@@ -597,7 +597,7 @@
 					<url>${tomcat.manager.url}</url>
 					<username>tomcat</username>
 					<password>explink</password>
-					<path>/dmp_pxwl_41030</path>
+					<path>/dmp_pxwl_smt</path>
 					<update>true</update>
 				</configuration>
 			</plugin>
@@ -682,7 +682,7 @@
 		<profile>
 			<id>version</id>
 			<properties>
-				<tomcat.manager.url>http://192.0.170.109:8095/manager</tomcat.manager.url>
+				<tomcat.manager.url>http://192.168.0.217:8086/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
 				<expressurl.url>jdbc:mysql://localhost:3306/dmp_pxwl_smt?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
