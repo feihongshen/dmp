@@ -4668,6 +4668,10 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set transcwb=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, transcwb, cwb);
 	}
+	public void updateCwbRemark5(String cwb, String remark5) {
+		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, remark5, cwb);
+	}
 
 	public List<CwbOrder> getIntoCwbByCwbsPage(long page, String cwbs, String customers, long cwbordertypeid, String emaildatebegin, String emaildateend) {
 		String sql = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";

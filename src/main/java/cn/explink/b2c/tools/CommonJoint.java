@@ -13,6 +13,18 @@ public class CommonJoint {
 	public long expt_type;
 	public String reasoncontent;
 	public String commonname;
+	public String reasontype;//异常类型，在广州通路开发时添加
+	
+	
+	
+
+	public String getReasontype() {
+		return reasontype;
+	}
+
+	public void setReasontype(String reasontype) {
+		this.reasontype = reasontype;
+	}
 
 	public String getCommonname() {
 		return commonname;

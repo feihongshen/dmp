@@ -27,6 +27,25 @@ public class OrderFlowDto {
 	private int isCancel;// 是否撤销 0 默认 1撤销
 	private String cwbremark;//
 	private String consignee;//
+	private String deliverymobile; // 派送员电话
+	private String deliveryname; // 派送员
+	
+
+	public String getDeliverymobile() {
+		return deliverymobile;
+	}
+
+	public void setDeliverymobile(String deliverymobile) {
+		this.deliverymobile = deliverymobile;
+	}
+
+	public String getDeliveryname() {
+		return deliveryname;
+	}
+
+	public void setDeliveryname(String deliveryname) {
+		this.deliveryname = deliveryname;
+	}
 
 	public String getCwbremark() {
 		return cwbremark;

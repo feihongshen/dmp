@@ -54,7 +54,7 @@ public class GztlFeedbackService {
 		gztl.setInvokeMethod(request.getParameter("invokeMethod"));
 		gztl.setReceive_url(request.getParameter("receive_url"));
 		gztl.setLoopCount(Integer.parseInt(request.getParameter("loopCount")));
-		String oldCustomerids = "";
+		
 
 		JSONObject jsonObj = JSONObject.fromObject(gztl);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -64,16 +64,13 @@ public class GztlFeedbackService {
 			jointEntity.setJoint_property(jsonObj.toString());
 			this.jiontDAO.Create(jointEntity);
 		} else {
-			try {
-				oldCustomerids = this.getGztlFeedback(joint_num).getCustomerids();
-			} catch (Exception e) {
-			}
+			
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
 			this.jiontDAO.Update(jointEntity);
 		}
-		// 保存 枚举到供货商表中
-		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+//		// 保存 枚举到供货商表中
+//	this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
 	}
 
 	public void update(int joint_num, int state) {

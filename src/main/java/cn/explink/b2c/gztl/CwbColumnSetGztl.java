@@ -23,6 +23,7 @@ public class CwbColumnSetGztl {
 		excelColumnSet.setCargoamountindex(1);// ??caramount
 		excelColumnSet.setCargorealweightindex(1);
 		excelColumnSet.setReceivablefeeindex(1);
+		excelColumnSet.setPaybackfeeindex(1);
 		excelColumnSet.setCustomercommandindex(1);
 		excelColumnSet.setSendcargonumindex(1);// sendcarnum??
 		excelColumnSet.setRemark1index(1);

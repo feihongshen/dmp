@@ -200,7 +200,7 @@ public class CommonExptDao {
 			return expt;
 		}
 	}
-
+	
 	public List<CommonJoint> getExpMatchListByKeyandcode(long type, long key, long page) {
 		List<CommonJoint> list = null;
 		try {
@@ -304,5 +304,37 @@ public class CommonExptDao {
 		return counts;
 
 	}
+	/**
+	 * 暂时广州通路添加
+	 * @param exptcodeid
+	 * @param codename
+	 * @return
+	 */
+	public CommonJoint getExceptReason(String exptcodeid, String codename) {
+		CommonJoint commonJoint = null;
+		try {
+			String sql = "select v.reasoncontent as reasoncontent,v.reasontype as reasontype,v.reasonid as reasonid from express_set_b2c_exptreason r,express_set_exptcode_joint j,express_set_reason v where r.exptid=j.exptid  and j.reasonid=v.reasonid and r.customerid="+codename +"  and r.expt_code='" +exptcodeid + "'  LIMIT 0,1";
+			commonJoint = jdbcTemplate.queryForObject(sql, new CommonRowMapper());
+			
+		} catch (Exception e) {
+		}
+		return commonJoint;
 
+	}
+	/**
+	 * 广州通路需要添加
+	 * @author wukong
+	 *
+	 */
+	private final class CommonRowMapper implements RowMapper<CommonJoint> {
+		@Override
+		public CommonJoint mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CommonJoint expt = new CommonJoint();
+			expt.setExpt_code(rs.getString("reasoncontent"));
+			expt.setExpt_type(rs.getLong("reasontype"));
+			expt.setReasonid(rs.getLong("reasonid"));
+			return expt;
+		}
+	}
+	
 }
