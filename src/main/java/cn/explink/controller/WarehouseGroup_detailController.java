@@ -52,6 +52,7 @@ import cn.explink.dao.PrintcwbDetailDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TruckDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Bale;
@@ -70,6 +71,7 @@ import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.Truck;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -146,7 +148,9 @@ public class WarehouseGroup_detailController {
 	ComplaintDAO complaintDAO;
 	@Autowired
 	BaleDao baleDAO;
-
+	@Autowired
+	TruckDAO truckDAO;
+	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
@@ -491,6 +495,8 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = getNextPossibleBranches();
+		List<User> uList = this.userDAO.getUserByRole(3);
+		List<Truck> tList = this.truckDAO.getAllTruck();
 		model.addAttribute("branchlist", bList);
 		String branchids = getStrings(branchid);
 		if (isshow > 0) {
@@ -527,6 +533,8 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("branchids", branchids);
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		model.addAttribute("time", "出库时间");
+		model.addAttribute("uList",uList);
+		model.addAttribute("tList",tList);
 		return "warehousegroup/outdetaillist";
 	}
 

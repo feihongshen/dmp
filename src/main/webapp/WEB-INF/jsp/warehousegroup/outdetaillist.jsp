@@ -12,6 +12,7 @@
     List<PrintTemplate> pList = (List<PrintTemplate>)request.getAttribute("printtemplateList");
     String strtime=request.getParameter("strtime")==null?"":(String)request.getParameter("strtime");
     String endtime=request.getParameter("endtime")==null?"":(String)request.getParameter("endtime");
+    String baleno=request.getParameter("baleno")==null?"":(String)request.getParameter("baleno");
     String[] branchidList=request.getParameterValues("branchid");
 %>
 
@@ -158,6 +159,25 @@ function cwbexport(){
 				到
 				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>"/>
 				（未打印订单只保留15天）
+				<br/>
+				<!-- 添加包号查询 -->
+				包号:<input type ="text" name ="baleno" id="baleno"  value="<%=baleno %>"/>
+				<!-- 添加驾驶员-->
+				驾驶员：
+				<select id="driverid" name="driverid">
+					<option value="-1" selected>请选择</option>
+					<%for(User u : uList){ %>
+						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
+					<%} %>
+		        </select>
+		        <!--添加车辆  -->
+				车辆：
+				<select id="truckid" name="truckid">
+					<option value="-1" selected>请选择</option>
+					<%for(Truck t : tList){ %>
+						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
+					<%} %>
+		        </select>
 		      　　<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
 		      <%if(printList!=null&&printList.size()>0){ %>
 		      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />

@@ -57,10 +57,16 @@ function cwbscan(scancwb){
 					$("#branchname").html(data.body.cwbOrder.excelbranch);//站点中文名
 					$("#transcwb").html(data.body.cwbOrder.transcwb);//运单号
 					$("#branchcode").html(data.body.branchcode);//站点分拣编码
+				var len=data.body.branchcode.length;
+				if(len>3){
+					$("#branchcode").attr('style','width:40mm;height: 18mm;font-family:黑体; font: bolder;font-size:18mm;font-weight:bolder;line-height: 18mm;margin:2mm;');
+				}
 					prn1_print(scancwb);
+
 				}
 			}
 		});
+		
 	}
 }
 </script>
@@ -78,9 +84,9 @@ function cwbscan(scancwb){
 					<div style="font-size:3mm ;height: 4mm;line-height: 4mm;" align="center" id="branchname"/>
 				</td>
 			</tr>
-			<tr >
-				<td style="padding:-20;margin:-20 ;display: table-cell;">
-					<div style="width:50mm;height:20mm;font-family:黑体; font: bolder;font-size:27mm;font-weight:bolder;line-height: 20mm;" align="center" id="branchcode"/>
+			<tr style="width:50mm;height: 20mm;">
+				<td style="padding:-20;margin:-20 ;width:50mm;height: 20mm;">
+					<div style="width:50mm;height: 20mm;font-family:黑体; font: bolder;font-size:26mm;font-weight:bolder;line-height: 20mm;" align="center" id="branchcode"/>
 				</td>
 			</tr>
 			<tr>

@@ -75,7 +75,7 @@ function prn1_preview() {
 };
 function prn1_print() {		
 	CreateOneFormPage();
-	//LODOP.PRINT();	
+	LODOP.PRINT();	
 };
 function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
@@ -87,17 +87,17 @@ function CreateOneFormPage(){
 		LODOP.PRINT_INIT("<%=printTemplate.getCustomname() %>出库至<%for(Branch b : branchlist){if(nextbranchid==b.getBranchid()){%><%=b.getBranchname() %><%}} %>清单");
 	<%} %>
 	LODOP.SET_PRINT_MODE("FULL_WIDTH_FOR_OVERFLOW",true);
-	//LODOP.SET_PRINT_PAGESIZE(2,0,0,"A4");
+	LODOP.SET_PRINT_PAGESIZE(2,0,0,"A4");
 	//LODOP.SET_PRINT_MODE("FULL_HEIGHT_FOR_OVERFLOW",true); 
 	LODOP.SET_PRINT_STYLE("FontSize",18);
 	LODOP.SET_PRINT_STYLE("Bold",1);
-	var width=$("#table1").width();
+	/* var width=$("#table1").width();
 	if(width>600&&width<1800)
 		{width=740;}
 	if(width>1800)
-	{width=$("#table1").width()/2;}
+	{width=$("#table1").width()/2;} */
 	//LODOP.ADD_PRINT_HTM(15,21,1050,50,document.getElementById("form1").innerHTML);
-	LODOP.ADD_PRINT_TABLE(10,10,width,1000,document.getElementById("table1").innerHTML);
+	LODOP.ADD_PRINT_TABLE(10,10,1050,1000,document.getElementById("table1").innerHTML);
 };	                     
 function setcreowg(){
 	var operatetype = <%=OutwarehousegroupOperateEnum.ChuKu.getValue()%>;
