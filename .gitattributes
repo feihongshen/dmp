@@ -1617,6 +1617,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/lechong.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong/addXml.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong/delXml.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lefeng.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/lefengdms.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/letv.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/liantong.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/liantong/liantongtest.jsp -text
