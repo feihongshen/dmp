@@ -607,7 +607,7 @@ public class SmtController {
 	}
 
 	private String getSmtOrderQryFields() {
-		return "d.opscwbid,d.cwb,d.consigneename,d.consigneeaddress,d.consigneephone,d.shouldfare,d.excelbranch,d.deliverid";
+		return "d.opscwbid,d.cwb,d.consigneename,d.consigneeaddress,d.consigneephone,d.consigneemobile,d.shouldfare,d.excelbranch,d.deliverid";
 	}
 
 	private String getSelectOrderPart() {

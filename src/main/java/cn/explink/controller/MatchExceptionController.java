@@ -649,7 +649,7 @@ public class MatchExceptionController {
 	}
 
 	private String getQueryFields() {
-		return "f.credate,f.branchid,f.userid,d.cwb,d.deliverybranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress,d.outareaflag";
+		return "f.credate,f.branchid,f.userid,d.cwb,d.deliverybranchid,d.consigneename,d.consigneephone,d.consigneemobile , d.shouldfare,d.consigneeaddress,d.outareaflag";
 	}
 
 	private String getTodayZeroTimeString() {

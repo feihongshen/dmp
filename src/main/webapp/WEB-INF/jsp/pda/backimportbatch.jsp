@@ -41,6 +41,7 @@ function tabView(tab){
 
 function exportField(flag){
 	var cwbs = "";
+
 	if(flag==1){
 		$("#type").val("weiruku");
 		$("#searchForm3").submit();

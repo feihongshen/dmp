@@ -291,6 +291,9 @@ function loadTodayOutAreaOrder(){
 	}
 
 	function afterDispatch(data) {
+		if(data.body.cwbOrder.cwbordertypeid != 2){
+			return;
+		}
 		if (data.body.isRepeatPicking) {
 			return;
 		}
@@ -611,8 +614,7 @@ dl dd span {
 						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
 				<div>
-					快捷超区：<input type="text" id="today_table_quick"
-						name="today_table_quick" value=""
+					快捷超区：<input type="text" id="today_table_quick" name="today_table_quick" value=""
 						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
 						id="today_table_msg" style="color: red"></label>
 				</div>

@@ -5104,13 +5104,31 @@ public class CwbDAO {
 			newOrder.setCwbId(rs.getLong("opscwbid"));
 			newOrder.setCwb(rs.getString("cwb"));
 			newOrder.setCustomerName(rs.getString("consigneename"));
-			newOrder.setPhone(rs.getString("consigneephone"));
+			newOrder.setPhone(this.getPhoneNumber(rs));
 			newOrder.setAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
 			newOrder.setMatchBranch(rs.getString("excelbranch"));
 			newOrder.setDeliver(rs.getLong("deliverid"));
 
 			return newOrder;
+		}
+
+		private String getPhoneNumber(ResultSet rs) throws SQLException {
+			String phone = rs.getString("consigneephone");
+			String mobile = rs.getString("consigneemobile");
+			boolean phoneNull = phone == null;
+			boolean mobileNull = mobile == null;
+			if (phoneNull && mobileNull) {
+				return new String();
+			}
+			if (phoneNull) {
+				return mobile;
+			}
+			if (mobileNull) {
+				return phone;
+			}
+			return phone + "/" + mobile;
+
 		}
 	}
 
@@ -5164,13 +5182,31 @@ public class CwbDAO {
 			newOrder.setReportOutAreaUserId(rs.getLong("userid"));
 			newOrder.setCwb(rs.getString("cwb"));
 			newOrder.setCustomerName(rs.getString("consigneename"));
-			newOrder.setCustomerPhone(rs.getString("consigneephone"));
+			newOrder.setCustomerPhone(this.getPhoneNumber(rs));
 			newOrder.setCustomerAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
 			newOrder.setMatchBranchId(rs.getLong("deliverybranchid"));
 			newOrder.setOutareaFlag(rs.getInt("outareaflag"));
 
 			return newOrder;
+		}
+
+		private String getPhoneNumber(ResultSet rs) throws SQLException {
+			String phone = rs.getString("consigneephone");
+			String mobile = rs.getString("consigneemobile");
+			boolean phoneNull = phone == null;
+			boolean mobileNull = mobile == null;
+			if (phoneNull && mobileNull) {
+				return new String();
+			}
+			if (phoneNull) {
+				return mobile;
+			}
+			if (mobileNull) {
+				return phone;
+			}
+			return phone + "/" + mobile;
+
 		}
 
 		private SimpleDateFormat getFormat() {
@@ -5275,8 +5311,9 @@ public class CwbDAO {
 		Object[] paras = new Object[] { cwbId };
 		return this.jdbcTemplate.queryForObject(sql, paras, String.class);
 	}
+
 	public void updateDeliveridByCwb(String cwb, long deliverid) {
 		String sql = "update express_ops_cwb_detail set deliverid=? where cwb=? and state=1 ";
-		this.jdbcTemplate.update(sql,deliverid , cwb);
+		this.jdbcTemplate.update(sql, deliverid, cwb);
 	}
 }
