@@ -13,9 +13,10 @@ public class Weisuda {
 	private String courierUpdate_URL;
 	private String carrierDel_URL;
 	private String nums;
+	private String count;
 
 	public String getSecret() {
-		return secret;
+		return this.secret;
 	}
 
 	public void setSecret(String secret) {
@@ -23,7 +24,7 @@ public class Weisuda {
 	}
 
 	public String getCode() {
-		return code;
+		return this.code;
 	}
 
 	public void setCode(String code) {
@@ -31,7 +32,7 @@ public class Weisuda {
 	}
 
 	public String getV() {
-		return v;
+		return this.v;
 	}
 
 	public void setV(String v) {
@@ -39,15 +40,15 @@ public class Weisuda {
 	}
 
 	public String getPushOrders_URL() {
-		return pushOrders_URL;
+		return this.pushOrders_URL;
 	}
 
 	public String getUnVerifyOrders_URL() {
-		return UnVerifyOrders_URL;
+		return this.UnVerifyOrders_URL;
 	}
 
 	public String getUpdateUnVerifyOrders_URL() {
-		return updateUnVerifyOrders_URL;
+		return this.updateUnVerifyOrders_URL;
 	}
 
 	public void setPushOrders_URL(String pushOrders_URL) {
@@ -55,7 +56,7 @@ public class Weisuda {
 	}
 
 	public void setUnVerifyOrders_URL(String unVerifyOrders_URL) {
-		UnVerifyOrders_URL = unVerifyOrders_URL;
+		this.UnVerifyOrders_URL = unVerifyOrders_URL;
 	}
 
 	public void setUpdateUnVerifyOrders_URL(String updateUnVerifyOrders_URL) {
@@ -63,7 +64,7 @@ public class Weisuda {
 	}
 
 	public String getUpdateOrders_URL() {
-		return updateOrders_URL;
+		return this.updateOrders_URL;
 	}
 
 	public void setUpdateOrders_URL(String updateOrders_URL) {
@@ -71,7 +72,7 @@ public class Weisuda {
 	}
 
 	public String getSiteUpdate_URL() {
-		return siteUpdate_URL;
+		return this.siteUpdate_URL;
 	}
 
 	public void setSiteUpdate_URL(String siteUpdate_URL) {
@@ -79,7 +80,7 @@ public class Weisuda {
 	}
 
 	public String getSiteDel_URL() {
-		return siteDel_URL;
+		return this.siteDel_URL;
 	}
 
 	public void setSiteDel_URL(String siteDel_URL) {
@@ -87,7 +88,7 @@ public class Weisuda {
 	}
 
 	public String getCourierUpdate_URL() {
-		return courierUpdate_URL;
+		return this.courierUpdate_URL;
 	}
 
 	public void setCourierUpdate_URL(String courierUpdate_URL) {
@@ -95,7 +96,7 @@ public class Weisuda {
 	}
 
 	public String getCarrierDel_URL() {
-		return carrierDel_URL;
+		return this.carrierDel_URL;
 	}
 
 	public void setCarrierDel_URL(String carrierDel_URL) {
@@ -103,11 +104,19 @@ public class Weisuda {
 	}
 
 	public String getNums() {
-		return nums;
+		return this.nums;
 	}
 
 	public void setNums(String nums) {
 		this.nums = nums;
+	}
+
+	public String getCount() {
+		return this.count;
+	}
+
+	public void setCount(String count) {
+		this.count = count;
 	}
 
 }
