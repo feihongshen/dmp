@@ -13,7 +13,15 @@ public class Tlmpos {
 	private int isbackout; // 是否允许撤销 1允许 0不允许
 	private int isshowPhone; // 是否显示电话 0不显示 1显示
 	private int isshowPaytype; // 是否显示支付方式放在remark列 0不显示 1显示
+	private String private_key;
+	
+	public String getPrivate_key() {
+		return private_key;
+	}
 
+	public void setPrivate_key(String private_key) {
+		this.private_key = private_key;
+	}
 	public int getIsshowPhone() {
 		return isshowPhone;
 	}

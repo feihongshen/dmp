@@ -1259,6 +1259,11 @@ src/main/java/cn/explink/pos/tonglianpos/TlmposService_toLogin.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposService_toPayAmount.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposService_toSmt.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposXMLHandler.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/Delivery.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/DeliveryEnum.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/DeliveryService.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/Delivery_request.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/Delivery_response.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/TlmposUnmarchal.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/Transaction.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/Transaction_Body.java -text

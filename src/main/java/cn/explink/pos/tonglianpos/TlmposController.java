@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.domain.User;
+import cn.explink.pos.tonglianpos.delivery.DeliveryService;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Dom4jParseUtil;
@@ -32,6 +33,8 @@ public class TlmposController {
 	JiontDAO jointDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	DeliveryService deliveryService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -98,6 +101,13 @@ public class TlmposController {
 			return "未知异常!";
 		}
 
+	}
+	
+
+	@RequestMapping("/delivery")
+	public @ResponseBody String test(HttpServletRequest request){
+		
+		return deliveryService.delivery(request);
 	}
 
 }
