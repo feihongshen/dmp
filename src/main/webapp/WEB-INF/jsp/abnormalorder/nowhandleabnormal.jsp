@@ -4,10 +4,7 @@
 <%@page import="cn.explink.domain.AbnormalType"%>
 <%@page import="cn.explink.domain.AbnormalOrder"%>
 <%@page import="cn.explink.enumutil.*"%>
-<%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.domain.CwbOrder"%>
-<%@page import="cn.explink.domain.User"%>
-<%@page import="cn.explink.domain.Branch"%>
+<%@page import="cn.explink.domain.*"%>
 
 <%@page import="cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
@@ -15,6 +12,8 @@
 List<AbnormalType> abnormalTypeList = (List<AbnormalType>)request.getAttribute("abnormalTypeList");
 AbnormalOrder abnormalOrder = (AbnormalOrder)request.getAttribute("abnormalOrder");
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
+Role role = (Role)request.getAttribute("role");
+String showabnomal = request.getAttribute("showabnomal").toString();
 
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
@@ -28,7 +27,7 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>问题件处理详情</h1>
-		<form method="post" onSubmit="if(check_describe()){submitSaveFormAndCloseBox(this);}return false;" action="<%=request.getContextPath()%>/abnormalOrder/SubmitHandleabnormal/<%=abnormalOrder.getId() %>">
+		<form method="post" id="form1" onSubmit="if(check_describe()){submitSaveFormAndCloseBox(this);}return false;" action="<%=request.getContextPath()%>/abnormalOrder/SubmitHandleabnormal/<%=abnormalOrder.getId() %>">
 			<table width="600" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
@@ -77,9 +76,21 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 			</table>
 			<input type="hidden" name="cwb" value="<%=cwborder.getCwb() %>">
 			<div align="center">
-				<input type="submit" value="提交" class="button">
+				<%if(showabnomal.equals("1")&&role.getRolename().equals("客服")) {%>
+				<input type="submit" value="处理中" class="button">
+				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
+				<%} 
+				else if(showabnomal.equals("0")&&role.getRolename().equals("客服")) {%>
+				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
+				<%} 
+				else { %>
+				<input type="submit" value="处理" class="button">
+				<%} %>
 			</div>
+		</form>
+		<form id="form2" action="<%=request.getContextPath()%>/abnormalOrder/SubmitOverabnormal/<%=abnormalOrder.getId() %>" method="post">
+		<input type="hidden" name="cwb" value="<%=cwborder.getCwb() %>">
+		<input type="hidden" name="describe2" id="describe2" >
 		</form>
 	</div>
 </div>
-

@@ -22,6 +22,8 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
+  String showabnomal = request.getAttribute("showabnomal").toString();
+  String ishandle = request.getAttribute("ishandle").toString();
 %>
 
 
@@ -96,7 +98,10 @@ $(function() {
 	checkstate();
 	
 });
-
+function yichuli()
+{
+	alert("ssssssssss");
+	}
 
 function getThisBox(id){
 	$.ajax({
@@ -114,7 +119,7 @@ function getThisBox(id){
 }
 
 function check(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.YiChuLi.getValue()%>){
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
@@ -179,7 +184,7 @@ function editSuccess(data){
 	$("#searchForm").submit();
 }		
 function checkstate(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>){
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>){
 		$("#chuangjianstrtime").show();
 		$("#chuangjianendtime").show();
 		$("#strtime").hide();
@@ -226,7 +231,10 @@ function checkstate(){
 									<select name="ishandle" id="ishandle" onchange="checkstate()">
 										<!-- <option value="-1">全部</option> -->
 										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.YiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.YiChuLi.getText() %></option>
+										<%if(showabnomal.equals("1")){%>
+										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
+										<%} %>
+										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 									</select>
 									<strong id="chuli" >处理时间：</strong>
 									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
@@ -272,7 +280,10 @@ function checkstate(){
 						<td width="100" align="center" valign="middle"><%=view.getCreuserName() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
-						<td width="80" align="center" valign="middle"><input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<td width="80" align="center" valign="middle">
+						<%if(!ishandle.equals(AbnormalOrderHandleEnum.yichuli.getValue()+"")){ %>
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<%} %>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />
 					</tr>
 					<%} %>

@@ -5864,6 +5864,14 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		</sql>
 	</changeSet>
 	
+	<changeSet id="wangyonghe-2014-12-26-1" author="wangyonghe">
+		<sql>
+	INSERT INTO `express_set_system_install`(`name`,`value`,`chinesename`) 
+	VALUES ('showabnomal','0','问题件是否开启处理中状态{0=关闭,1=开启}');
+
+		</sql>
+	</changeSet>
+	
 	
 </databaseChangeLog>
  

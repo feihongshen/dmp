@@ -36,6 +36,8 @@ import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.RoleDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalType;
@@ -43,6 +45,8 @@ import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.Role;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
@@ -84,6 +88,10 @@ public class AbnormalOrderController {
 	AbnormalService abnormalService;
 	@Autowired
 	AppearWindowDao appearWindowDao;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	RoleDAO roleDao;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -112,7 +120,6 @@ public class AbnormalOrderController {
 
 			List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
 			StringBuffer cwbs = new StringBuffer();
-
 			for (String cwbStr : cwb.split("\r\n")) {
 				if (cwbStr.trim().length() == 0) {
 					continue;
@@ -242,8 +249,18 @@ public class AbnormalOrderController {
 		int count = 0;
 
 		if (isshow == 1) {
-			if (ishandle == 2) {
+			if (ishandle == 1) {
+				if (begindate.length() == 0) {
+					begindate = DateTimeUtil.getDateBefore(1);
+				}
+				if (enddate.length() == 0) {
+					enddate = DateTimeUtil.getNowTime();
+				}
 
+				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
+
+			} else {
 				if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
 				}
@@ -258,16 +275,6 @@ public class AbnormalOrderController {
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
 				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
 
-			} else {
-				if (begindate.length() == 0) {
-					begindate = DateTimeUtil.getDateBefore(1);
-				}
-				if (enddate.length() == 0) {
-					enddate = DateTimeUtil.getNowTime();
-				}
-
-				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
 			}
 		}
 		// 根据条件查询和上一步中查出的opscwbid来查询
@@ -279,9 +286,12 @@ public class AbnormalOrderController {
 		/*
 		 * List<AbnormalView> viewForShow=new ArrayList<AbnormalView>(); for
 		 * (int i = (int) ((page-1)*Page.ONE_PAGE_NUMBER); i <
-		 * Page.ONE_PAGE_NUMBER*page&&i<views.size(); i++) {
-		 * viewForShow.add(views.get(i)); }
+		 * Page.ONE_PAGE_NUMBER*page&&i<views.size(); i++) { viewFo
+		 * rShow.add(views.get(i)); }
 		 */
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
 		model.addAttribute("chuangjianbegindate", chuangjianbegindate);
 		model.addAttribute("chuangjianenddate", chuangjianenddate);
 
@@ -289,6 +299,7 @@ public class AbnormalOrderController {
 		model.addAttribute("abnormalTypeList", atlist);
 		model.addAttribute("views", views);
 		model.addAttribute("cwb", cwb);
+		model.addAttribute("ishandle", ishandle);
 		/*
 		 * model.addAttribute("page_obj", new
 		 * Page(views.size(),page,Page.ONE_PAGE_NUMBER));
@@ -309,6 +320,11 @@ public class AbnormalOrderController {
 		model.addAttribute("userList", this.userDAO.getAllUser());
 		model.addAttribute("cwborder", this.cwbDAO.getCwbOrderByOpscwbid(abnormalOrder.getOpscwbid()));
 		model.addAttribute("abnormalWriteBackList", this.abnormalWriteBackDAO.getAbnormalOrderByOrderid(id));
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		Role role = this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid());
+		model.addAttribute("role", role);
 		if (type == 1) {
 			return "/abnormalorder/nowhandleabnormal";
 		} else if (type == 2) {
@@ -325,7 +341,7 @@ public class AbnormalOrderController {
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.YiChuLi.getValue(), nowtime);
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.chulizhong.getValue(), nowtime);
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
 					ab.getAbnormaltypeid(), cwb);
 			String json = "订单：" + cwb + "已处理";
@@ -522,6 +538,25 @@ public class AbnormalOrderController {
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping("/SubmitOverabnormal/{id}")
+	public @ResponseBody String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);
+			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.yichuli.getValue(), nowtime);
+			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe2, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
+					ab.getAbnormaltypeid(), cwb);
+			String json = "订单：" + cwb + "已处理";
+			this.appearWindowDao.creWindowTime(json, "4", ab.getCreuserid(), "1");
+			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
 		}
 	}
 

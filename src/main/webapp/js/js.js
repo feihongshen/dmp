@@ -283,6 +283,27 @@ function submitSaveFormAndCloseBox(form) {
 		}
 	});
 }
+function yichuli1()
+{
+	$("#describe2").val($("#describe").val());
+//	alert($("#describe2").val());
+//	$("#form2").submit();
+	$.ajax({
+		type : "POST",
+		url : $("#form2").attr("action"),
+		data :$("#form2").serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				closeBox();
+			}
+		}
+	});
+}
 
 // 归班审核功能，有使用小件员交款功能时使用
 function submitAuditAndCloseBox(form) {
