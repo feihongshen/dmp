@@ -102,7 +102,7 @@ function CreateOneFormPage(){
 				<% 
 					for (PrintColumn printColumn:printTemplate.getColumns()) {
 						%> 
-			<td  align="center" valign="middle"  width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px" style="font-size: 9.5000pt;" ><%=map.get(printColumn.getField())%></td>
+			<td  align="center" valign="middle"  width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px" style="font-size: 9.5000pt;" ><%=map.get(printColumn.getField())==null?"":map.get(printColumn.getField())%></td>
 					<%}%>
 				</tr>
 				<%

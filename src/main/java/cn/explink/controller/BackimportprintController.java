@@ -175,7 +175,7 @@ public class BackimportprintController {
 				if (printColumn.getField().equals("driver")) {
 					for (User u : driverList) {
 						if (u.getUserid() == bPrints.get(i).getDriverid()) {
-							map.put(printColumn.getField(), u.getUsername());
+							map.put(printColumn.getField(), u.getUsername() == null ? "" : u.getUsername());
 						}
 					}
 				}
