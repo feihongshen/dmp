@@ -243,7 +243,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	/**
 	 * 唯品会请求地址库接口
-	 * 
+	 *
 	 * @param itemno
 	 * @param Address
 	 * @return
@@ -344,7 +344,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	/**
 	 * ADD BY WANGYCH 20140725 唯品会请求地址库接口,面单前置
-	 * 
+	 *
 	 * @param itemno
 	 * @param Address
 	 * @return
@@ -413,7 +413,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	/**
 	 * 请求匹配地址公用接口
-	 * 
+	 *
 	 * @param itemno
 	 * @param Address
 	 * @return

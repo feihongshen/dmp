@@ -177,18 +177,20 @@ public class SmtController {
 		if (order == null) {
 			obj.put("successed", false);
 			obj.put("msg", "订单不存在");
-		} else {
-			FlowOrderTypeEnum flowOrderType = FlowOrderTypeEnum.getText(order.getFlowordertype());
-			boolean cond1 = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType);
-			boolean cond2 = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType);
-			if (!(cond1 || cond2)) {
-				obj.put("successed", false);
-				obj.put("msg", this.getOutAreaFlowErrorMsg(flowOrderType));
-			}
 		}
+		/*
+		 * 超区不对订单状态做限制. else { FlowOrderTypeEnum flowOrderType =
+		 * FlowOrderTypeEnum.getText(order.getFlowordertype()); boolean cond1 =
+		 * FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType); boolean
+		 * cond2 =
+		 * FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType
+		 * ); if (!(cond1 || cond2)) { obj.put("successed", false);
+		 * obj.put("msg", this.getOutAreaFlowErrorMsg(flowOrderType)); } }
+		 */
 		return obj;
 	}
 
+	@SuppressWarnings("unused")
 	private String getOutAreaFlowErrorMsg(FlowOrderTypeEnum flowOrderType) {
 		StringBuilder msg = new StringBuilder();
 		msg.append("订单状态为[");
