@@ -29,4 +29,11 @@ public class PrintCwbController {
 		model.addAttribute("scancwb", scancwb);
 		return "printcwbnew";
 	}
+	//打印入库  控制器
+	@RequestMapping("printCwbruku")
+	public String printCwbruku(Model model, @RequestParam(value = "scancwb", required = false, defaultValue = "") String scancwb) {
+		model.addAttribute("scancwb", scancwb);
+		return "printcwbruku";
+	}
+	
 }

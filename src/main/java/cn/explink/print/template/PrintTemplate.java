@@ -78,6 +78,10 @@ public class PrintTemplate {
 				|| opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()
 				|| opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue()) {
 			this.templatetype = 2;
+		}else if (opertatetype == PrintTemplateOpertatetypeEnum.TongLuTuiHuoShangChuKu.getValue()) {
+			this.templatetype = 5;
+		}else if (opertatetype == PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()) {
+			this.templatetype = 4;
 		}
 		this.opertatetype = opertatetype;
 	}

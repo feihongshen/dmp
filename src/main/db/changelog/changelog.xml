@@ -5800,6 +5800,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			DELETE FROM express_set_menu_info_new WHERE menuname='上门退运费结算';
 		</sql>
 	</changeSet>
+	<changeSet id="suyun-2014-12-18-1" author="suyun">
+		<sql>
+			UPDATE `express_set_system_install` SET `chinesename`='打印模式(普通标签(0) 新标签(1) 入库标签(2))',`value`='2' WHERE `name`='isprintnew'; 
+		</sql>
+	</changeSet>
 	
 	<changeSet id="zhangpengkai-2014-12-17-1" author="zhangpengkai">
 		<sql>
@@ -5864,6 +5869,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		</sql>
 	</changeSet>
 	
+
 	<changeSet id="wangyonghe-2014-12-26-1" author="wangyonghe">
 		<sql>
 	INSERT INTO `express_set_system_install`(`name`,`value`,`chinesename`) 
@@ -5872,6 +5878,6 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		</sql>
 	</changeSet>
 	
-	
+
 </databaseChangeLog>
  

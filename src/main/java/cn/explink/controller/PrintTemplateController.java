@@ -50,7 +50,9 @@ public class PrintTemplateController {
 		if (ptList.size() > 0) {
 			return "{\"errorCode\":0,\"error\":\"该模版设置已存在\"}";
 		} else {
-			if ((opertatetype % 2) == 0) {
+
+			if (opertatetype % 2 == 0||opertatetype==13) {
+
 				shownum = 1;
 			}
 
@@ -60,6 +62,10 @@ public class PrintTemplateController {
 					|| (opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()) || (opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue())
 					|| (opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue()) || (opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue())) {
 				templatetype = 2;
+			}else if(opertatetype==PrintTemplateOpertatetypeEnum.TongLuTuiHuoShangChuKu.getValue()){
+				templatetype = 5;
+			}else if(opertatetype==PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()){
+				templatetype = 4;
 			}
 			if (opertatetype == PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue()) {
 				templatetype = 3;
@@ -117,13 +123,19 @@ public class PrintTemplateController {
 		PrintTemplate printTemplate = this.printTemplateDAO.getPrintTemplate(id);
 
 		model.addAttribute("template", printTemplate);
-
 		if (printTemplate.getTemplatetype() == 1) {
 			return "/template/testprinting_template";
-		} else if (printTemplate.getTemplatetype() == 2) {
+		}else if (printTemplate.getTemplatetype() == 2) {
 			return "/template/testhuizongprinting_template";
+
+		}else if(printTemplate.getTemplatetype() == 5){
+			return "/template/testtongluprinting_template";
+		}else if (printTemplate.getTemplatetype() == 4) {
+			return "/template/testanbaoprinting_template";
+
 		} else if (printTemplate.getTemplatetype() == 3) {
 			return "/template/tuihuozhanruku_template";
+
 		}
 		return null;
 	}

@@ -47,6 +47,7 @@ import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
+import cn.explink.dao.PayWayDao;
 import cn.explink.dao.PrintcwbDetailDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
@@ -62,6 +63,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GroupDetail;
 import cn.explink.domain.OutWarehouseGroup;
+import cn.explink.domain.PayWay;
 import cn.explink.domain.PrintView;
 import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.Reason;
@@ -70,9 +72,12 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.CwbOrderTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 import cn.explink.print.template.PrintTemplateDAO;
 import cn.explink.service.CwbOrderService;
@@ -144,6 +149,9 @@ public class WarehouseGroupController {
 	WarehouseGroupDetailService warehouseGroupDetailService;
 	@Autowired
 	ComplaintDAO complaintDAO;
+	
+	@Autowired
+	PayWayDao payWayDao;
 
 	private Logger logger = LoggerFactory.getLogger(WarehouseGroupController.class);
 
@@ -626,7 +634,7 @@ public class WarehouseGroupController {
 		model.addAttribute(
 				"printtemplateList",
 				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuAnDan.getValue() + ","
-						+ PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()));
+						+ PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.TongLuTuiHuoShangChuKu.getValue()));
 		model.addAttribute("customerlist", customerList);
 		return "warehousegroup/backtocustomerlist";
 	}
@@ -642,8 +650,8 @@ public class WarehouseGroupController {
 	public String backtocustomerbillprinting_default(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
 			@RequestParam(value = "isback", defaultValue = "", required = true) String isback, @RequestParam(value = "iscustomer", required = false, defaultValue = "0") long iscustomer,
 			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid) {
-		iscustomer = 1;
-		String cwbs = "", cwbstr = "";
+		iscustomer = 1;//设置基础值
+		String cwbs = "", cwbstr = "",customerids="";
 		CwbOrder co = null;
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
@@ -651,13 +659,32 @@ public class WarehouseGroupController {
 			}
 			cwbs += "'" + isprint[i] + "',";
 			cwbstr += isprint[i] + ",";
-			co = cwbDao.getCwbByCwb(isprint[i]);
+			co = cwbDao.getCwbByCwb(isprint[i]);//
 		}
 		if (cwbs.length() > 0) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 		}
 
 		List<CwbOrder> cwbList = cwbDao.getCwbByCwbs(cwbs);
+		//查询退货站入库时间
+		//得到list 的String
+		List<String> cwbStrings=new ArrayList<String>();
+		
+		for (CwbOrder cwbOrder : cwbList) {
+			cwbStrings.add(cwbOrder.getCwb());
+			customerids+="'" + cwbOrder.getCustomerid() + "',";
+		}
+		//如果长度大于0 表示有值 进行截取
+		if (customerids.length() > 0) {
+			customerids = customerids.substring(0, customerids.length() - 1);
+		}
+		
+		
+		//查询退货信息
+		List<TuihuoRecord> tuihuoRecordList=tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbStrings);
+		List<Customer> customerList=customerDAO.getCustomerByIds(customerids);
+		//查询支付方式
+		//List<PayWay> paywayList=payWayDao.getpaywayby
 		List<OrderFlow> flowList = orderFlowDAO.getCwbByFlowordertypeAndCwbs(FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), cwbs);
 		Map<String, String> mapForOperatorName = new HashMap<String, String>();
 		for (OrderFlow of : flowList) {
@@ -668,7 +695,7 @@ public class WarehouseGroupController {
 
 		model.addAttribute("isback", isback);
 		model.addAttribute("iscustomer", iscustomer);
-
+		model.addAttribute("branch",this.branchDao.getBranchById(this.getSessionUser().getBranchid()));
 		model.addAttribute("template", printTemplateDAO.getPrintTemplate(printtemplateid));
 
 		model.addAttribute("localbranchname", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()).getBranchname());
@@ -687,6 +714,62 @@ public class WarehouseGroupController {
 			model.addAttribute("cwbs", cwbs);
 			model.addAttribute("cwbList", cwbJson);
 			return "warehousegroup/outbillhuizongprinting_template";
+		}else if(printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 5){
+			List<JSONObject> cwbJson = cwbDao.getDetailForChuKuPrint(cwbs);
+			List<WarehouseGroupPrintDto> printDtos=new ArrayList<WarehouseGroupPrintDto>();
+			
+			for (int i = 0; i < cwbStrings.size(); i++) {
+				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+				warehouseGroupPrintDto.setBackcarnum(cwbList.get(i).getBackcarnum());
+				warehouseGroupPrintDto.setCaramount(cwbList.get(i).getCaramount());
+				warehouseGroupPrintDto.setCarrealweight(cwbList.get(i).getCarrealweight());
+				warehouseGroupPrintDto.setCarsize(cwbList.get(i).getCarsize());
+				warehouseGroupPrintDto.setCarwarehouse(branchDao.getBranchById(Long.parseLong(cwbList.get(i).getCarwarehouse())).getBranchname());
+				warehouseGroupPrintDto.setConsigneeaddress(cwbList.get(i).getConsigneeaddress());
+				warehouseGroupPrintDto.setConsigneemobile(cwbList.get(i).getConsigneemobile());
+				warehouseGroupPrintDto.setConsigneename(cwbList.get(i).getConsigneename());
+				warehouseGroupPrintDto.setConsigneephone(cwbList.get(i).getConsigneephone());
+				warehouseGroupPrintDto.setConsigneepostcode(cwbList.get(i).getConsigneepostcode());
+				warehouseGroupPrintDto.setCustomername(customerDAO.getCustomerById(cwbList.get(i).getCustomerid()).getCustomername());
+				warehouseGroupPrintDto.setCwb(cwbStrings.get(i));
+				warehouseGroupPrintDto.setCwbordertypeid(CwbOrderTypeIdEnum.getByValue(cwbList.get(i).getCwbordertypeid()).getText());
+				if(cwbList.get(i).getCwbremark().length()>=30){
+					warehouseGroupPrintDto.setCwbremark(cwbList.get(i).getCwbremark().substring(0, 30));
+				}else {
+					warehouseGroupPrintDto.setCwbremark(cwbList.get(i).getCwbremark());
+				}
+				warehouseGroupPrintDto.setEmaildate(cwbList.get(i).getEmaildate());
+				warehouseGroupPrintDto.setPaybackfee(cwbList.get(i).getPaybackfee());
+				warehouseGroupPrintDto.setTuihuozhanrukutime(tuihuoRecordDAO.getTuihuoRecordByCwb(cwbList.get(i).getCwb()).get(0).getTuihuozhanrukutime());
+				warehouseGroupPrintDto.setTranscwb(cwbList.get(i).getTranscwb());
+				warehouseGroupPrintDto.setPaywayid(PaytypeEnum.getByValue(Integer.parseInt(cwbList.get(i).getPaywayid()+"")).getText());
+				/*System.out.println(cwbList.get(i).getBackreasonid());
+				System.out.println(cwbList.get(i).getBackreason());
+				System.out.println(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent());*/
+				if(cwbList.get(i).getBackreasonid()==0){
+					warehouseGroupPrintDto.setReasoncontent("无");
+				}else{
+					if(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent().length()>=30){
+						warehouseGroupPrintDto.setReasoncontent(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent().substring(0, 30));				
+					}else {
+						warehouseGroupPrintDto.setReasoncontent(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent());
+					}
+				}
+				warehouseGroupPrintDto.setCredate(orderFlowDAO.getOrderCurrentFlowByCwb(cwbList.get(i).getCwb()).getCredate().toString());
+				warehouseGroupPrintDto.setReceivablefee(cwbList.get(i).getReceivablefee());
+				warehouseGroupPrintDto.setSendcarname(cwbList.get(i).getSendcarname());
+				warehouseGroupPrintDto.setSendcarnum(cwbList.get(i).getScannum());
+				warehouseGroupPrintDto.setStartbranch(branchDao.getBranchByBranchid(cwbList.get(i).getStartbranchid()).getBranchname());
+				warehouseGroupPrintDto.setBackcarname(cwbList.get(i).getBackcarname());
+				printDtos.add(warehouseGroupPrintDto);
+			}
+			model.addAttribute("dto",printDtos);
+			model.addAttribute("cwbs", cwbs);
+			model.addAttribute("cwbList", cwbJson);
+			model.addAttribute("tuihuoRecordList",tuihuoRecordList);
+			model.addAttribute("iscustomer",2L);
+			model.addAttribute("cwbOrderList",cwbList);
+			return "warehousegroup/outtongluprintint_template";
 		}
 		return null;
 	}

@@ -632,7 +632,7 @@ function chuku(){
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+				<li style="display: none"><input type="button" id="btnval0" value="导出Exc"
 					class="input_button1" onclick="exportField(2);" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
@@ -719,8 +719,9 @@ function chuku(){
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+				<li style="display: none"><input type="button" id="btnval0" value="导出Exce"
 					class="input_button1" onclick="exportField(3);" />
+
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>

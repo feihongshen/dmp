@@ -18,6 +18,7 @@ String  showMassage=(String)request.getAttribute("showMassage");
 boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 String isprintnew = request.getAttribute("isprintnew").toString();
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -235,7 +236,6 @@ function callfunction(cwb){//getEmailDateByIds
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
 		
-		
 		var flag=false;
 		
 		if (scancwb.length > 0) {
@@ -316,14 +316,15 @@ function callfunction(cwb){//getEmailDateByIds
 									/* if (data.body.cwbOrder.scannum == 1) {
 										$("#successcwbnum").html(parseInt($("#successcwbnum").html()) + 1);
 									} */
-									if($("#updateswitch").attr('checked')=='checked')
-									{
-									if (rk_switch == "rkbq_01") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+									if($("#updateswitch").attr('checked')=='checked'){
+										if (rk_switch == "rkbq_01") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_03") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_04") {						
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
+										}
 									}
-									else if (rk_switch == "rkbq_03") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
-									}}
 
 									<%--if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
 										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
@@ -713,11 +714,21 @@ $(function(){
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p>
-						<%if(isprintnew.equals("yes")){ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
-						<%}else{ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
-						<%} %>
+						<%
+							if(isprintnew.equals("2")){ 
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_04" name="updateswitch"/>打印入库标签
+						<%
+							} else if (isprintnew.equals("1")) {
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
+						<%
+							} else {
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch" <%--  <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
+						<%
+							}
+						%>
 					</p>
 					<p style="display: none;">
 					<span>包号：</span>

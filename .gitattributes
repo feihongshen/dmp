@@ -759,6 +759,7 @@ src/main/java/cn/explink/controller/UserController.java -text
 src/main/java/cn/explink/controller/UserDTO.java -text
 src/main/java/cn/explink/controller/UserView.java -text
 src/main/java/cn/explink/controller/WarehouseGroupController.java -text
+src/main/java/cn/explink/controller/WarehouseGroupPrintDto.java -text
 src/main/java/cn/explink/controller/WarehouseGroup_detailController.java -text
 src/main/java/cn/explink/controller/WarehouseKeyController.java -text
 src/main/java/cn/explink/controller/WhareHouseToCommonController.java -text
@@ -2059,6 +2060,7 @@ src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbnew.jsp -text
+src/main/webapp/WEB-INF/jsp/printcwbruku.jsp -text
 src/main/webapp/WEB-INF/jsp/qiege.jsp -text
 src/main/webapp/WEB-INF/jsp/readWav.jsp -text
 src/main/webapp/WEB-INF/jsp/reason/add.jsp -text
@@ -2094,8 +2096,10 @@ src/main/webapp/WEB-INF/jsp/systeminstall/list.jsp -text
 src/main/webapp/WEB-INF/jsp/template/add.jsp -text
 src/main/webapp/WEB-INF/jsp/template/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/template/list.jsp -text
+src/main/webapp/WEB-INF/jsp/template/testanbaoprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testprinting_template.jsp -text
+src/main/webapp/WEB-INF/jsp/template/testtongluprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/tuihuozhanruku_template.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
@@ -2157,6 +2161,7 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_txd.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_yz.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outlist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outtongluprintint_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_default.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_hmj.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_txd.jsp -text

@@ -197,7 +197,7 @@ function yichuku(){
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1);'/>
+					<input type ="button" id="btnval0" value="导出Exc" class="input_button1" onclick='exportField(1);'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -237,7 +237,7 @@ function yichuku(){
 					</table>
 				</li>
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(2);"/>
+					<input type ="button" id="btnval0" value="导出Ex" class="input_button1" onclick="exportField(2);"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -277,7 +277,7 @@ function yichuku(){
 				</li>
 				
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(3);"/>
+					<input type ="button" id="btnval0" value="导出Exc" class="input_button1" onclick="exportField(3);"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
