@@ -377,7 +377,7 @@ public abstract class ExcelExtractor {
 		 * if (excelColumnSet.getOrdercwbindex() != 0) {
 		 * cwbOrder.setOrdercwb(getXRowCellData(row,
 		 * excelColumnSet.getOrdercwbindex())); }
-		 * 
+		 *
 		 * if (excelColumnSet.getServiceareaindex() != 0) {
 		 * cwbOrder.setPaisongArea( getXRowCellData(row,
 		 * excelColumnSet.getServiceareaindex())); }
@@ -609,7 +609,7 @@ public abstract class ExcelExtractor {
 		punish.setPunishcontent(this.getXRowCellData(row, 9));
 		User createuser = userMap.get(this.getXRowCellData(row, 10));
 		createuser = createuser == null ? new User() : createuser;
-		punish.setCreateuser(user.getUserid());
+		punish.setCreateuser(createuser.getUserid());
 
 		punish.setCreatetime(this.getXRowCellData(row, 11));
 		punish.setState(this.getXRowCellData(row, 12).equals("已审核") ? 1 : 0);

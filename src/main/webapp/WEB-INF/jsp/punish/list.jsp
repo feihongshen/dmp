@@ -166,7 +166,7 @@ function stateBatch(state)
 	<div class="inputselect_box">
 	<span><input name="" type="button" value="扣罚登记"  id="add_button"  />
 		</span>
-	<form action="<%=request.getContextPath()%>/punish/list/<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
+	<form action="<%=request.getContextPath()%>/punish/list/1" method="post" id="searchForm">
 		扣罚类型:<select id="punishid" name="punishid"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(PunishType p:punishTypeList){ %>
