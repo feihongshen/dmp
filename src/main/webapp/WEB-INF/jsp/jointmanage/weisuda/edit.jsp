@@ -62,9 +62,6 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
  						<input type ="text" id="count" name ="count" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCount())%>" maxlength="1000"  > 
 					</li>
 					
-					
-
-					
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>
