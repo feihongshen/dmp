@@ -78,7 +78,7 @@ public class TlmposService {
 		JointEntity obj = null;
 		String posValue = "";
 		try {
-			obj = jiontDAO.getJointEntity(key);
+			obj = this.jiontDAO.getJointEntity(key);
 			posValue = obj.getJoint_property();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -88,8 +88,8 @@ public class TlmposService {
 
 	public Tlmpos gettlmposSettingMethod(int key) {
 		Tlmpos tlmpos = new Tlmpos();
-		if (!"".equals(getObjectMethod(key))) {
-			JSONObject jsonObj = JSONObject.fromObject(getObjectMethod(key));
+		if (!"".equals(this.getObjectMethod(key))) {
+			JSONObject jsonObj = JSONObject.fromObject(this.getObjectMethod(key));
 			tlmpos = (Tlmpos) JSONObject.toBean(jsonObj, Tlmpos.class);
 		} else {
 			tlmpos = new Tlmpos();
@@ -101,8 +101,8 @@ public class TlmposService {
 	protected long getUserIdByUserName(String deliver_man) {
 		long deliverid = 0;
 		try {
-			List<User> userlist = userDAO.getUsersByUsername(deliver_man);
-			if (userlist != null && userlist.size() > 0) {
+			List<User> userlist = this.userDAO.getUsersByUsername(deliver_man);
+			if ((userlist != null) && (userlist.size() > 0)) {
 				deliverid = userlist.get(0).getUserid();
 			}
 		} catch (Exception e) {
@@ -146,21 +146,21 @@ public class TlmposService {
 		tlmpos.setIsshowPaytype(Integer.valueOf(isshowPaytype));
 
 		JSONObject jsonObj = JSONObject.fromObject(tlmpos);
-		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
+		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Create(jointEntity);
+			this.jiontDAO.Create(jointEntity);
 		} else {
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Update(jointEntity);
+			this.jiontDAO.Update(jointEntity);
 		}
 	}
 
 	protected User getUser(long userid) {
-		return userDAO.getUserByUserid(userid);
+		return this.userDAO.getUserByUserid(userid);
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class TlmposService {
 	 * @throws UnsupportedEncodingException
 	 */
 	public String AnalyzXMLBytlmpos(Tlmpos tlmpos, String xmlstr) {
-		if (xmlstr != null && !"".equals(xmlstr)) {
+		if ((xmlstr != null) && !"".equals(xmlstr)) {
 			try {
 
 				Transaction rootnote = TlmposUnmarchal.Unmarchal(xmlstr);
@@ -180,16 +180,16 @@ public class TlmposService {
 				String target_set = tlmpos.getTargeter();
 
 				if (!requester.equals(requester_set) || !target.equals(target_set)) {
-					logger.error("tlmpos请求方或应答方配置信息有误!");
+					this.logger.error("tlmpos请求方或应答方配置信息有误!");
 					return "请求方或应答方配置信息有误";
 				}
-				if (!ValidateMAC_publicMethod(rootnote, tlmpos, xmlstr)) {
-					logger.error("tlmpos请求签名验证失败!xml=" + xmlstr);
+				if (!this.ValidateMAC_publicMethod(rootnote, tlmpos, xmlstr)) {
+					this.logger.error("tlmpos请求签名验证失败!xml=" + xmlstr);
 					if (tlmpos.getIsValidateSign() == 1) {
 						return "签名验证失败";
 					}
 				}
-				return DealWithtlmposInterface(tlmpos, xmlstr, rootnote);
+				return this.DealWithtlmposInterface(tlmpos, xmlstr, rootnote);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return "Convert XML to Transaction Bean Exception! reason=" + e;
@@ -215,26 +215,29 @@ public class TlmposService {
 			transaction_id = rootnote.getTransaction_Header().getTransaction_id();
 			// logger.info("获取tlmpos的业务编码["+transaction_id+"];请求XML:"+xmlstr);
 			if ("MI0001".equals(transaction_id)) {// 派送员登陆
-				return tlmposServiceMaster.getTlmposService_toLogin().tologin(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toLogin().tologin(rootnote, tlmpos);
 			}
 			if ("MI0010".equals(transaction_id)) { // 运单查询
-				return tlmposServiceMaster.getTlmposService_toCwbSearch().toCwbSearch(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toCwbSearch().toCwbSearch(rootnote, tlmpos);
 			}
 			if ("MI0005".equals(transaction_id)) { // 派送运单支付反馈
-				return tlmposServiceMaster.getTlmposService_toPayAmount().toPayAmountForPos(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toPayAmount().toPayAmountForPos(rootnote, tlmpos);
 			}
 			if ("MI0006".equals(transaction_id)) {// 派件签收结果反馈
-				return tlmposServiceMaster.getTlmposService_toCwbSign().toCwbSign(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toCwbSign().toCwbSign(rootnote, tlmpos);
 			}
 			if ("MI0007".equals(transaction_id)) {// 撤销交易结果反馈
-				return tlmposServiceMaster.getTlmposService_toBackOut().toBackOut(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toBackOut().toBackOut(rootnote, tlmpos);
 			}
 			if ("MI0008".equals(transaction_id)) { // 派件异常反馈
-				return tlmposServiceMaster.getTlmposService_toExptFeedBack().toExceptionFeedBack(rootnote, tlmpos);
+				return this.tlmposServiceMaster.getTlmposService_toExptFeedBack().toExceptionFeedBack(rootnote, tlmpos);
 			}
 
+			if ("MI0009".equals(transaction_id)) { // 上门揽退业务
+				return this.tlmposServiceMaster.getTlmposService_toSmt().toDealWithSmt(rootnote, tlmpos);
+			}
 		} catch (Exception e) {
-			logger.error("处理tlmpos请求发生异常，异常原因：", e);
+			this.logger.error("处理tlmpos请求发生异常，异常原因：", e);
 			e.printStackTrace();
 			return "处理tlmpos请求发生异常" + e.getMessage();
 		}
@@ -248,14 +251,14 @@ public class TlmposService {
 		String xmlsB = xmltrim.substring(0, xmltrim.indexOf("<MAC>"));
 		String xmlsE = xmltrim.substring(xmltrim.indexOf("</MAC>") + 6, xmltrim.indexOf("</Transaction>"));
 		String checkMACdata = xmlsB + xmlsE;
-		logger.info(transaction_id + "签名验证的内容:" + checkMACdata);
+		this.logger.info(transaction_id + "签名验证的内容:" + checkMACdata);
 		// 验证签名
 		boolean checkMACflag = false;
 		try {
 			checkMACflag = RSACoder.verify(checkMACdata.getBytes(), tlmpos.getPublicKey(), rootnote.getTransaction_Header().getMAC());
 			// logger.info("checkMACdata="+checkMACdata+",public_key="+tlmpos.getPublicKey()+",MAC="+rootnote.getTransaction_Header().getMAC()+",checkMACflag="+checkMACflag);
 		} catch (Exception e) {
-			logger.error("tlmpos签名验证异常!业务编码");
+			this.logger.error("tlmpos签名验证异常!业务编码");
 			e.printStackTrace();
 		}
 
@@ -294,20 +297,20 @@ public class TlmposService {
 		try {
 			MAC = RSACoder.sign(str.getBytes(), tlmpos.getPrivateKey());
 		} catch (Exception e) {
-			logger.error("移动POS(tlmpos):返回签名加密异常!", e);
+			this.logger.error("移动POS(tlmpos):返回签名加密异常!", e);
 
 		}
 		return MAC;
 	}
 
 	public void update(int joint_num, int state) {
-		jiontDAO.UpdateState(joint_num, state);
+		this.jiontDAO.UpdateState(joint_num, state);
 	}
 
 	public DangDang getDangDangSettingMethod(int key) {
 		DangDang dangdang = new DangDang();
-		if (!"".equals(getObjectMethod(key))) {
-			JSONObject jsonObj = JSONObject.fromObject(getObjectMethod(key));
+		if (!"".equals(this.getObjectMethod(key))) {
+			JSONObject jsonObj = JSONObject.fromObject(this.getObjectMethod(key));
 			dangdang = (DangDang) JSONObject.toBean(jsonObj, DangDang.class);
 		} else {
 			dangdang = null;
@@ -333,27 +336,28 @@ public class TlmposService {
 	 * @return
 	 */
 	protected TlmposRespNote buildtlmposRespClass(Transaction rootnote, TlmposRespNote tlmposRespNote) {
-		tlmposRespNote.setDeliverid(getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
-		String cwbTransCwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no()); // 可能是订单号也可能是运单号
+		tlmposRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
+		String cwbTransCwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no()); // 可能是订单号也可能是运单号
 
 		long deliverid = 0;
-		Tlmpos tlmpos = gettlmposSettingMethod(PosEnum.TongLianPos.getKey());
+		Tlmpos tlmpos = this.gettlmposSettingMethod(PosEnum.TongLianPos.getKey());
 		if (tlmpos.getIsotheroperator() == 1) { // 限制他人刷卡，只能自己刷自己名下订单
 			deliverid = tlmposRespNote.getDeliverid() == 0 ? -1 : tlmposRespNote.getDeliverid();
 		}
-		tlmposRespNote.setCwbOrder(cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
+		tlmposRespNote.setCwbOrder(this.cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
 		if (tlmposRespNote.getCwbOrder() == null) {
 			return tlmposRespNote;
 		}
 
-		tlmposRespNote.setBranchid(userDAO.getUserByUsername(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()).getBranchid());
+		tlmposRespNote.setBranchid(this.userDAO.getUserByUsername(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()).getBranchid());
 
-		DeliveryState ds = deliveryStateDAO.getDeliveryStateByCwb_posHelper(cwbTransCwb, tlmposRespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb_posHelper(cwbTransCwb, tlmposRespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
 
 		tlmposRespNote.setDeliverstate(ds);
 		tlmposRespNote.setOrder_no(cwbTransCwb);
 		tlmposRespNote.setTransaction_id(rootnote.getTransaction_Header().getTransaction_id());
 		tlmposRespNote.setDelivery_man(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man());
+
 		return tlmposRespNote;
 	}
 

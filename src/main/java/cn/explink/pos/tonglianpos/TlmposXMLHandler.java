@@ -68,7 +68,8 @@ public class TlmposXMLHandler {
 				+ params.get("resp_msg") + "</resp_msg>" + "<ext_attributes>" + "<consignee>" + params.get("consignee") + "</consignee>" + "<consignee_address>" + params.get("consignee_address")
 				+ "</consignee_address>" + "<consignee_contact>" + params.get("consignee_contact") + "</consignee_contact>" + "<remark>" + params.get("remark") + "</remark>" + "</ext_attributes>"
 				+ "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>" + params.get("order_no") + "</order_no>" + "<e_order_no>" + params.get("e_order_no") + "</e_order_no>" + "<amt>"
-				+ params.get("amt") + "</amt>" + "<account_keyword>" + params.get("account_keyword") + "</account_keyword>" + "</Transaction_Body>";
+				+ params.get("amt") + "</amt>" + "<shouldfee>" + params.get("shouldfee") + "</shouldfee>" + "<account_keyword>" + params.get("account_keyword") + "</account_keyword>"
+				+ "</Transaction_Body>";
 
 		return xml.replaceAll("null", "");
 
@@ -86,8 +87,8 @@ public class TlmposXMLHandler {
 				+ params.get("resp_code") + "</resp_code>" + "<resp_msg>" + params.get("resp_msg") + "</resp_msg>" + "<MAC>" + params.get("MAC") + "</MAC>" + "<ext_attributes>" + "<consignee>"
 				+ params.get("consignee") + "</consignee>" + "<consignee_address>" + params.get("consignee_address") + "</consignee_address>" + "<consignee_contact>" + params.get("consignee_contact")
 				+ "</consignee_contact>" + "<remark>" + params.get("remark") + "</remark>" + "</ext_attributes>" + "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>"
-				+ params.get("order_no") + "</order_no>" + "<e_order_no>" + params.get("e_order_no") + "</e_order_no>" + "<amt>" + params.get("amt") + "</amt>" + "<account_keyword>"
-				+ params.get("account_keyword") + "</account_keyword>" + "</Transaction_Body>" + "</Transaction>";
+				+ params.get("order_no") + "</order_no>" + "<e_order_no>" + params.get("e_order_no") + "</e_order_no>" + "<amt>" + params.get("amt") + "</amt>" + "<shouldfee>"
+				+ params.get("shouldfee") + "</shouldfee>" + "<account_keyword>" + params.get("account_keyword") + "</account_keyword>" + "</Transaction_Body>" + "</Transaction>";
 		return xml.replaceAll("null", "");
 
 	}
@@ -222,7 +223,7 @@ public class TlmposXMLHandler {
 				+ "<request_time>" + payresultmap.get("request_time") + "</request_time>" + "<version>" + payresultmap.get("version") + "</version>" + "<ext_attributes>" + "<delivery_dept_no>"
 				+ payresultmap.get("delivery_dept_no") + "</delivery_dept_no>" + "<delivery_dept>" + payresultmap.get("delivery_dept") + "</delivery_dept>" + "<delivery_man>"
 				+ payresultmap.get("delivery_man") + "</delivery_man>" + "<delivery_name>" + payresultmap.get("delivery_name") + "</delivery_name>");
-		if (logistics_alias != null && !"".equals(logistics_alias)) {
+		if ((logistics_alias != null) && !"".equals(logistics_alias)) {
 			str.append("<logistics_alias>" + logistics_alias + "</logistics_alias>");
 		}
 		str.append("</ext_attributes>" + "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>" + payresultmap.get("order_no") + "</order_no>" + "<order_payable_amt>"
@@ -245,7 +246,7 @@ public class TlmposXMLHandler {
 				+ "<request_time>" + signmap.get("request_time") + "</request_time>" + "<version>" + signmap.get("version") + "</version>" + "<ext_attributes>" + "<delivery_dept_no>"
 				+ signmap.get("delivery_dept_no") + "</delivery_dept_no>" + "<delivery_dept>" + signmap.get("delivery_dept") + "</delivery_dept>" + "<delivery_man>" + signmap.get("delivery_man")
 				+ "</delivery_man>" + "<delivery_name>" + signmap.get("delivery_name") + "</delivery_name>");
-		if (logistics_alias != null && !"".equals(logistics_alias)) {
+		if ((logistics_alias != null) && !"".equals(logistics_alias)) {
 			str.append("<logistics_alias>" + logistics_alias + "</logistics_alias>");
 		}
 
@@ -270,7 +271,7 @@ public class TlmposXMLHandler {
 				+ exceptionmap.get("delivery_dept_no") + "</delivery_dept_no>" + "<delivery_dept>" + exceptionmap.get("delivery_dept") + "</delivery_dept>" + "<delivery_man>"
 				+ exceptionmap.get("delivery_man") + "</delivery_man>" + "<delivery_name>" + exceptionmap.get("delivery_name") + "</delivery_name>" + "<ex_packages>" + exceptionmap.get("ex_packages")
 				+ "</ex_packages>");
-		if (logistics_alias != null && !"".equals(logistics_alias)) {
+		if ((logistics_alias != null) && !"".equals(logistics_alias)) {
 			str.append("<logistics_alias>" + logistics_alias + "</logistics_alias>");
 		}
 		str.append("</ext_attributes>" + "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>" + exceptionmap.get("order_no") + "</order_no>" + "<ex_code>" + exceptionmap.get("ex_code")
@@ -319,7 +320,7 @@ public class TlmposXMLHandler {
 				+ cwbmap.get("resp_msg") + "</resp_msg>" + "<resp_time>" + cwbmap.get("resp_time") + "</resp_time>" + "<MAC>" + cwbmap.get("MAC") + "</MAC>" + "</Transaction_Header>"
 				+ "<Transaction_Body>");
 
-		if (reasonlist != null && reasonlist.size() > 0) {
+		if ((reasonlist != null) && (reasonlist.size() > 0)) {
 			sb.append("<item merchant_code=''>");
 			for (Reason r : reasonlist) {
 				sb.append("<exception code='" + (r.getReasonid() < 10 ? ("0" + r.getReasonid()) : (r.getReasonid() + "")) + "' msg='" + r.getReasoncontent() + "'/>");
@@ -327,7 +328,7 @@ public class TlmposXMLHandler {
 			sb.append("</item>");
 		}
 		// 当当的异常码
-		if (dangdangList != null && dangdangList.size() > 0) {
+		if ((dangdangList != null) && (dangdangList.size() > 0)) {
 			sb.append("<item merchant_code='" + dangdangList.get(0).getCustomercode() + "'>");
 			for (ExptReason e : dangdangList) {
 				sb.append("<exception code='" + e.getExpt_code() + "' msg='" + e.getExpt_msg() + "' />");
@@ -354,7 +355,7 @@ public class TlmposXMLHandler {
 				+ "<request_time>" + comebackmap.get("request_time") + "</request_time>" + "<version>" + comebackmap.get("version") + "</version>" + "<ext_attributes>" + "<delivery_dept_no>"
 				+ comebackmap.get("delivery_dept_no") + "</delivery_dept_no>" + "<delivery_dept>" + comebackmap.get("delivery_dept") + "</delivery_dept>" + "<delivery_man>"
 				+ comebackmap.get("delivery_man") + "</delivery_man>" + "<delivery_name>" + comebackmap.get("delivery_name") + "</delivery_name>");
-		if (logistics_alias != null && !"".equals(logistics_alias)) {
+		if ((logistics_alias != null) && !"".equals(logistics_alias)) {
 			str.append("<logistics_alias>" + logistics_alias + "</logistics_alias>");
 		}
 		str.append("</ext_attributes>" + "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>" + comebackmap.get("order_no") + "</order_no>" + "<order_amt>" + comebackmap.get("order_amt")
@@ -378,7 +379,7 @@ public class TlmposXMLHandler {
 				+ "<request_time>" + comebackmap.get("request_time") + "</request_time>" + "<version>" + comebackmap.get("version") + "</version>" + "<ext_attributes>" + "<delivery_dept_no>"
 				+ comebackmap.get("delivery_dept_no") + "</delivery_dept_no>" + "<delivery_dept>" + comebackmap.get("delivery_dept") + "</delivery_dept>" + "<delivery_man>"
 				+ comebackmap.get("delivery_man") + "</delivery_man>" + "<delivery_name>" + comebackmap.get("delivery_name") + "</delivery_name>");
-		if (logistics_alias != null && !"".equals(logistics_alias)) {
+		if ((logistics_alias != null) && !"".equals(logistics_alias)) {
 			str.append("<logistics_alias>" + logistics_alias + "</logistics_alias>");
 		}
 		str.append("</ext_attributes>" + "</Transaction_Header>" + "<Transaction_Body>" + "<order_no>" + comebackmap.get("order_no") + "</order_no>" + "<void_order_amt>"
@@ -412,7 +413,7 @@ public class TlmposXMLHandler {
 				+ cwbmap.get("resp_time") + "</resp_time>" + "</Transaction_Header>" + "<Transaction_Body>");
 
 		// 物流公司内部异常码(滞留和退货)
-		if (reasonlist != null && reasonlist.size() > 0) {
+		if ((reasonlist != null) && (reasonlist.size() > 0)) {
 			sb.append("<item merchant_code=''>");
 			for (Reason r : reasonlist) {
 				sb.append("<exception code='" + (r.getReasonid() < 10 ? ("0" + r.getReasonid()) : (r.getReasonid() + "")) + "' msg='" + r.getReasoncontent() + "'/>");
@@ -421,7 +422,7 @@ public class TlmposXMLHandler {
 		}
 
 		// 当当的异常码
-		if (dangdangList != null && dangdangList.size() > 0) {
+		if ((dangdangList != null) && (dangdangList.size() > 0)) {
 			sb.append("<item merchant_code='" + dangdangList.get(0).getCustomercode() + "'>");
 			for (ExptReason e : dangdangList) {
 				sb.append("<exception code='" + e.getExpt_code() + "' msg='" + e.getExpt_msg() + "' />");

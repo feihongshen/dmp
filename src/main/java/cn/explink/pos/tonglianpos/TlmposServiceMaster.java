@@ -20,9 +20,19 @@ public class TlmposServiceMaster {
 
 	@Autowired
 	private TlmposService_toExptFeedBack tlmposService_toExptFeedBack;
+	@Autowired
+	private TlmposService_toSmt tlmposService_toSmt;
+
+	public TlmposService_toSmt getTlmposService_toSmt() {
+		return this.tlmposService_toSmt;
+	}
+
+	public void setTlmposService_toSmt(TlmposService_toSmt tlmposService_toSmt) {
+		this.tlmposService_toSmt = tlmposService_toSmt;
+	}
 
 	public TlmposService_toLogin getTlmposService_toLogin() {
-		return tlmposService_toLogin;
+		return this.tlmposService_toLogin;
 	}
 
 	public void setTlmposService_toLogin(TlmposService_toLogin tlmposService_toLogin) {
@@ -30,7 +40,7 @@ public class TlmposServiceMaster {
 	}
 
 	public TlmposService_toBackOut getTlmposService_toBackOut() {
-		return tlmposService_toBackOut;
+		return this.tlmposService_toBackOut;
 	}
 
 	public void setTlmposService_toBackOut(TlmposService_toBackOut tlmposService_toBackOut) {
@@ -38,7 +48,7 @@ public class TlmposServiceMaster {
 	}
 
 	public TlmposService_toCwbSearch getTlmposService_toCwbSearch() {
-		return tlmposService_toCwbSearch;
+		return this.tlmposService_toCwbSearch;
 	}
 
 	public void setTlmposService_toCwbSearch(TlmposService_toCwbSearch tlmposService_toCwbSearch) {
@@ -46,7 +56,7 @@ public class TlmposServiceMaster {
 	}
 
 	public TlmposService_toCwbSign getTlmposService_toCwbSign() {
-		return tlmposService_toCwbSign;
+		return this.tlmposService_toCwbSign;
 	}
 
 	public void setTlmposService_toCwbSign(TlmposService_toCwbSign tlmposService_toCwbSign) {
@@ -54,7 +64,7 @@ public class TlmposServiceMaster {
 	}
 
 	public TlmposService_toPayAmount getTlmposService_toPayAmount() {
-		return tlmposService_toPayAmount;
+		return this.tlmposService_toPayAmount;
 	}
 
 	public void setTlmposService_toPayAmount(TlmposService_toPayAmount tlmposService_toPayAmount) {
@@ -62,7 +72,7 @@ public class TlmposServiceMaster {
 	}
 
 	public TlmposService_toExptFeedBack getTlmposService_toExptFeedBack() {
-		return tlmposService_toExptFeedBack;
+		return this.tlmposService_toExptFeedBack;
 	}
 
 	public void setTlmposService_toExptFeedBack(TlmposService_toExptFeedBack tlmposService_toExptFeedBack) {

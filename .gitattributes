@@ -1243,6 +1243,7 @@ src/main/java/cn/explink/pos/mobileapp_dcb/MobiledcbService.java -text
 src/main/java/cn/explink/pos/mobileapp_dcb/MobiledcbService_SynUser.java -text
 src/main/java/cn/explink/pos/mobileapp_dcb/ResponseJson.java -text
 src/main/java/cn/explink/pos/mobileapp_dcb/ResponseJsonSearch.java -text
+src/main/java/cn/explink/pos/tonglianpos/ReturnTypeEnum.java -text
 src/main/java/cn/explink/pos/tonglianpos/Tlmpos.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposController.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposExptMsgEnum.java -text
@@ -1256,6 +1257,7 @@ src/main/java/cn/explink/pos/tonglianpos/TlmposService_toCwbSign.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposService_toExptFeedBack.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposService_toLogin.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposService_toPayAmount.java -text
+src/main/java/cn/explink/pos/tonglianpos/TlmposService_toSmt.java -text
 src/main/java/cn/explink/pos/tonglianpos/TlmposXMLHandler.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/TlmposUnmarchal.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/Transaction.java -text

@@ -75,7 +75,7 @@ public enum B2cEnum {
 	LeChong(20085, "乐宠（科捷）", "lechong", 0), Smiled(20086, "思迈下游", "smiled", 0), SFexpressXHM(20087, "顺丰快递(小红帽)", "sfexpressxhm", 0), Zhongliang(20088, "中粮(我买网)", "zhongliang", 0), Wenxuan(20089,
 			"文轩网", "wenxuan", 0),
 
-	;
+	JiuYe(20089, "九曳", "jiuye", 0);
 
 	private int key;
 	private String text;
@@ -83,7 +83,7 @@ public enum B2cEnum {
 	private int api_type; // 接口类型
 
 	public int getApi_type() {
-		return api_type;
+		return this.api_type;
 	}
 
 	public void setApi_type(int api_type) {
@@ -98,7 +98,7 @@ public enum B2cEnum {
 	}
 
 	public String getMethod() {
-		return method;
+		return this.method;
 	}
 
 	public void setMethod(String method) {
@@ -106,7 +106,7 @@ public enum B2cEnum {
 	}
 
 	public int getKey() {
-		return key;
+		return this.key;
 	}
 
 	public void setKey(int key) {
@@ -114,7 +114,7 @@ public enum B2cEnum {
 	}
 
 	public String getText() {
-		return text;
+		return this.text;
 	}
 
 	public void setText(String text) {
