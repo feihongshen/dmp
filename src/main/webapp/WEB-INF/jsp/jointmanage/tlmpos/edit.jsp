@@ -30,6 +30,9 @@ Tlmpos alipay = (Tlmpos)request.getAttribute("tlmposlist");
 					<li><span>加密私钥：</span>
  						<input type ="text" id="privateKey" name ="privateKey" value ="<%=StringUtil.nullConvertToEmptyString(alipay.getPrivateKey())%>" maxlength="1000"  > 
 					</li>
+					<li><span>领货私钥：</span>
+ 						<input type ="text" id="private_key" name ="private_key" value ="<%=StringUtil.nullConvertToEmptyString(alipay.getPrivate_key())%>" maxlength="1000"  > 
+					</li>
 					<li><span>解密公钥：</span>
  						<input type ="text" id="publicKey" name ="publicKey" value ="<%=StringUtil.nullConvertToEmptyString(alipay.getPublicKey())%>" maxlength="1000"  > 
 					</li>
