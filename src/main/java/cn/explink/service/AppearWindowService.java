@@ -27,7 +27,7 @@ import cn.explink.util.DateTimeUtil;
 
 /**
  * 即时消息Service
- * 
+ *
  */
 @Service
 public class AppearWindowService {
@@ -49,11 +49,11 @@ public class AppearWindowService {
 
 	/**
 	 * 得到当前用户
-	 * 
+	 *
 	 * @return
 	 */
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -61,19 +61,19 @@ public class AppearWindowService {
 	 * 进入消息列表主要功能
 	 */
 	public void getAppearInfoShow() {
-		logger.info("进入消息列表......");
+		this.logger.info("进入消息列表......");
 
 		// 1.查询得到用户监听表
-		List<OperationSetTime> slist = operationSetTimeDAO.getOperationSetTime();
+		List<OperationSetTime> slist = this.operationSetTimeDAO.getOperationSetTime();
 		if (slist.isEmpty()) {
-			logger.info("没有用户定制消息列表功能");
+			this.logger.info("没有用户定制消息列表功能");
 			return;
 		}
 		// 2.轮偱用户监听表
 		StringBuffer sb = new StringBuffer();
 		for (OperationSetTime s : slist) {
-			logger.info("用户:{},监控时间名称：{}", s.getUserid(), s.getName());
-			long countYicunzai = appearWindowDao.getStateAndUserid(s.getUserid(), "1");
+			this.logger.info("用户:{},监控时间名称：{}", s.getUserid(), s.getName());
+			long countYicunzai = this.appearWindowDao.getStateAndUserid(s.getUserid(), "1");
 			if (countYicunzai > 0) {
 				continue;
 			}
@@ -82,7 +82,7 @@ public class AppearWindowService {
 			Map<String, Integer> timmerMap = new HashMap<String, Integer>();
 			try {
 				// 4.遍历每个客户的时间规定
-				timmerMap = jacksonmapper.readValue(timeShow, Map.class);
+				timmerMap = AppearWindowService.jacksonmapper.readValue(timeShow, Map.class);
 				long A1 = timmerMap.get("A1") == null ? 0 : timmerMap.get("A1");
 				long A2 = timmerMap.get("A2") == null ? 0 : timmerMap.get("A2");
 				long A3 = timmerMap.get("A3") == null ? 0 : timmerMap.get("A3");
@@ -121,13 +121,13 @@ public class AppearWindowService {
 				List<OperationTime> oplist = new ArrayList<OperationTime>();
 
 				for (int i = 0; i < 10; i++) {
-					List<OperationTime> excpCount = operationTimeDAO.countUserException((Long) list.get(i), FrameEnumExcp.getText(i), i);
+					List<OperationTime> excpCount = this.operationTimeDAO.countUserException((Long) list.get(i), FrameEnumExcp.getText(i), i);
 					oplist.addAll(excpCount);
 				}
 				for (OperationTime op : oplist) {
-					long count = middleAppearDao.getInfoCount(1, s.getUserid(), "1", op.getCwb());// 未发送
+					long count = this.middleAppearDao.getInfoCount(1, s.getUserid(), "1", op.getCwb());// 未发送
 					if (count == 0) {
-						middleAppearDao.creMiddleTime(op.getCwb(), "1", s.getUserid(), "1");// 新加入中间表一条数据
+						this.middleAppearDao.creMiddleTime(op.getCwb(), "1", s.getUserid(), "1");// 新加入中间表一条数据
 					}
 					sb.append("'");
 					sb.append(op.getCwb());
@@ -135,39 +135,45 @@ public class AppearWindowService {
 				}
 
 				// 中间表插入消息表
-				long count = middleAppearDao.getInfoCount(1, s.getUserid(), "1", "");
+				long count = this.middleAppearDao.getInfoCount(1, s.getUserid(), "1", "");
 				if (count > 0) {
-					logger.info("监控" + count);
-					long a = appearWindowDao.getCountByStateAndUserid(s.getUserid(), "1");
+					this.logger.info("监控" + count);
+					long a = this.appearWindowDao.getCountByStateAndUserid(s.getUserid(), "1");
 					String jsonInfo = "Sum:" + count;
 					if (a > 0) {// 存在,update
-						appearWindowDao.updateByStateAndUserid(jsonInfo, s.getUserid());
+						this.appearWindowDao.updateByStateAndUserid(jsonInfo, s.getUserid());
 					} else {
-						appearWindowDao.creWindowTime(jsonInfo, "1", s.getUserid(), "1");
+						this.appearWindowDao.creWindowTime(jsonInfo, "1", s.getUserid(), "1");
 					}
 				}
 
 			} catch (Exception e) {
-				logger.info("消息列表出现异常" + e);
+				this.logger.info("消息列表出现异常" + e);
 				e.printStackTrace();
 			}
 		}
 		if (sb.toString().length() > 0) {
-			logger.info("执行update 字段isupdate.......");
+			this.logger.info("执行update 字段isupdate.......");
 			String time = DateTimeUtil.getNowTime();
-			operationTimeDAO.updateUserException(time, sb.toString().equals("") ? "" : sb.substring(0, sb.length() - 1).toString());
+			this.operationTimeDAO.updateUserException(time, sb.toString().equals("") ? "" : sb.substring(0, sb.length() - 1).toString());
 		}
 	}
 
 	/**
 	 * 查询消息表符合state=1的该用户，弹出
-	 * 
+	 *
 	 * @return
 	 */
 	public String getAppearNewinfo() {
-		long userid = getSessionUser().getUserid();
-		List<WindowShow> winList = appearWindowDao.getCountWindowByState(userid);
-
+		long userid = this.getSessionUser().getUserid();
+		List<WindowShow> winList = this.appearWindowDao.getCountWindowByState(userid);
+		List<WindowShow> winListKf = null;
+		if (this.getSessionUser().getRoleid() == 1) {
+			winListKf = this.appearWindowDao.getCountWindowByType("'5'");
+		}
+		if ((winListKf != null) && (winListKf.size() > 0)) {
+			winList.addAll(winListKf);
+		}
 		if (winList.isEmpty()) {
 			return "";
 		}
@@ -177,25 +183,25 @@ public class AppearWindowService {
 			return json;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.info(" 查询消息出现异常" + e);
+			this.logger.info(" 查询消息出现异常" + e);
 			return "";
 		}
 	}
 
 	/**
 	 * 点击消息则失效消息表中该条数据
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
 
 	public String getchangeState(String type) {
-		long userid = getSessionUser().getUserid();
-		logger.info("点击{}......删除此消息", userid);
+		long userid = this.getSessionUser().getUserid();
+		this.logger.info("点击{}......删除此消息", userid);
 		String a = DateTimeUtil.getNowTime();
-		long resulta = appearWindowDao.updateByUserid(a, userid);
-		long resultb = middleAppearDao.updateByUserid(a, userid, type);
-		if (resulta == 1 && resultb == 1) {
+		long resulta = this.appearWindowDao.updateByUserid(a, userid);
+		long resultb = this.middleAppearDao.updateByUserid(a, userid, type);
+		if ((resulta == 1) && (resultb == 1)) {
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} else {
 			return "{\"errorCode\":1,\"error\":\"系统错误\"}";

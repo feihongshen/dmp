@@ -229,6 +229,7 @@ $(function(){
 								var options="";
 								for(var i=0;i<data.length;i++)
 									{
+									
 									options+="<option value='"+data[i].branchname+"'>"+data[i].branchname+"</option>";
 									}
 								$("#branchlist").empty();

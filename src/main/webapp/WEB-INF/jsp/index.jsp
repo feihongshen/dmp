@@ -85,7 +85,7 @@ $(document).ready(function () {
 	<%if("1".equals(isOpenFlag)){ %>
 	showZitiCount();
 	<%}%>
-	setInterval("refreshState()",600000);
+	setInterval("refreshState()",1000*60*1);
     setInterval("startRequest()",60000);
 //setInterval这个函数会根据后面定义的1000既每隔1秒执行一次前面那个函数
    //如果你用局部刷新，要用AJAX技术
@@ -162,12 +162,20 @@ function refreshState(){
 				$("#xiaoxiulinfo").html("");
 				var i = 0;
 				var flag = 0;
+				var n=0;
+				var m=0;
 				$.each(data, function(key, value) {					
 					if(value.type==3){
 						i=i+1;				 		
 				 	}
 					if(value.type==4){
 						i=i+1;	
+				 	}
+					if(value.type==5){
+						n=n+1;	
+				 	}
+					if(value.type==6){
+						m=m+1;	
 				 	}
 			 	});
 				
@@ -189,7 +197,21 @@ function refreshState(){
 				 	}
 					if(value.type==4){
 						if(flag == 0){
-				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+i+"单问题件已处理</a></strong></li>");
+				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+i+"单订单修改受理待处理</a></strong></li>");
+						}
+				 		$("#xiaoxitype").attr("value",value.type);
+				 		flag = flag+1;
+				 	}
+					if(value.type==5){
+						if(flag == 0){
+				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+n+"单订单申请修改-待处理-</a></strong></li>");
+						}
+				 		$("#xiaoxitype").attr("value",value.type);
+				 		flag = flag+1;
+				 	}
+					if(value.type==6){
+						if(flag == 0){
+				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+m+"单订单申请修改-已处理-</a></strong></li>");
 						}
 				 		$("#xiaoxitype").attr("value",value.type);
 				 		flag = flag+1;
@@ -217,6 +239,14 @@ function changeback(type){
 		    if(type==4){
 		    	$("#now_path").html("站点管理   &gt; 扫描   &gt; 问题件回复");
 		    	window.open("<%=request.getContextPath()%>/abnormalOrder/toReplyabnormal/1","WORK_AREA");
+		    }
+		    if(type==5){
+		    	$("#now_path").html("客服管理   &gt;   订单查询; 订单修改受理");
+		    	window.open("<%=request.getContextPath()%>/applyeditdeliverystate/tohandleApplyEditDeliverystateList/1","WORK_AREA");		    	
+		    }
+		    if(type==6){
+		    	$("#now_path").html("站点管理 &gt;   归班管理; 订单修改申请");
+		    	window.open("<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1","WORK_AREA");		    	
 		    }
 		}
  	});

@@ -91,4 +91,23 @@ public class AppearWindowDao {
 		}
 
 	}
+
+	public List<WindowShow> getCountWindowByType(String type) {
+		String sql = "select * from express_ops_window where state=1 and type in (" + type + ")";
+		try {
+			return this.jdbcTemplate.query(sql, new WindowShowRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
+
+	public long creWindowTime(String jsoninfo, int type, long userid, int state) {
+		try {
+			this.jdbcTemplate.update("insert into express_ops_window (jsoninfo,userid,type,state) values(?,?,?,?)", jsoninfo, userid, type, state);
+			return 1;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
 }

@@ -114,6 +114,7 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
 
 @Controller
@@ -1029,12 +1030,12 @@ public class OrderSelectController {
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>导入数据", currentbranchname);
 			}
-			String nextbranchname = this.getNextBranchName(cwbOrder);
-			String deliverybranchname = this.getDeliveryBranchName(cwbOrder);
-			String customername = this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername();
+			String nextbranchname = StringUtil.nullConvertToEmptyString(this.getNextBranchName(cwbOrder));
+			String deliverybranchname = StringUtil.nullConvertToEmptyString(this.getDeliveryBranchName(cwbOrder));
+			String customername = StringUtil.nullConvertToEmptyString(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
 			User user = this.getUser(orderFlowAll.getUserid());
-			String phone = this.getUserPhone(user);
-			String comment = orderFlowAll.getComment();
+			String phone = StringUtil.nullConvertToEmptyString(this.getUserPhone(user));
+			String comment = StringUtil.nullConvertToEmptyString(orderFlowAll.getComment());
 
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TiHuo.getValue()) {
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>提货；供货商：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>；备注：<font color =\"red\">[{3}]</font>",
@@ -1279,11 +1280,11 @@ public class OrderSelectController {
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
 				return MessageFormat.format("从[{0}]导入数据", currentbranchname);
 			}
-			String nextbranchname = this.getNextBranchName(cwbOrder);
-			String deliverybranchname = this.getDeliveryBranchName(cwbOrder);
+			String nextbranchname = StringUtil.nullConvertToEmptyString(this.getNextBranchName(cwbOrder));
+			String deliverybranchname = StringUtil.nullConvertToEmptyString(this.getDeliveryBranchName(cwbOrder));
 			User user = this.getUser(orderFlowAll.getUserid());
-			String phone = this.getUserPhone(user);
-			String comment = orderFlowAll.getComment();
+			String phone = StringUtil.nullConvertToEmptyString(this.getUserPhone(user));
+			String comment = StringUtil.nullConvertToEmptyString(orderFlowAll.getComment());
 
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
 				return MessageFormat.format("从[{0}]入库；联系电话：[{1}]；备注：[{2}]", currentbranchname, phone, comment);

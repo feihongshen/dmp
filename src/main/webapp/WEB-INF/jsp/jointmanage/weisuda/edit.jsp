@@ -58,6 +58,9 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 					<li><span>接收单数：</span>
  						<input type ="text" id="nums" name ="nums" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getNums())%>" maxlength="1000"  > 
 					</li>
+					<li><span>接收次数：</span>
+ 						<input type ="text" id="nums" name ="nums" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getNums())%>" maxlength="1000"  > 
+					</li>
 					
 					
 

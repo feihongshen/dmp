@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.AccountCwbFareDetailDAO;
+import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -76,6 +77,8 @@ public class ApplyEditDeliverystateController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
+	@Autowired
+	AppearWindowDao appearWindowDao;
 	@Autowired
 	EditCwbService editCwbService;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -177,6 +180,7 @@ public class ApplyEditDeliverystateController {
 			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
 			if ((deliverystate != null) && (deliverystate.getPayupid() == 0) && (deliverystate.getIssendcustomer() == 0)) {
 				this.applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id, editnowdeliverystate, editreason);
+				this.appearWindowDao.creWindowTime("订单申请修改cwb=" + applyEditDeliverystate.getCwb(), 5, 0, 1);
 				return "{\"errorCode\":0,\"error\":\"提交成功\"}";
 			} else {
 				if ((deliverystate == null) || (deliverystate.getPayupid() > 0)) {
@@ -410,7 +414,7 @@ public class ApplyEditDeliverystateController {
 
 			return "{\"errorCode\":1,\"error\":\"" + ce.getMessage() + "\"}";
 		}
-
+		this.appearWindowDao.creWindowTime("订单修改受理处理cwb=" + applyEditDeliverystate.getCwb(), 6, applyEditDeliverystate.getApplyuserid(), 1);
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 
 	}
