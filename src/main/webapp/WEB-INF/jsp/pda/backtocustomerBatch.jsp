@@ -39,9 +39,11 @@ function exportField(flag){
 	
 	if(flag==1){
 		$("#type").val("weichuku");
+		$("#extype").val("wall");
 		$("#exportForBack").submit();
 	}else if(flag==2){
 		$("#type").val("yichuku");
+		$("#extype").val("yall");
 		$("#exportForBack").submit();
 	}else if(flag==3){
 		var cwbs = "";
@@ -320,6 +322,7 @@ function yichuku(){
 		</form>
  		<form action="<%=request.getContextPath() %>/PDA/exportExcleForBackToCustomer" id="exportForBack">
 	 		<input  type="hidden" name="type" value="" id="type"/>
+	 		<input  type="hidden" name="extype" value="" id="extype"/>
  		</form>
 	
 	
