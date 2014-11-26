@@ -5,30 +5,16 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-List<CwbDetailView> weirukuList = (List<CwbDetailView>)request.getAttribute("weirukulist");
-List<CwbDetailView> yirukulist = (List<CwbDetailView>)request.getAttribute("yirukulist");
-List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
-List<User> uList = (List<User>)request.getAttribute("userList");
-Switch ck_switch = (Switch) request.getAttribute("ck_switch");
-int sitetype=(Integer)request.getAttribute("sitetype");
-String RUKUPCandPDAaboutYJDPWAV = request.getAttribute("RUKUPCandPDAaboutYJDPWAV").toString();
-String cid=request.getParameter("customerid")==null?"0":request.getParameter("customerid");
-long customerid=Long.parseLong(cid);
-String  showMassage=(String)request.getAttribute("showMassage");
-boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
-long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
-String isprintnew = request.getAttribute("isprintnew").toString();
+	List<User> deliverList = (List<User>)request.getAttribute("deliverList");
+Integer todayNotPickingCwbCount = (Integer)request.getAttribute("todayNotPickingCwbCount");
+Integer historyNotPickingCwbCount = (Integer)request.getAttribute("historyNotPickingCwbCount");
+List<CwbOrder> todayNotPickingCwbList= (List<CwbOrder> )request.getAttribute("todayNotPickingCwbList");
+List<CwbOrder> historyNotPickingCwbList= (List<CwbOrder> )request.getAttribute("historyNotPickingCwbList");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
-	<param name="CompanyName" value="北京易普联科信息技术有限公司" />
-	<param name="License" value="653717070728688778794958093190" />
-	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 CompanyName="北京易普联科信息技术有限公司"
-		License="653717070728688778794958093190"></embed>
-</object>
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
@@ -37,8 +23,6 @@ String isprintnew = request.getAttribute("isprintnew").toString();
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
-var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
-
 var data;
 var startIndex=0;
 var step=4;
@@ -167,7 +151,7 @@ var emaildate=0;
 	function getcwbsdataForCustomer(customerid, cwb,emaildate) {
 		$.ajax({
 			type : "POST",
-			url : "<%=request.getContextPath() %>/PDA/getInSum",
+			url : "<%=request.getContextPath()%>/PDA/getInSum",
 			data : {
 				"customerid" : customerid,
 				"cwb" : cwb,
@@ -480,88 +464,10 @@ function exportField(flag,customerid){
 var weipage=1;
 var yipage=1;
 function weiruku(){
-	weipage+=1;
-	$.ajax({
-		type:"post",
-		data:{"page":weipage,"customerid":$("#customerid").val()},
-		url:"<%=request.getContextPath()%>/PDA/getimportweirukulist",
-		success:function(data){
-			if(data.length>0){
-				var optionstring = "";
-				for ( var i = 0; i < data.length; i++) {
-					<%if(showCustomerSign){ %>
-						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
-						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
-						+"<td width='100' align='center'> "+data[i].customername+"</td>"
-						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
-						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
-						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
-						+ "</tr>";
-					<%}else{ %>
-						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
-						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
-						+"<td width='100' align='center'> "+data[i].customername+"</td>"
-						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
-						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
-						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
-						+ "</tr>";
-					<%} %>
-				}
-				$("#weiruku").remove();
-				$("#weirukuTable").append(optionstring);
-				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>';
-				$("#weirukuTable").append(more);
-				}
-			}
-		}
-	});
-	
 	
 }
 function yiruku(){
-	yipage+=1;
-	$.ajax({
-		type:"post",
-		url:"<%=request.getContextPath()%>/PDA/getimportyiruku",
-		data:{"page":yipage,"customerid":$("#customerid").val()},
-		success:function(data){
-			if(data.length>0){
-				var optionstring = "";
-				for ( var i = 0; i < data.length; i++) {
-					<%if(showCustomerSign){ %>
-						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
-						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
-						+"<td width='100' align='center'> "+data[i].customername+"</td>"
-						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
-						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
-						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
-						+ "</tr>";
-					<%}else{ %>
-						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
-						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
-						+"<td width='100' align='center'> "+data[i].customername+"</td>"
-						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
-						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
-						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
-						+ "</tr>";
-					<%} %>
-				}
-				$("#yiruku").remove();
-				$("#successTable").append(optionstring);
-				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>'
-				$("#successTable").append(more);
-				}
-			}
-		}
-	});
+	
 	
 }
 function ranCreate(){
@@ -601,15 +507,6 @@ function tohome(){
 	window.location.href="<%=request.getContextPath()%>/PDA/intowarhouse?customerid="+$("#customerid").val()+"&isscanbaleTag="+isscanbaleTag+"&emaildate="+$("#emaildate").val();
 }
 $(function(){
-	if(<%=isscanbaleTag==1%> ){
-		$("#scanbaleTag").click();
-		//$("#scancwbTag").removeClass("light");
-	}else{
-		//$("#scanbaleTag").removeClass("light");
-		$("#scancwbTag").click();
-	}
-});
-$(function(){
 	var $menuli = $(".saomiao_tab ul li");
 	$menuli.click(function(){
 		$(this).children().addClass("light");
@@ -643,8 +540,52 @@ $(function(){
  		}
  	});
  }
+ 
+ $(function(){
+	 $("#today_checkbox").click(function(){
+		var checked = $(this).attr("checked");
+		checkedTableAllRow("today_table" ,checked);
+	 });
+	 
+	 $("#history_checkbox").click(function(){
+		var checked =  $(this).attr("checked");
+		checkedTableAllRow("history_table" ,checked);
+	});
+	 
+	 $("#today_not_picking_a").click(function(){
+		 reloadTodayTable();
+	 });
+	 
+	 $("#history_not_picking_a").click(function(){
+		 reloadHistoryTable();
+	 });
+	 
+ });
+ 
+ function reloadTodayTable(dataScope)
+ {
+	 $("#today_table").empty();
+ }
+ 
+ function reloadHistoryTable()
+ {
+	 $("#history_table").empty();
+ }
+ 
+ 
+ 
+ function checkedTableAllRow(tableId,checked)
+ {
+	 if(checked){
+		 $("#" +tableId ).find("input[type='checkbox']").attr("checked" ,"checked");	 
+	 }else{
+		 $("#" +tableId ).find("input[type='checkbox']").removeAttr("checked");
+	 }	 
+ }
+ 
+ 
+ 
 </script>
-
 <style>
 dl dt span {
 	width: 50%;
@@ -697,8 +638,8 @@ dl dd span {
 					<span>历史新单待分派</span><span>历史转单待分派</span>
 				</dt>
 				<dd>
-					<span><a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu">0</a></span> <span><a
-						href="#">0</a></span>
+					<span><a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu"><%=historyNotPickingCwbCount%></a></span>
+					<span><a href="#">0</a></span>
 				</dd>
 			</dl>
 
@@ -720,7 +661,7 @@ dl dd span {
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
-				onclick="location.href='<%=request.getContextPath()%>/PDA/intowarhouse'"
+				onclick="location.href='<%=request.getContextPath()%>/PDA/smtorderdispatch'"
 				style="float: left; width: 100px; height: 65px; cursor: pointer; border: none; background: url(../images/buttonbgimg1.gif) no-repeat; font-size: 18px; font-family: '微软雅黑', '黑体'" />
 			<br clear="all" />
 		</div>
@@ -732,24 +673,15 @@ dl dd span {
 						<li><a href="#" id="scancwbTag"
 							onclick="clearMsg();$(function(){$('#baleno').parent().hide();$('#finish').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})"
 							class="light">扫描订单</a></li>
-						<%
-							if (sitetype == 4) {
-						%>
-						<li><a href="#" id="scanbaleTag"
-							onclick="clearMsg();$(function(){$('#baleno').parent().show();$('#baleno').show();$('#finish').parent().show();$('#finish').show();$('#baleno').val('');$('#baleno').focus();$('#scancwb').val('');$('#scancwb').parent().hide();})">合包到货</a></li>
-						<%
-							}
-						%>
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					小件员：<select id="customerid" name="customerid" onchange="tohome();">
+					小件员：<select id="deliverid" name="deliverid">
 						<option value="-1" selected>请选择</option>
 						<%
-							for (Customer c : cList) {
+							for (User c : deliverList) {
 						%>
-						<option value="<%=c.getCustomerid()%>" <%if (customerid == c.getCustomerid()) {%>
-							selected=selected <%}%>><%=c.getCustomername()%></option>
+						<option value="<%=c.getUserid()%>"><%=c.getRealname()%></option>
 						<%
 							}
 						%>
@@ -779,8 +711,7 @@ dl dd span {
 							class="input_txt1" />
 					</p>
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
-						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" /> <input type="hidden"
-						id="rk_switch" name="rk_switch" value="<%=ck_switch.getState()%>" />
+						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
 			</div>
 		</div>
@@ -788,10 +719,9 @@ dl dd span {
 		<div>
 			<div class="saomiao_tab2">
 				<ul>
-					<li><a id="table_weiruku" href="#" class="light">今日未领货</a></li>
-					<li><a id="table_yiruku" href="#">历史待分派</a></li>
-					<li><a id="table_quejian" href="#"
-						onclick='getrukucwbquejiandataList($("#customerid").val());'>今日已分派</a></li>
+					<li><a id="today_not_picking_a" href="#" class="light">今日未领货</a></li>
+					<li><a id="history_not_picking_a" href="#">历史待分派</a></li>
+					<li><a id="table_quejian" href="#">今日已分派</a></li>
 					<li><a href="#">异常单明细</a></li>
 					<li><a href="#">今日超区</a></li>
 				</ul>
@@ -806,11 +736,11 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+											<td width="40" align="center" bgcolor="#f1f1f1"><input id="today_checkbox"
+												type="checkbox"></input></td>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -820,42 +750,27 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 170px; overflow-y: scroll">
-										<table id="weirukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+										<table id="today_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%
-												for (CwbDetailView co : weirukuList) {
+												for (CwbOrder co : todayNotPickingCwbList) {
 											%>
 											<tr id="TR<%=co.getCwb()%>" cwb="<%=co.getCwb()%>" customerid="<%=co.getCustomerid()%>"
 												class="cwbids">
-												<td width="120" align="center"><%=co.getCwb()%></td>
-												<td width="100" align="center"><%=co.getPackagecode()%></td>
-												<td width="100" align="center"><%=co.getCustomername()%></td>
-												<td width="140"><%=co.getEmaildate()%></td>
-												<td width="100"><%=co.getConsigneename()%></td>
-												<td width="100"><%=co.getReceivablefee().doubleValue()%></td>
-												<%
-													if (showCustomerSign) {
-												%>
-												<td width="100"><%=co.getRemarkView()%></td>
-												<%
-													}
-												%>
-												<td align="left"><%=co.getConsigneeaddress()%></td>
+												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneename()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneephone()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
+												<td align="center" bgcolor="#f1f1f1"><%=co.getConsigneeaddress()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 											</tr>
 											<%
 												}
 											%>
-											<%
-												if (weirukuList != null && weirukuList.size() == Page.DETAIL_PAGE_NUMBER) {
-											%>
-											<tr align="center">
-												<td colspan="12" style="cursor: pointer"
-													onclick="weiruku();" id="weiruku">查看更多</td>
-											</tr>
-											<%
-												}
-											%>
-
 										</table>
 									</div>
 								</td>
@@ -871,7 +786,8 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+											<td width="40" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
+												type="checkbox"></input></td>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
@@ -885,42 +801,27 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="successTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+										<table id="history_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%
-												for (CwbDetailView co : yirukulist) {
+												for (CwbOrder co : todayNotPickingCwbList) {
 											%>
 											<tr id="TR<%=co.getCwb()%>" cwb="<%=co.getCwb()%>" customerid="<%=co.getCustomerid()%>"
-												class="yirukucwbids">
-												<td width="120" align="center"><%=co.getCwb()%></td>
-												<td width="100" align="center"><%=co.getPackagecode()%></td>
-												<td width="100" align="center"><%=co.getCustomername()%></td>
-												<td width="140"><%=co.getEmaildate()%></td>
-												<td width="100"><%=co.getConsigneename()%></td>
-												<td width="100"><%=co.getReceivablefee().doubleValue()%></td>
-												<%
-													if (showCustomerSign) {
-												%>
-												<td width="100"><%=co.getRemarkView()%></td>
-												<%
-													}
-												%>
-												<td align="left"><%=co.getConsigneeaddress()%></td>
+												class="cwbids">
+												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneename()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneephone()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
+												<td align="center" bgcolor="#f1f1f1"><%=co.getConsigneeaddress()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 											</tr>
 											<%
 												}
 											%>
-											<%
-												if (yirukulist != null && yirukulist.size() == Page.DETAIL_PAGE_NUMBER) {
-											%>
-											<tr aglin="center">
-												<td colspan="<%if (showCustomerSign) {%>7<%} else {%>6<%}%>" style="cursor: pointer"
-													onclick="yiruku();" id="yiruku">查看更多</td>
-											</tr>
-											<%
-												}
-											%>
-
 										</table>
 									</div>
 								</td>

@@ -91,6 +91,7 @@ import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
+import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.StockResult;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.Truck;
@@ -343,39 +344,55 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/smtorderdispatch")
-	public String smtOrderDispatch(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
-		List<Customer> cList = this.customerDAO.getAllCustomers();
-		List<User> uList = this.userDAO.getUserByRole(3);
-		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
-		// TODO 按批次查询
-		// 系统设置是否显示订单备注
-		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
-		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
-		// 未入库
-		List<CwbOrder> weirukulist = this.cwbDAO.getRukuByBranchidForList(b.getBranchid(), b.getSitetype(), 1, customerid, emaildate);
-		List<CwbDetailView> weirukuViewlist = this.getcwbDetail(weirukulist, cList, showCustomerjSONArray, null, 0);
+	public String smtOrderDispatch(Model model) {
+		this.addBranchDelvierToModel(model);
+		this.addTodayNoPickingDataToModel(model);
+		this.addHistoryNotPickingCount(model);
 
-		// 已入库
-		List<CwbOrder> yirukulist = this.cwbDAO.getYiRukubyBranchidList(b.getBranchid(), customerid, 1, emaildate);
-		List<CwbDetailView> yirukuViewlist = this.getcwbDetail(yirukulist, cList, showCustomerjSONArray, null, 0);
-		model.addAttribute("isscanbaleTag", isscanbaleTag);
-		model.addAttribute("weirukulist", weirukuViewlist);
-		model.addAttribute("yirukulist", yirukuViewlist);
-		model.addAttribute("sitetype", b.getSitetype());
-		model.addAttribute("customerlist", cList);
-		model.addAttribute("userList", uList);
-		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.RuKuDaYinBiaoQian.getText()));
-		model.addAttribute("RUKUPCandPDAaboutYJDPWAV",
-				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
-		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
-		model.addAttribute("showCustomerSign", showCustomerSign);
 		return "pda/smtorderdispatch";
+	}
+
+	@RequestMapping("/loadsmtorder")
+	public @ResponseBody SmtOrderContainer loadSmtOrder(HttpServletRequest request) {
+		String dataScope = (String) request.getAttribute("dataScope");
+		if ("all".equals(dataScope)) {
+
+		} else if ("transfer".equals(dataScope)) {
+
+		} else {
+
+		}
+		return null;
+	}
+
+	private void addBranchDelvierToModel(Model model) {
+		List<User> delivers = this.getCurrentBranchDeliver();
+		model.addAttribute("deliverList", delivers);
+	}
+
+	private void addTodayNoPickingDataToModel(Model model) {
+		long branchId = this.getSessionUser().getBranchid();
+		int todayNotPickingCwbCount = this.cwbDAO.getSmtTodayNotPickingCount(branchId);
+		model.addAttribute("todayNotPickingCwbCount", todayNotPickingCwbCount);
+
+		int queryCount = todayNotPickingCwbCount > 100 ? 100 : todayNotPickingCwbCount;
+		List<CwbOrder> cwbList = this.getTodayNotPickingList(branchId, 0, queryCount);
+		model.addAttribute("todayNotPickingCwbList", cwbList);
+	}
+
+	private List<CwbOrder> getTodayNotPickingList(long branchId, int offset, int length) {
+		return this.cwbDAO.getSmtTodayNotPickingList(branchId, 0, length);
+	}
+
+	private void addHistoryNotPickingCount(Model model) {
+		long branchId = this.getSessionUser().getBranchid();
+		int historyNotPickingCwbCount = this.cwbDAO.getSmtHistoryNotPickingCount(branchId);
+		model.addAttribute("historyNotPickingCwbCount", historyNotPickingCwbCount);
 	}
 
 	/**
 	 * 进入入库的功能页面（明细）
+	 *
 	 *
 	 * @param model
 	 * @return
@@ -6578,7 +6595,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7611,6 +7628,12 @@ public class PDAController {
 			return false;
 		}
 		return true;
+	}
+
+	private List<User> getCurrentBranchDeliver() {
+		String roleids = "2,4";
+
+		return this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 	}
 
 }
