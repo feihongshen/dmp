@@ -2016,9 +2016,11 @@ src/main/webapp/WEB-INF/jsp/pda/kdkexportwarhousebatch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/kftokflist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/kufanglist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/lanshoudaohuoBatch.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/matchexceptionhandle.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/quejianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/smtorderdispatch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
