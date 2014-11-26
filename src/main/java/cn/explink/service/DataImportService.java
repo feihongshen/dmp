@@ -1,0 +1,850 @@
+package cn.explink.service;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+
+import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Consume;
+import org.apache.camel.Header;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CommonDAO;
+import cn.explink.dao.ComplaintDAO;
+import cn.explink.dao.CustomWareHouseDAO;
+import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.ExportmouldDAO;
+import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.NoPiPeiCwbDetailDAO;
+import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.ReasonDao;
+import cn.explink.dao.RemarkDAO;
+import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TuihuoRecordDAO;
+import cn.explink.dao.UserDAO;
+import cn.explink.domain.Branch;
+import cn.explink.domain.Common;
+import cn.explink.domain.Complaint;
+import cn.explink.domain.CustomWareHouse;
+import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
+import cn.explink.domain.EmailDate;
+import cn.explink.domain.ExcelImportEdit;
+import cn.explink.domain.ImportValidationManager;
+import cn.explink.domain.Reason;
+import cn.explink.domain.Remark;
+import cn.explink.domain.SetExportField;
+import cn.explink.domain.TuihuoRecord;
+import cn.explink.domain.User;
+import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.util.DateTimeUtil;
+import cn.explink.util.ExcelUtils;
+import cn.explink.util.StreamingStatementCreator;
+import cn.explink.dao.ExcelImportEditDao;
+
+@Service
+public class DataImportService {
+
+	private Logger logger = LoggerFactory.getLogger(DataImportService.class);
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private CwbDAO cwbDAO;
+
+	@Autowired
+	EmailDateDAO emailDateDAO;
+
+	@Autowired
+	ExportmouldDAO exportmouldDAO;
+
+	@Autowired
+	CustomerDAO customerDAO;
+	@Autowired
+	BranchDAO branchDAO;
+	@Autowired
+	UserDAO userDAO;
+	@Autowired
+	CommonDAO commonDAO;
+	@Autowired
+	CustomWareHouseDAO customWareHouseDAO;
+	@Autowired
+	ExportService exportService;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
+	@Autowired
+	GotoClassAuditingDAO gotoClassAuditingDAO;
+	@Autowired
+	ImportValidationManager importValidationManager;
+
+	@Autowired
+	OrderFlowDAO orderFlowDAO;
+	@Autowired
+	EmailDateDAO emaildateDAO;
+	@Autowired
+	RemarkDAO remarkDao;
+	@Autowired
+	ReasonDao reasonDAO;
+	@Autowired
+	DataStatisticsService dataStatisticsService;
+
+	@Autowired
+	ResultCollectorManager resultCollectorManager;
+
+	@Autowired
+	CwbRouteService cwbRouteService;
+
+	@Autowired
+	CwbOrderService cwbOrderService;
+
+	@Autowired
+	TuihuoRecordDAO tuihuoRecordDAO;
+	@Autowired
+	TransCwbDao transCwbDao;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
+
+	@Autowired
+	NoPiPeiCwbDetailDAO noPiPeiCwbDetailDAO;
+	@Autowired
+	ComplaintDAO complaintDAO;
+	@Produce(uri = "jms:queue:cwborderinsert")
+	ProducerTemplate importCwbErrorProducer;
+
+	@Produce(uri = "jms:topic:addressmatch")
+	ProducerTemplate addressmatch;
+	@Produce(uri = "jms:queue:editInsert")
+	ProducerTemplate editInsert;
+	@Autowired
+	ExcelImportEditDao excelImportEditDao;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
+
+	public void importData(final List<CwbOrderDTO> cwbOrderDTOs, // 供货商
+			User user, // 操作员
+			ResultCollector errorCollector, EmailDate ed, boolean isReImport) {
+		logger.info("开始导入,emaildate:{}", ed.getEmaildateid());
+		for (CwbOrderDTO cwbOrderDTO : cwbOrderDTOs) {
+			logger.info("importing order. cwb = {}", cwbOrderDTO.getCwb());
+			if (errorCollector.isStoped()) {
+				logger.info("导入中止,emaildate:{}", ed.getEmaildateid());
+				break;
+			}
+			try {
+				importSingleData(user, ed, isReImport, cwbOrderDTO);
+				// 成功订单数+1 前台显示
+				errorCollector.setSuccessSavcNum(errorCollector.getSuccessSavcNum() + 1);
+				logger.info("importing order success. cwb = {}", cwbOrderDTO.getCwb());
+			} catch (Exception e) {
+				logger.info("importing order failed. cwb = {}", cwbOrderDTO.getCwb());
+				e.printStackTrace();
+				errorCollector.addError(cwbOrderDTO.getCwb(), e.getMessage());
+
+				// 失败订单数+1 前台显示
+				errorCollector.setFailSavcNum(errorCollector.getFailSavcNum() + 1);
+				// 存储报错订单，以便统计错误记录和处理错误订单
+				JSONObject errorOrder = new JSONObject();
+				errorOrder.put("cwbOrderDTO", cwbOrderDTO);
+				errorOrder.put("emaildateid", ed.getEmaildateid());
+				errorOrder.put("customerid", ed.getCustomerid());
+				errorOrder.put("message", e.getMessage());
+
+				try {
+					importCwbErrorProducer.sendBodyAndHeader(null, "errorOrder", errorOrder.toString());
+				} catch (Exception ee) {
+
+				}
+			}
+		}
+		emailDateDAO.editEditEmaildateForCwbcount(errorCollector.getSuccessSavcNum(), ed.getEmaildateid());
+		logger.info("导入结束,emaildate:{}", ed.getEmaildateid());
+	}
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public void importSingleData(User user, EmailDate ed, boolean isReImport, CwbOrderDTO cwbOrderDTO) {
+		for (CwbOrderValidator cwbOrderValidator : importValidationManager.getCommonValidators()) {
+			cwbOrderValidator.validate(cwbOrderDTO);
+		}
+		insertCwb(cwbOrderDTO, ed.getCustomerid(), ed.getBranchid(), user, ed, isReImport);
+		// 如果手动分配了地址，就不会自动调用地址库
+		if (cwbOrderDTO.getExcelbranch() == null || cwbOrderDTO.getExcelbranch().length() == 0 || cwbOrderDTO.getDeliverybranchid() == 0) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("cwb", cwbOrderDTO.getCwb());
+			map.put("userid", user.getUserid());
+			addressmatch.sendBodyAndHeaders(null, map);
+		}
+	}
+
+	/**
+	 * 发送地址库消息
+	 * 
+	 * @param user
+	 * @param cwborderList
+	 */
+	@Transactional
+	public void resendAddressmatch(User user, List<CwbOrder> cwborderList) {
+		for (CwbOrder cwbOrder : cwborderList) {
+			try {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("cwb", cwbOrder.getCwb());
+				map.put("userid", user.getUserid());
+				addressmatch.sendBodyAndHeaders(null, map);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info(cwbOrder.getCwb() + "匹配站点失败");
+			}
+		}
+	}
+
+	/**
+	 * 正常导入
+	 * 
+	 * @param cwbOrderDTO
+	 * @param customerid
+	 *            供货商
+	 * @param branchid
+	 * @param operatoruserid操作员
+	 */
+	private void insertCwb(final CwbOrderDTO cwbOrderDTO, final long customerid, long warhouseid, User user, EmailDate ed, boolean isReImport) {
+		CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwbOrderDTO.getCwb());
+		if (cwbOrder == null) {
+			cwbOrderService.insertCwbOrder(cwbOrderDTO, customerid, warhouseid, user, ed);
+			return;
+		}
+		if (cwbOrder.getEmaildateid() > 0) {
+			if (!isReImport) {
+				throw new RuntimeException("重复单号");
+			} else if (ed.getEmaildateid() != cwbOrder.getEmaildateid()) {
+				throw new RuntimeException("重复单号");
+			}
+		}
+		cwbOrderService.updateExcelCwb(cwbOrderDTO, customerid, warhouseid, user, ed, isReImport);
+	}
+
+	@Produce(uri = "jms:topic:loseCwb")
+	ProducerTemplate loseCwb;
+
+	public void datalose(long emaildateid) {
+		try {
+			loseCwb.sendBodyAndHeader(null, "loseCwbByEmaildateid", "{\"emaildateid\":" + emaildateid + "}");
+		} catch (Exception e) {
+		}
+	}
+
+	// @Consume(uri="jms:queue:VirtualTopicConsumers.dmp.updateOrderMoney")
+	public void updateOrderMoney(@Header("cwbAndMoney") String cwbAndMoney) {
+		JSONObject cam = JSONObject.fromObject(cwbAndMoney);
+		if (cam != null && !cam.isNullObject() && cam.get("cwb") != null && cam.get("money") != null) {
+
+			String sql = "update express_ops_cwb_detail set receivablefee=? where cwb=? and state=1";
+
+			jdbcTemplate.update(sql, cam.getString("money"), cam.getString("cwb"));
+		}
+	}
+
+	@Produce(uri = "jms:topic:batchedit")
+	ProducerTemplate batchedit;
+
+	public void batchedit(long customerwarehouseid, long serviceareaid, String editemaildate, long emaildateid) {
+		try {
+			batchedit.sendBodyAndHeader(null, "emaildate", "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":"
+					+ serviceareaid + "}");
+		} catch (Exception e) {
+		}
+
+	}
+
+	public void ExportExcelMethod(HttpServletResponse response, HttpServletRequest request, String cwb, long emaildate, long customerid, int addressCodeEditType, long branchid) {
+		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
+
+		String[] cloumnName1 = {}; // 导出的列名
+		String[] cloumnName2 = {}; // 导出的英文列名
+		String[] cloumnName3 = {}; // 导出的数据类型
+
+		if (mouldfieldids2 != null && !"0".equals(mouldfieldids2) && mouldfieldids2.length() > 0) { // 选择模板
+			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
+			cloumnName1 = new String[listSetExportField.size()];
+			cloumnName2 = new String[listSetExportField.size()];
+			cloumnName3 = new String[listSetExportField.size()];
+			for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+				cloumnName1[k] = listSetExportField.get(j).getFieldname();
+				cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+				cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+			}
+		} else {
+			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs("0");
+			cloumnName1 = new String[listSetExportField.size()];
+			cloumnName2 = new String[listSetExportField.size()];
+			cloumnName3 = new String[listSetExportField.size()];
+			for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+				cloumnName1[k] = listSetExportField.get(j).getFieldname();
+				cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+				cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+			}
+		}
+		final String[] cloumnName4 = cloumnName1;
+		final String[] cloumnName5 = cloumnName2;
+		final String[] cloumnName6 = cloumnName3;
+		String sheetName = "订单地址信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + "_"; // 文件名
+		String otherName = "";
+		if (emaildate != 0) {
+			otherName = emaildateDAO.getEmailDateById(emaildate).getEmaildatetime();
+		}
+		String lastStr = ".xlsx";// 文件名后缀
+
+		fileName = fileName + otherName + lastStr;
+		try {
+
+			final String sql = cwbDAO.getcwbOrderByPageIsMyWarehouseSql(customerid, cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid);
+
+			ExcelUtils excelUtil = new ExcelUtils() {
+				// 生成工具类实例，并实现填充数据的抽象方法
+				@Override
+				public void fillData(final Sheet sheet, final CellStyle style) {
+					final List<User> uList = userDAO.getAllUser();
+					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = branchDAO.getAllBranches();
+					final List<Common> commonList = commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = remarkDao.getAllRemark();
+					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = reasonDAO.getAllReason();
+					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+						private int count = 0;
+						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
+						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
+
+						public void processRow(ResultSet rs) throws SQLException {
+
+							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
+							recordbatch.add(mapRow);
+							count++;
+							if (count % 100 == 0) {
+								writeBatch();
+							}
+
+						}
+
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
+								Map<String, String> complaintMap) throws SQLException {
+							Row row = sheet.createRow(rownum + 1);
+							row.setHeightInPoints((float) 15);
+							for (int i = 0; i < cloumnName4.length; i++) {
+								Cell cell = row.createCell((short) i);
+								cell.setCellStyle(style);
+								// sheet.setColumnWidth(i, (short) (5000));
+								// //设置列宽
+								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
+										complaintMap);
+								if (cloumnName6[i].equals("double")) {
+									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
+								} else {
+									cell.setCellValue(a == null ? "" : a.toString());
+								}
+							}
+						}
+
+						@Override
+						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+							while (rs.next()) {
+								this.processRow(rs);
+							}
+							writeBatch();
+							return null;
+						}
+
+						public void writeBatch() throws SQLException {
+							if (recordbatch.size() > 0) {
+								List<String> cwbs = new ArrayList<String>();
+								for (Map<String, Object> mapRow : recordbatch) {
+									cwbs.add(mapRow.get("cwb").toString());
+								}
+								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = recordbatch.size();
+								for (int i = 0; i < size; i++) {
+									String cwb = recordbatch.get(i).get("cwb").toString();
+									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+								}
+								recordbatch.clear();
+							}
+						}
+
+						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
+							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
+							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
+							}
+							return map;
+						}
+
+						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
+							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
+							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+								map.put(deliveryState.getCwb(), deliveryState);
+							}
+							return map;
+						}
+
+						private Map<String, String> getComplaintMap(List<String> cwbs) {
+							Map<String, String> complaintMap = new HashMap<String, String>();
+							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+								complaintMap.put(complaint.getCwb(), complaint.getContent());
+							}
+							return complaintMap;
+						}
+
+						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
+							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
+							/*
+							 * for(DeliveryState deliveryState:deliveryStateDAO.
+							 * getActiveDeliveryStateByCwbs(cwbs)){ String
+							 * ispayup = "否"; GotoClassAuditing goclass =
+							 * gotoClassAuditingDAO
+							 * .getGotoClassAuditingByGcaid(deliveryState
+							 * .getGcaid());
+							 * 
+							 * if(goclass!=null&&goclass.getPayupid()!=0){
+							 * ispayup = "是"; }
+							 * cwbspayupidMap.put(deliveryState.getCwb(),
+							 * ispayup); }
+							 */
+							return cwbspayupidMap;
+						}
+					});
+					/*
+					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
+					 * new RowCallbackHandler(){ private int count=0;
+					 * 
+					 * @Override public void processRow(ResultSet rs) throws
+					 * SQLException { Row row = sheet.createRow(count + 1);
+					 * row.setHeightInPoints((float) 15);
+					 * 
+					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
+					 * Map<String,String> allTime =
+					 * getOrderFlowByCredateForDetailAndExportAllTime
+					 * (rs.getString("cwb"));
+					 * 
+					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
+					 * = row.createCell((short) i); cell.setCellStyle(style);
+					 * //sheet.setColumnWidth(i, (short) (5000)); //设置列宽 Object
+					 * a = exportService.setObjectA(cloumnName5, rs, i ,
+					 * uList,cMap
+					 * ,bList,commonList,ds,allTime,cWList,remarkMap,reasonList
+					 * ); if(cloumnName6[i].equals("double")){
+					 * cell.setCellValue(a == null ?
+					 * BigDecimal.ZERO.doubleValue() :
+					 * a.equals("")?BigDecimal.ZERO
+					 * .doubleValue():Double.parseDouble(a.toString())); }else{
+					 * cell.setCellValue(a == null ? "" : a.toString()); } }
+					 * count++;
+					 * 
+					 * }});
+					 */
+
+				}
+			};
+			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void ExportNoPiPeiExcelMethod(HttpServletResponse response, HttpServletRequest request, long branchid) {
+		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
+
+		String[] cloumnName1 = {}; // 导出的列名
+		String[] cloumnName2 = {}; // 导出的英文列名
+		String[] cloumnName3 = {}; // 导出的数据类型
+
+		if (mouldfieldids2 != null && !"0".equals(mouldfieldids2)) { // 选择模板
+			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
+			cloumnName1 = new String[listSetExportField.size()];
+			cloumnName2 = new String[listSetExportField.size()];
+			cloumnName3 = new String[listSetExportField.size()];
+			for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+				cloumnName1[k] = listSetExportField.get(j).getFieldname();
+				cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+				cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+			}
+		} else {
+			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs("0");
+			cloumnName1 = new String[listSetExportField.size()];
+			cloumnName2 = new String[listSetExportField.size()];
+			cloumnName3 = new String[listSetExportField.size()];
+			for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+				cloumnName1[k] = listSetExportField.get(j).getFieldname();
+				cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+				cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+			}
+		}
+		final String[] cloumnName4 = cloumnName1;
+		final String[] cloumnName5 = cloumnName2;
+		final String[] cloumnName6 = cloumnName3;
+		String sheetName = "订单地址信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()); // 文件名
+		String lastStr = ".xlsx";// 文件名后缀
+
+		fileName = fileName + lastStr;
+		try {
+
+			List<String> cwblist = noPiPeiCwbDetailDAO.getNoPiPeiCwbDetailByCarwarehouseid(branchid);
+			String cwbs = "";
+			if (cwblist.size() > 0) {
+				cwbs = dataStatisticsService.getOrderFlowCwbs(cwblist);
+			} else {
+				cwbs = "'--'";
+			}
+			final String sql = cwbDAO.getSqlByCwb(cwbs);
+			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+				@Override
+				public void fillData(final Sheet sheet, final CellStyle style) {
+					final List<User> uList = userDAO.getAllUser();
+					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = branchDAO.getAllBranches();
+					final List<Common> commonList = commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = remarkDao.getAllRemark();
+					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = reasonDAO.getAllReason();
+					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+						private int count = 0;
+						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
+						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
+
+						public void processRow(ResultSet rs) throws SQLException {
+							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
+							recordbatch.add(mapRow);
+							count++;
+							if (count % 100 == 0) {
+								writeBatch();
+							}
+						}
+
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
+								Map<String, String> complaintMap) throws SQLException {
+							Row row = sheet.createRow(rownum + 1);
+							row.setHeightInPoints((float) 15);
+							for (int i = 0; i < cloumnName4.length; i++) {
+								Cell cell = row.createCell((short) i);
+								cell.setCellStyle(style);
+								// sheet.setColumnWidth(i, (short) (5000));
+								// //设置列宽
+								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
+										complaintMap);
+								if (cloumnName6[i].equals("double")) {
+									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
+								} else {
+									cell.setCellValue(a == null ? "" : a.toString());
+								}
+							}
+						}
+
+						@Override
+						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+							while (rs.next()) {
+								this.processRow(rs);
+							}
+							writeBatch();
+							return null;
+						}
+
+						public void writeBatch() throws SQLException {
+							if (recordbatch.size() > 0) {
+								List<String> cwbs = new ArrayList<String>();
+								for (Map<String, Object> mapRow : recordbatch) {
+									cwbs.add(mapRow.get("cwb").toString());
+								}
+								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = recordbatch.size();
+								for (int i = 0; i < size; i++) {
+									String cwb = recordbatch.get(i).get("cwb").toString();
+									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+								}
+								recordbatch.clear();
+							}
+						}
+
+						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
+							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
+							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
+							}
+							return map;
+						}
+
+						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
+							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
+							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+								map.put(deliveryState.getCwb(), deliveryState);
+							}
+							return map;
+						}
+
+						private Map<String, String> getComplaintMap(List<String> cwbs) {
+							Map<String, String> complaintMap = new HashMap<String, String>();
+							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+								complaintMap.put(complaint.getCwb(), complaint.getContent());
+							}
+							return complaintMap;
+						}
+
+						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
+							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
+							/*
+							 * for(DeliveryState deliveryState:deliveryStateDAO.
+							 * getActiveDeliveryStateByCwbs(cwbs)){ String
+							 * ispayup = "否"; GotoClassAuditing goclass =
+							 * gotoClassAuditingDAO
+							 * .getGotoClassAuditingByGcaid(deliveryState
+							 * .getGcaid());
+							 * 
+							 * if(goclass!=null&&goclass.getPayupid()!=0){
+							 * ispayup = "是"; }
+							 * cwbspayupidMap.put(deliveryState.getCwb(),
+							 * ispayup); }
+							 */
+							return cwbspayupidMap;
+						}
+					});
+				}
+			};
+			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public DeliveryState getDeliveryByCwb(String cwb) {
+		List<DeliveryState> delvieryList = deliveryStateDAO.getDeliveryStateByCwb(cwb);
+		return delvieryList.size() > 0 ? delvieryList.get(delvieryList.size() - 1) : new DeliveryState();
+	}
+
+	public EmailDate getOrCreateEmailDate(final long customerid, long customerwarehouseid, final long warehouseid) {
+		EmailDate ed = null;
+		try {
+			String nowdate = DateTimeUtil.getNowDate();
+			String nowtime = DateTimeUtil.getNowTimeMin() + ":00";
+			ed = emaildateDAO.getEmailDateByKeys(customerid, warehouseid, nowdate);
+			if (ed == null) {
+				ed = new EmailDate();
+				ed.setEmaildatetime(nowtime);
+				ed.setEmaildateid(emaildateDAO.getCreateEmailDate(nowtime, 1, 0, warehouseid, customerid, warehouseid, 0));
+				ed.setCustomerid(customerid);
+				ed.setWarehouseid(customerwarehouseid); // 发货仓库Id
+				ed.setBranchid(warehouseid); // 入库站点Id.
+			}
+		} catch (Exception e) {
+			logger.error("生成批次出错", e);
+		}
+		return ed;
+	}
+
+	/**
+	 * B2C对接批次生成时间的限制 ，等同于以上的方法 区别是:新增了按照可设置的时间点来卡状态.
+	 * 
+	 * @param customerid
+	 * @param customerwarehouseid
+	 * @param warehouseid
+	 * @param ruleEmaildateHours
+	 *            当前规定的邮件时间，单位小时,假如为3
+	 * @return
+	 */
+	public EmailDate getOrCreateEmailDate_B2C(final long customerid, long customerwarehouseid, final long warehouseid, long ruleEmaildateHours) {
+		EmailDate ed = null;
+		try {
+			String nowdate = DateTimeUtil.getNowDate();
+			String nowtime = DateTimeUtil.getNowTimeMin() + ":00";
+
+			long nowHours = DateTimeUtil.getNowHours();
+			if (ruleEmaildateHours > 0 && nowHours < ruleEmaildateHours) {
+				nowdate = DateTimeUtil.formatDateDay(DateTimeUtil.getPreviousDate(new Date()));
+				nowtime = DateTimeUtil.formatDateDay(DateTimeUtil.getPreviousDate(new Date())) + " 22:00:00"; // 如果数据跨0点,则默认前一天的批次问题。
+			}
+
+			ed = emaildateDAO.getEmailDateByKeys_effect(customerid, warehouseid, nowdate);
+			if (ed == null) {
+				ed = new EmailDate();
+				ed.setEmaildatetime(nowtime);
+				ed.setEmaildateid(emaildateDAO.getCreateEmailDate(nowtime, 1, 0, warehouseid, customerid, warehouseid, 0));
+				ed.setCustomerid(customerid);
+				ed.setWarehouseid(customerwarehouseid); // 发货仓库Id
+				ed.setBranchid(warehouseid); // 入库站点Id.
+			}
+		} catch (Exception e) {
+			logger.error("生成批次出错", e);
+		}
+		return ed;
+	}
+
+	public EmailDate getEmailDate_B2C(final long customerid, long customerwarehouseid, final long warehouseid, String emaildate) {
+		EmailDate ed = null;
+		try {
+			ed = emaildateDAO.getEmailDateByKeys_effect(customerid, customerwarehouseid, emaildate);
+			if (ed == null) {
+				ed = new EmailDate();
+				ed.setEmaildatetime(emaildate);
+				ed.setEmaildateid(emaildateDAO.getCreateEmailDate(emaildate, 1, 0, customerwarehouseid, customerid, warehouseid, 0));
+				ed.setCustomerid(customerid);
+				ed.setWarehouseid(customerwarehouseid); // 发货仓库Id
+				ed.setBranchid(warehouseid); // 入库站点Id.
+			}
+		} catch (Exception e) {
+			logger.error("生成批次出错", e);
+		}
+		return ed;
+	}
+
+	public EmailDate getEmailDate_B2CByEmaildate(final long customerid, long customerwarehouseid, final long warehouseid, String emaildate) {
+		EmailDate ed = null;
+		try {
+			ed = emaildateDAO.getEmailDateByNowdate(customerid, customerwarehouseid, emaildate);
+			if (ed == null) {
+				ed = new EmailDate();
+				ed.setEmaildatetime(emaildate);
+				ed.setEmaildateid(emaildateDAO.getCreateEmailDate(emaildate, 1, 0, customerwarehouseid, customerid, warehouseid, 0));
+				ed.setCustomerid(customerid);
+				ed.setWarehouseid(customerwarehouseid); // 发货仓库Id
+				ed.setBranchid(warehouseid); // 入库站点Id.
+			}
+		} catch (Exception e) {
+			logger.error("生成批次出错", e);
+		}
+		return ed;
+	}
+
+	public Customer getQueryCustomer(List<Customer> customerList, long customerid) {
+		Customer customer = new Customer();
+		for (Customer c : customerList) {
+			if (c.getCustomerid() == customerid) {
+				customer = c;
+				break;
+			}
+		}
+		return customer;
+	}
+
+	public void reProduceTranscwb(List<CwbOrder> colist, List<Customer> customerlist) {
+		if (colist != null && colist.size() > 0) {
+			for (CwbOrder co : colist) {
+				Customer customer = this.getQueryCustomer(customerlist, co.getCustomerid());
+				if (customer.getIsAutoProductcwb() == 1 && customer.getIsUsetranscwb() == 0 && customer.getIsypdjusetranscwb() == 1) {
+					// 运单号
+					if (co.getTranscwb().length() == 0) {
+						String transcwb = "";
+						if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+							for (int i = 1; i < co.getSendcarnum() + 1; i++) {
+								String newtranscwb = "";
+								if (customer.getAutoProductcwbpre().indexOf("[index]") > 1) {
+									// 01，10
+									// [0][index](如果小于10，那么就是01，02，之后是10）；1,10
+									// [index]；01,010 0[index]
+									String index = i < 10 ? (customer.getAutoProductcwbpre().indexOf("[0]") > -1 ? "0" + i : i + "") : i + "";
+									String produceTransCwb = customer.getAutoProductcwbpre().replace("[0]", "").replace("[sendcarnum]", co.getSendcarnum() + "").replace("[cwb]", co.getCwb())
+											.replace("[index]", index);
+									newtranscwb = produceTransCwb;
+								} else {
+									newtranscwb = co.getCwb() + "-" + i;
+								}
+								transcwb += newtranscwb + ",";
+								transCwbDao.saveTranscwb(newtranscwb, co.getCwb());
+							}
+						}
+						if (transcwb.length() > 0) {
+							transcwb = transcwb.substring(0, transcwb.length() - 1);
+						}
+						cwbDAO.saveTranscwbByCwb(transcwb, co.getCwb());
+
+					}
+				}
+			}
+		}
+	}
+
+	public String getStrings(List<String> strArr) {
+		String strs = "";
+		if (strArr.size() > 0) {
+			for (String str : strArr) {
+				strs += str + ",";
+			}
+		}
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
+
+	public List<CwbOrder> getListByCwbs(String cwbs, long emaildateid) {
+		List<CwbOrder> list = new ArrayList<CwbOrder>();
+		if (cwbs.length() > 0) {
+			String[] cwbstr = cwbs.split("\r\n");
+			for (int i = 0; i < cwbstr.length; i++) {
+				if (i == cwbstr.length) {
+					break;
+				}
+				if (cwbstr[i].trim().length() == 0) {
+					continue;
+				}
+				String cwb = cwbOrderService.translateCwb(cwbstr[i].trim());
+				List<CwbOrder> oList = cwbDAO.getListByCwb(cwb);
+				list.addAll(oList);
+			}
+		} else {
+			list = cwbDAO.getCwbsByEmailDateId(emaildateid);
+		}
+		return list;
+	}
+
+}

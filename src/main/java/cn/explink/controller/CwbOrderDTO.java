@@ -1,0 +1,796 @@
+package cn.explink.controller;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+
+import org.springframework.util.StringUtils;
+
+import cn.explink.domain.Common;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.util.JMath;
+
+public class CwbOrderDTO {
+	long opscwbid;
+
+	public long getOpscwbid() {
+		return opscwbid;
+	}
+
+	public void setOpscwbid(long opscwbid) {
+		this.opscwbid = opscwbid;
+	}
+
+	String cwb;
+	String commoncwb;
+	String consigneename;
+	String consigneeaddress;
+	String consigneepostcode;
+	String consigneephone;
+	String consigneemobile;
+	String sendcargoname;
+	String backcargoname;
+	BigDecimal receivablefee = BigDecimal.ZERO;
+	BigDecimal paybackfee = BigDecimal.ZERO;
+	BigDecimal cargorealweight = BigDecimal.ZERO;
+	String cwbremark;
+	String accountarea;
+	long accountareaid;
+	long serviceareaid;
+	long emaildateid;
+	String emaildate;
+	long excelbranchid;
+	String shipcwb;
+	String exceldeliver;
+	String consigneeno;
+	String excelbranch;
+	BigDecimal cargoamount = BigDecimal.ZERO;
+	String customercommand;
+	String cargotype;
+	String cargosize;
+	BigDecimal backcargoamount = BigDecimal.ZERO;
+	String destination;
+	String transway;
+	long shipperid;
+	int sendcargonum;
+	int backcargonum;
+	long cwbordertypeid = 0;
+	long cwbdelivertypeid;
+	long customerwarehouseid;
+	String excelimportuserid;
+	long multipbranchflag;
+	long multipdeliverflag;
+	long cstypeid;
+	long startbranchid; // 导入数据时入库库房id
+	long deliverybranchid;
+	// long commonid;
+	Common common;
+	String orderprefix;
+	long commonstate;
+	String modelname;// 模版名称
+	long isaudit;
+	String remark1;
+	String remark2;
+	String remark3;
+	String remark4;
+	String remark5;
+	long paywayid;// 支付方式（导入数据的时候会导入）
+	String newpaywayid;// 新的支付方式（反馈的时候可能会更改的支付方式）
+	long customerid;
+	BigDecimal shouldfare;
+	BigDecimal infactfare;
+
+	public BigDecimal getShouldfare() {
+		return shouldfare;
+	}
+
+	public void setShouldfare(BigDecimal shouldfare) {
+		this.shouldfare = shouldfare;
+	}
+
+	public void setShouldfare(String shouldfare) {
+		try {
+			if (shouldfare == null || shouldfare.length() == 0) {
+				shouldfare = "0";
+			}
+			this.shouldfare = new BigDecimal(shouldfare);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("退货运费不是有效的數字格式:" + shouldfare);
+		}
+	}
+
+	public BigDecimal getInfactfare() {
+		return infactfare;
+	}
+
+	public void setInfactfare(BigDecimal infactfare) {
+		this.infactfare = infactfare;
+	}
+
+	int addresscodeedittype;// 匹配类型
+	String timelimited;// 地址库匹配时效
+
+	public long getCustomerid() {
+		return customerid;
+	}
+
+	public void setCustomerid(long customerid) {
+		this.customerid = customerid;
+	}
+
+	BigDecimal primitivemoney = BigDecimal.ZERO;
+
+	// /2012-10-29 tmall新增字段
+	String multi_shipcwb; // 运单号逗号隔开存储 tmall用
+	BigDecimal cargovolume = BigDecimal.ZERO; // 货物体积
+	String consignoraddress; // 取件地址
+	String tmall_notifyid; // tmall发送数据唯一标示
+	String printtime = "";// 打印时间
+
+	public long getIsaudit() {
+		return isaudit;
+	}
+
+	public void setIsaudit(long isaudit) {
+		this.isaudit = isaudit;
+	}
+
+	public String getCommoncwb() {
+		return commoncwb;
+	}
+
+	public void setCommoncwb(String commoncwb) {
+		this.commoncwb = commoncwb;
+	}
+
+	public String getMulti_shipcwb() {
+		return multi_shipcwb;
+	}
+
+	public void setMulti_shipcwb(String multi_shipcwb) {
+		this.multi_shipcwb = multi_shipcwb;
+	}
+
+	public BigDecimal getCargovolume() {
+		return cargovolume;
+	}
+
+	public void setCargovolume(BigDecimal cargovolume) {
+		this.cargovolume = cargovolume;
+	}
+
+	public String getConsignoraddress() {
+		return consignoraddress;
+	}
+
+	public void setConsignoraddress(String consignoraddress) {
+		this.consignoraddress = consignoraddress;
+	}
+
+	public String getTmall_notifyid() {
+		return tmall_notifyid;
+	}
+
+	public void setTmall_notifyid(String tmall_notifyid) {
+		this.tmall_notifyid = tmall_notifyid;
+	}
+
+	public long getStartbranchid() {
+		return startbranchid;
+	}
+
+	public void setStartbranchid(long startbranchid) {
+		this.startbranchid = startbranchid;
+	}
+
+	public long getDeliverybranchid() {
+		return deliverybranchid;
+	}
+
+	public void setDeliverybranchid(long deliverybranchid) {
+		this.deliverybranchid = deliverybranchid;
+	}
+
+	public long getMultipbranchflag() {
+		return multipbranchflag;
+	}
+
+	public void setMultipbranchflag(long multipbranchflag) {
+		this.multipbranchflag = multipbranchflag;
+	}
+
+	public long getMultipdeliverflag() {
+		return multipdeliverflag;
+	}
+
+	public void setMultipdeliverflag(long multipdeliverflag) {
+		this.multipdeliverflag = multipdeliverflag;
+	}
+
+	public long getCstypeid() {
+		return cstypeid;
+	}
+
+	public void setCstypeid(long cstypeid) {
+		this.cstypeid = cstypeid;
+	}
+
+	public void setConsigneephone(String consigneephone) {
+		this.consigneephone = consigneephone;
+	}
+
+	public void setReceivablefee(BigDecimal receivablefee) {
+		this.receivablefee = receivablefee;
+	}
+
+	public void setPaybackfee(BigDecimal paybackfee) {
+		this.paybackfee = paybackfee;
+	}
+
+	public void setCargorealweight(BigDecimal cargorealweight) {
+		this.cargorealweight = cargorealweight;
+	}
+
+	public void setCargoamount(BigDecimal cargoamount) {
+		this.cargoamount = cargoamount;
+	}
+
+	public void setBackcargoamount(BigDecimal backcargoamount) {
+		this.backcargoamount = backcargoamount;
+	}
+
+	public void setSendcargonum(int sendcargonum) {
+		this.sendcargonum = sendcargonum;
+	}
+
+	public void setBackcargonum(int backcargonum) {
+		this.backcargonum = backcargonum;
+	}
+
+	public String getExcelimportuserid() {
+		return excelimportuserid;
+	}
+
+	public void setExcelimportuserid(String excelimportuserid) {
+		this.excelimportuserid = excelimportuserid;
+	}
+
+	String cwbprovince;
+	String cwbcity;
+	String cwbcounty;
+	// String ordercwb;
+	String transcwb;
+	String paisongArea;
+
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+	SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+	public String getCwb() {
+		return cwb;
+	}
+
+	public void setCwb(String cwb) {
+		this.cwb = removeZero(cwb);
+	}
+
+	public String getConsigneename() {
+		return consigneename;
+	}
+
+	public void setConsigneename(String consigneename) {
+		this.consigneename = consigneename;
+	}
+
+	public String getConsigneeaddress() {
+		return consigneeaddress;
+	}
+
+	public void setConsigneeaddress(String consigneeaddress) {
+		if (consigneeaddress == null) {
+			this.consigneeaddress = "";
+			return;
+		}
+		this.consigneeaddress = consigneeaddress;
+	}
+
+	public String getConsigneepostcode() {
+		return consigneepostcode;
+	}
+
+	public void setConsigneepostcode(String consigneepostcode) {
+		this.consigneepostcode = removeZero(consigneepostcode);
+	}
+
+	public String getConsigneephone() {
+		return consigneephone;
+	}
+
+	public void setConsigneephone(String consigneephone, boolean guessMobile) {
+		this.consigneephone = consigneephone;
+		if (guessMobile) {
+			setConsigneemobile(consigneephone);
+		}
+	}
+
+	public String getConsigneemobile() {
+		return consigneemobile;
+	}
+
+	public void setConsigneemobile(String consigneemobile) {
+		this.consigneemobile = JMath.getmobileinstr(consigneemobile);
+	}
+
+	public String getSendcargoname() {
+		return sendcargoname;
+	}
+
+	public void setSendcargoname(String sendcargoname) {
+		this.sendcargoname = sendcargoname;
+	}
+
+	public String getBackcargoname() {
+		return backcargoname;
+	}
+
+	public void setBackcargoname(String backcargoname) {
+		this.backcargoname = backcargoname;
+	}
+
+	public BigDecimal getReceivablefee() {
+		return receivablefee;
+	}
+
+	public void setReceivablefee(String receivablefee) {
+		try {
+			if (receivablefee == null || receivablefee.length() == 0) {
+				receivablefee = "0";
+			}
+			this.receivablefee = new BigDecimal(receivablefee);
+			if (this.receivablefee.compareTo(BigDecimal.ZERO) == -1) {
+				this.setPaybackfee(receivablefee.replace("-", ""));
+				this.receivablefee = BigDecimal.ZERO;
+			}
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("費用不是有效的數字格式:" + receivablefee);
+		}
+	}
+
+	public BigDecimal getPaybackfee() {
+		return paybackfee;
+	}
+
+	public void setPaybackfee(String paybackfee) {
+		try {
+			if (paybackfee == null || paybackfee.length() == 0) {
+				paybackfee = "0";
+			}
+			this.paybackfee = new BigDecimal(paybackfee);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("退費不是有效的數字格式:" + paybackfee);
+		}
+	}
+
+	public BigDecimal getCargorealweight() {
+		return cargorealweight;
+	}
+
+	public void setCargorealweight(String cargorealweight) {
+		try {
+			if (cargorealweight == null || cargorealweight.length() == 0) {
+				cargorealweight = "0";
+			}
+			this.cargorealweight = new BigDecimal(cargorealweight);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("真实重量不是有效的數字格式:" + cargorealweight);
+		}
+	}
+
+	public String getCwbremark() {
+		return cwbremark;
+	}
+
+	public void setCwbremark(String cwbremark) {
+		this.cwbremark = cwbremark;
+	}
+
+	public String getAccountarea() {
+		return accountarea;
+	}
+
+	public void setAccountarea(String accountarea) {
+		this.accountarea = accountarea;
+	}
+
+	public long getEmaildateid() {
+		return emaildateid;
+	}
+
+	public void setEmaildateid(long emaildateid) {
+		this.emaildateid = emaildateid;
+	}
+
+	public String getEmaildate() {
+		return emaildate;
+	}
+
+	public void setEmaildate(String emaildate) {
+		this.emaildate = emaildate;
+	}
+
+	public long getExcelbranchid() {
+		return excelbranchid;
+	}
+
+	public void setExcelbranchid(long excelbranchid) {
+		this.excelbranchid = excelbranchid;
+	}
+
+	public String getShipcwb() {
+		return shipcwb;
+	}
+
+	public void setShipcwb(String shipcwb) {
+		shipcwb = removeZero(shipcwb);
+		this.shipcwb = shipcwb;
+	}
+
+	public String getExceldeliver() {
+		return exceldeliver;
+	}
+
+	public void setExceldeliver(String exceldeliver) {
+		this.exceldeliver = exceldeliver;
+	}
+
+	public String getConsigneeno() {
+		return consigneeno;
+	}
+
+	public void setConsigneeno(String consigneeno) {
+		this.consigneeno = removeZero(consigneeno);
+	}
+
+	public String getExcelbranch() {
+		return excelbranch;
+	}
+
+	public void setExcelbranch(String excelbranch) {
+		this.excelbranch = excelbranch;
+	}
+
+	public BigDecimal getCargoamount() {
+		return cargoamount;
+	}
+
+	public void setCargoamount(String cargoamount) {
+		try {
+			if (cargoamount == null || cargoamount.length() == 0) {
+				cargoamount = "0";
+			}
+			this.cargoamount = new BigDecimal(cargoamount);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("货物金额不是有效的数字格式:" + cargoamount);
+		}
+	}
+
+	public String getCustomercommand() {
+		return customercommand;
+	}
+
+	public void setCustomercommand(String customercommand) {
+		this.customercommand = customercommand;
+	}
+
+	public String getCargotype() {
+		return cargotype;
+	}
+
+	public void setCargotype(String cargotype) {
+		this.cargotype = cargotype;
+	}
+
+	public String getCargosize() {
+		return cargosize;
+	}
+
+	public void setCargosize(String cargosize) {
+		this.cargosize = cargosize;
+	}
+
+	public BigDecimal getBackcargoamount() {
+		return backcargoamount;
+	}
+
+	public void setBackcargoamount(String backcargoamount) {
+		try {
+			if (backcargoamount == null || backcargoamount.length() == 0) {
+				backcargoamount = "0";
+			}
+			this.backcargoamount = new BigDecimal(backcargoamount);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("退货重量不是有效的數字格式:" + backcargoamount);
+		}
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	public String getTransway() {
+		return transway;
+	}
+
+	public void setTransway(String transway) {
+		this.transway = transway;
+	}
+
+	public int getSendcargonum() {
+		return sendcargonum;
+	}
+
+	public void setSendcargonum(String sendcargonum) {
+		try {
+			if (sendcargonum == null || sendcargonum.length() == 0) {
+				sendcargonum = "1";
+			}
+			this.sendcargonum = Integer.parseInt(removeZero(sendcargonum));
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("货物数量不是有效的數字格式:" + sendcargonum);
+		}
+	}
+
+	public int getBackcargonum() {
+		return backcargonum;
+	}
+
+	public void setBackcargonum(String backcargonum) {
+		try {
+			if (backcargonum == null || backcargonum.length() == 0) {
+				backcargonum = "1";
+			}
+			this.backcargonum = Integer.parseInt(removeZero(backcargonum));
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("退货数量不是有效的數字格式:" + sendcargonum);
+		}
+	}
+
+	public long getCwbdelivertypeid() {
+		return cwbdelivertypeid;
+	}
+
+	public void setCwbdelivertypeid(long cwbdelivertypeid) {
+		this.cwbdelivertypeid = cwbdelivertypeid;
+	}
+
+	public String getCwbprovince() {
+		return cwbprovince;
+	}
+
+	public void setCwbprovince(String cwbprovince) {
+		this.cwbprovince = cwbprovince;
+	}
+
+	public String getCwbcity() {
+		return cwbcity;
+	}
+
+	public void setCwbcity(String cwbcity) {
+		this.cwbcity = cwbcity;
+	}
+
+	public String getCwbcounty() {
+		return cwbcounty;
+	}
+
+	public void setCwbcounty(String cwbcounty) {
+		this.cwbcounty = cwbcounty;
+	}
+
+	/*
+	 * public String getOrdercwb() { return ordercwb; } public void
+	 * setOrdercwb(String ordercwb) { this.ordercwb = ordercwb; }
+	 */
+	public String getTranscwb() {
+		return transcwb;
+	}
+
+	public void setTranscwb(String transcwb) {
+		this.transcwb = removeZero(transcwb);
+	}
+
+	public String getPaisongArea() {
+		return paisongArea;
+	}
+
+	public void setPaisongArea(String paisongArea) {
+		this.paisongArea = paisongArea;
+	}
+
+	private String removeZero(String cwb) {
+		int end = cwb.indexOf(".0");
+		if (end > -1) {
+			cwb = cwb.substring(0, end);
+		}
+		return cwb;
+	}
+
+	public long getCwbordertypeid() {
+		return cwbordertypeid;
+	}
+
+	public void setCwbordertypeid(long cwbordertypeid) {
+		this.cwbordertypeid = cwbordertypeid;
+	}
+
+	public void guessCwbordertypeid() {
+		// if(this.getReceivablefee().compareTo(BigDecimal.ZERO)>0&&this.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
+		// this.setCwbordertypeid(CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		// // 上门退
+		// }else if(this.getReceivablefee().compareTo(BigDecimal.ZERO)>0){
+		this.setCwbordertypeid(CwbOrderTypeIdEnum.Peisong.getValue());
+		// }else{
+		// this.setCwbordertypeid(CwbOrderTypeIdEnum.Shangmentui.getValue());
+		// }
+	}
+
+	public void guessPaywayid() {
+		// if(this.getReceivablefee().compareTo(BigDecimal.ZERO)>0&&this.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
+		// this.setCwbordertypeid(CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		// // 上门退
+		// }else if(this.getReceivablefee().compareTo(BigDecimal.ZERO)>0){
+		this.setPaywayid(PaytypeEnum.Xianjin.getValue());
+		// }else{
+		// this.setCwbordertypeid(CwbOrderTypeIdEnum.Shangmentui.getValue());
+		// }
+	}
+
+	public void setDefaultCargoName() {
+		if (this.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue() && !StringUtils.hasLength(this.getSendcargoname())) {
+			this.setSendcargoname("");
+		}
+		if (this.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue() && !StringUtils.hasLength(this.getBackcargoname())) {
+			this.setBackcargoname("");
+		}
+	}
+
+	public long getAccountareaid() {
+		return accountareaid;
+	}
+
+	public void setAccountareaid(long accountareaid) {
+		this.accountareaid = accountareaid;
+	}
+
+	public long getServiceareaid() {
+		return serviceareaid;
+	}
+
+	public void setServiceareaid(long serviceareaid) {
+		this.serviceareaid = serviceareaid;
+	}
+
+	public long getShipperid() {
+		return shipperid;
+	}
+
+	public void setShipperid(long shipperid) {
+		this.shipperid = shipperid;
+	}
+
+	public long getCustomerwarehouseid() {
+		return customerwarehouseid;
+	}
+
+	public void setCustomerwarehouseid(long customerwarehouseid) {
+		this.customerwarehouseid = customerwarehouseid;
+	}
+
+	public Common getCommon() {
+		return common;
+	}
+
+	public void setCommon(Common common) {
+		this.common = common;
+	}
+
+	public BigDecimal getPrimitivemoney() {
+		return primitivemoney;
+	}
+
+	public void setPrimitivemoney(BigDecimal primitivemoney) {
+		this.primitivemoney = primitivemoney;
+	}
+
+	public String getModelname() {
+		return modelname;
+	}
+
+	public void setModelname(String modelname) {
+		this.modelname = modelname;
+	}
+
+	public String getRemark1() {
+		return remark1;
+	}
+
+	public void setRemark1(String remark1) {
+		this.remark1 = remark1;
+	}
+
+	public String getRemark2() {
+		return remark2;
+	}
+
+	public void setRemark2(String remark2) {
+		this.remark2 = remark2;
+	}
+
+	public String getRemark3() {
+		return remark3;
+	}
+
+	public void setRemark3(String remark3) {
+		this.remark3 = remark3;
+	}
+
+	public String getRemark4() {
+		return remark4;
+	}
+
+	public void setRemark4(String remark4) {
+		this.remark4 = remark4;
+	}
+
+	public String getRemark5() {
+		return remark5;
+	}
+
+	public void setRemark5(String remark5) {
+		this.remark5 = remark5;
+	}
+
+	public long getPaywayid() {
+		return paywayid;
+	}
+
+	public void setPaywayid(long paywayid) {
+		this.paywayid = paywayid;
+	}
+
+	public String getNewpaywayid() {
+		return newpaywayid;
+	}
+
+	public void setNewpaywayid(String newpaywayid) {
+		this.newpaywayid = newpaywayid;
+	}
+
+	public int getAddresscodeedittype() {
+		return addresscodeedittype;
+	}
+
+	public void setAddresscodeedittype(int addresscodeedittype) {
+		this.addresscodeedittype = addresscodeedittype;
+	}
+
+	public String getPrinttime() {
+		return printtime;
+	}
+
+	public void setPrinttime(String printtime) {
+		this.printtime = printtime;
+	}
+
+	public String getTimelimited() {
+		return timelimited;
+	}
+
+	public void setTimelimited(String timelimited) {
+		this.timelimited = timelimited;
+	}
+}

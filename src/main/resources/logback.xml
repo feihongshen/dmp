@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<configuration scan="true">
+
+	<substitutionProperty name="logbase"
+		value="${catalina.base}/logs/dmpLog/" />
+	<substitutionProperty name="logbaseEditCwb"
+		value="${catalina.base}/logs/dmpLog/editCwb/" />
+
+	<jmxConfigurator />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				logbak: %d{yyyy-MM-dd HH:mm:ss.SSS} %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="logfile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+
+		<Encoding>UTF-8</Encoding>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${logbase}dmp.${label}.%d{yyyy-MM-dd}.log.zip
+			</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">  
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n   
+            </pattern>   
+       </layout> 
+	</appender>
+	
+	<appender name="logfileEditCwb"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+
+		<Encoding>UTF-8</Encoding>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${logbaseEditCwb}editcwb.${label}.%d{yyyy-MM-dd}.log.zip
+			</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">  
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n   
+            </pattern>   
+       </layout> 
+	</appender>
+	<logger name="cn.explink" level="INFO" />
+	<logger name="cn.explink.service.EditCwbService" level="DEBUG" additivity="false">
+		<appender-ref ref="logfileEditCwb"/> 
+	</logger>
+<!-- 	<logger name="org.springframework.jdbc.core" level="DEBUG">
+        </logger>
+        <logger name="java.sql.Connection" additivity="true">
+                <level value="DEBUG" />
+        </logger>
+        <logger name="java.sql.Statement" additivity="true">
+                <level value="DEBUG" />
+        </logger>
+        <logger name="java.sql.PreparedStatement" additivity="true">
+                <level value="DEBUG" />
+        </logger>
+        <logger name="java.sql.ResultSet" additivity="true">
+                <level value="DEBUG" />
+        </logger> -->
+	
+
+	<root level="info">
+	<!--<appender-ref ref="STDOUT" /> -->
+	   <appender-ref ref="logfile" />
+	</root>
+</configuration>  

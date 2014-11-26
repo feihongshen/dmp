@@ -1,0 +1,4 @@
+INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES('到车时间确认','orderarrivetime/list/1','3','kf13','303','images/dcsjqr.png',NULL);
+INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES('领货委托派送(明细)','orderdeliveryclient/clientCwb','3','d18','305','images/lhwtpsmx.png',NULL);
+INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES('领货委托派送(批量)','orderdeliveryclient/clientCwbs','3','d19','305','images/lhwtpspl.png',NULL);
+INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES('撤销委托派送','orderdeliveryclient/delete/1','3','d20','305','images/cxwtps.png',NULL);

@@ -1,0 +1,116 @@
+package cn.explink.b2c.efast;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.JointService;
+import cn.explink.dao.BranchDAO;
+import cn.explink.enumutil.BranchEnum;
+
+/**
+ * 中兴云购ERP接口
+ * 
+ * @author Administrator
+ *
+ */
+@Controller
+@RequestMapping("/efast")
+public class EfastController {
+	private Logger logger = LoggerFactory.getLogger(EfastController.class);
+	@Autowired
+	EfastService efastService;
+	@Autowired
+	JiontDAO jiontDAO;
+	@Autowired
+	JointService jointService;
+
+	@Autowired
+	BranchDAO branchDAO;
+	@Autowired
+	EfastInsertCwbDetailTimmer efastInsertCwbDetailTimmer;
+	@Autowired
+	EfastService_getOrderList efastService_getOrderList;
+	@Autowired
+	EfastService_getOrderDetailList efastService_getOrderDetailList;
+
+	@RequestMapping("/show/{id}")
+	public String jointShow(@PathVariable("id") int key, Model model) {
+
+		String editJsp = "";
+		for (B2cEnum fote : B2cEnum.values()) {
+			if (fote.getKey() == key) {
+				editJsp = fote.getMethod();
+				break;
+			}
+		}
+		model.addAttribute("efastObject", efastService.getEfast(key));
+		model.addAttribute("warehouselist", branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
+		model.addAttribute("joint_num", key);
+		return "b2cdj/efast";
+
+	}
+
+	@RequestMapping("/save/{id}")
+	public @ResponseBody String save(Model model, @PathVariable("id") int key, HttpServletRequest request) {
+
+		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
+
+			efastService.edit(request, key);
+			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+		} else {
+			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
+		}
+		// 保存
+
+	}
+
+	@RequestMapping("/del/{state}/{id}")
+	public @ResponseBody String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
+		efastService.update(key, state);
+		// 保存
+		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+
+	}
+
+	@RequestMapping("/test")
+	public String test(Model model) {
+		// 保存
+		return "b2cdj/testPingtai";
+
+	}
+
+	@RequestMapping("/timmer")
+	public @ResponseBody String timmer(HttpServletRequest request, HttpServletResponse response) {
+		long starttime = System.currentTimeMillis();
+		long endtime = System.currentTimeMillis();
+
+		efastInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+
+		logger.info("执行了临时表-获取[中兴ERP]订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		return "中兴云购ERP执行临时表成功";
+	}
+
+	@RequestMapping("/getorderlist")
+	public @ResponseBody String getorderlist(HttpServletRequest request, HttpServletResponse response) {
+		efastService_getOrderList.getOrderList();
+		return "中兴云购获取订单列表成功";
+	}
+
+	@RequestMapping("/getorderdetaillist")
+	public @ResponseBody String getorderdetaillist(HttpServletRequest request, HttpServletResponse response) {
+		efastService_getOrderDetailList.getOrderDetailList();
+		return "中兴云购获取订单列表成功";
+	}
+
+}
