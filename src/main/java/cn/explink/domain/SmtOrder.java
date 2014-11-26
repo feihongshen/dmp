@@ -2,7 +2,7 @@ package cn.explink.domain;
 
 public class SmtOrder {
 
-	private String cwbId = null;
+	private long cwbId = -1;
 
 	private String cwb = null;
 
@@ -22,11 +22,13 @@ public class SmtOrder {
 
 	private String matchBranch = null;
 
-	public String getCwbId() {
+	private String deliver = null;
+
+	public long getCwbId() {
 		return this.cwbId;
 	}
 
-	public void setCwbId(String cwbId) {
+	public void setCwbId(long cwbId) {
 		this.cwbId = cwbId;
 	}
 

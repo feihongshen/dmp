@@ -5009,8 +5009,8 @@ public class CwbDAO {
 		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate >=" + credate + " and flowordertype in(" + flowordertypes + ")))";
 		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
 		String sql = "select * from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ") limit " + offset + "," + length;
-
-		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, branchid);
+		List<CwbOrder> orderList = this.jdbcTemplate.query(sql, new CwbMapper(), branchid, branchid);
+		return null;
 	}
 
 	/**
@@ -5044,9 +5044,14 @@ public class CwbDAO {
 		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
 		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate <" + credate + " and flowordertype in(" + flowordertypes + ")))";
 		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
-		String sql = "select * from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ") limit " + offset + "," + length;
+		String sql = "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ") limit "
+				+ offset + "," + length;
 
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, branchid);
+	}
+
+	private String getSmtOrderQryFields() {
+		return "opscwbid,cwb,consigneename,consigneeaddress,consigneephone,shouldfare,excelbranch";
 	}
 
 	private long getTodayZeroTimeInMillis() {
@@ -5057,4 +5062,5 @@ public class CwbDAO {
 
 		return cal.getTimeInMillis();
 	}
+
 }

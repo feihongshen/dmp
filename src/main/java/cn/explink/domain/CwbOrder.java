@@ -113,7 +113,7 @@ public class CwbOrder {
 	private String fankuitime;// 反馈时间
 	private String shenhetime;// 审核时间
 	private String chuzhantime;// 出站时间
-	private BigDecimal shouldfare = BigDecimal.ZERO;
+	private BigDecimal shouldfare = BigDecimal.ZERO;// 应收运费
 	private BigDecimal infactfare = BigDecimal.ZERO;
 	private String timelimited;// 地址库匹配时效
 
@@ -122,14 +122,14 @@ public class CwbOrder {
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
 	public CwbOrder() {
-		if (this.sendcarnum == 0 && this.backcarnum == 0) {
-			if (cwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue()) {
+		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {
+			if (this.cwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue()) {
 				this.sendcarnum = 1;
 				this.backcarnum = 0;
-			} else if (cwbordertypeid == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+			} else if (this.cwbordertypeid == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
 				this.sendcarnum = 1;
 				this.backcarnum = 0;
-			} else if (cwbordertypeid == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+			} else if (this.cwbordertypeid == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 				this.sendcarnum = 0;
 				this.backcarnum = 0;
 			}
@@ -137,7 +137,7 @@ public class CwbOrder {
 	}
 
 	public String getHistorybranchname() {
-		return historybranchname;
+		return this.historybranchname;
 	}
 
 	public void setHistorybranchname(String historybranchname) {
@@ -145,7 +145,7 @@ public class CwbOrder {
 	}
 
 	public String getChuzhantime() {
-		return chuzhantime;
+		return this.chuzhantime;
 	}
 
 	public void setChuzhantime(String chuzhantime) {
@@ -153,7 +153,7 @@ public class CwbOrder {
 	}
 
 	public String getFankuitime() {
-		return fankuitime;
+		return this.fankuitime;
 	}
 
 	public void setFankuitime(String fankuitime) {
@@ -161,7 +161,7 @@ public class CwbOrder {
 	}
 
 	public String getShenhetime() {
-		return shenhetime;
+		return this.shenhetime;
 	}
 
 	public void setShenhetime(String shenhetime) {
@@ -169,7 +169,7 @@ public class CwbOrder {
 	}
 
 	public int getAddresscodeedittype() {
-		return addresscodeedittype;
+		return this.addresscodeedittype;
 	}
 
 	public void setAddresscodeedittype(int addresscodeedittype) {
@@ -177,7 +177,7 @@ public class CwbOrder {
 	}
 
 	public String getPackagecode() {
-		return packagecode;
+		return this.packagecode;
 	}
 
 	public void setPackagecode(String packagecode) {
@@ -185,7 +185,7 @@ public class CwbOrder {
 	}
 
 	public String getMulti_shipcwb() {
-		return multi_shipcwb;
+		return this.multi_shipcwb;
 	}
 
 	public void setMulti_shipcwb(String multi_shipcwb) {
@@ -193,7 +193,7 @@ public class CwbOrder {
 	}
 
 	public long getBackreasonid() {
-		return backreasonid;
+		return this.backreasonid;
 	}
 
 	public void setBackreasonid(long backreasonid) {
@@ -201,7 +201,7 @@ public class CwbOrder {
 	}
 
 	public String getPodrealname() {
-		return podrealname;
+		return this.podrealname;
 	}
 
 	public void setPodrealname(String podrealname) {
@@ -209,7 +209,7 @@ public class CwbOrder {
 	}
 
 	public String getPodtime() {
-		return podtime;
+		return this.podtime;
 	}
 
 	public void setPodtime(String podtime) {
@@ -217,7 +217,7 @@ public class CwbOrder {
 	}
 
 	public String getPodsignremark() {
-		return podsignremark;
+		return this.podsignremark;
 	}
 
 	public void setPodsignremark(String podsignremark) {
@@ -225,7 +225,7 @@ public class CwbOrder {
 	}
 
 	public long getSigntypeid() {
-		return signtypeid;
+		return this.signtypeid;
 	}
 
 	public void setSigntypeid(long signtypeid) {
@@ -233,7 +233,7 @@ public class CwbOrder {
 	}
 
 	public long getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(long state) {
@@ -241,11 +241,11 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getCarrealweight() {
-		return carrealweight;
+		return this.carrealweight;
 	}
 
 	public long getExcelimportuserid() {
-		return excelimportuserid;
+		return this.excelimportuserid;
 	}
 
 	public void setExcelimportuserid(long excelimportuserid) {
@@ -265,7 +265,7 @@ public class CwbOrder {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -273,7 +273,7 @@ public class CwbOrder {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -281,7 +281,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneename() {
-		return consigneename;
+		return this.consigneename;
 	}
 
 	public void setConsigneename(String consigneename) {
@@ -289,7 +289,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneeaddress() {
-		return consigneeaddress;
+		return this.consigneeaddress;
 	}
 
 	public void setConsigneeaddress(String consigneeaddress) {
@@ -303,7 +303,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneepostcode() {
-		return consigneepostcode;
+		return this.consigneepostcode;
 	}
 
 	public void setConsigneepostcode(String consigneepostcode) {
@@ -311,18 +311,18 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephone() {
-		return consigneephone;
+		return this.consigneephone;
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
 		this.consigneephone = consigneephone;
 		if (guessMobile) {
-			setConsigneemobile(consigneephone);
+			this.setConsigneemobile(consigneephone);
 		}
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile;
+		return this.consigneemobile;
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
@@ -330,15 +330,15 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getReceivablefee() {
-		return receivablefee;
+		return this.receivablefee;
 	}
 
 	public BigDecimal getPaybackfee() {
-		return paybackfee;
+		return this.paybackfee;
 	}
 
 	public String getCwbremark() {
-		return cwbremark;
+		return this.cwbremark;
 	}
 
 	public void setCwbremark(String cwbremark) {
@@ -346,7 +346,7 @@ public class CwbOrder {
 	}
 
 	public String getShipcwb() {
-		return shipcwb;
+		return this.shipcwb;
 	}
 
 	public void setShipcwb(String shipcwb) {
@@ -354,7 +354,7 @@ public class CwbOrder {
 	}
 
 	public String getExceldeliver() {
-		return exceldeliver;
+		return this.exceldeliver;
 	}
 
 	public void setExceldeliver(String exceldeliver) {
@@ -362,7 +362,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneeno() {
-		return consigneeno;
+		return this.consigneeno;
 	}
 
 	public void setConsigneeno(String consigneeno) {
@@ -370,7 +370,7 @@ public class CwbOrder {
 	}
 
 	public String getExcelbranch() {
-		return excelbranch;
+		return this.excelbranch;
 	}
 
 	public void setExcelbranch(String excelbranch) {
@@ -378,7 +378,7 @@ public class CwbOrder {
 	}
 
 	public String getCustomercommand() {
-		return customercommand;
+		return this.customercommand;
 	}
 
 	public void setCustomercommand(String customercommand) {
@@ -386,7 +386,7 @@ public class CwbOrder {
 	}
 
 	public String getDestination() {
-		return destination;
+		return this.destination;
 	}
 
 	public void setDestination(String destination) {
@@ -394,7 +394,7 @@ public class CwbOrder {
 	}
 
 	public String getTransway() {
-		return transway;
+		return this.transway;
 	}
 
 	public void setTransway(String transway) {
@@ -402,7 +402,7 @@ public class CwbOrder {
 	}
 
 	public String getCwbprovince() {
-		return cwbprovince;
+		return this.cwbprovince;
 	}
 
 	public void setCwbprovince(String cwbprovince) {
@@ -410,7 +410,7 @@ public class CwbOrder {
 	}
 
 	public String getCwbcity() {
-		return cwbcity;
+		return this.cwbcity;
 	}
 
 	public void setCwbcity(String cwbcity) {
@@ -418,7 +418,7 @@ public class CwbOrder {
 	}
 
 	public String getCwbcounty() {
-		return cwbcounty;
+		return this.cwbcounty;
 	}
 
 	public void setCwbcounty(String cwbcounty) {
@@ -426,7 +426,7 @@ public class CwbOrder {
 	}
 
 	public String getTranscwb() {
-		return transcwb;
+		return this.transcwb;
 	}
 
 	public void setTranscwb(String transcwb) {
@@ -434,7 +434,7 @@ public class CwbOrder {
 	}
 
 	public long getServiceareaid() {
-		return serviceareaid;
+		return this.serviceareaid;
 	}
 
 	public void setServiceareaid(long serviceareaid) {
@@ -442,7 +442,7 @@ public class CwbOrder {
 	}
 
 	public long getShipperid() {
-		return shipperid;
+		return this.shipperid;
 	}
 
 	public void setShipperid(long shipperid) {
@@ -450,7 +450,7 @@ public class CwbOrder {
 	}
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -458,7 +458,7 @@ public class CwbOrder {
 	}
 
 	public long getStartbranchid() {
-		return startbranchid;
+		return this.startbranchid;
 	}
 
 	public void setStartbranchid(long startbranchid) {
@@ -466,7 +466,7 @@ public class CwbOrder {
 	}
 
 	public long getNextbranchid() {
-		return nextbranchid;
+		return this.nextbranchid;
 	}
 
 	public void setNextbranchid(long nextbranchid) {
@@ -474,7 +474,7 @@ public class CwbOrder {
 	}
 
 	public String getBacktocustomer_awb() {
-		return backtocustomer_awb;
+		return this.backtocustomer_awb;
 	}
 
 	public void setBacktocustomer_awb(String backtocustomer_awb) {
@@ -482,7 +482,7 @@ public class CwbOrder {
 	}
 
 	public String getCwbflowflag() {
-		return cwbflowflag;
+		return this.cwbflowflag;
 	}
 
 	public void setCwbflowflag(String cwbflowflag) {
@@ -494,7 +494,7 @@ public class CwbOrder {
 	}
 
 	public String getCartype() {
-		return cartype;
+		return this.cartype;
 	}
 
 	public void setCartype(String cartype) {
@@ -502,7 +502,7 @@ public class CwbOrder {
 	}
 
 	public String getCarwarehouse() {
-		return carwarehouse;
+		return this.carwarehouse;
 	}
 
 	public void setCarwarehouse(String carwarehouse) {
@@ -510,7 +510,7 @@ public class CwbOrder {
 	}
 
 	public String getCarsize() {
-		return carsize;
+		return this.carsize;
 	}
 
 	public void setCarsize(String carsize) {
@@ -518,7 +518,7 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getBackcaramount() {
-		return backcaramount;
+		return this.backcaramount;
 	}
 
 	public void setBackcaramount(BigDecimal backcaramount) {
@@ -526,7 +526,7 @@ public class CwbOrder {
 	}
 
 	public long getSendcarnum() {
-		return sendcarnum;
+		return this.sendcarnum;
 	}
 
 	public void setSendcarnum(long sendcarnum) {
@@ -534,7 +534,7 @@ public class CwbOrder {
 	}
 
 	public long getBackcarnum() {
-		return backcarnum;
+		return this.backcarnum;
 	}
 
 	public void setBackcarnum(long backcarnum) {
@@ -542,7 +542,7 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getCaramount() {
-		return caramount;
+		return this.caramount;
 	}
 
 	public void setCaramount(BigDecimal caramount) {
@@ -550,7 +550,7 @@ public class CwbOrder {
 	}
 
 	public String getBackcarname() {
-		return backcarname;
+		return this.backcarname;
 	}
 
 	public void setBackcarname(String backcarname) {
@@ -558,7 +558,7 @@ public class CwbOrder {
 	}
 
 	public String getSendcarname() {
-		return sendcarname;
+		return this.sendcarname;
 	}
 
 	public void setSendcarname(String sendcarname) {
@@ -566,7 +566,7 @@ public class CwbOrder {
 	}
 
 	public long getDeliverid() {
-		return deliverid;
+		return this.deliverid;
 	}
 
 	public void setDeliverid(long deliverid) {
@@ -574,7 +574,7 @@ public class CwbOrder {
 	}
 
 	public int getEmailfinishflag() {
-		return emailfinishflag;
+		return this.emailfinishflag;
 	}
 
 	public void setEmailfinishflag(int emailfinishflag) {
@@ -582,7 +582,7 @@ public class CwbOrder {
 	}
 
 	public int getReacherrorflag() {
-		return reacherrorflag;
+		return this.reacherrorflag;
 	}
 
 	public void setReacherrorflag(int reacherrorflag) {
@@ -590,7 +590,7 @@ public class CwbOrder {
 	}
 
 	public long getOrderflowid() {
-		return orderflowid;
+		return this.orderflowid;
 	}
 
 	public void setOrderflowid(long orderflowid) {
@@ -598,7 +598,7 @@ public class CwbOrder {
 	}
 
 	public long getFlowordertype() {
-		return flowordertype;
+		return this.flowordertype;
 	}
 
 	public void setFlowordertype(long flowordertype) {
@@ -606,7 +606,7 @@ public class CwbOrder {
 	}
 
 	public long getCwbreachbranchid() {
-		return cwbreachbranchid;
+		return this.cwbreachbranchid;
 	}
 
 	public void setCwbreachbranchid(long cwbreachbranchid) {
@@ -614,7 +614,7 @@ public class CwbOrder {
 	}
 
 	public long getCwbreachdeliverbranchid() {
-		return cwbreachdeliverbranchid;
+		return this.cwbreachdeliverbranchid;
 	}
 
 	public void setCwbreachdeliverbranchid(long cwbreachdeliverbranchid) {
@@ -622,7 +622,7 @@ public class CwbOrder {
 	}
 
 	public String getPodfeetoheadflag() {
-		return podfeetoheadflag;
+		return this.podfeetoheadflag;
 	}
 
 	public void setPodfeetoheadflag(String podfeetoheadflag) {
@@ -630,15 +630,15 @@ public class CwbOrder {
 	}
 
 	public String getPodfeetoheadtime() {
-		return podfeetoheadtime;
+		return this.podfeetoheadtime;
 	}
 
 	public String getPodfeetoheadchecktime() {
-		return podfeetoheadchecktime;
+		return this.podfeetoheadchecktime;
 	}
 
 	public String getPodfeetoheadcheckflag() {
-		return podfeetoheadcheckflag;
+		return this.podfeetoheadcheckflag;
 	}
 
 	public void setPodfeetoheadcheckflag(String podfeetoheadcheckflag) {
@@ -646,7 +646,7 @@ public class CwbOrder {
 	}
 
 	public long getLeavedreasonid() {
-		return leavedreasonid;
+		return this.leavedreasonid;
 	}
 
 	public void setLeavedreasonid(long leavedreasonid) {
@@ -654,11 +654,11 @@ public class CwbOrder {
 	}
 
 	public String getDeliversubscribeday() {
-		return deliversubscribeday;
+		return this.deliversubscribeday;
 	}
 
 	public String getCustomerwarehouseid() {
-		return customerwarehouseid;
+		return this.customerwarehouseid;
 	}
 
 	public void setCustomerwarehouseid(String customerwarehouseid) {
@@ -666,7 +666,7 @@ public class CwbOrder {
 	}
 
 	public long getEmaildateid() {
-		return emaildateid;
+		return this.emaildateid;
 	}
 
 	public void setEmaildateid(long emaildateid) {
@@ -674,7 +674,7 @@ public class CwbOrder {
 	}
 
 	public String getEmaildate() {
-		return emaildate;
+		return this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -682,7 +682,7 @@ public class CwbOrder {
 	}
 
 	public int getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(int cwbordertypeid) {
@@ -690,7 +690,7 @@ public class CwbOrder {
 	}
 
 	public String getCwbdelivertypeid() {
-		return cwbdelivertypeid;
+		return this.cwbdelivertypeid;
 	}
 
 	public void setCwbdelivertypeid(String cwbdelivertypeid) {
@@ -698,7 +698,7 @@ public class CwbOrder {
 	}
 
 	public String getPrinttime() {
-		return printtime;
+		return this.printtime;
 	}
 
 	public void setPrinttime(String printtime) {
@@ -706,7 +706,7 @@ public class CwbOrder {
 	}
 
 	public long getCommonid() {
-		return commonid;
+		return this.commonid;
 	}
 
 	public void setCommonid(long commonid) {
@@ -714,7 +714,7 @@ public class CwbOrder {
 	}
 
 	public String getCommoncwb() {
-		return commoncwb;
+		return this.commoncwb;
 	}
 
 	public void setCommoncwb(String commoncwb) {
@@ -722,7 +722,7 @@ public class CwbOrder {
 	}
 
 	public String getModelname() {
-		return modelname;
+		return this.modelname;
 	}
 
 	public void setModelname(String modelname) {
@@ -730,7 +730,7 @@ public class CwbOrder {
 	}
 
 	public long getScannum() {
-		return scannum;
+		return this.scannum;
 	}
 
 	public void setScannum(long scannum) {
@@ -738,7 +738,7 @@ public class CwbOrder {
 	}
 
 	public long getIsaudit() {
-		return isaudit;
+		return this.isaudit;
 	}
 
 	public void setIsaudit(long isaudit) {
@@ -746,7 +746,7 @@ public class CwbOrder {
 	}
 
 	public String getBackreason() {
-		return backreason;
+		return this.backreason;
 	}
 
 	public void setBackreason(String backreason) {
@@ -754,7 +754,7 @@ public class CwbOrder {
 	}
 
 	public String getLeavedreason() {
-		return leavedreason;
+		return this.leavedreason;
 	}
 
 	public void setLeavedreason(String leavedreason) {
@@ -762,7 +762,7 @@ public class CwbOrder {
 	}
 
 	public long getPaywayid() {
-		return paywayid;
+		return this.paywayid;
 	}
 
 	public void setPaywayid(long paywayid) {
@@ -770,7 +770,7 @@ public class CwbOrder {
 	}
 
 	public String getNewpaywayid() {
-		return newpaywayid;
+		return this.newpaywayid;
 	}
 
 	public void setNewpaywayid(String newpaywayid) {
@@ -778,7 +778,7 @@ public class CwbOrder {
 	}
 
 	public long getTuihuoid() {
-		return tuihuoid;
+		return this.tuihuoid;
 	}
 
 	public void setTuihuoid(long tuihuoid) {
@@ -796,7 +796,7 @@ public class CwbOrder {
 	}
 
 	public long getCurrentbranchid() {
-		return currentbranchid;
+		return this.currentbranchid;
 	}
 
 	public void setCurrentbranchid(long currentbranchid) {
@@ -804,7 +804,7 @@ public class CwbOrder {
 	}
 
 	public long getCwbstate() {
-		return cwbstate;
+		return this.cwbstate;
 	}
 
 	public void setCwbstate(long cwbstate) {
@@ -812,7 +812,7 @@ public class CwbOrder {
 	}
 
 	public long getDeliverybranchid() {
-		return deliverybranchid;
+		return this.deliverybranchid;
 	}
 
 	public void setDeliverybranchid(long deliverybranchid) {
@@ -820,7 +820,7 @@ public class CwbOrder {
 	}
 
 	public String getRemark1() {
-		return remark1;
+		return this.remark1;
 	}
 
 	public void setRemark1(String remark1) {
@@ -828,7 +828,7 @@ public class CwbOrder {
 	}
 
 	public String getRemark2() {
-		return remark2;
+		return this.remark2;
 	}
 
 	public void setRemark2(String remark2) {
@@ -836,7 +836,7 @@ public class CwbOrder {
 	}
 
 	public String getRemark3() {
-		return remark3;
+		return this.remark3;
 	}
 
 	public void setRemark3(String remark3) {
@@ -844,7 +844,7 @@ public class CwbOrder {
 	}
 
 	public String getRemark4() {
-		return remark4;
+		return this.remark4;
 	}
 
 	public void setRemark4(String remark4) {
@@ -852,7 +852,7 @@ public class CwbOrder {
 	}
 
 	public String getRemark5() {
-		return remark5;
+		return this.remark5;
 	}
 
 	public void setRemark5(String remark5) {
@@ -860,7 +860,7 @@ public class CwbOrder {
 	}
 
 	public int getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(int deliverystate) {
@@ -868,7 +868,7 @@ public class CwbOrder {
 	}
 
 	public long getBackreturnreasonid() {
-		return backreturnreasonid;
+		return this.backreturnreasonid;
 	}
 
 	public void setBackreturnreasonid(long backreturnreasonid) {
@@ -876,7 +876,7 @@ public class CwbOrder {
 	}
 
 	public String getBackreturnreason() {
-		return backreturnreason;
+		return this.backreturnreason;
 	}
 
 	public void setBackreturnreason(String backreturnreason) {
@@ -884,7 +884,7 @@ public class CwbOrder {
 	}
 
 	public long getHandleresult() {
-		return handleresult;
+		return this.handleresult;
 	}
 
 	public void setHandleresult(long handleresult) {
@@ -892,7 +892,7 @@ public class CwbOrder {
 	}
 
 	public long getHandleperson() {
-		return handleperson;
+		return this.handleperson;
 	}
 
 	public void setHandleperson(long handleperson) {
@@ -900,7 +900,7 @@ public class CwbOrder {
 	}
 
 	public String getHandlereason() {
-		return handlereason;
+		return this.handlereason;
 	}
 
 	public void setHandlereason(String handlereason) {
@@ -908,7 +908,7 @@ public class CwbOrder {
 	}
 
 	public String getResendtime() {
-		return resendtime;
+		return this.resendtime;
 	}
 
 	public void setResendtime(String resendtime) {
@@ -916,7 +916,7 @@ public class CwbOrder {
 	}
 
 	public long getWeishuakareasonid() {
-		return weishuakareasonid;
+		return this.weishuakareasonid;
 	}
 
 	public void setWeishuakareasonid(long weishuakareasonid) {
@@ -924,7 +924,7 @@ public class CwbOrder {
 	}
 
 	public String getWeishuakareason() {
-		return weishuakareason;
+		return this.weishuakareason;
 	}
 
 	public void setWeishuakareason(String weishuakareason) {
@@ -932,7 +932,7 @@ public class CwbOrder {
 	}
 
 	public long getLosereasonid() {
-		return losereasonid;
+		return this.losereasonid;
 	}
 
 	public void setLosereasonid(long losereasonid) {
@@ -940,7 +940,7 @@ public class CwbOrder {
 	}
 
 	public String getLosereason() {
-		return losereason;
+		return this.losereason;
 	}
 
 	public void setLosereason(String losereason) {
@@ -948,7 +948,7 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getShouldfare() {
-		return shouldfare;
+		return this.shouldfare;
 	}
 
 	public void setShouldfare(BigDecimal shouldfare) {
@@ -956,7 +956,7 @@ public class CwbOrder {
 	}
 
 	public BigDecimal getInfactfare() {
-		return infactfare;
+		return this.infactfare;
 	}
 
 	public void setInfactfare(BigDecimal infactfare) {
@@ -964,7 +964,7 @@ public class CwbOrder {
 	}
 
 	public String getTimelimited() {
-		return timelimited;
+		return this.timelimited;
 	}
 
 	public void setTimelimited(String timelimited) {
@@ -972,7 +972,7 @@ public class CwbOrder {
 	}
 
 	public int getGoodsType() {
-		return goodsType;
+		return this.goodsType;
 	}
 
 	public void setGoodsType(int goodsType) {
