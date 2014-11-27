@@ -104,6 +104,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
@@ -894,19 +895,56 @@ public class PDAController {
 		// TODO只有做了订单拦截的订单才是待退货
 		List<CwbOrder> cwbAllList = this.getAuditTuiHuo();
 		List<CwbOrder> yichuzhanlist = this.cwbDAO.getCwbByFlowOrderTypeAndNextbranchidAndStartbranchidList(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid(), branchid);
-
+		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : yichuzhanlist) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				ypeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				yshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				yshangmentui.add(cwb);
+			}
+		}
+		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : cwbAllList) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				wpeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				wshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				wshangmentui.add(cwb);
+			}
+		}
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 		List<CwbDetailView> weichukuViewlist = this.getcwbDetail(cwbAllList, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> wpeisongViewlist = this.getcwbDetail(wpeisong, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> wshangmenhuanViewlist = this.getcwbDetail(wshangmenhuan, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> wshangmentuiViewlist = this.getcwbDetail(wshangmentui, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
 
 		List<CwbDetailView> yichuzhanViewlist = this.getcwbDetail(yichuzhanlist, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> ypeisongViewlist = this.getcwbDetail(ypeisong, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> yshangmenhuanViewlist = this.getcwbDetail(yshangmenhuan, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
+		List<CwbDetailView> yshangmentuiViewlist = this.getcwbDetail(yshangmentui, this.customerDAO.getAllCustomers(), showCustomerjSONArray, null, 0);
 
 		List<User> uList = this.userDAO.getUserByRole(3);
 
-		model.addAttribute("weichukulist", weichukuViewlist);
 		model.addAttribute("yichuzhanlist", yichuzhanViewlist);
+		model.addAttribute("ypeisong", ypeisongViewlist);
+		model.addAttribute("yshangmenhuan", yshangmenhuanViewlist);
+		model.addAttribute("yshangmentui", yshangmentuiViewlist);
+
+		model.addAttribute("weichukulist", weichukuViewlist);
+		model.addAttribute("wpeisong", wpeisongViewlist);
+		model.addAttribute("wshangmenhuan", wshangmenhuanViewlist);
+		model.addAttribute("wshangmentui", wshangmentuiViewlist);
+
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("branchlist", bList);
@@ -1982,8 +2020,43 @@ public class PDAController {
 	public String backimport(Model model) {
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		model.addAttribute("weituihuorukuList", this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1));
-		model.addAttribute("yituihuorukuList", this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1));
+
+		List<CwbOrder> yichuzhanlist = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1);
+		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : yichuzhanlist) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				ypeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				yshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				yshangmentui.add(cwb);
+			}
+		}
+		List<CwbOrder> cwbAllList = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1);
+		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : cwbAllList) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				wpeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				wshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				wshangmentui.add(cwb);
+			}
+		}
+		model.addAttribute("ypeisong", ypeisong);
+		model.addAttribute("yshangmenhuan", yshangmenhuan);
+		model.addAttribute("yshangmentui", yshangmentui);
+
+		model.addAttribute("wpeisong", wpeisong);
+		model.addAttribute("wshangmenhuan", wshangmenhuan);
+		model.addAttribute("wshangmentui", wshangmentui);
+
+		model.addAttribute("weituihuorukuList", cwbAllList);
+		model.addAttribute("yituihuorukuList", yichuzhanlist);
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
 		return "pda/backimport";
@@ -6595,7 +6668,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6623,7 +6696,8 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/backimportexport")
-	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type) {
+	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "extype", defaultValue = "") String extype) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -6650,10 +6724,38 @@ public class PDAController {
 			if (type.length() > 0) {
 				List<String> cwbList = new ArrayList<String>();
 				if (type.equals("weiruku")) {
-					cwbList = this.operationTimeDAO.getOperationTimeTuiHuoChuZhan(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+					if (extype.equals("wall")) {
+						cwbList = this.cwbDAO.getWeirukuCwbs(0, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("wshangmengtui")) {
+						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("wshangmenghuan")) {
+						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("wpeisong")) {
+						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+					}
+					// cwbList =
+					// this.operationTimeDAO.getOperationTimeTuiHuoChuZhan(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
+					// this.getSessionUser().getBranchid());
 				}
 				if (type.equals("yiruku")) {
-					cwbList = this.operationTimeDAO.getOperationTimeTuiHuoZhanRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+					if (extype.equals("yall")) {
+						cwbList = this.cwbDAO.getYirukuCwbs(0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("yshangmengtui")) {
+						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("yshangmenghuan")) {
+						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+					}
+					if (extype.equals("ypeisong")) {
+						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+					}
+					// cwbList =
+					// this.operationTimeDAO.getOperationTimeTuiHuoZhanRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+					// this.getSessionUser().getBranchid());
 				}
 				String cwbs = "";
 				if (cwbList.size() > 0) {
@@ -7510,6 +7612,7 @@ public class PDAController {
 
 				view.setOpscwbid(wco.getOpscwbid());
 				view.setCwb(wco.getCwb());
+				view.setCwbordertypeid(wco.getCwbordertypeid());
 				view.setPackagecode(wco.getPackagecode());
 				view.setConsigneeaddress(wco.getConsigneeaddress());
 				view.setConsigneename(wco.getConsigneename());

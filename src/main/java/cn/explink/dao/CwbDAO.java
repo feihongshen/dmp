@@ -4977,6 +4977,22 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, cwbstate.getValue());
 	}
 
+	public List<String> getWeirukuCwbs(long cwbordertypeid, long flowordertype, long nextbranchid) {
+		String sql = "select cwb from express_ops_cwb_detail where  flowordertype=? and nextbranchid=? AND state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, nextbranchid);
+	}
+
+	public List<String> getYirukuCwbs(long cwbordertypeid, long flowordertype, long currentbranchid) {
+		String sql = "select cwb from express_ops_cwb_detail where flowordertype=? and currentbranchid=? AND state=1";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, currentbranchid);
+	}
+
 	/**
 	 * 今日未领货数量.
 	 *
