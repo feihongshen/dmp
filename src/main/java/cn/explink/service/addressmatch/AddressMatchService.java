@@ -37,6 +37,7 @@ import cn.explink.domain.addressvo.OrderVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.service.BranchAutoWarhouseService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.service.SystemConfigChangeListner;
@@ -83,60 +84,62 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	UserDAO userDAO;
 	@Autowired
 	AddressMappingService addressMappingService;
+	@Autowired
+	BranchAutoWarhouseService branchAutoWarhouseService;
 
 	public void init() {
-		logger.info("init addressmatch camel routes");
+		this.logger.info("init addressmatch camel routes");
 		try {
-			this.address_url = systemInstallService.getParameter("addressmatch.url");
-			this.addZhanDian_url = systemInstallService.getParameter("addressmatch.addZhanDianurl");
-			this.address_userid = systemInstallService.getParameter("addressmatch.userid");
-			this.addressMatchConsumerCount = systemInstallService.getParameter("addressMatch.consumerCount");
-			if (!StringUtils.hasLength(addressMatchConsumerCount)) {
+			this.address_url = this.systemInstallService.getParameter("addressmatch.url");
+			this.addZhanDian_url = this.systemInstallService.getParameter("addressmatch.addZhanDianurl");
+			this.address_userid = this.systemInstallService.getParameter("addressmatch.userid");
+			this.addressMatchConsumerCount = this.systemInstallService.getParameter("addressMatch.consumerCount");
+			if (!StringUtils.hasLength(this.addressMatchConsumerCount)) {
 				this.addressMatchConsumerCount = "1";
 			}
-			String addressmatchenabled = systemInstallService.getParameter("addressmatch.enabled");
+			String addressmatchenabled = this.systemInstallService.getParameter("addressmatch.enabled");
 			if (addressmatchenabled.equals("1")) {
-				logger.info("enable addressmatch camel routes");
-				camelContext.addRoutes(new RouteBuilder() {
+				this.logger.info("enable addressmatch camel routes");
+				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + addressMatchConsumerCount).to("bean:addressMatchService?method=matchAddress")
-								.routeId("地址匹配");
-						from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + addressMatchConsumerCount).to("bean:addressMatchService?method=addZhanDian")
-								.routeId("创建地址库中的站点");
+						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
+						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
 				});
 			} else {
-				logger.info("disable addressmatch camel routes");
-				camelContext.addRoutes(new RouteBuilder() {
+				this.logger.info("disable addressmatch camel routes");
+				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + addressMatchConsumerCount).to("bean:addressMatchService?method=empty")
-								.routeId("地址匹配");
-						from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + addressMatchConsumerCount).to("bean:addressMatchService?method=empty").routeId(
-								"创建地址库中的站点");
+						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+								.to("bean:addressMatchService?method=empty").routeId("地址匹配");
+						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+								.to("bean:addressMatchService?method=empty").routeId("创建地址库中的站点");
 					}
 				});
 			}
 
 		} catch (Exception e) {
-			logger.error("camel context start fail", e);
+			this.logger.error("camel context start fail", e);
 		}
 
 	}
 
 	public void addZhanDian(@Header("branchid") String branchid) {
-		logger.info("add zhandian branche id:{}", branchid);
+		this.logger.info("add zhandian branche id:{}", branchid);
 		try {
-			Branch b = branchDAO.getBranchByBranchid(Long.parseLong(branchid));
-			JSONReslutUtil.getResultMessage(addZhanDian_url, "userid=" + address_userid + "&stationId=" + b.getBranchid() + "&name=" + b.getBranchname(), "POST");
+			Branch b = this.branchDAO.getBranchByBranchid(Long.parseLong(branchid));
+			JSONReslutUtil.getResultMessage(this.addZhanDian_url, "userid=" + this.address_userid + "&stationId=" + b.getBranchid() + "&name=" + b.getBranchname(), "POST");
 		} catch (Exception e) {
-			logger.error("error add zhandian branche id:{}", branchid);
+			this.logger.error("error add zhandian branche id:{}", branchid);
 		}
 	}
 
 	public void empty(@Header("cwb") String cwb) {
-		logger.debug("empty process cwb:{}", cwb);
+		this.logger.debug("empty process cwb:{}", cwb);
 	}
 
 	/**
@@ -163,17 +166,17 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	}
 
 	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
-		logger.info("start address match for {}", cwb);
+		this.logger.info("start address match for {}", cwb);
 		try {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			User user = userDAO.getUserByUserid(userid);
-			String addressenabled = systemInstallService.getParameter("newaddressenabled");
-			if (addressenabled != null && addressenabled.equals("1")) {
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			User user = this.userDAO.getUserByUserid(userid);
+			String addressenabled = this.systemInstallService.getParameter("newaddressenabled");
+			if ((addressenabled != null) && addressenabled.equals("1")) {
 				// TODO 启用新地址库 调用webservice
 				List<OrderVo> orderVoList = new ArrayList<OrderVo>();
 				try {
-					orderVoList.add(getOrderVo(cwbOrder));
-					AddressMappingResult addressreturn = addressMappingService.mappingAddress(getApplicationVo(), orderVoList);
+					orderVoList.add(this.getOrderVo(cwbOrder));
+					AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
 					int successFlag = addressreturn.getResultCode().getCode();
 					if (successFlag == 0) {
 						OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
@@ -189,37 +192,39 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 								set.add(desvo.getExternalId());
 							}
 							if (set.size() == 1) {
-								Branch b = branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
-								if (b.getSitetype() == BranchEnum.ZhanDian.getValue() || b.getSitetype() == BranchEnum.KuFang.getValue()) {
-									cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
+								Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
+								if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+									this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
 								}
 							}
 						}
 					}
 				} catch (Exception e) {
-					logger.error("error while doing address match for {}", cwb);
+					this.logger.error("error while doing address match for {}", cwb);
 				}
 
 			} else {
 				// 老地址库
-				JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(address_url, "userid=" + address_userid + "&address=" + cwbOrder.getCwb() + "@"
+				JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + cwbOrder.getCwb() + "@"
 						+ cwbOrder.getConsigneeaddress().replaceAll(",", ""), "POST"));
 				Branch b = null;
 				for (int i = 0; i < addressList.size(); i++) {
 					try {
-						b = branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
-						if (b.getSitetype() == BranchEnum.ZhanDian.getValue() || b.getSitetype() == BranchEnum.KuFang.getValue()) {
-							cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
+						b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
+						if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+							this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
+							// 触发上门退自动分站领货
+							this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
 						}
 					} catch (CwbException ce) {
-						logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
+						this.logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
 					}
 				}
 			}
 
 		} catch (Exception e) {
 			// e.printStackTrace();
-			logger.error("error while doing address match for {}", cwb);
+			this.logger.error("error while doing address match for {}", cwb);
 		}
 	}
 
@@ -231,33 +236,34 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 * @return
 	 */
 	public JSONObject matchAddressByInterface(String itemno, String Address) {
-		logger.info("唯品会匹配站点: 地址： {} 开始", Address);
+		this.logger.info("唯品会匹配站点: 地址： {} 开始", Address);
 		JSONObject json = new JSONObject();
 		try {
-			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(address_url, "userid=" + address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""), "POST"));
+			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""),
+					"POST"));
 			Branch b = null;
-			if (addressList != null && addressList.size() > 0) {
+			if ((addressList != null) && (addressList.size() > 0)) {
 				try {
-					b = branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
-					if (b.getSitetype() == BranchEnum.ZhanDian.getValue() || b.getSitetype() == BranchEnum.KuFang.getValue()) {
+					b = this.branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
+					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						json.put("itemno", itemno);
 						json.put("netid", b.getBranchid());
 						json.put("netpoint", b.getBranchname());
 						json.put("remark", "已匹配到站点");
-						logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
+						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
 					} else {
 						json.put("itemno", itemno);
 						json.put("netid", "");
 						json.put("netpoint", "");
 						json.put("remark", "未匹配到站点");
-						logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
+						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
 					}
 				} catch (Exception e) {
 					json.put("itemno", itemno);
 					json.put("netid", "");
 					json.put("netpoint", "");
 					json.put("remark", "未匹配到站点");
-					logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
+					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
 			}
 
@@ -267,7 +273,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			json.put("netid", "");
 			json.put("netpoint", "");
 			json.put("remark", "未匹配到站点");
-			logger.error("唯品会未匹配到站点,接口异常", e);
+			this.logger.error("唯品会未匹配到站点,接口异常", e);
 		}
 		return json;
 	}
@@ -280,16 +286,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 * @return
 	 */
 	public JSONObject matchAddressByPre(String itemno, String Address) {
-		logger.info("唯品会匹配站点: 地址： {} 开始", Address);
+		this.logger.info("唯品会匹配站点: 地址： {} 开始", Address);
 		JSONObject json = new JSONObject();
 		try {
-			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(address_url, "userid=" + address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", "")
+			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", "")
 					+ "&showinfo=true", "POST"));
 			Branch b = null;
-			if (addressList != null && addressList.size() > 0) {
+			if ((addressList != null) && (addressList.size() > 0)) {
 				try {
-					b = branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
-					if (b.getSitetype() == BranchEnum.ZhanDian.getValue() || b.getSitetype() == BranchEnum.KuFang.getValue()) {
+					b = this.branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
+					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						json.put("itemno", addressList.getJSONObject(0).getString("id"));
 						json.put("netid", b.getBranchid());
 						json.put("netpoint", b.getBranchname());
@@ -299,7 +305,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						json.put("district", addressList.getJSONObject(0).getString("district"));
 						json.put("finaladdress", addressList.getJSONObject(0).getString("finaladdress"));
 						json.put("remark", "已匹配到站点");
-						logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
+						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
 					} else {
 						json.put("itemno", itemno);
 						json.put("netid", "");
@@ -310,7 +316,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						json.put("district", "");
 						json.put("finaladdress", "");
 						json.put("remark", "未匹配到站点");
-						logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
+						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
 					}
 				} catch (Exception e) {
 					json.put("itemno", itemno);
@@ -322,7 +328,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("district", "");
 					json.put("finaladdress", "");
 					json.put("remark", "未匹配到站点");
-					logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
+					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
 			}
 
@@ -336,7 +342,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			json.put("district", "");
 			json.put("finaladdress", "");
 			json.put("remark", "未匹配到站点");
-			logger.error("唯品会未匹配到站点,接口异常", e);
+			this.logger.error("唯品会未匹配到站点,接口异常", e);
 		}
 		return json;
 	}
@@ -349,26 +355,27 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 * @return
 	 */
 	public JSONObject matchAddressByPublicInterface(String itemno, String Address) {
-		logger.info("start address match for {}", itemno);
+		this.logger.info("start address match for {}", itemno);
 		try {
-			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(address_url, "userid=" + address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""), "POST"));
+			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""),
+					"POST"));
 
 			return addressList.getJSONObject(0);
 
 		} catch (Exception e) {
-			logger.error("请求站点地址信息发生异常", e);
+			this.logger.error("请求站点地址信息发生异常", e);
 			return null;
 		}
 
 	}
 
 	public void matchAddress1(@Header("cwb") String cwb) {
-		logger.info("start address match for {}", cwb);
+		this.logger.info("start address match for {}", cwb);
 		try {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			List<MatchResult> matchedBranchids = addressMatchManager.getMatch(cwbOrder.getConsigneeaddress());
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			List<MatchResult> matchedBranchids = this.addressMatchManager.getMatch(cwbOrder.getConsigneeaddress());
 			if (matchedBranchids.size() == 1) {
-				jdbcTemplate.update("update express_ops_cwb_detail set excelbranch=? where opscwbid=? and state=1 ", matchedBranchids.get(0).getBranchid(), cwbOrder.getOpscwbid());
+				this.jdbcTemplate.update("update express_ops_cwb_detail set excelbranch=? where opscwbid=? and state=1 ", matchedBranchids.get(0).getBranchid(), cwbOrder.getOpscwbid());
 			}
 			if (matchedBranchids.size() > 1) {
 				String keyword = "";
@@ -377,15 +384,15 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					branch += matchResult.getBranchid();
 					keyword += matchResult.getKey();
 				}
-				logger.warn("find multiple match site for cwb{}", cwb);
-				jdbcTemplate.update("update express_ops_cwb_detail set excelbranch=?,multipbranchflag=1,nextbranchid=? where opscwbid=? and state=1 ", branch, keyword, cwbOrder.getOpscwbid());
+				this.logger.warn("find multiple match site for cwb{}", cwb);
+				this.jdbcTemplate.update("update express_ops_cwb_detail set excelbranch=?,multipbranchflag=1,nextbranchid=? where opscwbid=? and state=1 ", branch, keyword, cwbOrder.getOpscwbid());
 			}
 			if (matchedBranchids.size() == 0) {
-				jdbcTemplate.update("update express_ops_cwb_detail set multipbranchflag=-1 where opscwbid=? and state=1", cwbOrder.getOpscwbid());
+				this.jdbcTemplate.update("update express_ops_cwb_detail set multipbranchflag=-1 where opscwbid=? and state=1", cwbOrder.getOpscwbid());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("error while doing address match for {}", cwb);
+			this.logger.error("error while doing address match for {}", cwb);
 		}
 	}
 
@@ -396,16 +403,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			return;
 		}
 		if (parameters.keySet().contains("addressmatch.url")) {
-			this.address_url = systemInstallService.getParameter("addressmatch.url");
+			this.address_url = this.systemInstallService.getParameter("addressmatch.url");
 		}
 		if (parameters.keySet().contains("addressmatch.addZhanDianurl")) {
-			this.addZhanDian_url = systemInstallService.getParameter("addressmatch.addZhanDianurl");
+			this.addZhanDian_url = this.systemInstallService.getParameter("addressmatch.addZhanDianurl");
 		}
 		if (parameters.keySet().contains("addressmatch.addZhanDianurl")) {
-			this.address_userid = systemInstallService.getParameter("addressmatch.userid");
+			this.address_userid = this.systemInstallService.getParameter("addressmatch.userid");
 		}
 		if (parameters.keySet().contains("addressMatch.consumerCount")) {
-			this.addressMatchConsumerCount = systemInstallService.getParameter("addressMatch.consumerCount");
+			this.addressMatchConsumerCount = this.systemInstallService.getParameter("addressMatch.consumerCount");
 		}
 
 	}

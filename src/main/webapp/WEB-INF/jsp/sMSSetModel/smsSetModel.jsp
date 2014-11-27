@@ -413,6 +413,7 @@ function saveSuccess(data){
 					<p><strong>1.替换字符：（供应商-customername,小件员-delivername,小件员电话-deliverphone,代收款金额-receivablefee）</strong></p>
 					<p><strong>2.字符总长度不超过70个字符，超过70个字符，短信平台将分两条发送</strong></p>
 					<p><strong>3.模板示例：您好，您在[customername]的订单已由[delivername][deliverphone]送出，代收款[receivablefee]，18点前查询及投诉请拨打010-85896659【易普联科】</strong></p>
+					<p><strong>4.上门退模板示例(开启上门退模板设置)：您好，您的退件（尾号{tailnumber}）在24小时内由快递员{delivername}（{deliverphone}）上门收取。请提前备好包裹，留意致电</strong></p>
 					<textarea name=templatecontent cols="100" rows="5" id="templatecontent"></textarea>
 					</td>
 				</tr>

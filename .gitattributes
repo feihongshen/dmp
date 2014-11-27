@@ -1334,6 +1334,7 @@ src/main/java/cn/explink/service/ApplyDeliverstateService.java -text
 src/main/java/cn/explink/service/BackDetailService.java -text
 src/main/java/cn/explink/service/BackSummaryService.java -text
 src/main/java/cn/explink/service/BaleService.java -text
+src/main/java/cn/explink/service/BranchAutoWarhouseService.java -text
 src/main/java/cn/explink/service/BranchPayamountService.java -text
 src/main/java/cn/explink/service/BranchService.java -text
 src/main/java/cn/explink/service/ColumnService.java -text

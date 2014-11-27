@@ -53,6 +53,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.SmsSendManageEnum;
 import cn.explink.util.ExcelUtils;
@@ -358,7 +359,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	 * @throws UnsupportedEncodingException
 	 */
 	public int sendSmsByTemplate(String mobileIds, Integer num, SmsConfig smsConf, SmsConfigModel smsConfigModel, String customername, String delivername, String deliverphone, String recipients,
-			String receivablefee) throws UnsupportedEncodingException {
+			String receivablefee, CwbOrder co) throws UnsupportedEncodingException {
 
 		// strMsg = new
 		// String(strMsg.getBytes("ISO-8859-1"),"UTF-8");//web服务端只接受UTF—8方式的编码
@@ -367,6 +368,12 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			if (smsConf != null) {
 				if (smsConf.getIsOpen() == 1) {
 					String strMsg = smsConfigModel.getTemplatecontent().replaceAll("customername", customername).replaceAll("delivername", delivername).replaceAll("deliverphone", deliverphone);
+
+					strMsg = this.buildVipshopSmtMessageModel(smsConfigModel, delivername, deliverphone, co, strMsg);
+					if (strMsg == null) {
+						return 0;
+					}
+
 					ids = this.saveSendSms(recipients, mobileIds, strMsg, -1L, "服务器", smsConf.getChannel());
 					if ((mobileIds == null) || (mobileIds.trim().length() != 11)) {
 						this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "手机号格式不正确", ids);
@@ -472,6 +479,36 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		}
 	}
 
+	/**
+	 * 构建唯品会上门退模板
+	 * 
+	 * @param smsConfigModel
+	 * @param delivername
+	 * @param deliverphone
+	 * @param cwb
+	 * @param strMsg
+	 * @return
+	 */
+	private String buildVipshopSmtMessageModel(SmsConfigModel smsConfigModel, String delivername, String deliverphone, CwbOrder co, String strMsg) {
+		SystemInstall smtmodel = this.systemInstallDAO.getSystemInstall("isSmtMessageModel"); // 是否开启上门退短信模板
+
+		if ((smtmodel != null) && smtmodel.getValue().equals("1")) {
+			String cwb = co.getCwb();
+			String tailnumber = cwb.contains("-T") && (cwb.length() > 6) ? cwb.substring(0, cwb.indexOf("-T")) : null;
+			if (tailnumber == null) {
+				this.logger.info("单号{}不满足发短信条件，退出", cwb);
+				return null;
+			}
+			if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				this.logger.info("单号{}不满足发短信条件,不是上门退退类型，退出", cwb);
+				return null;
+			}
+
+			strMsg = smsConfigModel.getTemplatecontent().replaceAll("tailnumber", cwb).replaceAll("delivername", delivername).replaceAll("deliverphone", deliverphone);
+		}
+		return strMsg;
+	}
+
 	// 获取短信剩余条数
 	public Integer getResidualCount(String name, String password) {
 		try {
@@ -541,7 +578,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 						}
 						try {
 							this.logger.info("短信发送，订单号:{}", of.getCwb());
-							return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee);
+							return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 						} catch (UnsupportedEncodingException e) {
 							this.logger.info("短信发送，失败,订单号:{}", of.getCwb());
 							return 0;
@@ -596,7 +633,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 							}
 							try {
 								this.logger.info("短信发送，订单号:{}", of.getCwb());
-								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee);
+								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 							} catch (UnsupportedEncodingException e) {
 								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
 								return 0;
@@ -663,14 +700,15 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 										return 0;
 									} else {
 										int count = this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(),
-												receivablefee);
+												receivablefee, order);
 										if (count == 1) {
 											this.smsManageDao.createInfo(order.getCwb(), order.getDeliverid(), order.getFlowordertype(), of.getBranchid());
 										}
 										return count;
 									}
 								} else {
-									return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee);
+									return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee,
+											order);
 								}
 							} catch (UnsupportedEncodingException e) {
 								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
@@ -745,7 +783,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 							}
 							try {
 								this.logger.info("短信发送，订单号:{}", of.getCwb());
-								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee);
+								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 							} catch (UnsupportedEncodingException e) {
 								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
 								return 0;
@@ -924,4 +962,5 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		}
 
 	}
+
 }
