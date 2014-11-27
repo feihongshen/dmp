@@ -339,128 +339,7 @@ public class PDAController {
 		return "pda/intowarhouse";
 	}
 
-	/**
-	 * 进入入库的功能页面（明细）
-	 *
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping("/smtorderdispatch")
-	public String smtOrderDispatch(Model model) {
-		this.addBranchDelvierToModel(model);
-		this.addTodayNoPickingDataToModel(model);
-		this.addHistoryNotPickingCount(model);
 
-		return "pda/smtorderdispatch";
-	}
-
-	@RequestMapping("/loadsmttodaynotpickingorder")
-	public @ResponseBody SmtOrderContainer loadSmtTodayNotPickingOrder(HttpServletRequest request) {
-		String dataScope = request.getParameter("dataScope");
-		String strPage = request.getParameter("page");
-		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
-		SmtOrderContainer container = new SmtOrderContainer();
-		long branchId = this.getSessionUser().getBranchid();
-		if ("all".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else if ("transfer".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else {
-			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		}
-		return container;
-	}
-
-	@RequestMapping("/loadsmthistorynotpickingorder")
-	public @ResponseBody SmtOrderContainer loadSmtHistoryNotPickingOrder(HttpServletRequest request) {
-		String dataScope = request.getParameter("scope");
-		String strPage = request.getParameter("page");
-		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
-		SmtOrderContainer container = new SmtOrderContainer();
-		long branchId = this.getSessionUser().getBranchid();
-		if ("all".equals(dataScope)) {
-			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else if ("transfer".equals(dataScope)) {
-			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else {
-			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		}
-		return container;
-	}
-
-	@RequestMapping("/loadsmttodaypickingorder")
-	public @ResponseBody SmtOrderContainer loadSmtTodayPickingOrder(HttpServletRequest request) {
-		String dataScope = request.getParameter("scope");
-		String strPage = request.getParameter("page");
-		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
-		SmtOrderContainer container = new SmtOrderContainer();
-		long branchId = this.getSessionUser().getBranchid();
-		if ("all".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else if ("transfer".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		}
-		return container;
-	}
-
-	@RequestMapping("/loadsmttodayoutareaorder")
-	public @ResponseBody SmtOrderContainer loadSmtTodayOutAreaOrder(HttpServletRequest request) {
-		String dataScope = request.getParameter("scope");
-		String strPage = request.getParameter("page");
-		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
-		SmtOrderContainer container = new SmtOrderContainer();
-		long branchId = this.getSessionUser().getBranchid();
-		if ("all".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else if ("transfer".equals(dataScope)) {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		} else {
-			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
-		}
-		return container;
-	}
-
-	@RequestMapping("/smtorderoutarea")
-	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
-		return "";
-	}
-
-	private void addBranchDelvierToModel(Model model) {
-		List<User> delivers = this.getCurrentBranchDeliver();
-		model.addAttribute("deliverList", delivers);
-	}
-
-	private void addTodayNoPickingDataToModel(Model model) {
-		long branchId = this.getSessionUser().getBranchid();
-		int todayNotPickingCwbCount = this.cwbDAO.getSmtTodayNotPickingCount(branchId);
-		model.addAttribute("todayNotPickingCwbCount", todayNotPickingCwbCount);
-		if (todayNotPickingCwbCount == 0) {
-			model.addAttribute("todayNotPickingCwbList", new ArrayList<SmtOrder>());
-		} else {
-			int qryCnt = todayNotPickingCwbCount > 100 ? 100 : todayNotPickingCwbCount;
-			model.addAttribute("todayNotPickingCwbList", this.getTodayNotPickingList(branchId, 0, qryCnt));
-		}
-	}
-
-	private List<SmtOrder> getTodayNotPickingList(long branchId, int offset, int length) {
-		return this.cwbDAO.getSmtTodayNotPickingList(branchId, 0, length);
-	}
-
-	private List<SmtOrder> getHistoryNotPickingList(long branchId, int offset, int length) {
-		return this.cwbDAO.getSmtHistoryNotPickingList(branchId, 0, length);
-	}
-
-	private List<SmtOrder> getTodayPickingList(long branchId, int offset, int length) {
-		return this.cwbDAO.getSmtTodayPickingList(branchId, 0, length);
-	}
-
-	private void addHistoryNotPickingCount(Model model) {
-		long branchId = this.getSessionUser().getBranchid();
-		int historyNotPickingCwbCount = this.cwbDAO.getSmtHistoryNotPickingCount(branchId);
-		model.addAttribute("historyNotPickingCwbCount", historyNotPickingCwbCount);
-	}
 
 	/**
 	 * 进入入库的功能页面（明细）
@@ -7804,10 +7683,6 @@ public class PDAController {
 		return true;
 	}
 
-	private List<User> getCurrentBranchDeliver() {
-		String roleids = "2,4";
 
-		return this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
-	}
 
 }

@@ -727,6 +727,7 @@ src/main/java/cn/explink/controller/SetExportCwbController.java -text
 src/main/java/cn/explink/controller/SmsConfigController.java -text
 src/main/java/cn/explink/controller/SmsConfigModelController.java -text
 src/main/java/cn/explink/controller/SmsSendController.java -text
+src/main/java/cn/explink/controller/SmtController.java -text
 src/main/java/cn/explink/controller/SwitchController.java -text
 src/main/java/cn/explink/controller/SystemInstallController.java -text
 src/main/java/cn/explink/controller/SystemStateController.java -text
@@ -2023,7 +2024,6 @@ src/main/webapp/WEB-INF/jsp/pda/matchexceptionhandle.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/quejianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
-src/main/webapp/WEB-INF/jsp/pda/smtorderdispatch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
@@ -2056,6 +2056,7 @@ src/main/webapp/WEB-INF/jsp/smsSendto/smsSendCwb.jsp -text
 src/main/webapp/WEB-INF/jsp/smsSendto/smsSendMobile.jsp -text
 src/main/webapp/WEB-INF/jsp/smsSendto/smsSendNew.jsp -text
 src/main/webapp/WEB-INF/jsp/smsSendto/smsSendRole.jsp -text
+src/main/webapp/WEB-INF/jsp/smt/smtorderdispatch.jsp -text
 src/main/webapp/WEB-INF/jsp/systeminstall/add.jsp -text
 src/main/webapp/WEB-INF/jsp/systeminstall/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/systeminstall/list.jsp -text

@@ -1,12 +1,14 @@
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
-<%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
-<%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page
+	import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
+<%@page
+	import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-	List<User> deliverList = (List<User>)request.getAttribute("deliverList");
+List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 Integer todayNotPickingCwbCount = (Integer)request.getAttribute("todayNotPickingCwbCount");
 Integer historyNotPickingCwbCount = (Integer)request.getAttribute("historyNotPickingCwbCount");
 List<CwbOrder> todayNotPickingCwbList= (List<CwbOrder> )request.getAttribute("todayNotPickingCwbList");
@@ -16,13 +18,19 @@ List<CwbOrder> historyNotPickingCwbList= (List<CwbOrder> )request.getAttribute("
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js"
+	type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css"
+	type="text/css" />
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
+	type="text/javascript"></script>
+<script language="javascript"
+	src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 var data;
 var startIndex=0;
@@ -273,30 +281,9 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		var checked =  $(this).attr("checked");
 		checkedTableAllRow("history_table" ,checked);
 	});
-	 
-	 $("#today_not_picking_a").click(function(){
-		 loadTodayNotPickingOrder("all");
-	 });
-	 
-	 $("#history_not_picking_a").click(function(){
-		 loadHistoryNotPickingOrder("all");
-	 });
-	 $("#today_dispatch_a").click(function(){
-		 reloadTodayTable("all");
-	 });
-	 $("#today_out_area").click(function(){
-		 loadTodayPickingOrder("all");
-	 });
-	 
-	 
  });
  
-
- 
- 
- 
- function checkedTableAllRow(tableId,checked)
- {
+ function checkedTableAllRow(tableId,checked){
 	 if(checked){
 		 $("#" +tableId ).find("input[type='checkbox']").attr("checked" ,"checked");	 
 	 }else{
@@ -308,7 +295,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  {
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/PDA/loadsmthistorynotpickingorder",
+		 url:"<%=request.getContextPath()%>/smt/loadsmthistorynotpickingorder",
 		 dataType:"json",
 		 async:false,
 		 data:{scope:scope,page:1},
@@ -327,7 +314,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  function loadTodayNotPickingOrder(scope){
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/PDA/loadsmttodaynotpickingorder",
+		 url:"<%=request.getContextPath()%>/smt/loadsmttodaynotpickingorder",
 		 dataType:"json",
 		 async:false,
 		 data:{scope:scope,page:1},
@@ -345,7 +332,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  function loadTodayPickingOrder(scope){
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/PDA/loadsmttodaypickingorder",
+		 url:"<%=request.getContextPath()%>/smt/loadsmttodaypickingorder",
 		 dataType:"json",
 		 async:false,
 		 data:{scope:scope,page:1},
@@ -363,7 +350,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  {
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/PDA/loadsmttodayoutareaorder",
+		 url:"<%=request.getContextPath()%>/smt/loadsmttodayoutareaorder",
 			dataType : "json",
 			async : false,
 			success : function(data) {
@@ -375,7 +362,30 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		});
 	}
 
-	function refreshTable(tableId, dataList, tableIndex) {
+ 
+ 	function loadSmtOrder(dataType , timeType , dispatched , page ,tableId , dtabIndex){
+ 		 $.ajax({
+ 			 type:"post",
+ 			 url:"<%=request.getContextPath()%>/smt/querysmtorder",
+ 				dataType : "json",
+ 				async : false,
+ 				data:{
+ 					dataType:dataType,
+ 					timeType:timeType,
+ 					dispatched:dispatched,
+ 					page:page
+ 				},
+ 				success : function(data) {
+ 					var smtOrderList = data.smtOrderList;
+ 					refreshTable(tableId,dataList,tabIndex);
+ 				},
+ 				error : function(data) {
+ 					alert(data);
+ 				}
+ 			});
+ 	}
+
+ 	function refreshTable(tableId, dataList, tableIndex) {
 		var $table = $("#" + tableId);
 		$table.empty();
 		if (dataList) {
@@ -399,7 +409,6 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		var $tab = $(".saomiao_tab2 li").eq(index);
 		$tab.children().addClass("light");
 		$tab.siblings().children().removeClass("light");
-		;
 		$(".tabbox li").eq(index).show().siblings().hide();
 	}
 
@@ -509,9 +518,10 @@ dl dd span {
 					<span>今日新单待分派</span><span>今日转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadTodayNotPickingOrder('normal')"><a id="t_normal_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
-					<span onclick="loadTodayNotPickingOrder('transfer')"><a id="t_transfer_not_picking"
-						href="#"><%=todayNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a
+						id="t_normal_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a
+						id="t_transfer_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
 				</dd>
 			</dl>
 
@@ -521,10 +531,10 @@ dl dd span {
 					<span>历史新单待分派</span><span>历史转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadHistoryNotPickingOrder('normal')"><a id="h_normal_not_picking"
-						href="#"><%=historyNotPickingCwbCount%></a></span> <span
-						onclick="loadHistoryNotPickingOrder('transfer')"><a id="h_transfer_not_picking"
-						href="#"><%=historyNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a
+						id="h_normal_not_picking" href="#"><%=historyNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a
+						id="h_transfer_not_picking" href="#"><%=historyNotPickingCwbCount%></a></span>
 				</dd>
 			</dl>
 
@@ -533,8 +543,10 @@ dl dd span {
 					<span>今日分派新单</span><span>今日分派转单</span>
 				</dt>
 				<dd>
-					<span onclick="loadTodayPickingOrder('normal')"><a id="t_normal_picking" href="#">0</a></span>
-					<span onclick="loadTodayPickingOrder('transfer')"><a id="t_transfer_picking" href="#">0</a></span>
+					<span onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
+						id="t_normal_picking" href="#">0</a></span> <span
+						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
+						id="t_transfer_picking" href="#">0</a></span>
 				</dd>
 			</dl>
 
@@ -542,7 +554,8 @@ dl dd span {
 			<dl class="red">
 				<dt>今日超区</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#">0</a></span>
+					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area"
+						href="#">0</a></span>
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
@@ -575,7 +588,8 @@ dl dd span {
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
 						<p>
-							订单号：<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""
+							订单号：<input type="text" class="saomiao_inputtxt2" id="scancwb"
+								name="scancwb" value=""
 								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchDeliver("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val(),$("#requestbatchno").val());}' />
 						</p>
 					</div>
@@ -590,8 +604,9 @@ dl dd span {
 						<p id="cwbDetailshow" name="cwbDetailshow"></p>
 						<p id="customercommand" name="customercommand"></p>
 					</div>
-					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
-						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
+					<input type="hidden" id="requestbatchno" name="requestbatchno"
+						value="0" /> <input type="hidden" id="scansuccesscwb"
+						name="scansuccesscwb" value="" />
 				</div>
 			</div>
 		</div>
@@ -607,17 +622,20 @@ dl dd span {
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
-				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
-					onclick='exportField(1,$("#customerid").val());' /> <input type="button" id="btnval0"
-					value="超区" class="input_button1" onclick="outArea('today_table')" />
+				<li><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1"
+					onclick='exportField(1,$("#customerid").val());' /> <input
+					type="button" id="btnval0" value="超区" class="input_button1"
+					onclick="outArea('today_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2"
+										class="table_5">
 										<tr>
-											<td width="40" align="center" bgcolor="#f1f1f1"><input id="today_checkbox"
-												type="checkbox"></input></td>
+											<td width="40" align="center" bgcolor="#f1f1f1"><input
+												id="today_checkbox" type="checkbox"></input></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -627,13 +645,14 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 170px; overflow-y: scroll">
-										<table id="today_table" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
+										<table id="today_table" width="100%" border="0"
+											cellspacing="1" cellpadding="2" class="table_2">
 											<%
 												for (CwbOrder co : todayNotPickingCwbList) {
 											%>
 											<tr cwb="<%=co.getCwb()%>" class="cwbids">
-												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+												<td width="40" align="center" bgcolor="#f1f1f1"><input
+													type="checkbox"></input></td>
 												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -651,17 +670,20 @@ dl dd span {
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportField(2,$("#customerid").val());' /> <input type="button"
-					id="btnval0" value="超区" class="input_button1" onclick="outArea('history_table')" />
+				<li style="display: none"><input type="button" id="btnval0"
+					value="导出Excel" class="input_button1"
+					onclick='exportField(2,$("#customerid").val());' /> <input
+					type="button" id="btnval0" value="超区" class="input_button1"
+					onclick="outArea('history_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2"
+										class="table_5">
 										<tr>
-											<td width="40px" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
-												type="checkbox"></input></td>
+											<td width="40px" align="center" bgcolor="#f1f1f1"><input
+												id="history_checkbox" type="checkbox"></input></td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -671,8 +693,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="history_table" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
+										<table id="history_table" width="100%" border="0"
+											cellspacing="1" cellpadding="2" class="table_2">
 										</table>
 									</div>
 								</td>
@@ -680,13 +702,15 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportField(4,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0"
+					value="导出Excel" class="input_button1"
+					onclick='exportField(4,$("#customerid").val());' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2"
+										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
@@ -699,8 +723,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="today_dispatch_table" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
+										<table id="today_dispatch_table" width="100%" border="0"
+											cellspacing="1" cellpadding="2" class="table_2">
 										</table>
 									</div>
 								</td>
@@ -708,13 +732,15 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportField(3,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0"
+					value="导出Excel" class="input_button1"
+					onclick='exportField(3,$("#customerid").val());' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2"
+										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
@@ -727,21 +753,23 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="errorTable" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
+										<table id="errorTable" width="100%" border="0" cellspacing="1"
+											cellpadding="2" class="table_2">
 										</table>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportField(3,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0"
+					value="导出Excel" class="input_button1"
+					onclick='exportField(3,$("#customerid").val());' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2"
+										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
@@ -753,8 +781,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="out_area_table" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
+										<table id="out_area_table" width="100%" border="0"
+											cellspacing="1" cellpadding="2" class="table_2">
 										</table>
 									</div>
 								</td>
@@ -764,14 +792,16 @@ dl dd span {
 			</div>
 		</div>
 
-		<form action="<%=request.getContextPath()%>/PDA/exportExcle" method="post" id="searchForm2">
-			<input type="hidden" name="cwbs" id="cwbs" value="" /> <input type="hidden" name="exportmould2"
-				id="exportmould2" />
+		<form action="<%=request.getContextPath()%>/PDA/exportExcle"
+			method="post" id="searchForm2">
+			<input type="hidden" name="cwbs" id="cwbs" value="" /> <input
+				type="hidden" name="exportmould2" id="exportmould2" />
 		</form>
-		<form action="<%=request.getContextPath()%>/PDA/exportByCustomerid" method="post" id="searchForm3">
-			<input type="hidden" name="customerid" value="0" id="expcustomerid" /> <input type="hidden"
-				name="emaildate" value="0" id="expemailid" /> <input type="hidden" name="type" value=""
-				id="type" />
+		<form action="<%=request.getContextPath()%>/PDA/exportByCustomerid"
+			method="post" id="searchForm3">
+			<input type="hidden" name="customerid" value="0" id="expcustomerid" />
+			<input type="hidden" name="emaildate" value="0" id="expemailid" /> <input
+				type="hidden" name="type" value="" id="type" />
 		</form>
 	</div>
 </body>
