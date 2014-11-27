@@ -3,6 +3,7 @@
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<User> deliverList = (List<User>)request.getAttribute("deliverList");
@@ -125,28 +126,6 @@ var emaildate=0;
 		$("#"+tab).click();
 	}
 	
-	function addAndRemoval(cwb,tab,isRemoval,customerid){
-		var trObj = $("#ViewList tr[id='TR"+cwb+"']");
-		if(isRemoval){
-			$("#"+tab).append(trObj);
-		}else{
-			$("#ViewList #errorTable tr[id='TR"+cwb+"error']").remove();
-			trObj.clone(true).appendTo("#"+tab);
-			$("#ViewList #errorTable tr[id='TR"+cwb+"']").attr("id",trObj.attr("id")+"error");
-		}
-		//已入库明细只显示该供货商明细、异常单明细只显示该供货商明细
-		if(customerid>0){
-			$("#successTable tr").hide();
-			$("#successTable tr[customerid='"+customerid+"']").show();
-			
-			$("#errorTable tr").hide();
-			$("#errorTable tr[customerid='"+customerid+"']").show();
-		}else{
-			$("#successTable tr").show();
-			$("#errorTable tr").show();
-		}
-	}
-
 	//得到当前入库的供应商的库存量
 	function getcwbsdataForCustomer(customerid, cwb,emaildate) {
 		$.ajax({
@@ -164,8 +143,6 @@ var emaildate=0;
 				$("#successcwbnum").html(data.yirukunum);
 			}
 		});
-		
-	
 	}
 	
 	
@@ -211,336 +188,81 @@ function callfunction(cwb){//getEmailDateByIds
 		}
 	});
 }
-	
-	/**
-	 * 入库扫描
-	 */
-	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
-			requestbatchno, rk_switch, comment) {
-		
-		
-		var flag=false;
-		
-		if (scancwb.length > 0) {
-			$("#close_box").hide();
 
-			if($("#scanbaleTag").attr("class")=="light"){//入库根据包号扫描订单
-				baledaohuo(scancwb,driverid,comment);
-			}else{//入库
-				//是否按批次过滤？
-				if($("#emaildate").val()>0){
-					var recheck=false;
-					$(".yirukucwbids").each(function(i,val){
-						if(scancwb==val.id.substr(2)){
-							alert(scancwb+"订单重复入库");
-							recheck=true;
-							return;
-						}
-					} )
-					if(recheck){
-						return;
-					}
-					var flag=false;
-					$(".cwbids").each(function(i,val){
-						if(scancwb==val.id.substr(2)){
-							flag=true;
-						}
-					} )
-					if(!flag){
-						callfunction(scancwb);
-						return;
-					}
-				}
-				$.ajax({
-							type : "POST",
-							url : pname + "/PDA/cwbintowarhouse/" + scancwb
-									+ "?customerid=" + customerid
-									+ "&driverid=" + driverid
-									+ "&requestbatchno=" + requestbatchno,
-							data : {
-								"comment" : comment
-							},
-							dataType : "json",
-							success : function(data) {
-								$("#scancwb").val("");
-								
-								if (data.statuscode == "000000") {
-									
-									$("#cwbgaojia").hide();
 
-									$("#excelbranch").show();
-									$("#customername").show();
-									$("#damage").show();
-									$("#multicwbnum").show();
-
-									$("#customerid").val(data.body.cwbOrder.customerid);
-
-									if(data.body.showRemark!=null){
-										$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-										}
-									if (data.body.cwbOrder.deliverybranchid != 0) {
-										$("#excelbranch").html("目的站："+ data.body.cwbdeliverybranchname
-																+ "<br/>下一站："+ data.body.cwbbranchname);
-									} else {
-										$("#excelbranch").html("尚未匹配站点");
-									}
-									$("#customername").html(
-											data.body.cwbcustomername);
-									$("#multicwbnum").val(
-											data.body.cwbOrder.sendcarnum);
-									$("#msg").html(scancwb+ data.errorinfo+ "（共"+ data.body.cwbOrder.sendcarnum
-													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）");
-									
-									//将成功扫描的订单放到已入库明细中
-									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#customerid").val());
-									
-									
-									
-									/* if (data.body.cwbOrder.scannum == 1) {
-										$("#successcwbnum").html(parseInt($("#successcwbnum").html()) + 1);
-									} */
-
-									if (rk_switch == "rkbq_01") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
-									}
-									else if (rk_switch == "rkbq_03") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
-									}
-
-									<%--if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
-															+ "&a="+ Math.random());
-									}else{
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-									}
-
-									if (data.body.cwbgaojia != undefined && data.body.cwbgaojia != '') {
-										$("#cwbgaojia").parent().show();
-										try {
-											document.gaojia.Play();
-										} catch (e) {
-										}
-									}
-									if (<%=RUKUPCandPDAaboutYJDPWAV.equals("yes")%>&&data.body.cwbOrder.sendcarnum > 1) {
-										try {
-											document.ypdj.Play();
-										} catch (e) {
-										}
-									} --%>
-
-									$("#scansuccesscwb").val(scancwb);
-									$("#showcwb").html("订 单 号：" + scancwb);
-									$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
-									if(data.body.showRemark!=null){
-									$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-									}
-									if(data.body.cwbOrder.emaildateid==0){
-										$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-									}
-									//getcwbsdataForCustomer($("#customerid").val(),scancwb);
-									//getcwbsquejiandataForCustomer($("#customerid").val());
-									//getrukucwbquejiandataList($("#customerid").val());
-
-								} /* else if (data.statuscode == "13") {
-									$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-									errorvedioplay(pname, data);
-									//将有货无单扫描的订单放到有货无单明细中
-									//addAndRemoval(cwb,"youhuowudanTable");
-								} */ else {
-									$("#excelbranch").hide();
-									$("#customername").hide();
-									$("#cwbgaojia").hide();
-									$("#damage").hide();
-									$("#multicwbnum").hide();
-									$("#multicwbnum").val("1");
-									$("#showcwb").html("");
-									$("#cwbDetailshow").html("");
-									$("#consigneeaddress").html("");
-									$("#msg").html("（异常扫描）" + data.errorinfo);
-									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
-									//errorvedioplay(pname, data);
-								}
-								$("#responsebatchno").val(data.responsebatchno);
-								batchPlayWav(data.wavList);
-							}
-						});
-			}
-		}
-	}
-	/**
-	 * 入库扫描（包）
-	 */
-	/* function submitIntoWarehouseforbale(pname, driverid, baleno) {
-		if (scancwb.length == 0 && baleno.length == 0) {
-			$("#pagemsg").html("请先扫描");
-			return;
-		}
-		if (baleno.length > 0) {
-			$.ajax({
-				type : "POST",
-				url : pname + "/PDA/cwbintowarhouseByPackageCode/" + baleno
-						+ "?driverid=" + driverid,
-				dataType : "json",
-				success : function(data) {
-					$("#bale").val("");
-					$("#msg")
-							.html(
-									data.body.packageCode + "　（"
-											+ data.errorinfo + "）");
-				}
-			});
-		}
-	} */
-	/**
-	 * 入库备注提交
-	 */
-	function intoWarehouseforremark(pname, scancwb, csremarkid, multicwbnum) {
-		if (csremarkid == 4 && multicwbnum == "1") {
-			$("#msg").html("抱歉，一票多件至少件数为2");
-			return;
-		} else {
-			$.ajax({
-				type : "POST",
-				url : pname + "/PDA/forremark/" + scancwb + "?csremarkid="
-						+ csremarkid + "&multicwbnum=" + multicwbnum
-						+ "&requestbatchno=0",
-				dataType : "json",
-				success : function(data) {
-					if (data.statuscode == "000000") {
-						$("#msg").html("订单备注操作成功");
-					} else {
-						$("#msg").html(data.errorinfo);
-						errorvedioplay(pname, data);
-					}
-				}
-			});
-		}
-	}
-	
-	
-function exportField(flag,customerid){
-	var cwbs = "";
-	$("#expemailid").val($("#emaildate").val());
-	if(flag==1){
-		$("#expcustomerid").val($("#customerid").val());
-		$("#type").val("weiruku");
-		$("#searchForm3").submit();
-	}else if(flag==2){
-		$("#expcustomerid").val($("#customerid").val());
-		$("#type").val("yiruku");
-		$("#searchForm3").submit();
-	}else if(flag==3){//修改导出问题
-		/* if(customerid>0){
-			$("#errorTable tr[customerid='"+customerid+"']").each(function(){
-				var cwb = $(this).attr("cwb");
-				cwbs += "'" + cwb + "',";
-			});
-		}else{ */
-			$("#errorTable tr").each(function(){
-				var cwb = $(this).attr("cwb");
-				cwbs += "'" + cwb + "',";
-			});
-		/* } */
-		if(cwbs.length>0){
-			cwbs = cwbs.substring(0, cwbs.length-1);
-		}
-		if(cwbs!=""){
-			$("#exportmould2").val($("#exportmould").val());
-			$("#cwbs").val(cwbs);
-			$("#btnval").attr("disabled","disabled");
-		 	$("#btnval").val("请稍后……");
-		 	$("#searchForm2").submit();
-		}else{
-			alert("没有订单信息，不能导出！");
-		};
-	}else if(flag==4){
-		$("#expcustomerid").val($("#customerid").val());
-		$("#type").val("ypdj");
-		$("#searchForm3").submit();
-	}
-	
-}
-
-var weipage=1;
-var yipage=1;
-function weiruku(){
-	
-}
-function yiruku(){
-	
-	
-}
-function ranCreate(){
-	var timestamp = new Date().getTime();
-	$("#baleno").val(timestamp);
-	$("#baleno").attr('readonly','readonly');
-	$('#scancwb').parent().show();
-	$('#scancwb').show();
-	$('#scancwb').focus();
-}
-function hanCreate(){
-	$('#baleno').removeAttr('readonly');
-	$('#baleno').val('');
-	$('#baleno').focus();
-}
-function clearMsg(){
-	$("#msg").html("");
-	$("#showcwb").html("");
-	$("#excelbranch").html("");
-	$("#customername").html("");
-	$("#consigneeaddress").html("");
-	$("#cwbDetailshow").html("");
-	$("#cwbgaojia").hide();
-}
-
-function tohome(){
-	var isscanbaleTag = 1;
-	if($("#scanbaleTag").hasClass("light")){
-		isscanbaleTag=1;
+function addAndRemoval(cwb,tab,isRemoval){
+	var trObj = $("#ViewList tr[cwb='"+cwb+"']");
+	if(isRemoval){
+		$("#"+tab).append(trObj);
 	}else{
-		isscanbaleTag=0;
+		$("#ViewList #errorTable tr[id='TR"+cwb+"error']").remove();
+		trObj.clone(true).appendTo("#"+tab);
+		$("#ViewList #errorTable tr[id='TR"+cwb+"']").attr("id",trObj.attr("id")+"error");
 	}
-	var temp=$("#customerid").val();
-	if("-1"==temp||temp<0){
-		$("#emaildate").val("0")
-	}
-	window.location.href="<%=request.getContextPath()%>/PDA/intowarhouse?customerid="+$("#customerid").val()+"&isscanbaleTag="+isscanbaleTag+"&emaildate="+$("#emaildate").val();
 }
-$(function(){
-	var $menuli = $(".saomiao_tab ul li");
-	$menuli.click(function(){
-		$(this).children().addClass("light");
-		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
-		/* $(".tabbox li").eq(index).show().siblings().hide(); */
-	});
+
 	
-}) 
+function branchDeliver(pname,scancwb,deliverid,requestbatchno){
+	if(deliverid==-1){
+		$("#msg").html("扫描前请选择小件员");
+		return ;
+	}else if(scancwb.length>0){
+		var allnum = 0;
+		
+		$.ajax({
+			type: "POST",
+			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno,
+			dataType:"json",
+			success : function(data) {
+				$("#scancwb").val("");
+				$("#pagemsg").html("");
+				//var linghuoSuccessCount = deliverStr[deliverid].split(",").length-1;
+				if(data.statuscode=="000000"){
+					$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
+					
+					$("#scansuccesscwb").val(scancwb);
+					$("#showcwb").html("订 单 号："+scancwb);
+					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
+					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
+					{	
+						$("#customercommand").html("预约派送");
+					}
+					else{$("#customercommand").html("");}
+					if(data.body.cwbOrder.cwbordertypeid==<%=CwbOrderTypeIdEnum.Peisong.getValue()%>){
+						$("#cwbordertype").html("订单类型：配送订单");
+						$("#fee").html("应收金额："+data.body.cwbOrder.receivablefee);
+					}else if(data.body.cwbOrder.cwbordertypeid==<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>){
+						$("#cwbordertype").html("订单类型：上门换订单");
+						$("#fee").html("应收金额："+data.body.cwbOrder.receivablefee);
+					}else if(data.body.cwbOrder.cwbordertypeid==<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>){
+						$("#cwbordertype").html("订单类型：上门退订单");
+						$("#fee").html("应退金额："+data.body.cwbOrder.paybackfee);
+					}
+					if(data.body.showRemark!=null){
+					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+					}
+					$("#exceldeliverid").html(data.body.cwbdelivername);
+					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
+				}else{
+					$("#exceldeliverid").html("");
+					$("#showcwb").html("");
+					$("#consigneeaddress").html("");
+					$("#cwbordertype").html("");
+					$("#cwbDetailshow").html("");
+					$("#deliver").html("已领货");
+					$("#fee").html("");
+					$("#customercommand").html("");
+					$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
+					addAndRemoval(scancwb,"errorTable",false);
+				}
+				$("#responsebatchno").val(data.responsebatchno);
+				batchPlayWav(data.wavList);
+			}
+		});
+	}
+}
 
 
-//=========合包到货=============
- function baledaohuo(scancwb,driverid,comment){
- 	if($("#baleno").val()==""){
- 		alert("包号不能为空！");
- 		$("#scancwb").val("");
- 		return;
- 	}
- 	$.ajax({
- 		type: "POST",
- 		url:"<%=request.getContextPath()%>/bale/balezhongzhuandaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid="+driverid,
- 		data:{
-			"comment":comment
-		},
- 		dataType : "json",
- 		success : function(data) {
- 			clearMsg();
- 			$("#msg").html(data.body.errorinfo);
- 			$("#scancwb").val("");
- 			errorvedioplay("<%=request.getContextPath()%>",data);
- 		}
- 	});
- }
- 
  $(function(){
 	 $("#today_checkbox").click(function(){
 		var checked = $(this).attr("checked");
@@ -553,24 +275,23 @@ $(function(){
 	});
 	 
 	 $("#today_not_picking_a").click(function(){
-		 reloadTodayTable();
+		 loadTodayNotPickingOrder("all");
 	 });
 	 
 	 $("#history_not_picking_a").click(function(){
-		 reloadHistoryTable();
+		 loadHistoryNotPickingOrder("all");
 	 });
+	 $("#today_dispatch_a").click(function(){
+		 reloadTodayTable("all");
+	 });
+	 $("#today_out_area").click(function(){
+		 loadTodayPickingOrder("all");
+	 });
+	 
 	 
  });
  
- function reloadTodayTable(dataScope)
- {
-	 $("#today_table").empty();
- }
- 
- function reloadHistoryTable()
- {
-	 $("#history_table").empty();
- }
+
  
  
  
@@ -583,8 +304,165 @@ $(function(){
 	 }	 
  }
  
+ function loadHistoryNotPickingOrder(scope)
+ {
+	 $.ajax({
+		 type:"post",
+		 url:"<%=request.getContextPath()%>/PDA/loadsmthistorynotpickingorder",
+		 dataType:"json",
+		 async:false,
+		 data:{scope:scope,page:1},
+		 success:function(data){
+	 		var smtOrderList = data.smtOrderList;
+	 		refreshTable("history_table" , smtOrderList ,1);
+		 },
+		 error:function(data)
+		 {
+			 alert(data);
+		 }
+	 });
+ }
  
  
+ function loadTodayNotPickingOrder(scope){
+	 $.ajax({
+		 type:"post",
+		 url:"<%=request.getContextPath()%>/PDA/loadsmttodaynotpickingorder",
+		 dataType:"json",
+		 async:false,
+		 data:{scope:scope,page:1},
+		 success:function(data){
+	 		var smtOrderList = data.smtOrderList;
+	 		refreshTable("today_table" , smtOrderList,0);
+		 },
+		 error:function(data){
+			 alert(data);
+		 }
+	 });
+ }
+ 
+ 
+ function loadTodayPickingOrder(scope){
+	 $.ajax({
+		 type:"post",
+		 url:"<%=request.getContextPath()%>/PDA/loadsmttodaypickingorder",
+		 dataType:"json",
+		 async:false,
+		 data:{scope:scope,page:1},
+		 success:function(data){
+	 		var smtOrderList = data.smtOrderList;
+	 		refreshTable("today_picking_table" , smtOrderList,2);
+		 },
+		 error:function(data){
+			 alert(data);
+		 }
+	 });
+ }
+ 
+ function loadTodayOutAreaOrder()
+ {
+	 $.ajax({
+		 type:"post",
+		 url:"<%=request.getContextPath()%>/PDA/loadsmttodayoutareaorder",
+			dataType : "json",
+			async : false,
+			success : function(data) {
+				var smtOrderList = data.smtOrderList;
+			},
+			error : function(data) {
+				alert(data);
+			}
+		});
+	}
+
+	function refreshTable(tableId, dataList, tableIndex) {
+		var $table = $("#" + tableId);
+		$table.empty();
+		if (dataList) {
+			var dataHtml = createTableRowData(dataList);
+			$table.append(dataHtml);
+		}
+		showTab(tableIndex);
+	}
+
+	function createTableRowData(dataList) {
+		var allRow = "";
+		var length = dataList.length;
+		for (var i = 0; i < length; i++) {
+			var tr = createTR(dataList[i]);
+			allRow += tr;
+		}
+		return allRow;
+	}
+
+	function showTab(index) {
+		var $tab = $(".saomiao_tab2 li").eq(index);
+		$tab.children().addClass("light");
+		$tab.siblings().children().removeClass("light");
+		;
+		$(".tabbox li").eq(index).show().siblings().hide();
+	}
+
+	function createTR(data) {
+		var tr = "<tr cwb="+ data.cwb +">";
+		tr += createTD("center", "40px", "<input type='checkbox'></input>");
+		tr += createTD("center", "100px", data.cwb);
+		tr += createTD("center", "100px", data.matchBranch);
+		tr += createTD("right", "100px", data.receivedFee);
+		tr += createTD("center", "100px", data.customerName);
+		tr += createTD("center", "150px", data.phone);
+		tr += createTD("center", null, data.address);
+		tr += "</tr>";
+		return tr;
+	}
+
+	function createTD(align, width, content) {
+		var td = "<td  bgcolor='#f1f1f1' align='" + align + "'";
+		if (width) {
+			td += " width='" + width + "'";
+		}
+		td += ">" + content + "</td>"
+		return td;
+	}
+
+	function outArea(tableId) {
+		var $table = $("#" + tableId);
+		var cwbs = [];
+		$table.find("input[type='checkbox']").filter(":checked").each(function(){
+			var cwb = $(this).closest("tr").attr("cwb");
+			cwbs.push(cwb);
+		});
+		if(cwbs.length ==0)
+			{
+			
+			}
+		 $.ajax({
+			 type:"post",
+			 url:"<%=request.getContextPath()%>/PDA/smtorderoutarea",
+			dataType : "json",
+			async : false,
+			data : {
+				cwbs : cwbs
+			},
+			success : function(data) {
+				handleOutAreaSuccess(tableId, cwbs);
+			},
+			error : function(data) {
+
+			}
+		});
+	}
+
+	function handleOutAreaSuccess(tableId, cwbs) {
+		var $table = $("#" + tableId);
+		for (var i = 0; i < cwbs.length; i++) {
+			$table.find("tr[cwb='" + cwbs[i] + "']").remove();
+		}
+		var length = cwbs.length;
+		var $tOutArea = $("#t_out_area");
+		var oriCnt = $tOutArea.html();
+		$tOutArea.html(parseInt(oriCnt) + length);
+	}
 </script>
 <style>
 dl dt span {
@@ -616,6 +494,10 @@ dl dd span {
 .input_button1 {
 	margin: 10px 0px 0px 10px;
 }
+
+.saomiao_tab {
+	height: 17px;
+}
 </style>
 </head>
 <body style="background: #eef9ff" marginwidth="0" marginheight="0">
@@ -627,8 +509,9 @@ dl dd span {
 					<span>今日新单待分派</span><span>今日转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span><a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu">0</a></span> <span><a
-						href="#">0</a></span>
+					<span onclick="loadTodayNotPickingOrder('normal')"><a id="t_normal_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
+					<span onclick="loadTodayNotPickingOrder('transfer')"><a id="t_transfer_not_picking"
+						href="#"><%=todayNotPickingCwbCount%></a></span>
 				</dd>
 			</dl>
 
@@ -637,9 +520,11 @@ dl dd span {
 				<dt>
 					<span>历史新单待分派</span><span>历史转单待分派</span>
 				</dt>
-				<dd>
-					<span><a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu"><%=historyNotPickingCwbCount%></a></span>
-					<span><a href="#">0</a></span>
+				<dd style="cursor: pointer">
+					<span onclick="loadHistoryNotPickingOrder('normal')"><a id="h_normal_not_picking"
+						href="#"><%=historyNotPickingCwbCount%></a></span> <span
+						onclick="loadHistoryNotPickingOrder('transfer')"><a id="h_transfer_not_picking"
+						href="#"><%=historyNotPickingCwbCount%></a></span>
 				</dd>
 			</dl>
 
@@ -648,16 +533,16 @@ dl dd span {
 					<span>今日分派新单</span><span>今日分派转单</span>
 				</dt>
 				<dd>
-					<span><a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu">0</a></span> <span><a
-						href="#">0</a></span>
+					<span onclick="loadTodayPickingOrder('normal')"><a id="t_normal_picking" href="#">0</a></span>
+					<span onclick="loadTodayPickingOrder('transfer')"><a id="t_transfer_picking" href="#">0</a></span>
 				</dd>
 			</dl>
 
 
 			<dl class="red">
 				<dt>今日超区</dt>
-				<dd>
-					<a href="#" onclick="tabView('table_weiruku')" id="rukukucundanshu">0</a>
+				<dd style="cursor: pointer">
+					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#">0</a></span>
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
@@ -690,26 +575,21 @@ dl dd span {
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
 						<p>
-							订单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value=""
-								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}' />
+							订单号：<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchDeliver("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val(),$("#requestbatchno").val());}' />
 						</p>
 					</div>
 					<div class="saomiao_right2">
 						<p id="msg" name="msg"></p>
+						<p id="cwbordertype" name="cwbordertype"></p>
 						<p id="showcwb" name="showcwb"></p>
 						<p id="cwbgaojia" name="cwbgaojia" style="display: none">高价</p>
 						<p id="consigneeaddress" name="consigneeaddress"></p>
-						<p id="excelbranch" name="excelbranch"></p>
-						<p id="customername" name="customername"></p>
+						<p id="fee" name="fee"></p>
+						<p id="exceldeliverid" name="exceldeliverid"></p>
 						<p id="cwbDetailshow" name="cwbDetailshow"></p>
-						<div style="display: none" id="errorvedio"></div>
+						<p id="customercommand" name="customercommand"></p>
 					</div>
-					<p style="display: none;">
-						<input type="button" class="input_btn1" id="moregoods" name="moregoods" value="一票多物"
-							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),4,$("#multicwbnum").val());' />
-						<span>一票多物件数：</span><input type="text" id="multicwbnum" name="multicwbnum" value="1"
-							class="input_txt1" />
-					</p>
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
 						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
@@ -721,15 +601,15 @@ dl dd span {
 				<ul>
 					<li><a id="today_not_picking_a" href="#" class="light">今日未领货</a></li>
 					<li><a id="history_not_picking_a" href="#">历史待分派</a></li>
-					<li><a id="table_quejian" href="#">今日已分派</a></li>
+					<li><a id="today_dispatch_a" href="#">今日已分派</a></li>
 					<li><a href="#">异常单明细</a></li>
-					<li><a href="#">今日超区</a></li>
+					<li><a id="today_out_area" href="#">今日超区</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
 					onclick='exportField(1,$("#customerid").val());' /> <input type="button" id="btnval0"
-					value="超区" class="input_button1" onclick='exportField(1,$("#customerid").val());' />
+					value="超区" class="input_button1" onclick="outArea('today_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -738,15 +618,12 @@ dl dd span {
 										<tr>
 											<td width="40" align="center" bgcolor="#f1f1f1"><input id="today_checkbox"
 												type="checkbox"></input></td>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
-											<td align="center" bgcolor="#f1f1f1">取件地址</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">联系方式</td>
+											<td align="center" bgcolor="#f1f1f1">取件地址</td>
 										</tr>
 									</table>
 									<div style="height: 170px; overflow-y: scroll">
@@ -755,18 +632,15 @@ dl dd span {
 											<%
 												for (CwbOrder co : todayNotPickingCwbList) {
 											%>
-											<tr id="TR<%=co.getCwb()%>" cwb="<%=co.getCwb()%>" customerid="<%=co.getCustomerid()%>"
-												class="cwbids">
+											<tr cwb="<%=co.getCwb()%>" class="cwbids">
 												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
 												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-												<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneename()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneephone()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 												<td align="center" bgcolor="#f1f1f1"><%=co.getConsigneeaddress()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-												<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
+
 											</tr>
 											<%
 												}
@@ -779,49 +653,26 @@ dl dd span {
 					</table></li>
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick='exportField(2,$("#customerid").val());' /> <input type="button"
-					id="btnval0" value="超区" class="input_button1" onclick='exportField(1,$("#customerid").val());' />
+					id="btnval0" value="超区" class="input_button1" onclick="outArea('history_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="40" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
+											<td width="40px" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
 												type="checkbox"></input></td>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
+											<td width="100px" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100px" align="center" bgcolor="#f1f1f1">匹配站点</td>
+											<td width="100px" align="center" bgcolor="#f1f1f1">应收运费</td>
+											<td width="100px" align="center" bgcolor="#f1f1f1">退件人姓名</td>
+											<td width="150px" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
 										<table id="history_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
-											<%
-												for (CwbOrder co : todayNotPickingCwbList) {
-											%>
-											<tr id="TR<%=co.getCwb()%>" cwb="<%=co.getCwb()%>" customerid="<%=co.getCustomerid()%>"
-												class="cwbids">
-												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
-												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-												<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneename()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneephone()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
-												<td align="center" bgcolor="#f1f1f1"><%=co.getConsigneeaddress()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-												<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
-											</tr>
-											<%
-												}
-											%>
 										</table>
 									</div>
 								</td>
@@ -838,19 +689,17 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="lesscwbTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+										<table id="today_dispatch_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 										</table>
 									</div>
@@ -868,8 +717,6 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
@@ -897,19 +744,16 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">系统接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">本站接收时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
+
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="errorTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+										<table id="out_area_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 										</table>
 									</div>

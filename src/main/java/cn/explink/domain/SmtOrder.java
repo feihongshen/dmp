@@ -6,9 +6,9 @@ public class SmtOrder {
 
 	private String cwb = null;
 
-	private String sysRecvTime = null;
+	private String sysRecvTime = " ";
 
-	private String curBranRecvTime = null;
+	private String curBranRecvTime = " ";
 
 	private String dispatchTime = null;
 
@@ -16,13 +16,15 @@ public class SmtOrder {
 
 	private String phone = null;
 
-	private String receivedFee = null;
-
 	private String address = null;
+
+	private double receivedFee = 0;
 
 	private String matchBranch = null;
 
-	private String deliver = null;
+	private long deliver = -1;
+
+	private String strDeliver = null;
 
 	public long getCwbId() {
 		return this.cwbId;
@@ -80,11 +82,11 @@ public class SmtOrder {
 		this.phone = phone;
 	}
 
-	public String getReceivedFee() {
+	public double getReceivedFee() {
 		return this.receivedFee;
 	}
 
-	public void setReceivedFee(String receivedFee) {
+	public void setReceivedFee(double receivedFee) {
 		this.receivedFee = receivedFee;
 	}
 
@@ -102,6 +104,22 @@ public class SmtOrder {
 
 	public void setMatchBranch(String matchBranch) {
 		this.matchBranch = matchBranch;
+	}
+
+	public long getDeliver() {
+		return this.deliver;
+	}
+
+	public void setDeliver(long deliver) {
+		this.deliver = deliver;
+	}
+
+	public String getStrDeliver() {
+		return this.strDeliver;
+	}
+
+	public void setStrDeliver(String strDeliver) {
+		this.strDeliver = strDeliver;
 	}
 
 }

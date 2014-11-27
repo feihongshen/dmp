@@ -1,5 +1,8 @@
 package cn.explink.enumutil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum FlowOrderTypeEnum {
 	DaoRuShuJu(1, "导入数据"),
 	// YouHuoWuDanDaoRuShuJu(2,"有货无单导入数据","NoListImportCwb"),
@@ -14,34 +17,32 @@ public enum FlowOrderTypeEnum {
 	private int value;
 	private String text;
 
+	private static Map<Integer, FlowOrderTypeEnum> indexMap = null;
+	static {
+		FlowOrderTypeEnum.indexMap = new HashMap<Integer, FlowOrderTypeEnum>();
+		for (FlowOrderTypeEnum orderType : FlowOrderTypeEnum.values()) {
+			FlowOrderTypeEnum.indexMap.put(Integer.valueOf(orderType.getValue()), orderType);
+		}
+	}
+
 	private FlowOrderTypeEnum(int value, String text) {
 		this.value = value;
 		this.text = text;
 	}
 
 	public int getValue() {
-		return value;
+		return this.value;
 	}
 
 	public String getText() {
-		return text;
+		return this.text;
 	}
 
 	public static FlowOrderTypeEnum getText(int value) {
-		for (FlowOrderTypeEnum typeEnum : FlowOrderTypeEnum.values()) {
-			if (typeEnum.getValue() == value) {
-				return typeEnum;
-			}
-		}
-		return null;
+		return FlowOrderTypeEnum.indexMap.get(Integer.valueOf(value));
 	}
 
 	public static FlowOrderTypeEnum getText(long value) {
-		for (FlowOrderTypeEnum typeEnum : FlowOrderTypeEnum.values()) {
-			if (typeEnum.getValue() == value) {
-				return typeEnum;
-			}
-		}
-		return null;
+		return FlowOrderTypeEnum.indexMap.get(Integer.valueOf((int) value));
 	}
 }

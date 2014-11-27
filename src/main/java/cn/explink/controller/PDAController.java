@@ -91,6 +91,7 @@ import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
+import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.StockResult;
 import cn.explink.domain.SystemInstall;
@@ -353,17 +354,77 @@ public class PDAController {
 		return "pda/smtorderdispatch";
 	}
 
-	@RequestMapping("/loadsmtorder")
-	public @ResponseBody SmtOrderContainer loadSmtOrder(HttpServletRequest request) {
-		String dataScope = (String) request.getAttribute("dataScope");
+	@RequestMapping("/loadsmttodaynotpickingorder")
+	public @ResponseBody SmtOrderContainer loadSmtTodayNotPickingOrder(HttpServletRequest request) {
+		String dataScope = request.getParameter("dataScope");
+		String strPage = request.getParameter("page");
+		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
+		SmtOrderContainer container = new SmtOrderContainer();
+		long branchId = this.getSessionUser().getBranchid();
 		if ("all".equals(dataScope)) {
-
+			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
 		} else if ("transfer".equals(dataScope)) {
-
+			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
 		} else {
-
+			container.setSmtOrderList(this.getTodayNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
 		}
-		return null;
+		return container;
+	}
+
+	@RequestMapping("/loadsmthistorynotpickingorder")
+	public @ResponseBody SmtOrderContainer loadSmtHistoryNotPickingOrder(HttpServletRequest request) {
+		String dataScope = request.getParameter("scope");
+		String strPage = request.getParameter("page");
+		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
+		SmtOrderContainer container = new SmtOrderContainer();
+		long branchId = this.getSessionUser().getBranchid();
+		if ("all".equals(dataScope)) {
+			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else if ("transfer".equals(dataScope)) {
+			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else {
+			container.setSmtOrderList(this.getHistoryNotPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		}
+		return container;
+	}
+
+	@RequestMapping("/loadsmttodaypickingorder")
+	public @ResponseBody SmtOrderContainer loadSmtTodayPickingOrder(HttpServletRequest request) {
+		String dataScope = request.getParameter("scope");
+		String strPage = request.getParameter("page");
+		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
+		SmtOrderContainer container = new SmtOrderContainer();
+		long branchId = this.getSessionUser().getBranchid();
+		if ("all".equals(dataScope)) {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else if ("transfer".equals(dataScope)) {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		}
+		return container;
+	}
+
+	@RequestMapping("/loadsmttodayoutareaorder")
+	public @ResponseBody SmtOrderContainer loadSmtTodayOutAreaOrder(HttpServletRequest request) {
+		String dataScope = request.getParameter("scope");
+		String strPage = request.getParameter("page");
+		int nPage = strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
+		SmtOrderContainer container = new SmtOrderContainer();
+		long branchId = this.getSessionUser().getBranchid();
+		if ("all".equals(dataScope)) {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else if ("transfer".equals(dataScope)) {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		} else {
+			container.setSmtOrderList(this.getTodayPickingList(branchId, nPage * 100, (nPage * 100) + 100));
+		}
+		return container;
+	}
+
+	@RequestMapping("/smtorderoutarea")
+	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
+		return "";
 	}
 
 	private void addBranchDelvierToModel(Model model) {
@@ -375,14 +436,24 @@ public class PDAController {
 		long branchId = this.getSessionUser().getBranchid();
 		int todayNotPickingCwbCount = this.cwbDAO.getSmtTodayNotPickingCount(branchId);
 		model.addAttribute("todayNotPickingCwbCount", todayNotPickingCwbCount);
-
-		int queryCount = todayNotPickingCwbCount > 100 ? 100 : todayNotPickingCwbCount;
-		List<CwbOrder> cwbList = this.getTodayNotPickingList(branchId, 0, queryCount);
-		model.addAttribute("todayNotPickingCwbList", cwbList);
+		if (todayNotPickingCwbCount == 0) {
+			model.addAttribute("todayNotPickingCwbList", new ArrayList<SmtOrder>());
+		} else {
+			int qryCnt = todayNotPickingCwbCount > 100 ? 100 : todayNotPickingCwbCount;
+			model.addAttribute("todayNotPickingCwbList", this.getTodayNotPickingList(branchId, 0, qryCnt));
+		}
 	}
 
-	private List<CwbOrder> getTodayNotPickingList(long branchId, int offset, int length) {
+	private List<SmtOrder> getTodayNotPickingList(long branchId, int offset, int length) {
 		return this.cwbDAO.getSmtTodayNotPickingList(branchId, 0, length);
+	}
+
+	private List<SmtOrder> getHistoryNotPickingList(long branchId, int offset, int length) {
+		return this.cwbDAO.getSmtHistoryNotPickingList(branchId, 0, length);
+	}
+
+	private List<SmtOrder> getTodayPickingList(long branchId, int offset, int length) {
+		return this.cwbDAO.getSmtTodayPickingList(branchId, 0, length);
 	}
 
 	private void addHistoryNotPickingCount(Model model) {
@@ -6019,7 +6090,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6031,16 +6102,16 @@ public class PDAController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 *
+					 * 
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 *
+					 * 
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 *
+					 * 
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -6053,7 +6124,7 @@ public class PDAController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 *
+					 * 
 					 * }});
 					 */
 
@@ -6101,7 +6172,7 @@ public class PDAController {
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	 * if(clist.size()>0){ for(CwbOrder c: clist){ CwbOrderView cwbOrderView =
 	 * new CwbOrderView();
-	 *
+	 * 
 	 * cwbOrderView.setCwb(c.getCwb());
 	 * cwbOrderView.setEmaildate(c.getEmaildate());
 	 * cwbOrderView.setCarrealweight(c.getCarrealweight());
@@ -6116,7 +6187,7 @@ public class PDAController {
 	 * cwbOrderView.setConsigneephone(c.getConsigneephone());
 	 * cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 	 * cwbOrderView.setResendtime(c.getResendtime()==null?"":c.getResendtime());
-	 *
+	 * 
 	 * cwbOrderView.setCustomerid(c.getCustomerid());
 	 * cwbOrderView.setCustomername
 	 * (dataStatisticsService.getQueryCustomerName(customerList,
@@ -6146,7 +6217,7 @@ public class PDAController {
 	 * cwbOrderView.setReceivablefee(c.getReceivablefee());
 	 * cwbOrderView.setCaramount(c.getCaramount());
 	 * cwbOrderView.setPaybackfee(c.getPaybackfee());
-	 *
+	 * 
 	 * DeliveryState deliverystate =
 	 * dataStatisticsService.getDeliveryByCwb(c.getCwb());
 	 * cwbOrderView.setPaytype
@@ -6166,7 +6237,7 @@ public class PDAController {
 	 * currentBranch =dataStatisticsService.getQueryBranchName(branchList,
 	 * c.getCurrentbranchid());
 	 * cwbOrderView.setCurrentbranchname(currentBranch);
-	 *
+	 * 
 	 * Date ruku =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
 	 * FlowOrderTypeEnum.RuKu.getValue()).getCredate(); Date chukusaomiao
 	 * =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
@@ -6224,9 +6295,9 @@ public class PDAController {
 	 * .getInwarhouseRemarks(remarkList).
 	 * get(c.getCwb()).get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 	 * cwbOrderView.setCwbordertypeid(c.getCwbordertypeid()+"");//订单类型
-	 *
+	 * 
 	 * cwbOrderViewList.add(cwbOrderView);
-	 *
+	 * 
 	 * } } return cwbOrderViewList; }
 	 */
 
@@ -6473,7 +6544,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6877,7 +6948,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7048,7 +7119,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7326,7 +7397,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7551,7 +7622,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),

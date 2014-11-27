@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +23,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.SmtOrder;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -2243,7 +2248,6 @@ public class CwbDAO {
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return 0;
 		}
 	}
@@ -2468,7 +2472,6 @@ public class CwbDAO {
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return new CwbOrder();
 		}
 	}
@@ -2481,7 +2484,6 @@ public class CwbDAO {
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return new CwbOrder();
 		}
 	}
@@ -3444,7 +3446,6 @@ public class CwbDAO {
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return new CwbOrder();
 		}
 	}
@@ -4573,7 +4574,6 @@ public class CwbDAO {
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper(), begindate, enddate);
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return new CwbOrder();
 		}
 	}
@@ -4848,7 +4848,6 @@ public class CwbDAO {
 			this.jdbcTemplate.update(sql);
 			this.logger.info("订单[一件多票]追加成功，存储系统中为普通单子，sql={}", sql);
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			this.logger.error("订单[一件多票]追加失败", e);
 		}
 	}
@@ -5002,13 +5001,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public int getSmtTodayNotPickingCount(long branchid) {
-		long credate = this.getTodayZeroTimeInMillis();
-		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate >=" + credate + " and flowordertype in(" + flowordertypes + ")))";
-		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
-		String sql = "select count(1) from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ")";
-
-		return this.jdbcTemplate.queryForInt(sql, branchid, branchid);
+		return this.getSmtNotPickingCount(branchid, true);
 	}
 
 	/**
@@ -5019,14 +5012,20 @@ public class CwbDAO {
 	 * @param currentDayZeroTime
 	 * @return
 	 */
-	public List<CwbOrder> getSmtTodayNotPickingList(long branchid, int offset, int length) {
-		long credate = this.getTodayZeroTimeInMillis();
-		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate >=" + credate + " and flowordertype in(" + flowordertypes + ")))";
-		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
-		String sql = "select * from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ") limit " + offset + "," + length;
-		List<CwbOrder> orderList = this.jdbcTemplate.query(sql, new CwbMapper(), branchid, branchid);
-		return null;
+	public List<SmtOrder> getSmtTodayNotPickingList(long branchid, int offset, int length) {
+		return this.getSmtNotPickingOrderList(branchid, offset, length, true);
+	}
+
+	/**
+	 * 今日已领货.
+	 *
+	 * @param branchid
+	 * @param string
+	 * @param currentDayZeroTime
+	 * @return
+	 */
+	public List<SmtOrder> getSmtTodayPickingList(long branchid, int offset, int length) {
+		return this.getSmtPickingOrderList(branchid, offset, length, true);
 	}
 
 	/**
@@ -5038,45 +5037,301 @@ public class CwbDAO {
 	 * @return
 	 */
 	public int getSmtHistoryNotPickingCount(long branchid) {
-		long credate = this.getTodayZeroTimeInMillis();
-		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate <" + credate + " and flowordertype in(" + flowordertypes + ")))";
-		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
-		String sql = "select count(1) from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ")";
-
-		return this.jdbcTemplate.queryForInt(sql, branchid, branchid);
+		return this.getSmtNotPickingCount(branchid, false);
 	}
 
 	/**
-	 * 历史未领货.
+	 * 上门退历史未领货.
 	 *
 	 * @param branchid
 	 * @param offset
 	 * @param length
 	 * @return
 	 */
-	public List<CwbOrder> getSmtHistoryNotPickingList(long branchid, int offset, int length) {
-		long credate = this.getTodayZeroTimeInMillis();
-		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String inSql = "(cwb in (select cwb from express_ops_operation_time  where branchid=? and credate <" + credate + " and flowordertype in(" + flowordertypes + ")))";
-		String deliveryStateSql = "(deliverystate=" + DeliveryStateEnum.FenZhanZhiLiu.getValue() + ")";
-		String sql = "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where currentbranchid=? and cwbordertypeid=2 and (" + inSql + " or " + deliveryStateSql + ") limit "
-				+ offset + "," + length;
+	public List<SmtOrder> getSmtHistoryNotPickingList(long branchid, int offset, int length) {
+		return this.getSmtNotPickingOrderList(branchid, offset, length, false);
+	}
 
-		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, branchid);
+	private int getSmtNotPickingCount(long branchid, boolean today) {
+		return this.jdbcTemplate.queryForInt(this.getSmtNotPickingCountSql(branchid, today));
+	}
+
+	private List<SmtOrder> getSmtNotPickingOrderList(long branchid, int offset, int length, boolean today) {
+		// String sql = this.getSmtNotPickingSql(branchid, offset, length,
+		// today);
+		String sql = this.getTestSql();
+		List<SmtOrder> smtOrderList = this.jdbcTemplate.query(sql, new SmtOrderRowMap());
+		if (smtOrderList.isEmpty()) {
+			return smtOrderList;
+		}
+		// String cwbInPara = this.getCwbs(smtOrderList);
+		// String flowTypes =
+		// this.getOrderFlowTypes(FlowOrderTypeEnum.DaoRuShuJu,
+		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
+		// FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+		// Map<String, Map<FlowOrderTypeEnum, String>> flowTime =
+		// this.getOrderFlowTime(branchid, cwbInPara, flowTypes, today);
+		// this.fillData(smtOrderList, flowTime);
+
+		return smtOrderList;
+	}
+
+	private String getTestSql() {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail ");
+		strSql.append("limit 100");
+
+		return strSql.toString();
+	}
+
+	private List<SmtOrder> getSmtPickingOrderList(long branchid, int offset, int length, boolean today) {
+		String sql = this.getSmtPickingSql(branchid, offset, length, today);
+		List<SmtOrder> smtOrderList = this.jdbcTemplate.query(sql, new SmtOrderRowMap());
+		if (smtOrderList.isEmpty()) {
+			return smtOrderList;
+		}
+		// String cwbInPara = this.getCwbs(smtOrderList);
+		// String flowTypes =
+		// this.getOrderFlowTypes(FlowOrderTypeEnum.DaoRuShuJu,
+		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
+		// FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+		// Map<String, Map<FlowOrderTypeEnum, String>> flowTime =
+		// this.getOrderFlowTime(branchid, cwbInPara, flowTypes, today);
+		// this.fillData(smtOrderList, flowTime);
+
+		return smtOrderList;
+	}
+
+	@SuppressWarnings("unused")
+	private void fillData(List<SmtOrder> smtOrderList, Map<String, Map<FlowOrderTypeEnum, String>> flowTime) {
+		for (SmtOrder smtOrder : smtOrderList) {
+			Map<FlowOrderTypeEnum, String> timeMap = flowTime.get(smtOrder.getCwb());
+			smtOrder.setSysRecvTime(timeMap.get(FlowOrderTypeEnum.DaoRuShuJu));
+			if (timeMap.containsKey(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao)) {
+				smtOrder.setCurBranRecvTime(timeMap.get(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
+			} else {
+				smtOrder.setCurBranRecvTime(timeMap.get(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao));
+			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private String getCwbs(List<SmtOrder> smtOrderList) {
+		StringBuilder cwbs = new StringBuilder();
+		for (SmtOrder smtOrder : smtOrderList) {
+			cwbs.append(smtOrder.getCwb());
+			cwbs.append(" , ");
+		}
+		return cwbs.substring(0, cwbs.length() - 2);
+	}
+
+	private String getOrderFlowTypes(FlowOrderTypeEnum... typeEnums) {
+		StringBuilder flowTypes = new StringBuilder();
+		for (FlowOrderTypeEnum typeEnum : typeEnums) {
+			flowTypes.append(typeEnum.getValue());
+			flowTypes.append(",");
+		}
+		return flowTypes.substring(0, flowTypes.length() - 1);
+	}
+
+	private class SmtOrderRowMap implements RowMapper<SmtOrder> {
+
+		@Override
+		public SmtOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+			SmtOrder newOrder = new SmtOrder();
+			newOrder.setCwbId(rs.getLong("opscwbid"));
+			newOrder.setCwb(rs.getString("cwb"));
+			newOrder.setCustomerName(rs.getString("consigneename"));
+			newOrder.setPhone(rs.getString("consigneephone"));
+			newOrder.setAddress(rs.getString("consigneeaddress"));
+			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
+			newOrder.setMatchBranch(rs.getString("excelbranch"));
+			newOrder.setDeliver(rs.getLong("deliverid"));
+
+			return newOrder;
+		}
+	}
+
+	private String getSmtNotPickingSql(long branchid, int offset, int length, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where ");
+		strSql.append("deliverybranchid=" + branchid + " ");
+		// 订单类型为上门退.
+		strSql.append("and cwbordertypeid=" + 2 + " ");
+		// 小件员为空.
+		strSql.append("and deliverid='' ");
+		// 流程类型为分到到货和到错误或者配送类型分站滞留.
+		strSql.append("and (flowordertype IN(7,8) or deliverystate=6) ");
+		strSql.append("and cwb in(");
+		strSql.append(this.getSmtNotPickingCwbInSqlParam(branchid, today) + ") ");
+		strSql.append("limit " + offset + "," + length);
+
+		return strSql.toString();
+	}
+
+	private String getSmtPickingSql(long branchid, int offset, int length, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where ");
+		strSql.append("deliverybranchid=" + branchid + " ");
+		// 订单类型为上门退.
+		strSql.append("and cwbordertypeid=" + 2 + " ");
+		// 小件员不为空.
+		strSql.append("and deliverid!='' ");
+		// 今日订单曾经处于领货状态.
+		strSql.append("and cwb in(");
+		strSql.append(this.getSmtPickingCwbInSqlParam(branchid, today) + ") ");
+		strSql.append("limit " + offset + "," + length);
+
+		return strSql.toString();
+	}
+
+	private String getSmtNotPickingOrderInSql(long branchid, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select cwb from express_ops_cwb_detail where ");
+		strSql.append("deliverybranchid=" + branchid + " ");
+		// 订单类型为上门退.
+		strSql.append("and cwbordertypeid=" + 2 + " ");
+		// 流程类型为分到到货和到错误或者配送类型分站滞留.
+		strSql.append("and (flowordertype IN(7,8) or deliverystate=6) ");
+		strSql.append("and cwb in(");
+		strSql.append(this.getSmtNotPickingCwbInSqlParam(branchid, today) + ") ");
+
+		return strSql.toString();
+	}
+
+	private String getSmtNotPickingCountSql(long branchid, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select count(1) from express_ops_cwb_detail where ");
+		strSql.append("deliverybranchid=" + branchid + " ");
+		// 订单类型为上门退.
+		strSql.append("and cwbordertypeid=" + 2 + " ");
+		// 小件员为空.
+		strSql.append("and deliverid='' ");
+		// 流程类型为分到到货和到错误或者配送类型分站滞留.
+		strSql.append("and (flowordertype IN(7,8) or deliverystate=6) ");
+		strSql.append("and cwb in(");
+		strSql.append(this.getSmtNotPickingCwbInSqlParam(branchid, today) + ") ");
+
+		return strSql.toString();
+	}
+
+	private String getSmtNotPickingCwbInSqlParam(long branchid, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select cwb from express_ops_order_flow where branchid=" + branchid + " ");
+		// 流程状态为分站到货和到错货状态或者配送状态为分站滞留.
+		String dhFlow = this.getOrderFlowTypes(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+		strSql.append("and flowordertype in(" + dhFlow + ") ");
+		strSql.append("and credate");
+		if (today) {
+			strSql.append(" >= ");
+		} else {
+			strSql.append(" < ");
+		}
+		// 处理时间.
+		String credate = this.getTodayZeroTimeString();
+		strSql.append("'" + credate + "'");
+
+		return strSql.toString();
+	}
+
+	private String getSmtPickingCwbInSqlParam(long branchid, boolean today) {
+		StringBuilder strSql = new StringBuilder();
+		strSql.append("select cwb from express_ops_order_flow where branchid=" + branchid + " ");
+		// 流程状态为分站到货和到错货状态或者配送状态为分站滞留.
+		String dhFlow = this.getOrderFlowTypes(FlowOrderTypeEnum.FenZhanLingHuo);
+		strSql.append("and flowordertype in(" + dhFlow + ") ");
+		strSql.append("and credate");
+		if (today) {
+			strSql.append(" >= ");
+		} else {
+			strSql.append(" < ");
+		}
+		// 处理时间.
+		String credate = this.getTodayZeroTimeString();
+		strSql.append("'" + credate + "'");
+
+		return strSql.toString();
+	}
+
+	@SuppressWarnings("unused")
+	private Map<String, Map<FlowOrderTypeEnum, String>> getOrderFlowTime(long branchId, String cwbs, String flowTypes, boolean today) {
+		String qrySql = this.getQueryOrderFlowTimeSql(branchId, cwbs, flowTypes, today);
+		Map<String, Map<FlowOrderTypeEnum, String>> flowTimeMap = new HashMap<String, Map<FlowOrderTypeEnum, String>>();
+		this.jdbcTemplate.query(qrySql, new OrderFlowTimeHandler(flowTimeMap));
+
+		return flowTimeMap;
+	}
+
+	private String getQueryOrderFlowTimeSql(long branchId, String cwbs, String flowTypes, boolean today) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select cwb , flowordertype , credate from express_ops_order_flow where ");
+		sql.append("cwb in (" + this.getSmtNotPickingOrderInSql(branchId, today) + ") ");
+		sql.append("and credate ");
+		if (today) {
+			sql.append(" >= ");
+		} else {
+			sql.append(" < ");
+		}
+		String todyZeroTimeString = this.getTodayZeroTimeString();
+		sql.append("'" + todyZeroTimeString + "' ");
+		sql.append("and flowordertype in (" + flowTypes + ") ");
+
+		return sql.toString();
+	}
+
+	private class OrderFlowTimeHandler implements RowCallbackHandler {
+
+		private Map<String, Map<FlowOrderTypeEnum, String>> typeMap = null;
+
+		private SimpleDateFormat dateFormat = null;
+
+		public OrderFlowTimeHandler(Map<String, Map<FlowOrderTypeEnum, String>> typeMap) {
+			this.typeMap = typeMap;
+		}
+
+		@Override
+		public void processRow(ResultSet rs) throws SQLException {
+			String cwb = rs.getString("cwb");
+			FlowOrderTypeEnum flowType = this.getOrderFlowType(rs);
+			String dateString = this.getDateString(rs);
+			if (!this.getTypeMap().containsKey(cwb)) {
+				this.getTypeMap().put(cwb, new HashMap<FlowOrderTypeEnum, String>());
+			}
+			this.getTypeMap().get(cwb).put(flowType, dateString);
+		}
+
+		private Map<String, Map<FlowOrderTypeEnum, String>> getTypeMap() {
+			return this.typeMap;
+		}
+
+		private FlowOrderTypeEnum getOrderFlowType(ResultSet rs) throws SQLException {
+			return FlowOrderTypeEnum.getText(rs.getInt("flowordertype"));
+		}
+
+		private String getDateString(ResultSet rs) throws SQLException {
+			return this.getDateFormat().format(new Date(rs.getLong("credate")));
+
+		}
+
+		private SimpleDateFormat getDateFormat() {
+			if (this.dateFormat == null) {
+				this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+			}
+			return this.dateFormat;
+		}
+
 	}
 
 	private String getSmtOrderQryFields() {
-		return "opscwbid,cwb,consigneename,consigneeaddress,consigneephone,shouldfare,excelbranch";
+		return "opscwbid,cwb,consigneename,consigneeaddress,consigneephone,shouldfare,excelbranch,deliverid";
 	}
 
-	private long getTodayZeroTimeInMillis() {
+	private String getTodayZeroTimeString() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
-
-		return cal.getTimeInMillis();
+		Date date = new Date(cal.getTimeInMillis());
+		return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 	}
-
 }
