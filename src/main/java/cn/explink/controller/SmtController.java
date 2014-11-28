@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,7 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -18,14 +24,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.util.ExcelUtils;
 
 @Controller
 @RequestMapping("/smt")
 public class SmtController {
+
+	private static final String TODAY_OUT_AREA_FN = "今日超区.xlsx";
+
+	private static final String EXCEPTION_DATA_FN = "异常数据.xlsx";
 
 	@Autowired
 	private CwbDAO cwbDAO = null;
@@ -89,6 +101,20 @@ public class SmtController {
 		public static OptTimeTypeEnum getDataType(String name) {
 			return OptTimeTypeEnum.nameMap.get(name);
 		}
+	}
+
+	private enum ColumnEnum {
+		OrderNo("订单号"), MatchStation("匹配站点"), ReceivableFee("应收运费"), Delvier("小件员"), CustomerName("退件人姓名"), Phone("联系方式"), Address("取件地址");
+
+		String name;
+
+		ColumnEnum(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
 
 	}
 
@@ -97,6 +123,8 @@ public class SmtController {
 		this.addBranchDelvierToModel(model);
 		this.addTodayNotDispatchedData(model);
 		this.addHistoryNotDispatchedData(model);
+		this.addTodayDispatchData(model);
+		this.addTodayOutAreaData(model);
 
 		return "smt/smtorderdispatch";
 	}
@@ -107,7 +135,7 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querysmtorder")
-	public SmtOrderContainer querySmtOrder(HttpServletRequest request) {
+	public @ResponseBody SmtOrderContainer querySmtOrder(HttpServletRequest request) {
 		OrderTypeEnum dataType = this.getDataType(request);
 		OptTimeTypeEnum timeType = this.getTimeType(request);
 		int page = this.getQueryPage(request);
@@ -117,8 +145,120 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querytodayoutareaorder")
-	public SmtOrderContainer queryTodayOutAreaOrder() {
-		return null;
+	public @ResponseBody SmtOrderContainer queryTodayOutAreaOrder() {
+		StringBuilder fullSql = new StringBuilder();
+		String sql = this.getOrderListQuerySql(OrderTypeEnum.All, OptTimeTypeEnum.Today, 1, false);
+		fullSql.append(sql);
+		// 追加超区条件.
+		this.appendOutAreaWhereCond(fullSql);
+
+		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(fullSql.toString());
+		SmtOrderContainer ctn = new SmtOrderContainer();
+		ctn.setSmtOrderList(orderList);
+
+		return ctn;
+	}
+
+	@RequestMapping("/showconfirmdialog")
+	public String showConfirmDialog() {
+		return "smt/confirm";
+	}
+
+	@RequestMapping("/exportdata")
+	public void exportData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		OrderTypeEnum dataType = this.getDataType(request);
+		OptTimeTypeEnum timeType = this.getTimeType(request);
+		int page = this.getQueryPage(request);
+		boolean dispatched = this.getDipatched(request);
+		SmtOrderContainer ctn = this.querySmtOrder(dataType, timeType, page, dispatched);
+
+		this.exportData(response, ctn, dataType, timeType, dispatched);
+	}
+
+	@RequestMapping("/exporttodayoutareadata")
+	public void exportOutAreaData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		SmtOrderContainer order = this.queryTodayOutAreaOrder();
+		this.exportTodayOutAreaData(response, order, SmtController.TODAY_OUT_AREA_FN);
+	}
+
+	@RequestMapping("/exportexceptiondata")
+	public void exportExceptionData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		SmtOrderContainer order = this.queryExceptionData(request);
+		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
+	}
+
+	private SmtOrderContainer queryExceptionData(HttpServletRequest request) {
+		String cwbs = request.getParameter("cwbs");
+		SmtOrderContainer ctn = new SmtOrderContainer();
+		if (cwbs.length() == 0) {
+			ctn.setSmtOrderList(new ArrayList<SmtOrder>());
+		} else {
+			ctn.setSmtOrderList(this.cwbDAO.querySmtOrder(this.getOrderQuerySql(cwbs)));
+		}
+		return ctn;
+	}
+
+	private String getOrderQuerySql(String cwbs) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where ");
+		this.appendBranchWhereCond(sql);
+		this.appendCwbsWhereCond(sql, cwbs);
+
+		return sql.toString();
+	}
+
+	private void exportTodayOutAreaData(HttpServletResponse response, SmtOrderContainer ctn, String fileName) throws Exception {
+		ExportHandler handler = new ExportHandler(ctn);
+		handler.excel(response, this.getColumnNames(), "sheet1", fileName);
+	}
+
+	private void exportData(HttpServletResponse response, SmtOrderContainer ctn, OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) throws Exception {
+		ExportHandler handler = new ExportHandler(ctn);
+		String fileName = this.getFileName(dataType, timeType, dispatched);
+		handler.excel(response, this.getColumnNames(), "sheet1", fileName);
+	}
+
+	private String getFileName(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
+		StringBuilder fileName = new StringBuilder();
+		this.appendTimeTypeToFileName(fileName, timeType);
+		this.appendOrderTypeToFileName(fileName, dataType);
+		this.appendDispatchToFileName(fileName, dispatched);
+		fileName.append(".xlsx");
+
+		return fileName.toString();
+	}
+
+	private void appendTimeTypeToFileName(StringBuilder fileName, OptTimeTypeEnum timeType) {
+		if (OptTimeTypeEnum.Today.equals(timeType)) {
+			fileName.append("今日");
+		} else {
+			fileName.append("历史");
+		}
+	}
+
+	private void appendOrderTypeToFileName(StringBuilder fileName, OrderTypeEnum dataType) {
+		if (OrderTypeEnum.Normal.equals(dataType)) {
+			fileName.append("新单");
+		} else if (OrderTypeEnum.Transfer.equals(dataType)) {
+			fileName.append("转单");
+		} else {
+		}
+	}
+
+	private void appendDispatchToFileName(StringBuilder fileName, boolean dispatched) {
+		if (dispatched) {
+			fileName.append("已分派");
+		} else {
+			fileName.append("未分派");
+		}
+	}
+
+	private String[] getColumnNames() {
+		List<String> colNameList = new ArrayList<String>();
+		for (ColumnEnum colEnum : ColumnEnum.values()) {
+			colNameList.add(colEnum.getName());
+		}
+		return colNameList.toArray(new String[0]);
 	}
 
 	private void addTodayNotDispatchedData(Model model) {
@@ -138,13 +278,53 @@ public class SmtController {
 		model.addAttribute("hTraNotDisCnt", hTraNotDisCnt);
 	}
 
+	private void addTodayDispatchData(Model model) {
+		int hNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		int hTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		model.addAttribute("tNorDisCnt", hNorDisCnt);
+		model.addAttribute("tTraDisCnt", hTraDisCnt);
+	}
+
+	private void addTodayOutAreaData(Model model) {
+		int tOutAreaCnt = this.queryTodayOutAreaCount();
+		model.addAttribute("tOutAreaCnt", tOutAreaCnt);
+	}
+
 	private SmtOrderContainer querySmtOrder(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched) {
 		String sql = this.getOrderListQuerySql(dataType, timeType, page, dispatched);
 
+		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
+		this.fillUserName(orderList);
+
 		SmtOrderContainer container = new SmtOrderContainer();
-		container.setSmtOrderList(this.cwbDAO.querySmtOrder(sql));
+		container.setSmtOrderList(orderList);
 
 		return container;
+	}
+
+	private void fillUserName(List<SmtOrder> orderList) {
+		if (orderList.isEmpty()) {
+			return;
+		}
+		List<Long> deliverIdList = this.getDeliverIdList(orderList);
+		if (deliverIdList.isEmpty()) {
+			return;
+		}
+		Map<Long, String> nameMap = this.userDAO.getUserNameMap(deliverIdList);
+		for (SmtOrder order : orderList) {
+			order.setStrDeliver(nameMap.get(Long.valueOf(order.getDeliver())));
+		}
+	}
+
+	private List<Long> getDeliverIdList(List<SmtOrder> orderList) {
+		List<Long> deliverIdList = new ArrayList<Long>();
+		for (SmtOrder order : orderList) {
+			if (order.getDeliver() == 0) {
+				continue;
+			}
+			deliverIdList.add(Long.valueOf(order.getDeliver()));
+		}
+		return deliverIdList;
 	}
 
 	private int querySmtOrderCount(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
@@ -157,13 +337,23 @@ public class SmtController {
 		return OrderTypeEnum.getDataType(request.getParameter("dataType"));
 	}
 
+	private int queryTodayOutAreaCount() {
+		StringBuilder fullSql = new StringBuilder();
+		String sql = this.getOrderCountQuerySql(OrderTypeEnum.All, OptTimeTypeEnum.Today, false);
+		fullSql.append(sql);
+		// 追加超区条件.
+		this.appendOutAreaWhereCond(fullSql);
+
+		return this.cwbDAO.querySmtOrderCount(fullSql.toString());
+	}
+
 	private OptTimeTypeEnum getTimeType(HttpServletRequest request) {
 		return OptTimeTypeEnum.getDataType(request.getParameter("timeType"));
 	}
 
 	private int getQueryPage(HttpServletRequest request) {
 		String strPage = request.getParameter("page");
-		return strPage == null ? 0 : Integer.valueOf(strPage).intValue() - 1;
+		return strPage == null ? 1 : Integer.valueOf(strPage).intValue();
 	}
 
 	private boolean getDipatched(HttpServletRequest request) {
@@ -201,6 +391,9 @@ public class SmtController {
 	}
 
 	private void appendLimit(StringBuilder sql, int page) {
+		if (page == -1) {
+			return;
+		}
 		int start = (page - 1) * 100;
 		int end = page * 100;
 		sql.append("limit " + start + "," + end);
@@ -221,13 +414,21 @@ public class SmtController {
 		this.appendTimeTypeWhereCond(sql, timeType);
 	}
 
+	private void appendOutAreaWhereCond(StringBuilder sql) {
+
+	}
+
 	private void appendBranchWhereCond(StringBuilder sql) {
 		long branchId = this.getCurrentBranchId();
 		sql.append("deliverybranchid=" + branchId + " ");
 	}
 
+	private void appendCwbsWhereCond(StringBuilder sql, String cwbs) {
+		sql.append("and cwb in(" + cwbs + ") ");
+	}
+
 	private void appendSmtOrderTypeWhereCond(StringBuilder sql) {
-		sql.append("and cwbordertypeid=" + 2 + " ");
+		// sql.append("and cwbordertypeid=" + 2 + " ");
 	}
 
 	private void appendDispatchedWhereCond(StringBuilder sql, boolean dispatched) {
@@ -309,11 +510,73 @@ public class SmtController {
 
 	private String getTodayZeroTimeString() {
 		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		Date date = new Date(cal.getTimeInMillis());
-		return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+		// 大写HH为24小时,小写hh为12小时.
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
 
+	private class ExportHandler extends ExcelUtils {
+
+		private SmtOrderContainer contianer = null;
+
+		public ExportHandler(SmtOrderContainer container) {
+			this.contianer = container;
+		}
+
+		@Override
+		public void fillData(Sheet sheet, CellStyle style) {
+			int rowNum = 1;
+			List<SmtOrder> orderList = this.getOrderList();
+			for (SmtOrder order : orderList) {
+				this.createRow(sheet, order, rowNum++, style);
+			}
+		}
+
+		private void createRow(Sheet sheet, SmtOrder order, int rowNum, CellStyle style) {
+			Row row = sheet.createRow(rowNum);
+			this.handleSheet(sheet, style);
+			this.createStringCell(row, 0, order.getCwb(), style);
+			this.createStringCell(row, 1, order.getMatchBranch(), style);
+			this.createNumberCell(row, 2, order.getReceivedFee(), style);
+			this.createStringCell(row, 3, order.getStrDeliver(), style);
+			this.createStringCell(row, 4, order.getCustomerName(), style);
+			this.createStringCell(row, 5, order.getPhone(), style);
+			this.createStringCell(row, 6, order.getAddress(), style);
+		}
+
+		private void handleSheet(Sheet sheet, CellStyle style) {
+			style.setAlignment(CellStyle.ALIGN_CENTER);
+			sheet.setColumnWidth(0, 15 * 256);
+			sheet.setColumnWidth(1, 15 * 256);
+			sheet.setColumnWidth(2, 15 * 256);
+			sheet.setColumnWidth(3, 15 * 256);
+			sheet.setColumnWidth(4, 15 * 256);
+			sheet.setColumnWidth(5, 25 * 256);
+			sheet.setColumnWidth(6, 50 * 256);
+		}
+
+		private void createStringCell(Row row, int column, String value, CellStyle style) {
+			Cell cell = row.createCell(column);
+			cell.setCellStyle(style);
+			cell.setCellValue(value);
+		}
+
+		private void createNumberCell(Row row, int column, double value, CellStyle style) {
+			Cell cell = row.createCell(column);
+			cell.setCellStyle(style);
+			cell.setCellValue(value);
+		}
+
+		private List<SmtOrder> getOrderList() {
+			return this.getContianer().getSmtOrderList();
+		}
+
+		private SmtOrderContainer getContianer() {
+			return this.contianer;
+		}
+
+	}
 }

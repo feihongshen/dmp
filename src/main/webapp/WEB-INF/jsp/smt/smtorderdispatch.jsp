@@ -1,202 +1,42 @@
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
-<%@page
-	import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
-<%@page
-	import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
+<%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@page import="cn.explink.domain.SmtOrderContainer"%>
+<%@page import="cn.explink.domain.SmtOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+	//今日未分派.
+Integer tNorNotDisCnt = (Integer)request.getAttribute("tNorNotDisCnt");
+Integer tTraNotDisCnt = (Integer)request.getAttribute("tTraNotDisCnt");
+SmtOrderContainer ctn = (SmtOrderContainer)request.getAttribute("tNotDisData");
+List<SmtOrder> tNotDisData= ctn.getSmtOrderList();
+//历史未分派.
+Integer hNorNotDisCnt = (Integer)request.getAttribute("hNorNotDisCnt");
+Integer hTraNotDisCnt = (Integer)request.getAttribute("hTraNotDisCnt");
+//今日已分派.
+Integer tNorDisCnt = (Integer)request.getAttribute("tNorDisCnt");
+Integer tTraDisCnt = (Integer)request.getAttribute("tTraDisCnt");
+//今日超区.
+Integer tOutAreaCnt = (Integer)request.getAttribute("tOutAreaCnt");
+//小件员.
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
-Integer todayNotPickingCwbCount = (Integer)request.getAttribute("todayNotPickingCwbCount");
-Integer historyNotPickingCwbCount = (Integer)request.getAttribute("historyNotPickingCwbCount");
-List<CwbOrder> todayNotPickingCwbList= (List<CwbOrder> )request.getAttribute("todayNotPickingCwbList");
-List<CwbOrder> historyNotPickingCwbList= (List<CwbOrder> )request.getAttribute("historyNotPickingCwbList");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script src="<%=request.getContextPath()%>/js/LodopFuncs.js"
-	type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css"
-	type="text/css" />
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
-	type="text/javascript"></script>
-<script language="javascript"
-	src="<%=request.getContextPath()%>/js/js.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
-var data;
-var startIndex=0;
-var step=4;
-var preStep;
-function initEmailDateUI(emaildate){
-	 $.ajax({
-		 type: "POST",
-			url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
-			data:{customerids:$("#customerid").val(),state:"-1"},
-			success:function(optionData){
-				data=optionData;
-				var optionstring="";
-				var high ="";
-				var preStep;
-				for(var j=0;j<data.length;j++){
-					if(data[j].emaildateid==emaildate){
-						preStep=j;
-					}
-				}
-				moreOpt();
-				if(emaildate){
-					$("#emaildate").val(emaildate);
-				}
-			
-			}
-		});
-}
-	function moreOpt(){
-		step=startIndex+4;
-		if(preStep>step){
-			step=preStep;
-		}
-		for(var i=startIndex;i<data.length;i++){
-			if(i>step){
-				continue;
-			}
-			optionstring="<option value='"+data[i].emaildateid+"'>"+
-			data[i].emaildatetime+(data[i].state==0?"（未到货）":"")+" "+
-			data[i].customername+"_"+data[i].warehousename+"_"+data[i].areaname
-			+"</option>";
-			var opt=$(optionstring);
-			$("#emaildate").append(opt);
-			startIndex=i+1;
-		}
-	}
-var emaildate=0;
-	$(function(){
-		$("#more").click(moreOpt);
-		emaildate=GetQueryString("emaildate");
-		initEmailDateUI(emaildate);
-		getcwbsdataForCustomer($("#customerid").val(),'',emaildate);
-		getcwbsquejiandataForCustomer($("#customerid").val());
-		$("#scancwb").focus();
-		$("#updateswitch").click(function(){
-			var switchstate = "rkbq_02";
-			if($("#updateswitch").attr("checked")=="checked"){
-				switchstate = $("#updateswitch").val();
-				$("#rk_switch").val(switchstate);
-			}else{
-				switchstate = "rkbq_02";
-				$("#rk_switch").val("rkbq_02");
-			}
-			$.ajax({
-				type: "POST",
-				url:"<%=request.getContextPath()%>/switchcontroller/updateswitch?switchstate="+switchstate,
-				dataType:"json",
-				success : function(data) {
-					if(data.errorCode==1){
-						alert(data.error);
-					}
-				}                 
-			});
-		});
-	});
-	 $(function(){
-			var $menuli = $(".saomiao_tab ul li");
-			$menuli.click(function(){
-				$(this).children().addClass("light");
-				$(this).siblings().children().removeClass("light");
-				var index = $menuli.index(this);
-				/* $(".tabbox li").eq(index).show().siblings().hide(); */
-			});
-			
-		}) 
-
-	 $(function() {
-		var $menuli = $(".saomiao_tab2 ul li");
-		$menuli.click(function() {
-			$(this).children().addClass("light");
-			$(this).siblings().children().removeClass("light");
-			var index = $menuli.index(this);
-			$(".tabbox li").eq(index).show().siblings().hide();
-		});
-	});
-	
-	function focusCwb(){
-		$("#scancwb").focus();
-	}
-	function tabView(tab){
-		$("#"+tab).click();
-	}
-	
-	//得到当前入库的供应商的库存量
-	function getcwbsdataForCustomer(customerid, cwb,emaildate) {
-		$.ajax({
-			type : "POST",
-			url : "<%=request.getContextPath()%>/PDA/getInSum",
-			data : {
-				"customerid" : customerid,
-				"cwb" : cwb,
-				"emaildate": emaildate
-			},
-			dataType : "json",
-			success : function(data) {
-				$("#rukukucundanshu").html(data.weirukucount);
-				$("#rukukucunjianshu").html(data.weirukusum);
-				$("#successcwbnum").html(data.yirukunum);
-			}
-		});
-	}
-	
-	
-	//得到入库缺货件数的统计
-	function getcwbsquejiandataForCustomer(customerid) {
-		$.ajax({
-			type : "POST",
-			url : "<%=request.getContextPath()%>/PDA/getInQueSum",
-			data : {
-				"customerid" : customerid,
-				"emaildate":emaildate
-			},
-			dataType : "json",
-			success : function(data) {
-				$("#lesscwbnum").html(data.lesscwbnum);
-			}
-		});
-	}
-	
-	//得到入库缺货件数的list列表
-	function getrukucwbquejiandataList(customerid){
-		$.ajax({
-			type : "POST",
-			url : "<%=request.getContextPath()%>/PDA/getInQueList",
-			data : {
-				"customerid" : customerid,
-				"emaildate":emaildate
-			},
-			dataType : "html",
-			success : function(data) {
-				$("#lesscwbTable").html(data);
-			}
-		});
-		
-	}
-function callfunction(cwb){//getEmailDateByIds
-	$.ajax({
-		type: "POST",
-		url:"<%=request.getContextPath()%>/PDA/getEmaildateid/"+cwb,
-		data:{customerids:$("#customerid").val(),state:'0'},
-		success:function(data){
-			alert(data.cwb+"订单号不在本批次中，请选择"+data.emaildatename+"的批次");
-		}
-	});
-}
-
 
 function addAndRemoval(cwb,tab,isRemoval){
 	var trObj = $("#ViewList tr[cwb='"+cwb+"']");
@@ -291,70 +131,52 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 	 }	 
  }
  
- function loadHistoryNotPickingOrder(scope)
- {
+ 
+function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabIndex){
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/smt/loadsmthistorynotpickingorder",
-		 dataType:"json",
-		 async:false,
-		 data:{scope:scope,page:1},
-		 success:function(data){
-	 		var smtOrderList = data.smtOrderList;
-	 		refreshTable("history_table" , smtOrderList ,1);
-		 },
-		 error:function(data)
-		 {
-			 alert(data);
-		 }
-	 });
- }
- 
- 
- function loadTodayNotPickingOrder(scope){
+		 url:"<%=request.getContextPath()%>/smt/querysmtorder",
+			dataType : "json",
+			async : false,
+			data:{
+				dataType:dataType,
+				timeType:timeType,
+				dispatched:dispatched,
+				page:page
+			},
+			success : function(data) {
+				var dataList = data.smtOrderList;
+				if(tableId == "today_table" || tableId =="history_table"){
+ 					refreshTable(tableId,dataList,tabIndex ,true);
+				}
+				else{
+ 					refreshTable(tableId,dataList,tabIndex ,false);
+				}
+				setCurrentDataFilterCond(dataType , timeType , dispatched);
+			},
+			error : function(data) {
+				alert(data);
+			}
+		});
+}
+
+function setCurrentDataFilterCond(dataType , timeType , dispatched)
+{
+	var $from = $("#exportForm");
+	$("#dataType" ,$from).val(dataType);
+	$("#timeType" ,$from).val(dataType);
+	$("#dispatched" , $from).val(dispatched);
+}
+
+function loadTodayOutAreaOrder(){
 	 $.ajax({
 		 type:"post",
-		 url:"<%=request.getContextPath()%>/smt/loadsmttodaynotpickingorder",
-		 dataType:"json",
-		 async:false,
-		 data:{scope:scope,page:1},
-		 success:function(data){
-	 		var smtOrderList = data.smtOrderList;
-	 		refreshTable("today_table" , smtOrderList,0);
-		 },
-		 error:function(data){
-			 alert(data);
-		 }
-	 });
- }
- 
- 
- function loadTodayPickingOrder(scope){
-	 $.ajax({
-		 type:"post",
-		 url:"<%=request.getContextPath()%>/smt/loadsmttodaypickingorder",
-		 dataType:"json",
-		 async:false,
-		 data:{scope:scope,page:1},
-		 success:function(data){
-	 		var smtOrderList = data.smtOrderList;
-	 		refreshTable("today_picking_table" , smtOrderList,2);
-		 },
-		 error:function(data){
-			 alert(data);
-		 }
-	 });
- }
- 
- function loadTodayOutAreaOrder()
- {
-	 $.ajax({
-		 type:"post",
-		 url:"<%=request.getContextPath()%>/smt/loadsmttodayoutareaorder",
+		 url:'<%=request.getContextPath()+ "/smt/querytodayoutareaorder"%>',
 			dataType : "json",
 			async : false,
 			success : function(data) {
-				var smtOrderList = data.smtOrderList;
+				var dataList = data.smtOrderList;
+				refreshTable("out_area_table", dataList, 4, false);
 			},
 			error : function(data) {
 				alert(data);
@@ -362,44 +184,21 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		});
 	}
 
- 
- 	function loadSmtOrder(dataType , timeType , dispatched , page ,tableId , dtabIndex){
- 		 $.ajax({
- 			 type:"post",
- 			 url:"<%=request.getContextPath()%>/smt/querysmtorder",
- 				dataType : "json",
- 				async : false,
- 				data:{
- 					dataType:dataType,
- 					timeType:timeType,
- 					dispatched:dispatched,
- 					page:page
- 				},
- 				success : function(data) {
- 					var smtOrderList = data.smtOrderList;
- 					refreshTable(tableId,dataList,tabIndex);
- 				},
- 				error : function(data) {
- 					alert(data);
- 				}
- 			});
- 	}
-
- 	function refreshTable(tableId, dataList, tableIndex) {
+	function refreshTable(tableId, dataList, tableIndex, withCheckBox) {
 		var $table = $("#" + tableId);
 		$table.empty();
 		if (dataList) {
-			var dataHtml = createTableRowData(dataList);
+			var dataHtml = createTableRowData(dataList, withCheckBox);
 			$table.append(dataHtml);
 		}
 		showTab(tableIndex);
 	}
 
-	function createTableRowData(dataList) {
+	function createTableRowData(dataList, withCheckBox) {
 		var allRow = "";
 		var length = dataList.length;
 		for (var i = 0; i < length; i++) {
-			var tr = createTR(dataList[i]);
+			var tr = createTR(dataList[i], withCheckBox);
 			allRow += tr;
 		}
 		return allRow;
@@ -412,12 +211,17 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		$(".tabbox li").eq(index).show().siblings().hide();
 	}
 
-	function createTR(data) {
+	function createTR(data, widthCheckBox) {
 		var tr = "<tr cwb="+ data.cwb +">";
-		tr += createTD("center", "40px", "<input type='checkbox'></input>");
+		if (widthCheckBox) {
+			tr += createTD("center", "40px", "<input type='checkbox'></input>");
+		}
 		tr += createTD("center", "100px", data.cwb);
 		tr += createTD("center", "100px", data.matchBranch);
 		tr += createTD("right", "100px", data.receivedFee);
+		if (data.strDeliver != undefined) {
+			tr += createTD("center", "100px", data.strDeliver);
+		}
 		tr += createTD("center", "100px", data.customerName);
 		tr += createTD("center", "150px", data.phone);
 		tr += createTD("center", null, data.address);
@@ -434,27 +238,42 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		return td;
 	}
 
+	var currentOutAreaTableId;
+	var currentCwbs;
+
 	function outArea(tableId) {
+		var cwbs = this.getSelectedCwbs(tableId);
+		if (cwbs.length == 0) {
+			showTipDialog();
+			return;
+		}
+		currentOutAreaTableId = tableId;
+		currentCwbs = cwbs;
+		showConfrimDialog();
+	}
+
+	function getSelectedCwbs(tableId) {
 		var $table = $("#" + tableId);
 		var cwbs = [];
-		$table.find("input[type='checkbox']").filter(":checked").each(function(){
-			var cwb = $(this).closest("tr").attr("cwb");
-			cwbs.push(cwb);
-		});
-		if(cwbs.length ==0)
-			{
-			
-			}
-		 $.ajax({
-			 type:"post",
-			 url:"<%=request.getContextPath()%>/PDA/smtorderoutarea",
+		$table.find("input[type='checkbox']").filter(":checked").each(
+				function() {
+					var cwb = $(this).closest("tr").attr("cwb");
+					cwbs.push(cwb);
+				});
+		return cwbs;
+	}
+
+	function confirmOutArea() {
+		$.ajax({
+			type : "post",
+			url :'<%=request.getContextPath() + "/smt/smtorderoutarea"%>',
 			dataType : "json",
 			async : false,
 			data : {
-				cwbs : cwbs
+				cwbs : currentCwbs
 			},
 			success : function(data) {
-				handleOutAreaSuccess(tableId, cwbs);
+				handleOutAreaSuccess(currentOutAreaTableId, currentCwbs);
 			},
 			error : function(data) {
 
@@ -471,6 +290,45 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		var $tOutArea = $("#t_out_area");
 		var oriCnt = $tOutArea.html();
 		$tOutArea.html(parseInt(oriCnt) + length);
+		closeConfirmDialog();
+	}
+
+	function showTipDialog() {
+		var $box = $("#tip_dialog");
+		$box.show();
+		innerCenterBox($("#box_contant"));
+	}
+
+	function closeTipDialog() {
+		$("#tip_dialog").hide();
+	}
+
+	function showConfrimDialog() {
+		var $box = $("#confirm_dialog");
+		$box.show();
+	}
+
+	function closeConfirmDialog() {
+		$("#confirm_dialog").hide();
+	}
+
+	function exportData() {
+		$("#exportForm").submit();
+	}
+
+	function exportTodayOutAreaData() {
+		$("#exportTodayOutAreaForm").submit();
+	}
+
+	function exportExceptionData() {
+		var cwbs = '';
+		var $from = $("#exportTodayOutAreaForm");
+		$("#exception_table tr").each(function() {
+			var cwb = $(this).attr("cwb");
+			cwbs += "'" + cwb + "',";
+		});
+		$("#cwbs", $from).val(cwbs);
+		$from.submit();
 	}
 </script>
 <style>
@@ -518,10 +376,8 @@ dl dd span {
 					<span>今日新单待分派</span><span>今日转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a
-						id="t_normal_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
-					<span onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a
-						id="t_transfer_not_picking" href="#"><%=todayNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a href="#"><%=tNorNotDisCnt%></a></span>
+					<span onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a href="#"><%=tTraNotDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -531,10 +387,8 @@ dl dd span {
 					<span>历史新单待分派</span><span>历史转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a
-						id="h_normal_not_picking" href="#"><%=historyNotPickingCwbCount%></a></span>
-					<span onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a
-						id="h_transfer_not_picking" href="#"><%=historyNotPickingCwbCount%></a></span>
+					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a href="#"><%=hNorNotDisCnt%></a></span>
+					<span onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a href="#"><%=hTraNotDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -542,11 +396,10 @@ dl dd span {
 				<dt>
 					<span>今日分派新单</span><span>今日分派转单</span>
 				</dt>
-				<dd>
+				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
-						id="t_normal_picking" href="#">0</a></span> <span
-						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
-						id="t_transfer_picking" href="#">0</a></span>
+						href="#"><%=tNorDisCnt%></a></span> <span
+						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a href="#"><%=tTraDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -554,12 +407,11 @@ dl dd span {
 			<dl class="red">
 				<dt>今日超区</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area"
-						href="#">0</a></span>
+					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#"><%=tOutAreaCnt%></a></span>
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
-				onclick="location.href='<%=request.getContextPath()%>/PDA/smtorderdispatch'"
+				onclick="location.href='<%=request.getContextPath()%>/smt/smtorderdispatch'"
 				style="float: left; width: 100px; height: 65px; cursor: pointer; border: none; background: url(../images/buttonbgimg1.gif) no-repeat; font-size: 18px; font-family: '微软雅黑', '黑体'" />
 			<br clear="all" />
 		</div>
@@ -588,8 +440,7 @@ dl dd span {
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
 						<p>
-							订单号：<input type="text" class="saomiao_inputtxt2" id="scancwb"
-								name="scancwb" value=""
+							订单号：<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""
 								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchDeliver("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val(),$("#requestbatchno").val());}' />
 						</p>
 					</div>
@@ -604,9 +455,8 @@ dl dd span {
 						<p id="cwbDetailshow" name="cwbDetailshow"></p>
 						<p id="customercommand" name="customercommand"></p>
 					</div>
-					<input type="hidden" id="requestbatchno" name="requestbatchno"
-						value="0" /> <input type="hidden" id="scansuccesscwb"
-						name="scansuccesscwb" value="" />
+					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
+						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
 			</div>
 		</div>
@@ -614,28 +464,26 @@ dl dd span {
 		<div>
 			<div class="saomiao_tab2">
 				<ul>
-					<li><a id="today_not_picking_a" href="#" class="light">今日未领货</a></li>
-					<li><a id="history_not_picking_a" href="#">历史待分派</a></li>
-					<li><a id="today_dispatch_a" href="#">今日已分派</a></li>
-					<li><a href="#">异常单明细</a></li>
-					<li><a id="today_out_area" href="#">今日超区</a></li>
+					<li><a href="#" class="light"
+						onclick="loadSmtOrder('all','today',false,1,'today_table',0)">今日未领货</a></li>
+					<li><a href="#" onclick="loadSmtOrder('all','history',false,1,'history_table',1)">历史待分派</a></li>
+					<li><a href="#" onclick="loadSmtOrder('all','today',true,1,'today_dispatch_table',2)">今日已分派</a></li>
+					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
+					<li><a href="#" onclick="loadTodayOutAreaOrder()">今日超区</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
-				<li><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1"
-					onclick='exportField(1,$("#customerid").val());' /> <input
-					type="button" id="btnval0" value="超区" class="input_button1"
+				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
+					onclick='exportData()' /> <input type="button" id="btnval0" value="超区" class="input_button1"
 					onclick="outArea('today_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="40" align="center" bgcolor="#f1f1f1"><input
-												id="today_checkbox" type="checkbox"></input></td>
+											<td width="40" align="center" bgcolor="#f1f1f1"><input id="today_checkbox"
+												type="checkbox"></input></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -645,21 +493,19 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 170px; overflow-y: scroll">
-										<table id="today_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="today_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 											<%
-												for (CwbOrder co : todayNotPickingCwbList) {
+												for (SmtOrder so : tNotDisData) {
 											%>
-											<tr cwb="<%=co.getCwb()%>" class="cwbids">
-												<td width="40" align="center" bgcolor="#f1f1f1"><input
-													type="checkbox"></input></td>
-												<td width="120" align="center" bgcolor="#f1f1f1"><%=co.getCwb()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-												<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneename()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getConsigneephone()%></td>
-												<td align="center" bgcolor="#f1f1f1"><%=co.getConsigneeaddress()%></td>
-
+											<tr cwb="<%=so.getCwb()%>" class="cwbids">
+												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
+												<td width="120" align="center" bgcolor="#f1f1f1"><%=so.getCwb()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getMatchBranch()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getReceivedFee()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCustomerName()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getPhone()%></td>
+												<td align="center" bgcolor="#f1f1f1"><%=so.getAddress()%></td>
 											</tr>
 											<%
 												}
@@ -670,20 +516,17 @@ dl dd span {
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(2,$("#customerid").val());' /> <input
-					type="button" id="btnval0" value="超区" class="input_button1"
-					onclick="outArea('history_table')" />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="超区"
+					class="input_button1" onclick="outArea('history_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="40px" align="center" bgcolor="#f1f1f1"><input
-												id="history_checkbox" type="checkbox"></input></td>
+											<td width="40px" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
+												type="checkbox"></input></td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">应收运费</td>
@@ -693,8 +536,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="history_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="history_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -702,29 +545,26 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(4,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="today_dispatch_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="today_dispatch_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -732,44 +572,38 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(3,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportExceptionData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">客户名称</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="errorTable" width="100%" border="0" cellspacing="1"
-											cellpadding="2" class="table_2">
+										<table id="exception_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(3,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportTodayOutAreaData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
@@ -781,8 +615,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="out_area_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="out_area_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -791,18 +625,66 @@ dl dd span {
 					</table></li>
 			</div>
 		</div>
-
-		<form action="<%=request.getContextPath()%>/PDA/exportExcle"
-			method="post" id="searchForm2">
-			<input type="hidden" name="cwbs" id="cwbs" value="" /> <input
-				type="hidden" name="exportmould2" id="exportmould2" />
-		</form>
-		<form action="<%=request.getContextPath()%>/PDA/exportByCustomerid"
-			method="post" id="searchForm3">
-			<input type="hidden" name="customerid" value="0" id="expcustomerid" />
-			<input type="hidden" name="emaildate" value="0" id="expemailid" /> <input
-				type="hidden" name="type" value="" id="type" />
-		</form>
 	</div>
+	<input type="hidden" id="edit" value="<%=request.getContextPath()%>/smt/showconfirmdialog" />
+
+	<div id="confirm_dialog" style="display: none">
+		<div id="box_contant" style="width: 270px">
+			<div id="box_top_bg"></div>
+			<div id="box_in_bg">
+				<h1>
+					<div id="close_box" onclick="closeConfirmDialog()"></div>
+					提示
+				</h1>
+				<form>
+					<div id="box_form" style="font-size: 13px">
+						<ul>
+							<li>请确认是否将选中数据处理为超区.</li>
+						</ul>
+					</div>
+					<div align="center" style="margin-left: 4px">
+						<span><input type="button" value="确认" class="button" onclick="confirmOutArea()" /></span> <span><input
+							type="button" value="取消" class="button" onclick="closeConfirmDialog()" /></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div id="tip_dialog" style="display: none;">
+		<div id="box_contant" style="width: 200px">
+			<div id="box_top_bg"></div>
+			<div id="box_in_bg">
+				<h1>
+					<div id="close_box" onclick="closeTipDialog()"></div>
+					提示
+				</h1>
+				<form>
+					<div id="box_form" style="font-size: 20px; margin-left: 4px">
+						<ul>
+							<li id="content">请选中数据</li>
+						</ul>
+					</div>
+					<div align="center">
+						<input type="button" value="确认" class="button" onclick="closeTipDialog()" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<form action='<%=request.getContextPath() + "/smt/exportdata"%>' method="post" id="exportForm"
+		style="padding: 10px">
+		<input type="hidden" id="dataType" name="dataType" value="all" /> <input type="hidden"
+			id="timeType" name="timeType" value="today" /> <input type="hidden" id="dispatched"
+			name="dispatched" value="false" />
+	</form>
+
+	<form action='<%=request.getContextPath() + "/smt/exportexceptiondata"%>' method="post"
+		id="exportTodayOutAreaForm" style="padding: 10px">
+		<input type="hidden" id="cwbs" name="cwbs" />
+	</form>
+
+
+
 </body>
 </html>
