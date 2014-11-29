@@ -5742,5 +5742,17 @@ ALTER TABLE `express_ops_exception_cwb`
 MODIFY COLUMN `remark`  varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT '' AFTER `interfacetype`;
 		</sql>
 	</changeSet>
+	 <changeSet id="zhangpengkai-2014-11-29-1"  author="zhangpengkai">
+	 <sql>
+		ALTER TABLE `peisongdata_dmp_test`.`account_cwb_fare_detail` ADD COLUMN `verifytime` VARCHAR(50) NULL COMMENT '审核时间' AFTER `fareid`,
+		 ADD COLUMN `verifyflag` INT(2) DEFAULT 0 NULL COMMENT '是否审核0 默认，1已审核' AFTER `verifytime`;
+	 </sql>
+	 </changeSet>
+	 
+	 	<changeSet id="zhangpengkai-2014-11-29-2" author="zhangpengkai">
+		<sql>
+			INSERT  INTO `express_set_menu_info_new`(`menuname`,`menuurl`,`menulevel`,`menuno`,`parentno`,`menuimage`,`adminshowflag`) VALUES ('上门退运费审核','accountcwbfaredetailVerify/accountfarelist/1','3','Y10116','1085','images/smtyfjs.png',NULL);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  

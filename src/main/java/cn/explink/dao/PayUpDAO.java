@@ -2,7 +2,6 @@ package cn.explink.dao;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
-import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -197,7 +196,8 @@ public class PayUpDAO {
 	public long crePayUp(final PayUp pu) {
 
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_pay_up (upaccountnumber,upuserrealname,upbranchid,toaccountnumber,"
@@ -246,7 +246,7 @@ public class PayUpDAO {
 			sql += " and upbranchid=" + upbranchid;
 		}
 		sql += " order by credatetime asc  ";
-		return jdbcTemplate.query(sql, new PayUpRowMapper(), upstate);
+		return this.jdbcTemplate.query(sql, new PayUpRowMapper(), upstate);
 	}
 
 	public List<PayUpDTO> getPayUpByCredatetimeAndUpstateAndBranchidAudit(int upstate, String credatetime, String credatetime1, long branchid, long upbranchid) {
@@ -266,7 +266,7 @@ public class PayUpDAO {
 			sql += " and upbranchid=" + upbranchid;
 		}
 		sql += " GROUP BY branchid, DATE(credatetime) ORDER BY id ASC ";
-		return jdbcTemplate.query(sql, new PayUpAuditRowMapper(), upstate);
+		return this.jdbcTemplate.query(sql, new PayUpAuditRowMapper(), upstate);
 	}
 
 	public List<JSONObject> getAllPayUpByCredatetimeAndUpstateAndBranchid(long page, int upstate, String credatetime, String credatetime1, long branchid, long upbranchid, long type) {
@@ -299,9 +299,9 @@ public class PayUpDAO {
 		if (upbranchid > 0) {
 			sql += " and pu.upbranchid=" + upbranchid;
 		}
-		sql += " order by pu.credatetime asc limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " order by pu.credatetime asc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), upstate);
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), upstate);
 	}
 
 	public long getAllPayUpByCredatetimeAndUpstateAndBranchidCount(int upstate, String credatetime, String credatetime1, long branchid, long upbranchid, long type) {
@@ -336,7 +336,7 @@ public class PayUpDAO {
 		}
 		sql += " order by pu.credatetime asc ";
 
-		return jdbcTemplate.queryForLong(sql, upstate);
+		return this.jdbcTemplate.queryForLong(sql, upstate);
 	}
 
 	/**
@@ -381,7 +381,7 @@ public class PayUpDAO {
 				+ DeliveryStateEnum.ShangMenHuanChengGong.getValue()
 				+ ","
 				+ DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "," + DeliveryStateEnum.BuFenTuiHuo.getValue() + "," + DeliveryStateEnum.HuoWuDiuShi.getValue() + ") GROUP BY pu.id";
-		return jdbcTemplate.query(sql, new PayUpForMapRowMapper(), payupid);
+		return this.jdbcTemplate.query(sql, new PayUpForMapRowMapper(), payupid);
 	}
 
 	public List<JSONObject> getPayUpByIdForCountAudit(String payupids) {
@@ -396,7 +396,7 @@ public class PayUpDAO {
 				+ DeliveryStateEnum.ShangMenHuanChengGong.getValue()
 				+ ","
 				+ DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "," + DeliveryStateEnum.BuFenTuiHuo.getValue() + "," + DeliveryStateEnum.HuoWuDiuShi.getValue() + ") ";
-		return jdbcTemplate.query(sql, new PayUpForMapRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpForMapRowMapper());
 	}
 
 	/**
@@ -425,9 +425,9 @@ public class PayUpDAO {
 				sql += " and ds.checkfee>0";
 			}
 		}
-		sql += " order by ds.cwb limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " order by ds.cwb limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), payupid);
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), payupid);
 	}
 
 	public List<JSONObject> getPayUpByIdForDetailAudit(String payupids, long type, long page) {
@@ -447,9 +447,9 @@ public class PayUpDAO {
 				sql += " and ds.checkfee>0";
 			}
 		}
-		sql += " order by ds.cwb limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " order by ds.cwb limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
 	}
 
 	public List<JSONObject> getPayUpByIdForDetailNopage(long payupid, long type) {
@@ -471,7 +471,7 @@ public class PayUpDAO {
 		}
 		sql += " order by ds.cwb";
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), payupid);
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper(), payupid);
 	}
 
 	public List<JSONObject> getPayUpByIdForDetailAuditNopage(String payupids, long type) {
@@ -493,7 +493,7 @@ public class PayUpDAO {
 		}
 		sql += " order by ds.cwb";
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
 	}
 
 	public long getPayUpByIdForDetailCount(long payupid, long type) {
@@ -515,7 +515,7 @@ public class PayUpDAO {
 		}
 		sql += "  order by ds.cwb ";
 
-		return jdbcTemplate.queryForLong(sql, payupid);
+		return this.jdbcTemplate.queryForLong(sql, payupid);
 	}
 
 	public long getPayUpByIdForDetailAuditCount(String payupids, long type) {
@@ -537,7 +537,7 @@ public class PayUpDAO {
 		}
 		sql += "  order by ds.cwb ";
 
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	/**
@@ -551,9 +551,9 @@ public class PayUpDAO {
 	 */
 	public List<PayUp> getPayUpByBranchid(long upstate, int type, int way, String credatetime, String credatetime1, long branchid) {
 		String sql = "select * from express_ops_pay_up ";
-		sql = getPayUpByPageWhereSql(sql, upstate, type, way, credatetime, credatetime1, branchid);
+		sql = this.getPayUpByPageWhereSql(sql, upstate, type, way, credatetime, credatetime1, branchid);
 		sql += " order by credatetime desc ";
-		return jdbcTemplate.query(sql, new PayUpRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpRowMapper());
 	}
 
 	private String getPayUpByPageWhereSql(String sql, long upstate, int type, int way, String credatetime, String credatetime1, long branchid) {
@@ -578,7 +578,7 @@ public class PayUpDAO {
 	 */
 	public PayUp getPayUpById(long id) {
 		String sql = "select * from express_ops_pay_up where id=? ";
-		return jdbcTemplate.queryForObject(sql, new PayUpRowMapper(), id);
+		return this.jdbcTemplate.queryForObject(sql, new PayUpRowMapper(), id);
 	}
 
 	/**
@@ -586,7 +586,7 @@ public class PayUpDAO {
 	 */
 	public PayUp getPayUpByIdLock(long id) {
 		String sql = "select * from express_ops_pay_up where id=? for update ";
-		return jdbcTemplate.queryForObject(sql, new PayUpRowMapper(), id);
+		return this.jdbcTemplate.queryForObject(sql, new PayUpRowMapper(), id);
 	}
 
 	/**
@@ -594,17 +594,17 @@ public class PayUpDAO {
 	 */
 	public void savePayUpByBack(long id, String backRemark) {
 		String sql = "update express_ops_pay_up set upstate=1,remark=CONCAT(remark,'<br/>回复：',?) where id=? ";
-		jdbcTemplate.update(sql, backRemark, id);
+		this.jdbcTemplate.update(sql, backRemark, id);
 	}
 
 	public void savePayUpForAudting(long id, String auditinguser, String auditingremark, String auditingtime) {
 		String sql = "update express_ops_pay_up set upstate=?,auditinguser=?,auditingremark=?,auditingtime=? where id=? ";
-		jdbcTemplate.update(sql, 1, auditinguser, auditingremark, auditingtime, id);
+		this.jdbcTemplate.update(sql, 1, auditinguser, auditingremark, auditingtime, id);
 	}
 
 	public void savePayUpForAudtingAudit(String payupids, String auditinguser, String auditingremark, String auditingtime, long auditid) {
 		String sql = "update express_ops_pay_up set upstate=?,auditinguser=?,auditingremark=?,auditingtime=?,auditid=? where id in(" + payupids + ") ";
-		jdbcTemplate.update(sql, 1, auditinguser, auditingremark, auditingtime, auditid);
+		this.jdbcTemplate.update(sql, 1, auditinguser, auditingremark, auditingtime, auditid);
 	}
 
 	public List<JSONObject> getAllPayUpByCredatetimeAndUpstateAndBranchidNoPage(int upstate, String credatetime, String credatetime1, long branchid, long upbranchid, long type) {
@@ -639,7 +639,7 @@ public class PayUpDAO {
 		}
 		sql += " order by pu.credatetime asc ";
 
-		return jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpForDetailMapRowMapper());
 	}
 
 	private final class PayupByBranchid implements RowMapper<JSONObject> {
@@ -656,7 +656,7 @@ public class PayUpDAO {
 	public List<JSONObject> getPayupByDayGroupByBranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT branchid,SUM(`amount`) AS amount,SUM(`amountpos`) AS pos FROM `express_ops_pay_up` WHERE upstate=0 AND credatetime>? AND credatetime<=? GROUP BY branchid";
-			return jdbcTemplate.query(sql, new PayupByBranchid(), day, secondDay);
+			return this.jdbcTemplate.query(sql, new PayupByBranchid(), day, secondDay);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -677,7 +677,7 @@ public class PayUpDAO {
 	 *            修改订单时间
 	 */
 	public void updateForChongZhiShenHe(long id, BigDecimal amount, BigDecimal amount_pos, String updateTime) {
-		jdbcTemplate.update("update  express_ops_pay_up set " + "amount=?,amountpos=?,updatetime=? where id = ? ", amount, amount_pos, updateTime, id);
+		this.jdbcTemplate.update("update  express_ops_pay_up set " + "amount=?,amountpos=?,updatetime=? where id = ? ", amount, amount_pos, updateTime, id);
 
 	}
 
@@ -692,7 +692,7 @@ public class PayUpDAO {
 
 	public List<PayUp> getAllForExportbyid(String id) {
 		String sql = "select * from express_ops_pay_up where id in (" + id + ")";
-		return jdbcTemplate.query(sql, new PayUpRowMapper());
+		return this.jdbcTemplate.query(sql, new PayUpRowMapper());
 	}
 
 	// 新加为导出
@@ -717,7 +717,10 @@ public class PayUpDAO {
 				+ "FROM `express_ops_pay_up` pu LEFT JOIN `express_ops_goto_class_auditing` gca ON gca.payupid=pu.id	"
 				+ "LEFT JOIN `express_ops_delivery_state` ds ON ds.gcaid=gca.id WHERE pu.id in("
 				+ payupids + ") ";
-		return jdbcTemplate.queryForObject(sql, new PayUpExportRowMapper());
+		sql += " and ds.state =1  and ds.deliverystate in(" + DeliveryStateEnum.PeiSongChengGong.getValue() + "," + DeliveryStateEnum.ShangMenHuanChengGong.getValue() + ","
+				+ DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "," + DeliveryStateEnum.BuFenTuiHuo.getValue() + "," + DeliveryStateEnum.HuoWuDiuShi.getValue() + ")";
+
+		return this.jdbcTemplate.queryForObject(sql, new PayUpExportRowMapper());
 	}
 
 	// 新加方法，求出站点结算list
@@ -732,7 +735,7 @@ public class PayUpDAO {
 			sb.append(" and branchid=" + branchid);
 		}
 		sql += sb.toString();
-		return jdbcTemplate.queryForList(sql, String.class, credatetime, credatetime1);
+		return this.jdbcTemplate.queryForList(sql, String.class, credatetime, credatetime1);
 	}
 
 }

@@ -60,7 +60,8 @@ public class AccountCwbFareDetailDAO {
 
 	public void createAccountCwbFareDetail(final AccountCwbFareDetail accountCwbFareDetail) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into account_cwb_fare_detail(cwb,customerid,cwbordertypeid,deliverybranchid,audittime,"
@@ -81,7 +82,7 @@ public class AccountCwbFareDetailDAO {
 	}
 
 	public void saveAccountCwbFareDetailByCwb(final AccountCwbFareDetail accountCwbFareDetail) {
-		jdbcTemplate.update("update account_cwb_fare_detail set customerid=?,cwbordertypeid=?,deliverybranchid=?," + "audittime=?,deliverystate=?,shouldfare=?,infactfare=? where cwb=?",
+		this.jdbcTemplate.update("update account_cwb_fare_detail set customerid=?,cwbordertypeid=?,deliverybranchid=?," + "audittime=?,deliverystate=?,shouldfare=?,infactfare=? where cwb=?",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -99,7 +100,7 @@ public class AccountCwbFareDetailDAO {
 
 	public void saveAccountCwbFareDetailByCwb(String payuptime, long fareid, String cwbs) {
 		String sql = "update account_cwb_fare_detail set payuptime = ?,fareid = ? where cwb in(" + cwbs + ")";
-		jdbcTemplate.update(sql, payuptime, fareid);
+		this.jdbcTemplate.update(sql, payuptime, fareid);
 	}
 
 	public List<AccountCwbFareDetail> getAccountCwbFareDetailByQK(long page, String customerids, long ispay, long isaudittime, String begindate, String enddate, long deliverybranchid,
@@ -107,8 +108,32 @@ public class AccountCwbFareDetailDAO {
 		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKSql(sql, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
 
-		sql += " limit " + (page - 1) * pageNumber + " ," + pageNumber;
-		return jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
+		sql += " limit " + ((page - 1) * pageNumber) + " ," + pageNumber;
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
+	}
+
+	/**
+	 * 查询已交款的数据
+	 * 
+	 * @param page
+	 * @param customerids
+	 * @param ispay
+	 * @param verifytime
+	 * @param begindate
+	 * @param enddate
+	 * @param deliverybranchid
+	 * @param deliverystate
+	 * @param shoulefarefeesign
+	 * @param pageNumber
+	 * @return
+	 */
+	public List<AccountCwbFareDetail> getAccountCwbFareDetailByQKVerify(long page, String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid,
+			long deliverystate, long shoulefarefeesign, long pageNumber) {
+		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
+		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+
+		sql += " limit " + ((page - 1) * pageNumber) + " ," + pageNumber;
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
 
 	public List<AccountCwbFareDetail> getExportAccountCwbFareDetailByQK(String customerids, long ispay, long isaudittime, String begindate, String enddate, long deliverybranchid, long deliverystate,
@@ -116,7 +141,16 @@ public class AccountCwbFareDetailDAO {
 		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKSql(sql, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
 
-		return jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
+	}
+
+	// 财务审核
+	public List<AccountCwbFareDetail> getExportAccountCwbFareDetailByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid,
+			long deliverystate, long shoulefarefeesign) {
+		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
+		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
 
 	public long getAccountCwbFareDetailCountByQK(String customerids, long ispay, long isaudittime, String begindate, String enddate, long deliverybranchid, long deliverystate, long shoulefarefeesign) {
@@ -124,7 +158,32 @@ public class AccountCwbFareDetailDAO {
 		sql = this.getAccountCwbFareDetailByQKSql(sql, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
 
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * 财务审核查询
+	 * 
+	 * @param customerids
+	 * @param verifyflag
+	 * @param verifytime
+	 * @param begindate
+	 * @param enddate
+	 * @param deliverybranchid
+	 * @param deliverystate
+	 * @param shoulefarefeesign
+	 * @return
+	 */
+	public long getAccountCwbFareDetailCountByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid, long deliverystate,
+			long shoulefarefeesign) {
+		String sql = "select count(1) from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
+		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+
+		try {
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
 			return 0;
 		}
@@ -135,7 +194,18 @@ public class AccountCwbFareDetailDAO {
 		String sql = "select sum(shouldfare) as shouldfare,sum(infactfare) as infactfare from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKSql(sql, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
 		try {
-			return jdbcTemplate.queryForObject(sql, new AccountCwbFareDetailMOneyMapper());
+			return this.jdbcTemplate.queryForObject(sql, new AccountCwbFareDetailMOneyMapper());
+		} catch (DataAccessException e) {
+			return new AccountCwbFareDetail();
+		}
+	}
+
+	public AccountCwbFareDetail getAccountCwbFareDetailSumByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid, long deliverystate,
+			long shoulefarefeesign) {
+		String sql = "select sum(shouldfare) as shouldfare,sum(infactfare) as infactfare from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
+		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new AccountCwbFareDetailMOneyMapper());
 		} catch (DataAccessException e) {
 			return new AccountCwbFareDetail();
 		}
@@ -169,15 +239,43 @@ public class AccountCwbFareDetailDAO {
 		return sql;
 	}
 
+	// 财务审核
+	public String getAccountCwbFareDetailByQKVerifySql(String sql, String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid, long deliverystate,
+			long shoulefarefeesign) {
+		if (customerids.length() > 0) {
+			sql += " and customerid in(" + customerids + ")";
+		}
+		if (verifyflag == 0) { // 未审核 是交款时间
+			sql += " and audittime >= '" + begindate + "' ";
+			sql += " and audittime <= '" + enddate + "' ";
+		} else { // 已审核是审核时间
+			sql += " and verifyflag=1 ";
+			sql += " and verifytime >= '" + begindate + "' ";
+			sql += " and verifytime <= '" + enddate + "' ";
+		}
+		if (deliverybranchid > 0) {
+			sql += " and deliverybranchid=" + deliverybranchid;
+		}
+		if (deliverystate > 0) {
+			sql += " and deliverystate=" + deliverystate;
+		}
+		if (shoulefarefeesign > 0) {
+			sql += " and shouldfare>0";
+		} else {
+			sql += " and shouldfare=0";
+		}
+		return sql;
+	}
+
 	public List<AccountCwbFareDetail> getAccountCwbFareDetailByCwb(String cwb) {
 		String sql = "select * from account_cwb_fare_detail where cwb=? order by id desc";
-		return jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper(), cwb);
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper(), cwb);
 	}
 
 	public Map<String, AccountCwbFareDetail> getAccountCwbFareDetailMapByCwbs(String cwbs) {
 		String sql = "SELECT * from account_cwb_fare_detail where cwb in(" + cwbs + ") ";
 		final Map<String, AccountCwbFareDetail> cwbList = new HashMap<String, AccountCwbFareDetail>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				AccountCwbFareDetail accountCwbFareDetail = new AccountCwbFareDetail();
@@ -201,6 +299,6 @@ public class AccountCwbFareDetailDAO {
 
 	public void deleteAccountCwbFareDetailByCwb(String cwb) {
 		String sql = "delete from account_cwb_fare_detail where cwb=?";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 	}
 }

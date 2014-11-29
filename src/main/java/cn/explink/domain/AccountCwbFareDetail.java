@@ -15,8 +15,27 @@ public class AccountCwbFareDetail {
 	private String payuptime;// 交款时间
 	private long fareid;// 对应交款表id
 
+	private int verifyflag; // 是否审核 0默认 1已审核
+	private String verifytime; // 审核时间r
+
+	public int getVerifyflag() {
+		return this.verifyflag;
+	}
+
+	public void setVerifyflag(int verifyflag) {
+		this.verifyflag = verifyflag;
+	}
+
+	public String getVerifytime() {
+		return this.verifytime;
+	}
+
+	public void setVerifytime(String verifytime) {
+		this.verifytime = verifytime;
+	}
+
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -24,7 +43,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -32,7 +51,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -40,7 +59,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public long getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(long cwbordertypeid) {
@@ -48,7 +67,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public long getDeliverybranchid() {
-		return deliverybranchid;
+		return this.deliverybranchid;
 	}
 
 	public void setDeliverybranchid(long deliverybranchid) {
@@ -56,7 +75,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public String getAudittime() {
-		return audittime;
+		return this.audittime;
 	}
 
 	public void setAudittime(String audittime) {
@@ -64,7 +83,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public long getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(long deliverystate) {
@@ -72,7 +91,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public BigDecimal getShouldfare() {
-		return shouldfare;
+		return this.shouldfare;
 	}
 
 	public void setShouldfare(BigDecimal shouldfare) {
@@ -80,7 +99,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public BigDecimal getInfactfare() {
-		return infactfare;
+		return this.infactfare;
 	}
 
 	public void setInfactfare(BigDecimal infactfare) {
@@ -88,7 +107,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public String getPayuptime() {
-		return payuptime;
+		return this.payuptime;
 	}
 
 	public void setPayuptime(String payuptime) {
@@ -96,7 +115,7 @@ public class AccountCwbFareDetail {
 	}
 
 	public long getFareid() {
-		return fareid;
+		return this.fareid;
 	}
 
 	public void setFareid(long fareid) {
