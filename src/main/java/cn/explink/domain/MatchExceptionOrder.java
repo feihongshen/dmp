@@ -14,6 +14,10 @@ public class MatchExceptionOrder {
 
 	private String reportOutAreaUserName = null;
 
+	private long matchBranchId = 0;
+
+	private String matchBranchName = null;
+
 	private String customerName = null;
 
 	private String customerPhone = null;
@@ -52,6 +56,22 @@ public class MatchExceptionOrder {
 
 	public void setReportOutAreaBranchName(String reportOutAreaBranchName) {
 		this.reportOutAreaBranchName = reportOutAreaBranchName;
+	}
+
+	public long getMatchBranchId() {
+		return this.matchBranchId;
+	}
+
+	public void setMatchBranchId(long matchBranchId) {
+		this.matchBranchId = matchBranchId;
+	}
+
+	public String getMatchBranchName() {
+		return this.matchBranchName;
+	}
+
+	public void setMatchBranchName(String matchBranchName) {
+		this.matchBranchName = matchBranchName;
 	}
 
 	public long getReportOutAreaUserId() {

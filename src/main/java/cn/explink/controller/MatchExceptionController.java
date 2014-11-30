@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -44,6 +45,16 @@ public class MatchExceptionController {
 		return "meh/matchexceptionhandle";
 	}
 
+	@RequestMapping("/querytodaywaithandleorder")
+	public @ResponseBody List<MatchExceptionOrder> queryTodayWaitHandleOrder() {
+		return this.queryWaitHandleOrder(true, 1);
+	}
+
+	@RequestMapping("/queryhistorywaithandleorder")
+	public @ResponseBody List<MatchExceptionOrder> queryHistoryWaitHandleOrder() {
+		return this.queryWaitHandleOrder(false, 1);
+	}
+
 	private void addBranchList(Model model) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		model.addAttribute("branchList", branchList);
@@ -56,7 +67,7 @@ public class MatchExceptionController {
 
 	private void addHWaitTransferOrderCnt(Model model) {
 		int tWaitTraOrdCnt = this.queryTransferOrderCount(false, false);
-		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
+		model.addAttribute("hWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
 	private void addTWaitMatchOrderCnt(Model model) {
@@ -66,11 +77,11 @@ public class MatchExceptionController {
 
 	private void addHWaitMatchOrderCnt(Model model) {
 		int tWaitMatOrdCnt = this.queryMatchOrderCount(false, false);
-		model.addAttribute("tWaitMatOrdCnt", Integer.valueOf(tWaitMatOrdCnt));
+		model.addAttribute("hWaitMatOrdCnt", Integer.valueOf(tWaitMatOrdCnt));
 	}
 
 	private void addTodayWaitHandleOrder(Model model) {
-		List<MatchExceptionOrder> tWaitHanOrdList = this.queryWaitHandleOrder(true);
+		List<MatchExceptionOrder> tWaitHanOrdList = this.queryWaitHandleOrder(true, 1);
 		model.addAttribute("tWaitHanOrdList", tWaitHanOrdList);
 	}
 
@@ -90,8 +101,8 @@ public class MatchExceptionController {
 		return this.cwbDAO.queryMatchExceptionOrder(this.getMatchOrderSql(today, match, page));
 	}
 
-	private List<MatchExceptionOrder> queryWaitHandleOrder(boolean today) {
-		String sql = this.getQuerywaitHandleOrderSql(today, 1);
+	private List<MatchExceptionOrder> queryWaitHandleOrder(boolean today, int page) {
+		String sql = this.getQuerywaitHandleOrderSql(today, page);
 
 		return this.cwbDAO.queryMatchExceptionOrder(sql);
 	}
@@ -113,7 +124,7 @@ public class MatchExceptionController {
 		this.appendTransferSqlWhereCond(sql, today, transfer);
 		sql.appendExtraPart(this.getLimitSql(page));
 
-		return sql.toString();
+		return sql.getSql();
 	}
 
 	private String getQueryTransferCountSql(boolean today, boolean transfer) {
@@ -121,7 +132,7 @@ public class MatchExceptionController {
 		sql.appendSelectPart(this.getSelectCountPart());
 		this.appendTransferSqlWhereCond(sql, today, transfer);
 
-		return sql.toString();
+		return sql.getSql();
 	}
 
 	private String getMatchOrderCountSql(boolean today, boolean match) {
@@ -129,7 +140,7 @@ public class MatchExceptionController {
 		sql.appendSelectPart(this.getSelectCountPart());
 		this.appendMatchSqlWhereCond(sql, today, match);
 
-		return sql.toString();
+		return sql.getSql();
 
 	}
 
@@ -139,7 +150,7 @@ public class MatchExceptionController {
 		this.appendMatchSqlWhereCond(sql, today, match);
 		sql.appendExtraPart(this.getLimitSql(page));
 
-		return sql.toString();
+		return sql.getSql();
 	}
 
 	private String getLimitSql(int page) {
@@ -211,15 +222,15 @@ public class MatchExceptionController {
 	}
 
 	private String getSelectOrderPart() {
-		return "select " + this.getQueryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+		return "select " + this.getQueryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
 	private String getSelectCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
 	private String getQueryFields() {
-		return "d.nextbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
+		return "d.cwb , d.nextbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
 	}
 
 	private String getTodayZeroTimeString() {

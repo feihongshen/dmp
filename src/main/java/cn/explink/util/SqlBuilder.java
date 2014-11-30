@@ -15,6 +15,9 @@ public class SqlBuilder {
 	}
 
 	public void appendCondition(String condition) {
+		if ((condition == null) || condition.isEmpty()) {
+			return;
+		}
 		if (this.isFirstAddWhereCond()) {
 			this.getBuiler().append(" where ");
 			this.setFirstAddWhereCond(false);
