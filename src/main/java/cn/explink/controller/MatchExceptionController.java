@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.SqlBuilder;
@@ -27,7 +28,50 @@ public class MatchExceptionController {
 
 	@RequestMapping("/matchexceptionhandle")
 	public String matchExpectionHandle(Model model) {
+		// 站点列表.
+		this.addBranchList(model);
+		// 今日待处理转单.
+		this.addTWaitTransferOrderCnt(model);
+		// 今日待匹配订单.
+		this.addTWaitMatchOrderCnt(model);
+		// 历史待处理转单.
+		this.addHWaitTransferOrderCnt(model);
+		// 历史待匹配订单.
+		this.addHWaitMatchOrderCnt(model);
+		// 今日待处理订单.
+		this.addTodayWaitHandleOrder(model);
+
 		return "meh/matchexceptionhandle";
+	}
+
+	private void addBranchList(Model model) {
+		List<Branch> branchList = this.branchDAO.getAllBranches();
+		model.addAttribute("branchList", branchList);
+	}
+
+	private void addTWaitTransferOrderCnt(Model model) {
+		int tWaitTraOrdCnt = this.queryTransferOrderCount(true, false);
+		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
+	}
+
+	private void addHWaitTransferOrderCnt(Model model) {
+		int tWaitTraOrdCnt = this.queryTransferOrderCount(false, false);
+		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
+	}
+
+	private void addTWaitMatchOrderCnt(Model model) {
+		int tWaitMatOrdCnt = this.queryMatchOrderCount(true, false);
+		model.addAttribute("tWaitMatOrdCnt", Integer.valueOf(tWaitMatOrdCnt));
+	}
+
+	private void addHWaitMatchOrderCnt(Model model) {
+		int tWaitMatOrdCnt = this.queryMatchOrderCount(false, false);
+		model.addAttribute("tWaitMatOrdCnt", Integer.valueOf(tWaitMatOrdCnt));
+	}
+
+	private void addTodayWaitHandleOrder(Model model) {
+		List<MatchExceptionOrder> tWaitHanOrdList = this.queryWaitHandleOrder(true);
+		model.addAttribute("tWaitHanOrdList", tWaitHanOrdList);
 	}
 
 	private int queryTransferOrderCount(boolean today, boolean transfer) {
@@ -38,7 +82,7 @@ public class MatchExceptionController {
 		return this.cwbDAO.queryMatchExceptionOrder(this.getQueryTransferOrderSql(today, transfer, page));
 	}
 
-	private int queryMatchOrderCount(boolean today, boolean match, int page) {
+	private int queryMatchOrderCount(boolean today, boolean match) {
 		return this.cwbDAO.queryMatchExceptionOrderCount(this.getMatchOrderCountSql(today, match));
 	}
 
