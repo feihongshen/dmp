@@ -975,6 +975,7 @@ src/main/java/cn/explink/domain/ImportCwbOrderType.java -text
 src/main/java/cn/explink/domain/ImportField.java -text
 src/main/java/cn/explink/domain/ImportValidationManager.java -text
 src/main/java/cn/explink/domain/JsonContext.java -text
+src/main/java/cn/explink/domain/MatchExceptionOrder.java -text
 src/main/java/cn/explink/domain/Menu.java -text
 src/main/java/cn/explink/domain/MiddleAppear.java -text
 src/main/java/cn/explink/domain/NewForExportJson.java -text
@@ -1469,6 +1470,7 @@ src/main/java/cn/explink/util/QuartzContextListener.java -text
 src/main/java/cn/explink/util/ReflectionUtil.java -text
 src/main/java/cn/explink/util/ResourceBundleUtil.java -text
 src/main/java/cn/explink/util/ServiceUtil.java -text
+src/main/java/cn/explink/util/SqlBuilder.java -text
 src/main/java/cn/explink/util/StreamingStatementCreator.java -text
 src/main/java/cn/explink/util/StringUtil.java -text
 src/main/java/cn/explink/util/WebServiceHandler.java -text
