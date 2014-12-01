@@ -5744,7 +5744,7 @@ MODIFY COLUMN `remark`  varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NULL DE
 	</changeSet>
 	 <changeSet id="zhangpengkai-2014-11-29-1"  author="zhangpengkai">
 	 <sql>
-		ALTER TABLE `peisongdata_dmp_test`.`account_cwb_fare_detail` ADD COLUMN `verifytime` VARCHAR(50) NULL COMMENT '审核时间' AFTER `fareid`,
+		ALTER TABLE `account_cwb_fare_detail` ADD COLUMN `verifytime` VARCHAR(50) NULL COMMENT '审核时间' AFTER `fareid`,
 		 ADD COLUMN `verifyflag` INT(2) DEFAULT 0 NULL COMMENT '是否审核0 默认，1已审核' AFTER `verifytime`;
 	 </sql>
 	 </changeSet>
