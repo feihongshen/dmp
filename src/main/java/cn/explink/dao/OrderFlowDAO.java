@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -100,13 +101,14 @@ public class OrderFlowDAO {
 
 	/**
 	 * 创建一条操作记录
-	 * 
+	 *
 	 * @param of
 	 * @return key
 	 */
 	public long creOrderFlow(final OrderFlow of, final String credate) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_order_flow (cwb,branchid,userid,floworderdetail,flowordertype,isnow,comment,credate) " + "values(?,?,?,?,?,1,?,?)",
@@ -127,30 +129,30 @@ public class OrderFlowDAO {
 
 	public long creAndUpdateOrderFlow(OrderFlow of) {
 
-		jdbcTemplate.update("update express_ops_order_flow set isnow='0' where cwb=? and isnow='1'", of.getCwb());
-		if (of.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.PosZhiFu.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue() || of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()
-				|| of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) {
+		this.jdbcTemplate.update("update express_ops_order_flow set isnow='0' where cwb=? and isnow='1'", of.getCwb());
+		if ((of.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.PosZhiFu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) {
 			JSONObject orderJson = JSONObject.fromObject(of.getFloworderdetail()).getJSONObject("cwbOrder");
 			String outWarehouseTime = "";
 			if (of.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
 				outWarehouseTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate());
 			}
-			operationTimeDAO.creAndUpdateOperationTime(of.getCwb(), of.getBranchid(), of.getFlowordertype(), 0, orderJson.getLong("nextbranchid"), orderJson.getLong("customerid"), outWarehouseTime,
-					orderJson.getString("emaildate"));
+			this.operationTimeDAO.creAndUpdateOperationTime(of.getCwb(), of.getBranchid(), of.getFlowordertype(), 0, orderJson.getLong("nextbranchid"), orderJson.getLong("customerid"),
+					outWarehouseTime, orderJson.getString("emaildate"));
 		} else if (of.getFlowordertype() == FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()) {
-			operationTimeDAO.delOperationTime(of.getCwb());
+			this.operationTimeDAO.delOperationTime(of.getCwb());
 		}
-		return creOrderFlow(of, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
+		return this.creOrderFlow(of, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
 	}
 
 	public List<OrderFlow> getOrderFlowListByCwb(String cwb) {
-		List<OrderFlow> orderFlowList = jdbcTemplate.query("SELECT of_b.*,u.username FROM express_set_user u RIGHT JOIN " + "(SELECT of.*,b.branchname FROM "
+		List<OrderFlow> orderFlowList = this.jdbcTemplate.query("SELECT of_b.*,u.username FROM express_set_user u RIGHT JOIN " + "(SELECT of.*,b.branchname FROM "
 				+ "(SELECT * FROM express_ops_order_flow WHERE cwb=?) " + "of LEFT JOIN express_set_branch b ON b.branchid=of.branchid )" + " of_b ON of_b.userid=u.userid ", new OrderFlowRowMapper(),
 				cwb);
 		return orderFlowList;
@@ -158,13 +160,13 @@ public class OrderFlowDAO {
 
 	public List<OrderFlow> getOrderFlowByFlowordertypeAndCwb(long flowordertype, String cwb, long branchid) {
 		String sql = "select * from express_ops_order_flow where flowordertype=? and cwb=? and branchid=?";
-		return jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb, branchid);
+		return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb, branchid);
 	}
 
 	public OrderFlow getOrderFlowByCwbAndState(String cwb, long isnow) {
 		try {
 			String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow where cwb='" + cwb + "' and isnow=" + isnow;
-			return jdbcTemplate.queryForObject(sql, new OrderFlowRowMapperNotDetail());
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapperNotDetail());
 		} catch (Exception e) {
 			return null;
 		}
@@ -173,7 +175,7 @@ public class OrderFlowDAO {
 	public OrderFlow getOrderFlowByCwbAndStateAll(String cwb, long isnow) {
 		try {
 			String sql = "select * from express_ops_order_flow where cwb='" + cwb + "' and isnow=" + isnow;
-			return jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper());
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper());
 		} catch (Exception e) {
 			return null;
 		}
@@ -181,7 +183,7 @@ public class OrderFlowDAO {
 
 	public OrderFlow getOrderFlowById(long id) {
 		String sql = "select * from express_ops_order_flow where floworderid = ?";
-		return jdbcTemplate.queryForObject(sql, new OrderFlowRealRowMapper(), id);
+		return this.jdbcTemplate.queryForObject(sql, new OrderFlowRealRowMapper(), id);
 	}
 
 	private final class IntoWarehousByBranchidAndCustomerMapper implements RowMapper<BigDecimal[]> {
@@ -195,7 +197,7 @@ public class OrderFlowDAO {
 
 	/**
 	 * 获取今天状态为flowordertype的并且 属于branchid机构的customerid供货商的数量与金额的统计结果
-	 * 
+	 *
 	 * @param branchid
 	 *            机构
 	 * @param customerid
@@ -210,12 +212,12 @@ public class OrderFlowDAO {
 		String sql = "SELECT COUNT(1) as num,SUM(of_cd.receivablefee) as receivablefee,SUM(of_cd.paybackfee) as paybackfee FROM "
 				+ "(SELECT DISTINCT of.`cwb`,of.`flowordertype`,cd.receivablefee,cd.paybackfee FROM `express_ops_order_flow` of "
 				+ "LEFT JOIN `express_ops_cwb_detail` cd ON  of.cwb=cd.cwb WHERE of.credate >? and of.flowordertype=? and of.branchid=? and cd.customerid=? AND cd.state=1) of_cd ";
-		return jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid, customerid);
+		return this.jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid, customerid);
 	}
 
 	/**
 	 * 获取今天状态为flowordertype的并且 属于branchid机构的数量与金额的统计结果
-	 * 
+	 *
 	 * @param branchid
 	 *            机构
 	 * @param toDay
@@ -228,12 +230,12 @@ public class OrderFlowDAO {
 		String sql = "SELECT COUNT(1) as num,SUM(of_cd.receivablefee) as receivablefee,SUM(of_cd.paybackfee) as paybackfee FROM "
 				+ "(SELECT DISTINCT of.`cwb`,of.`flowordertype`,cd.receivablefee,cd.paybackfee FROM `express_ops_order_flow` of "
 				+ "LEFT JOIN `express_ops_cwb_detail` cd ON  of.cwb=cd.cwb WHERE of.credate >? and of.flowordertype=? and of.branchid=? AND cd.state=1) of_cd ";
-		return jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid);
+		return this.jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid);
 	}
 
 	/**
 	 * 获取今天“当前”状态为flowordertype的并且 属于branchid机构的customerid供货商的数量与金额的统计结果
-	 * 
+	 *
 	 * @param branchid
 	 *            机构
 	 * @param customerid
@@ -248,13 +250,13 @@ public class OrderFlowDAO {
 		String sql = "SELECT COUNT(1) as num,SUM(of_cd.receivablefee) as receivablefee,SUM(of_cd.paybackfee) as paybackfee FROM "
 				+ "(SELECT DISTINCT of.`cwb`,of.`flowordertype`,cd.receivablefee,cd.paybackfee FROM `express_ops_order_flow` of "
 				+ "LEFT JOIN `express_ops_cwb_detail` cd ON  of.cwb=cd.cwb WHERE of.credate >? and of.flowordertype=? and isnow=1 and of.branchid=? and cd.customerid=? AND cd.state=1) of_cd ";
-		return jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid, customerid);
+		return this.jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, flowordertype, branchid, customerid);
 	}
 
 	/**
 	 * 获取toDay以后的环节为flowordertype的并且
 	 * 属于branchid机构的结果中符合reacherrorflag状态的的数量与金额的统计结果
-	 * 
+	 *
 	 * @param branchid
 	 *            机构
 	 * @param toDay
@@ -269,34 +271,34 @@ public class OrderFlowDAO {
 		String sql = "SELECT COUNT(1) as num,SUM(of_cd.receivablefee) as receivablefee,SUM(of_cd.paybackfee) as paybackfee FROM "
 				+ "(SELECT DISTINCT of.`cwb`,of.`flowordertype`,cd.receivablefee,cd.paybackfee FROM `express_ops_order_flow` of "
 				+ "LEFT JOIN `express_ops_cwb_detail` cd ON  of.cwb=cd.cwb WHERE of.credate >? and cd.reacherrorflag=? and of.flowordertype=? and of.branchid=? AND cd.state=1) of_cd ";
-		return jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, reacherrorflag, flowordertype, branchid);
+		return this.jdbcTemplate.queryForObject(sql, new IntoWarehousByBranchidAndCustomerMapper(), toDay, reacherrorflag, flowordertype, branchid);
 	}
 
 	/**
 	 * 快捷查询,调用订单流程的接口
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
 	public List<OrderFlow> getOrderFlowByCwb(String cwb) {
-		return jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
+		return this.jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
 	}
 
 	public List<OrderFlow> getOrderFlowByWhere(long page, long branchid, long userid, long flowordertype, String beginemaildate, String endemaildate, long onePageNumber) {
 		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow ";
-		sql = getOrderFlowByWhereSql(sql, branchid, userid, flowordertype, beginemaildate, endemaildate);
-		sql += " limit " + (page - 1) * onePageNumber + " ," + onePageNumber;
-		return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
+		sql = this.getOrderFlowByWhereSql(sql, branchid, userid, flowordertype, beginemaildate, endemaildate);
+		sql += " limit " + ((page - 1) * onePageNumber) + " ," + onePageNumber;
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
 	}
 
 	public List<String> getOrderFlowLingHuoList(long branchid, String flowordertypes, String beginemaildate, String endemaildate) {
 		String sql = "select cwb from express_ops_order_flow ";
 		// 强制索引
-		if (beginemaildate.length() > 0 || endemaildate.length() > 0) {
+		if ((beginemaildate.length() > 0) || (endemaildate.length() > 0)) {
 			sql = sql.replace("express_ops_order_flow", "express_ops_order_flow FORCE INDEX(FlowCredateIdx)");
 		}
 
-		if (branchid > 0 || beginemaildate.length() > 0 || endemaildate.length() > 0 || flowordertypes.length() > 0) {
+		if ((branchid > 0) || (beginemaildate.length() > 0) || (endemaildate.length() > 0) || (flowordertypes.length() > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (branchid > 0) {
@@ -313,14 +315,14 @@ public class OrderFlowDAO {
 			}
 			sql += w.substring(4, w.length());
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getOrderFlowJinRiChuKuORRuKuList(final long branchid, String flowordertypes, String beginemaildate) {
 		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx) where credate >='" + beginemaildate + "' " + " and flowordertype in(" + flowordertypes + ")";
 
 		final List<String> cwbList = new ArrayList<String>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -346,12 +348,12 @@ public class OrderFlowDAO {
 
 	public long getOrderFlowCount(long branchid, long userid, long flowordertype, String beginemaildate, String endemaildate) {
 		String sql = "select  count(1) from express_ops_order_flow ";
-		sql = getOrderFlowByWhereSql(sql, branchid, userid, flowordertype, beginemaildate, endemaildate);
-		return jdbcTemplate.queryForInt(sql);
+		sql = this.getOrderFlowByWhereSql(sql, branchid, userid, flowordertype, beginemaildate, endemaildate);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	private String getOrderFlowByWhereSql(String sql, long branchid, long userid, long flowordertype, String beginemaildate, String endemaildate) {
-		if (branchid > 0 || userid > 0 || beginemaildate.length() > 0 || endemaildate.length() > 0 || flowordertype > 0) {
+		if ((branchid > 0) || (userid > 0) || (beginemaildate.length() > 0) || (endemaildate.length() > 0) || (flowordertype > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (branchid > 0) {
@@ -375,7 +377,7 @@ public class OrderFlowDAO {
 	}
 
 	public String getOrderFlowByCwbAndFlowordertypeWhereSql(String sql, String cwb, long flowordertype, String begindate, String enddate) {
-		if (cwb.length() > 0 || flowordertype > 0 || begindate.length() > 0 || enddate.length() > 0) {
+		if ((cwb.length() > 0) || (flowordertype > 0) || (begindate.length() > 0) || (enddate.length() > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (cwb.trim().length() > 0) {
@@ -390,7 +392,7 @@ public class OrderFlowDAO {
 			if (enddate.length() > 0) {
 				w.append(" and credate <= '" + enddate + "'");
 			}
-			if (cwb.trim().length() == 0 && flowordertype == 0 && begindate.length() == 0 && enddate.length() == 0) {
+			if ((cwb.trim().length() == 0) && (flowordertype == 0) && (begindate.length() == 0) && (enddate.length() == 0)) {
 				w.append(" and cwb = '" + cwb + "'");
 			}
 			w.append(" order by floworderid ");
@@ -403,8 +405,8 @@ public class OrderFlowDAO {
 
 	public List<OrderFlow> getOrderFlowByCwbAndFlowordertype(String cwb, long flowordertype, String begindate, String enddate) {
 		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow ";
-		sql = getOrderFlowByCwbAndFlowordertypeWhereSql(sql, cwb, flowordertype, begindate, enddate);
-		return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
+		sql = this.getOrderFlowByCwbAndFlowordertypeWhereSql(sql, cwb, flowordertype, begindate, enddate);
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
 	}
 
 	// 2013-10-09 5196版本临时去掉到货明细、到货批量页面中的“出库时间”
@@ -422,7 +424,7 @@ public class OrderFlowDAO {
 	public List<OrderFlow> getOrderFlowByCwbAndFlowordertype(long flowordertype, String cwb) {
 		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow  where flowordertype=? and cwb = ?";
 
-		return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), flowordertype, cwb);
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), flowordertype, cwb);
 	}
 
 	public List<String> getOrderFlowByCredateAndFlowordertype(String begindate, String enddate, long flowordertype, final String[] operationOrderResultTypes, final String[] dispatchbranchids,
@@ -442,7 +444,7 @@ public class OrderFlowDAO {
 
 		sql += deliverystatesql.toString();
 		final List<String> cwbList = new ArrayList<String>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -455,13 +457,13 @@ public class OrderFlowDAO {
 						for (String operationOrderResultType : operationOrderResultTypes) {
 							String dsate = "deliverystate\":" + operationOrderResultType + ",\"cash";
 							String dsate2 = "deliveryState\":null";
-							if (rs.getString("floworderdetail").indexOf(dsate) > -1 || rs.getString("floworderdetail").indexOf(dsate2) > -1) {
+							if ((rs.getString("floworderdetail").indexOf(dsate) > -1) || (rs.getString("floworderdetail").indexOf(dsate2) > -1)) {
 								isTrue = true;
 								break;
 							}
 						}
 					}
-					if (dispatchbranchids.length > 0 && isTrue) {
+					if ((dispatchbranchids.length > 0) && isTrue) {
 						isTrue = false;
 						for (String dispatchbranchid : dispatchbranchids) {
 							String deliverybranchidstr = "deliverybranchid\":" + dispatchbranchid + ",";
@@ -511,7 +513,7 @@ public class OrderFlowDAO {
 		}
 		sql += deliverystatesql.toString();
 
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getOrderFlowBySome(String begindate, String enddate, String flowordertypes, String currentBranchids, long isnowdata) {
@@ -521,7 +523,7 @@ public class OrderFlowDAO {
 		if (isnowdata > 0) {
 			sql += " and isnow =1 ";
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getOrderFlowForOutwarehouse(String begindate, String enddate, long flowordertype, final String[] nextbranchids, final String[] startbranchids) {
@@ -540,7 +542,7 @@ public class OrderFlowDAO {
 		 */
 		sql += deliverystatesql.toString();
 		final List<String> cwbList = new ArrayList<String>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -558,7 +560,7 @@ public class OrderFlowDAO {
 							}
 						}
 					}
-					if (startbranchids.length > 0 && isTrue) {
+					if ((startbranchids.length > 0) && isTrue) {
 						isTrue = false;
 						for (String startbranchid : startbranchids) {
 							String startbranchidstr = "startbranchid\":" + startbranchid + ",";
@@ -601,7 +603,7 @@ public class OrderFlowDAO {
 
 		sql += deliverystatesql.toString();
 		final List<String> cwbList = new ArrayList<String>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -619,7 +621,7 @@ public class OrderFlowDAO {
 							}
 						}
 					}
-					if (startbranchids.length > 0 && isTrue) {
+					if ((startbranchids.length > 0) && isTrue) {
 						isTrue = false;
 						for (String startbranchid : startbranchids) {
 							String startbranchidstr = "startbranchid\":" + startbranchid + ",";
@@ -650,7 +652,7 @@ public class OrderFlowDAO {
 
 		sql += deliverystatesql.toString();
 		final List<OrderFlow> cwbList = new ArrayList<OrderFlow>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -665,7 +667,7 @@ public class OrderFlowDAO {
 							}
 						}
 					}
-					if (startbranchids.length > 0 && isTrue) {
+					if ((startbranchids.length > 0) && isTrue) {
 						isTrue = false;
 						for (String startbranchid : startbranchids) {
 							String startbranchidstr = "startbranchid\":" + startbranchid + ",";
@@ -675,7 +677,7 @@ public class OrderFlowDAO {
 							}
 						}
 					}
-					if (flowordertype > 0 && isTrue) {
+					if ((flowordertype > 0) && isTrue) {
 						isTrue = false;
 						String flowordertypestr = "flowordertype\":" + flowordertype + ",";
 						if (rs.getString("floworderdetail").indexOf(flowordertypestr) > -1) {
@@ -708,14 +710,14 @@ public class OrderFlowDAO {
 	}
 
 	public List<OrderFlow> getAdvanceOrderFlowByCwb(String cwb) {
-		return jdbcTemplate.query("select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow where cwb= '" + cwb
+		return this.jdbcTemplate.query("select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow where cwb= '" + cwb
 				+ "'  order by  credate ASC", new OrderFlowRowMapperNotDetail());
 
 	}
 
 	// modi by wangych 20140721 增加“系统自动处理”查询条件
 	private String getOpreateOrderFlowByWhereSql(String sql, String branchids, long flowordertype, String beginemaildate, String endemaildate, String autodetailflag) {
-		if (branchids.length() > 0 || beginemaildate.length() > 0 || endemaildate.length() > 0 || flowordertype > 0 || autodetailflag.length() > 0) {
+		if ((branchids.length() > 0) || (beginemaildate.length() > 0) || (endemaildate.length() > 0) || (flowordertype > 0) || (autodetailflag.length() > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (branchids.length() > 0) {
@@ -745,23 +747,23 @@ public class OrderFlowDAO {
 	// modi by wangych 20140721 增加“系统自动处理”查询条件
 	public List<OrderFlow> getOperateOrderFlowByWhere(long page, String branchids, long flowordertype, String beginemaildate, String endemaildate, String autodetailflag) {
 		String sql = "select * from express_ops_order_flow ";
-		sql = getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new OrderFlowRealRowMapper());
+		sql = this.getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper());
 	}
 
 	// modi by wangych 20140721 增加“系统自动处理”查询条件
 	public long getOperateOrderFlowByWhereCount(String branchids, long flowordertype, String beginemaildate, String endemaildate, String autodetailflag) {
 		String sql = "select  count(1) from express_ops_order_flow ";
-		sql = getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
-		return jdbcTemplate.queryForInt(sql);
+		sql = this.getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	// modi by wangych 20140721 增加“系统自动处理”查询条件
 	public List<OrderFlow> downloadOperateOrderFlowByWhere(String branchids, long flowordertype, String beginemaildate, String endemaildate, String autodetailflag) {
 		String sql = "select * from express_ops_order_flow ";
-		sql = getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
-		return jdbcTemplate.query(sql, new OrderFlowRealRowMapper());
+		sql = this.getOpreateOrderFlowByWhereSql(sql, branchids, flowordertype, beginemaildate, endemaildate, autodetailflag);
+		return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper());
 	}
 
 	// ============统计到站无结果的订单===五步===begin===============
@@ -770,7 +772,7 @@ public class OrderFlowDAO {
 				+ flowordertypes + ") and d.state=1  AND f.credate>=? AND f.credate<=?";
 
 		StringBuilder deliverystatesql = new StringBuilder();
-		if (kufangids.length() > 0 || branchids.length() > 0) {
+		if ((kufangids.length() > 0) || (branchids.length() > 0)) {
 			if (branchids.length() > 0) {
 				sql += " AND d.startbranchid IN(" + branchids + ") ";
 			}
@@ -779,36 +781,36 @@ public class OrderFlowDAO {
 			}
 		}
 		sql += deliverystatesql.toString();
-		return jdbcTemplate.queryForList(sql, String.class, begindate, enddate);
+		return this.jdbcTemplate.queryForList(sql, String.class, begindate, enddate);
 	}
 
 	public List<String> getTwoCwbs(String flowordertypes, String cwbs, String enddate) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")" + " AND flowordertype in(" + flowordertypes + ") AND credate>? ";
 
-		return jdbcTemplate.queryForList(sql, String.class, enddate);
+		return this.jdbcTemplate.queryForList(sql, String.class, enddate);
 	}
 
 	public List<String> getThreeCwbs(String flowordertypes, String cwbs, String noIncwbs) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")" + " AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getFourCwbs(String cwbs) {
 		String sql = "SELECT DISTINCT cwb  FROM `express_ops_delivery_state` WHERE cwb IN(" + cwbs + ") " + "AND state=1 AND `deliverystate`>0";
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getFiveCwbs(String flowordertypes, String cwbs, String noIncwbs, long page) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")  " + "AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
 		if (page > 0) {
-			sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public long getFiveCwbsCount(String flowordertypes, String cwbs, String noIncwbs) {
 		String sql = "SELECT count(DISTINCT cwb) FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")  " + "AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	// ============统计到站无结果的订单===五步===end===============
@@ -821,7 +823,7 @@ public class OrderFlowDAO {
 			deliverystatesql.append(" and branchid=" + branchid);
 		}
 		// 强制索引
-		if (begindate.length() > 0 || enddate.length() > 0) {
+		if ((begindate.length() > 0) || (enddate.length() > 0)) {
 			sql = sql.replace("express_ops_order_flow", "express_ops_order_flow FORCE INDEX(FlowCredateIdx)");
 		}
 		if (begindate.length() > 0) {
@@ -837,26 +839,26 @@ public class OrderFlowDAO {
 
 		sql += deliverystatesql.toString();
 
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	public List<OrderFlow> getCwbsByFlowordertype(FlowOrderTypeEnum flowordertype, String cwbs) {
 		String sql = "SELECT `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")" + " AND flowordertype="
 				+ flowordertype.getValue() + " ORDER BY floworderid ";
-		return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
 	}
 
 	public List<OrderFlow> getCwbsByDateAndFlowtype(String emailStartTime, String eamilEndTime, long flowordertype) {
 		String sql = "SELECT  `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` FROM express_ops_order_flow FORCE INDEX(FlowCredateIdx) WHERE flowordertype =? "
 				+ " AND credate>=? AND credate<=? and isnow=1 ";
 
-		return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), flowordertype, emailStartTime, eamilEndTime);
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), flowordertype, emailStartTime, eamilEndTime);
 	}
 
 	public List<String> getZaituCwbsByDateAndFlowtype(String emailStartTime, String eamilEndTime, long flowordertype, String branchids) {
 		String sql = "SELECT  cwb FROM express_ops_order_flow FORCE INDEX(FlowCredateIdx) WHERE flowordertype =? " + " AND credate>=? AND credate<=? and branchid in (" + branchids + ") and isnow=1 ";
 
-		return jdbcTemplate.queryForList(sql, String.class, flowordertype, emailStartTime, eamilEndTime);
+		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, emailStartTime, eamilEndTime);
 	}
 
 	public List<String> getIntoCwbDetailAndOrderFlow(String begindate, String enddate, long flowordertype, long branchid) {
@@ -865,7 +867,7 @@ public class OrderFlowDAO {
 		if (branchid > 0) {
 			sql += " and branchid =" + branchid;
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public String getCwbDetailAndOrderFlowByParamSQL(long page, String customers, String emaildatebegin, String emaildateend, String begindate, String enddate, long flowordertype, long branchid,
@@ -899,7 +901,7 @@ public class OrderFlowDAO {
 	public OrderFlow getOrderFlowByParam(long flowordertype, String cwb) {
 		try {
 			String sql = "select * from express_ops_order_flow where flowordertype=? and cwb=? order by  credate DESC";
-			return jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb).get(0);
+			return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb).get(0);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -908,7 +910,7 @@ public class OrderFlowDAO {
 	public OrderFlow getOrderFlowByIsnow(String cwb) {
 		try {
 			String sql = "select * from express_ops_order_flow where isnow=1 and cwb='" + cwb + "' ";
-			return jdbcTemplate.query(sql, new OrderFlowRealRowMapper()).get(0);
+			return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper()).get(0);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -923,7 +925,7 @@ public class OrderFlowDAO {
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		}
 		stringBuilder.append(") ");
-		return jdbcTemplate.query(stringBuilder.toString(), new OrderFlowRowMapperNotDetail());
+		return this.jdbcTemplate.query(stringBuilder.toString(), new OrderFlowRowMapperNotDetail());
 	}
 
 	// 站点到货汇总查询
@@ -935,16 +937,16 @@ public class OrderFlowDAO {
 			sql += " and branchid = " + currentBranchid;
 		}
 		final List<String> cwbList = new ArrayList<String>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			private StringBuffer cwbs = new StringBuffer();
 
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
-					if (cwbs.indexOf("'" + rs.getString("cwb") + "'") > -1) {
+					if (this.cwbs.indexOf("'" + rs.getString("cwb") + "'") > -1) {
 						return;
 					}
-					cwbs = cwbs.append("'" + rs.getString("cwb") + "'");
+					this.cwbs = this.cwbs.append("'" + rs.getString("cwb") + "'");
 
 					cwbList.add(rs.getString("cwb"));
 
@@ -961,7 +963,7 @@ public class OrderFlowDAO {
 		if (cwbs.trim().length() > 0) {
 			String sql = " select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow where flowordertype=?  and cwb in(" + cwbs
 					+ ")  order by credate desc";
-			return jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), value);
+			return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), value);
 		} else {
 			return new ArrayList<OrderFlow>();
 		}
@@ -970,7 +972,7 @@ public class OrderFlowDAO {
 	public OrderFlow getOrderFlowByCwbAndFlowtype(String cwb, String flowordertypes) {
 		try {
 			String sql = "select * from express_ops_order_flow where  cwb=? and flowordertype in(" + flowordertypes + ") order by credate desc limit 0,1";
-			return jdbcTemplate.queryForObject(sql, new OrderFlowRowMapperCwbAndCredate(), cwb);
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapperCwbAndCredate(), cwb);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -978,8 +980,31 @@ public class OrderFlowDAO {
 
 	public void updateCommentByCwb(String cwb, String comment) {
 		String sql = "update express_ops_order_flow set comment=? where cwb=? and isnow=1 ";
-		jdbcTemplate.update(sql, comment, cwb);
+		this.jdbcTemplate.update(sql, comment, cwb);
 
 	}
 
+	/**
+	 * 批量插入订单超区流程.
+	 */
+	public void batchInsertOutAreaFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype)values(? , ");
+		sql.append(Long.toString(reportOutAreaBranchId) + " , ");
+		sql.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " , ");
+		sql.append(Long.toString(reportOutAreaUserId) + " , ");
+		sql.append(Integer.toString(FlowOrderTypeEnum.ChaoQu.getValue()) + ")");
+
+		this.jdbcTemplate.batchUpdate(sql.toString(), this.getOutAreaOrderParaList(cwbs));
+	}
+
+	private List<Object[]> getOutAreaOrderParaList(String[] cwbs) {
+		List<Object[]> paraList = new ArrayList<Object[]>();
+		for (String cwb : cwbs) {
+			Object[] objs = new Object[1];
+			objs[0] = cwb;
+			paraList.add(objs);
+		}
+		return paraList;
+	}
 }

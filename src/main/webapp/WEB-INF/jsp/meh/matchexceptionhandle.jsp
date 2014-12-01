@@ -1,10 +1,8 @@
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
-<%@page
-	import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
-<%@page
-	import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
+<%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.MatchExceptionOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
@@ -20,24 +18,15 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script src="<%=request.getContextPath()%>/js/LodopFuncs.js"
-	type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>异常匹配处理</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css"
-	type="text/css" />
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
-	type="text/javascript"></script>
-<script language="javascript"
-	src="<%=request.getContextPath()%>/js/js.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
-	/**
-	 * 入库扫描
-	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
 		
@@ -113,44 +102,6 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 											data.body.cwbOrder.sendcarnum);
 									$("#msg").html(scancwb+ data.errorinfo+ "（共"+ data.body.cwbOrder.sendcarnum
 													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）");
-									
-									//将成功扫描的订单放到已入库明细中
-									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#customerid").val());
-									
-									
-									
-									/* if (data.body.cwbOrder.scannum == 1) {
-										$("#successcwbnum").html(parseInt($("#successcwbnum").html()) + 1);
-									} */
-
-									if (rk_switch == "rkbq_01") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
-									}
-									else if (rk_switch == "rkbq_03") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
-									}
-
-									<%--if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
-															+ "&a="+ Math.random());
-									}else{
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-									}
-
-									if (data.body.cwbgaojia != undefined && data.body.cwbgaojia != '') {
-										$("#cwbgaojia").parent().show();
-										try {
-											document.gaojia.Play();
-										} catch (e) {
-										}
-									}
-									if (<%=RUKUPCandPDAaboutYJDPWAV.equals("yes")%>&&data.body.cwbOrder.sendcarnum > 1) {
-										try {
-											document.ypdj.Play();
-										} catch (e) {
-										}
-									} --%>
-
 									$("#scansuccesscwb").val(scancwb);
 									$("#showcwb").html("订 单 号：" + scancwb);
 									$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
@@ -160,16 +111,8 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 									if(data.body.cwbOrder.emaildateid==0){
 										$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
 									}
-									//getcwbsdataForCustomer($("#customerid").val(),scancwb);
-									//getcwbsquejiandataForCustomer($("#customerid").val());
-									//getrukucwbquejiandataList($("#customerid").val());
 
-								} /* else if (data.statuscode == "13") {
-									$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-									errorvedioplay(pname, data);
-									//将有货无单扫描的订单放到有货无单明细中
-									//addAndRemoval(cwb,"youhuowudanTable");
-								} */ else {
+								} else {
 									$("#excelbranch").hide();
 									$("#customername").hide();
 									$("#cwbgaojia").hide();
@@ -181,7 +124,6 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 									$("#consigneeaddress").html("");
 									$("#msg").html("（异常扫描）" + data.errorinfo);
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
-									//errorvedioplay(pname, data);
 								}
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
@@ -200,45 +142,46 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 		$(".tabbox li").eq(index).show().siblings().hide();
 	}
 	
-	function loadWaitHandleOrder(today){
-		var url='<%=request.getContextPath()+"/meh/"%>';
-		var tableId,tabIndex;
-		if(today){
-			url += "querytodaywaithandleorder"
-			tableId = "t_wait_handle_table";
-			tabIndex = 0;
-		}
-		else{
-			url += "queryhistorywaithandleorder"
-			tableId = "h_wait_handle_table";
-			tabIndex = 1;
-		}
+	function queryOrder(tableId , tabIndex , today , transfer , match)
+	{
 		$.ajax({
 			type:"post",
-			dataType:"json",
-			async:false,
-			url:url,
-			success:function(data){
-				refreshTableData(tableId , data , tabIndex);
-			}
-		});
+			async:true,
+			url:'<%=request.getContextPath() + "/meh/querymatchexceptionorder"%>',
+					dataType : "json",
+					data : {
+						today : today,
+						transfer : transfer,
+						match : match
+					},
+					success : function(data) {
+						refreshTableData(tableId, data, tabIndex);
+						recordCurTabCond(today, transfer, match);
+					}
+
+				});
 	}
-	
-	function refreshTableData(tableId , data , tabIndex){
-	 	showTab(tabIndex);
-	 	addRowData(tableId , data);
+
+	function recordCurTabCond(today, transfer, match) {
+		var $form = $("#exportForm");
+		$("#today", $form).val(today);
+		$("#transfer", $form).val(transfer);
+		$("#match", $form).val(match);
+
 	}
-	
-	
-	function addRowData(tableId , data){
+	function refreshTableData(tableId, data, tabIndex) {
+		showTab(tabIndex);
+		addRowData(tableId, data);
+	}
+
+	function addRowData(tableId, data) {
 		var $table = $("#" + tableId);
 		$table.empty();
-		for(var i = 0; i < data.length;i++){
+		for (var i = 0; i < data.length; i++) {
 			$table.append(createTR(data[i]));
 		}
 	}
 
-	
 	function createTR(data) {
 		var tr = "<tr cwb="+ data.cwb +">";
 		tr += createTD("center", "100px", data.cwb);
@@ -261,10 +204,30 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 		}
 		td += ">" + content + "</td>"
 		return td;
-	} 
-	
-	
-	
+	}
+
+	function exportData() {
+		$("#exportForm").submit();
+	}
+
+	function exportExceptionnData() {
+		var $exceptionTable = $("#exception_table");
+		var rows = [];
+		$exceptionTable.find("tr").each(function() {
+			var $tr = $(this);
+			var row = [];
+			$tr.find("td").each(td)
+			{
+				var $td = $(td);
+				row.push($td.val());
+			}
+			rows.push(tr);
+		});
+		var exeData = JSON.stringify(rows);
+		var $exeForm = $("#exportExceptionForm");
+		$("#data", $exeForm).val(exeData);
+		$exeForm.submit();
+	}
 </script>
 
 <style>
@@ -308,8 +271,8 @@ dl dd span {
 					<span>今日待分转单</span><span>今日待匹配</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span><a href="#"><%=tWaitTraOrdCnt%></a></span>
-					<span><a href="#"><%=tWaitMatOrdCnt%></a></span>
+					<span onclick="queryOrder('t_wait_handle_table',0,true,true,null)"><a href="#"><%=tWaitTraOrdCnt%></a></span>
+					<span onclick="queryOrder('t_wait_handle_table',0,true,null,true)"><a href="#"><%=tWaitMatOrdCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -319,8 +282,8 @@ dl dd span {
 					<span>历史待转单</span><span>历史待匹配</span>
 				</dt>
 				<dd>
-					<span><a href="#"><%=hWaitTraOrdCnt%></a></span>
-					<span><a href="#"><%=hWaitMatOrdCnt%></a></span>
+					<span onclick="queryOrder('h_wait_handle_table',1,false,true,null)"><a href="#"><%=hWaitTraOrdCnt%></a></span>
+					<span onclick="queryOrder('h_wait_handle_table',1,false,null,true)"><a href="#"><%=hWaitMatOrdCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -329,7 +292,8 @@ dl dd span {
 					<span>今日已转单</span><span>今日已匹配</span>
 				</dt>
 				<dd>
-					<span><a href="#">0</a></span> <span><a href="#">0</a></span>
+					<span onclick="queryOrder('t_handle_table',2,true,true,null)"><a href="#">0</a></span> <span
+						onclick="queryOrder('t_handle_table',2,true,null,true)"><a href="#">0</a></span>
 				</dd>
 			</dl>
 
@@ -342,8 +306,7 @@ dl dd span {
 		<div class="saomiao_info2">
 			<div class="saomiao_inbox2">
 				<div class="saomiao_selet2">
-					站&#12288;点：<select id="customerid" name="customerid"
-						onchange="tohome();">
+					站&#12288;点：<select id="customerid" name="customerid" onchange="tohome();">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Branch b : branchList) {
@@ -358,8 +321,7 @@ dl dd span {
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
 						<p>
-							订单号：<input type="text" class="saomiao_inputtxt" id="scancwb"
-								name="scancwb" value=""
+							订单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value=""
 								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}' />
 						</p>
 					</div>
@@ -374,11 +336,10 @@ dl dd span {
 						<div style="display: none" id="errorvedio"></div>
 					</div>
 					<p style="display: none;">
-						<input type="button" class="input_btn1" id="moregoods"
-							name="moregoods" value="一票多物"
+						<input type="button" class="input_btn1" id="moregoods" name="moregoods" value="一票多物"
 							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),4,$("#multicwbnum").val());' />
-						<span>一票多物件数：</span><input type="text" id="multicwbnum"
-							name="multicwbnum" value="1" class="input_txt1" />
+						<span>一票多物件数：</span><input type="text" id="multicwbnum" name="multicwbnum" value="1"
+							class="input_txt1" />
 					</p>
 				</div>
 			</div>
@@ -387,23 +348,21 @@ dl dd span {
 		<div>
 			<div class="saomiao_tab2">
 				<ul>
-					<li><a href="#" onclick="loadWaitHandleOrder(true)"
+					<li><a href="#" onclick="queryOrder('t_wait_handle_table',0,true,false,false)"
 						class="light">今日待处理</a></li>
-					<li><a href="#" onclick="loadWaitHandleOrder(false)">历史待处理</a></li>
-					<li><a href="#" onclick="showTab(2)">今日已处理</a></li>
+					<li><a href="#" onclick="queryOrder('t_wait_handle_table',1,false,false,false)">历史待处理</a></li>
+					<li><a href="#" onclick="queryOrder('t_wait_handle_table',2,true,true,true)">今日已处理</a></li>
 					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
-				<li><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1"
-					onclick='exportField(1,$("#customerid").val());' />
+				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
+					onclick='exportData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
@@ -417,8 +376,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="t_wait_handle_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="t_wait_handle_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 											<%
 												for (MatchExceptionOrder meo : tWaitHanOrdList) {
 											%>
@@ -443,15 +402,13 @@ dl dd span {
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(2,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
@@ -465,8 +422,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="h_wait_handle_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="h_wait_handle_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -474,15 +431,13 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(4,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
@@ -496,8 +451,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="t_handle_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="t_handle_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -505,15 +460,13 @@ dl dd span {
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0"
-					value="导出Excel" class="input_button1"
-					onclick='exportField(3,$("#customerid").val());' />
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
+					class="input_button1" onclick='exportExceptionnData()' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
 								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
+									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
@@ -527,8 +480,8 @@ dl dd span {
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
-										<table id="exception_table" width="100%" border="0"
-											cellspacing="1" cellpadding="2" class="table_2">
+										<table id="exception_table" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
 										</table>
 									</div>
 								</td>
@@ -538,5 +491,13 @@ dl dd span {
 			</div>
 		</div>
 	</div>
+	<form id="exportForm" action="<%=request.getContextPath() + "/meh/exportdata"%>" method="post">
+		<input type="hidden" id="today" name="today" value="true" /> <input type="hidden" id="transfer"
+			value="false" name="transfer" /> <input type="hidden" id="match" name="match" value="false" />
+	</form>
+	<form id="exportExceptionForm" action="<%=request.getContextPath() + "/meh/exportexceptiondata"%>"
+		method="post">
+		<input type="hidden" id="data" name="data" />
+	</form>
 </body>
 </html>

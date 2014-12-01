@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
@@ -44,6 +45,9 @@ public class SmtController {
 
 	@Autowired
 	private UserDAO userDAO = null;
+
+	@Autowired
+	private OrderFlowDAO orderFlowDAO = null;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -131,7 +135,17 @@ public class SmtController {
 
 	@RequestMapping("/smtorderoutarea")
 	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
+		String cwbs = this.getCwbs(request);
+		// 更新订单表设定订单状态为超区.
+		this.cwbDAO.updateOrderOutAreaStatus(cwbs);
+		// 更新订单流程表加入超区流程.
+		this.orderFlowDAO.batchInsertOutAreaFlow(this.transfer(cwbs), this.getCurrentBranchId(), this.getCurrentBranchId());
+
 		return "";
+	}
+
+	private String[] transfer(String cwbs) {
+		return cwbs.split(",");
 	}
 
 	@RequestMapping("/querysmtorder")
@@ -185,6 +199,10 @@ public class SmtController {
 	public void exportExceptionData(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		SmtOrderContainer order = this.queryExceptionData(request);
 		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
+	}
+
+	private String getCwbs(HttpServletRequest request) {
+		return (String) request.getAttribute("cwbs");
 	}
 
 	private SmtOrderContainer queryExceptionData(HttpServletRequest request) {
@@ -501,6 +519,10 @@ public class SmtController {
 
 	private long getCurrentBranchId() {
 		return this.getSessionUser().getBranchid();
+	}
+
+	private long getCurrentUserId() {
+		return this.getSessionUser().getUserid();
 	}
 
 	private User getSessionUser() {
