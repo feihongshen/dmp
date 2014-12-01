@@ -492,7 +492,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	private String buildVipshopSmtMessageModel(SmsConfigModel smsConfigModel, String delivername, String deliverphone, CwbOrder co, String strMsg) {
 		SystemInstall smtmodel = this.systemInstallDAO.getSystemInstall("isSmtMessageModel"); // 是否开启上门退短信模板
 
-		if ((smtmodel != null) && smtmodel.getValue().equals("1")) {
+		if ((smtmodel != null) && smtmodel.getValue().equals("yes")) {
 			String cwb = co.getCwb();
 			String tailnumber = cwb.contains("-T") && (cwb.length() > 6) ? cwb.substring(0, cwb.indexOf("-T")) : null;
 			if (tailnumber == null) {
