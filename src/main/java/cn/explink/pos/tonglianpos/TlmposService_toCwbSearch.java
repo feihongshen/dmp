@@ -30,43 +30,43 @@ public class TlmposService_toCwbSearch extends TlmposService {
 			if (tlmposRespNote.getCwbOrder() == null) {
 				tlmposRespNote.setResp_code(TlmposExptMsgEnum.ChaXunYiChang.getResp_code());
 				tlmposRespNote.setResp_msg(TlmposExptMsgEnum.ChaXunYiChang.getResp_msg());
-				logger.error("tlmpos运单查询没有检索到数据，当前小件员：", tlmposRespNote.getDelivery_man());
+				this.logger.error("tlmpos运单查询没有检索到数据，当前小件员：", tlmposRespNote.getDelivery_man());
 				return null;
 			}
 			if (tlmposRespNote.getDeliverstate().getSign_typeid() == 1) {
 				tlmposRespNote.setResp_code(TlmposExptMsgEnum.DingDanYiQianShou.getResp_code());
 				tlmposRespNote.setResp_msg(TlmposExptMsgEnum.DingDanYiQianShou.getResp_msg());
-				logger.info("tlmpos运单查询:订单已签收,当前小件员:" + tlmposRespNote.getDelivery_man());
+				this.logger.info("tlmpos运单查询:订单已签收,当前小件员:" + tlmposRespNote.getDelivery_man());
 				return null;
 			}
-			if ((tlmposRespNote.getDeliverstate().getReceivedfee().doubleValue() > 0) && tlmposRespNote.getDeliverstate().getSign_typeid() == 0) {
+			if ((tlmposRespNote.getDeliverstate().getReceivedfee().doubleValue() > 0) && (tlmposRespNote.getDeliverstate().getSign_typeid() == 0)) {
 				tlmposRespNote.setResp_code(TlmposExptMsgEnum.YiShouKuanWeiQianShou.getResp_code());
 				tlmposRespNote.setResp_msg(TlmposExptMsgEnum.YiShouKuanWeiQianShou.getResp_msg());
-				logger.info("tlmpos运单查询:已收款,未签收,当前小件员:" + tlmposRespNote.getDelivery_man());
+				this.logger.info("tlmpos运单查询:已收款,未签收,当前小件员:" + tlmposRespNote.getDelivery_man());
 				return null;
 			}
 			if (tlmposRespNote.getDeliverstate().getDeliverystate() != 0) { // 判断是否已反馈过
 				tlmposRespNote.setResp_code(TlmposExptMsgEnum.DingDanYiFankui.getResp_code());
 				tlmposRespNote.setResp_msg(TlmposExptMsgEnum.DingDanYiFankui.getResp_msg());
-				logger.info("tlmpos运单查询:订单已反馈过无需再次反馈,当前小件员:" + tlmposRespNote.getDelivery_man());
+				this.logger.info("tlmpos运单查询:订单已反馈过无需再次反馈,当前小件员:" + tlmposRespNote.getDelivery_man());
 				return null;
 			}
 
 			tlmposRespNote.setResp_code(TlmposExptMsgEnum.Success.getResp_code());
 			tlmposRespNote.setResp_msg(TlmposExptMsgEnum.Success.getResp_msg());
-			logger.info("tlmpos运单查询:未收款,未签收,当前小件员:" + tlmposRespNote.getDelivery_man());
+			this.logger.info("tlmpos运单查询:未收款,未签收,当前小件员:" + tlmposRespNote.getDelivery_man());
 
-			tlmposRespNote = SearchCwbDetailBytlmpos(tlmposRespNote, tlmpos); // 查询其他信息
+			tlmposRespNote = this.SearchCwbDetailBytlmpos(tlmposRespNote, tlmpos); // 查询其他信息
 
 		} catch (Exception e) {
-			logger.error("tlmpos运单查询未知异常!", e);
+			this.logger.error("tlmpos运单查询未知异常!", e);
 			tlmposRespNote.setResp_code(TlmposExptMsgEnum.QiTaShiBai.getResp_code());
 			tlmposRespNote.setResp_code(TlmposExptMsgEnum.QiTaShiBai.getResp_code());
 		} finally {
-			final Map<String, String> retMap = convertMapType_cwbSearch(tlmposRespNote, tlmpos, rootnote);
+			final Map<String, String> retMap = this.convertMapType_cwbSearch(tlmposRespNote, tlmpos, rootnote);
 
 			final String responseXml = TlmposXMLHandler.createXMLMessage_SearchCwb(retMap);// 生成响应报文
-			logger.info("[" + rootnote.getTransaction_Header().getTransaction_id() + "]返回XML:" + responseXml);
+			this.logger.info("[" + rootnote.getTransaction_Header().getTransaction_id() + "]返回XML:" + responseXml);
 			return responseXml;
 		}
 
@@ -104,10 +104,10 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		 * 第二位：0表示可以刷卡也可以现金；1现金；2刷卡 第三位业务预留，目前取值0； 第四位到第七位表示序号：例如：0001
 		 */
 
-		PoscodeMapp codemapping = poscodeMappDAO.getPosCodeByKey(tlmposRespNote.getCwbOrder().getCustomerid(), PosEnum.TongLianPos.getKey());
+		PoscodeMapp codemapping = this.poscodeMappDAO.getPosCodeByKey(tlmposRespNote.getCwbOrder().getCustomerid(), PosEnum.TongLianPos.getKey());
 		String end4str = ""; // 后四位 查询POS商户映射上面得出
 		if (codemapping != null) {
-			end4str = codemapping.getCustomercode() == null || codemapping.getCustomercode().isEmpty() ? "0000" : codemapping.getCustomercode();
+			end4str = (codemapping.getCustomercode() == null) || codemapping.getCustomercode().isEmpty() ? "0000" : codemapping.getCustomercode();
 		}
 
 		String idx1 = tlmpos.getIsbackout() == 1 ? "0" : "A";
@@ -132,7 +132,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		Map<String, String> retMap = new HashMap<String, String>();
 		// 放入map
 
-		String remark = getRemarkByPaytype(tlmposRespNote, tlmpos);
+		String remark = this.getRemarkByPaytype(tlmposRespNote, tlmpos);
 
 		retMap.put("transaction_id", tlmposRespNote.getTransaction_id());
 		retMap.put("resp_code", tlmposRespNote.getResp_code());
@@ -154,15 +154,18 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		// 生成待加密的字符串
 		String str = TlmposXMLHandler.createMACXML_SearchCwb(retMap);
 
-		logger.info("MI0010签名串信息：" + str);
+		this.logger.info("MI0010签名串信息：" + str);
 
-		String MAC = CreateRespSign(tlmpos, str);
+		String MAC = this.CreateRespSign(tlmpos, str);
 		retMap.put("MAC", MAC);
 		return retMap;
 	}
 
 	private String getRemarkByPaytype(TlmposRespNote tlmposRespNote, Tlmpos tlmpos) {
 		String remark;
+		if ((tlmposRespNote == null) || (tlmposRespNote.getCwbOrder() == null) || (tlmposRespNote.getCwbOrder().getPaywayid() == 0)) {
+			return null;
+		}
 		if (tlmposRespNote.getCwbOrder().getPaywayid() == PaytypeEnum.Xianjin.getValue()) {
 			remark = "现金支付";
 		} else if (tlmposRespNote.getCwbOrder().getPaywayid() == PaytypeEnum.Pos.getValue()) {
