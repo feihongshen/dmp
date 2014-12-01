@@ -201,6 +201,16 @@ public class SmtController {
 		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
 	}
 
+	private String getTodayOutAreaSql() {
+		StringBuilder sql = new StringBuilder();
+		sql.append(this.getSelectCountPart());
+		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
+		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
+		sql.append("and f.credate > '" + this.getTodayZeroTimeString() + "' ");
+
+		return sql.toString();
+	}
+
 	private String getCwbs(HttpServletRequest request) {
 		return (String) request.getAttribute("cwbs");
 	}
@@ -297,10 +307,10 @@ public class SmtController {
 	}
 
 	private void addTodayDispatchData(Model model) {
-		int hNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
-		int hTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
-		model.addAttribute("tNorDisCnt", hNorDisCnt);
-		model.addAttribute("tTraDisCnt", hTraDisCnt);
+		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		model.addAttribute("tNorDisCnt", tNorDisCnt);
+		model.addAttribute("tTraDisCnt", tTraDisCnt);
 	}
 
 	private void addTodayOutAreaData(Model model) {
@@ -356,13 +366,9 @@ public class SmtController {
 	}
 
 	private int queryTodayOutAreaCount() {
-		StringBuilder fullSql = new StringBuilder();
-		String sql = this.getOrderCountQuerySql(OrderTypeEnum.All, OptTimeTypeEnum.Today, false);
-		fullSql.append(sql);
-		// 追加超区条件.
-		this.appendOutAreaWhereCond(fullSql);
+		String sql = this.getTodayOutAreaSql();
 
-		return this.cwbDAO.querySmtOrderCount(fullSql.toString());
+		return this.cwbDAO.querySmtOrderCount(sql);
 	}
 
 	private OptTimeTypeEnum getTimeType(HttpServletRequest request) {
@@ -393,7 +399,7 @@ public class SmtController {
 
 	private String getOrderCountQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select count(1) from express_ops_cwb_detail where ");
+		sql.append(this.getSelectCountPart());
 		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched);
 
 		return sql.toString();
@@ -401,7 +407,7 @@ public class SmtController {
 
 	private String getOrderListQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail where ");
+		sql.append(this.getSelectOrderPart());
 		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched);
 		this.appendLimit(sql, page);
 
@@ -438,7 +444,7 @@ public class SmtController {
 
 	private void appendBranchWhereCond(StringBuilder sql) {
 		long branchId = this.getCurrentBranchId();
-		sql.append("deliverybranchid=" + branchId + " ");
+		sql.append("d.deliverybranchid=" + branchId + " ");
 	}
 
 	private void appendCwbsWhereCond(StringBuilder sql, String cwbs) {
@@ -446,31 +452,43 @@ public class SmtController {
 	}
 
 	private void appendSmtOrderTypeWhereCond(StringBuilder sql) {
-		// sql.append("and cwbordertypeid=" + 2 + " ");
+		sql.append("and d.cwbordertypeid = 2 ");
 	}
 
 	private void appendDispatchedWhereCond(StringBuilder sql, boolean dispatched) {
 		if (dispatched) {
-			sql.append("and deliverid != ''");
+			sql.append("and d.deliverid != ''");
 		} else {
-			sql.append("and deliverid ='' ");
+			sql.append("and d.deliverid ='' ");
 		}
 	}
 
 	private void appendInStationWhereCond(StringBuilder sql) {
 		// 流程类型为分到到货和到错误或者配送类型分站滞留.
-		sql.append("and (flowordertype IN(7,8) or deliverystate=6) ");
+		sql.append("and (d.flowordertype IN(7,8) or d.deliverystate=6) ");
 	}
 
 	private void appendDataTypeWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
-
+		int cqFlow = FlowOrderTypeEnum.ChaoQu.getValue();
+		if (OrderTypeEnum.Transfer.equals(dataType)) {
+			sql.append("and f.flowordertype = " + cqFlow + " ");
+		} else if (OrderTypeEnum.Normal.equals(dataType)) {
+			sql.append("and NOT EXISTS( SELECT 1 FROM express_ops_order_flow f1 WHERE f1.cwb = d.cwb AND f1.flowordertype = " + cqFlow + ") ");
+		} else {
+		}
 	}
 
 	private void appendTimeTypeWhereCond(StringBuilder sql, OptTimeTypeEnum timeType) {
-		sql.append("and cwb in(");
-		sql.append(this.getOptTimeCwbInSqlParam(timeType) + ") ");
+		sql.append("and f.credate ");
+		if (OptTimeTypeEnum.Today.equals(timeType)) {
+			sql.append(">=");
+		} else {
+			sql.append("<");
+		}
+		sql.append("'" + this.getTodayZeroTimeString() + "' ");
 	}
 
+	@SuppressWarnings("unused")
 	private String getOptTimeCwbInSqlParam(OptTimeTypeEnum timeType) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select cwb from express_ops_order_flow where ");
@@ -514,15 +532,19 @@ public class SmtController {
 	}
 
 	private String getSmtOrderQryFields() {
-		return "opscwbid,cwb,consigneename,consigneeaddress,consigneephone,shouldfare,excelbranch,deliverid";
+		return "d.opscwbid,d.cwb,d.consigneename,d.consigneeaddress,d.consigneephone,d.shouldfare,d.excelbranch,d.deliverid";
+	}
+
+	private String getSelectOrderPart() {
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+	}
+
+	private String getSelectCountPart() {
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private long getCurrentBranchId() {
 		return this.getSessionUser().getBranchid();
-	}
-
-	private long getCurrentUserId() {
-		return this.getSessionUser().getUserid();
 	}
 
 	private User getSessionUser() {
