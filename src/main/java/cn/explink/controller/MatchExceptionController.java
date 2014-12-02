@@ -537,16 +537,6 @@ public class MatchExceptionController {
 		return cond.toString();
 	}
 
-	private String getMatchWhereCond(boolean match) {
-		StringBuilder cond = new StringBuilder();
-		if (match) {
-			cond.append("d.deliverbranchid != 0 ");
-		} else {
-			cond.append("d.deliverbranchid = 0 ");
-		}
-		return cond.toString();
-	}
-
 	private String getTimeWhereCond(boolean today) {
 		StringBuilder whereCond = new StringBuilder();
 		whereCond.append("f.credate ");
