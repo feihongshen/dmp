@@ -18,18 +18,20 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.b2c.huitongtx.addressmatch.MatchTypeEnum;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.MatchExceptionOrder;
+import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.SqlBuilder;
 
@@ -39,8 +41,8 @@ public class MatchExceptionController {
 
 	private enum ColumnEnum {
 
-		OrderNo("订单号"), ReportOutAraaTime("上报超区时间"), ReportOutAreaBranch("上报超区站点"), ReportOutAreaUser("上报超区人"), MatchBranch("分派站点"), CustomerName("客户姓名"), CustmerPhone("联系方式"), ReceivedFee("应收运费"), CustomerAddress(
-				"客户地址");
+		OrderNo("订单号"), ReportOutAraaTime("上报超区时间"), ReportOutAreaBranch("上报超区站点"), ReportOutAreaUser("上报超区人"), MatchBranch("分派站点"), CustomerName(
+				"客户姓名"), CustmerPhone("联系方式"), ReceivedFee("应收运费"), CustomerAddress("客户地址");
 		String columnName;
 
 		ColumnEnum(String columnName) {
@@ -62,11 +64,14 @@ public class MatchExceptionController {
 	@Autowired
 	private UserDAO userDAO;
 
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
 	@RequestMapping("/matchexceptionhandle")
 	public String matchExpectionHandle(Model model) {
 		// 站点列表.
 		this.addBranchList(model);
-		// 今日待处理转单.
+		// 今日待转单.
 		this.addTWaitTransferOrderCnt(model);
 		// 今日待匹配订单.
 		this.addTWaitMatchOrderCnt(model);
@@ -75,7 +80,7 @@ public class MatchExceptionController {
 		// 历史待匹配订单.
 		this.addHWaitMatchOrderCnt(model);
 		// 今日已转单.
-		this.addTTransferOrderCnt(model);
+		this.addTTraCnt(model);
 		// 今日已匹配.
 		this.addTMatchOrderCnt(model);
 		// 今日待处理订单.
@@ -214,12 +219,12 @@ public class MatchExceptionController {
 	}
 
 	private void addTWaitTransferOrderCnt(Model model) {
-		int tWaitTraOrdCnt = this.queryTransferOrderCount(true, false);
+		int tWaitTraOrdCnt = this.queryWaitTraOrderCount(true);
 		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
 	private void addHWaitTransferOrderCnt(Model model) {
-		int tWaitTraOrdCnt = this.queryTransferOrderCount(false, false);
+		int tWaitTraOrdCnt = this.queryWaitTraOrderCount(false);
 		model.addAttribute("hWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
@@ -233,8 +238,8 @@ public class MatchExceptionController {
 		model.addAttribute("hWaitMatOrdCnt", Integer.valueOf(hWaitMatOrdCnt));
 	}
 
-	private void addTTransferOrderCnt(Model model) {
-		int tTraOrdCnt = this.queryTransferOrderCount(true, true);
+	private void addTTraCnt(Model model) {
+		int tTraOrdCnt = this.queryTTraCnt();
 		model.addAttribute("tTraOrdCnt", Integer.valueOf(tTraOrdCnt));
 	}
 
@@ -248,8 +253,12 @@ public class MatchExceptionController {
 		model.addAttribute("tWaitHanOrdList", tWaitHanOrdList);
 	}
 
-	private int queryTransferOrderCount(boolean today, boolean transfer) {
-		return this.cwbDAO.queryMatchExceptionOrderCount(this.getQueryTransferCountSql(today, transfer));
+	private int queryWaitTraOrderCount(boolean today) {
+		return this.cwbDAO.queryMatchExceptionOrderCount(this.getWaitTraCountSql(today));
+	}
+
+	private int queryTTraCnt() {
+		return this.cwbDAO.queryMatchExceptionOrderCount(this.getTodayTraCountSql());
 	}
 
 	private List<MatchExceptionOrder> queryTransferOrder(boolean today, boolean transfer, int page) {
@@ -257,6 +266,20 @@ public class MatchExceptionController {
 		this.fillMatchExceptionOrder(meoList);
 
 		return meoList;
+	}
+
+	private String getQueryTransferOrderSql(boolean today, Boolean transfer, int page) {
+		if (today) {
+			if (transfer.booleanValue()) {
+				return this.getTTraSql();
+			} else {
+				return this.getWaitTraSql(true, page);
+			}
+		} else {
+			// 只有历史待转单情况.
+			return this.getWaitTraSql(false, page);
+		}
+
 	}
 
 	private int queryMatchOrderCount(boolean today, boolean match) {
@@ -343,7 +366,7 @@ public class MatchExceptionController {
 
 	private String getQuerywaitHandleOrderSql(boolean today, int page) {
 		StringBuilder sql = new StringBuilder();
-		sql.append(this.getQueryTransferOrderSql(today, false, -1));
+		sql.append(this.getWaitTraSql(today, -1));
 		sql.append(" union ");
 		sql.append(this.getMatchOrderSql(today, false, -1));
 		sql.append(" ");
@@ -352,26 +375,42 @@ public class MatchExceptionController {
 		return sql.toString();
 	}
 
-	private String getQueryTransferOrderSql(boolean today, boolean transfer, int page) {
+	private String getWaitTraSql(boolean today, int page) {
 		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectOrderPart());
-		this.appendTransferSqlWhereCond(sql, today, transfer);
+		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
+		this.appendWaitTraSqlWhereCond(sql, today);
 		sql.appendExtraPart(this.getLimitSql(page));
 
 		return sql.getSql();
 	}
 
-	private String getQueryTransferCountSql(boolean today, boolean transfer) {
+	private String getWaitTraCountSql(boolean today) {
 		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectCountPart());
-		this.appendTransferSqlWhereCond(sql, today, transfer);
+		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowCountPart());
+		this.appendWaitTraSqlWhereCond(sql, today);
+
+		return sql.getSql();
+	}
+
+	private String getTodayTraCountSql() {
+		SqlBuilder sql = new SqlBuilder();
+		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbCountPart());
+		this.appendTodayTraSqlWhereCond(sql);
+
+		return sql.getSql();
+	}
+
+	private String getTTraSql() {
+		SqlBuilder sql = new SqlBuilder();
+		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbPart());
+		this.appendTodayTraSqlWhereCond(sql);
 
 		return sql.getSql();
 	}
 
 	private String getMatchOrderCountSql(boolean today, boolean match) {
 		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectCountPart());
+		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowCountPart());
 		this.appendMatchSqlWhereCond(sql, today, match);
 
 		return sql.getSql();
@@ -380,7 +419,7 @@ public class MatchExceptionController {
 
 	private String getMatchOrderSql(boolean today, boolean match, int page) {
 		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectOrderPart());
+		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
 		this.appendMatchSqlWhereCond(sql, today, match);
 		sql.appendExtraPart(this.getLimitSql(page));
 
@@ -400,34 +439,92 @@ public class MatchExceptionController {
 	private void appendMatchSqlWhereCond(SqlBuilder sql, boolean today, boolean match) {
 		// 增加前导列的命中率.
 		if (match) {
+			// 流程站点条件.
+			sql.appendCondition(this.getMatchBranchSql(true));
+			// 流程处理时间.
 			sql.appendCondition(this.getTimeWhereCond(today));
-			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
-			sql.appendCondition(this.getMatchWhereCond(match));
-			sql.appendCondition(this.getManualMatchWhereCond());
+			// 站点分配完成状态.
+			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.ZhanDianFenPeiWanCheng));
 		} else {
-			sql.appendCondition(this.getMatchWhereCond(match));
+			// 订单站点条件.
+			sql.appendCondition(this.getMatchBranchSql(false));
+			// 订单流程状态.
 			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.DaoRuShuJu));
+			// 流程处理时间.
 			sql.appendCondition(this.getTimeWhereCond(today));
+		}
+		sql.appendCondition(this.getOrderTypeWhereCond());
+	}
+
+	private String getMatchBranchSql(boolean match) {
+		if (match) {
+			return "f.branchid = " + this.getCurrentBranchId();
+		} else {
+			return "d.currentbranchid = " + this.getCurrentBranchId();
 		}
 	}
 
-	private String getManualMatchWhereCond() {
-		return "d.addresscodeedittype = " + MatchTypeEnum.RenGong.getValue();
-	}
-
-	private void appendTransferSqlWhereCond(SqlBuilder sql, boolean today, boolean transfer) {
+	private void appendWaitTraSqlWhereCond(SqlBuilder sql, boolean today) {
+		// 配送站点条件.
+		sql.appendCondition(this.getWaitTraBranchWhereCond());
+		// 订单类型条件.
+		this.getOrderTypeWhereCond();
 		// 转单条件.
-		sql.appendCondition(this.getTransferWhereCond(transfer));
+		sql.appendCondition(this.getTransferWhereCond(false));
 		// 时间条件.
 		sql.appendCondition(this.getTimeWhereCond(today));
+		// 订单流程条件.
+		sql.appendCondition(this.getCwbFlowStatusCondWhere(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
+		// 如果出现环形分派a->b->a会出现多次分站到货流程,连接时需要加入流程isnow条件.
+		sql.appendCondition(this.getFlowNowWhereCond());
+	}
+
+	private void appendTodayTraSqlWhereCond(SqlBuilder sql) {
+		// 时间条件.
+		sql.appendCondition(this.getTimeWhereCond(true));
+		// 转单站点条件.
+		sql.appendCondition(this.getTraBranchWhereCond());
+		// 订单类型条件.
+		this.getOrderTypeWhereCond();
+		// 订单流程条件.
+		sql.appendCondition(this.getFlowFlowStatusCondWhere(FlowOrderTypeEnum.ZhanDianFenPeiWanCheng));
+		// 已转单条件.
+		sql.appendCondition(this.getTransferWhereCond(true));
+	}
+
+	private String getWaitTraBranchWhereCond() {
+		return "d.deliverbranchid = " + this.getCurrentBranchId();
+	}
+
+	private String getTraBranchWhereCond() {
+		return "f.branchid = " + this.getCurrentBranchId();
+	}
+
+	private String getFlowNowWhereCond() {
+		return "f.isnow = 1";
+	}
+
+	private String getCwbFlowStatusCondWhere(FlowOrderTypeEnum flowType) {
+		int flow = flowType.getValue();
+		return "d.flowordertype = " + flow;
+	}
+
+	private String getFlowFlowStatusCondWhere(FlowOrderTypeEnum flowType) {
+		int flow = flowType.getValue();
+		return "f.flowordertype = " + flow;
+	}
+
+	private String getOrderTypeWhereCond() {
+		return "d.cwbordertypeid = 2";
 	}
 
 	private String getTransferWhereCond(boolean transfer) {
-		int outAreaFlow = FlowOrderTypeEnum.ChaoQu.getValue();
 		if (transfer) {
-			return "f.flowordertype = " + outAreaFlow + " and d.flowordertype between 7 and 59";
+			// 转单已处理.
+			return "d.outareaflag = 2 ";
 		} else {
-			return "d.flowordertype = " + outAreaFlow + " and f.flowordertype = " + outAreaFlow;
+			// 转单未处理.
+			return "d.outareaflag = 1 ";
 		}
 	}
 
@@ -443,9 +540,9 @@ public class MatchExceptionController {
 	private String getMatchWhereCond(boolean match) {
 		StringBuilder cond = new StringBuilder();
 		if (match) {
-			cond.append("d.nextbranchid != 0 ");
+			cond.append("d.deliverbranchid != 0 ");
 		} else {
-			cond.append("d.nextbranchid = 0 ");
+			cond.append("d.deliverbranchid = 0 ");
 		}
 		return cond.toString();
 	}
@@ -463,11 +560,21 @@ public class MatchExceptionController {
 		return whereCond.toString();
 	}
 
-	private String getSelectOrderPart() {
-		return "select " + this.getQueryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
+	private String getSelectCwbInnerJoinFlowPart() {
+		String qryFields = this.getQueryFields();
+		return "select " + qryFields + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
-	private String getSelectCountPart() {
+	private String getSelectFlowInnerJoinCwbPart() {
+		String qryFields = this.getQueryFields();
+		return "select " + qryFields + " from express_ops_order_flow f inner join express_ops_cwb_detail d on f.cwb = d.cwb";
+	}
+
+	private String getSelectCwbInnerJoinFlowCountPart() {
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
+	}
+
+	private String getSelectFlowInnerJoinCwbCountPart() {
 		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
@@ -542,6 +649,14 @@ public class MatchExceptionController {
 		private List<MatchExceptionOrder> getMeoList() {
 			return this.meoList;
 		}
+	}
 
+	private long getCurrentBranchId() {
+		return this.getSessionUser().getBranchid();
+	}
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
 	}
 }
