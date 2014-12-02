@@ -58,11 +58,13 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExceedFeeDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportmouldDAO;
+import cn.explink.dao.ExportwarhousesummaryDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
@@ -87,6 +89,7 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.GroupDetail;
 import cn.explink.domain.JsonContext;
 import cn.explink.domain.Menu;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
@@ -215,8 +218,11 @@ public class PDAController {
 	@Autowired
 	CwbKuaiDiDAO cwbKuaiDiDAO;
 	@Autowired
+	OrderGoodsDAO orderGoodsDAO;
+	@Autowired
 	EmailDateService emailDateService;
-
+	@Autowired
+	ExportwarhousesummaryDAO exportwarhousesummaryDAO;
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -5926,7 +5932,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -5938,16 +5944,16 @@ public class PDAController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 *
+					 * 
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 *
+					 * 
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 *
+					 * 
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -5960,7 +5966,7 @@ public class PDAController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 *
+					 * 
 					 * }});
 					 */
 
@@ -6008,7 +6014,7 @@ public class PDAController {
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	 * if(clist.size()>0){ for(CwbOrder c: clist){ CwbOrderView cwbOrderView =
 	 * new CwbOrderView();
-	 *
+	 * 
 	 * cwbOrderView.setCwb(c.getCwb());
 	 * cwbOrderView.setEmaildate(c.getEmaildate());
 	 * cwbOrderView.setCarrealweight(c.getCarrealweight());
@@ -6023,7 +6029,7 @@ public class PDAController {
 	 * cwbOrderView.setConsigneephone(c.getConsigneephone());
 	 * cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 	 * cwbOrderView.setResendtime(c.getResendtime()==null?"":c.getResendtime());
-	 *
+	 * 
 	 * cwbOrderView.setCustomerid(c.getCustomerid());
 	 * cwbOrderView.setCustomername
 	 * (dataStatisticsService.getQueryCustomerName(customerList,
@@ -6053,7 +6059,7 @@ public class PDAController {
 	 * cwbOrderView.setReceivablefee(c.getReceivablefee());
 	 * cwbOrderView.setCaramount(c.getCaramount());
 	 * cwbOrderView.setPaybackfee(c.getPaybackfee());
-	 *
+	 * 
 	 * DeliveryState deliverystate =
 	 * dataStatisticsService.getDeliveryByCwb(c.getCwb());
 	 * cwbOrderView.setPaytype
@@ -6073,7 +6079,7 @@ public class PDAController {
 	 * currentBranch =dataStatisticsService.getQueryBranchName(branchList,
 	 * c.getCurrentbranchid());
 	 * cwbOrderView.setCurrentbranchname(currentBranch);
-	 *
+	 * 
 	 * Date ruku =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
 	 * FlowOrderTypeEnum.RuKu.getValue()).getCredate(); Date chukusaomiao
 	 * =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
@@ -6131,9 +6137,9 @@ public class PDAController {
 	 * .getInwarhouseRemarks(remarkList).
 	 * get(c.getCwb()).get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 	 * cwbOrderView.setCwbordertypeid(c.getCwbordertypeid()+"");//订单类型
-	 *
+	 * 
 	 * cwbOrderViewList.add(cwbOrderView);
-	 *
+	 * 
 	 * } } return cwbOrderViewList; }
 	 */
 
@@ -6380,7 +6386,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6784,7 +6790,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6955,7 +6961,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7233,7 +7239,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7458,7 +7464,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7640,4 +7646,78 @@ public class PDAController {
 		return true;
 	}
 
+	@RequestMapping("/showgoodsdetail/{cwb}")
+	public @ResponseBody ExplinkResponse showgoodsdetail(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
+		List<OrderGoods> orderGoodsList = this.orderGoodsDAO.getOrderGoodsList(cwb);
+		JSONObject obj = new JSONObject();
+		String code = "1111111";
+		if (orderGoodsList.size() > 0) {
+			code = "000000";
+			obj.put("orderGoodsList", orderGoodsList);
+		}
+		ExplinkResponse explinkResponse = new ExplinkResponse(code, "商品明细", obj);
+
+		return explinkResponse;
+	}
+
+	@RequestMapping("/updategoodthzrkcount")
+	public @ResponseBody ExplinkResponse updategoodthzrkcount(Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "cwb", required = true, defaultValue = "") String cwb, @RequestParam(value = "jasonval", required = true, defaultValue = "0") String jasonval) {
+		JSONArray ids = (JSONArray) JSONObject.fromObject(jasonval).get("id");
+		JSONArray thzrkcounts = (JSONArray) JSONObject.fromObject(jasonval).get("thzrkcount");
+
+		String scancwb = cwb;
+		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false);
+		JSONObject obj = new JSONObject();
+		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+		for (int i = 0; i < ids.size(); i++) {
+			this.orderGoodsDAO.updateThzrkcount(ids.getLong(i), thzrkcounts.getLong(i));
+		}
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
+		if (cwbOrder.getNextbranchid() != 0) {
+			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+			obj.put("cwbbranchname", branch.getBranchname());
+			obj.put("cwbbranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+		} else if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
+			obj.put("cwbgaojia", "true");
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+		} else {
+			obj.put("cwbbranchname", "");
+			obj.put("cwbbranchnamewav", "");
+			obj.put("cwbgaojia", "");
+		}
+
+		if (cwbOrder.getDeliverybranchid() != 0) {
+			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+			obj.put("cwbdeliverybranchname", branch.getBranchname());
+			obj.put("cwbdeliverybranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+		} else {
+			obj.put("cwbdeliverybranchname", "");
+			obj.put("cwbdeliverybranchnamewav", "");
+		}
+		// 加入供货商名称.
+		this.addCustomerWav(request, explinkResponse, cwbOrder);
+		// 加入货物类型声音.
+		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+
+		String wavPath = null;
+		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+		} else {
+			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
+		}
+
+		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+			explinkResponse.setErrorinfo(explinkResponse.getErrorinfo() + "\n一票多件");
+			if (this.isPlayYPDJSound()) {
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+			}
+		}
+		explinkResponse.addLastWav(wavPath);
+
+		return explinkResponse;
+	}
 }

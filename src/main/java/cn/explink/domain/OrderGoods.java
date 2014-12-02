@@ -2,7 +2,7 @@ package cn.explink.domain;
 
 /**
  * 订单商品列表
- * 
+ *
  * @author Administrator
  *
  */
@@ -33,9 +33,10 @@ public class OrderGoods {
 	private int weituicount;
 	private int tepituicount;
 	private String weituireason;
+	private int thzrkcount;
 
 	public int getShituicount() {
-		return shituicount;
+		return this.shituicount;
 	}
 
 	public void setShituicount(int shituicount) {
@@ -43,7 +44,7 @@ public class OrderGoods {
 	}
 
 	public int getWeituicount() {
-		return weituicount;
+		return this.weituicount;
 	}
 
 	public void setWeituicount(int weituicount) {
@@ -51,7 +52,7 @@ public class OrderGoods {
 	}
 
 	public int getTepituicount() {
-		return tepituicount;
+		return this.tepituicount;
 	}
 
 	public void setTepituicount(int tepituicount) {
@@ -59,7 +60,7 @@ public class OrderGoods {
 	}
 
 	public String getWeituireason() {
-		return weituireason;
+		return this.weituireason;
 	}
 
 	public void setWeituireason(String weituireason) {
@@ -67,7 +68,7 @@ public class OrderGoods {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -75,7 +76,7 @@ public class OrderGoods {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -83,7 +84,7 @@ public class OrderGoods {
 	}
 
 	public String getCretime() {
-		return cretime;
+		return this.cretime;
 	}
 
 	public void setCretime(String cretime) {
@@ -91,7 +92,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_code() {
-		return goods_code;
+		return this.goods_code;
 	}
 
 	public void setGoods_code(String goods_code) {
@@ -99,7 +100,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_brand() {
-		return goods_brand;
+		return this.goods_brand;
 	}
 
 	public void setGoods_brand(String goods_brand) {
@@ -107,7 +108,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_name() {
-		return goods_name;
+		return this.goods_name;
 	}
 
 	public void setGoods_name(String goods_name) {
@@ -115,7 +116,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_spec() {
-		return goods_spec;
+		return this.goods_spec;
 	}
 
 	public void setGoods_spec(String goods_spec) {
@@ -123,7 +124,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_num() {
-		return goods_num;
+		return this.goods_num;
 	}
 
 	public void setGoods_num(String goods_num) {
@@ -131,7 +132,7 @@ public class OrderGoods {
 	}
 
 	public String getReturn_reason() {
-		return return_reason;
+		return this.return_reason;
 	}
 
 	public void setReturn_reason(String return_reason) {
@@ -139,7 +140,7 @@ public class OrderGoods {
 	}
 
 	public String getGoods_pic_url() {
-		return goods_pic_url;
+		return this.goods_pic_url;
 	}
 
 	public void setGoods_pic_url(String goods_pic_url) {
@@ -147,7 +148,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark1() {
-		return remark1;
+		return this.remark1;
 	}
 
 	public void setRemark1(String remark1) {
@@ -155,7 +156,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark2() {
-		return remark2;
+		return this.remark2;
 	}
 
 	public void setRemark2(String remark2) {
@@ -163,7 +164,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark3() {
-		return remark3;
+		return this.remark3;
 	}
 
 	public void setRemark3(String remark3) {
@@ -171,7 +172,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark4() {
-		return remark4;
+		return this.remark4;
 	}
 
 	public void setRemark4(String remark4) {
@@ -179,7 +180,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark5() {
-		return remark5;
+		return this.remark5;
 	}
 
 	public void setRemark5(String remark5) {
@@ -187,7 +188,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark6() {
-		return remark6;
+		return this.remark6;
 	}
 
 	public void setRemark6(String remark6) {
@@ -195,7 +196,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark7() {
-		return remark7;
+		return this.remark7;
 	}
 
 	public void setRemark7(String remark7) {
@@ -203,7 +204,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark8() {
-		return remark8;
+		return this.remark8;
 	}
 
 	public void setRemark8(String remark8) {
@@ -211,7 +212,7 @@ public class OrderGoods {
 	}
 
 	public String getRemark9() {
-		return remark9;
+		return this.remark9;
 	}
 
 	public void setRemark9(String remark9) {
@@ -219,11 +220,19 @@ public class OrderGoods {
 	}
 
 	public String getRemark10() {
-		return remark10;
+		return this.remark10;
 	}
 
 	public void setRemark10(String remark10) {
 		this.remark10 = remark10;
+	}
+
+	public int getThzrkcount() {
+		return this.thzrkcount;
+	}
+
+	public void setThzrkcount(int thzrkcount) {
+		this.thzrkcount = thzrkcount;
 	}
 
 }

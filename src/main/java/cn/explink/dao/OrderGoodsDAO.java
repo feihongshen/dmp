@@ -45,6 +45,7 @@ public class OrderGoodsDAO {
 			good.setRemark8(rs.getString("remark8"));
 			good.setRemark9(rs.getString("remark9"));
 			good.setRemark10(rs.getString("remark10"));
+			good.setThzrkcount(rs.getInt("thzrkcount"));
 
 			return good;
 		}
@@ -55,7 +56,7 @@ public class OrderGoodsDAO {
 
 	public List<OrderGoods> getOrderGoodsList(String cwb) {
 		try {
-			return jdbcTemplate.query("select * from orders_goods where cwb=? order by goods_num desc", new OrderGoodsRowMapper(), cwb);
+			return this.jdbcTemplate.query("select * from orders_goods where cwb=? order by goods_num desc", new OrderGoodsRowMapper(), cwb);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -64,7 +65,7 @@ public class OrderGoodsDAO {
 
 	public void CreateOrderGoods(final OrderGoods goods) {
 
-		jdbcTemplate.update("insert into orders_goods(cwb,cretime,goods_code,goods_brand,goods_name,goods_spec,goods_num,return_reason,goods_pic_url) " + "values(?,?,?,?,?,?,?,?,?)",
+		this.jdbcTemplate.update("insert into orders_goods(cwb,cretime,goods_code,goods_brand,goods_name,goods_spec,goods_num,return_reason,goods_pic_url) " + "values(?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -85,7 +86,7 @@ public class OrderGoodsDAO {
 
 	public void updateOrderGoodsById(final OrderGoods goods) {
 
-		jdbcTemplate.update("update orders_goods set shituicount = ?, weituicount = ?, tepituicount = ?, weituireason = ?, remark1 = ? where id = ? ", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("update orders_goods set shituicount = ?, weituicount = ?, tepituicount = ?, weituireason = ?, remark1 = ? where id = ? ", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				// TODO Auto-generated method stub
@@ -99,4 +100,7 @@ public class OrderGoodsDAO {
 		});
 	}
 
+	public int updateThzrkcount(long id, long thzrkcount) {
+		return this.jdbcTemplate.update("update  orders_goods set thzrkcount=" + thzrkcount + " where id=" + id);
+	}
 }

@@ -54,6 +54,7 @@ function tabView(tab,tip){
 	$("div[id^='w']").attr('style','display: none;');
 	$("#"+tip).attr('style','height: 160px; overflow-y: scroll;');
 	$("#extype").attr('value',tip);
+	$('#view').attr('style','display:');
 	
 }
 function ranCreate(){
@@ -104,7 +105,67 @@ function getcwbsdataForBack(){
  * 退货站入库扫描
  */
 function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
+/* 	alert($('#tip').val()); */
 	if(scancwb.length>0){
+		if($('#tip').val()=='goods')
+			{
+						$("#tr>table").remove();
+						$("#view").attr('style','display:none');
+						$("#msg").html("");
+						$("#cwbgoods").attr('value',$("#scancwb").val());
+						$("#excelbranch").html("");
+						$("#customername").html("");
+						$("#showcwb").html("");
+						$("#consigneeaddress").html("");
+			$.ajax({
+				type: "POST",
+				url:pname+"/PDA/showgoodsdetail/"+scancwb,
+				dataType:"json",
+				success : function(data) {
+					$("#scancwb").val("");
+					if(data.statuscode=="000000"){
+						$('#tt').attr('style','display:');
+						var goods=data.body.orderGoodsList;
+						var tr="<table width='100%' border='0' cellspacing='1' cellpadding='2' class='table_2' >"
+								+ "<tr><td nowrap='nowrap'>应退商品编码</td>"
+								+ "<td nowrap='nowrap'>应退商品名称</td>"
+								+ "<td nowrap='nowrap'>应退商品规格</td>"
+								+ "<td nowrap='nowrap'>应退商品数量</td>"
+								+ "<td nowrap='nowrap'>实退商品数量</td>"
+								+ "<td nowrap='nowrap'>退货出站数量</td>"
+								+ "<td nowrap='nowrap'>退货站入库数量</td>"
+								+ "<td nowrap='nowrap'>未退商品数量</td>"
+								+ "<td nowrap='nowrap'>特批退货数量</td>"
+								+ "<td nowrap='nowrap'>未退商品原因</td>"
+								+ "<td nowrap='nowrap'>备注</td></tr>";
+						for ( var i=0;i<goods.length;i++) {
+							
+							tr+="<tr>";
+							tr+="<td>"+goods[i].goods_code+"</td>";
+							tr+="<td>"+goods[i].goods_name+"</td>";
+							tr+="<td>"+goods[i].goods_spec+"</td>";
+							tr+="<td>"+goods[i].goods_num+"</td>";
+							tr+="<td>"+goods[i].shituicount+"</td>";
+							tr+="<td>"+goods[i].shituicount+"</td>";
+							tr+="<td><input type='text' id='thzrkcount' onblur='goodCounts("+goods[i].shituicount+",$(this).val())' name='thzrkcount' counts="+goods[i].shituicount+" value="+goods[i].shituicount+" size='6'/></td>";
+							tr+="<td>"+goods[i].weituicount+"</td>";
+							tr+="<td>"+goods[i].tepituicount+"</td>";
+							tr+="<td>"+goods[i].weituireason+"</td>";
+							tr+="<td>"+goods[i].remark1+"</td>";
+							tr+="<input type='hidden' id='id' name='id' value="+goods[i].id+" size='6'/>";
+							//tr+="<input type='hidden' id='thzrkcount' name='thzrkcount' value="+goods[i].thzrkcount+" size='6'/>";
+							tr+="</tr>";
+						}
+						tr+="</table>";
+						$("#tr").append(tr);
+				}
+					else{
+						$("#msg").html("         该记录不存在任何商品，请选择其它入库方式！");
+					}
+				}}
+			);
+			return false;
+			}
 		if($("#scanbaleTag").attr("class")=="light"){//入库根据包号扫描订单
 			baledaohuo(scancwb,driverid,comment);
 		}else{//入库
@@ -169,7 +230,146 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 		}
 	}
 }
+function goodCounts(counts,val)
+{
+	//alert(counts+","+val);
+/*     if(!/^[0-9]*$/.test(val)){
+        alert("请输入数字!");
+        return false;
+    }
+    if(val>counts){
+        alert("退货站入库数量:"+val+" 不能大于实退商品数量:"+counts);
+        return false;
+    }
+    if(""==val){
+        alert("退货站入库数量不能为空！");
+        return false;
+    } */
+	}
+function updategoods()
+{ var flag=true;
+var json="{ thzrkcount:[";
 
+	var sum=0;
+	$("input[name=thzrkcount]").each(function(){
+    nameValue = $(this).val();
+    counts = $(this).attr("counts");
+    sum+=nameValue;
+    if(!/^[0-9]*$/.test(nameValue)){
+        alert("请输入正确的数字!");
+        $(this).focus();
+        flag=false;
+    }
+    if(""==nameValue){
+        alert("退货站入库数量不能为空！");
+        flag=false;
+    }
+    if(nameValue>counts){
+    	alert("退货站入库数量:"+nameValue+" 不能大于实退商品数量:"+counts);
+        flag=false;
+    }
+    json+=nameValue+","
+    
+});
+	json=json.substring(0, json.length-1);
+	json+="],id:["
+		$("input[name=id]").each(function(){
+		    id = $(this).val();
+		    json+=id+","    
+		});
+	json=json.substring(0, json.length-1);
+	json+="]}"
+	
+	if(sum==0)
+	{
+		alert("入库商品数量全部为0!");
+		return false;
+	}
+
+if(flag){
+ 	var jsonuserinfo = $('#form1').serializeObject();  
+	var jsonval=JSON.stringify(jsonuserinfo);
+	/* var a = eval('(' + jsonval + ')');
+	alert(a.id); */
+	var pname="<%=request.getContextPath()%>";
+	
+	//alert(urlstr);
+	$.ajax({
+		type: "POST",
+		url:"<%=request.getContextPath()%>/PDA/updategoodthzrkcount?cwb="+$("#cwbgoods").val()+"&driverid="+$("#driverid").val()+"&comment="+$("#comment").val(),
+		//data:{"thzrkcount":$("#thzrkcount").val(),"id":$("#id").val()},
+		//data:"jasonval="+ encodeURI(jsonval),
+		data:"jasonval="+ encodeURI(json),
+		//data:{id : a},
+		dataType:"json",
+		success : function(data) {
+			$("#scancwbTag1").click();
+			$("#tr>table").remove();
+			//$("#view").attr('style','display:none');
+				if(data.statuscode=="000000")
+					{
+					$("#cwbgaojia").hide();
+					if(data.body.cwbOrder.deliverybranchid!=0){
+						$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+					}else{
+						$("#excelbranch").html("尚未匹配站点");
+					}
+					
+					$("#customername").html(data.body.cwbcustomername);
+					$("#multicwbnum").val(data.body.cwbOrder.sendcarnum);
+					$("#msg").html($("#cwbgoods").val()+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
+					$("#scansuccesscwb").val($("#cwbgoods").val());
+					$("#showcwb").html("订 单 号："+$("#cwbgoods").val());
+					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
+					if(data.body.cwbbranchnamewav!=pname+"/wav/"){
+						$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
+					}else{
+						$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
+					}
+					}
+				else
+					{
+					$("#excelbranch").hide();
+					$("#customername").hide();
+					$("#cwbgaojia").hide();
+					$("#damage").hide();
+					$("#multicwbnum").hide();
+					$("#multicwbnum").val("1");
+					$("#showcwb").html("");
+					$("#consigneeaddress").html("");
+					$("#msg").html("         （异常扫描）"+data.errorinfo);
+					addAndRemoval($("#cwbgoods").val(),"errorTable",false);
+					}
+				$("#responsebatchno").val(data.responsebatchno);
+				batchPlayWav(data.wavList);
+		}
+		}
+	);
+}
+	}
+	
+$.fn.serializeObject = function()    
+{    
+   var o = {};    
+   var a = this.serializeArray();    
+   $.each(a, function() {    
+       if (o[this.name]) {    
+           if (!o[this.name].push) {    
+               o[this.name] = [o[this.name]];    
+           }    
+           o[this.name].push(this.value || '');    
+       } else {    
+           o[this.name] = this.value || '';    
+       }    
+   });    
+   return o;    
+};
+function onClik(){  
+    //var data = $("#form1").serializeArray(); //自动将form表单封装成json  
+    //alert(JSON.stringify(data));  
+    var jsonuserinfo = $('#form1').serializeObject();  
+    alert(JSON.stringify(jsonuserinfo));  
+}  
 function exportField(flag){
 	var cwbs = "";
 	if(flag==1){
@@ -347,13 +547,14 @@ function yiruku(){
 		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		<br clear="all">
 	</div>
-	
+	<input id="tip" type="hidden" />
 	<div class="saomiao_info2">
 		<div class="saomiao_inbox2">
 		<div id="Tag" class="saomiao_tab">
 				<ul id="bigTag">
-					<li><a href="#" id="scancwbTag" onclick="clearMsg();$(function(){$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light">扫描订单</a></li>
-					<li><a href="#" id="scanbaleTag" onclick="clearMsg();$(function(){$('#baleno').parent().show();$('#baleno').show();$('#finish').parent().show();$('#finish').show();$('#baleno').val('');$('#baleno').focus();$('#scancwb').val('');$('#scancwb').parent().hide();})">合包到货</a></li>
+					<li><a href="#" id="scancwbTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light">扫描订单</a></li>
+					<li><a href="#" id="scanbaleTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().show();$('#baleno').show();$('#finish').parent().show();$('#finish').show();$('#baleno').val('');$('#baleno').focus();$('#scancwb').val('');$('#scancwb').parent().hide();})">合包到货</a></li>
+					<li><a href="#" id="scancwbTag1" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:none');$('#goods').attr('style','display:');$('#tip').val('goods');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light1">按商品明细入库</a></li>
 				</ul>
 			</div>
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
@@ -377,7 +578,11 @@ function yiruku(){
 					<p><span>订单号：</span>
 						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitBackIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#driverid").val(),$("#comment").val());}'/>
 					</p>
+					<%-- <p><span>订单号：</span>
+						<input type="text" class="saomiao_inputtxt3" id="scancwb1" name="scancwb1" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitBackIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#driverid").val(),$("#comment").val());}'/>
+					</p> --%>
 				</div>
+			
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
@@ -400,8 +605,20 @@ function yiruku(){
 			</div>
 		</div>
 	</div>
-	
-		<div>
+		<div  id="goods" style="display: none;">
+		<form id="form1">
+					<div id="tt">
+					<br><br>
+					<div style='height: 200px; overflow-y: scroll;' id="tr"></div>
+					<center>
+					<input type="button" value="确定修改" onclick="updategoods()"/>
+					<input type="reset" value="取消"/>
+					</center>
+					</div>
+					<input type="hidden" id="cwbgoods"/> 
+		</form>
+		</div>
+		<div id="view">
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
 					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'" />

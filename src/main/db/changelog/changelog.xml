@@ -5742,6 +5742,12 @@ ALTER TABLE `express_ops_exception_cwb`
 MODIFY COLUMN `remark`  varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT '' AFTER `interfacetype`;
 		</sql>
 	</changeSet>
+	 <changeSet id="wangyonghe-2014-11-28-1"  author="wangyonghe">
+		<sql>
+ALTER TABLE `orders_goods`
+ADD COLUMN `thzrkcount`  int(4) NULL DEFAULT 0 COMMENT '退货站入库数量' AFTER `weituireason`;
+		</sql>
+	</changeSet>
 	 <changeSet id="zhangpengkai-2014-11-29-1"  author="zhangpengkai">
 	 <sql>
 		ALTER TABLE `account_cwb_fare_detail` ADD COLUMN `verifytime` VARCHAR(50) NULL COMMENT '审核时间' AFTER `fareid`,
