@@ -1006,13 +1006,13 @@ function check_user() {
 			return false;
 		}
 
-		else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+	/*	else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
 			alert("手机号码格式有误!");
 			return false;
-		}
+		}*/
 	}
 	return true;
-}
+} 
 function roleChange() {
 	$("#tip").html("");
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
@@ -3990,10 +3990,10 @@ function check_userbranch() {
 		alert("员工手机不能为空");
 		return false;
 	}
-	if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+	/*if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
 		alert("手机号码格式有误!");
 		return false;
-	}
+	}*/
 	return true;
 }
 
