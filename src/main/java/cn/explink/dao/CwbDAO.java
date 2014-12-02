@@ -5046,4 +5046,22 @@ public class CwbDAO {
 		this.jdbcTemplate.execute(sql);
 	}
 
+	public String getSqlExportBackToCustomerWeichukuOfcwbtype(long branchid, long cwbordertypeid) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid =" + branchid + " and cwbstate=" + CwbStateEnum.TuiGongYingShang.getValue() + "  and flowordertype<>"
+				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " and state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+
+		return sql;
+	}
+
+	public String getSqlExportBackToCustomerYichukuOfcwbtype(long branchid, long cwbordertypeid) {
+		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
+				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and b.cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
+	}
 }

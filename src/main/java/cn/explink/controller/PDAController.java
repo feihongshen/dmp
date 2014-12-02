@@ -2085,9 +2085,46 @@ public class PDAController {
 	@RequestMapping("/backtocustomer")
 	public String backtocustomer(Model model) {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		model.addAttribute("weitghsckList", this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1));
-		model.addAttribute("yitghsckList", this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1));
+		List<CwbOrder> weitghsckList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
+		List<CwbOrder> yitghsckList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1);
+
+		model.addAttribute("weitghsckList", weitghsckList);
+		model.addAttribute("yitghsckList", yitghsckList);
 		model.addAttribute("customerlist", cList);
+
+		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : yitghsckList) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				ypeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				yshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				yshangmentui.add(cwb);
+			}
+		}
+		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
+		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : weitghsckList) {
+			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+				wpeisong.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+				wshangmenhuan.add(cwb);
+			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+				wshangmentui.add(cwb);
+			}
+		}
+
+		model.addAttribute("ypeisong", ypeisong);
+		model.addAttribute("yshangmenhuan", yshangmenhuan);
+		model.addAttribute("yshangmentui", yshangmentui);
+
+		model.addAttribute("wpeisong", wpeisong);
+		model.addAttribute("wshangmenhuan", wshangmenhuan);
+		model.addAttribute("wshangmentui", wshangmentui);
+
 		return "pda/backtocustomer";
 	}
 
@@ -6817,7 +6854,8 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/exportExcleForBackToCustomer")
-	public void exportExcleForBackToCustomer(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type) {
+	public void exportExcleForBackToCustomer(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "extype", defaultValue = "") String extype) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -6843,10 +6881,32 @@ public class PDAController {
 			String sqlstr = "";
 			if (type.length() > 0) {
 				if (type.equals("weichuku")) {
-					sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichuku(this.getSessionUser().getBranchid());
+					if (extype.equals("wall")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
+					}
+					if (extype.equals("wshangmengtui")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+					}
+					if (extype.equals("wshangmenghuan")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+					}
+					if (extype.equals("wpeisong")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+					}
 				}
 				if (type.equals("yichuku")) {
-					sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichuku(this.getSessionUser().getBranchid());
+					if (extype.equals("yall")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
+					}
+					if (extype.equals("yshangmengtui")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+					}
+					if (extype.equals("yshangmenghuan")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+					}
+					if (extype.equals("ypeisong")) {
+						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+					}
 				}
 			}
 			if (sqlstr.length() == 0) {
