@@ -139,7 +139,7 @@ public class SmtController {
 		// 更新订单表设定订单状态为超区.
 		this.cwbDAO.updateOrderOutAreaStatus(cwbs);
 		// 更新订单流程表加入超区流程.
-		this.orderFlowDAO.batchInsertOutAreaFlow(this.transfer(cwbs), this.getCurrentBranchId(), this.getCurrentBranchId());
+		this.orderFlowDAO.batchInsertOutAreaFlow(this.transfer(cwbs), this.getCurrentBranchId(), this.getCurrentUserId());
 
 		return "";
 	}
@@ -171,11 +171,6 @@ public class SmtController {
 		ctn.setSmtOrderList(orderList);
 
 		return ctn;
-	}
-
-	@RequestMapping("/showconfirmdialog")
-	public String showConfirmDialog() {
-		return "smt/confirm";
 	}
 
 	@RequestMapping("/exportdata")
@@ -212,7 +207,7 @@ public class SmtController {
 	}
 
 	private String getCwbs(HttpServletRequest request) {
-		return (String) request.getAttribute("cwbs");
+		return request.getParameter("cwbs");
 	}
 
 	private SmtOrderContainer queryExceptionData(HttpServletRequest request) {
@@ -291,7 +286,7 @@ public class SmtController {
 
 	private void addTodayNotDispatchedData(Model model) {
 		int tNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false);
-		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false);
+		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, false);
 		model.addAttribute("tNorNotDisCnt", tNorNotDisCnt);
 		model.addAttribute("tTraNotDisCnt", tTraNotDisCnt);
 
@@ -301,14 +296,14 @@ public class SmtController {
 
 	private void addHistoryNotDispatchedData(Model model) {
 		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
-		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
+		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false);
 		model.addAttribute("hNorNotDisCnt", hNorNotDisCnt);
 		model.addAttribute("hTraNotDisCnt", hTraNotDisCnt);
 	}
 
 	private void addTodayDispatchData(Model model) {
 		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
-		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, true);
 		model.addAttribute("tNorDisCnt", tNorDisCnt);
 		model.addAttribute("tTraDisCnt", tTraDisCnt);
 	}
@@ -428,12 +423,10 @@ public class SmtController {
 		this.appendBranchWhereCond(sql);
 		// 上门退订单查询条件.
 		this.appendSmtOrderTypeWhereCond(sql);
-		// 未领货查询条件.
-		this.appendInStationWhereCond(sql);
+		// 订单状态查询条件.
+		this.appendInStationWhereCond(sql, dispatched);
 		// 数据类型过滤条件.
 		this.appendDataTypeWhereCond(sql, dataType);
-		// 是否分派小件员.
-		this.appendDispatchedWhereCond(sql, dispatched);
 		// 时间过滤条件.
 		this.appendTimeTypeWhereCond(sql, timeType);
 	}
@@ -455,25 +448,21 @@ public class SmtController {
 		sql.append("and d.cwbordertypeid = 2 ");
 	}
 
-	private void appendDispatchedWhereCond(StringBuilder sql, boolean dispatched) {
-		if (dispatched) {
-			sql.append("and d.deliverid != ''");
+	private void appendInStationWhereCond(StringBuilder sql, boolean dispatch) {
+		if (dispatch) {
+			// 流程类型为分到到货和到错误或者配送类型分站滞留.
+			sql.append("and (d.flowordertype IN(7,8) or d.deliverystate=6) ");
 		} else {
-			sql.append("and d.deliverid ='' ");
+			int pickingFlow = FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+			sql.append("and d.flowordertpe= " + pickingFlow + " ");
 		}
 	}
 
-	private void appendInStationWhereCond(StringBuilder sql) {
-		// 流程类型为分到到货和到错误或者配送类型分站滞留.
-		sql.append("and (d.flowordertype IN(7,8) or d.deliverystate=6) ");
-	}
-
 	private void appendDataTypeWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
-		int cqFlow = FlowOrderTypeEnum.ChaoQu.getValue();
 		if (OrderTypeEnum.Transfer.equals(dataType)) {
-			sql.append("and f.flowordertype = " + cqFlow + " ");
+			sql.append("and d.outarea != 0 ");
 		} else if (OrderTypeEnum.Normal.equals(dataType)) {
-			sql.append("and NOT EXISTS( SELECT 1 FROM express_ops_order_flow f1 WHERE f1.cwb = d.cwb AND f1.flowordertype = " + cqFlow + ") ");
+			sql.append("and d.outarea = 0 ");
 		} else {
 		}
 	}
@@ -536,11 +525,15 @@ public class SmtController {
 	}
 
 	private String getSelectOrderPart() {
-		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb and d.flowordertype = f.flowordertype where ";
 	}
 
 	private String getSelectCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb and d.flowordertype = f.flowordertype where ";
+	}
+
+	private long getCurrentUserId() {
+		return this.getSessionUser().getUserid();
 	}
 
 	private long getCurrentBranchId() {

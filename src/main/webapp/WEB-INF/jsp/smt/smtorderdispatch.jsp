@@ -134,7 +134,6 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  
 function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabIndex){
 	 $.ajax({
-		 type:"post",
 		 url:"<%=request.getContextPath()%>/smt/querysmtorder",
 			dataType : "json",
 			async : false,
@@ -258,25 +257,24 @@ function loadTodayOutAreaOrder(){
 		$table.find("input[type='checkbox']").filter(":checked").each(
 				function() {
 					var cwb = $(this).closest("tr").attr("cwb");
-					cwbs.push(cwb);
+					cwbs.push("'"+cwb + "'");
 				});
 		return cwbs;
 	}
 
 	function confirmOutArea() {
 		$.ajax({
-			type : "post",
-			url :'<%=request.getContextPath() + "/smt/smtorderoutarea"%>',
-			dataType : "json",
-			async : false,
-			data : {
-				cwbs : currentCwbs
+			type:"post",
+			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>',
+			dataType:"json",
+			async:false,
+			data:{
+				cwbs:currentCwbs.join(",")
 			},
-			success : function(data) {
+			success:function(data) {
 				handleOutAreaSuccess(currentOutAreaTableId, currentCwbs);
 			},
-			error : function(data) {
-
+			error:function(data) {
 			}
 		});
 	}
