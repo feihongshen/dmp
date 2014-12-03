@@ -265,10 +265,12 @@ var json="{ thzrkcount:[";
     }
     if(""==nameValue){
         alert("退货站入库数量不能为空！");
+        $(this).focus();
         flag=false;
     }
     if(nameValue>counts){
     	alert("退货站入库数量:"+nameValue+" 不能大于实退商品数量:"+counts);
+    	   $(this).focus();
         flag=false;
     }
     json+=nameValue+","
@@ -284,7 +286,7 @@ var json="{ thzrkcount:[";
 	json+="]}"
 	
 	if(sum==0)
-	{
+	{$("input[name=thzrkcount]")[0].focus();
 		alert("入库商品数量全部为0!");
 		return false;
 	}
