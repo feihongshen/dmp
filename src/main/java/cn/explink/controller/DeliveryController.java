@@ -133,53 +133,53 @@ public class DeliveryController {
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 	private ObjectMapper objectMapper = new ObjectMapper();
-	private ObjectReader dmpOrderFlowMapper = objectMapper.reader(CwbOrder.class);
+	private ObjectReader dmpOrderFlowMapper = this.objectMapper.reader(CwbOrder.class);
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/auditView")
 	public String auditView(Model model, @RequestParam(value = "deliveryId", defaultValue = "0", required = false) long deliveryId) {
-		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("useAudit");
+		SystemInstall siteDayLogTime = this.systemInstallDAO.getSystemInstallByName("useAudit");
 		if (siteDayLogTime != null) {
 			model.addAttribute("useAudit", siteDayLogTime.getValue());
 		}
 		// 退货原因
-		List<Reason> returnlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> returnlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 		// 滞留原因
-		List<Reason> staylist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> staylist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 		model.addAttribute("returnlist", returnlist);
 		model.addAttribute("staylist", staylist);
 
 		List<JSONObject> dList = null;
 		// 如果当前登录用户为小件员
-		if (2 == getSessionUser().getRoleid()) {
-			dList = deliveryStateDAO.getDeliverByDeliveryStateNoZeroUserid(getSessionUser().getBranchid(), getSessionUser().getUserid());
-			SystemInstall deliveryxiaojianyuan = systemInstallDAO.getSystemInstall("deliveryxiaojianyuan");
+		if (2 == this.getSessionUser().getRoleid()) {
+			dList = this.deliveryStateDAO.getDeliverByDeliveryStateNoZeroUserid(this.getSessionUser().getBranchid(), this.getSessionUser().getUserid());
+			SystemInstall deliveryxiaojianyuan = this.systemInstallDAO.getSystemInstall("deliveryxiaojianyuan");
 			model.addAttribute("deliveryxiaojianyuan", deliveryxiaojianyuan == null ? "no" : deliveryxiaojianyuan.getValue());
 		} else {
-			dList = deliveryStateDAO.getDeliverByDeliveryStateNoZero(getSessionUser().getBranchid());
+			dList = this.deliveryStateDAO.getDeliverByDeliveryStateNoZero(this.getSessionUser().getBranchid());
 		}
 		model.addAttribute("deliverList", dList);
-		model.addAttribute("userroleid", getSessionUser().getRoleid());
+		model.addAttribute("userroleid", this.getSessionUser().getRoleid());
 
 		/* model.addAttribute("customers",customerDAO.getAllCustomers()); */
 		int width = 1400;
 		if (deliveryId > 0) {
-			List<DeliveryState> deliveryStateList = deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
-			List<DeliveryStateView> cwbOrderWithDeliveryState = getDeliveryStateViews(deliveryStateList, null);
+			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
+			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
 			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
 			model.addAttribute("deliveryStateDTO", deliveryStateDTO);
 		} else {// 没有选小件员的情况下 显示所有小件员当天的对应数据数据的
-			List<Customer> customerList = customerDAO.getAllCustomers();
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
 			// <小件员,<供货商,<类型，单数>>>
 			// 领货 = 今日未反馈+ 今日已反馈 + 昨日未反馈
-			Map<Long, Map<Long, Map<Long, Long>>> deliveryInCountMap = getDMap(dList, customerList, getSessionUser().getBranchid());
+			Map<Long, Map<Long, Map<Long, Long>>> deliveryInCountMap = this.getDMap(dList, customerList, this.getSessionUser().getBranchid());
 			Map<Long, Map<Long, Long>> huizongMap = new HashMap<Long, Map<Long, Long>>();
-			if (dList != null && dList.size() > 0 && customerList != null && customerList.size() > 0) {
+			if ((dList != null) && (dList.size() > 0) && (customerList != null) && (customerList.size() > 0)) {
 				for (Customer customer : customerList) {
 					long yifankui = 0;
 					long jinriweifankui = 0;
@@ -208,12 +208,12 @@ public class DeliveryController {
 			}
 		}
 
-		SystemInstall showposandqita = systemInstallDAO.getSystemInstall("showposandqita");
-		SystemInstall isGuiBanUseZanBuChuLi = systemInstallDAO.getSystemInstall("isGuiBanUseZanBuChuLi");
-		SystemInstall isReasonRequired = systemInstallDAO.getSystemInstall("isReasonRequired");
+		SystemInstall showposandqita = this.systemInstallDAO.getSystemInstall("showposandqita");
+		SystemInstall isGuiBanUseZanBuChuLi = this.systemInstallDAO.getSystemInstall("isGuiBanUseZanBuChuLi");
+		SystemInstall isReasonRequired = this.systemInstallDAO.getSystemInstall("isReasonRequired");
 		model.addAttribute("isReasonRequired", isReasonRequired == null ? "no" : isReasonRequired.getValue());
 		model.addAttribute("width", width);
-		model.addAttribute("pl_switch", switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
+		model.addAttribute("pl_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
 		model.addAttribute("showposandqita", showposandqita == null ? "no" : showposandqita.getValue());
 		model.addAttribute("isGuiBanUseZanBuChuLi", isGuiBanUseZanBuChuLi == null ? "no" : isGuiBanUseZanBuChuLi.getValue());
 		model.addAttribute("isGuiBanUseZanBuChuLi", isGuiBanUseZanBuChuLi == null ? "no" : isGuiBanUseZanBuChuLi.getValue());
@@ -222,7 +222,7 @@ public class DeliveryController {
 
 	/**
 	 * 封装前台需要的map
-	 * 
+	 *
 	 * @param dList
 	 * @param customerList
 	 * @return
@@ -230,11 +230,11 @@ public class DeliveryController {
 	private Map<Long, Map<Long, Map<Long, Long>>> getDMap(List<JSONObject> dList, List<Customer> customerList, long branchid) {
 		Map<Long, Map<Long, Map<Long, Long>>> deliveryInCountMap = new HashMap<Long, Map<Long, Map<Long, Long>>>();
 		// 获取该站点所有的未归班的订单
-		List<DeliveryState> delList = deliveryStateDAO.getDeliverByBranchid(branchid);
-		if (dList != null && dList.size() > 0 && customerList != null && customerList.size() > 0) {
+		List<DeliveryState> delList = this.deliveryStateDAO.getDeliverByBranchid(branchid);
+		if ((dList != null) && (dList.size() > 0) && (customerList != null) && (customerList.size() > 0)) {
 			String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 			for (JSONObject dObject : dList) {
-				if (delList != null && delList.size() > 0) {
+				if ((delList != null) && (delList.size() > 0)) {
 					Map<Long, Map<Long, Long>> customerIdCountMap = new HashMap<Long, Map<Long, Long>>();
 					for (Customer customer : customerList) {
 						Map<Long, Long> typeMap = new HashMap<Long, Long>();
@@ -263,13 +263,13 @@ public class DeliveryController {
 									continue;
 								}
 								// 今日未反馈
-								if (deliveryState.getDeliverystate() <= 0 && cratetimeL > nowTimeL) {
+								if ((deliveryState.getDeliverystate() <= 0) && (cratetimeL > nowTimeL)) {
 									jinriweifankui++;
 									linghuo++;
 									continue;
 								}
 								// 昨日未反馈
-								if (deliveryState.getDeliverystate() <= 0 && cratetimeL <= nowTimeL) {
+								if ((deliveryState.getDeliverystate() <= 0) && (cratetimeL <= nowTimeL)) {
 									zuoriweifankui++;
 									linghuo++;
 									continue;
@@ -294,27 +294,27 @@ public class DeliveryController {
 
 	/**
 	 * 暂不处理
-	 * 
+	 *
 	 * @param cwb
 	 */
 	@RequestMapping("/noSub/{cwb}")
 	public @ResponseBody void noSub(@PathVariable("cwb") String cwb) {
-		deliveryStateDAO.noSubSave(cwb);
+		this.deliveryStateDAO.noSubSave(cwb);
 	}
 
 	/**
 	 * 暂不处理恢复
-	 * 
+	 *
 	 * @param cwb
 	 */
 	@RequestMapping("/reSub/{cwb}")
 	public @ResponseBody void reSub(@PathVariable("cwb") String cwb) {
-		deliveryStateDAO.reSubSave(cwb);
+		this.deliveryStateDAO.reSubSave(cwb);
 	}
 
 	/**
 	 * 确定审核
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param nocwbs
@@ -324,27 +324,27 @@ public class DeliveryController {
 			@RequestParam("deliveryId") long deliveryId) {
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
 		String cwbs = zanbuchuliTrStr;
-		cwbs += cwbs.length() > 0 && subTrStr.length() > 0 ? "," + subTrStr : subTrStr;
-		cwbs += cwbs.length() > 0 && nocwbs.length() > 0 ? "," + nocwbs : nocwbs;
-		List<DeliveryState> dlist = deliveryStateDAO.getDeliveryStateByCwbs(cwbs);
+		cwbs += (cwbs.length() > 0) && (subTrStr.length() > 0) ? "," + subTrStr : subTrStr;
+		cwbs += (cwbs.length() > 0) && (nocwbs.length() > 0) ? "," + nocwbs : nocwbs;
+		List<DeliveryState> dlist = this.deliveryStateDAO.getDeliveryStateByCwbs(cwbs);
 
 		if (dlist != null) {
-			List<DeliveryStateView> deliveryStateViews = getDeliveryStateViews(dlist, cwbs);
+			List<DeliveryStateView> deliveryStateViews = this.getDeliveryStateViews(dlist, cwbs);
 			dsDTO.analysisDeliveryStateList(deliveryStateViews);
 		}
 
 		model.addAttribute("deliveryStateDTO", dsDTO);
-		User u = userDAO.getUserByUserid(deliveryId);
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(u.getBranchid()));
+		User u = this.userDAO.getUserByUserid(deliveryId);
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(u.getBranchid()));
 		model.addAttribute("deliver", u);
-		SystemInstall usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+		SystemInstall usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 		model.addAttribute("usedeliverpayup", usedeliverpay == null ? "no" : usedeliverpay.getValue());
 		return "delivery/sub";
 	}
 
 	/**
 	 * 获得前端需要的界面视图变量
-	 * 
+	 *
 	 * @param dsList
 	 * @param cwbs
 	 *            'ABD123','BCD321' 如果为null 会自动从dsList中获取订单号
@@ -352,11 +352,11 @@ public class DeliveryController {
 	 */
 	public List<DeliveryStateView> getDeliveryStateViews(List<DeliveryState> dsList, String cwbs) {
 		List<DeliveryStateView> deliveryStateViewList = new ArrayList<DeliveryStateView>();
-		List<Customer> customerList = customerDAO.getAllCustomersNew();
-		List<User> userList = userDAO.getAllUser();
+		List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+		List<User> userList = this.userDAO.getAllUser();
 
 		if (dsList.size() > 0) {
-			if (cwbs == null || cwbs.equals("")) {
+			if ((cwbs == null) || cwbs.equals("")) {
 				StringBuffer cwbBuffer = new StringBuffer();
 				for (DeliveryState ds : dsList) {
 					cwbBuffer = cwbBuffer.append("'").append(ds.getCwb()).append("',");
@@ -364,10 +364,10 @@ public class DeliveryController {
 				cwbs = cwbBuffer.substring(0, cwbBuffer.length() - 1);
 			}
 
-			List<CwbOrder> clist = cwbDAO.getCwbByCwbs(cwbs);
+			List<CwbOrder> clist = this.cwbDAO.getCwbByCwbs(cwbs);
 
 			for (DeliveryState ds : dsList) {
-				DeliveryStateView sdv = getDeliveryStateView(ds, customerList, userList, clist);
+				DeliveryStateView sdv = this.getDeliveryStateView(ds, customerList, userList, clist);
 				if (sdv != null) { // 数据不正确时会返回null
 					deliveryStateViewList.add(sdv);
 				}
@@ -409,7 +409,7 @@ public class DeliveryController {
 		sdv.setDeliverytime(ds.getDeliverytime());
 		CwbOrder cwbOrder = null;
 		if (clist == null) {
-			cwbOrder = cwbDAO.getCwbByCwb(ds.getCwb());
+			cwbOrder = this.cwbDAO.getCwbByCwb(ds.getCwb());
 		} else {
 			for (CwbOrder c : clist) {
 				if (c.getCwb().equals(ds.getCwb())) {
@@ -419,7 +419,7 @@ public class DeliveryController {
 			}
 		}
 		if (cwbOrder == null) {
-			logger.warn("cwborder {} not exist" + ds.getCwb());
+			this.logger.warn("cwborder {} not exist" + ds.getCwb());
 			return null;
 		}
 		sdv.setCustomerid(cwbOrder.getCustomerid());
@@ -454,35 +454,35 @@ public class DeliveryController {
 
 	/**
 	 * 历史审核记录详情
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param nocwbs
 	 */
 	@RequestMapping("/viewOldSub/{id}")
 	public String viewOldSub(Model model, @PathVariable("id") long id) {
-		GotoClassAuditing gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(id);
+		GotoClassAuditing gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(id);
 		model.addAttribute("gotoClassAuditing", gca);
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(gca.getBranchid()));
-		model.addAttribute("deliverealuser", userDAO.getUserByUserid(gca.getDeliverealuser()));
-		model.addAttribute("gotoClassOld", gotoClassOldDAO.getGotoClassOld(id).get(0));
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(gca.getBranchid()));
+		model.addAttribute("deliverealuser", this.userDAO.getUserByUserid(gca.getDeliverealuser()));
+		model.addAttribute("gotoClassOld", this.gotoClassOldDAO.getGotoClassOld(id).get(0));
 
-		SystemInstall usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+		SystemInstall usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 		model.addAttribute("usedeliverpayup", usedeliverpay == null ? "no" : usedeliverpay.getValue());
 		return "delivery/viewOldSub";
 	}
 
 	/**
 	 * 打印归班汇总详情
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param nocwbs
 	 */
 	@RequestMapping("/printSub")
 	public String printSub(Model model, @RequestParam("branchid") long branchid, @RequestParam("userid") long userid) {
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(branchid));
-		model.addAttribute("user", userDAO.getUserByUserid(userid));
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(branchid));
+		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		return "delivery/printSub";
 	}
 
@@ -509,9 +509,9 @@ public class DeliveryController {
 			BigDecimal subAmountPosAndCodPos = new BigDecimal(subAmountPos).add(new BigDecimal(subAmountCodPos));
 			subAmountPos = subAmountPosAndCodPos + "";
 			deliverpayupamount_pos = deliverpayupamount_pos.add(deliverpayupamount_codpos);
-			GotoClassOld gotoClassOld = loadFormForGotoClass(request);
-			return cwborderService.deliverAuditok(getSessionUser(), subTrStr, okTime, subAmount, subAmountPos, deliverealuser, gotoClassOld, deliverpayuptype, deliverpayupamount, deliverpayupbanknum,
-					deliverpayupaddress, deliverpayupamount_pos, deliverAccount, deliverPosAccount);
+			GotoClassOld gotoClassOld = this.loadFormForGotoClass(request);
+			return this.cwborderService.deliverAuditok(this.getSessionUser(), subTrStr, okTime, subAmount, subAmountPos, deliverealuser, gotoClassOld, deliverpayuptype, deliverpayupamount,
+					deliverpayupbanknum, deliverpayupaddress, deliverpayupamount_pos, deliverAccount, deliverPosAccount);
 
 		} catch (CwbException e) {
 			String[] cwbs = subTrStr.split(",");
@@ -520,9 +520,9 @@ public class DeliveryController {
 					continue;
 				}
 				cwb = cwb.replaceAll("'", "");
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-				exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-						cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "");
 			}
 
 			e.printStackTrace();
@@ -577,10 +577,10 @@ public class DeliveryController {
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam("infactfare") BigDecimal infactfare) {
 
-		logger.info("web--进入单票反馈");
+		this.logger.info("web--进入单票反馈");
 		try {
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
+			cwb = this.cwborderService.translateCwb(cwb);
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("deliverid", deliveryid);
@@ -597,8 +597,8 @@ public class DeliveryController {
 			parameters.put("checkremark", checkremark);
 			parameters.put("deliverstateremark", deliverstateremark);
 			parameters.put("owgid", 0);
-			parameters.put("sessionbranchid", getSessionUser().getBranchid());
-			parameters.put("sessionuserid", getSessionUser().getUserid());
+			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+			parameters.put("sessionuserid", this.getSessionUser().getUserid());
 			parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 			parameters.put("sign_man", signman);
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
@@ -607,10 +607,10 @@ public class DeliveryController {
 			parameters.put("deliverytime_now", deliverytime);
 			parameters.put("infactfare", infactfare);
 
-			cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
+			this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 		} catch (CwbException ce) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 			return "{\"errorCode\":1,\"error\":\"" + ce.getMessage() + "\"}";
 		}
@@ -620,44 +620,48 @@ public class DeliveryController {
 
 	@RequestMapping("/getnowDeliveryState/{cwb}")
 	public String getnowDeliveryState(Model model, @PathVariable("cwb") String cwb) {
-		DeliveryState ds = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 		// model.addAttribute("deliverystate", ds.getDeliverystate());
-		List<Reason> backreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		List<Reason> leavedreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
-		List<Reason> podremarkreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
-		List<Reason> weishuakareasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
-		List<Reason> losereasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> podremarkreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 
-		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<User> userList = userDAO.getAllUser();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<User> userList = this.userDAO.getAllUser();
 		// 是否开启了亚马逊对接
-		int isOpenFlag = jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("isOpenFlag", isOpenFlag);
 		model.addAttribute("cwborder", co);
-		session.setAttribute("deliveryStateType", ds.getDeliverystate());
-		model.addAttribute("deliverystate", getDeliveryStateView(ds, customerList, userList, null));
+		this.session.setAttribute("deliveryStateType", ds.getDeliverystate());
+		model.addAttribute("deliverystate", this.getDeliveryStateView(ds, customerList, userList, null));
 
-		Reason backreason = reasonDao.getReasonByReasonid(co.getBackreasonid());
-		Reason leavedreason = reasonDao.getReasonByReasonid(co.getLeavedreasonid());
-		Reason weishuakareason = reasonDao.getReasonByReasonid(co.getWeishuakareasonid());
-		Reason losereason = reasonDao.getReasonByReasonid(co.getLosereasonid());
+		Reason backreason = this.reasonDao.getReasonByReasonid(co.getBackreasonid());
+		Reason leavedreason = this.reasonDao.getReasonByReasonid(co.getLeavedreasonid());
+		Reason weishuakareason = this.reasonDao.getReasonByReasonid(co.getWeishuakareasonid());
+		Reason losereason = this.reasonDao.getReasonByReasonid(co.getLosereasonid());
 
-		if (co.getBackreason() != null && co.getBackreason().length() > 0)
+		if ((co.getBackreason() != null) && (co.getBackreason().length() > 0)) {
 			model.addAttribute("backreasonid", backreason == null ? 0 : backreason.getReasonid());
-		if (co.getLeavedreason() != null && co.getLeavedreason().length() > 0)
+		}
+		if ((co.getLeavedreason() != null) && (co.getLeavedreason().length() > 0)) {
 			model.addAttribute("leavedreasonid", leavedreason == null ? 0 : leavedreason.getReasonid());
-		if (co.getLeavedreason() != null && co.getLeavedreason().length() > 0)
+		}
+		if ((co.getLeavedreason() != null) && (co.getLeavedreason().length() > 0)) {
 			model.addAttribute("weishuakareasonid", weishuakareason == null ? 0 : weishuakareason.getReasonid());
-		if (co.getLeavedreason() != null && co.getLeavedreason().length() > 0)
+		}
+		if ((co.getLeavedreason() != null) && (co.getLeavedreason().length() > 0)) {
 			model.addAttribute("losereasonid", losereason == null ? 0 : losereason.getReasonid());
+		}
 
-		SystemInstall isReasonRequired = systemInstallDAO.getSystemInstall("isReasonRequired");
-		SystemInstall showposandqita = systemInstallDAO.getSystemInstall("showposandqita");
-		SystemInstall isShowZLZDLH = systemInstallDAO.getSystemInstall("isShowZLZDLH");
+		SystemInstall isReasonRequired = this.systemInstallDAO.getSystemInstall("isReasonRequired");
+		SystemInstall showposandqita = this.systemInstallDAO.getSystemInstall("showposandqita");
+		SystemInstall isShowZLZDLH = this.systemInstallDAO.getSystemInstall("isShowZLZDLH");
 		// 是否允许反馈为部分拒收
-		SystemInstall partReject = systemInstallDAO.getSystemInstall("partReject");
+		SystemInstall partReject = this.systemInstallDAO.getSystemInstall("partReject");
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
@@ -674,7 +678,7 @@ public class DeliveryController {
 
 	/**
 	 * 配送订单批量反馈功能
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param cwbs
@@ -693,12 +697,12 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
-		List<Reason> backreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		List<Reason> leavedreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 
-		List<User> deliverList = userDAO.getDeliveryUserByRolesAndBranchid("2,4", getSessionUser().getBranchid());
+		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -712,7 +716,7 @@ public class DeliveryController {
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
-				logger.info("反馈(批量)-配送订单,cwb:{}", cwb);
+				this.logger.info("反馈(批量)-配送订单,cwb:{}", cwb);
 				try {
 
 					// 成功订单
@@ -725,8 +729,8 @@ public class DeliveryController {
 					parameters.put("checkremark", "");
 					parameters.put("deliverstateremark", "");
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
@@ -735,15 +739,15 @@ public class DeliveryController {
 					parameters.put("zhiliuremark", zhiliuremark);
 					parameters.put("deliverstateremark", deliverstateremark);
 
-					cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(cwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-					exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -759,8 +763,8 @@ public class DeliveryController {
 							}
 						}
 
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb);
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 
@@ -769,7 +773,7 @@ public class DeliveryController {
 			}
 		}
 
-		List<Reason> weishuakareasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("backreasonid", backreasonid);
@@ -781,21 +785,21 @@ public class DeliveryController {
 		model.addAttribute("deliverystateid", deliverystate);
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
-		model.addAttribute("showposandqita", systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : systemInstallDAO.getSystemInstall("showposandqita").getValue());
+		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
 		// model.addAttribute("pl_switch",
 		// switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
-		model.addAttribute("pl_switch", systemInstallDAO.getSystemInstall("feedbackpos") == null ? "no" : systemInstallDAO.getSystemInstall("feedbackpos").getValue());
+		model.addAttribute("pl_switch", this.systemInstallDAO.getSystemInstall("feedbackpos") == null ? "no" : this.systemInstallDAO.getSystemInstall("feedbackpos").getValue());
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("batchEditDeliveryStateisUseCash",
-				systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
+				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
 
 		return "delivery/batchEditDeliveryState";
 	}
 
 	/**
 	 * 上门换订单批量反馈功能
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param cwbs
@@ -810,8 +814,8 @@ public class DeliveryController {
 	@RequestMapping("/batchEditSMHDeliveryState")
 	public String batchEditSMHDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype) {
-		List<User> deliverList = userDAO.getDeliveryUserByRolesAndBranchid("2,4", getSessionUser().getBranchid());
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -825,7 +829,7 @@ public class DeliveryController {
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
-				logger.info("反馈(批量)-上门换订单,cwb:{}", cwb);
+				this.logger.info("反馈(批量)-上门换订单,cwb:{}", cwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("podresultid", deliverystate);
@@ -836,8 +840,8 @@ public class DeliveryController {
 					parameters.put("checkremark", "");
 					parameters.put("deliverstateremark", "");
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
@@ -845,15 +849,15 @@ public class DeliveryController {
 					parameters.put("resendtime", "");
 					parameters.put("zhiliuremark", "");
 
-					cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(cwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-					exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -869,8 +873,8 @@ public class DeliveryController {
 							}
 						}
 
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb);
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 
@@ -885,15 +889,15 @@ public class DeliveryController {
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
 		model.addAttribute("paytype", paytype);
-		model.addAttribute("showposandqita", systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : systemInstallDAO.getSystemInstall("showposandqita").getValue());
-		model.addAttribute("pl_switch", switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
+		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
+		model.addAttribute("pl_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
 
 		return "delivery/batchEditSMHDeliveryState";
 	}
 
 	/**
 	 * 上门退订单批量反馈功能
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param cwbs
@@ -907,11 +911,14 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/batchEditSMTDeliveryState")
 	public String batchEditSMTDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate) {
+			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate,
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
+			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid) {
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 
-		List<User> deliverList = userDAO.getDeliveryUserByRolesAndBranchid("2,4", getSessionUser().getBranchid());
+		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -925,20 +932,20 @@ public class DeliveryController {
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
-				logger.info("反馈(批量)-上门退订单,cwb:{}", cwb);
-				DeliveryState deliveryState = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+				this.logger.info("反馈(批量)-上门退订单,cwb:{}", cwb);
+				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("podresultid", deliverystate);
-					parameters.put("backreasonid", 0l);
+					parameters.put("backreasonid", backreasonid);
 					parameters.put("leavedreasonid", 0l);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
@@ -948,15 +955,15 @@ public class DeliveryController {
 						parameters.put("infactfare", deliveryState.getShouldfare());
 					}
 
-					cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(cwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-					exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -972,8 +979,8 @@ public class DeliveryController {
 							}
 						}
 
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb);
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 
@@ -981,21 +988,23 @@ public class DeliveryController {
 				objList.add(obj);
 			}
 		}
-
+		model.addAttribute("backreasonid", backreasonid);
+		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("objList", objList);
+		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
-		model.addAttribute("showposandqita", systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : systemInstallDAO.getSystemInstall("showposandqita").getValue());
-		model.addAttribute("pl_switch", switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
+		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
+		model.addAttribute("pl_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
 
 		return "delivery/batchEditSMTDeliveryState";
 	}
 
 	/**
 	 * 配送订单再次反馈功能
-	 * 
+	 *
 	 * @param model
 	 * @param cwbdetails
 	 * @param deliverystate
@@ -1011,12 +1020,12 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
-		List<Reason> backreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		List<Reason> leavedreasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 
-		List<User> deliverList = userDAO.getUserByRoleAndBranchid(2, getSessionUser().getBranchid());
+		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -1025,7 +1034,7 @@ public class DeliveryController {
 
 		for (int i = 0; i < rJson.size(); i++) {
 			String cwbdetail = rJson.getString(i);
-			if (cwbdetail.equals("") || cwbdetail.indexOf("_s_") == -1) {
+			if (cwbdetail.equals("") || (cwbdetail.indexOf("_s_") == -1)) {
 				continue;
 			}
 			String[] cwb_reasonid = cwbdetail.split("_s_");
@@ -1044,8 +1053,8 @@ public class DeliveryController {
 					parameters.put("checkremark", "");
 					parameters.put("deliverstateremark", "");
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
@@ -1054,13 +1063,13 @@ public class DeliveryController {
 					parameters.put("resendtime", resendtime);
 					parameters.put("deliverstateremark", deliverstateremark);
 
-					cwborderService.deliverStatePod(getSessionUser(), scancwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(scancwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(scancwb);
-					exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
+					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
@@ -1075,14 +1084,14 @@ public class DeliveryController {
 								break;
 							}
 						}
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(scancwb);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(scancwb);
 
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 				}
 			} else {
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb_reasonid[0]);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb_reasonid[0]);
 				for (Customer c : customerList) {
 					if (c.getCustomerid() == cwbOrder.getCustomerid()) {
 						obj.put("customer", c.getCustomername());
@@ -1090,9 +1099,9 @@ public class DeliveryController {
 					}
 				}
 
-				List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
+				List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
 				obj.put("daohuoTime",
-						DateTimeUtil.formatDate(cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
+						DateTimeUtil.formatDate(this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
 								FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao).getCredate()));
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				if (cwb_reasonid[1].indexOf("w") > -1) {
@@ -1105,7 +1114,7 @@ public class DeliveryController {
 			}
 			objList.add(obj);
 		}
-		List<Reason> weishuakareasonlist = reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("backreasonid", backreasonid);
@@ -1120,14 +1129,14 @@ public class DeliveryController {
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("batchEditDeliveryStateisUseCash",
-				systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
+				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
 
 		return "delivery/batchEditDeliveryState";
 	}
 
 	/**
 	 * 上门换订单再次批量反馈功能
-	 * 
+	 *
 	 * @param model
 	 * @param cwbdetails
 	 * @param deliverystate
@@ -1136,11 +1145,12 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/rebatchEditSMHDeliveryState")
 	public String rebatchEditSMHDeliveryState(Model model, @RequestParam(value = "cwbdetails", required = true, defaultValue = "") String cwbdetails,
-			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype) {
+			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
+			@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid) {
 
-		List<User> deliverList = userDAO.getUserByRoleAndBranchid(2, getSessionUser().getBranchid());
+		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -1149,7 +1159,7 @@ public class DeliveryController {
 
 		for (int i = 0; i < rJson.size(); i++) {
 			String cwbdetail = rJson.getString(i);
-			if (cwbdetail.equals("") || cwbdetail.indexOf("_s_") == -1) {
+			if (cwbdetail.equals("") || (cwbdetail.indexOf("_s_") == -1)) {
 				continue;
 			}
 			String[] cwb_reasonid = cwbdetail.split("_s_");
@@ -1161,28 +1171,28 @@ public class DeliveryController {
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("deliverid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? "0" : cwb_reasonid[1]));
 					parameters.put("podresultid", deliverystate);
-					parameters.put("backreasonid", 0l);
+					parameters.put("backreasonid", backreasonid);
 					parameters.put("leavedreasonid", 0l);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
 					parameters.put("deliverstateremark", "");
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
 					parameters.put("paywayid", paytype);
 					parameters.put("weishuakareasonid", 0l);
 
-					cwborderService.deliverStatePod(getSessionUser(), scancwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(scancwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(scancwb);
-					exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
+					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
@@ -1197,14 +1207,14 @@ public class DeliveryController {
 								break;
 							}
 						}
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(scancwb);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(scancwb);
 
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 				}
 			} else {
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb_reasonid[0]);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb_reasonid[0]);
 				for (Customer c : customerList) {
 					if (c.getCustomerid() == cwbOrder.getCustomerid()) {
 						obj.put("customer", c.getCustomername());
@@ -1212,9 +1222,9 @@ public class DeliveryController {
 					}
 				}
 
-				List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
+				List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
 				obj.put("daohuoTime",
-						DateTimeUtil.formatDate(cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
+						DateTimeUtil.formatDate(this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
 								FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao).getCredate()));
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "555555");
@@ -1234,7 +1244,7 @@ public class DeliveryController {
 
 	/**
 	 * 上门退订单再次批量反馈
-	 * 
+	 *
 	 * @param model
 	 * @param cwbdetails
 	 * @param deliverystate
@@ -1245,10 +1255,12 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/rebatchEditSMTDeliveryState")
 	public String rebatchEditSMTDeliveryState(Model model, @RequestParam(value = "cwbdetails", required = true, defaultValue = "") String cwbdetails,
-			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate) {
-		List<User> deliverList = userDAO.getUserByRoleAndBranchid(2, getSessionUser().getBranchid());
+			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate,
+			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid,
+			@RequestParam(defaultValue = "", required = true, value = "deliverstateremark") String deliverstateremark) {
+		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取供货商列表
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 
@@ -1257,7 +1269,7 @@ public class DeliveryController {
 
 		for (int i = 0; i < rJson.size(); i++) {
 			String cwbdetail = rJson.getString(i);
-			if (cwbdetail.equals("") || cwbdetail.indexOf("_s_") == -1) {
+			if (cwbdetail.equals("") || (cwbdetail.indexOf("_s_") == -1)) {
 				continue;
 			}
 			String[] cwb_reasonid = cwbdetail.split("_s_");
@@ -1269,27 +1281,27 @@ public class DeliveryController {
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("deliverid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? "0" : cwb_reasonid[1]));
 					parameters.put("podresultid", deliverystate);
-					parameters.put("backreasonid", 0l);
+					parameters.put("backreasonid", backreasonid);
 					parameters.put("leavedreasonid", 0l);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
-					parameters.put("sessionbranchid", getSessionUser().getBranchid());
-					parameters.put("sessionuserid", getSessionUser().getUserid());
+					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+					parameters.put("sessionuserid", this.getSessionUser().getUserid());
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
 					parameters.put("weishuakareasonid", 0l);
 
-					cwborderService.deliverStatePod(getSessionUser(), scancwb, scancwb, parameters);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbDAO.getCwbByCwb(scancwb)));
+					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
+					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = cwbDAO.getCwbByCwb(scancwb);
-					exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
+					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
@@ -1304,14 +1316,14 @@ public class DeliveryController {
 								break;
 							}
 						}
-						List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(scancwb);
+						List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(scancwb);
 
-						OrderFlow of = cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
+						OrderFlow of = this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
 						obj.put("daohuoTime", of == null ? "" : DateTimeUtil.formatDate(of.getCredate()));
 					}
 				}
 			} else {
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb_reasonid[0]);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb_reasonid[0]);
 				for (Customer c : customerList) {
 					if (c.getCustomerid() == cwbOrder.getCustomerid()) {
 						obj.put("customer", c.getCustomername());
@@ -1319,9 +1331,9 @@ public class DeliveryController {
 					}
 				}
 
-				List<OrderFlow> ofList = orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
+				List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwb(cwb_reasonid[0]);
 				obj.put("daohuoTime",
-						DateTimeUtil.formatDate(cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
+						DateTimeUtil.formatDate(this.cwborderService.getOrderFlowByOrderFlowListCwbAndTypes(ofList, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,
 								FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao).getCredate()));
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "555555");
@@ -1329,8 +1341,12 @@ public class DeliveryController {
 			}
 			objList.add(obj);
 		}
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 
 		model.addAttribute("successcount", successcount);
+		model.addAttribute("deliverstateremark", deliverstateremark);
+		model.addAttribute("backreasonid", backreasonid);
+		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("objList", objList);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
@@ -1343,28 +1359,29 @@ public class DeliveryController {
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate) {
 
 		if (begindate.length() == 0) {
-			begindate = df_d.format(new Date());
+			begindate = this.df_d.format(new Date());
 		}
 		if (enddate.length() == 0) {
-			enddate = df_d.format(new Date());
+			enddate = this.df_d.format(new Date());
 		}
 		begindate += " 00:00:00";
 		enddate += " 23:59:59";
 
-		List<GotoClassAuditing> gotoClassAuditingByPage = gotoClassAuditingDAO.getGotoClassAuditingByPage(page, deliverealuser, begindate, enddate, getSessionUser().getBranchid());
+		List<GotoClassAuditing> gotoClassAuditingByPage = this.gotoClassAuditingDAO.getGotoClassAuditingByPage(page, deliverealuser, begindate, enddate, this.getSessionUser().getBranchid());
 		List<gotoClassAuditingView> gotoClassAuditingViews = new ArrayList<gotoClassAuditingView>();
 		for (GotoClassAuditing gotoClassAuditing : gotoClassAuditingByPage) {
 			gotoClassAuditingView view = new gotoClassAuditingView();
 			BeanUtils.copyProperties(gotoClassAuditing, view);
-			view.setDeliverealuser_name(userDAO.getUserByUserid(gotoClassAuditing.getDeliverealuser()).getRealname());
-			view.setReceivedfeeuser_name(userDAO.getUserByUserid(gotoClassAuditing.getReceivedfeeuser()).getRealname());
+			view.setDeliverealuser_name(this.userDAO.getUserByUserid(gotoClassAuditing.getDeliverealuser()).getRealname());
+			view.setReceivedfeeuser_name(this.userDAO.getUserByUserid(gotoClassAuditing.getReceivedfeeuser()).getRealname());
 			gotoClassAuditingViews.add(view);
 		}
 		model.addAttribute("gcas", gotoClassAuditingViews);
-		model.addAttribute("page_obj", new Page(gotoClassAuditingDAO.getGotoClassAuditingCount(deliverealuser, begindate, enddate, getSessionUser().getBranchid()), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.gotoClassAuditingDAO.getGotoClassAuditingCount(deliverealuser, begindate, enddate, this.getSessionUser().getBranchid()), page,
+				Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
-		model.addAttribute("us", userDAO.getUserByRole("2,4", getSessionUser().getBranchid()));
-		SystemInstall usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+		model.addAttribute("us", this.userDAO.getUserByRole("2,4", this.getSessionUser().getBranchid()));
+		SystemInstall usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 		model.addAttribute("usedeliverpayup", usedeliverpay == null ? "no" : usedeliverpay.getValue());
 		return "delivery/list";
 	}
@@ -1380,7 +1397,7 @@ public class DeliveryController {
 			if (pushstate != B2cPushStateEnum.TuiSongChengGong.getValue()) {
 				pushtime = "";
 			}
-			deliveryStateDAO.saveDeliveryStateForB2C(pushtime, pushstate, pushremarks, cwb, deliverystate);
+			this.deliveryStateDAO.saveDeliveryStateForB2C(pushtime, pushstate, pushremarks, cwb, deliverystate);
 			return "{\"errorCode\":0,\"message\":\"" + cwb + "推送结果处理成功" + pushstate + "\"}";
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"message\":\"系统错误:\"" + e.getMessage() + "}";
@@ -1405,23 +1422,23 @@ public class DeliveryController {
 	@RequestMapping("/searchDeliveryLead/{page}")
 	public String searchDeliveryLead(@PathVariable("page") long page, Model model, @RequestParam(value = "deliverystate", required = false, defaultValue = "-1") long deliverystate,
 			@RequestParam(value = "startid", required = false, defaultValue = "") String begindate, @RequestParam(value = "endid", required = false, defaultValue = "") String enddate) {
-		long roleid = getSessionUser().getRoleid();
+		long roleid = this.getSessionUser().getRoleid();
 		long deliveryid = -1;
 		long branchid = -1;
 		if (roleid == 4) {// 站长
-			branchid = getSessionUser().getBranchid();
+			branchid = this.getSessionUser().getBranchid();
 		}
 		if (roleid == 2) {// 小件员
-			deliveryid = getSessionUser().getUserid();
+			deliveryid = this.getSessionUser().getUserid();
 		}
 		List<CwbSearchDelivery> conSoleList = new ArrayList<CwbSearchDelivery>();
-		if (begindate.length() > 0 && enddate.length() > 0) {
-			List<CwbOrder> cwbList = cwbDAO.getCwbByDeliveryStateAndBranchid(deliveryid, deliverystate);
-			List<DeliveryState> desList = deliveryStateDAO.getCwbAndDeliveryByToPagedeliverystate(page, branchid, deliveryid, begindate, enddate, deliverystate);
+		if ((begindate.length() > 0) && (enddate.length() > 0)) {
+			List<CwbOrder> cwbList = this.cwbDAO.getCwbByDeliveryStateAndBranchid(deliveryid, deliverystate);
+			List<DeliveryState> desList = this.deliveryStateDAO.getCwbAndDeliveryByToPagedeliverystate(page, branchid, deliveryid, begindate, enddate, deliverystate);
 			// 两表关联
-			conSoleList = getJointCwbAndDelivery(cwbList, desList);
-			model.addAttribute("page_obj", new Page(deliveryStateDAO.getCountBydeliverystate(branchid, deliverystate, begindate, enddate, deliveryid), page, Page.ONE_PAGE_NUMBER));
-			model.addAttribute("customers", customerDAO.getAllCustomers());
+			conSoleList = this.getJointCwbAndDelivery(cwbList, desList);
+			model.addAttribute("page_obj", new Page(this.deliveryStateDAO.getCountBydeliverystate(branchid, deliverystate, begindate, enddate, deliveryid), page, Page.ONE_PAGE_NUMBER));
+			model.addAttribute("customers", this.customerDAO.getAllCustomers());
 		} else {
 			model.addAttribute("page_obj", new Page());
 		}
@@ -1447,7 +1464,7 @@ public class DeliveryController {
 					csd.setCreatetime(dlist.getCreatetime());
 					csd.setReceivablefee(clist.getReceivablefee());
 					for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-						if (ds.getValue() == dlist.getDeliverystate() && dlist.getDeliverystate() != 0) {
+						if ((ds.getValue() == dlist.getDeliverystate()) && (dlist.getDeliverystate() != 0)) {
 							csd.setStatus(ds.getText());
 							break;
 						} else {
@@ -1468,15 +1485,15 @@ public class DeliveryController {
 		String[] cloumnName1 = new String[9]; // 导出的列名
 		String[] cloumnName2 = new String[9]; // 导出的英文列名
 
-		exportService.SetAuditFields(cloumnName1, cloumnName2);
+		this.exportService.SetAuditFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
-			List<DeliveryState> deliveryStateList = deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
-			List<DeliveryStateView> cwbOrderWithDeliveryState = getDeliveryStateViews(deliveryStateList, null);
+			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
+			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
 			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
 			final List<DeliveryStateView> views = deliveryStateDTO.getWeifankuiList();
@@ -1485,13 +1502,13 @@ public class DeliveryController {
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < views.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = exportService.setAuditWeifankuiObject(cloumnName3, views, a, i, k);
+							a = DeliveryController.this.exportService.setAuditWeifankuiObject(cloumnName3, views, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -1510,15 +1527,15 @@ public class DeliveryController {
 		String[] cloumnName1 = new String[15]; // 导出的列名
 		String[] cloumnName2 = new String[15]; // 导出的英文列名
 
-		exportService.SetAuditFieldsYiFanKui(cloumnName1, cloumnName2);
+		this.exportService.SetAuditFieldsYiFanKui(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
-			List<DeliveryState> deliveryStateList = deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
-			List<DeliveryStateView> cwbOrderWithDeliveryState = getDeliveryStateViews(deliveryStateList, null);
+			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
+			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
 			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
 			cwbOrderWithDeliveryState.removeAll(deliveryStateDTO.getWeifankuiList());
@@ -1528,13 +1545,13 @@ public class DeliveryController {
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < views.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = exportService.setAuditYifankuiObject(cloumnName3, views, a, i, k);
+							a = DeliveryController.this.exportService.setAuditYifankuiObject(cloumnName3, views, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -1548,7 +1565,7 @@ public class DeliveryController {
 
 	/**
 	 * 修改签收人
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param cwbs
@@ -1564,21 +1581,21 @@ public class DeliveryController {
 	public String batchEditXGSJRDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(defaultValue = "", required = false, value = "consignName") String consignName) {
 
-		List<User> deliverList = userDAO.getDeliveryUserByRolesAndBranchid("2,4", getSessionUser().getBranchid());
+		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
 		long successcount = 0;
-		logger.info("反馈(批量)-修改收件人,cwb:{}，收件人改为{}", cwbs, consignName);
+		this.logger.info("反馈(批量)-修改收件人,cwb:{}，收件人改为{}", cwbs, consignName);
 		try {// 成功订单
-			int cwbCount = cwbDAO.countDeliverystateAndCwb(cwbs);
+			int cwbCount = this.cwbDAO.countDeliverystateAndCwb(cwbs);
 			if (cwbCount > 0) {
-				deliveryStateDAO.updateDeliveryStateConsigneenameByCwb(consignName, cwbs);
-				logger.info("修改收件人完毕,cwb:{}，收件人改为{}", cwbs, consignName);
+				this.deliveryStateDAO.updateDeliveryStateConsigneenameByCwb(consignName, cwbs);
+				this.logger.info("修改收件人完毕,cwb:{}，收件人改为{}", cwbs, consignName);
 				successcount++;
 			}
 		} catch (CwbException ce) {// 出现验证错误
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwbs);
-			exceptionCwbDAO.createExceptionCwb(cwbs, ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwbs);
+			this.exceptionCwbDAO.createExceptionCwb(cwbs, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+					: cwbOrder.getCustomerid(), 0, 0, 0, "");
 
 		}
 		model.addAttribute("successcount", successcount);
@@ -1588,7 +1605,7 @@ public class DeliveryController {
 
 	/**
 	 * 触发的ajax
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param cwb
@@ -1597,12 +1614,12 @@ public class DeliveryController {
 	@RequestMapping("/checkBoxForff")
 	public @ResponseBody int checkBoxFor(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwb) {
 		int flag = 0;
-		CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 		if (cwbOrder == null) {// 如果无此订单
 			flag = 2;
 			return flag;
 		}
-		int cwbCount = cwbDAO.countDeliverystateAndCwb(cwb);// 判断是不是反馈为配送成功状态的订单
+		int cwbCount = this.cwbDAO.countDeliverystateAndCwb(cwb);// 判断是不是反馈为配送成功状态的订单
 		if (cwbCount == 0) {
 			return flag = 1;
 		}

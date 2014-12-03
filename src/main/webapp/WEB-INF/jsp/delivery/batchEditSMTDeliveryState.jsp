@@ -11,12 +11,14 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
-
+List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
 long deliverystateid = request.getAttribute("deliverystateid")==null?0:(Long)request.getAttribute("deliverystateid");
+long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
 long successcount = request.getAttribute("successcount")==null?0:Long.parseLong(request.getAttribute("successcount").toString());
+String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":request.getAttribute("deliverstateremark").toString();
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request.getAttribute("pl_switch");
@@ -42,24 +44,34 @@ Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request
 function dgetViewBox(key,durl){
 	window.parent.getViewBoxd(key,durl);
 }
-
-$(function(){
-	$("#right_hideboxbtn").click(function(){
+function changeTag(tip)
+{
+	$("#backreasonid").attr('value', '');
+	$("#deliverstateremark").attr('value', '');
+	if (tip == 1) {
+			$("#smjt").attr('style', 'display:none');
+		}
+	else{
+		$("#smjt").attr('style', 'display:');
+	}
+	}
+	$(function() {
+		$("#right_hideboxbtn").click(function() {
 			var right_hidebox = $("#right_hidebox").css("right")
-			if(
-				right_hidebox == -400+'px'
-			){
-				$("#right_hidebox").css("right","10px");
-				$("#right_hideboxbtn").css("background","url(right_hideboxbtn2.gif)");
-				
-			};
-			
-			if(right_hidebox == 10+'px'){
-				$("#right_hidebox").css("right","-400px");
-				$("#right_hideboxbtn").css("background","url(right_hideboxbtn.gif)");
-			};
-	});
-	<%if(successcount>0){%>
+			if (right_hidebox == -400 + 'px') {
+				$("#right_hidebox").css("right", "10px");
+				$("#right_hideboxbtn").css("background", "url(right_hideboxbtn2.gif)");
+
+			}
+			;
+
+			if (right_hidebox == 10 + 'px') {
+				$("#right_hidebox").css("right", "-400px");
+				$("#right_hideboxbtn").css("background", "url(right_hideboxbtn.gif)");
+			}
+			;
+		});
+<%if(successcount>0){%>
 		alert("成功反馈：<%=successcount %>单");
 	<%}%>
 });
@@ -114,9 +126,18 @@ function resub(form){
 	$("#sub").submit();
 	
 }
+function load(deliverystateid,backreasonid,deliverstateremark)
+{
+	if(deliverystateid==2)
+		{changeTag(1);}
+	else if(deliverystateid==7)
+		{
+		$("#smjt").attr('style', 'display:');
+		}
+	}
 </script>
 </head>
-<body style="background: #eef9ff" marginwidth="0" marginheight="0">
+<body style="background: #eef9ff" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>,<%=backreasonid%>,<%=deliverstateremark%>)">
 	<div class="right_box">
 		<div class="kfsh_tabbtn">
 			<ul>
@@ -132,7 +153,26 @@ function resub(form){
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
 					<tr>
 						<td valign="middle" >&nbsp;&nbsp; 
-							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" checked="checked"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate2" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(deliverystateid==2){ %> checked="checked"<%} %> onclick="changeTag(1)"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
+						
+						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
+							<input type="radio" name="deliverystate" id="deliverystate7" value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystateid==7){ %> checked="checked"<%} %> onclick="changeTag(2)" /> <%=DeliveryStateEnum.ShangMenJuTui.getText() %>
+						</td>
+					</tr>
+					<tr>
+					<td>		<div id="smjt" style="display: none">
+							拒退原因：
+							 <select name="backreasonid" id="backreasonid">
+					        	<option value ="0">请选择</option>
+					        	<%for(Reason r : backlist){ %>
+			           				<option value="<%=r.getReasonid()%>"  <%if(backreasonid==r.getReasonid()){%> selected="selected"<%} %>><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+						
+						拒退备注输入内容：
+							<input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
+						
+						</div>
 						</td>
 					</tr>
 					<tr>
@@ -143,6 +183,7 @@ function resub(form){
 							(只能反馈上门退类型的订单)
 						</td>
 					</tr>
+					
 				</table>
 			</form>
 		</div>
@@ -196,6 +237,8 @@ function resub(form){
 					<td>
 					<input type="hidden" id="cwbdetails" name="cwbdetails" value="[]" />
 					<input type="hidden" name="deliverystate" value="<%=deliverystateid%>" />
+					<input type="hidden" name="backreasonid" value="<%=backreasonid%>" />
+					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
 					<%if(objList!=null&&objList.size()>0) {%>
 					<input type="button" name="button2" id="button2" value="提交" class="button" onclick="resub();"/><%} %></td>
 				</tr>
