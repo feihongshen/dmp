@@ -126,7 +126,7 @@ function resub(form){
 	$("#sub").submit();
 	
 }
-function load(deliverystateid,backreasonid,deliverstateremark)
+function load(deliverystateid)
 {
 	if(deliverystateid==2)
 		{changeTag(1);}
@@ -137,7 +137,7 @@ function load(deliverystateid,backreasonid,deliverstateremark)
 	}
 </script>
 </head>
-<body style="background: #eef9ff" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>,<%=backreasonid%>,<%=deliverstateremark%>)">
+<body style="background: #eef9ff" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>)">
 	<div class="right_box">
 		<div class="kfsh_tabbtn">
 			<ul>
