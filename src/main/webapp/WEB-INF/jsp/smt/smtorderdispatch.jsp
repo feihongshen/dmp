@@ -301,8 +301,8 @@ function loadTodayOutAreaOrder(){
 		var today = data.body.isTodayFlow;
 		var today = data.body.isTodayFlow;
 		var outarea = data.body.cwbOrder.outareaflag;
-		var rSpan ="";
-		var aSpan="today_";
+		var rSpan = "";
+		var aSpan = "today_";
 		if (today) {
 			rSpan += "today_";
 		} else {
@@ -446,7 +446,7 @@ dl dd span {
 				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
 						href="#" id="today_normal_dispatched"><%=tNorDisCnt%></a></span> <span
-						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a href="#"
+						onclick="loadSmtOrder('transfer','today',true,1,'today_dispatch_table',2)"><a href="#"
 						id="today_transfer_dispatched"><%=tTraDisCnt%></a></span>
 				</dd>
 			</dl>
@@ -727,8 +727,13 @@ dl dd span {
 	</form>
 
 	<form action='<%=request.getContextPath() + "/smt/exportexceptiondata"%>' method="post"
-		id="exportTodayOutAreaForm" style="padding: 10px">
+		id="exportExceptionDataForm" style="padding: 10px">
 		<input type="hidden" id="cwbs" name="cwbs" />
+	</form>
+
+
+	<form action='<%=request.getContextPath() + "/smt/exporttodayoutareadata"%>' method="post"
+		id="exportTodayOutAreaForm" style="padding: 10px">
 	</form>
 
 
