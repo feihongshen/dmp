@@ -23,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
@@ -48,6 +51,15 @@ public class SmtController {
 
 	@Autowired
 	private OrderFlowDAO orderFlowDAO = null;
+
+	@Autowired
+	private CwbOrderService cwborderService;
+
+	@Autowired
+	private SystemInstallDAO systemInstallDAO;
+
+	@Autowired
+	private ExceptionCwbDAO exceptionCwbDAO;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -135,17 +147,13 @@ public class SmtController {
 
 	@RequestMapping("/smtorderoutarea")
 	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
-		String cwbs = this.getCwbs(request);
+		String[] cwbs = this.getCwbs(request).split(",");
 		// 更新订单表设定订单状态为超区.
 		this.cwbDAO.updateOrderOutAreaStatus(cwbs);
 		// 更新订单流程表加入超区流程.
-		this.orderFlowDAO.batchInsertOutAreaFlow(this.transfer(cwbs), this.getCurrentBranchId(), this.getCurrentUserId());
+		this.orderFlowDAO.batchInsertOutAreaFlow(cwbs, this.getCurrentBranchId(), this.getCurrentUserId());
 
 		return "";
-	}
-
-	private String[] transfer(String cwbs) {
-		return cwbs.split(",");
 	}
 
 	@RequestMapping("/querysmtorder")
@@ -160,13 +168,9 @@ public class SmtController {
 
 	@RequestMapping("/querytodayoutareaorder")
 	public @ResponseBody SmtOrderContainer queryTodayOutAreaOrder() {
-		StringBuilder fullSql = new StringBuilder();
-		String sql = this.getOrderListQuerySql(OrderTypeEnum.All, OptTimeTypeEnum.Today, 1, false);
-		fullSql.append(sql);
-		// 追加超区条件.
-		this.appendOutAreaWhereCond(fullSql);
+		String sql = this.getTodayOutAreaOrderSql();
 
-		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(fullSql.toString());
+		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
 		SmtOrderContainer ctn = new SmtOrderContainer();
 		ctn.setSmtOrderList(orderList);
 
@@ -196,14 +200,26 @@ public class SmtController {
 		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
 	}
 
-	private String getTodayOutAreaSql() {
+	private String getTodayOutAreaCountSql() {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.getSelectCountPart());
-		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
-		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
-		sql.append("and f.credate > '" + this.getTodayZeroTimeString() + "' ");
+		this.appendTodayOutAreaWhereCond(sql);
 
 		return sql.toString();
+	}
+
+	private String getTodayOutAreaOrderSql() {
+		StringBuilder sql = new StringBuilder();
+		sql.append(this.getSelectOrderPart());
+		this.appendTodayOutAreaWhereCond(sql);
+
+		return sql.toString();
+	}
+
+	private void appendTodayOutAreaWhereCond(StringBuilder sql) {
+		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
+		sql.append("and f.credate > '" + this.getTodayZeroTimeString() + "' ");
+		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
 	}
 
 	private String getCwbs(HttpServletRequest request) {
@@ -361,7 +377,7 @@ public class SmtController {
 	}
 
 	private int queryTodayOutAreaCount() {
-		String sql = this.getTodayOutAreaSql();
+		String sql = this.getTodayOutAreaCountSql();
 
 		return this.cwbDAO.querySmtOrderCount(sql);
 	}
@@ -429,10 +445,12 @@ public class SmtController {
 		this.appendDataTypeWhereCond(sql, dataType);
 		// 时间过滤条件.
 		this.appendTimeTypeWhereCond(sql, timeType);
+		// 转单数据可能存在多次分站到货.
+		this.appendFlowNowWhereCond(sql, dataType);
 	}
 
-	private void appendOutAreaWhereCond(StringBuilder sql) {
-
+	private void appendFlowNowWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
+		sql.append("and f.isnow = 1 ");
 	}
 
 	private void appendBranchWhereCond(StringBuilder sql) {
@@ -450,20 +468,22 @@ public class SmtController {
 
 	private void appendInStationWhereCond(StringBuilder sql, boolean dispatch) {
 		if (dispatch) {
+			int pickingFlow = FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+			sql.append("and d.flowordertype= " + pickingFlow + " ");
+
+		} else {
 			// 流程类型为分到到货和到错误或者配送类型分站滞留.
 			sql.append("and (d.flowordertype IN(7,8) or d.deliverystate=6) ");
-		} else {
-			int pickingFlow = FlowOrderTypeEnum.FenZhanLingHuo.getValue();
-			sql.append("and d.flowordertpe= " + pickingFlow + " ");
 		}
 	}
 
 	private void appendDataTypeWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
 		if (OrderTypeEnum.Transfer.equals(dataType)) {
-			sql.append("and d.outarea != 0 ");
+			sql.append("and d.outareaflag = 2 ");
 		} else if (OrderTypeEnum.Normal.equals(dataType)) {
-			sql.append("and d.outarea = 0 ");
+			sql.append("and d.outareaflag = 0 ");
 		} else {
+			sql.append("and d.outareaflag != 1 ");
 		}
 	}
 
@@ -525,11 +545,11 @@ public class SmtController {
 	}
 
 	private String getSelectOrderPart() {
-		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb and d.flowordertype = f.flowordertype where ";
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private String getSelectCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb and d.flowordertype = f.flowordertype where ";
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private long getCurrentUserId() {

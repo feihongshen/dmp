@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -991,7 +993,7 @@ public class OrderFlowDAO {
 		StringBuilder sql = new StringBuilder();
 		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype)values(? , ");
 		sql.append(Long.toString(reportOutAreaBranchId) + " , ");
-		sql.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " , ");
+		sql.append("'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " ', ");
 		sql.append(Long.toString(reportOutAreaUserId) + " , ");
 		sql.append(Integer.toString(FlowOrderTypeEnum.ChaoQu.getValue()) + ")");
 
@@ -1002,9 +1004,25 @@ public class OrderFlowDAO {
 		List<Object[]> paraList = new ArrayList<Object[]>();
 		for (String cwb : cwbs) {
 			Object[] objs = new Object[1];
-			objs[0] = cwb;
+			objs[0] = cwb.replace("'", "");
 			paraList.add(objs);
 		}
 		return paraList;
+	}
+
+	public boolean isCurrentFlowToday(String cwb) {
+		try {
+			String sql = "select credate from express_ops_order_flow where cwb = '" + cwb + "' and isnow = 1";
+			String strDate = this.jdbcTemplate.queryForObject(sql, String.class);
+			Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strDate);
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+
+			return cal.getTime().compareTo(date) < 0;
+		} catch (ParseException e) {
+		}
+		return false;
 	}
 }

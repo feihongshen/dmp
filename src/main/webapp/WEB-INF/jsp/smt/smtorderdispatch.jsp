@@ -91,6 +91,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					}
 					$("#exceldeliverid").html(data.body.cwbdelivername);
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
+					afterDispatch(data);
 				}else{
 					$("#exceldeliverid").html("");
 					$("#showcwb").html("");
@@ -109,6 +110,8 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		});
 	}
 }
+
+
 
 
  $(function(){
@@ -163,7 +166,7 @@ function setCurrentDataFilterCond(dataType , timeType , dispatched)
 {
 	var $from = $("#exportForm");
 	$("#dataType" ,$from).val(dataType);
-	$("#timeType" ,$from).val(dataType);
+	$("#timeType" ,$from).val(timeType);
 	$("#dispatched" , $from).val(dispatched);
 }
 
@@ -218,7 +221,7 @@ function loadTodayOutAreaOrder(){
 		tr += createTD("center", "100px", data.cwb);
 		tr += createTD("center", "100px", data.matchBranch);
 		tr += createTD("right", "100px", data.receivedFee);
-		if (data.strDeliver != undefined) {
+		if (data.strDeliver != undefined && !widthCheckBox) {
 			tr += createTD("center", "100px", data.strDeliver);
 		}
 		tr += createTD("center", "100px", data.customerName);
@@ -257,7 +260,7 @@ function loadTodayOutAreaOrder(){
 		$table.find("input[type='checkbox']").filter(":checked").each(
 				function() {
 					var cwb = $(this).closest("tr").attr("cwb");
-					cwbs.push("'"+cwb + "'");
+					cwbs.push(cwb);
 				});
 		return cwbs;
 	}
@@ -266,15 +269,15 @@ function loadTodayOutAreaOrder(){
 		$.ajax({
 			type:"post",
 			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>',
-			dataType:"json",
-			async:false,
-			data:{
-				cwbs:currentCwbs.join(",")
+			dataType : "json",
+			async : false,
+			data : {
+				cwbs : currentCwbs.join(",")
 			},
-			success:function(data) {
+			success : function(data) {
 				handleOutAreaSuccess(currentOutAreaTableId, currentCwbs);
 			},
-			error:function(data) {
+			error : function(data) {
 			}
 		});
 	}
@@ -288,7 +291,49 @@ function loadTodayOutAreaOrder(){
 		var $tOutArea = $("#t_out_area");
 		var oriCnt = $tOutArea.html();
 		$tOutArea.html(parseInt(oriCnt) + length);
+
+		reduceNotHandleNumber(length);
+
 		closeConfirmDialog();
+	}
+
+	function afterDispatch(data) {
+		var today = data.body.isTodayFlow;
+		var today = data.body.isTodayFlow;
+		var outarea = data.body.cwbOrder.outareaflag;
+		var rSpan ="";
+		var aSpan="today_";
+		if (today) {
+			rSpan += "today_";
+		} else {
+			rSpan += "history_";
+		}
+		if (outarea == 0) {
+			rSpan += "normal_";
+			aSpan += "normal_"
+		} else {
+			rSpan += "transfer_";
+			aSpan += "transfer_"
+		}
+		var $RSpan = $("#" + rSpan + "not_dispatched");
+		var $ASpan = $("#" + aSpan + "dispatched");
+		$RSpan.html(parseInt($RSpan.html()) - 1);
+		$ASpan.html(parseInt($ASpan.html()) + 1);
+	}
+
+	function reduceNotHandleNumber(length) {
+		var dataType = $("#dataType").val();
+		var timeType = $("#timeType").val();
+		var dispatched = $("#dispatched").val();
+		var spanId = timeType + "_" + dataType;
+		if (dispatched == "true") {
+			spanId += "_dispatched";
+		} else {
+			spanId += "_not_dispatched";
+		}
+		var $span = $("#" + spanId);
+		var oriVal = parseInt($span.html());
+		$span.html(oriVal - length);
 	}
 
 	function showTipDialog() {
@@ -374,8 +419,10 @@ dl dd span {
 					<span>今日新单待分派</span><span>今日转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a href="#"><%=tNorNotDisCnt%></a></span>
-					<span onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a href="#"><%=tTraNotDisCnt%></a></span>
+					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a href="#"
+						id="today_normal_not_dispatched"><%=tNorNotDisCnt%></a></span> <span
+						onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a href="#"
+						id="today_transfer_not_dispatched"><%=tTraNotDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -385,8 +432,10 @@ dl dd span {
 					<span>历史新单待分派</span><span>历史转单待分派</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a href="#"><%=hNorNotDisCnt%></a></span>
-					<span onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a href="#"><%=hTraNotDisCnt%></a></span>
+					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a href="#"
+						id="history_normal_not_dispatched"><%=hNorNotDisCnt%></a></span> <span
+						onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a href="#"
+						id="history_transfer_not_dispatched"><%=hTraNotDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -396,8 +445,9 @@ dl dd span {
 				</dt>
 				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
-						href="#"><%=tNorDisCnt%></a></span> <span
-						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a href="#"><%=tTraDisCnt%></a></span>
+						href="#" id="today_normal_dispatched"><%=tNorDisCnt%></a></span> <span
+						onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a href="#"
+						id="today_transfer_dispatched"><%=tTraDisCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -502,7 +552,7 @@ dl dd span {
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getMatchBranch()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getReceivedFee()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCustomerName()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getPhone()%></td>
+												<td width="150" align="center" bgcolor="#f1f1f1"><%=so.getPhone()%></td>
 												<td align="center" bgcolor="#f1f1f1"><%=so.getAddress()%></td>
 											</tr>
 											<%
@@ -551,12 +601,12 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
 										</tr>
 									</table>
@@ -578,11 +628,11 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
 										</tr>
 									</table>
@@ -603,13 +653,12 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">联系方式</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">联系方式</td>
 											<td align="center" bgcolor="#f1f1f1">取件地址</td>
-
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">

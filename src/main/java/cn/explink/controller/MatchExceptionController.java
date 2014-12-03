@@ -41,8 +41,8 @@ public class MatchExceptionController {
 
 	private enum ColumnEnum {
 
-		OrderNo("订单号"), ReportOutAraaTime("上报超区时间"), ReportOutAreaBranch("上报超区站点"), ReportOutAreaUser("上报超区人"), MatchBranch("分派站点"), CustomerName(
-				"客户姓名"), CustmerPhone("联系方式"), ReceivedFee("应收运费"), CustomerAddress("客户地址");
+		OrderNo("订单号"), ReportOutAraaTime("上报超区时间"), ReportOutAreaBranch("上报超区站点"), ReportOutAreaUser("上报超区人"), MatchBranch("分派站点"), CustomerName("客户姓名"), CustmerPhone("联系方式"), ReceivedFee("应收运费"), CustomerAddress(
+				"客户地址");
 		String columnName;
 
 		ColumnEnum(String columnName) {
@@ -80,7 +80,7 @@ public class MatchExceptionController {
 		// 历史待匹配订单.
 		this.addHWaitMatchOrderCnt(model);
 		// 今日已转单.
-		this.addTTraCnt(model);
+		this.addTTransferCount(model);
 		// 今日已匹配.
 		this.addTMatchOrderCnt(model);
 		// 今日待处理订单.
@@ -198,7 +198,7 @@ public class MatchExceptionController {
 		if (match == null) {
 			return this.queryTransferOrder(today, transfer, page);
 		}
-		return this.queryWaitHandleOrder(today, page);
+		return this.queryHandleOrder(today, transfer, match, page);
 	}
 
 	private boolean isToday(HttpServletRequest request) {
@@ -219,12 +219,12 @@ public class MatchExceptionController {
 	}
 
 	private void addTWaitTransferOrderCnt(Model model) {
-		int tWaitTraOrdCnt = this.queryWaitTraOrderCount(true);
+		int tWaitTraOrdCnt = this.queryWaitTransferOrderCount(true);
 		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
 	private void addHWaitTransferOrderCnt(Model model) {
-		int tWaitTraOrdCnt = this.queryWaitTraOrderCount(false);
+		int tWaitTraOrdCnt = this.queryWaitTransferOrderCount(false);
 		model.addAttribute("hWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
@@ -238,8 +238,8 @@ public class MatchExceptionController {
 		model.addAttribute("hWaitMatOrdCnt", Integer.valueOf(hWaitMatOrdCnt));
 	}
 
-	private void addTTraCnt(Model model) {
-		int tTraOrdCnt = this.queryTTraCnt();
+	private void addTTransferCount(Model model) {
+		int tTraOrdCnt = this.queryTransferOrderCount(true);
 		model.addAttribute("tTraOrdCnt", Integer.valueOf(tTraOrdCnt));
 	}
 
@@ -249,16 +249,16 @@ public class MatchExceptionController {
 	}
 
 	private void addTodayWaitHandleOrder(Model model) {
-		List<MatchExceptionOrder> tWaitHanOrdList = this.queryWaitHandleOrder(true, 1);
+		List<MatchExceptionOrder> tWaitHanOrdList = this.queryHandleOrder(true, Boolean.FALSE, Boolean.FALSE, 1);
 		model.addAttribute("tWaitHanOrdList", tWaitHanOrdList);
 	}
 
-	private int queryWaitTraOrderCount(boolean today) {
-		return this.cwbDAO.queryMatchExceptionOrderCount(this.getWaitTraCountSql(today));
+	private int queryWaitTransferOrderCount(boolean today) {
+		return this.cwbDAO.queryMatchExceptionOrderCount(this.getQueryTransferCountSql(today, false));
 	}
 
-	private int queryTTraCnt() {
-		return this.cwbDAO.queryMatchExceptionOrderCount(this.getTodayTraCountSql());
+	private int queryTransferOrderCount(boolean today) {
+		return this.cwbDAO.queryMatchExceptionOrderCount(this.getQueryTransferCountSql(today, true));
 	}
 
 	private List<MatchExceptionOrder> queryTransferOrder(boolean today, boolean transfer, int page) {
@@ -269,17 +269,20 @@ public class MatchExceptionController {
 	}
 
 	private String getQueryTransferOrderSql(boolean today, Boolean transfer, int page) {
-		if (today) {
-			if (transfer.booleanValue()) {
-				return this.getTTraSql();
-			} else {
-				return this.getWaitTraSql(true, page);
-			}
-		} else {
-			// 只有历史待转单情况.
-			return this.getWaitTraSql(false, page);
-		}
+		SqlBuilder sql = new SqlBuilder();
+		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
+		this.appendTransferSqlWhereCond(sql, today, transfer);
+		sql.appendExtraPart(this.getLimitSql(page));
 
+		return sql.getSql();
+	}
+
+	private String getQueryTransferCountSql(boolean today, boolean transfer) {
+		SqlBuilder sql = new SqlBuilder();
+		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbCountPart());
+		this.appendTransferSqlWhereCond(sql, today, transfer);
+
+		return sql.getSql();
 	}
 
 	private int queryMatchOrderCount(boolean today, boolean match) {
@@ -356,17 +359,22 @@ public class MatchExceptionController {
 		return branchIdSet;
 	}
 
-	private List<MatchExceptionOrder> queryWaitHandleOrder(boolean today, int page) {
-		String sql = this.getQuerywaitHandleOrderSql(today, page);
+	private List<MatchExceptionOrder> queryHandleOrder(boolean today, Boolean transfer, Boolean match, int page) {
+		String sql = null;
+		if (transfer && match) {
+			sql = this.getQueryHandleOrderSql(today, page);
+		} else {
+			sql = this.getQueryWaitHandleOrderSql(today, page);
+		}
 		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(sql);
 		this.fillMatchExceptionOrder(meoList);
 
 		return meoList;
 	}
 
-	private String getQuerywaitHandleOrderSql(boolean today, int page) {
+	private String getQueryWaitHandleOrderSql(boolean today, int page) {
 		StringBuilder sql = new StringBuilder();
-		sql.append(this.getWaitTraSql(today, -1));
+		sql.append(this.getQueryTransferOrderSql(today, false, -1));
 		sql.append(" union ");
 		sql.append(this.getMatchOrderSql(today, false, -1));
 		sql.append(" ");
@@ -375,37 +383,15 @@ public class MatchExceptionController {
 		return sql.toString();
 	}
 
-	private String getWaitTraSql(boolean today, int page) {
-		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
-		this.appendWaitTraSqlWhereCond(sql, today);
-		sql.appendExtraPart(this.getLimitSql(page));
+	private String getQueryHandleOrderSql(boolean today, int page) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(this.getQueryTransferOrderSql(today, true, -1));
+		sql.append(" union ");
+		sql.append(this.getMatchOrderSql(today, true, -1));
+		sql.append(" ");
+		sql.append(this.getLimitSql(page));
 
-		return sql.getSql();
-	}
-
-	private String getWaitTraCountSql(boolean today) {
-		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowCountPart());
-		this.appendWaitTraSqlWhereCond(sql, today);
-
-		return sql.getSql();
-	}
-
-	private String getTodayTraCountSql() {
-		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbCountPart());
-		this.appendTodayTraSqlWhereCond(sql);
-
-		return sql.getSql();
-	}
-
-	private String getTTraSql() {
-		SqlBuilder sql = new SqlBuilder();
-		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbPart());
-		this.appendTodayTraSqlWhereCond(sql);
-
-		return sql.getSql();
+		return sql.toString();
 	}
 
 	private String getMatchOrderCountSql(boolean today, boolean match) {
@@ -444,7 +430,7 @@ public class MatchExceptionController {
 			// 流程处理时间.
 			sql.appendCondition(this.getTimeWhereCond(today));
 			// 站点分配完成状态.
-			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.ZhanDianFenPeiWanCheng));
+			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
 		} else {
 			// 订单站点条件.
 			sql.appendCondition(this.getMatchBranchSql(false));
@@ -454,6 +440,11 @@ public class MatchExceptionController {
 			sql.appendCondition(this.getTimeWhereCond(today));
 		}
 		sql.appendCondition(this.getOrderTypeWhereCond());
+		sql.appendCondition(this.getMatchOrderWhereCond());
+	}
+
+	private String getMatchOrderWhereCond() {
+		return "d.outareaflag = 0";
 	}
 
 	private String getMatchBranchSql(boolean match) {
@@ -464,54 +455,43 @@ public class MatchExceptionController {
 		}
 	}
 
-	private void appendWaitTraSqlWhereCond(SqlBuilder sql, boolean today) {
-		// 配送站点条件.
-		sql.appendCondition(this.getWaitTraBranchWhereCond());
+	private void appendTransferSqlWhereCond(SqlBuilder sql, boolean today, boolean transfer) {
+		// 站点条件.
+		sql.appendCondition(this.getTransferBranchWhereCond(transfer));
 		// 订单类型条件.
 		this.getOrderTypeWhereCond();
 		// 转单条件.
-		sql.appendCondition(this.getTransferWhereCond(false));
+		sql.appendCondition(this.getTransferWhereCond(transfer));
 		// 时间条件.
 		sql.appendCondition(this.getTimeWhereCond(today));
-		// 订单流程条件.
-		sql.appendCondition(this.getCwbFlowStatusCondWhere(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
+		// 订单流程条件(标识为超区的订单不需要加入订单流程条件因肯能存在分站到货，滞留审核等后续状态).
+		sql.appendCondition(this.getFlowStatusCondWhere(transfer));
 		// 如果出现环形分派a->b->a会出现多次分站到货流程,连接时需要加入流程isnow条件.
-		sql.appendCondition(this.getFlowNowWhereCond());
+		sql.appendCondition(this.getFlowNowWhereCond(transfer));
 	}
 
-	private void appendTodayTraSqlWhereCond(SqlBuilder sql) {
-		// 时间条件.
-		sql.appendCondition(this.getTimeWhereCond(true));
-		// 转单站点条件.
-		sql.appendCondition(this.getTraBranchWhereCond());
-		// 订单类型条件.
-		this.getOrderTypeWhereCond();
-		// 订单流程条件.
-		sql.appendCondition(this.getFlowFlowStatusCondWhere(FlowOrderTypeEnum.ZhanDianFenPeiWanCheng));
-		// 已转单条件.
-		sql.appendCondition(this.getTransferWhereCond(true));
+	private String getTransferBranchWhereCond(boolean transfer) {
+		if (transfer) {
+			// 已转订单只能通过流程表站点来过滤定单因为订单表的当前站点可能发生变化.
+			return "f.branchid = " + this.getCurrentBranchId();
+		} else {
+			// 未转订单的当前站点为库房.
+			return "d.currentbranchid = " + this.getCurrentBranchId();
+		}
 	}
 
-	private String getWaitTraBranchWhereCond() {
-		return "d.deliverbranchid = " + this.getCurrentBranchId();
-	}
-
-	private String getTraBranchWhereCond() {
-		return "f.branchid = " + this.getCurrentBranchId();
-	}
-
-	private String getFlowNowWhereCond() {
+	private String getFlowNowWhereCond(boolean transfer) {
+		if (transfer) {
+			return "";
+		}
 		return "f.isnow = 1";
 	}
 
-	private String getCwbFlowStatusCondWhere(FlowOrderTypeEnum flowType) {
-		int flow = flowType.getValue();
-		return "d.flowordertype = " + flow;
-	}
-
-	private String getFlowFlowStatusCondWhere(FlowOrderTypeEnum flowType) {
-		int flow = flowType.getValue();
-		return "f.flowordertype = " + flow;
+	private String getFlowStatusCondWhere(boolean transfer) {
+		if (transfer) {
+			return "f.flowordertype = 7";
+		}
+		return "";
 	}
 
 	private String getOrderTypeWhereCond() {
@@ -553,11 +533,6 @@ public class MatchExceptionController {
 	private String getSelectCwbInnerJoinFlowPart() {
 		String qryFields = this.getQueryFields();
 		return "select " + qryFields + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
-	}
-
-	private String getSelectFlowInnerJoinCwbPart() {
-		String qryFields = this.getQueryFields();
-		return "select " + qryFields + " from express_ops_order_flow f inner join express_ops_cwb_detail d on f.cwb = d.cwb";
 	}
 
 	private String getSelectCwbInnerJoinFlowCountPart() {

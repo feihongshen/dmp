@@ -4028,10 +4028,14 @@ public class PDAController {
 			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
+		JSONObject obj = new JSONObject();
+		// 判断当前流程是否为今日，供上门退订单分派使用.
+		boolean isTodayFlow = this.isFlowToday(cwb);
+		obj.put("isTodayFlow", Boolean.valueOf(isTodayFlow));
+
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 
-		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 
 		if (cwbOrder.getDeliverid() != 0) {
@@ -4074,6 +4078,16 @@ public class PDAController {
 		explinkResponse.addLastWav(wavPath);
 
 		return explinkResponse;
+	}
+
+	/**
+	 * 订单最后流程时间，供上门退订单分派区分.
+	 *
+	 * @param cwb
+	 * @return
+	 */
+	private boolean isFlowToday(String cwb) {
+		return this.orderFlowDAO.isCurrentFlowToday(cwb);
 	}
 
 	/**

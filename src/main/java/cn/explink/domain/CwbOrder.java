@@ -121,6 +121,8 @@ public class CwbOrder {
 
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
+	private int outareaflag = 0;// 超区标识.
+
 	public CwbOrder() {
 		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {
 			if (this.cwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue()) {
@@ -977,6 +979,14 @@ public class CwbOrder {
 
 	public void setGoodsType(int goodsType) {
 		this.goodsType = goodsType;
+	}
+
+	public int getOutareaflag() {
+		return this.outareaflag;
+	}
+
+	public void setOutareaflag(int outareaflag) {
+		this.outareaflag = outareaflag;
 	}
 
 }

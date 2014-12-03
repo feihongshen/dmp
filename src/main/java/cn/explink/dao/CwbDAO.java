@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -145,6 +147,7 @@ public class CwbDAO {
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
 			cwbOrder.setHistorybranchname(rs.getString("historybranchname"));
 			cwbOrder.setGoodsType(rs.getInt("goods_type"));
+			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
 
 			return cwbOrder;
 		}
@@ -5040,10 +5043,60 @@ public class CwbDAO {
 		}
 	}
 
-	public void updateOrderOutAreaStatus(String cwbs) {
-		int chaoQuFlow = FlowOrderTypeEnum.ChaoQu.getValue();
-		String sql = "update express_ops_cwb_detail set flowordertype = " + Integer.toString(chaoQuFlow) + " where cwb in (" + cwbs + ")";
-		this.jdbcTemplate.execute(sql);
+	public void updateOrderOutAreaStatus(String[] cwbs) {
+		// 上报超区时需要改变超区标识和将当前站点改为入库库房站点.
+		Map<String, Long> branchMap = this.getImprotDataBranchMap(cwbs);
+		String sql = "update express_ops_cwb_detail set outareaflag = 1,currentbranchid = ? where cwb = ?";
+		this.jdbcTemplate.batchUpdate(sql, this.getOutAreaParaList(cwbs, branchMap));
+	}
+
+	private List<Object[]> getOutAreaParaList(String[] cwbs, Map<String, Long> branchMap) {
+		List<Object[]> paraList = new ArrayList<Object[]>();
+		for (String cwb : cwbs) {
+			Object[] objs = new Object[2];
+			objs[0] = branchMap.get(cwb);
+			objs[1] = cwb;
+			paraList.add(objs);
+		}
+		return paraList;
+	}
+
+	private Map<String, Long> getImprotDataBranchMap(String[] cwbs) {
+		Map<String, Long> branchMap = new HashMap<String, Long>();
+		String strInPara = this.getInPara(cwbs);
+		String sql = "select cwb , branchid from express_ops_order_flow where cwb in(" + strInPara + ") and flowordertype = 1";
+		this.jdbcTemplate.query(sql, new FlowBranchRowHandler(branchMap));
+
+		return branchMap;
+	}
+
+	private String getInPara(String[] cwbs) {
+		StringBuilder inPara = new StringBuilder();
+		for (String cwb : cwbs) {
+			inPara.append("'");
+			inPara.append(cwb);
+			inPara.append("'");
+		}
+		return inPara.toString();
+	}
+
+	private class FlowBranchRowHandler implements RowCallbackHandler {
+
+		private Map<String, Long> branchMap = null;
+
+		public FlowBranchRowHandler(Map<String, Long> branchMap) {
+			this.branchMap = branchMap;
+		}
+
+		@Override
+		public void processRow(ResultSet rs) throws SQLException {
+			this.getBranchMap().put(rs.getString("cwb"), rs.getLong("branchid"));
+		}
+
+		private Map<String, Long> getBranchMap() {
+			return this.branchMap;
+		}
+
 	}
 
 	public String getSqlExportBackToCustomerWeichukuOfcwbtype(long branchid, long cwbordertypeid) {
