@@ -951,7 +951,7 @@ public class DeliveryController {
 					parameters.put("isbatch", true);
 					parameters.put("resendtime", "");
 					parameters.put("zhiliuremark", "");
-					if (deliveryState != null) {
+					if ((deliveryState != null) && (DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate)) {
 						parameters.put("infactfare", deliveryState.getShouldfare());
 					}
 
