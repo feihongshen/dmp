@@ -446,7 +446,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
 			dataMap.put("cwbordertypeid", cwbordertype);
 
-			if ((this.cwbDAO.getCwbByCwb(order_sn) != null) && (Long.valueOf(cwbordertype) == CwbOrderTypeIdEnum.Peisong.getValue())) {
+			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
 				seq_arrs += seq + ",";
 				return seq_arrs;
