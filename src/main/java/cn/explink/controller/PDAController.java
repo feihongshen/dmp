@@ -7708,12 +7708,17 @@ public class PDAController {
 
 	@RequestMapping("/showgoodsdetail/{cwb}")
 	public @ResponseBody ExplinkResponse showgoodsdetail(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
-		List<OrderGoods> orderGoodsList = this.orderGoodsDAO.getOrderGoodsList(cwb);
 		JSONObject obj = new JSONObject();
-		String code = "1111111";
-		if (orderGoodsList.size() > 0) {
-			code = "000000";
-			obj.put("orderGoodsList", orderGoodsList);
+		String code = "111111";
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		if (cwbOrder != null) {
+			List<OrderGoods> orderGoodsList = this.orderGoodsDAO.getOrderGoodsList(cwb);
+			if (orderGoodsList.size() > 0) {
+				code = "000000";
+				obj.put("orderGoodsList", orderGoodsList);
+			}
+		} else {
+			code = "222222";
 		}
 		ExplinkResponse explinkResponse = new ExplinkResponse(code, "商品明细", obj);
 

@@ -160,7 +160,10 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 						$("#tr").append(tr);
 				}
 					else{
-						$("#msg").html("         该记录不存在任何商品，请选择其它入库方式！");
+						if(data.statuscode=="222222")
+							{$("#msg").html("         无此单号！");}
+						else
+						$("#msg").html("         该订单不存在任何商品，请选择其它入库方式！");
 					}
 				}}
 			);
