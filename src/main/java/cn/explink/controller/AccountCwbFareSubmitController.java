@@ -93,6 +93,7 @@ public class AccountCwbFareSubmitController {
 		if (page > 1) {
 			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailBySubmit(branch.getBranchid(), begindate, enddate, cwbordertypeid, faretypeid, userid);
 		}
+		model.addAttribute("userid", userid);
 		model.addAttribute("acfdList", acfdList);
 		model.addAttribute("faretypeid", faretypeid);
 		model.addAttribute("cwbordertypeid", cwbordertypeid);

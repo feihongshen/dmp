@@ -327,23 +327,23 @@ function changeYj(){
 							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
 						<font color="red">（查询31天以内数据）</font>
 						订单类型：<select id="cwbordertypeid" name="cwbordertypeid">
-						<option value="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
-						<option value="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
-						<option value="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Shangmentui.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Shangmenhuan.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Peisong.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
 						</select>
 				</td>
 				</tr>
 				 <tr>
 					<td width="100%">
 					交款状态：<select id="faretypeid" name="faretypeid">
-						<option value="1">未交款</option>
-						<option value="2">已交款未审核</option>
-						<option value="3">已审核</option>
+						<option value="1" <%if(faretypeid.equals("1")){%>selected="selected"<%}%>>未交款</option>
+						<option value="2" <%if(faretypeid.equals("2")){%>selected="selected"<%}%>>已交款未审核</option>
+						<option value="3" <%if(faretypeid.equals("3")){%>selected="selected"<%}%>>已审核</option>
 						</select>
 						小件员：
 						<select id="userid" name="userid">
 						<%for(User u:userList){ %>
-						<option value="<%=u.getUserid() %>" <%if(u.getUserid()==user.getUserid()){%> selected="selected" <%} %>><%=u.getRealname() %></option>
+						<option value="<%=u.getUserid() %>" <%if(userid.equals(u.getUserid()+"")){%> selected="selected" <%} %>><%=u.getRealname() %></option>
 						<%} %>
 						</select>
 					<input type ="button" value ="查询" class="input_button2" onclick="sumitForm();"/>
