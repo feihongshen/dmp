@@ -42,7 +42,7 @@ import cn.explink.util.Page;
 
 /**
  * 运费结算审核
- * 
+ *
  */
 
 @Controller
@@ -80,7 +80,7 @@ public class AccountCwbFareDetailVerifyController {
 
 	/**
 	 * 查询已交款的信息
-	 * 
+	 *
 	 * @param model
 	 * @param branchid
 	 * @return
@@ -154,7 +154,7 @@ public class AccountCwbFareDetailVerifyController {
 
 	/**
 	 * 反馈
-	 * 
+	 *
 	 * @param model
 	 * @param branchid
 	 * @return
@@ -176,7 +176,7 @@ public class AccountCwbFareDetailVerifyController {
 
 	/**
 	 * 配送结果结算记录导出Excel
-	 * 
+	 *
 	 * @param model
 	 */
 	@RequestMapping("/exportExcle")
@@ -186,8 +186,8 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
 			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
-		String[] cloumnName1 = new String[10]; // 导出的列名
-		String[] cloumnName2 = new String[10]; // 导出的英文列名
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailVerifyFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;

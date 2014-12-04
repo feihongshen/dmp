@@ -17,6 +17,8 @@ User user = (User)request.getAttribute("user");
 String cwbordertypeid = request.getAttribute("cwbordertypeid")==null?"0":request.getAttribute("cwbordertypeid").toString();
 String faretypeid = request.getAttribute("faretypeid")==null?"0":request.getAttribute("faretypeid").toString();
 String userid = request.getAttribute("userid")==null?"0":request.getAttribute("userid").toString();
+String shouldfare = request.getAttribute("shouldfare")==null?"0":request.getAttribute("shouldfare").toString();
+String infactfare = request.getAttribute("infactfare")==null?"0":request.getAttribute("infactfare").toString();
 Branch branch   = (Branch)request.getAttribute("branch");
 List<Branch> branchList   = (List<Branch>)request.getAttribute("branchList");
 Date now = new Date();
@@ -401,8 +403,8 @@ function changeYj(){
 								<td></td>
 								<td></td>
 								<td></td>
-								<td><strong><%=accountCwbFareDetailSum.getShouldfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getShouldfare() %></strong></td>
-								<td><strong><%=accountCwbFareDetailSum.getInfactfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getInfactfare() %></strong></td>
+								<td><strong><%=shouldfare%></strong></td>
+								<td><strong><%=infactfare%></strong></td>
 								<td></td>
 								<td></td>
 							</tr>
