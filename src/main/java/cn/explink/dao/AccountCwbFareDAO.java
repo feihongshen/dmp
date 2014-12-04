@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -44,7 +45,8 @@ public class AccountCwbFareDAO {
 
 	public long createAccountCwbFare(final AccountCwbFare accountCwbFare) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into account_cwb_fare(cashfee,cashuser,girocardno,girofee,girouser,payuptime," + "userid) values (?,?,?,?,?,?,?)", new String[] { "accountcwbid" });
@@ -64,13 +66,22 @@ public class AccountCwbFareDAO {
 
 	public void saveAccountCwbFareById(BigDecimal cashfee, BigDecimal girofee, long id) {
 		String sql = "update account_cwb_fare set cashfee = ?,girofee = ? where id =?";
-		jdbcTemplate.update(sql, cashfee, girofee, id);
+		this.jdbcTemplate.update(sql, cashfee, girofee, id);
 	}
 
 	public AccountCwbFare getAccountCwbFareLocKById(long id) {
 		String sql = "select * from account_cwb_fare where id=? for update";
 		try {
-			return jdbcTemplate.queryForObject(sql, new AccountCwbFareRowMapper(), id);
+			return this.jdbcTemplate.queryForObject(sql, new AccountCwbFareRowMapper(), id);
+		} catch (DataAccessException de) {
+			return null;
+		}
+	}
+
+	public List<AccountCwbFare> getAccountCwbFareListByIds(String ids) {
+		String sql = "select * from account_cwb_fare where id in (" + ids + ")";
+		try {
+			return this.jdbcTemplate.query(sql, new AccountCwbFareRowMapper());
 		} catch (DataAccessException de) {
 			return null;
 		}

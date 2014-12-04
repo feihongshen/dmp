@@ -3,6 +3,7 @@ package cn.explink.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +22,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.explink.dao.AccountCwbFareDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.AccountCwbFare;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -33,6 +36,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 
@@ -66,6 +70,8 @@ public class AccountCwbFareDetailVerifyController {
 
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	AccountCwbFareDAO accountCwbFareDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -114,7 +120,27 @@ public class AccountCwbFareDetailVerifyController {
 					shoulefarefeesign);
 		}
 
+		StringBuffer fareidsub = new StringBuffer();
+		if ((acfdList != null) && (acfdList.size() > 0)) {
+			for (AccountCwbFareDetail accountCwbFareDetail : acfdList) {
+				fareidsub.append("'" + accountCwbFareDetail.getFareid() + "',");
+			}
+		}
+		String fareids = "";
+		if (fareidsub.length() > 0) {
+			fareids = fareidsub.substring(0, fareidsub.length() - 1);
+		}
+
+		List<AccountCwbFare> accountFarelist = this.accountCwbFareDAO.getAccountCwbFareListByIds(fareids);
+		Map<Long, AccountCwbFare> accountFareMap = new HashMap<Long, AccountCwbFare>();
+		if ((accountFarelist != null) && (accountFarelist.size() > 0)) {
+			for (AccountCwbFare accountCwbFare : accountFarelist) {
+				accountFareMap.put(accountCwbFare.getId(), accountCwbFare);
+			}
+		}
+
 		model.addAttribute("acfdList", acfdList);
+		model.addAttribute("accountFareMap", accountFareMap);
 		model.addAttribute("accountCwbFareDetailSum", accountCwbFareDetailSum);
 		model.addAttribute("branchList", branchnameList);
 		List<String> customeridList = this.dataStatisticsService.getList(customerid);
@@ -124,6 +150,28 @@ public class AccountCwbFareDetailVerifyController {
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
 		return "/accountfare/accountfareVerifylist";
+	}
+
+	/**
+	 * 反馈
+	 * 
+	 * @param model
+	 * @param branchid
+	 * @return
+	 */
+	@RequestMapping("/verify")
+	public String accountfarelistVerify(@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
+		String cwbarrs[] = cwbs.split(",");
+		String cwbstrs = "";
+		for (String cwb : cwbarrs) {
+			cwbstrs += "'" + cwb + "',";
+		}
+		if (cwbstrs.length() > 0) {
+			cwbstrs = cwbstrs.substring(0, cwbstrs.length() - 1);
+		}
+		this.accountCwbFareDetailDAO.updateAccountCwbFareDetailByCwb(cwbstrs, DateTimeUtil.getNowTime());
+
+		return "redirect:/accountcwbfaredetailVerify/accountfarelist/1";
 	}
 
 	/**
@@ -140,7 +188,7 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
 		String[] cloumnName1 = new String[10]; // 导出的列名
 		String[] cloumnName2 = new String[10]; // 导出的英文列名
-		this.exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
+		this.exportService.SetAccountCwbFareDetailVerifyFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		final HttpServletRequest request1 = request;

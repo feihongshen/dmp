@@ -44,6 +44,9 @@ public class AccountCwbFareDetailDAO {
 			accountCwbFareDetail.setPayuptime(rs.getString("payuptime"));
 			accountCwbFareDetail.setShouldfare(rs.getBigDecimal("shouldfare"));
 
+			accountCwbFareDetail.setVerifyflag(rs.getInt("verifyflag"));
+			accountCwbFareDetail.setVerifytime(rs.getString("verifytime"));
+
 			return accountCwbFareDetail;
 		}
 	}
@@ -133,6 +136,7 @@ public class AccountCwbFareDetailDAO {
 		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
 
 		sql += " limit " + ((page - 1) * pageNumber) + " ," + pageNumber;
+		System.out.println(sql);
 		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
 
@@ -245,11 +249,14 @@ public class AccountCwbFareDetailDAO {
 		if (customerids.length() > 0) {
 			sql += " and customerid in(" + customerids + ")";
 		}
+
+		sql += " and verifyflag=" + verifyflag;
+
 		if (verifyflag == 0) { // 未审核 是交款时间
-			sql += " and audittime >= '" + begindate + "' ";
-			sql += " and audittime <= '" + enddate + "' ";
+			sql += " and payuptime >= '" + begindate + "' ";
+			sql += " and payuptime <= '" + enddate + "' ";
 		} else { // 已审核是审核时间
-			sql += " and verifyflag=1 ";
+
 			sql += " and verifytime >= '" + begindate + "' ";
 			sql += " and verifytime <= '" + enddate + "' ";
 		}
@@ -300,5 +307,10 @@ public class AccountCwbFareDetailDAO {
 	public void deleteAccountCwbFareDetailByCwb(String cwb) {
 		String sql = "delete from account_cwb_fare_detail where cwb=?";
 		this.jdbcTemplate.update(sql, cwb);
+	}
+
+	public void updateAccountCwbFareDetailByCwb(String cwbs, String verifytime) {
+		String sql = "update  account_cwb_fare_detail set verifytime=?,verifyflag=1 where cwb in (" + cwbs + ")";
+		this.jdbcTemplate.update(sql, verifytime);
 	}
 }

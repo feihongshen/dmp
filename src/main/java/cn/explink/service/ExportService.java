@@ -347,7 +347,7 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("cwbordertypeid")) {
 				a = "";
 				if (views.get(k).getCwbordertypeid() > 0) {
-					a = getCwbordertype(views.get(k).getCwbordertypeid());
+					a = this.getCwbordertype(views.get(k).getCwbordertypeid());
 				}
 			} else if (cloumnName3[i].equals("customername")) {
 				a = views.get(k).getCustomername();
@@ -379,7 +379,7 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("deliverystate")) {
 				a = "";
 				if (views.get(k).getDeliverystate() > 0) {
-					a = getDeliveryState(views.get(k).getDeliverystate());
+					a = this.getDeliveryState(views.get(k).getDeliverystate());
 				}
 			}
 		} catch (Exception e) {
@@ -409,7 +409,7 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("cwbordertypeid")) {
 				a = "";
 				if (views.get(k).getCwbordertypeid() > 0) {
-					a = getCwbordertype(views.get(k).getCwbordertypeid());
+					a = this.getCwbordertype(views.get(k).getCwbordertypeid());
 				}
 			} else if (cloumnName3[i].equals("customername")) {
 				a = views.get(k).getCustomername();
@@ -630,13 +630,14 @@ public class ExportService {
 			Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 		Object a = null;
 		Branch currentb = new Branch();
-		if (ds != null)
+		if (ds != null) {
 			for (Branch b : bList) {
 				if (b.getBranchid() == ds.getDeliverybranchid()) {
 					currentb = b;
 					break;
 				}
 			}
+		}
 		String cloumname = cloumnName3[i];
 		cloumname = cloumnName3[i].substring(0, 1).toLowerCase() + cloumnName3[i].substring(1, cloumnName3[i].length());
 		try {
@@ -657,31 +658,34 @@ public class ExportService {
 			} else if ("flowordertypeMethod".equals(cloumname)) {
 				a = mapRow.get("flowordertype") == null ? "0" : mapRow.get("flowordertype");
 				for (FlowOrderTypeEnum fote : FlowOrderTypeEnum.values()) {
-					if (fote.getValue() == Integer.parseInt(a.toString()))
+					if (fote.getValue() == Integer.parseInt(a.toString())) {
 						return fote.getText();
+					}
 				}
 			} else if ("paytypeName".equals(cloumname)) {
-				a = advancedQueryService.getPayWayType(mapRow.get("cwb").toString(), mapRow.get("paywayid").toString());
+				a = this.advancedQueryService.getPayWayType(mapRow.get("cwb").toString(), mapRow.get("paywayid").toString());
 			} else if ("newpayway".equals(cloumname)) {
-				a = advancedQueryService.getPayWayType(mapRow.get("cwb").toString(), mapRow.get("newpaywayid").toString());
+				a = this.advancedQueryService.getPayWayType(mapRow.get("cwb").toString(), mapRow.get("newpaywayid").toString());
 			} else if ("statisticstateStr".equals(cloumname)) {
 				a = "";
-				if (ds != null)
+				if (ds != null) {
 					for (DeliveryStateEnum dse : DeliveryStateEnum.values()) {
 						if (dse.getValue() == ds.getDeliverystate()) {
 							a = dse.getText();
 							break;
 						}
 					}
+				}
 			} else if ("orderResultTypeText".equals(cloumname)) {
 				a = "";
-				if (ds != null)
+				if (ds != null) {
 					for (DeliveryStateEnum fote : DeliveryStateEnum.values()) {
 						if (fote.getValue() == ds.getDeliverystate()) {
 							a = fote.getText();
 							break;
 						}
 					}
+				}
 			} else if ("carwarehouse".equals(cloumname)) {
 				a = "";
 				for (Branch b : bList) {
@@ -713,13 +717,14 @@ public class ExportService {
 				a = (ds != null) ? ds.getBusinessfee() : "";
 			} else if ("receivedfeeuserName".equals(cloumname)) {
 				a = "";
-				if (ds != null)
+				if (ds != null) {
 					for (User u : uList) {
 						if (u.getUserid() == ds.getReceivedfeeuser()) {
 							a = u.getRealname();
 							break;
 						}
 					}
+				}
 			} else if ("tuihuochuzhantime".equals(cloumname)) {
 				a = (tuihuoRecord != null) ? tuihuoRecord.getTuihuochuzhantime() : "";
 			} else if ("tuihuozhanrukutime".equals(cloumname)) {
@@ -753,7 +758,7 @@ public class ExportService {
 				a = allTime.get("Gobacktime") == null ? "" : allTime.get("Gobacktime");
 			} else if ("podremarkStr".equals(cloumname)) {
 				a = "";
-				if (reasonList.size() > 0 && ds != null) {
+				if ((reasonList.size() > 0) && (ds != null)) {
 					for (Reason reason : reasonList) {
 						if (ds.getPodremarkid() == reason.getReasonid()) {
 							a = reason.getReasoncontent();
@@ -805,7 +810,7 @@ public class ExportService {
 
 			else if ("fdelivername".equals(cloumname)) {
 				a = "";
-				if (ds != null)
+				if (ds != null) {
 					for (User u : uList) {
 						if (u.getUserid() == ds.getDeliveryid()) {
 							a = u.getRealname();
@@ -815,6 +820,7 @@ public class ExportService {
 							break;
 						}
 					}
+				}
 			} else if ("dReceivedfee".equals(cloumname)) {
 				a = (ds != null) ? ds.getReceivedfee() : "";
 			} else if ("deliverid".equals(cloumname)) {
@@ -860,16 +866,16 @@ public class ExportService {
 				a = (ds != null) ? ds.getOtherfee() : "";
 			} else if ("signinman".equals(cloumname)) {
 				a = "";
-				if (ds != null
-						&& (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue() || ds
-								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+				if ((ds != null)
+						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
+								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
-				if (ds != null
-						&& (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue() || ds
-								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+				if ((ds != null)
+						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
+								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = allTime.get("Gobacktime") == null ? "" : allTime.get("Gobacktime");
 				}
 			} else if ("excelbranch".equals(cloumname)) {
@@ -890,13 +896,14 @@ public class ExportService {
 				}
 			} else if ("deliverybranchname".equals(cloumname)) {
 				a = "";
-				if (ds != null)
+				if (ds != null) {
 					for (Branch b : bList) {
 						if (b.getBranchid() == ds.getDeliverybranchid()) {
 							a = b.getBranchname();
 							break;
 						}
 					}
+				}
 			} else if ("realbranchname".equals(cloumname)) {
 				a = "";
 				long realbranchid = Long.parseLong(mapRow.get("currentbranchid").toString());
@@ -915,9 +922,9 @@ public class ExportService {
 				if (realbranchid == 0) {
 					realbranchid = Long.parseLong(mapRow.get("startbranchid").toString());
 				}
-				a = getRealflowordertype(bList, realbranchid, Long.parseLong(mapRow.get("flowordertype").toString()), nextbranchid);
+				a = this.getRealflowordertype(bList, realbranchid, Long.parseLong(mapRow.get("flowordertype").toString()), nextbranchid);
 			} else if ("ispayup".equals(cloumname)) {
-				if (cwbspayupidMap != null && cwbspayupidMap.size() > 0 && cwbspayupidMap.get(mapRow.get("cwb").toString()) != null) {
+				if ((cwbspayupidMap != null) && (cwbspayupidMap.size() > 0) && (cwbspayupidMap.get(mapRow.get("cwb").toString()) != null)) {
 					a = cwbspayupidMap.get(mapRow.get("cwb").toString());
 				} else {
 					a = "否";
@@ -925,7 +932,7 @@ public class ExportService {
 			} else if ("complaintContent".equals(cloumname)) {
 				// 投诉受理-客服备注
 				a = "";
-				if (complaintMap != null && complaintMap.size() > 0 && complaintMap.get(mapRow.get("cwb").toString()) != null) {
+				if ((complaintMap != null) && (complaintMap.size() > 0) && (complaintMap.get(mapRow.get("cwb").toString()) != null)) {
 					a = complaintMap.get(mapRow.get("cwb").toString());
 				}
 			} else {
@@ -946,13 +953,14 @@ public class ExportService {
 		cloumname = cloumnName3[i].substring(0, 1).toLowerCase() + cloumnName3[i].substring(1, cloumnName3[i].length());
 		try {
 			Branch currentb = new Branch();
-			if (ds != null)
+			if (ds != null) {
 				for (Branch b : bList) {
 					if (b.getBranchid() == ds.getDeliverybranchid()) {
 						currentb = b;
 						break;
 					}
 				}
+			}
 			if ("orderType".equals(cloumname)) {
 				a = co.getCwbordertypeid();
 				for (CwbOrderTypeIdEnum f : CwbOrderTypeIdEnum.values()) {
@@ -968,13 +976,14 @@ public class ExportService {
 			} else if ("flowordertypeMethod".equals(cloumname)) {
 				a = co.getFlowordertype();
 				for (FlowOrderTypeEnum fote : FlowOrderTypeEnum.values()) {
-					if (fote.getValue() == Integer.parseInt(a.toString()))
+					if (fote.getValue() == Integer.parseInt(a.toString())) {
 						return fote.getText();
+					}
 				}
 			} else if ("paytypeName".equals(cloumname)) {
-				a = advancedQueryService.getPayWayType(co.getCwb(), co.getPaywayid() + "");
+				a = this.advancedQueryService.getPayWayType(co.getCwb(), co.getPaywayid() + "");
 			} else if ("newpayway".equals(cloumname)) {
-				a = advancedQueryService.getPayWayType(co.getCwb(), co.getNewpaywayid());
+				a = this.advancedQueryService.getPayWayType(co.getCwb(), co.getNewpaywayid());
 			} else if ("statisticstateStr".equals(cloumname)) {
 				a = "";
 				for (DeliveryStateEnum dse : DeliveryStateEnum.values()) {
@@ -994,7 +1003,7 @@ public class ExportService {
 			} else if ("carwarehouse".equals(cloumname)) {
 				a = "";
 				for (Branch b : bList) {
-					if (b.getBranchid() == Long.parseLong((co.getCarwarehouse() == null || "".equals(co.getCarwarehouse())) ? "0" : co.getCarwarehouse())) {
+					if (b.getBranchid() == Long.parseLong(((co.getCarwarehouse() == null) || "".equals(co.getCarwarehouse())) ? "0" : co.getCarwarehouse())) {
 						a = b.getBranchname();
 						break;
 					}
@@ -1002,7 +1011,7 @@ public class ExportService {
 			} else if ("customerwarehouseid".equals(cloumname)) {
 				a = "";
 				for (CustomWareHouse b : cWList) {
-					if (b.getWarehouseid() == Long.parseLong((co.getCustomerwarehouseid() == null || "".equals(co.getCustomerwarehouseid())) ? "0" : co.getCustomerwarehouseid())) {
+					if (b.getWarehouseid() == Long.parseLong(((co.getCustomerwarehouseid() == null) || "".equals(co.getCustomerwarehouseid())) ? "0" : co.getCustomerwarehouseid())) {
 						a = b.getCustomerwarehouse();
 						break;
 					}
@@ -1150,16 +1159,16 @@ public class ExportService {
 				a = ds.getOtherfee();
 			} else if ("signinman".equals(cloumname)) {
 				a = "";
-				if (ds != null
-						&& (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue() || ds
-								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+				if ((ds != null)
+						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
+								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
-				if (ds != null
-						&& (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue() || ds
-								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+				if ((ds != null)
+						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
+								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = ds.getSign_time() == null ? "" : ds.getSign_time();
 				}
 			} else if ("excelbranch".equals(cloumname)) {
@@ -1215,7 +1224,7 @@ public class ExportService {
 				if (realbranchid == 0) {
 					realbranchid = co.getStartbranchid();
 				}
-				a = getRealflowordertype(bList, realbranchid, co.getFlowordertype(), co.getNextbranchid());
+				a = this.getRealflowordertype(bList, realbranchid, co.getFlowordertype(), co.getNextbranchid());
 			} else if ("ispayup".equals(cloumname)) {
 				if (cwbspayup != null) {
 					a = cwbspayup;
@@ -1241,28 +1250,28 @@ public class ExportService {
 		try {
 			if (cloumnName3[i].equals("Deliverystate")) {
 				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-					if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == ds.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Orderflowtype")) {
 				for (FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()) {
-					if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == ft.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ft.getValue()) {
 						a = ft.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Type")) {
 				for (ComplaintTypeEnum ct : ComplaintTypeEnum.values()) {
-					if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == ct.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ct.getValue()) {
 						a = ct.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("AuditType")) {
 				for (ComplaintAuditTypeEnum cat : ComplaintAuditTypeEnum.values()) {
-					if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == cat.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == cat.getValue()) {
 						a = cat.getText();
 						break;
 					}
@@ -1271,7 +1280,7 @@ public class ExportService {
 				a = "";
 				if (userList.size() > 0) {
 					for (User u : userList) {
-						if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == u.getUserid()) {
+						if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == u.getUserid()) {
 							a = u.getRealname();
 						}
 					}
@@ -1280,13 +1289,13 @@ public class ExportService {
 				a = "";
 				if (userList.size() > 0) {
 					for (User u : userList) {
-						if (Long.parseLong(((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k)).toString()) == u.getUserid()) {
+						if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == u.getUserid()) {
 							a = u.getRealname();
 						}
 					}
 				}
 			} else {
-				a = ((ComplaintView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((ComplaintView) list.get(k));
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1312,18 +1321,18 @@ public class ExportService {
 		try {
 			if (cloumnName3[i].equals("Deliverystate")) {
 				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-					if (Long.parseLong(((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k)).toString()) == ds.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Applyishandle")) {
 				a = "未处理";
-				if (Long.parseLong(((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k)).toString()) == 1) {
+				if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == 1) {
 					a = "已处理";
 				}
 			} else {
-				a = ((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k));
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1348,18 +1357,18 @@ public class ExportService {
 		try {
 			if (cloumnName3[i].equals("Deliverystate")) {
 				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-					if (Long.parseLong(((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k)).toString()) == ds.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Applyzhongzhuanishandle")) {
 				a = "未处理";
-				if (Long.parseLong(((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k)).toString()) == 1) {
+				if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == 1) {
 					a = "已处理";
 				}
 			} else {
-				a = ((CwbOrderView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbOrderView) list.get(k));
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1408,13 +1417,13 @@ public class ExportService {
 		try {
 			if (cloumnName3[i].equals("Flowordertype")) {
 				for (FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()) {
-					if (Long.parseLong(((CwbKuaiDiView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbKuaiDiView) list.get(k)).toString()) == ft.getValue()) {
+					if (Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString()) == ft.getValue()) {
 						a = ft.getText();
 						break;
 					}
 				}
 			} else {
-				a = ((CwbKuaiDiView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbKuaiDiView) list.get(k));
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1492,7 +1501,7 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("Deliverpayuptype")) {
 				a = list.get(k).getDeliverpayuptypeStr();
 			} else if (cloumnName3[i].equals("Deliverpayupbanknum")) {
-				a = list.get(k).getDeliverpayupbanknum() == null || "".equals(list.get(k).getDeliverpayupbanknum()) ? "无" : list.get(k).getDeliverpayupbanknum();
+				a = (list.get(k).getDeliverpayupbanknum() == null) || "".equals(list.get(k).getDeliverpayupbanknum()) ? "无" : list.get(k).getDeliverpayupbanknum();
 			} else if (cloumnName3[i].equals("Payupamount")) {
 				a = list.get(k).getPayupamount();
 			} else if (cloumnName3[i].equals("Deliverpayupamount")) {
@@ -1512,20 +1521,20 @@ public class ExportService {
 				a = list.get(k).getDeliverpayuparrearage_pos().negate();
 
 			} else if (cloumnName3[i].equals("Auditingtime")) {
-				a = ((GotoClassAuditing) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((GotoClassAuditing) list.get(k)).toString();
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString();
 			} else if (cloumnName3[i].equals("Payupaddress")) {
-				a = ((GotoClassAuditing) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((GotoClassAuditing) list.get(k)).toString();
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString();
 			} else if (cloumnName3[i].equals("Checkremark")) {
-				a = ((GotoClassAuditing) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((GotoClassAuditing) list.get(k)).toString();
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString();
 			} else if (cloumnName3[i].equals("Deliverpayupapproved")) {
 				for (DeliverPayupArrearageapprovedEnum de : DeliverPayupArrearageapprovedEnum.values()) {
-					if (de.getValue() == Long.parseLong(((GotoClassAuditing) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((GotoClassAuditing) list.get(k)).toString())) {
+					if (de.getValue() == Long.parseLong(list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k)).toString())) {
 						a = de.getText();
 						break;
 					}
 				}
 			} else {
-				a = ((GotoClassAuditing) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((GotoClassAuditing) list.get(k));
+				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1566,33 +1575,34 @@ public class ExportService {
 			return RealFlowOrderTypeEnum.TiHuo.getText();
 		} else if (flowordertype == FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) {
 			return RealFlowOrderTypeEnum.TiHuo.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.RuKu.getValue() && sitetype == BranchEnum.KuFang.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.RuKu.getValue()) && (sitetype == BranchEnum.KuFang.getValue())) {
 			return RealFlowOrderTypeEnum.KuFangRuKu.getText();
-		} else if ((flowordertype == FlowOrderTypeEnum.RuKu.getValue() && sitetype == BranchEnum.ZhongZhuan.getValue()) || flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+		} else if (((flowordertype == FlowOrderTypeEnum.RuKu.getValue()) && (sitetype == BranchEnum.ZhongZhuan.getValue())) || (flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())) {
 			return RealFlowOrderTypeEnum.ZhongZhuanZhanRuKu.getText();
 		} else if (flowordertype == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
 			return RealFlowOrderTypeEnum.TuiHuoZhanRuKu.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() && sitetype == BranchEnum.KuFang.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && (sitetype == BranchEnum.KuFang.getValue())) {
 			return RealFlowOrderTypeEnum.KuFangChuKuSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() && sitetype == BranchEnum.ZhanDian.getValue() && nextbranchsitetype == BranchEnum.ZhongZhuan.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && (sitetype == BranchEnum.ZhanDian.getValue()) && (nextbranchsitetype == BranchEnum.ZhongZhuan.getValue())) {
 			// 中转出站
 			return RealFlowOrderTypeEnum.ZhongZhuanChuZhanSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() && sitetype == BranchEnum.ZhanDian.getValue() && nextbranchsitetype == BranchEnum.ZhanDian.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && (sitetype == BranchEnum.ZhanDian.getValue()) && (nextbranchsitetype == BranchEnum.ZhanDian.getValue())) {
 			// 站点出站
 			return RealFlowOrderTypeEnum.ZhanDianChuZhanSaoMiao.getText();
-		} else if ((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() && sitetype == BranchEnum.ZhongZhuan.getValue()) || flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) {
+		} else if (((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && (sitetype == BranchEnum.ZhongZhuan.getValue()))
+				|| (flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) {
 			return RealFlowOrderTypeEnum.ZhongZhuanZhanChuKuSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() && sitetype == BranchEnum.TuiHuo.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && (sitetype == BranchEnum.TuiHuo.getValue())) {
 			return RealFlowOrderTypeEnum.TuiHuoZhanChuKuSaoMiao.getText();
 		} else if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
 			return RealFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() && sitetype == BranchEnum.KuFang.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) && (sitetype == BranchEnum.KuFang.getValue())) {
 			return RealFlowOrderTypeEnum.KuFangYouHuoWuDanSaoMiao.getText();
 		} else if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
 			return RealFlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() && sitetype == BranchEnum.ZhongZhuan.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) && (sitetype == BranchEnum.ZhongZhuan.getValue())) {
 			return RealFlowOrderTypeEnum.ZhongZhuanZhanYouHuoWuDanSaoMiao.getText();
-		} else if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() && sitetype == BranchEnum.TuiHuo.getValue()) {
+		} else if ((flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) && (sitetype == BranchEnum.TuiHuo.getValue())) {
 			return RealFlowOrderTypeEnum.TuiHuoZhanYouHuoWuDanSaoMiao.getText();
 		} else if (flowordertype == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
 			return RealFlowOrderTypeEnum.FenZhanLingHuo.getText();
@@ -1871,8 +1881,7 @@ public class ExportService {
 				a = "";
 				if (roleList.size() > 0) {
 					for (Role r : roleList) {
-						if (Long.parseLong(((CwbDiuShiView) cwbDiuShiList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbDiuShiView) cwbDiuShiList.get(k)).toString()) == r
-								.getRoleid()) {
+						if (Long.parseLong(cwbDiuShiList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(cwbDiuShiList.get(k)).toString()) == r.getRoleid()) {
 							a = r.getRolename();
 							break;
 						}
@@ -1880,20 +1889,20 @@ public class ExportService {
 				}
 			} else if (cloumnName3[i].equals("Deliverystate")) {
 				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-					if (Long.parseLong(((CwbDiuShiView) cwbDiuShiList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbDiuShiView) cwbDiuShiList.get(k)).toString()) == ds.getValue()) {
+					if (Long.parseLong(cwbDiuShiList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(cwbDiuShiList.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Flowordertype")) {
 				for (FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()) {
-					if (Long.parseLong(((CwbDiuShiView) cwbDiuShiList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbDiuShiView) cwbDiuShiList.get(k)).toString()) == ft.getValue()) {
+					if (Long.parseLong(cwbDiuShiList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(cwbDiuShiList.get(k)).toString()) == ft.getValue()) {
 						a = ft.getText();
 						break;
 					}
 				}
 			} else {
-				a = ((CwbDiuShiView) cwbDiuShiList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((CwbDiuShiView) cwbDiuShiList.get(k));
+				a = cwbDiuShiList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(cwbDiuShiList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1985,7 +1994,7 @@ public class ExportService {
 
 	public Object setAccountDelivery(String[] cloumnName3, HttpServletRequest request1, List<AccountCwbDetailView> list, Object a, int i, int k) {
 		try {
-			a = ((AccountCwbDetailView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountCwbDetailView) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2086,7 +2095,7 @@ public class ExportService {
 			if (cloumnName3[i].equals("Cwb")) {
 				a = views.get(k).getCwb();
 			} else if (cloumnName3[i].equals("deliverybranchid")) {
-				a = branchDAO.getBranchByBranchid(views.get(k).getDeliverybranchid()).getBranchname();
+				a = this.branchDAO.getBranchByBranchid(views.get(k).getDeliverybranchid()).getBranchname();
 			} else if (cloumnName3[i].equals("oldconsigneename")) {
 				a = views.get(k).getOldconsigneename();
 			} else if (cloumnName3[i].equals("newconsigneename")) {
@@ -2152,7 +2161,7 @@ public class ExportService {
 
 	public Object setAccountDeducDetail(String[] cloumnName3, HttpServletRequest request1, List<AccountDeducDetailView> list, Object a, int i, int k) {
 		try {
-			a = ((AccountDeducDetailView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountDeducDetailView) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2190,7 +2199,7 @@ public class ExportService {
 
 	public Object setAccountDeductRecord(String[] cloumnName3, HttpServletRequest request1, List<AccountDeductRecordView> list, Object a, int i, int k) {
 		try {
-			a = ((AccountDeductRecordView) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountDeductRecordView) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2226,7 +2235,7 @@ public class ExportService {
 
 	public Object setOrderBackCheck(String[] cloumnName3, HttpServletRequest request1, List<OrderBackCheck> list, Object a, int i, int k) {
 		try {
-			a = ((OrderBackCheck) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((OrderBackCheck) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2389,7 +2398,7 @@ public class ExportService {
 
 	public Object setAccountCwbSummary(String[] cloumnName3, HttpServletRequest request1, List<AccountCwbSummary> list, Object a, int i, int k) {
 		try {
-			a = ((AccountCwbSummary) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountCwbSummary) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2440,7 +2449,7 @@ public class ExportService {
 
 	public Object setBranchList(String[] cloumnName3, HttpServletRequest request1, List<Branch> list, Object a, int i, int k) {
 		try {
-			a = ((Branch) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((Branch) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -2468,19 +2477,44 @@ public class ExportService {
 		cloumnName2[8] = "Fareid";
 		cloumnName1[9] = "交款时间";
 		cloumnName2[9] = "Payuptime";
+
+	}
+
+	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "供货商";
+		cloumnName2[1] = "Customerid";
+		cloumnName1[2] = "订单类型";
+		cloumnName2[2] = "Cwbordertypeid";
+		cloumnName1[3] = "配送站点";
+		cloumnName2[3] = "Deliverybranchid";
+		cloumnName1[4] = "审核时间";
+		cloumnName2[4] = "Audittime";
+		cloumnName1[5] = "配送结果";
+		cloumnName2[5] = "Deliverystate";
+		cloumnName1[6] = "应收运费金[元]";
+		cloumnName2[6] = "Shouldfare";
+		cloumnName1[7] = "实收运费[元]";
+		cloumnName2[7] = "Infactfare";
+		cloumnName1[8] = "交款状态";
+		cloumnName2[8] = "Fareid";
+		cloumnName1[9] = "交款时间";
+		cloumnName2[9] = "Payuptime";
+		cloumnName1[10] = "审核时间";
+		cloumnName2[10] = "Verifytime";
+
 	}
 
 	public Object setAccountCwbFareDetailObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
 			List<Branch> branchList, Map<Long, Customer> cMap) {
 		try {
 			if (cloumnName3[i].equals("Customerid")) {
-				long customerid = Long.parseLong(((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i])
-						.invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).toString());
+				long customerid = Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString());
 				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();
 			} else if (cloumnName3[i].equals("Cwbordertypeid")) {
 				for (CwbOrderTypeIdEnum ct : CwbOrderTypeIdEnum.values()) {
-					if (Long.parseLong(((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i])
-							.invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).toString()) == ct.getValue()) {
+					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == ct.getValue()) {
 						a = ct.getText();
 						break;
 					}
@@ -2489,8 +2523,7 @@ public class ExportService {
 				a = "";
 				if (branchList.size() > 0) {
 					for (Branch b : branchList) {
-						if (Long.parseLong(((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i])
-								.invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).toString()) == b.getBranchid()) {
+						if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == b.getBranchid()) {
 							a = b.getBranchname();
 							break;
 						}
@@ -2498,20 +2531,18 @@ public class ExportService {
 				}
 			} else if (cloumnName3[i].equals("Deliverystate")) {
 				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
-					if (Long.parseLong(((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i])
-							.invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).toString()) == ds.getValue()) {
+					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
 						break;
 					}
 				}
 			} else if (cloumnName3[i].equals("Fareid")) {
 				a = "未交款";
-				if (Long.parseLong(((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k))
-						.toString()) > 0) {
+				if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) > 0) {
 					a = "已交款";
 				}
 			} else {
-				a = ((AccountCwbFareDetail) accountCwbFareDetailList.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((AccountCwbFareDetail) accountCwbFareDetailList.get(k));
+				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -2550,7 +2581,7 @@ public class ExportService {
 
 	public Object setBackSummary(String[] cloumnName3, HttpServletRequest request1, List<BackSummary> list, Object a, int i, int k) {
 		try {
-			a = ((BackSummary) list.get(k)).getClass().getMethod("get" + cloumnName3[i]).invoke((BackSummary) list.get(k));
+			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
