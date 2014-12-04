@@ -5017,7 +5017,10 @@ public class CwbDAO {
 		}
 	}
 
-	public List<MatchExceptionOrder> queryMatchExceptionOrder(String sql) {
+	public List<MatchExceptionOrder> queryMatchExceptionOrder(String sql, boolean union) {
+		if (union) {
+			return this.jdbcTemplate.query(sql, new MatchExceptionOrderUnionRowMap());
+		}
 		return this.jdbcTemplate.query(sql, new MatchExceptionOrderRowMap());
 	}
 
@@ -5038,6 +5041,24 @@ public class CwbDAO {
 			newOrder.setCustomerPhone(rs.getString("d.consigneephone"));
 			newOrder.setCustomerAddress(rs.getString("d.consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("d.shouldfare"));
+
+			return newOrder;
+		}
+	}
+
+	private class MatchExceptionOrderUnionRowMap implements RowMapper<MatchExceptionOrder> {
+
+		@Override
+		public MatchExceptionOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+			MatchExceptionOrder newOrder = new MatchExceptionOrder();
+			newOrder.setReportOutAreaTime(rs.getString("credate"));
+			newOrder.setReportOutAreaBranchId(rs.getLong("branchid"));
+			newOrder.setReportOutAreaUserId(rs.getLong("userid"));
+			newOrder.setCwb(rs.getString("cwb"));
+			newOrder.setCustomerName(rs.getString("consigneename"));
+			newOrder.setCustomerPhone(rs.getString("consigneephone"));
+			newOrder.setCustomerAddress(rs.getString("consigneeaddress"));
+			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
 
 			return newOrder;
 		}
@@ -5116,5 +5137,15 @@ public class CwbDAO {
 			sql += " and b.cwbordertypeid=" + cwbordertypeid;
 		}
 		return sql;
+	}
+
+	public void mehUpdateOutAreaOrderData(String cwb, long newBranchId, boolean isOutArea) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("update express_ops_cwb_detail set deliverybranchid= ? ,currentbranchid = ? ");
+		if (isOutArea) {
+			sql.append(", outareaflag = 2 ");
+		}
+		sql.append(", flowordertype = 1 where cwb= ?");
+		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
 	}
 }

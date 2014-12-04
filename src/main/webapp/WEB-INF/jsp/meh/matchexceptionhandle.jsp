@@ -7,12 +7,15 @@
 <%@page import="cn.explink.domain.MatchExceptionOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
-Integer tWaitTraOrdCnt = (Integer)request.getAttribute("tWaitTraOrdCnt");
-Integer hWaitTraOrdCnt = (Integer)request.getAttribute("hWaitTraOrdCnt");
-Integer tWaitMatOrdCnt = (Integer)request.getAttribute("tWaitMatOrdCnt");
-Integer hWaitMatOrdCnt = (Integer)request.getAttribute("hWaitMatOrdCnt");
-List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.getAttribute("tWaitHanOrdList");
+	List<Branch> branchList = (List<Branch>) request.getAttribute("branchList");
+	Integer tWaitTraOrdCnt = (Integer) request.getAttribute("tWaitTraOrdCnt");
+	Integer hWaitTraOrdCnt = (Integer) request.getAttribute("hWaitTraOrdCnt");
+	Integer tWaitMatOrdCnt = (Integer) request.getAttribute("tWaitMatOrdCnt");
+	Integer hWaitMatOrdCnt = (Integer) request.getAttribute("hWaitMatOrdCnt");
+	Integer tTraOrdCnt = (Integer) request.getAttribute("tTraOrdCnt");
+	Integer tMatOrdCnt = (Integer) request.getAttribute("tMatOrdCnt");
+	
+	List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>) request.getAttribute("tWaitHanOrdList");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -27,112 +30,76 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
-	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
-			requestbatchno, rk_switch, comment) {
-		
-		
-		var flag=false;
-		
-		if (scancwb.length > 0) {
-			$("#close_box").hide();
-
-			if($("#scanbaleTag").attr("class")=="light"){//入库根据包号扫描订单
-				baledaohuo(scancwb,driverid,comment);
-			}else{//入库
-				//是否按批次过滤？
-				if($("#emaildate").val()>0){
-					var recheck=false;
-					$(".yirukucwbids").each(function(i,val){
-						if(scancwb==val.id.substr(2)){
-							alert(scancwb+"订单重复入库");
-							recheck=true;
-							return;
-						}
-					} )
-					if(recheck){
-						return;
-					}
-					var flag=false;
-					$(".cwbids").each(function(i,val){
-						if(scancwb==val.id.substr(2)){
-							flag=true;
-						}
-					} )
-					if(!flag){
-						callfunction(scancwb);
-						return;
-					}
-				}
-				$.ajax({
-							type : "POST",
-							url : pname + "/PDA/cwbintowarhouse/" + scancwb
-									+ "?customerid=" + customerid
-									+ "&driverid=" + driverid
-									+ "&requestbatchno=" + requestbatchno,
-							data : {
-								"comment" : comment
-							},
-							dataType : "json",
-							success : function(data) {
-								$("#scancwb").val("");
-								
-								if (data.statuscode == "000000") {
-									
-									$("#cwbgaojia").hide();
-
-									$("#excelbranch").show();
-									$("#customername").show();
-									$("#damage").show();
-									$("#multicwbnum").show();
-
-									$("#customerid").val(data.body.cwbOrder.customerid);
-
-									if(data.body.showRemark!=null){
-										$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-										}
-									if (data.body.cwbOrder.deliverybranchid != 0) {
-										$("#excelbranch").html("目的站："+ data.body.cwbdeliverybranchname
-																+ "<br/>下一站："+ data.body.cwbbranchname);
-									} else {
-										$("#excelbranch").html("尚未匹配站点");
-									}
-									$("#customername").html(
-											data.body.cwbcustomername);
-									$("#multicwbnum").val(
-											data.body.cwbOrder.sendcarnum);
-									$("#msg").html(scancwb+ data.errorinfo+ "（共"+ data.body.cwbOrder.sendcarnum
-													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）");
-									$("#scansuccesscwb").val(scancwb);
-									$("#showcwb").html("订 单 号：" + scancwb);
-									$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
-									if(data.body.showRemark!=null){
-									$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-									}
-									if(data.body.cwbOrder.emaildateid==0){
-										$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-									}
-
-								} else {
-									$("#excelbranch").hide();
-									$("#customername").hide();
-									$("#cwbgaojia").hide();
-									$("#damage").hide();
-									$("#multicwbnum").hide();
-									$("#multicwbnum").val("1");
-									$("#showcwb").html("");
-									$("#cwbDetailshow").html("");
-									$("#consigneeaddress").html("");
-									$("#msg").html("（异常扫描）" + data.errorinfo);
-									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
-								}
-								$("#responsebatchno").val(data.responsebatchno);
-								batchPlayWav(data.wavList);
-							}
-						});
-			}
+	function redistributionBranch() {
+		var branchid = $("#branchid").val();
+		var $msg = $("#msg");
+		var $order_no = $("#order_no");
+		if(branchid == "-1"){
+			$msg.html("请选择站点");
+			$order_no.val("");
+			return;
 		}
+
+		var orderNo = $order_no.val();
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			async:true,
+			url:"<%=request.getContextPath()%>/meh/redistributionbranch",
+			data:{
+				cwb : orderNo,
+				branchid:branchid
+			},
+			success:function(data){
+				showResult($order_no ,$msg , data);
+			},
+			error:function(data){
+				
+			}
+		});
 	}
 
+	
+	function showResult($order_no,$msg , data){
+		$msg.html(data.message);
+	 	$order_no.val("");
+		if(!data.successed){
+			 addExceptionData(data);
+			 return;
+		}
+		var isToday = data.today;
+		var outarea = data.outarea;
+		var rSpan = "";
+		var aSpan = "today_";
+		if(isToday){
+			rSpan +="today_";
+		}
+		else{
+			rSpan +="history_";
+		}
+		if(outarea){
+			rSpan+="transfer_";
+			aSpan +="transfer_";
+		}else{
+			rSpan +="normal_";	
+			aSpan+="normal_";
+		}
+		var $rSpan = $("#" +rSpan + "not_matched");
+		var $aSpan = $("#" +aSpan + "matched");
+		 $rSpan.html(parseInt($rSpan.html()) - 1);
+	 	$aSpan.html(parseInt($aSpan.html()) + 1);
+	}
+	
+	function addExceptionData(data){
+		if(data.meo == undefined){
+			return;
+		}
+		var $exceptionTable = $("#exception_table");
+		if($exceptionTable.find("tr[cwb=" +data.meo.cwb + "]").length != 0){
+			return;
+		}
+		$exceptionTable.append(createTR(data.meo));
+	}
 	
 
 	function showTab(index) {
@@ -147,19 +114,18 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 		$.ajax({
 			type:"post",
 			async:true,
-			url:'<%=request.getContextPath() + "/meh/querymatchexceptionorder"%>',
-					dataType : "json",
-					data : {
-						today : today,
-						transfer : transfer,
-						match : match
-					},
-					success : function(data) {
-						refreshTableData(tableId, data, tabIndex);
-						recordCurTabCond(today, transfer, match);
-					}
-
-				});
+			url:"<%=request.getContextPath()%>/meh/querymatchexceptionorder",
+			dataType : "json",
+			data : {
+				today : today,
+				transfer : transfer,
+				match : match
+			},
+			success : function(data) {
+				refreshTableData(tableId, data, tabIndex);
+				recordCurTabCond(today, transfer, match);
+			}
+		});
 	}
 
 	function recordCurTabCond(today, transfer, match) {
@@ -185,7 +151,7 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 	function createTR(data) {
 		var tr = "<tr cwb="+ data.cwb +">";
 		tr += createTD("center", "100px", data.cwb);
-		tr += createTD("center", "100px", data.reportOutAreaTime);
+		tr += createTD("center", "150px", data.reportOutAreaTime);
 		tr += createTD("center", "100px", data.reportOutAreaBranchName);
 		tr += createTD("center", "100px", data.reportOutAreaUserName);
 		tr += createTD("center", "100px", data.matchBranchName);
@@ -216,12 +182,11 @@ List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>)request.g
 		$exceptionTable.find("tr").each(function() {
 			var $tr = $(this);
 			var row = [];
-			$tr.find("td").each(td)
-			{
-				var $td = $(td);
-				row.push($td.val());
-			}
-			rows.push(tr);
+			$tr.find("td").each(function(){
+				var $td = $(this);
+				row.push($td.html());
+			});
+			rows.push(row);
 		});
 		var exeData = JSON.stringify(rows);
 		var $exeForm = $("#exportExceptionForm");
@@ -260,6 +225,10 @@ dl dd span {
 .input_button1 {
 	margin: 10px 0px 0px 10px;
 }
+
+.saomiao_tab {
+	height: 17px;
+}
 </style>
 </head>
 <body style="background: #eef9ff" marginwidth="0" marginheight="0">
@@ -268,11 +237,13 @@ dl dd span {
 		<div class="saomiao_topnum2">
 			<dl class="blue">
 				<dt>
-					<span>今日待分转单</span><span>今日待匹配</span>
+					<span>今日待转单</span><span>今日待匹配</span>
 				</dt>
 				<dd style="cursor: pointer">
-					<span onclick="queryOrder('t_wait_handle_table',0,true,true,null)"><a href="#"><%=tWaitTraOrdCnt%></a></span>
-					<span onclick="queryOrder('t_wait_handle_table',0,true,null,true)"><a href="#"><%=tWaitMatOrdCnt%></a></span>
+					<span onclick="queryOrder('t_wait_handle_table',0,true,false,null)"><a href="#"
+						id="today_transfer_not_matched"><%=tWaitTraOrdCnt%></a></span> <span
+						onclick="queryOrder('t_wait_handle_table',0,true,null,false)"><a href="#"
+						id="today_normal_not_matched"><%=tWaitMatOrdCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -282,8 +253,10 @@ dl dd span {
 					<span>历史待转单</span><span>历史待匹配</span>
 				</dt>
 				<dd>
-					<span onclick="queryOrder('h_wait_handle_table',1,false,true,null)"><a href="#"><%=hWaitTraOrdCnt%></a></span>
-					<span onclick="queryOrder('h_wait_handle_table',1,false,null,true)"><a href="#"><%=hWaitMatOrdCnt%></a></span>
+					<span onclick="queryOrder('h_wait_handle_table',1,false,false,null)"><a href="#"
+						id="history_transfer_not_matched"><%=hWaitTraOrdCnt%></a></span> <span
+						onclick="queryOrder('h_wait_handle_table',1,false,null,false)"><a href="#"
+						id="history_normal_not_matched"><%=hWaitMatOrdCnt%></a></span>
 				</dd>
 			</dl>
 
@@ -292,8 +265,10 @@ dl dd span {
 					<span>今日已转单</span><span>今日已匹配</span>
 				</dt>
 				<dd>
-					<span onclick="queryOrder('t_handle_table',2,true,true,null)"><a href="#">0</a></span> <span
-						onclick="queryOrder('t_handle_table',2,true,null,true)"><a href="#">0</a></span>
+					<span onclick="queryOrder('t_handle_table',2,true,true,null)"><a href="#"
+						id="today_transfer_matched"><%=tTraOrdCnt %></a></span> <span
+						onclick="queryOrder('t_handle_table',2,true,null,true)"><a href="#"
+						id="today_normal_matched"><%=tMatOrdCnt %></a></span>
 				</dd>
 			</dl>
 
@@ -305,8 +280,13 @@ dl dd span {
 
 		<div class="saomiao_info2">
 			<div class="saomiao_inbox2">
+				<div class="saomiao_tab">
+					<ul id="bigTag">
+						<li><a href="#" id="scancwbTag" class="light">扫描订单</a></li>
+					</ul>
+				</div>
 				<div class="saomiao_selet2">
-					站&#12288;点：<select id="customerid" name="customerid" onchange="tohome();">
+					站&#12288;点：<select id="branchid" name="branchid">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Branch b : branchList) {
@@ -321,26 +301,13 @@ dl dd span {
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
 						<p>
-							订单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value=""
-								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}' />
+							订单号：<input type="text" class="saomiao_inputtxt" id="order_no" name="order_no" value=""
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){redistributionBranch()}' />
 						</p>
 					</div>
 					<div class="saomiao_right2">
 						<p id="msg" name="msg"></p>
-						<p id="showcwb" name="showcwb"></p>
-						<p id="cwbgaojia" name="cwbgaojia" style="display: none">高价</p>
-						<p id="consigneeaddress" name="consigneeaddress"></p>
-						<p id="excelbranch" name="excelbranch"></p>
-						<p id="customername" name="customername"></p>
-						<p id="cwbDetailshow" name="cwbDetailshow"></p>
-						<div style="display: none" id="errorvedio"></div>
 					</div>
-					<p style="display: none;">
-						<input type="button" class="input_btn1" id="moregoods" name="moregoods" value="一票多物"
-							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),4,$("#multicwbnum").val());' />
-						<span>一票多物件数：</span><input type="text" id="multicwbnum" name="multicwbnum" value="1"
-							class="input_txt1" />
-					</p>
 				</div>
 			</div>
 		</div>
@@ -350,8 +317,8 @@ dl dd span {
 				<ul>
 					<li><a href="#" onclick="queryOrder('t_wait_handle_table',0,true,false,false)"
 						class="light">今日待处理</a></li>
-					<li><a href="#" onclick="queryOrder('t_wait_handle_table',1,false,false,false)">历史待处理</a></li>
-					<li><a href="#" onclick="queryOrder('t_wait_handle_table',2,true,true,true)">今日已处理</a></li>
+					<li><a href="#" onclick="queryOrder('h_wait_handle_table',1,false,false,false)">历史待处理</a></li>
+					<li><a href="#" onclick="queryOrder('t_handle_table',2,true,true,true)">今日已处理</a></li>
 					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
 				</ul>
 			</div>
@@ -365,7 +332,7 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>
@@ -383,7 +350,7 @@ dl dd span {
 											%>
 											<tr cwb="<%=meo.getCwb()%>" class="cwbids">
 												<td width="100" align="center"><%=meo.getCwb()%></td>
-												<td width="100" align="center"><%=meo.getReportOutAreaTime()%></td>
+												<td width="150" align="center"><%=meo.getReportOutAreaTime()%></td>
 												<td width="100" align="center"><%=meo.getReportOutAreaBranchName()%></td>
 												<td width="100" align="center"><%=meo.getReportOutAreaUserName()%></td>
 												<td width="100" align="center"><%=meo.getReportOutAreaBranchName()%></td>
@@ -411,7 +378,7 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>
@@ -440,7 +407,7 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>
@@ -469,7 +436,7 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区时间</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>

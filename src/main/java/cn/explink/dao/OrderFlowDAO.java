@@ -129,6 +129,29 @@ public class OrderFlowDAO {
 		return key.getKey().longValue();
 	}
 
+	public long mehCreOrderFlow(final OrderFlow of, final String credate) {
+		KeyHolder key = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement("insert into express_ops_order_flow (cwb,branchid,userid,floworderdetail,flowordertype,isnow,comment,credate) " + "values(?,?,?,?,?,?,?,?)",
+						new String[] { "floworderid" });
+				ps.setString(1, of.getCwb());
+				ps.setLong(2, of.getBranchid());
+				ps.setLong(3, of.getUserid());
+				ps.setString(4, of.getFloworderdetail() == null ? "" : of.getFloworderdetail().toString());
+				ps.setInt(5, of.getFlowordertype());
+				ps.setInt(6, of.getIsnow());
+				ps.setString(7, of.getComment());
+				ps.setString(8, credate);
+				return ps;
+			}
+		}, key);
+		of.setFloworderid(key.getKey().longValue());
+		return key.getKey().longValue();
+	}
+
 	public long creAndUpdateOrderFlow(OrderFlow of) {
 
 		this.jdbcTemplate.update("update express_ops_order_flow set isnow='0' where cwb=? and isnow='1'", of.getCwb());
@@ -158,6 +181,16 @@ public class OrderFlowDAO {
 				+ "(SELECT * FROM express_ops_order_flow WHERE cwb=?) " + "of LEFT JOIN express_set_branch b ON b.branchid=of.branchid )" + " of_b ON of_b.userid=u.userid ", new OrderFlowRowMapper(),
 				cwb);
 		return orderFlowList;
+	}
+
+	public OrderFlow getOrderCurrentFlowByCwb(String cwb) {
+		String sql = "select * from express_ops_order_flow where cwb = ? and isnow = 1";
+		Object[] paras = new Object[] { cwb };
+		List<OrderFlow> orderFlowList = this.jdbcTemplate.query(sql, paras, new OrderFlowRowMapper());
+		if (orderFlowList.size() == 0) {
+			return null;
+		}
+		return orderFlowList.get(0);
 	}
 
 	public List<OrderFlow> getOrderFlowByFlowordertypeAndCwb(long flowordertype, String cwb, long branchid) {
@@ -1025,4 +1058,45 @@ public class OrderFlowDAO {
 		}
 		return false;
 	}
+
+	public void deleteOrderFlow(String cwb, FlowOrderTypeEnum... flows) {
+		if (cwb == null) {
+			return;
+		}
+		if ((flows == null) || (flows.length == 0)) {
+			return;
+		}
+		String sql = "delete from express_ops_order_flow where cwb = ? and " + this.getFlowOrderTypeCond(flows);
+		this.jdbcTemplate.update(sql, cwb);
+	}
+
+	private String getFlowOrderTypeCond(FlowOrderTypeEnum... flows) {
+		StringBuilder cond = new StringBuilder();
+		if (flows.length == 1) {
+			cond.append("flowordertype = ");
+			cond.append(flows[0].getValue());
+		} else {
+			cond.append("flowordertype in (");
+			cond.append(this.getInPara(flows));
+			cond.append(")");
+		}
+		return cond.toString();
+	}
+
+	private String getInPara(FlowOrderTypeEnum... flows) {
+		StringBuilder inPara = new StringBuilder();
+		for (FlowOrderTypeEnum flow : flows) {
+			inPara.append(flow.getValue());
+			inPara.append(",");
+		}
+		return inPara.substring(0, inPara.length() - 1);
+	}
+
+	public void setOrderCurrentFlow(String cwb, FlowOrderTypeEnum flow) {
+		String resetSql = "update express_ops_order_flow set isnow = 0 where cwb = ? and isnow = 1";
+		this.jdbcTemplate.update(resetSql, cwb);
+		String setSql = "update express_ops_order_flow set isnow = 1 where cwb = ? and flowordertype = " + flow.getValue();
+		this.jdbcTemplate.update(setSql, cwb);
+	}
+
 }

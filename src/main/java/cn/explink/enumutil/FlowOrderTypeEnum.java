@@ -12,7 +12,7 @@ public enum FlowOrderTypeEnum {
 	GongHuoShangTuiHuoChenggong(34, "供货商退货成功"), YiFanKui(35, "反馈"), YiShenHe(36, "审核"), UpdateDeliveryBranch(37, "更新配送站"), DaoCuoHuoChuLi(38, "到错货处理"), BeiZhu(39, "备注"), TuiHuoChuZhan(40, "退货出站"), ShouGongXiuGai(
 			41, "手工修改"), PosZhiFu(42, "POS支付"), YiChangDingDanChuLi(43, "异常订单处理"), DingDanLanJie(44, "订单拦截"), ShenHeWeiZaiTou(45, "审核为退货再投"), KuDuiKuChuKuSaoMiao(46, "库对库出库"), BaoGuoweiDao(50, "包裹未到"), // 亚马逊对接使用
 	ZhongZhuanyanwu(51, "中转延误"), // 亚马逊对接使用
-	ShouGongdiushi(52, "货物丢失"), LanShouDaoHuo(53, "揽收到货"), LingHuoWeiTuo(54, "领货委托"), WeiPaiCheXiao(55, "委派撤销"), GaiDan(56, "改单"), ChaoQu(60, "超区");
+	ShouGongdiushi(52, "货物丢失"), LanShouDaoHuo(53, "揽收到货"), LingHuoWeiTuo(54, "领货委托"), WeiPaiCheXiao(55, "委派撤销"), GaiDan(56, "改单"), ChaoQu(60, "超区"), YiChangPiPeiYiChuLi(61, "异常匹配已处理");
 
 	private int value;
 	private String text;

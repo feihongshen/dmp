@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -26,12 +27,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.MatchExceptionHandleService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.SqlBuilder;
 
@@ -65,7 +68,13 @@ public class MatchExceptionController {
 	private UserDAO userDAO;
 
 	@Autowired
-	SecurityContextHolderStrategy securityContextHolderStrategy;
+	private OrderFlowDAO flowDAO;
+
+	@Autowired
+	private SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	@Autowired
+	private MatchExceptionHandleService mehService;
 
 	@RequestMapping("/matchexceptionhandle")
 	public String matchExpectionHandle(Model model) {
@@ -111,6 +120,22 @@ public class MatchExceptionController {
 		List<MatchExceptionOrder> meoList = this.transfer(array);
 		ExportHandler handler = new ExportHandler(meoList);
 		handler.exportExcel(response, "异常订单.xlsx");
+	}
+
+	@RequestMapping("/redistributionbranch")
+	public @ResponseBody JSONObject redistributionBranch(HttpServletRequest request) {
+		long newBranchId = this.getBranchId(request);
+		String cwb = this.getCwb(request);
+
+		return this.mehService.redistributionBranch(cwb, newBranchId);
+	}
+
+	private long getBranchId(HttpServletRequest request) {
+		return Long.valueOf(request.getParameter("branchid"));
+	}
+
+	private String getCwb(HttpServletRequest request) {
+		return request.getParameter("cwb");
 	}
 
 	private List<MatchExceptionOrder> transfer(JSONArray data) {
@@ -207,7 +232,7 @@ public class MatchExceptionController {
 
 	private Boolean getBooleanValue(HttpServletRequest request, String name) {
 		String parameter = request.getParameter(name);
-		if (parameter == null) {
+		if ((parameter == null) || parameter.equals("null")) {
 			return null;
 		}
 		return Boolean.valueOf(parameter);
@@ -245,7 +270,7 @@ public class MatchExceptionController {
 
 	private void addTMatchOrderCnt(Model model) {
 		int tMatOrdCnt = this.queryMatchOrderCount(true, true);
-		model.addAttribute("tTraOrdCnt", Integer.valueOf(tMatOrdCnt));
+		model.addAttribute("tMatOrdCnt", Integer.valueOf(tMatOrdCnt));
 	}
 
 	private void addTodayWaitHandleOrder(Model model) {
@@ -262,7 +287,7 @@ public class MatchExceptionController {
 	}
 
 	private List<MatchExceptionOrder> queryTransferOrder(boolean today, boolean transfer, int page) {
-		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getQueryTransferOrderSql(today, transfer, page));
+		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getQueryTransferOrderSql(today, transfer, page), false);
 		this.fillMatchExceptionOrder(meoList);
 
 		return meoList;
@@ -290,7 +315,7 @@ public class MatchExceptionController {
 	}
 
 	private List<MatchExceptionOrder> queryMatchOrder(boolean today, boolean match, int page) {
-		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getMatchOrderSql(today, match, page));
+		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getMatchOrderSql(today, match, page), false);
 		this.fillMatchExceptionOrder(meoList);
 
 		return meoList;
@@ -366,7 +391,7 @@ public class MatchExceptionController {
 		} else {
 			sql = this.getQueryWaitHandleOrderSql(today, page);
 		}
-		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(sql);
+		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(sql, true);
 		this.fillMatchExceptionOrder(meoList);
 
 		return meoList;
@@ -430,17 +455,25 @@ public class MatchExceptionController {
 			// 流程处理时间.
 			sql.appendCondition(this.getTimeWhereCond(today));
 			// 站点分配完成状态.
-			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao));
+			sql.appendCondition(this.getFlowStatusWhereCond(FlowOrderTypeEnum.YiChangPiPeiYiChuLi));
 		} else {
 			// 订单站点条件.
 			sql.appendCondition(this.getMatchBranchSql(false));
 			// 订单流程状态.
-			sql.appendCondition(this.getOrderStatusWhereCond(FlowOrderTypeEnum.DaoRuShuJu));
+			sql.appendCondition(this.getFlowStatusWhereCond(FlowOrderTypeEnum.DaoRuShuJu));
 			// 流程处理时间.
 			sql.appendCondition(this.getTimeWhereCond(today));
 		}
+		sql.appendCondition(this.getMatchFlowNowCond(match));
 		sql.appendCondition(this.getOrderTypeWhereCond());
 		sql.appendCondition(this.getMatchOrderWhereCond());
+	}
+
+	private String getMatchFlowNowCond(boolean match) {
+		if (match) {
+			return "";
+		}
+		return "f.isnow = 1";
 	}
 
 	private String getMatchOrderWhereCond() {
@@ -489,7 +522,8 @@ public class MatchExceptionController {
 
 	private String getFlowStatusCondWhere(boolean transfer) {
 		if (transfer) {
-			return "f.flowordertype = 7";
+			// 超区已处理.
+			return "f.flowordertype = 61";
 		}
 		return "";
 	}
@@ -510,9 +544,16 @@ public class MatchExceptionController {
 
 	private String getOrderStatusWhereCond(FlowOrderTypeEnum orderStatus) {
 		StringBuilder cond = new StringBuilder();
-		int fzdh = orderStatus.getValue();
 		cond.append("d.flowordertype = ");
-		cond.append(fzdh);
+		cond.append(orderStatus.getValue());
+
+		return cond.toString();
+	}
+
+	private String getFlowStatusWhereCond(FlowOrderTypeEnum orderStatus) {
+		StringBuilder cond = new StringBuilder();
+		cond.append("f.flowordertype = ");
+		cond.append(orderStatus.getValue());
 
 		return cond.toString();
 	}

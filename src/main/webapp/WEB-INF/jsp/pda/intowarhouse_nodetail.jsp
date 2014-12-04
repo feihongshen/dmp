@@ -15,12 +15,11 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA"
-	width=0 height=0>
+<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
 	<param name="CompanyName" value="北京易普联科信息技术有限公司" />
 	<param name="License" value="653717070728688778794958093190" />
-	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 CompanyName="北京易普联科信息技术有限公司" 
-	License="653717070728688778794958093190"></embed>
+	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 CompanyName="北京易普联科信息技术有限公司"
+		License="653717070728688778794958093190"></embed>
 </object>
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>入库扫描</title>
@@ -381,111 +380,138 @@ function initEmailDateUI(ed){
 		///播放声音文件结束//////
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
-<div id="emb"></div>
-<div class="saomiao_box2">
-	<div class="saomiao_topnum2">
-		<dl class="blue">
-			<dt>未入库合计</dt>
-			<dd id="rukukucundanshu"></dd>
-		</dl>
-		<dl class="yellow">
-			<dt>未入库件数合计</dt>
-			<dd id="rukukucunjianshu"></dd>
-		</dl>
-		<dl class="green">
-			<dt>已入库</dt>
-			<dd id="successcwbnum" name="successcwbnum">0</dd>
-		</dl>
-		<dl class="yellow">
-			<dt>一票多件缺货件数</dt>
-			<dd style="cursor:pointer" onclick="tabView('table_quejian');"  id="lesscwbnum" name="lesscwbnum" >0</dd>
-		</dl>
-		<dl class="red">
-			<dt>有货无单</dt>
-			<dd id="morecwbnum" name="morecwbnum" >0</dd>
-		</dl>
-		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/intowarhousenodetail'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
-		<br clear="all"/>
-	</div>
-	
-	<div class="saomiao_info2">
-		<div class="saomiao_inbox2">
-			<!-- <div class="saomiao_lefttitle2">扫描订单</div> -->
-			<div class="saomiao_righttitle2" id="pagemsg"></div>
-			<!-- <form action="" method="get"> -->
-			<div class="saomiao_selet2">
-				供应商：
-				<select id="customerid" name="customerid" onchange="initUI();getcwbsdataForCustomer($('#customerid').val(),$('#scancwb').val());;getcwbsquejiandataForCustomer($('#customerid').val());">
-					<option value="-1" selected>全部供应商</option>
-					<%for(Customer c : cList){ %>
-						<option value="<%=c.getCustomerid() %>" ><%=c.getCustomername() %></option>
-					<%} %>
-				</select>
-				发货批次：
-				<select id="emaildate" name="emaildate" onchange="getcwbsdataForCustomer($('#customerid').val(),$('#scancwb').val());;getcwbsquejiandataForCustomer($('#customerid').val());" style="height: 20px;width: 280px">
-					<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option> 
-				</select>
-				<a href="#" id="more" style="color:#222222">更多</a>
-				驾驶员：
-				<select id="driverid" name="driverid">
-					<option value="-1" selected>请选择</option>
-					<%for(User u : uList){ %>
-						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
-					<%} %>
-				</select>
-			</div>
-			<div class="saomiao_inwrith2">
-				<div class="saomiao_left2">
-					<p><%if(isprintnew.equals("yes")){ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
-						<%}else{ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch"<%--  <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
-						<%} %>
-					</p>
-					<p style="display: none;"><span>包号扫描：</span>
-						<input type="text" class="saomiao_inputtxt" value=""  id="bale" name="bale" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouseforbale("<%=request.getContextPath()%>",$("#driverid").val(),$(this).val());}'/>
-					</p>
-					<p><span>订单号：</span>
-						<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
-					</p>
-					<!-- <p>
+<body style="background: #eef9ff" marginwidth="0" marginheight="0">
+	<div id="emb"></div>
+	<div class="saomiao_box2">
+		<div class="saomiao_topnum2">
+			<dl class="blue">
+				<dt>未入库合计</dt>
+				<dd id="rukukucundanshu"></dd>
+			</dl>
+			<dl class="yellow">
+				<dt>未入库件数合计</dt>
+				<dd id="rukukucunjianshu"></dd>
+			</dl>
+			<dl class="green">
+				<dt>已入库</dt>
+				<dd id="successcwbnum" name="successcwbnum">0</dd>
+			</dl>
+			<dl class="yellow">
+				<dt>一票多件缺货件数</dt>
+				<dd style="cursor: pointer" onclick="tabView('table_quejian');" id="lesscwbnum"
+					name="lesscwbnum">0</dd>
+			</dl>
+			<dl class="red">
+				<dt>有货无单</dt>
+				<dd id="morecwbnum" name="morecwbnum">0</dd>
+			</dl>
+			<input type="button" id="refresh" value="刷新"
+				onclick="location.href='<%=request.getContextPath()%>/PDA/intowarhousenodetail'"
+				style="float: left; width: 100px; height: 65px; cursor: pointer; border: none; background: url(../images/buttonbgimg1.gif) no-repeat; font-size: 18px; font-family: '微软雅黑', '黑体'" />
+			<br clear="all" />
+		</div>
+
+		<div class="saomiao_info2">
+			<div class="saomiao_inbox2">
+				<!-- <div class="saomiao_lefttitle2">扫描订单</div> -->
+				<div class="saomiao_righttitle2" id="pagemsg"></div>
+				<!-- <form action="" method="get"> -->
+				<div class="saomiao_selet2">
+					供应商： <select id="customerid" name="customerid"
+						onchange="initUI();getcwbsdataForCustomer($('#customerid').val(),$('#scancwb').val());;getcwbsquejiandataForCustomer($('#customerid').val());">
+						<option value="-1" selected>全部供应商</option>
+						<%
+							for (Customer c : cList) {
+						%>
+						<option value="<%=c.getCustomerid()%>"><%=c.getCustomername()%></option>
+						<%
+							}
+						%>
+					</select> 发货批次： <select id="emaildate" name="emaildate"
+						onchange="getcwbsdataForCustomer($('#customerid').val(),$('#scancwb').val());;getcwbsquejiandataForCustomer($('#customerid').val());"
+						style="height: 20px; width: 280px">
+						<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option>
+					</select> <a href="#" id="more" style="color: #222222">更多</a> 驾驶员： <select id="driverid" name="driverid">
+						<option value="-1" selected>请选择</option>
+						<%
+							for (User u : uList) {
+						%>
+						<option value="<%=u.getUserid()%>"><%=u.getRealname()%></option>
+						<%
+							}
+						%>
+					</select>
+				</div>
+				<div class="saomiao_inwrith2">
+					<div class="saomiao_left2">
+						<p>
+							<%
+								if (isprintnew.equals("yes")) {
+							%>
+							<input type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
+							<%
+								} else {
+							%>
+							<input type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch" <%--  <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
+							<%
+								}
+							%>
+						</p>
+						<p style="display: none;">
+							<span>包号扫描：</span> <input type="text" class="saomiao_inputtxt" value="" id="bale" name="bale"
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouseforbale("<%=request.getContextPath()%>",$("#driverid").val(),$(this).val());}' />
+						</p>
+						<p>
+							<span>订单号：</span> <input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb"
+								value=""
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}' />
+						</p>
+						<!-- <p>
 						<span>&nbsp;</span><input type="submit" name="button" id="button" value="完成扫描" class="button">
 					</p> -->
-				</div>
-				<div class="saomiao_right2">
-					<p id="msg" name="msg" ></p>
-					<p id="showcwb" name="showcwb"></p>
-					<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
-					<p id="consigneeaddress" name="consigneeaddress"></p>
-					<p id="excelbranch" name="excelbranch" ></p>
-					<p id="customername" name="customername" ></p>
-					<p id="cwbDetailshow" name="cwbDetailshow" ></p>
-					<div style="display: none" id="EMBED">
 					</div>
-					<div style="display: none">
-						<EMBED id='ypdj' name='ypdj' SRC='<%=request.getContextPath() %><%=ServiceUtil.waverrorPath %><%=CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+					<div class="saomiao_right2">
+						<p id="msg" name="msg"></p>
+						<p id="showcwb" name="showcwb"></p>
+						<p id="cwbgaojia" name="cwbgaojia" style="display: none">高价</p>
+						<p id="consigneeaddress" name="consigneeaddress"></p>
+						<p id="excelbranch" name="excelbranch"></p>
+						<p id="customername" name="customername"></p>
+						<p id="cwbDetailshow" name="cwbDetailshow"></p>
+						<div style="display: none" id="EMBED"></div>
+						<div style="display: none">
+							<EMBED id='ypdj' name='ypdj'
+								SRC='<%=request.getContextPath()%><%=ServiceUtil.waverrorPath%><%=CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl()%>'
+								LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+						</div>
+						<div style="display: none">
+							<EMBED id='gaojia' name='gaojia'
+								SRC='<%=request.getContextPath()%><%=ServiceUtil.waverrorPath%><%=CwbOrderPDAEnum.GAO_JIA.getVediourl()%>'
+								LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+						</div>
+						<div style="display: none" id="errorvedio"></div>
 					</div>
-					<div style="display: none">
-						<EMBED id='gaojia' name='gaojia' SRC='<%=request.getContextPath() %><%=ServiceUtil.waverrorPath %><%=CwbOrderPDAEnum.GAO_JIA.getVediourl() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
-					</div>
-					<div style="display: none" id="errorvedio"></div>
-				</div>
-				<p style="display: none;">
-						<input type="button" class="input_btn1" id="moregoods" name="moregoods" value="一票多物" onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),4,$("#multicwbnum").val());'/>
-						<span>一票多物件数：</span><input type="text" id="multicwbnum" name="multicwbnum" value="1" class="input_txt1"/>
+					<p style="display: none;">
+						<input type="button" class="input_btn1" id="moregoods" name="moregoods" value="一票多物"
+							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),4,$("#multicwbnum").val());' />
+						<span>一票多物件数：</span><input type="text" id="multicwbnum" name="multicwbnum" value="1"
+							class="input_txt1" />
 					</p>
 					<p style="display: none;">
-						<input type="button" class="input_btn1" id="damage" name="damage" value="破损" onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),1,$("#multicwbnum").val());'/>
-						<input type="button" class="input_btn1" id="superbig" name="superbig" value="超大" onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),2,$("#multicwbnum").val());'/>
-						<input type="button" class="input_btn1" id="superweight" name="superweight" value="超重" onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),3,$("#multicwbnum").val());'/>
+						<input type="button" class="input_btn1" id="damage" name="damage" value="破损"
+							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),1,$("#multicwbnum").val());' />
+						<input type="button" class="input_btn1" id="superbig" name="superbig" value="超大"
+							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),2,$("#multicwbnum").val());' />
+						<input type="button" class="input_btn1" id="superweight" name="superweight" value="超重"
+							onclick='intoWarehouseforremark("<%=request.getContextPath()%>",$("#scansuccesscwb").val(),3,$("#multicwbnum").val());' />
 					</p>
-					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" />
-			        <input type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
-			        <input type="hidden" id="rk_switch" name="rk_switch" value="<%=ck_switch.getState() %>" />
-			</div><!-- </form> -->
+					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
+						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" /> <input type="hidden"
+						id="rk_switch" name="rk_switch" value="<%=ck_switch.getState()%>" />
+				</div>
+				<!-- </form> -->
+			</div>
 		</div>
-	</div>
 
 	</div>
 </body>
