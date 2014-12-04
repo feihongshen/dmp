@@ -637,6 +637,7 @@ src/main/java/cn/explink/controller/AccountCwbDetailController.java -text
 src/main/java/cn/explink/controller/AccountCwbFareController.java -text
 src/main/java/cn/explink/controller/AccountCwbFareDetailController.java -text
 src/main/java/cn/explink/controller/AccountCwbFareDetailVerifyController.java -text
+src/main/java/cn/explink/controller/AccountCwbFareSubmitController.java -text
 src/main/java/cn/explink/controller/AccountDeductRecordController.java -text
 src/main/java/cn/explink/controller/AccountFeeDetailController.java -text
 src/main/java/cn/explink/controller/AccountFeeTypeController.java -text
@@ -1541,6 +1542,7 @@ src/main/webapp/WEB-INF/jsp/accountdeductrecord/branchList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountdeductrecord/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfareVerifylist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfarelist.jsp -text
+src/main/webapp/WEB-INF/jsp/accountfare/accountfaresubmitlist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/add.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/edit.jsp -text

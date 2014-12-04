@@ -19,6 +19,7 @@ long deliverystateid = request.getAttribute("deliverystateid")==null?0:(Long)req
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
 long successcount = request.getAttribute("successcount")==null?0:Long.parseLong(request.getAttribute("successcount").toString());
 String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":request.getAttribute("deliverstateremark").toString();
+String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":request.getAttribute("isReasonRequired").toString();
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request.getAttribute("pl_switch");
@@ -81,6 +82,13 @@ function checkResult(){
 }
 
 function sub(){
+	var isReasonRequired="<%=isReasonRequired%>";
+	var deliverystate=$("#deliverystate7").attr("checked");
+	if(isReasonRequired=='yes'&&deliverystate=='checked')
+	{	if($("#backreasonid").val()=="0"){
+		alert("请选择对接原因");
+		return false;
+	}}
 	if($("#cwbs").val()==""){
 		alert("请扫描订单号");
 		return false;
@@ -157,6 +165,7 @@ function load(deliverystateid)
 						
 						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
 							<input type="radio" name="deliverystate" id="deliverystate7" value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystateid==7){ %> checked="checked"<%} %> onclick="changeTag(2)" /> <%=DeliveryStateEnum.ShangMenJuTui.getText() %>
+						<br></br>	
 						</td>
 					</tr>
 					<tr>
@@ -171,7 +180,6 @@ function load(deliverystateid)
 						
 						拒退备注输入内容：
 							<input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
-						
 						</div>
 						</td>
 					</tr>

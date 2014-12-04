@@ -616,7 +616,7 @@ function yiruku(){
 					<br><br>
 					<div style='height: 200px; overflow-y: scroll;' id="tr"></div>
 					<center>
-					<input type="button" value="确定修改" onclick="updategoods()"/>
+					<input type="button" value="确认" onclick="updategoods()"/>
 					<input type="reset" value="取消"/>
 					</center>
 					</div>

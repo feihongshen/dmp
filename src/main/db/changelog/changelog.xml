@@ -5766,5 +5766,18 @@ ADD COLUMN `thzrkcount`  int(4) NULL DEFAULT 0 COMMENT '退货站入库数量' A
 		</sql>
 	</changeSet>
 	
+	<changeSet id="wangyonghe-2014-12-04-1" author="wangyonghe">
+		<sql>
+		ALTER TABLE `account_cwb_fare_detail`
+		ADD COLUMN `userid`  bigint(20) NULL DEFAULT 0 COMMENT '用户id' AFTER `fareid`,
+		ADD INDEX `acfd_userid_idx` (`userid`) ;		
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2014-12-04-2" author="wangyonghe">
+		<sql>
+		INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '运费交款', 'accountcwbfaresubmit/accountfaresubmitlist/1', '3', 'zg01', '290', 'images/gbsh.png', NULL);
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
  

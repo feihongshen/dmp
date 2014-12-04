@@ -18,6 +18,8 @@ public class AccountCwbFareDetail {
 	private int verifyflag; // 是否审核 0默认 1已审核
 	private String verifytime; // 审核时间r
 
+	private long userid; // 审核时间r
+
 	public int getVerifyflag() {
 		return this.verifyflag;
 	}
@@ -120,6 +122,14 @@ public class AccountCwbFareDetail {
 
 	public void setFareid(long fareid) {
 		this.fareid = fareid;
+	}
+
+	public long getUserid() {
+		return this.userid;
+	}
+
+	public void setUserid(long userid) {
+		this.userid = userid;
 	}
 
 }

@@ -951,6 +951,9 @@ public class DeliveryController {
 					parameters.put("isbatch", true);
 					parameters.put("resendtime", "");
 					parameters.put("zhiliuremark", "");
+					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
+						parameters.put("isjutui", true);
+					}
 					if ((deliveryState != null) && (DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate)) {
 						parameters.put("infactfare", deliveryState.getShouldfare());
 					}
@@ -998,6 +1001,7 @@ public class DeliveryController {
 		model.addAttribute("deliverystateid", deliverystate);
 		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
 		model.addAttribute("pl_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
+		model.addAttribute("isReasonRequired", this.systemInstallDAO.getSystemInstall("isReasonRequired") == null ? "no" : this.systemInstallDAO.getSystemInstall("isReasonRequired").getValue());
 
 		return "delivery/batchEditSMTDeliveryState";
 	}
@@ -1294,7 +1298,9 @@ public class DeliveryController {
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
 					parameters.put("weishuakareasonid", 0l);
-
+					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
+						parameters.put("isjutui", true);
+					}
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
@@ -1351,6 +1357,7 @@ public class DeliveryController {
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
+		model.addAttribute("isReasonRequired", this.systemInstallDAO.getSystemInstall("isReasonRequired") == null ? "no" : this.systemInstallDAO.getSystemInstall("isReasonRequired").getValue());
 		return "delivery/batchEditSMTDeliveryState";
 	}
 

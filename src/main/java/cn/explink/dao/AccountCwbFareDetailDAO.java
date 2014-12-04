@@ -47,6 +47,8 @@ public class AccountCwbFareDetailDAO {
 			accountCwbFareDetail.setVerifyflag(rs.getInt("verifyflag"));
 			accountCwbFareDetail.setVerifytime(rs.getString("verifytime"));
 
+			accountCwbFareDetail.setUserid(rs.getInt("userid"));
+
 			return accountCwbFareDetail;
 		}
 	}
@@ -68,7 +70,7 @@ public class AccountCwbFareDetailDAO {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into account_cwb_fare_detail(cwb,customerid,cwbordertypeid,deliverybranchid,audittime,"
-						+ "deliverystate,shouldfare,infactfare) values (?,?,?,?,?,?,?,?)", new String[] { "accountcwbid" });
+						+ "deliverystate,shouldfare,infactfare,userid) values (?,?,?,?,?,?,?,?,?)", new String[] { "accountcwbid" });
 				ps.setString(1, accountCwbFareDetail.getCwb());
 				ps.setLong(2, accountCwbFareDetail.getCustomerid());
 				ps.setLong(3, accountCwbFareDetail.getCwbordertypeid());
@@ -77,6 +79,7 @@ public class AccountCwbFareDetailDAO {
 				ps.setLong(6, accountCwbFareDetail.getDeliverystate());
 				ps.setBigDecimal(7, accountCwbFareDetail.getShouldfare());
 				ps.setBigDecimal(8, accountCwbFareDetail.getInfactfare());
+				ps.setLong(9, accountCwbFareDetail.getUserid());
 				return ps;
 			}
 		}, key);
@@ -117,7 +120,7 @@ public class AccountCwbFareDetailDAO {
 
 	/**
 	 * 查询已交款的数据
-	 * 
+	 *
 	 * @param page
 	 * @param customerids
 	 * @param ispay
@@ -170,7 +173,7 @@ public class AccountCwbFareDetailDAO {
 
 	/**
 	 * 财务审核查询
-	 * 
+	 *
 	 * @param customerids
 	 * @param verifyflag
 	 * @param verifytime
@@ -312,5 +315,24 @@ public class AccountCwbFareDetailDAO {
 	public void updateAccountCwbFareDetailByCwb(String cwbs, String verifytime) {
 		String sql = "update  account_cwb_fare_detail set verifytime=?,verifyflag=1 where cwb in (" + cwbs + ")";
 		this.jdbcTemplate.update(sql, verifytime);
+	}
+
+	public List<AccountCwbFareDetail> getAccountCwbFareDetailBySubmit(long branchid, String begindate, String enddate, long cwbordertypeid, long faretypeid, long userid) {
+
+		String sql = "select * from account_cwb_fare_detail " + "where " + " cwbordertypeid=" + cwbordertypeid + " and deliverybranchid=" + branchid + " and audittime>='" + begindate
+				+ "' and audittime<='" + enddate + "' and userid=" + userid;
+		if (faretypeid == 1) {
+			sql += " and fareid=0";
+		}
+		if (faretypeid == 2) {
+			sql += " and fareid>0";
+			sql += " and verifyflag=0";
+		}
+		if (faretypeid == 3) {
+			sql += " and fareid>0";
+			sql += " and verifyflag>0";
+		}
+
+		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
 }
