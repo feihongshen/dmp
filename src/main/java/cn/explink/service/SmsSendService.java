@@ -505,6 +505,10 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			}
 
 			strMsg = smsConfigModel.getTemplatecontent().replaceAll("tailnumber", cwb).replaceAll("delivername", delivername).replaceAll("deliverphone", deliverphone);
+		} else {
+			if (strMsg.contains("tailnumber")) {
+				return null;
+			}
 		}
 		return strMsg;
 	}
