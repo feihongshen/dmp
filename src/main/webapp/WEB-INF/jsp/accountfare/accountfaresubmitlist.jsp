@@ -393,7 +393,7 @@ function changeYj(){
 									 <td align="center" valign="middle" ><%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){if(acfd.getDeliverystate()==ds.getValue()){out.print(ds.getText());}} %></td>
 									<td align="center" valign="middle" ><%=acfd.getShouldfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getInfactfare()%></td>
-									<td align="center" valign="middle" ><%=acfd.getFareid()>0?"已交款":"未交款"%></td>
+									<td align="center" valign="middle" ><%=acfd.getVerifyflag()>0?"已审核":acfd.getFareid()>0?"已交款":"未交款"%></td>
 									<td align="center" valign="middle" ><%=acfd.getPayuptime()%></td>
 								 </tr>
 							 <%}} %>
