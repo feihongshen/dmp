@@ -172,7 +172,7 @@ function load(deliverystateid)
 					<td>		<div id="smjt" style="display: none">
 							拒退原因：
 							 <select name="backreasonid" id="backreasonid">
-					        	<option value ="0">请选择</option>
+					        	<option value ="0" selected="selected">请选择</option>
 					        	<%for(Reason r : backlist){ %>
 			           				<option value="<%=r.getReasonid()%>"  <%if(backreasonid==r.getReasonid()){%> selected="selected"<%} %>><%=r.getReasoncontent() %></option>
 			           			<%} %>
