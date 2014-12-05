@@ -66,7 +66,7 @@
 			              	 <ref bean="doTime_happigou23"/>
 			              	 <ref bean="doTime_smile"/>
 			              	 <ref bean="doAlan"/>
-			              	 <ref bean="doTime_xiaoxi" />
+			              	<!--  <ref bean="doTime_xiaoxi" /> -->
 			              	 <ref bean="doTime_liantong" />
 			              	 <ref bean="doTime_KouKuan" />
 			              	 <ref bean="doTime_dangdang" />
@@ -478,7 +478,7 @@
          </property>
      </bean>
      
-     <bean id="doTime_xiaoxi" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+<!--      <bean id="doTime_xiaoxi" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
                <ref bean="getXiaoxiInfo_Task" />
            </property>
@@ -494,7 +494,7 @@
          <property name="targetMethod">
              <value>getXiaoxiInfo_Task</value>
          </property>
-     </bean>
+     </bean> -->
      
      
      <bean id="doTime_KouKuan" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">

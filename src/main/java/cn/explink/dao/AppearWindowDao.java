@@ -31,7 +31,8 @@ public class AppearWindowDao {
 
 	public long creWindowTime(String jsoninfo, String type, long userid, String state) {
 		try {
-			jdbcTemplate.update("insert into express_ops_window (jsoninfo,userid,type,state) values(?,?,?,?)", jsoninfo, userid, type, state);
+			// jdbcTemplate.update("insert into express_ops_window (jsoninfo,userid,type,state) values(?,?,?,?)",
+			// jsoninfo, userid, type, state);
 			return 1;
 		} catch (Exception e) {
 			return 0;
@@ -41,7 +42,7 @@ public class AppearWindowDao {
 	public List<WindowShow> getCountWindowByState(long userid) {
 		String sql = "select * from express_ops_window where state=1 and userid=?";
 		try {
-			return jdbcTemplate.query(sql, new WindowShowRowMapper(), userid);
+			return this.jdbcTemplate.query(sql, new WindowShowRowMapper(), userid);
 		} catch (Exception e) {
 			return null;
 		}
@@ -51,7 +52,7 @@ public class AppearWindowDao {
 	public long getCountByStateAndUserid(long userid, String type) {
 		String sql = "select count(1) from express_ops_window where type=? and userid=?";
 		try {
-			return jdbcTemplate.queryForLong(sql, type, userid);
+			return this.jdbcTemplate.queryForLong(sql, type, userid);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -60,7 +61,7 @@ public class AppearWindowDao {
 	public long getStateAndUserid(long userid, String type) {
 		String sql = "select count(1) from express_ops_window where type=? and userid=? and state=1";
 		try {
-			return jdbcTemplate.queryForLong(sql, type, userid);
+			return this.jdbcTemplate.queryForLong(sql, type, userid);
 		} catch (Exception e) {
 			return 0;
 		}
@@ -68,13 +69,13 @@ public class AppearWindowDao {
 
 	public void updateByStateAndUserid(String jsonInfo, long userid) {
 		String sql = "update express_ops_window set state='1' , jsonInfo=? where userid=?";
-		jdbcTemplate.update(sql, jsonInfo, userid);
+		this.jdbcTemplate.update(sql, jsonInfo, userid);
 	}
 
 	public long updateByUserid(String timmer, long userid) {
 		try {
 			String sql = "update express_ops_window set state=?  where userid=?";
-			jdbcTemplate.update(sql, timmer, userid);
+			this.jdbcTemplate.update(sql, timmer, userid);
 			return 1;
 		} catch (Exception e) {
 			return 0;
@@ -84,7 +85,7 @@ public class AppearWindowDao {
 	public WindowShow getObjectWindowByState(long userid) {
 		String sql = "select * from express_ops_window where state=1 and userid=? limit 0,1";
 		try {
-			return jdbcTemplate.queryForObject(sql, new WindowShowRowMapper(), userid);
+			return this.jdbcTemplate.queryForObject(sql, new WindowShowRowMapper(), userid);
 		} catch (Exception e) {
 			return null;
 		}
