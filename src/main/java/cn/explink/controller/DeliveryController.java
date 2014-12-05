@@ -605,9 +605,7 @@ public class DeliveryController {
 			parameters.put("weishuakareasonid", weishuakareasonid);
 			parameters.put("losereasonid", losereasonid);
 			parameters.put("deliverytime_now", deliverytime);
-			if (podresultid != 7) {
-				parameters.put("infactfare", infactfare);
-			}
+			parameters.put("infactfare", infactfare);
 
 			this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 		} catch (CwbException ce) {

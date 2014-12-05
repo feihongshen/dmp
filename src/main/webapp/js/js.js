@@ -1293,6 +1293,12 @@ function click_podresultid(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanC
 		ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
 		needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
+	
+	if(podresultid==7){
+		
+		$("#infactfare").val(0)
+		
+	}
 	init_deliverystate();
 	if (podresultid == PeiSongChengGong) {// 配送成功
 		for (var i = 0; i < newpaywayid.split(",").length; i++) {
@@ -1412,6 +1418,11 @@ function click_podresultid(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanC
 
 	// $("#remandtype").val(0);
 	centerBox();
+	if(podresultid==7){
+		
+		$("#infactfare").val(0);
+		
+	}
 }
 
 // 验证字段是否正确输入
