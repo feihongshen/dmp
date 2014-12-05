@@ -134,10 +134,12 @@ public class AccountCwbFareDetailDAO {
 	 * @return
 	 */
 	public List<AccountCwbFareDetail> getAccountCwbFareDetailByQKVerify(long page, String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid,
-			long deliverystate, long shoulefarefeesign, long pageNumber) {
+			long deliverystate, long shoulefarefeesign, long pageNumber, long userid) {
 		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
-
+		if (userid > 0) {
+			sql += " and userid=" + userid;
+		}
 		sql += " limit " + ((page - 1) * pageNumber) + " ," + pageNumber;
 		System.out.println(sql);
 		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
@@ -153,10 +155,12 @@ public class AccountCwbFareDetailDAO {
 
 	// 财务审核
 	public List<AccountCwbFareDetail> getExportAccountCwbFareDetailByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid,
-			long deliverystate, long shoulefarefeesign) {
+			long deliverystate, long shoulefarefeesign, long userid) {
 		String sql = "select * from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
-
+		if (userid > 0) {
+			sql += " and userid=" + userid;
+		}
 		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
 
@@ -208,9 +212,12 @@ public class AccountCwbFareDetailDAO {
 	}
 
 	public AccountCwbFareDetail getAccountCwbFareDetailSumByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid, long deliverystate,
-			long shoulefarefeesign) {
+			long shoulefarefeesign, long userid) {
 		String sql = "select sum(shouldfare) as shouldfare,sum(infactfare) as infactfare from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+		if (userid > 0) {
+			sql += " and userid=" + userid;
+		}
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new AccountCwbFareDetailMOneyMapper());
 		} catch (DataAccessException e) {

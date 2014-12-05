@@ -370,6 +370,7 @@ function changeYj(){
 							<tr class="font_1">
 								<td width="100" align="center" valign="middle" ><a style="cursor: pointer;" onclick="isgetallcheck();">[全选/反选]</a></td>
 								<td width="200" align="center" valign="middle" >订单号</td>
+								<td  align="center" valign="middle" >小件员</td>
 								<td align="center" valign="middle" >供货商</td>
 								<td align="center" valign="middle" >订单类型</td>
 								<td align="center" valign="middle" >配送站点</td>
@@ -384,6 +385,7 @@ function changeYj(){
 								<tr valign="middle">
 									 	<td><input id="cwb" name="cwb" type="checkbox" value="<%=acfd.getCwb()%>" <%if(acfd.getFareid()>0){ %> disabled="disabled" <%}else{ %>checked="checked" <%} %> onClick="changeYj()" infactfare="<%=acfd.getInfactfare()%>"/></td>
 									<td align="center" valign="middle" ><%=acfd.getCwb()%></td>
+									<td align="center" valign="middle" ><%for(User u :userList){if(u.getUserid()==acfd.getUserid()){out.print(u.getRealname());}} %></td>
 									<td align="center" valign="middle" ><%for(Customer c :customerlist){if(acfd.getCustomerid()==c.getCustomerid()){out.print(c.getCustomername());}} %></td>
 								<td align="center" valign="middle" ><%for(CwbOrderTypeIdEnum ct : CwbOrderTypeIdEnum.values()){if(acfd.getCwbordertypeid()==ct.getValue()){out.print(ct.getText());}} %></td>
 									<td align="center" valign="middle"  ><%for(Branch b :branchList){if(acfd.getDeliverybranchid()==b.getBranchid()){out.print(b.getBranchname());}} %></td>
@@ -398,6 +400,7 @@ function changeYj(){
 							<tr valign="middle" >
 								<td>合计</td>
 								<td><strong><%=acfdList.size() %></strong>单</td>
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>

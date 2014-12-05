@@ -68,13 +68,13 @@ public class AccountCwbFareDetailController {
 	ExportService exportService;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	/**
 	 * 先付：显示信息
-	 * 
+	 *
 	 * @param model
 	 * @param branchid
 	 * @return
@@ -88,15 +88,15 @@ public class AccountCwbFareDetailController {
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign,
 			@RequestParam(value = "pageNumber", required = false, defaultValue = "100") long pageNumber) {
 
-		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-		List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
 				+ BranchEnum.ZhongZhuan.getValue());
 
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 			if (branchnameList.size() == 0) {
 				branchnameList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 					branchnameList.add(branch);
 				}
 			}
@@ -104,20 +104,22 @@ public class AccountCwbFareDetailController {
 		Page pageparm = new Page();
 		List<AccountCwbFareDetail> acfdList = new ArrayList<AccountCwbFareDetail>();
 		AccountCwbFareDetail accountCwbFareDetailSum = new AccountCwbFareDetail();
-		if (begindate.length() > 0 && enddate.length() > 0) {
-			String customerids = dataStatisticsService.getStrings(customerid);
-			acfdList = accountCwbFareDetailDAO.getAccountCwbFareDetailByQK(page, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign, pageNumber);
-			pageparm = new Page(accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign),
+		if ((begindate.length() > 0) && (enddate.length() > 0)) {
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailByQK(page, customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign,
+					pageNumber);
+			pageparm = new Page(this.accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign),
 					page, pageNumber);
-			accountCwbFareDetailSum = accountCwbFareDetailDAO.getAccountCwbFareDetailSumByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
+			accountCwbFareDetailSum = this.accountCwbFareDetailDAO.getAccountCwbFareDetailSumByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate,
+					shoulefarefeesign);
 		}
 
 		model.addAttribute("acfdList", acfdList);
 		model.addAttribute("accountCwbFareDetailSum", accountCwbFareDetailSum);
 		model.addAttribute("branchList", branchnameList);
-		List<String> customeridList = dataStatisticsService.getList(customerid);
+		List<String> customeridList = this.dataStatisticsService.getList(customerid);
 		model.addAttribute("customeridStr", customeridList);
-		List<Customer> customerList = customerDAO.getAllCustomers();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		model.addAttribute("customerlist", customerList);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
@@ -126,7 +128,7 @@ public class AccountCwbFareDetailController {
 
 	/**
 	 * 配送结果结算记录导出Excel
-	 * 
+	 *
 	 * @param model
 	 */
 	@RequestMapping("/exportExcle")
@@ -136,9 +138,9 @@ public class AccountCwbFareDetailController {
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
 			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
-		String[] cloumnName1 = new String[10]; // 导出的列名
-		String[] cloumnName2 = new String[10]; // 导出的英文列名
-		exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		this.exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		final HttpServletRequest request1 = request;
@@ -146,23 +148,25 @@ public class AccountCwbFareDetailController {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "AccountCwbFareDetail_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
-			final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-			final List<Branch> bList = branchDAO.getAllBranches();
-			String customerids = dataStatisticsService.getStrings(customerid);
-			final List<AccountCwbFareDetail> list = accountCwbFareDetailDAO.getExportAccountCwbFareDetailByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid, deliverystate,
-					shoulefarefeesign);
+			final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
+			final List<Branch> bList = this.branchDAO.getAllBranches();
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			final List<User> userList = this.userDAO.getUserListByBranchid(this.getSessionUser().getBranchid(), 0);
+
+			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getExportAccountCwbFareDetailByQK(customerids, ispay, isaudittime, begindate, enddate, deliverybranchid,
+					deliverystate, shoulefarefeesign);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < list.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap);
+							a = AccountCwbFareDetailController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}

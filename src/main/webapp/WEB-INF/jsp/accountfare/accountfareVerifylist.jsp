@@ -6,7 +6,7 @@
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="java.math.BigDecimal"%>
-<%@page import="cn.explink.domain.Branch"%>
+<%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.domain.PayUp"%>
 <%@page import="cn.explink.domain.AccountCwbFare"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -14,9 +14,12 @@
 <%
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
+List<User> userList = (List<User>)request.getAttribute("userList");
 Date now = new Date();
   String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
+  String deliverystate=request.getAttribute("deliverystate")==null?"":request.getAttribute("deliverystate").toString();
+  String userid=request.getAttribute("userid")==null?"":request.getAttribute("userid").toString();
   Page page_obj = (Page)request.getAttribute("page_obj");
   List customeridList =(List) request.getAttribute("customeridStr");
   List<AccountCwbFareDetail> acfdList=request.getAttribute("acfdList")==null?new ArrayList<AccountCwbFareDetail>():(List<AccountCwbFareDetail>)request.getAttribute("acfdList");
@@ -48,6 +51,34 @@ Date now = new Date();
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+
+function change(){
+	var optionstring="";
+	
+	if($("#branchid").val()!=0){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/user/",
+			data:{branchid:$("#branchid").val()},
+			success:function(data){
+				optionstring+="<option value='0'>请选择</option>";
+				for(var i=0;i<data.length;i++){
+					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+				}
+				//alert(optionstring);
+				$("#userid").html(optionstring);
+			}
+		});
+	}else{
+		optionstring+="<option value='0'>请选择</option>";
+		
+		<%for(User u : userList){ %>
+			optionstring += "<option value=<%=u.getUserid()%>><%=u.getRealname()%></option>";
+        <%} %>
+        $("#userid").html(optionstring);
+	}
+	
+}
 function Days(){     
 	var day1 = $("#strtime").val();   
 	var day2 = $("#endtime").val(); 
@@ -215,21 +246,27 @@ function changeTime(){
 							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
 						<font color="red">（查询31天以内数据）</font>
 					        <br/>
-						配送站点：<select name ="deliverybranchid" id="deliverybranchid">
+						配送站点：<select name ="deliverybranchid" id="branchid" onchange="change()">
 				               <option value="-1">全部</option>
 				               <%if(branchList != null && branchList.size()>0){ %>
 				                <%for( Branch b:branchList){ %>
 				               <option value ="<%=b.getBranchid()%>" <%if(b.getBranchid() == new Long(request.getParameter("deliverybranchid")==null?"-1":request.getParameter("deliverybranchid"))) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 				               <%} }%>
 			              </select>
+			            小件员：  <select name ="userid" id ="userid" >
+			            <option value="0">请选择</option>
+						<%for(User u:userList){ %>
+						<option value="<%=u.getUserid()%>" <%if(userid.equals(u.getUserid()+"")) {%> selected="selected"<%} %>><%=u.getRealname()%></option>
+						<%} %>
+			            </select>
 						 配送结果：
 						<select name ="deliverystate" id ="deliverystate" >
 							<option value ="-1">请选择</option>
-							<option value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" <%=request.getParameter("deliverystate")!=null&&request.getParameter("deliverystate").equals(DeliveryStateEnum.ShangMenTuiChengGong.getValue())?"selected":"" %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
-							<option value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%=request.getParameter("deliverystate")!=null&&request.getParameter("deliverystate").equals(DeliveryStateEnum.ShangMenJuTui.getValue())?"selected":"" %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
-							<option value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" <%=request.getParameter("deliverystate")!=null&&request.getParameter("deliverystate").equals(DeliveryStateEnum.FenZhanZhiLiu.getValue())?"selected":"" %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-							<option value="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>" <%=request.getParameter("deliverystate")!=null&&request.getParameter("deliverystate").equals(DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue())?"selected":"" %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
-							<option value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" <%=request.getParameter("deliverystate")!=null&&request.getParameter("deliverystate").equals(DeliveryStateEnum.HuoWuDiuShi.getValue())?"selected":"" %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+							<option value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenTuiChengGong.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
+							<option value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenJuTui.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
+							<option value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %> <%if(deliverystate.equals(""+DeliveryStateEnum.FenZhanZhiLiu.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+							<option value="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(deliverystate.equals(""+DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue())){ %>selected="selected"<%} %> ><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+							<option value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.HuoWuDiuShi.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
 						 </select>
 						 应收运费：
 						<select name ="shoulefarefeesign" id ="shoulefarefeesign" >
@@ -252,6 +289,7 @@ function changeTime(){
 		<form action="<%=request.getContextPath()%>/accountcwbfaredetailVerify/exportExcle" method="post" id="searchForm2">
 		<input type="hidden" name="begindate" value="<%=starttime%>"/>
 		<input type="hidden" name="enddate" value="<%=endtime%>"/>
+		<input type="hidden" name="userid" value="<%=userid%>"/>
 		<input type="hidden" name="verifyflag" value="<%=request.getParameter("verifyflag")==null?"0":request.getParameter("verifyflag")%>"/>
 		<input type="hidden" name="deliverybranchid" value="<%=request.getParameter("deliverybranchid")==null?"0":request.getParameter("deliverybranchid")%>"/>
 		<input type="hidden" name="deliverystate" value="<%=request.getParameter("deliverystate")==null?"-1":request.getParameter("deliverystate")%>"/>
@@ -287,6 +325,7 @@ function changeTime(){
 							<tr class="font_1">
 								<td width="80" align="center" valign="middle" ><a style="cursor: pointer;" onclick="isgetallcheck();">[全选/反选]</a></td>
 								<td width="150" align="center" valign="middle" >订单号</td>
+								<td  align="center" valign="middle" >小件员</td>
 								<td align="center" valign="middle" >供货商</td>
 								<td align="center" valign="middle" >配送站点</td>
 								<td align="center" valign="middle" >归班时间</td>
@@ -308,13 +347,13 @@ function changeTime(){
 								BigDecimal girofee=accountFareMap.get(acfd.getFareid()).getGirofee();
 								BigDecimal cashfee=accountFareMap.get(acfd.getFareid()).getCashfee();
 								String jiaokuantype= girofee!=null&&girofee.compareTo(BigDecimal.ZERO)>0?"转账":"现金";
-								
 										
 								%>
 								<tr valign="middle">
 									<td><input id="cwb" name="cwb" type="checkbox" value="<%=acfd.getCwb()%>" <%if(acfd.getVerifyflag()>0){ %> disabled="disabled" <%}else{ %>checked="checked" <%} %> onClick="changeYj()" infactfare="<%=acfd.getInfactfare()%>"/></td>
 									<td align="center" valign="middle" ><%=acfd.getCwb()%></td>
 									<td align="center" valign="middle" ><%for(Customer c :customerlist){if(acfd.getCustomerid()==c.getCustomerid()){out.print(c.getCustomername());}} %></td>
+									<td align="center" valign="middle" ><%for(User u :userList){if(acfd.getUserid()==u.getUserid()){out.print(u.getRealname());}} %></td>
 									<td align="center" valign="middle"  ><%for(Branch b :branchList){if(acfd.getDeliverybranchid()==b.getBranchid()){out.print(b.getBranchname());}} %></td>
 									<td align="center" valign="middle" ><%=acfd.getAudittime()%></td>
 									<td align="center" valign="middle" ><%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){if(acfd.getDeliverystate()==ds.getValue()){out.print(ds.getText());}} %></td>
@@ -331,13 +370,14 @@ function changeTime(){
 							<tr valign="middle" >
 								<td>合计</td>
 								<td><strong><%=page_obj.getTotal() %></strong>单</td>
-								
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>
 								<td><strong><%=accountCwbFareDetailSum.getShouldfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getShouldfare() %></strong></td>
 								<td><strong><%=accountCwbFareDetailSum.getInfactfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getInfactfare() %></strong></td>
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>

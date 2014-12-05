@@ -84,7 +84,7 @@ public class AccountCwbFareSubmitController {
 
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		model.addAttribute("branch", branch);
-		List<User> userList = this.userDAO.getUserListByBranchid(branch.getBranchid(), 0);
+		List<User> userList = this.userDAO.getAllUserbybranchid(branch.getBranchid());
 		model.addAttribute("userList", userList);
 		model.addAttribute("user", this.getSessionUser());
 		List<Branch> branchList = this.branchDAO.getAllBranches();
@@ -119,8 +119,8 @@ public class AccountCwbFareSubmitController {
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "0") long cwbordertypeid,
 			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid) {
-		String[] cloumnName1 = new String[10]; // 导出的列名
-		String[] cloumnName2 = new String[10]; // 导出的英文列名
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
@@ -131,6 +131,7 @@ public class AccountCwbFareSubmitController {
 		try {
 			final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
 			final List<Branch> bList = this.branchDAO.getAllBranches();
+			final List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
 			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getAccountCwbFareDetailBySubmit(this.getSessionUser().getBranchid(), begindate, enddate, cwbordertypeid, faretypeid,
 					userid);
 
@@ -145,7 +146,7 @@ public class AccountCwbFareSubmitController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AccountCwbFareSubmitController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap);
+							a = AccountCwbFareSubmitController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}

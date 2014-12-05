@@ -547,7 +547,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 * 
+	 *
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -560,7 +560,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 * 
+	 *
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -621,7 +621,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 * 
+	 *
 	 * }
 	 */
 
@@ -2003,7 +2003,7 @@ public class ExportService {
 
 	/**
 	 * 结算后付类型
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2031,7 +2031,7 @@ public class ExportService {
 
 	/**
 	 * 结算先付类型
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2138,7 +2138,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算订单明细
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2170,7 +2170,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2208,7 +2208,7 @@ public class ExportService {
 
 	/**
 	 * 退货审核
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2334,7 +2334,7 @@ public class ExportService {
 
 	/**
 	 * 配送结果结算记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2407,7 +2407,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2426,7 +2426,7 @@ public class ExportService {
 
 	/**
 	 * 账户管理
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2459,55 +2459,58 @@ public class ExportService {
 	public void SetAccountCwbFareDetailFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "供货商";
-		cloumnName2[1] = "Customerid";
-		cloumnName1[2] = "订单类型";
-		cloumnName2[2] = "Cwbordertypeid";
-		cloumnName1[3] = "配送站点";
-		cloumnName2[3] = "Deliverybranchid";
-		cloumnName1[4] = "审核时间";
-		cloumnName2[4] = "Audittime";
-		cloumnName1[5] = "配送结果";
-		cloumnName2[5] = "Deliverystate";
-		cloumnName1[6] = "应收运费金[元]";
-		cloumnName2[6] = "Shouldfare";
-		cloumnName1[7] = "实收运费[元]";
-		cloumnName2[7] = "Infactfare";
-		cloumnName1[8] = "交款状态";
-		cloumnName2[8] = "Fareid";
-		cloumnName1[9] = "交款时间";
-		cloumnName2[9] = "Payuptime";
-
+		cloumnName1[1] = "小件员";
+		cloumnName2[1] = "Userid";
+		cloumnName1[2] = "供货商";
+		cloumnName2[2] = "Customerid";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "Cwbordertypeid";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Deliverybranchid";
+		cloumnName1[5] = "审核时间";
+		cloumnName2[5] = "Audittime";
+		cloumnName1[6] = "配送结果";
+		cloumnName2[6] = "Deliverystate";
+		cloumnName1[7] = "应收运费金[元]";
+		cloumnName2[7] = "Shouldfare";
+		cloumnName1[8] = "实收运费[元]";
+		cloumnName2[8] = "Infactfare";
+		cloumnName1[9] = "交款状态";
+		cloumnName2[9] = "Fareid";
+		cloumnName1[10] = "交款时间";
+		cloumnName2[10] = "Payuptime";
 	}
 
 	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "供货商";
-		cloumnName2[1] = "Customerid";
-		cloumnName1[2] = "订单类型";
-		cloumnName2[2] = "Cwbordertypeid";
-		cloumnName1[3] = "配送站点";
-		cloumnName2[3] = "Deliverybranchid";
-		cloumnName1[4] = "审核时间";
-		cloumnName2[4] = "Audittime";
-		cloumnName1[5] = "配送结果";
-		cloumnName2[5] = "Deliverystate";
-		cloumnName1[6] = "应收运费金[元]";
-		cloumnName2[6] = "Shouldfare";
-		cloumnName1[7] = "实收运费[元]";
-		cloumnName2[7] = "Infactfare";
-		cloumnName1[8] = "交款状态";
-		cloumnName2[8] = "Fareid";
-		cloumnName1[9] = "交款时间";
-		cloumnName2[9] = "Payuptime";
-		cloumnName1[10] = "审核时间";
-		cloumnName2[10] = "Verifytime";
+		cloumnName1[1] = "小件员";
+		cloumnName2[1] = "Userid";
+		cloumnName1[2] = "供货商";
+		cloumnName2[2] = "Customerid";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "Cwbordertypeid";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Deliverybranchid";
+		cloumnName1[5] = "审核时间";
+		cloumnName2[5] = "Audittime";
+		cloumnName1[6] = "配送结果";
+		cloumnName2[6] = "Deliverystate";
+		cloumnName1[7] = "应收运费金[元]";
+		cloumnName2[7] = "Shouldfare";
+		cloumnName1[8] = "实收运费[元]";
+		cloumnName2[8] = "Infactfare";
+		cloumnName1[9] = "交款状态";
+		cloumnName2[9] = "Fareid";
+		cloumnName1[10] = "交款时间";
+		cloumnName2[10] = "Payuptime";
+		cloumnName1[11] = "审核时间";
+		cloumnName2[11] = "Verifytime";
 
 	}
 
 	public Object setAccountCwbFareDetailObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
-			List<Branch> branchList, Map<Long, Customer> cMap) {
+			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList) {
 		try {
 			if (cloumnName3[i].equals("Customerid")) {
 				long customerid = Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString());
@@ -2525,6 +2528,16 @@ public class ExportService {
 					for (Branch b : branchList) {
 						if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == b.getBranchid()) {
 							a = b.getBranchname();
+							break;
+						}
+					}
+				}
+			} else if (cloumnName3[i].equals("Userid")) {
+				a = "";
+				if (userList.size() > 0) {
+					for (User u : userList) {
+						if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == u.getUserid()) {
+							a = u.getRealname();
 							break;
 						}
 					}

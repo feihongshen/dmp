@@ -90,7 +90,7 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "verifyflag", required = false, defaultValue = "0") int verifyflag, @RequestParam(value = "verifytime", required = false, defaultValue = "1") long verifytime,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
-			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate,
+			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign,
 			@RequestParam(value = "pageNumber", required = false, defaultValue = "100") long pageNumber) {
 
@@ -108,16 +108,17 @@ public class AccountCwbFareDetailVerifyController {
 			}
 		}
 		Page pageparm = new Page();
+		List<User> userList = this.userDAO.getAllUserbybranchid(deliverybranchid);
 		List<AccountCwbFareDetail> acfdList = new ArrayList<AccountCwbFareDetail>();
 		AccountCwbFareDetail accountCwbFareDetailSum = new AccountCwbFareDetail();
 		if ((begindate.length() > 0) && (enddate.length() > 0)) {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailByQKVerify(page, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
-					shoulefarefeesign, pageNumber);
+					shoulefarefeesign, pageNumber, userid);
 			pageparm = new Page(this.accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
 					shoulefarefeesign), page, pageNumber);
 			accountCwbFareDetailSum = this.accountCwbFareDetailDAO.getAccountCwbFareDetailSumByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
-					shoulefarefeesign);
+					shoulefarefeesign, userid);
 		}
 
 		StringBuffer fareidsub = new StringBuffer();
@@ -139,6 +140,9 @@ public class AccountCwbFareDetailVerifyController {
 			}
 		}
 
+		model.addAttribute("userList", userList);
+		model.addAttribute("userid", userid);
+		model.addAttribute("deliverystate", deliverystate);
 		model.addAttribute("acfdList", acfdList);
 		model.addAttribute("accountFareMap", accountFareMap);
 		model.addAttribute("accountCwbFareDetailSum", accountCwbFareDetailSum);
@@ -184,10 +188,10 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "verifyflag", required = false, defaultValue = "0") int verifyflag, @RequestParam(value = "verifytime", required = false, defaultValue = "1") long verifytime,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
-			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate,
+			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
-		String[] cloumnName1 = new String[11]; // 导出的列名
-		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		String[] cloumnName1 = new String[12]; // 导出的列名
+		String[] cloumnName2 = new String[12]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailVerifyFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
@@ -199,8 +203,10 @@ public class AccountCwbFareDetailVerifyController {
 			final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
 			final List<Branch> bList = this.branchDAO.getAllBranches();
 			String customerids = this.dataStatisticsService.getStrings(customerid);
+			final List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
+
 			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getExportAccountCwbFareDetailByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid,
-					deliverystate, shoulefarefeesign);
+					deliverystate, shoulefarefeesign, userid);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
@@ -212,7 +218,7 @@ public class AccountCwbFareDetailVerifyController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AccountCwbFareDetailVerifyController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap);
+							a = AccountCwbFareDetailVerifyController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
