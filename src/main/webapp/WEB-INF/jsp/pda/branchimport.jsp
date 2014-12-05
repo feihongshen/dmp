@@ -69,7 +69,7 @@ function submitIntoWarehouse(pname,scancwb,customerid,driverid,requestbatchno,rk
 		}else{//入库
 			$.ajax({
 				type: "POST",
-				url:pname+"/PDA//"+scancwb+"?driverid="+driverid+"&requestbatchno="+requestbatchno,
+				url:pname+"/PDA/cwbsubstationGoods/"+scancwb+"?driverid="+driverid+"&requestbatchno="+requestbatchno,
 				data:{
 					"comment":""
 				},

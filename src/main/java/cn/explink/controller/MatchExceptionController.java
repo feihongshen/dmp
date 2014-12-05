@@ -467,6 +467,7 @@ public class MatchExceptionController {
 		sql.appendCondition(this.getMatchFlowNowCond(match));
 		sql.appendCondition(this.getOrderTypeWhereCond());
 		sql.appendCondition(this.getMatchOrderWhereCond());
+		sql.appendCondition(this.getEffectiveWhereCond());
 	}
 
 	private String getMatchFlowNowCond(boolean match) {
@@ -501,6 +502,12 @@ public class MatchExceptionController {
 		sql.appendCondition(this.getFlowStatusCondWhere(transfer));
 		// 如果出现环形分派a->b->a会出现多次分站到货流程,连接时需要加入流程isnow条件.
 		sql.appendCondition(this.getFlowNowWhereCond(transfer));
+		// 加入订单有效条件.
+		sql.appendCondition(this.getEffectiveWhereCond());
+	}
+
+	private String getEffectiveWhereCond() {
+		return "and d.state = 1 ";
 	}
 
 	private String getTransferBranchWhereCond(boolean transfer) {

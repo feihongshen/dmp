@@ -171,6 +171,7 @@ public class SmtController {
 		String sql = this.getTodayOutAreaOrderSql();
 
 		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
+		this.fillUserName(orderList);
 		SmtOrderContainer ctn = new SmtOrderContainer();
 		ctn.setSmtOrderList(orderList);
 
@@ -218,8 +219,9 @@ public class SmtController {
 
 	private void appendTodayOutAreaWhereCond(StringBuilder sql) {
 		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
-		sql.append("and f.credate > '" + this.getTodayZeroTimeString() + "' ");
+		sql.append("and f.credate >= '" + this.getTodayZeroTimeString() + "' ");
 		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
+		sql.append("and d.state = 1 ");
 	}
 
 	private String getCwbs(HttpServletRequest request) {
@@ -447,6 +449,12 @@ public class SmtController {
 		this.appendTimeTypeWhereCond(sql, timeType);
 		// 转单数据可能存在多次分站到货.
 		this.appendFlowNowWhereCond(sql, dataType);
+		// 加入订单失效条件.
+		this.appendEffectiveWhereCond(sql);
+	}
+
+	private void appendEffectiveWhereCond(StringBuilder sql) {
+		sql.append("and d.state = 1 ");
 	}
 
 	private void appendFlowNowWhereCond(StringBuilder sql, OrderTypeEnum dataType) {

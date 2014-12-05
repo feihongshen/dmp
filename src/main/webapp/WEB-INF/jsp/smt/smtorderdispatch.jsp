@@ -298,7 +298,9 @@ function loadTodayOutAreaOrder(){
 	}
 
 	function afterDispatch(data) {
-		var today = data.body.isTodayFlow;
+		if (date.body.isRepeatPicking) {
+			return;
+		}
 		var today = data.body.isTodayFlow;
 		var outarea = data.body.cwbOrder.outareaflag;
 		var rSpan = "";
@@ -548,7 +550,7 @@ dl dd span {
 											%>
 											<tr cwb="<%=so.getCwb()%>" class="cwbids">
 												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
-												<td width="120" align="center" bgcolor="#f1f1f1"><%=so.getCwb()%></td>
+												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCwb()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getMatchBranch()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getReceivedFee()%></td>
 												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCustomerName()%></td>
@@ -733,8 +735,7 @@ dl dd span {
 
 
 	<form action='<%=request.getContextPath() + "/smt/exporttodayoutareadata"%>' method="post"
-		id="exportTodayOutAreaForm" style="padding: 10px">
-	</form>
+		id="exportTodayOutAreaForm" style="padding: 10px"></form>
 
 
 
