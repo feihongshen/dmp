@@ -5097,8 +5097,9 @@ public class CwbDAO {
 			inPara.append("'");
 			inPara.append(cwb);
 			inPara.append("'");
+			inPara.append(",");
 		}
-		return inPara.toString();
+		return inPara.substring(0, inPara.length() - 1);
 	}
 
 	private class FlowBranchRowHandler implements RowCallbackHandler {

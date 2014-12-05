@@ -89,7 +89,7 @@ public class MatchExceptionHandleService {
 	}
 
 	private User getBranchMaster(long branchId) {
-		List<User> userList = this.userDAO.getUserByRole("4", branchId);
+		List<User> userList = this.userDAO.getUserByRole("2,4", branchId);
 		if (userList.isEmpty()) {
 			return null;
 		}
