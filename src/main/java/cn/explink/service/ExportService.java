@@ -547,7 +547,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 *
+	 * 
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -560,7 +560,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 *
+	 * 
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -621,7 +621,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 *
+	 * 
 	 * }
 	 */
 
@@ -2550,9 +2550,13 @@ public class ExportService {
 					}
 				}
 			} else if (cloumnName3[i].equals("Fareid")) {
-				a = "未交款";
-				if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) > 0) {
-					a = "已交款";
+				if (accountCwbFareDetailList.get(k).getVerifyflag() > 0) {
+					a = "已审核";
+				} else {
+					a = "未交款";
+					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) > 0) {
+						a = "已交款";
+					}
 				}
 			} else {
 				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));

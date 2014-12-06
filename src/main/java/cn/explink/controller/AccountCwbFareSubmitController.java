@@ -97,7 +97,7 @@ public class AccountCwbFareSubmitController {
 		model.addAttribute("acfdList", acfdList);
 		model.addAttribute("faretypeid", faretypeid);
 		model.addAttribute("cwbordertypeid", cwbordertypeid);
-		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<Customer> customerList = this.customerDAO.getAllCustomersNew();
 		model.addAttribute("customerlist", customerList);
 		Double shouldfare = new Double(0);
 		Double infactfare = new Double(0);
