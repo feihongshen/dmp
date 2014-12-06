@@ -15,8 +15,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.jcraft.jsch.Logger;
-
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.util.Page;
 
@@ -72,7 +70,7 @@ public class AbnormalOrderDAO {
 	public AbnormalOrder getAbnormalOrderById(long id) {
 		try {
 			String sql = "select * from express_ops_abnormal_order where `id`=?  ";
-			return jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), id);
+			return this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), id);
 		} catch (Exception e) {
 			return null;
 		}
@@ -80,14 +78,14 @@ public class AbnormalOrderDAO {
 
 	public List<AbnormalOrder> getAbnormalOrderByOpscwbid(long opscwbid) {
 		String sql = "select * from express_ops_abnormal_order where `opscwbid`=?  ";
-		return jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), opscwbid);
+		return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), opscwbid);
 	}
 
 	public AbnormalOrder getAbnormalOrderByOpscwbidForObject(long opscwbid) {
 		String sql = "select * from express_ops_abnormal_order where `opscwbid`=? ";
 		AbnormalOrder ab = new AbnormalOrder();
 		try {
-			ab = jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), opscwbid);
+			ab = this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), opscwbid);
 		} catch (Exception e) {
 			ab = null;
 		}
@@ -103,25 +101,26 @@ public class AbnormalOrderDAO {
 	 */
 	public void saveAbnormalOrderByid(long id, long abnormaltypeid, String describe) {
 		String sql = "update express_ops_abnormal_order set `abnormaltypeid`=?,`describe`=? where `id`=?";
-		jdbcTemplate.update(sql, abnormaltypeid, describe, id);
+		this.jdbcTemplate.update(sql, abnormaltypeid, describe, id);
 	}
 
 	public void saveAbnormalOrderByOpscwbid(long opscwbid) {
-		jdbcTemplate.update("update express_ops_abnormal_order set `isnow`='0' where `opscwbid`=?", opscwbid);
+		this.jdbcTemplate.update("update express_ops_abnormal_order set `isnow`='0' where `opscwbid`=?", opscwbid);
 	}
 
 	public void creAbnormalOrder(long opscwbid, long customerid, String describe, long creuserid, long branchid, long abnormaltypeid, String credatetime) {
-		saveAbnormalOrderByOpscwbid(opscwbid);
+		this.saveAbnormalOrderByOpscwbid(opscwbid);
 
 		String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`) values(?,?,?,?,?,?,?,?)";
-		jdbcTemplate.update(sql, opscwbid, customerid, describe, creuserid, branchid, abnormaltypeid, credatetime, 1);
+		this.jdbcTemplate.update(sql, opscwbid, customerid, describe, creuserid, branchid, abnormaltypeid, credatetime, 1);
 	}
 
 	public long creAbnormalOrderLong(final long opscwbid, final long customerid, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime) {
-		saveAbnormalOrderByOpscwbid(opscwbid);
+		this.saveAbnormalOrderByOpscwbid(opscwbid);
 		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`) values(?,?,?,?,?,?,?,?)";
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement(sql, new String[] { "id" });
@@ -148,9 +147,9 @@ public class AbnormalOrderDAO {
 			sql += " and abnormaltypeid =" + abnormaltypeid;
 		}
 
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		return jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), creuserid);
+		return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), creuserid);
 	}
 
 	public long getAbnormalOrderCount(String begindate, String enddate, long ishandle, long abnormaltypeid, long creuserid) {
@@ -161,7 +160,35 @@ public class AbnormalOrderDAO {
 		if (abnormaltypeid > 0) {
 			sql += " and abnormaltypeid =" + abnormaltypeid;
 		}
-		return jdbcTemplate.queryForLong(sql, creuserid, begindate, enddate);
+		return this.jdbcTemplate.queryForLong(sql, creuserid, begindate, enddate);
+	}
+
+	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(int type, String cwb, long branchid, long abnormaltypeid, long ishandle, String start, String end) {
+		String sql = "SELECT ao.*,cd.`cwb`,cd.`customerid`,cd.`emaildate`,cd.`flowordertype`,cd.`deliverybranchid` FROM `express_ops_abnormal_order` ao "
+				+ "LEFT JOIN `express_ops_cwb_detail` cd  ON ao.`opscwbid`=cd.`opscwbid`  WHERE  cd.state=1";
+		if (cwb.length() > 0) {
+			sql += " AND cd.`cwb` IN(" + cwb + ")";
+		}
+		if (branchid > 0) {
+			sql += " AND ao.`branchid`=" + branchid;
+		}
+		if (abnormaltypeid > 0) {
+			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+		}
+		if (ishandle > -1) {
+			sql += " AND ao.`ishandle`=" + ishandle;
+		}
+		if (type == 1) {
+			if ((start != null) && (end != null)) {
+				sql += " AND ao.credatetime >=" + "'" + start + "' and ao.credatetime<=" + "'" + end + "' ";
+			}
+		} else if (type == 2) {
+			if ((start != null) && (end != null)) {
+				sql += " AND ao.opscwbid in (select opscwbid from express_ops_abnormal_write_back where " + " credatetime >= '" + start + "'  and credatetime <= '" + end + "' )";
+			}
+		}
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+
 	}
 
 	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(String opscwbids, String cwb, long branchid, long abnormaltypeid, long ishandle) {
@@ -180,7 +207,7 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 
-		return jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 
 	}
 
@@ -200,7 +227,7 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 
-		return jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 
 	}
 
@@ -219,40 +246,40 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 
 	}
 
 	public void saveAbnormalOrderForIshandle(long id, long ishandle) {
 		String sql = "update express_ops_abnormal_order set `ishandle`=?  where `id`=? ";
-		jdbcTemplate.update(sql, ishandle, id);
+		this.jdbcTemplate.update(sql, ishandle, id);
 	}
 
 	public void saveAbnormalOrderForNohandle(long id, long ishandle) {
 		String sql = "update express_ops_abnormal_order set `ishandle`= ? where `id`=?  ";
-		jdbcTemplate.update(sql, ishandle, id);
+		this.jdbcTemplate.update(sql, ishandle, id);
 	}
 
 	public List<String> getAbnormalOrderByCredatetime(String chuangjianbegindate, String chuangjianenddate) {
 		String sql = "select opscwbid from express_ops_abnormal_order where " + "  credatetime >= '" + chuangjianbegindate + "' and credatetime <= '" + chuangjianenddate + "' ";
 
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	/**
 	 * 用于迁移
-	 * 
+	 *
 	 * @return
 	 */
 	public List<AbnormalOrder> getAllAbnormalIsnow() {
 		String sql = "SELECT * FROM express_ops_abnormal_order WHERE isnow=1 ORDER BY credatetime ";
-		return jdbcTemplate.query(sql, new AbnormalOrderRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper());
 
 	}
 
 	/**
 	 * 根据id 得到
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -260,7 +287,7 @@ public class AbnormalOrderDAO {
 		String sql = "select * from express_ops_abnormal_order where id=? ";
 		AbnormalOrder ab = new AbnormalOrder();
 		try {
-			ab = jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), id);
+			ab = this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), id);
 		} catch (Exception e) {
 			ab = null;
 		}
@@ -284,9 +311,9 @@ public class AbnormalOrderDAO {
 		if (ishandle > -1) {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		return jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
 
 	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle) {
@@ -307,7 +334,7 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 
-		return jdbcTemplate.queryForInt(sql);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public int getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate, String enddate) {
@@ -329,7 +356,7 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 		// sql +=" AND ao.isnow=1 ";
-		return jdbcTemplate.queryForInt(sql);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(long page, String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate,
@@ -350,8 +377,8 @@ public class AbnormalOrderDAO {
 			sql += " AND ao.`ishandle`=" + ishandle;
 		}
 		// sql +=" AND ao.isnow=1 ";
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		System.out.println("问题件sql：" + sql);
-		return jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
 }

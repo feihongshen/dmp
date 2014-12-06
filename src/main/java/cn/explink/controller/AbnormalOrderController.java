@@ -240,7 +240,8 @@ public class AbnormalOrderController {
 		List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 		int count = 0;
 		if (isshow == 1) {
-			if ((begindate.length() == 0) && (enddate.length() == 0)) {
+			if (ishandle == 2) {
+
 				if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
 				}
@@ -427,14 +428,21 @@ public class AbnormalOrderController {
 			}
 			// 根据时间去abnormalWriteBack表查询符合条件的opscwbid
 			List<String> abnormalWriteBackOpscwbidList = new ArrayList<String>();
-			if ((begindate.length() == 0) && (enddate.length() == 0)) {
+			List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
+			if (ishandle == 2) {
+
 				if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
 				}
 				if (chuangjianenddate.length() == 0) {
 					chuangjianenddate = DateTimeUtil.getNowTime();
 				}
-				abnormalWriteBackOpscwbidList = this.abnormalOrderDAO.getAbnormalOrderByCredatetime(chuangjianbegindate, chuangjianenddate);
+				// abnormalWriteBackOpscwbidList =
+				// this.abnormalOrderDAO.getAbnormalOrderByCredatetime(chuangjianbegindate,
+				// chuangjianenddate);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(1, cwbs, branchid, abnormaltypeid, ishandle, chuangjianbegindate,
+						chuangjianenddate);
+
 			} else {
 				if (begindate.length() == 0) {
 					begindate = DateTimeUtil.getDateBefore(1);
@@ -442,12 +450,17 @@ public class AbnormalOrderController {
 				if (enddate.length() == 0) {
 					enddate = DateTimeUtil.getNowTime();
 				}
-				abnormalWriteBackOpscwbidList = this.abnormalWriteBackDAO.getAbnormalOrderByCredatetime(begindate, enddate);
+				// abnormalWriteBackOpscwbidList =
+				// this.abnormalWriteBackDAO.getAbnormalOrderByCredatetime(begindate,
+				// enddate);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(2, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
 			}
 
 			// 根据条件查询和上一步中查出的opscwbid来查询
-			List<JSONObject> abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(this.getStrings(abnormalWriteBackOpscwbidList), cwbs,
-					branchid, abnormaltypeid, ishandle);
+			// abnormalOrderList =
+			// this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(this.getStrings(abnormalWriteBackOpscwbidList),
+			// cwbs, branchid,
+			// abnormaltypeid, ishandle);
 
 			List<Branch> branchs = this.branchDAO.getAllBranches();
 			List<User> users = this.userDAO.getAllUser();

@@ -245,11 +245,6 @@ public class JobUtil {
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
-	public void getVipShopCwbDetail_Task3() {
-
-		System.out.println("哇哈哈哈哈哈哈哈哈");
-	}
-
 	/**
 	 * 执行重临时表获取tmall订单的定时器
 	 */
