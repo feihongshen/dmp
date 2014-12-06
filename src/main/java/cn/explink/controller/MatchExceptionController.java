@@ -507,7 +507,7 @@ public class MatchExceptionController {
 	}
 
 	private String getEffectiveWhereCond() {
-		return "and d.state = 1 ";
+		return "d.state = 1 ";
 	}
 
 	private String getTransferBranchWhereCond(boolean transfer) {
