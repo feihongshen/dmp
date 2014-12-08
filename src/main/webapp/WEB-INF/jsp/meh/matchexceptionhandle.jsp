@@ -164,7 +164,7 @@
 	}
 
 	function createTD(align, width, content) {
-		var td = "<td  bgcolor='#f1f1f1' align='" + align + "'";
+		var td = "<td align='" + align + "'";
 		if (width) {
 			td += " width='" + width + "'";
 		}

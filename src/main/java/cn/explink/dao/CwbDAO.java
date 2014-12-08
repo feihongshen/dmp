@@ -5041,6 +5041,7 @@ public class CwbDAO {
 			newOrder.setCustomerPhone(rs.getString("d.consigneephone"));
 			newOrder.setCustomerAddress(rs.getString("d.consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("d.shouldfare"));
+			newOrder.setMatchBranchId(rs.getLong("d.currentbranchid"));
 
 			return newOrder;
 		}
@@ -5059,6 +5060,7 @@ public class CwbDAO {
 			newOrder.setCustomerPhone(rs.getString("consigneephone"));
 			newOrder.setCustomerAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
+			newOrder.setMatchBranchId(rs.getLong("currentbranchid"));
 
 			return newOrder;
 		}

@@ -239,7 +239,8 @@ public class MatchExceptionController {
 	}
 
 	private void addBranchList(Model model) {
-		List<Branch> branchList = this.branchDAO.getAllBranches();
+		// 查询所有站点.
+		List<Branch> branchList = this.branchDAO.getBranchBySiteType(2);
 		model.addAttribute("branchList", branchList);
 	}
 
@@ -592,7 +593,7 @@ public class MatchExceptionController {
 	}
 
 	private String getQueryFields() {
-		return "f.credate,f.branchid,f.userid,d.cwb,d.nextbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
+		return "f.credate,f.branchid,f.userid,d.cwb,d.currentbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
 	}
 
 	private String getTodayZeroTimeString() {
