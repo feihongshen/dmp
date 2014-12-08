@@ -5780,6 +5780,7 @@ ADD COLUMN `thzrkcount`  int(4) NULL DEFAULT 0 COMMENT '退货站入库数量' A
 	</changeSet>
 		<changeSet id="zhaoshb-2014-12-05" author="zhoashb">
 		<sql>
+		alter table express_ops_cwb_detail add column outareaflag int default 0;
 		INSERT INTO express_set_menu_info_new (menuname, menuurl, menulevel, menuno, parentno, menuimage, adminshowflag) VALUES ('上门退订单分派', 'smt/smtorderdispatch', '3', 'smt_01', '305', 'images/lhsm.png', null);
 		INSERT INTO express_set_menu_info_new (menuname, menuurl, menulevel, menuno, parentno, menuimage, adminshowflag) VALUES ('异常匹配处理', 'meh/matchexceptionhandle', '3', 'smt_02', '303', 'images/fdcz.png', null);
 		</sql>
