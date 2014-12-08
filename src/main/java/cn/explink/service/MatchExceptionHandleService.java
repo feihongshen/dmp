@@ -117,7 +117,7 @@ public class MatchExceptionHandleService {
 	private void insertExceptionMatchHandledFlow(String cwb) {
 		OrderFlow outAreaHandledFlow = this.createOutAreaHandledFlow(cwb);
 		Calendar cal = Calendar.getInstance();
-		String strTime = new SimpleDateFormat("yyyy-MM-hh HH:mm:ss").format(cal.getTime());
+		String strTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTime());
 		this.flowDAO.mehCreOrderFlow(outAreaHandledFlow, strTime);
 	}
 
