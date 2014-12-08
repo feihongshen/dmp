@@ -231,7 +231,7 @@ public class MatchExceptionHandleService {
 	}
 
 	private String getQueryFields() {
-		return "f.credate,f.branchid,f.userid,d.cwb,d.nextbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
+		return "f.credate,f.branchid,f.userid,d.cwb,d.deliverybranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
 	}
 
 	private JSONObject createResult(boolean successed, String message, MatchExceptionOrder meo) {

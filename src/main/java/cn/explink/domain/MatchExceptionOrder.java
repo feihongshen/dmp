@@ -26,6 +26,8 @@ public class MatchExceptionOrder {
 
 	private double receivedFee = 0;
 
+	private int outareaFlag = 0;
+
 	public String getCwb() {
 		return this.cwb;
 	}
@@ -120,6 +122,14 @@ public class MatchExceptionOrder {
 
 	public void setReceivedFee(double receivedFee) {
 		this.receivedFee = receivedFee;
+	}
+
+	public int getOutareaFlag() {
+		return this.outareaFlag;
+	}
+
+	public void setOutareaFlag(int outareaFlag) {
+		this.outareaFlag = outareaFlag;
 	}
 
 }

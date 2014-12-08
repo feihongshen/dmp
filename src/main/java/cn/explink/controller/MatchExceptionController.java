@@ -322,10 +322,24 @@ public class MatchExceptionController {
 		return meoList;
 	}
 
+	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList) {
+		for (MatchExceptionOrder meo : meoList) {
+			if (meo.getOutareaFlag() != 0) {
+				continue;
+			}
+			meo.setReportOutAreaBranchId(0);
+			meo.setReportOutAreaTime("");
+			meo.setReportOutAreaUserId(0);
+			meo.setReportOutAreaUserName("");
+		}
+	}
+
 	private void fillMatchExceptionOrder(List<MatchExceptionOrder> meoList) {
 		if (meoList.isEmpty()) {
 			return;
 		}
+		// 匹配异常站点要去掉超区人信息.
+		this.clearMatchUserInfo(meoList);
 		this.fillBranchName(meoList);
 		this.fillUserName(meoList);
 	}
@@ -355,6 +369,9 @@ public class MatchExceptionController {
 
 	private void fillUserName(List<MatchExceptionOrder> meoList) {
 		Set<Long> userIdSet = this.getUserIdSet(meoList);
+		if (userIdSet.isEmpty()) {
+			return;
+		}
 		Map<Long, String> userNameMap = this.userDAO.getUserNameMap(new ArrayList<Long>(userIdSet));
 		for (MatchExceptionOrder meo : meoList) {
 			String name = userNameMap.get(meo.getReportOutAreaUserId());
@@ -550,14 +567,6 @@ public class MatchExceptionController {
 		}
 	}
 
-	private String getOrderStatusWhereCond(FlowOrderTypeEnum orderStatus) {
-		StringBuilder cond = new StringBuilder();
-		cond.append("d.flowordertype = ");
-		cond.append(orderStatus.getValue());
-
-		return cond.toString();
-	}
-
 	private String getFlowStatusWhereCond(FlowOrderTypeEnum orderStatus) {
 		StringBuilder cond = new StringBuilder();
 		cond.append("f.flowordertype = ");
@@ -593,7 +602,7 @@ public class MatchExceptionController {
 	}
 
 	private String getQueryFields() {
-		return "f.credate,f.branchid,f.userid,d.cwb,d.currentbranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress";
+		return "f.credate,f.branchid,f.userid,d.cwb,d.deliverybranchid,d.consigneename,d.consigneephone,d.shouldfare,d.consigneeaddress,d.outareaflag";
 	}
 
 	private String getTodayZeroTimeString() {

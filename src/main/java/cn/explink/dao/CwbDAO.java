@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -5030,10 +5031,12 @@ public class CwbDAO {
 
 	private class MatchExceptionOrderRowMap implements RowMapper<MatchExceptionOrder> {
 
+		private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		@Override
 		public MatchExceptionOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MatchExceptionOrder newOrder = new MatchExceptionOrder();
-			newOrder.setReportOutAreaTime(rs.getString("f.credate"));
+			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTime("credate")));
 			newOrder.setReportOutAreaBranchId(rs.getLong("f.branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("f.userid"));
 			newOrder.setCwb(rs.getString("d.cwb"));
@@ -5041,18 +5044,26 @@ public class CwbDAO {
 			newOrder.setCustomerPhone(rs.getString("d.consigneephone"));
 			newOrder.setCustomerAddress(rs.getString("d.consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("d.shouldfare"));
-			newOrder.setMatchBranchId(rs.getLong("d.currentbranchid"));
+			newOrder.setMatchBranchId(rs.getLong("d.deliverybranchid"));
+			newOrder.setOutareaFlag(rs.getInt("d.outareaflag"));
 
 			return newOrder;
 		}
+
+		private SimpleDateFormat getFormat() {
+			return this.format;
+		}
+
 	}
 
 	private class MatchExceptionOrderUnionRowMap implements RowMapper<MatchExceptionOrder> {
 
+		private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		@Override
 		public MatchExceptionOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MatchExceptionOrder newOrder = new MatchExceptionOrder();
-			newOrder.setReportOutAreaTime(rs.getString("credate"));
+			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTime("credate")));
 			newOrder.setReportOutAreaBranchId(rs.getLong("branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("userid"));
 			newOrder.setCwb(rs.getString("cwb"));
@@ -5060,10 +5071,16 @@ public class CwbDAO {
 			newOrder.setCustomerPhone(rs.getString("consigneephone"));
 			newOrder.setCustomerAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
-			newOrder.setMatchBranchId(rs.getLong("currentbranchid"));
+			newOrder.setMatchBranchId(rs.getLong("deliverybranchid"));
+			newOrder.setOutareaFlag(rs.getInt("outareaflag"));
 
 			return newOrder;
 		}
+
+		private SimpleDateFormat getFormat() {
+			return this.format;
+		}
+
 	}
 
 	public void updateOrderOutAreaStatus(String[] cwbs) {
