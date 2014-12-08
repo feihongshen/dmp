@@ -5036,7 +5036,7 @@ public class CwbDAO {
 		@Override
 		public MatchExceptionOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MatchExceptionOrder newOrder = new MatchExceptionOrder();
-			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTime("credate")));
+			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTimestamp("credate")));
 			newOrder.setReportOutAreaBranchId(rs.getLong("f.branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("f.userid"));
 			newOrder.setCwb(rs.getString("d.cwb"));
@@ -5063,7 +5063,7 @@ public class CwbDAO {
 		@Override
 		public MatchExceptionOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MatchExceptionOrder newOrder = new MatchExceptionOrder();
-			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTime("credate")));
+			newOrder.setReportOutAreaTime(this.getFormat().format(rs.getTimestamp("credate")));
 			newOrder.setReportOutAreaBranchId(rs.getLong("branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("userid"));
 			newOrder.setCwb(rs.getString("cwb"));
