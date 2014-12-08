@@ -53,9 +53,8 @@ public class OperationTimeDAO {
 	 * @return key
 	 */
 	public void creOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customerid, String inwarehouseTime, String emaildate) {
-		this.jdbcTemplate.update(
-				"insert into express_ops_operation_time (cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate) values(?,?,?,?,?,?,?,?,?)", cwb,
-				branchid, System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate);
+		this.jdbcTemplate.update("insert into v (cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate) values(?,?,?,?,?,?,?,?,?)", cwb, branchid,
+				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate);
 	}
 
 	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customeid, String inwarehouseTime, String emaildate) {

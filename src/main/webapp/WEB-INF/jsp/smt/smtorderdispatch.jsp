@@ -515,7 +515,7 @@ dl dd span {
 			<div class="saomiao_tab2">
 				<ul>
 					<li><a href="#" class="light"
-						onclick="loadSmtOrder('all','today',false,1,'today_table',0)">今日未领货</a></li>
+						onclick="loadSmtOrder('all','today',false,1,'today_table',0)">今日待分配</a></li>
 					<li><a href="#" onclick="loadSmtOrder('all','history',false,1,'history_table',1)">历史待分派</a></li>
 					<li><a href="#" onclick="loadSmtOrder('all','today',true,1,'today_dispatch_table',2)">今日已分派</a></li>
 					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
