@@ -119,8 +119,8 @@ public class AccountCwbFareSubmitController {
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "0") long cwbordertypeid,
 			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid) {
-		String[] cloumnName1 = new String[11]; // 导出的列名
-		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		String[] cloumnName1 = new String[12]; // 导出的列名
+		String[] cloumnName2 = new String[12]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;

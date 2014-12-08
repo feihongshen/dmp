@@ -357,7 +357,7 @@ function changeYj(){
 		<input type="hidden" name="enddate" value="<%=endtime%>"/>
 		<input type="hidden" name="cwbordertypeid" value="<%=cwbordertypeid%>"/>
 		<input type="hidden" name="faretypeid" value="<%=faretypeid%>"/>
-		<input type="hidden" name="userid" value="<%=user.getUserid()%>"/>
+		<input type="hidden" name="userid" value="<%=userid%>"/>
 	</form>
  
 	<div>	
@@ -374,12 +374,13 @@ function changeYj(){
 								<td align="center" valign="middle" >供货商</td>
 								<td align="center" valign="middle" >订单类型</td>
 								<td align="center" valign="middle" >配送站点</td>
-								<td align="center" valign="middle" >审核时间</td>
+								<td align="center" valign="middle" >归班审核时间</td>
 								<td align="center" valign="middle" >配送结果</td>
 								<td align="center" valign="middle" >应收运费[元]</td>
 								<td align="center" valign="middle" >实收运费[元]</td>
 								<td align="center" valign="middle" >交款状态</td>
 								<td align="center" valign="middle" >交款时间</td>
+								<td align="center" valign="middle" >审核时间</td>
 							</tr>
 							<%if(acfdList.size()>0){for(AccountCwbFareDetail acfd: acfdList){ %>
 								<tr valign="middle">
@@ -395,6 +396,7 @@ function changeYj(){
 									<td align="center" valign="middle" ><%=acfd.getInfactfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifyflag()>0?"已审核":acfd.getFareid()>0?"已交款":"未交款"%></td>
 									<td align="center" valign="middle" ><%=acfd.getPayuptime()%></td>
+									<td align="center" valign="middle" ><%=acfd.getVerifytime()==null?"":acfd.getVerifytime()%></td>
 								 </tr>
 							 <%}} %>
 							<tr valign="middle" >
@@ -408,6 +410,7 @@ function changeYj(){
 								<td></td>
 								<td><strong><%=shouldfare%></strong></td>
 								<td><strong><%=infactfare%></strong></td>
+								<td></td>
 								<td></td>
 								<td></td>
 							</tr>
