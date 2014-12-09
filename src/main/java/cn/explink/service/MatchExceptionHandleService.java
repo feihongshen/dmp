@@ -60,7 +60,7 @@ public class MatchExceptionHandleService {
 			return obj;
 		}
 		// 删除订单流程.
-		this.resetOrderFlow(cwbOrder);
+		// this.resetOrderFlow(cwbOrder);
 		// 更新订单状态.
 		this.updateOrderDeliverBranch(cwbOrder, newBranchId);
 		// 插入异常匹配已处理流程.
