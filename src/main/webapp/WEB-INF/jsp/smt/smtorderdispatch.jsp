@@ -232,7 +232,7 @@ function loadTodayOutAreaOrder(){
 	}
 
 	function createTD(align, width, content) {
-		var td = "<td  bgcolor='#f1f1f1' align='" + align + "'";
+		var td = "<td align='" + align + "'";
 		if (width) {
 			td += " width='" + width + "'";
 		}
@@ -549,13 +549,13 @@ dl dd span {
 												for (SmtOrder so : tNotDisData) {
 											%>
 											<tr cwb="<%=so.getCwb()%>" class="cwbids">
-												<td width="40" align="center" bgcolor="#f1f1f1"><input type="checkbox"></input></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCwb()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getMatchBranch()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getReceivedFee()%></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=so.getCustomerName()%></td>
-												<td width="150" align="center" bgcolor="#f1f1f1"><%=so.getPhone()%></td>
-												<td align="center" bgcolor="#f1f1f1"><%=so.getAddress()%></td>
+												<td width="40" align="center"><input type="checkbox"></input></td>
+												<td width="100" align="center" ><%=so.getCwb()%></td>
+												<td width="100" align="center"><%=so.getMatchBranch()%></td>
+												<td width="100" align="center"><%=so.getReceivedFee()%></td>
+												<td width="100" align="center"><%=so.getCustomerName()%></td>
+												<td width="150" align="center"><%=so.getPhone()%></td>
+												<td align="center"><%=so.getAddress()%></td>
 											</tr>
 											<%
 												}

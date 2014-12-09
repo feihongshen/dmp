@@ -407,9 +407,9 @@ dl dd span {
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
+											<td width="150" align="center" bgcolor="#f1f1f1">处理时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">处理站点</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">处理人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">联系方式</td>
