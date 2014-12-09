@@ -1289,12 +1289,12 @@ function signmanchange() {
 }
 
 // 监控配送状态变化 对显示字段做相应处理
-function click_podresultid(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
+function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
 		ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
 		needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
 	
-	if(podresultid==7){
+	if(podresultid==7&&deliverystate==0){
 		
 		$("#infactfare").val(0)
 		
@@ -1418,7 +1418,7 @@ function click_podresultid(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanC
 
 	// $("#remandtype").val(0);
 	centerBox();
-	if(podresultid==7){
+	if(podresultid==7&&deliverystate==0){
 		
 		$("#infactfare").val(0);
 		

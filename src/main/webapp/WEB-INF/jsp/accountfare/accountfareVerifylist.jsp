@@ -264,10 +264,8 @@ function changeTime(){
 							<option value ="-1">请选择</option>
 							<option value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenTuiChengGong.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
 							<option value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenJuTui.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
-							<option value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %> <%if(deliverystate.equals(""+DeliveryStateEnum.FenZhanZhiLiu.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-							<%-- <option value="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(deliverystate.equals(""+DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue())){ %>selected="selected"<%} %> ><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
-							<option value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.HuoWuDiuShi.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option> --%>
-						 </select>
+						</select>
+						
 						 应收运费：
 						<select name ="shoulefarefeesign" id ="shoulefarefeesign" >
 							<option value="1" <%=request.getParameter("shoulefarefeesign")!=null&&request.getParameter("shoulefarefeesign").equals("1")?"selected":"" %>>大于0</option>

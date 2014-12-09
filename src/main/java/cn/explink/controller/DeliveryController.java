@@ -638,6 +638,7 @@ public class DeliveryController {
 		model.addAttribute("cwborder", co);
 		this.session.setAttribute("deliveryStateType", ds.getDeliverystate());
 		model.addAttribute("deliverystate", this.getDeliveryStateView(ds, customerList, userList, null));
+		// model.addAttribute("deliveryStateType", ds.getDeliverystate());
 
 		Reason backreason = this.reasonDao.getReasonByReasonid(co.getBackreasonid());
 		Reason leavedreason = this.reasonDao.getReasonByReasonid(co.getLeavedreasonid());

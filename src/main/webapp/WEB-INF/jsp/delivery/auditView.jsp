@@ -5,6 +5,7 @@
 <%@page import="cn.explink.controller.DeliveryStateDTO"%>
 <%@page import=" cn.explink.domain.DeliveryState"%>
 <%@page import=" cn.explink.domain.Customer"%>
+<%@page import=" cn.explink.controller.DeliveryStateView"%>
 <%@page import=" cn.explink.domain.Reason"%>
 <%@page import=" cn.explink.enumutil.DeliveryStateEnum"%>
 <%@page import=" cn.explink.enumutil.FlowOrderTypeEnum"%>
@@ -17,6 +18,7 @@
 <%
 List<JSONObject> deliverList = request.getAttribute("deliverList")==null?new ArrayList<JSONObject>():(List<JSONObject>) request.getAttribute("deliverList");
 DeliveryStateDTO dsDTO = request.getAttribute("deliveryStateDTO")==null?null:(DeliveryStateDTO)request.getAttribute("deliveryStateDTO");
+DeliveryStateView deliverystate =request.getAttribute("deliverystate")==null?new DeliveryStateView(): (DeliveryStateView)request.getAttribute("deliverystate");
 
 /* List<Customer> customers = request.getAttribute("customers")==null?new ArrayList<Customer>():(List<Customer>)request.getAttribute("customers"); */
 List<Reason> returnlist = (List<Reason>)request.getAttribute("returnlist");
@@ -32,7 +34,6 @@ String isGuiBanUseZanBuChuLi = request.getAttribute("isGuiBanUseZanBuChuLi")==nu
 String isReasonRequired=(String)request.getAttribute("isReasonRequired");
 
 Long deliveryStateType=(Long)session.getAttribute("deliveryStateType"); 
-
 //用户角色id
 long userroleid = request.getAttribute("userroleid")==null?0:(Long)request.getAttribute("userroleid");
 String deliveryxiaojianyuan=request.getAttribute("deliveryxiaojianyuan")==null?"yes":(String)request.getAttribute("deliveryxiaojianyuan");
@@ -256,7 +257,7 @@ function editInit(){
 		$("#"+name, parent.document).val(value);
 	}
 	thisCheck();
-	window.parent.click_podresultid(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
+	window.parent.click_podresultid(<%=deliverystate.getDeliverystate()%>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
    			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,

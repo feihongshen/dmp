@@ -13,10 +13,10 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <%
-DeliveryStateView deliverystate = (DeliveryStateView)request.getAttribute("deliverystate");
+DeliveryStateView deliverystate =request.getAttribute("deliverystate")==null?new DeliveryStateView(): (DeliveryStateView)request.getAttribute("deliverystate");
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
 List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
-
+Long deliveryStateType=(Long)session.getAttribute("deliveryStateType"); 
 List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
 
 List<Reason> podremarkreasonlist = (List<Reason>)request.getAttribute("podremarkreasonlist");
@@ -41,7 +41,23 @@ int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:(Integer)request.get
 %>
 <script>
 var showposandqita="<%=showposandqita%>";
-
+function editInit(){
+	for(var i =0 ; i < initEditArray.length ; i ++){
+		var value = initEditArray[i].split(",")[0];
+		var name = initEditArray[i].split(",")[1];
+		$("#"+name, parent.document).val(value);
+	}
+	thisCheck();
+	window.parent.click_podresultid(<%=deliverystate.getDeliverystate()%>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
+   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
+   			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
+   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,
+   			$("#backreasonid", parent.document).val(),$("#leavedreasonid", parent.document).val(),$("#podremarkid", parent.document).val(),$("#newpaywayid", parent.document).val(),
+   			$("#weishuakareasonid", parent.document).val(),$("#losereasonid", parent.document).val(),false);
+	$("input[type='text']", parent.document).focus(function(){
+		$(this).select();
+	});
+}
 
 var initEditArray = new Array();
 initEditArray[0]="<%=deliverystate.getDeliverystate()%>,podresultid";
@@ -96,9 +112,8 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="newpaywayid" value="<%=cwborder.getNewpaywayid()%>"/>
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
-					
 					<select id ="podresultid" name ="podresultid" 
-		   			onChange="click_podresultid(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
+		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
 		   			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=backreasonid%>,<%=leavedreasonid%>,
@@ -187,7 +202,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 		        <li><span>退还现金：</span><input type="text" name="returnedfee" id="returnedfee" value ="<%=deliverystate.getReturnedfee()%>" maxlength="50"/></li>
 			    <li><span>实收现金：</span><input type="text" name="receivedfeecash" id="receivedfeecash" value ="<%= deliverystate.getCash()%>" onkeyup="weishuakachange();" /></li>
 			    <li><span>应收运费：</span><%=deliverystate.getShouldfare() %><input type="hidden" id="shouldfare" value="<%=deliverystate.getShouldfare()%>"/></li>
-		        <li><span>实收运费：</span><input type="text" id="infactfare" name="infactfare" value="<%=deliverystate.getInfactfare()%> "/></li>
+		        <li><span>实收运费：</span><input type="text" id="infactfare" name="infactfare" value="<%=deliverystate.getInfactfare()%>" maxlength="50"/></li>
 			    <%if(showposandqita.equals("yes")){ %>
 					<li><span>POS刷卡实收：</span><input type="text" name="receivedfeepos" id="receivedfeepos" value ="<%=deliverystate.getPos()%>" maxlength="50"/><input  id="isforchange" type="button" onclick="forchange();" value="换"/></li>
 					<li><span>POS备注：</span><input type="text" name="posremark" id="posremark" value ="<%=deliverystate.getPosremark()%>" maxlength="50"/></li>
