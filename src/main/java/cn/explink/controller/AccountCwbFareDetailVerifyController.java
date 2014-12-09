@@ -191,8 +191,8 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
 			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
-		String[] cloumnName1 = new String[17]; // 导出的列名
-		String[] cloumnName2 = new String[17]; // 导出的英文列名
+		String[] cloumnName1 = new String[15]; // 导出的列名
+		String[] cloumnName2 = new String[15]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailVerifyFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
@@ -234,6 +234,7 @@ public class AccountCwbFareDetailVerifyController {
 						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
+
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值

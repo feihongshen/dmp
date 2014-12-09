@@ -332,23 +332,47 @@ function changeTime(){
 								<td align="center" valign="middle" >应收运费[元]</td>
 								<td align="center" valign="middle" >实收运费[元]</td>
 								<td align="center" valign="middle" >交款时间</td>
-								<td align="center" valign="middle" >现金</td>
-								<td align="center" valign="middle" >交款人</td>
-								<td align="center" valign="middle" >转账</td>
+								<td align="center" valign="middle" >交款方式</td>
 								<td align="center" valign="middle" >交款人</td>
 								<td align="center" valign="middle" >卡号</td>
 								<td align="center" valign="middle" >审核状态</td>
 								<td align="center" valign="middle" >审核时间</td>
 							</tr>
 					 		<%if(acfdList.size()>0){for(AccountCwbFareDetail acfd: acfdList){
-						/* 		String girouser=accountFareMap.get(acfd.getFareid()).getGirouser();
+								String girouser=accountFareMap.get(acfd.getFareid()).getGirouser();
 								String cashuser=accountFareMap.get(acfd.getFareid()).getCashuser();
-								String jiaokuanren= girouser!=null&&girouser.length()>0?girouser:cashuser;
 								
+								String jiaokuanren= "";
+								if(girouser.length()>0)
+								{
+									jiaokuanren=girouser;
+								}
+								if(cashuser.length()>0)
+								{
+									jiaokuanren=cashuser;
+								}
+								if(cashuser.length()>0&&girouser.length()>0)
+								{  
+									jiaokuanren=cashuser+"--"+girouser;
+								}
 								BigDecimal girofee=accountFareMap.get(acfd.getFareid()).getGirofee();
 								BigDecimal cashfee=accountFareMap.get(acfd.getFareid()).getCashfee();
-								String jiaokuantype= cashfee!=null&&cashfee.compareTo(BigDecimal.ZERO)>0?"现金":"转账";
-									 */	
+								double girofee1=girofee==null?0:girofee.doubleValue();
+								double cashfee1=cashfee==null?0:cashfee.doubleValue();
+								String jiaokuantype= "";
+								if(girofee1>0)
+								{
+									jiaokuantype="转账";
+								}
+								if(cashfee1>0)
+								{
+									jiaokuantype="现金";
+								}
+								if(cashfee1>0&&girofee1>0)
+								{
+									jiaokuantype="现金--转账";
+								}
+								 
 								%> 
 								<tr valign="middle">
 									<td><input id="cwb" name="cwb" type="checkbox" value="<%=acfd.getCwb()%>" <%if(acfd.getVerifyflag()>0){ %> disabled="disabled" <%}else{ %>checked="checked" <%} %> onClick="changeYj()" infactfare="<%=acfd.getInfactfare()%>"/></td>
@@ -361,10 +385,8 @@ function changeTime(){
 									<td align="center" valign="middle" ><%=acfd.getShouldfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getInfactfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getPayuptime()%></td>
-									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getCashfee()==null?"":accountFareMap.get(acfd.getFareid()).getCashfee()%></td>
-									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getCashuser()%></td>
-									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirofee()==null?"":accountFareMap.get(acfd.getFareid()).getGirofee()%></td>
-									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirouser()%></td>
+									<td align="center" valign="middle" ><%=jiaokuantype%></td>
+									<td align="center" valign="middle" ><%=jiaokuanren%></td>
 									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirocardno()%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifyflag()>0?"已审核":"未审核"%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifytime()==null?"":acfd.getVerifytime()%></td>

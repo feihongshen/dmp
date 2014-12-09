@@ -2579,40 +2579,50 @@ public class ExportService {
 		cloumnName2[8] = "Infactfare";
 		cloumnName1[9] = "交款时间";
 		cloumnName2[9] = "Payuptime";
-		cloumnName1[10] = "现金";
-		cloumnName2[10] = "Cashfee";
+		cloumnName1[10] = "交款方式";
+		cloumnName2[10] = "Fee";
 		cloumnName1[11] = "交款人";
-		cloumnName2[11] = "Cashuser";
-		cloumnName1[12] = "转账";
-		cloumnName2[12] = "Girofee";
-		cloumnName1[13] = "交款人";
-		cloumnName2[13] = "Girouser";
-		cloumnName1[14] = "卡号";
-		cloumnName2[14] = "Griocardno";
-		cloumnName1[15] = "审核状态";
-		cloumnName2[15] = "Verifytype";
-		cloumnName1[16] = "审核时间";
-		cloumnName2[16] = "Verifytime";
+		cloumnName2[11] = "User";
+		cloumnName1[12] = "卡号";
+		cloumnName2[12] = "Griocardno";
+		cloumnName1[13] = "审核状态";
+		cloumnName2[13] = "Verifytype";
+		cloumnName1[14] = "审核时间";
+		cloumnName2[14] = "Verifytime";
 
 	}
 
 	public Object setAccountCwbFareDetailVerifyObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
 			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList, Map<Long, AccountCwbFare> accountFareMap) {
 		try {
-			if (cloumnName3[i].equals("Cashfee")) {
+			if (cloumnName3[i].equals("Fee")) {
 
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee() == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee();
+				double cashfee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee() == null ? 0 : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
+						.getCashfee().doubleValue();
+				double girofee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee() == null ? 0 : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
+						.getGirofee().doubleValue();
+				if (girofee > 0) {
+					a = "转账";
+				}
+				if (cashfee > 0) {
+					a = "现金";
+				}
+				if ((cashfee > 0) && (girofee > 0)) {
+					a = "现金--转账";
+				}
 
-			} else if (cloumnName3[i].equals("Cashuser")) {
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
-
-			} else if (cloumnName3[i].equals("Girofee")) {
-
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee() == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee();
-
-			} else if (cloumnName3[i].equals("Girouser")) {
-
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
+			} else if (cloumnName3[i].equals("User")) {
+				String cashuser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
+				String girouser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
+				if (girouser.length() > 0) {
+					a = girouser;
+				}
+				if (cashuser.length() > 0) {
+					a = cashuser;
+				}
+				if ((cashuser.length() > 0) && (girouser.length() > 0)) {
+					a = cashuser + "--" + girouser;
+				}
 
 			} else if (cloumnName3[i].equals("Griocardno")) {
 				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
