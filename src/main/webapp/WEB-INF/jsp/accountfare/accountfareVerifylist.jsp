@@ -15,6 +15,7 @@
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<User> userList = (List<User>)request.getAttribute("userList");
+List<User> userListofbranch = (List<User>)request.getAttribute("userListofbranch");
 Date now = new Date();
   String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
@@ -255,7 +256,7 @@ function changeTime(){
 			              </select>
 			            小件员：  <select name ="userid" id ="userid" >
 			            <option value="0">请选择</option>
-						<%for(User u:userList){ %>
+						<%for(User u:userListofbranch){ %>
 						<option value="<%=u.getUserid()%>" <%if(userid.equals(u.getUserid()+"")) {%> selected="selected"<%} %>><%=u.getRealname()%></option>
 						<%} %>
 			            </select>
@@ -322,7 +323,7 @@ function changeTime(){
 						<tbody>
 							<tr class="font_1">
 								<td width="80" align="center" valign="middle" ><a style="cursor: pointer;" onclick="isgetallcheck();">[全选/反选]</a></td>
-								<td width="150" align="center" valign="middle" >订单号</td>
+								<td  align="center" valign="middle" >订单号</td>
 								<td  align="center" valign="middle" >小件员</td>
 								<td align="center" valign="middle" >供货商</td>
 								<td align="center" valign="middle" >配送站点</td>
@@ -331,35 +332,39 @@ function changeTime(){
 								<td align="center" valign="middle" >应收运费[元]</td>
 								<td align="center" valign="middle" >实收运费[元]</td>
 								<td align="center" valign="middle" >交款时间</td>
+								<td align="center" valign="middle" >现金</td>
 								<td align="center" valign="middle" >交款人</td>
-								<td align="center" valign="middle" >交款方式</td>
+								<td align="center" valign="middle" >转账</td>
+								<td align="center" valign="middle" >交款人</td>
 								<td align="center" valign="middle" >卡号</td>
 								<td align="center" valign="middle" >审核状态</td>
 								<td align="center" valign="middle" >审核时间</td>
 							</tr>
-							<%if(acfdList.size()>0){for(AccountCwbFareDetail acfd: acfdList){
-								String girouser=accountFareMap.get(acfd.getFareid()).getGirouser();
+					 		<%if(acfdList.size()>0){for(AccountCwbFareDetail acfd: acfdList){
+						/* 		String girouser=accountFareMap.get(acfd.getFareid()).getGirouser();
 								String cashuser=accountFareMap.get(acfd.getFareid()).getCashuser();
 								String jiaokuanren= girouser!=null&&girouser.length()>0?girouser:cashuser;
 								
 								BigDecimal girofee=accountFareMap.get(acfd.getFareid()).getGirofee();
 								BigDecimal cashfee=accountFareMap.get(acfd.getFareid()).getCashfee();
-								String jiaokuantype= girofee!=null&&girofee.compareTo(BigDecimal.ZERO)>0?"转账":"现金";
-										
-								%>
+								String jiaokuantype= cashfee!=null&&cashfee.compareTo(BigDecimal.ZERO)>0?"现金":"转账";
+									 */	
+								%> 
 								<tr valign="middle">
 									<td><input id="cwb" name="cwb" type="checkbox" value="<%=acfd.getCwb()%>" <%if(acfd.getVerifyflag()>0){ %> disabled="disabled" <%}else{ %>checked="checked" <%} %> onClick="changeYj()" infactfare="<%=acfd.getInfactfare()%>"/></td>
 									<td align="center" valign="middle" ><%=acfd.getCwb()%></td>
-									<td align="center" valign="middle" ><%for(Customer c :customerlist){if(acfd.getCustomerid()==c.getCustomerid()){out.print(c.getCustomername());}} %></td>
 									<td align="center" valign="middle" ><%for(User u :userList){if(acfd.getUserid()==u.getUserid()){out.print(u.getRealname());}} %></td>
+									<td align="center" valign="middle" ><%for(Customer c :customerlist){if(acfd.getCustomerid()==c.getCustomerid()){out.print(c.getCustomername());}} %></td>
 									<td align="center" valign="middle"  ><%for(Branch b :branchList){if(acfd.getDeliverybranchid()==b.getBranchid()){out.print(b.getBranchname());}} %></td>
 									<td align="center" valign="middle" ><%=acfd.getAudittime()%></td>
 									<td align="center" valign="middle" ><%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){if(acfd.getDeliverystate()==ds.getValue()){out.print(ds.getText());}} %></td>
 									<td align="center" valign="middle" ><%=acfd.getShouldfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getInfactfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getPayuptime()%></td>
-									<td align="center" valign="middle" ><%=jiaokuanren%></td>
-									<td align="center" valign="middle" ><%=jiaokuantype%></td>
+									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getCashfee()==null?"":accountFareMap.get(acfd.getFareid()).getCashfee()%></td>
+									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getCashuser()%></td>
+									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirofee()==null?"":accountFareMap.get(acfd.getFareid()).getGirofee()%></td>
+									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirouser()%></td>
 									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirocardno()%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifyflag()>0?"已审核":"未审核"%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifytime()==null?"":acfd.getVerifytime()%></td>
@@ -375,6 +380,7 @@ function changeTime(){
 								<td></td>
 								<td><strong><%=accountCwbFareDetailSum.getShouldfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getShouldfare() %></strong></td>
 								<td><strong><%=accountCwbFareDetailSum.getInfactfare()==null?BigDecimal.ZERO:accountCwbFareDetailSum.getInfactfare() %></strong></td>
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>

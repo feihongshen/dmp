@@ -112,6 +112,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="newpaywayid" value="<%=cwborder.getNewpaywayid()%>"/>
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
+					<input type="hidden" id="shishou" value="<%=deliverystate.getInfactfare()%>"/>
 					<select id ="podresultid" name ="podresultid" 
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,

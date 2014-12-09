@@ -1396,7 +1396,7 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 			zhiliuObj();
 		} else if (podresultid == ShangMenJuTui) {// 上门拒退
 			if (needdefault) {
-				$("#infactfare").val(parseFloat($("#shouldfare").val()));
+				$("#infactfare").val(parseFloat($("#shishou").val()));
 			}
 			shangmenjutuiObj();
 		} else if (podresultid == HuoWuDiuShi) {// 货物丢失

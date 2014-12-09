@@ -25,6 +25,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbDetailView;
+import cn.explink.domain.AccountCwbFare;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.AccountCwbSummary;
 import cn.explink.domain.AccountDeducDetailView;
@@ -2483,34 +2484,6 @@ public class ExportService {
 		cloumnName2[11] = "Verifytime";
 	}
 
-	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
-		cloumnName1[0] = "订单号";
-		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "小件员";
-		cloumnName2[1] = "Userid";
-		cloumnName1[2] = "供货商";
-		cloumnName2[2] = "Customerid";
-		cloumnName1[3] = "订单类型";
-		cloumnName2[3] = "Cwbordertypeid";
-		cloumnName1[4] = "配送站点";
-		cloumnName2[4] = "Deliverybranchid";
-		cloumnName1[5] = "审核时间";
-		cloumnName2[5] = "Audittime";
-		cloumnName1[6] = "配送结果";
-		cloumnName2[6] = "Deliverystate";
-		cloumnName1[7] = "应收运费金[元]";
-		cloumnName2[7] = "Shouldfare";
-		cloumnName1[8] = "实收运费[元]";
-		cloumnName2[8] = "Infactfare";
-		cloumnName1[9] = "交款状态";
-		cloumnName2[9] = "Fareid";
-		cloumnName1[10] = "交款时间";
-		cloumnName2[10] = "Payuptime";
-		cloumnName1[11] = "审核时间";
-		cloumnName2[11] = "Verifytime";
-
-	}
-
 	public Object setAccountCwbFareDetailObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
 			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList) {
 		try {
@@ -2556,9 +2529,142 @@ public class ExportService {
 					a = "已审核";
 				} else {
 					a = "未交款";
+
 					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) > 0) {
 						a = "已交款";
 					}
+
+				}
+			} else {
+				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));
+			}
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return a;
+
+	}
+
+	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "小件员";
+		cloumnName2[1] = "Userid";
+		cloumnName1[2] = "供货商";
+		cloumnName2[2] = "Customerid";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "Cwbordertypeid";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Deliverybranchid";
+		cloumnName1[5] = "审核时间";
+		cloumnName2[5] = "Audittime";
+		cloumnName1[6] = "配送结果";
+		cloumnName2[6] = "Deliverystate";
+		cloumnName1[7] = "应收运费金[元]";
+		cloumnName2[7] = "Shouldfare";
+		cloumnName1[8] = "实收运费[元]";
+		cloumnName2[8] = "Infactfare";
+		cloumnName1[9] = "交款时间";
+		cloumnName2[9] = "Payuptime";
+		cloumnName1[10] = "现金";
+		cloumnName2[10] = "Cashfee";
+		cloumnName1[11] = "交款人";
+		cloumnName2[11] = "Cashuser";
+		cloumnName1[12] = "转账";
+		cloumnName2[12] = "Girofee";
+		cloumnName1[13] = "交款人";
+		cloumnName2[13] = "Girouser";
+		cloumnName1[14] = "卡号";
+		cloumnName2[14] = "Griocardno";
+		cloumnName1[15] = "审核状态";
+		cloumnName2[15] = "Verifytype";
+		cloumnName1[16] = "审核时间";
+		cloumnName2[16] = "Verifytime";
+
+	}
+
+	public Object setAccountCwbFareDetailVerifyObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
+			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList, Map<Long, AccountCwbFare> accountFareMap) {
+		try {
+			if (cloumnName3[i].equals("Cashfee")) {
+
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee() == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee();
+
+			} else if (cloumnName3[i].equals("Cashuser")) {
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
+
+			} else if (cloumnName3[i].equals("Girofee")) {
+
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee() == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee();
+
+			} else if (cloumnName3[i].equals("Girouser")) {
+
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
+
+			} else if (cloumnName3[i].equals("Griocardno")) {
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
+			} else if (cloumnName3[i].equals("Customerid")) {
+				long customerid = Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString());
+				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();
+			} else if (cloumnName3[i].equals("Cwbordertypeid")) {
+				for (CwbOrderTypeIdEnum ct : CwbOrderTypeIdEnum.values()) {
+					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == ct.getValue()) {
+						a = ct.getText();
+						break;
+					}
+				}
+			} else if (cloumnName3[i].equals("Deliverybranchid")) {
+				a = "";
+				if (branchList.size() > 0) {
+					for (Branch b : branchList) {
+						if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == b.getBranchid()) {
+							a = b.getBranchname();
+							break;
+						}
+					}
+				}
+			} else if (cloumnName3[i].equals("Userid")) {
+				a = "";
+				if (userList.size() > 0) {
+					for (User u : userList) {
+						if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == u.getUserid()) {
+							a = u.getRealname();
+							break;
+						}
+					}
+				}
+			} else if (cloumnName3[i].equals("Deliverystate")) {
+				for (DeliveryStateEnum ds : DeliveryStateEnum.values()) {
+					if (Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString()) == ds.getValue()) {
+						a = ds.getText();
+						break;
+					}
+				}
+			} else if (cloumnName3[i].equals("Verifytype")) {
+				if (accountCwbFareDetailList.get(k).getVerifyflag() > 0) {
+					a = "已审核";
+				} else {
+					a = "未审核";
+					/*
+					 * if
+					 * (Long.parseLong(accountCwbFareDetailList.get(k).getClass
+					 * ().getMethod("get" +
+					 * cloumnName3[i]).invoke(accountCwbFareDetailList
+					 * .get(k)).toString()) > 0) { a = "已交款"; }
+					 */
 				}
 			} else {
 				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));

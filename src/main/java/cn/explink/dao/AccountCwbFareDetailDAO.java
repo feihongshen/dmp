@@ -189,10 +189,12 @@ public class AccountCwbFareDetailDAO {
 	 * @return
 	 */
 	public long getAccountCwbFareDetailCountByQKVerify(String customerids, int verifyflag, long verifytime, String begindate, String enddate, long deliverybranchid, long deliverystate,
-			long shoulefarefeesign) {
+			long shoulefarefeesign, long userid) {
 		String sql = "select count(1) from account_cwb_fare_detail where cwbordertypeid=" + CwbOrderTypeIdEnum.Shangmentui.getValue();
 		sql = this.getAccountCwbFareDetailByQKVerifySql(sql, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate, shoulefarefeesign);
-
+		if (userid > 0) {
+			sql += " and userid=" + userid;
+		}
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
@@ -342,4 +344,5 @@ public class AccountCwbFareDetailDAO {
 
 		return this.jdbcTemplate.query(sql, new AccountCwbFareDetailRowMapper());
 	}
+
 }

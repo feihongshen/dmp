@@ -95,8 +95,7 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "pageNumber", required = false, defaultValue = "100") long pageNumber) {
 
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-				+ BranchEnum.ZhongZhuan.getValue());
+		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "");
 
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 			if (branchnameList.size() == 0) {
@@ -108,7 +107,8 @@ public class AccountCwbFareDetailVerifyController {
 			}
 		}
 		Page pageparm = new Page();
-		List<User> userList = this.userDAO.getAllUserbybranchid(deliverybranchid);
+		List<User> userList = this.userDAO.getAllUser();
+		List<User> userListofbranch = this.userDAO.getAllUserbybranchid(deliverybranchid);
 		List<AccountCwbFareDetail> acfdList = new ArrayList<AccountCwbFareDetail>();
 		AccountCwbFareDetail accountCwbFareDetailSum = new AccountCwbFareDetail();
 		if ((begindate.length() > 0) && (enddate.length() > 0)) {
@@ -116,7 +116,7 @@ public class AccountCwbFareDetailVerifyController {
 			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailByQKVerify(page, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
 					shoulefarefeesign, pageNumber, userid);
 			pageparm = new Page(this.accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
-					shoulefarefeesign), page, pageNumber);
+					shoulefarefeesign, userid), page, pageNumber);
 			accountCwbFareDetailSum = this.accountCwbFareDetailDAO.getAccountCwbFareDetailSumByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
 					shoulefarefeesign, userid);
 		}
@@ -141,6 +141,7 @@ public class AccountCwbFareDetailVerifyController {
 		}
 
 		model.addAttribute("userList", userList);
+		model.addAttribute("userListofbranch", userListofbranch);
 		model.addAttribute("userid", userid);
 		model.addAttribute("deliverystate", deliverystate);
 		model.addAttribute("acfdList", acfdList);
@@ -190,13 +191,13 @@ public class AccountCwbFareDetailVerifyController {
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
 			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
 			@RequestParam(value = "shoulefarefeesign", required = false, defaultValue = "1") long shoulefarefeesign) {
-		String[] cloumnName1 = new String[12]; // 导出的列名
-		String[] cloumnName2 = new String[12]; // 导出的英文列名
+		String[] cloumnName1 = new String[17]; // 导出的列名
+		String[] cloumnName2 = new String[17]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailVerifyFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		final HttpServletRequest request1 = request;
-		String sheetName = "上门退运费结算记录"; // sheet的名称
+		String sheetName = "上门退运费审核记录"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "AccountCwbFareDetail_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
@@ -207,6 +208,24 @@ public class AccountCwbFareDetailVerifyController {
 
 			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getExportAccountCwbFareDetailByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid,
 					deliverystate, shoulefarefeesign, userid);
+			StringBuffer fareidsub = new StringBuffer();
+			if ((list != null) && (list.size() > 0)) {
+				for (AccountCwbFareDetail accountCwbFareDetail : list) {
+					fareidsub.append("'" + accountCwbFareDetail.getFareid() + "',");
+				}
+			}
+			String fareids = "";
+			if (fareidsub.length() > 0) {
+				fareids = fareidsub.substring(0, fareidsub.length() - 1);
+			}
+
+			List<AccountCwbFare> accountFarelist = this.accountCwbFareDAO.getAccountCwbFareListByIds(fareids);
+			final Map<Long, AccountCwbFare> accountFareMap = new HashMap<Long, AccountCwbFare>();
+			if ((accountFarelist != null) && (accountFarelist.size() > 0)) {
+				for (AccountCwbFare accountCwbFare : accountFarelist) {
+					accountFareMap.put(accountCwbFare.getId(), accountCwbFare);
+				}
+			}
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
@@ -218,7 +237,8 @@ public class AccountCwbFareDetailVerifyController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AccountCwbFareDetailVerifyController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList);
+							a = AccountCwbFareDetailVerifyController.this.exportService
+									.setAccountCwbFareDetailVerifyObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList, accountFareMap);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
