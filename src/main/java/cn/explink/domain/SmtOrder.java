@@ -20,7 +20,7 @@ public class SmtOrder {
 
 	private double receivedFee = 0;
 
-	private String matchBranch = null;
+	private String matchBranch = "";
 
 	private long deliver = -1;
 
