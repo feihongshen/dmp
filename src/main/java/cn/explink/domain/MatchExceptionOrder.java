@@ -16,7 +16,7 @@ public class MatchExceptionOrder {
 
 	private long matchBranchId = 0;
 
-	private String matchBranchName = null;
+	private String matchBranchName = "";
 
 	private String customerName = null;
 

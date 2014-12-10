@@ -96,6 +96,7 @@ public class MatchExceptionHandleService {
 		return userList.get(0);
 	}
 
+	@SuppressWarnings("unused")
 	private void resetOrderFlow(CwbOrder cwbOrder) {
 		if (cwbOrder.getOutareaflag() == 0) {
 			return;
@@ -149,9 +150,14 @@ public class MatchExceptionHandleService {
 	}
 
 	private boolean isCurrentBranchOrder(CwbOrder order) {
-		long orderBranchId = order.getCurrentbranchid();
+		long compareBranchid = 0;
+		if (order.getOutareaflag() != 0) {
+			compareBranchid = order.getCurrentbranchid();
+		} else {
+			compareBranchid = order.getNextbranchid();
+		}
 		long curBranchId = this.getCurrentBranchId();
-		if (orderBranchId == curBranchId) {
+		if (compareBranchid == curBranchId) {
 			return true;
 		}
 		return false;

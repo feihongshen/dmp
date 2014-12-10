@@ -328,6 +328,7 @@ public class MatchExceptionController {
 				continue;
 			}
 			meo.setReportOutAreaBranchId(0);
+			meo.setReportOutAreaBranchName("");
 			meo.setReportOutAreaTime("");
 			meo.setReportOutAreaUserId(0);
 			meo.setReportOutAreaUserName("");
