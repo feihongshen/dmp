@@ -5713,14 +5713,13 @@ INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUE
 	<changeSet id="wangyonghe-2014-11-11"  author="wangyonghe">
 		<sql>
 				ALTER TABLE `express_ops_exception_cwb`
-ADD COLUMN `remark`  varchar(500) NOT NULL AFTER `interfacetype`;
+ADD COLUMN `remark`  varchar(500)  AFTER `interfacetype`;
 		</sql>
 	</changeSet>
 	<changeSet id="wangyonghe-2014-11-12-8"  author="wangyonghe">
 		<sql>
 ALTER TABLE `express_ops_exception_cwb`
-MODIFY COLUMN `errortype`  varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT '' AFTER `scantype`,
-MODIFY COLUMN `remark`  varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' AFTER `interfacetype`;
+MODIFY COLUMN `errortype`  varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT '' AFTER `scantype`;
 		</sql>
 	</changeSet>
 	<changeSet id="wangyonghe-2014-11-12-2"  author="wangyonghe">
