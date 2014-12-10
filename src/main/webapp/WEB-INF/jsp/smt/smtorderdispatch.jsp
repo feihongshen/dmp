@@ -149,10 +149,10 @@ function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabInd
 			success : function(data) {
 				var dataList = data.smtOrderList;
 				if(tableId == "today_table" || tableId =="history_table"){
- 					refreshTable(tableId,dataList,tabIndex ,true);
+ 					refreshTable(tableId,dataList,tabIndex ,true,false);
 				}
 				else{
- 					refreshTable(tableId,dataList,tabIndex ,false);
+ 					refreshTable(tableId,dataList,tabIndex ,false,false);
 				}
 				setCurrentDataFilterCond(dataType , timeType , dispatched);
 			},
@@ -178,7 +178,7 @@ function loadTodayOutAreaOrder(){
 			async : false,
 			success : function(data) {
 				var dataList = data.smtOrderList;
-				refreshTable("out_area_table", dataList, 4, false);
+				refreshTable("out_area_table", dataList, 4, false,true);
 			},
 			error : function(data) {
 				alert(data);
@@ -186,21 +186,21 @@ function loadTodayOutAreaOrder(){
 		});
 	}
 
-	function refreshTable(tableId, dataList, tableIndex, withCheckBox) {
+	function refreshTable(tableId, dataList, tableIndex, withCheckBox,outArea) {
 		var $table = $("#" + tableId);
 		$table.empty();
 		if (dataList) {
-			var dataHtml = createTableRowData(dataList, withCheckBox);
+			var dataHtml = createTableRowData(dataList, withCheckBox,outArea);
 			$table.append(dataHtml);
 		}
 		showTab(tableIndex);
 	}
 
-	function createTableRowData(dataList, withCheckBox) {
+	function createTableRowData(dataList, withCheckBox,outArea) {
 		var allRow = "";
 		var length = dataList.length;
 		for (var i = 0; i < length; i++) {
-			var tr = createTR(dataList[i], withCheckBox);
+			var tr = createTR(dataList[i], withCheckBox,outArea);
 			allRow += tr;
 		}
 		return allRow;
@@ -213,7 +213,7 @@ function loadTodayOutAreaOrder(){
 		$(".tabbox li").eq(index).show().siblings().hide();
 	}
 
-	function createTR(data, widthCheckBox) {
+	function createTR(data, widthCheckBox ,outArea) {
 		var tr = "<tr cwb="+ data.cwb +">";
 		if (widthCheckBox) {
 			tr += createTD("center", "40px", "<input type='checkbox'></input>");
@@ -221,7 +221,7 @@ function loadTodayOutAreaOrder(){
 		tr += createTD("center", "100px", data.cwb);
 		tr += createTD("center", "100px", data.matchBranch);
 		tr += createTD("right", "100px", data.receivedFee);
-		if (data.strDeliver != undefined && !widthCheckBox) {
+		if (data.strDeliver != undefined && !widthCheckBox && !outArea) {
 			tr += createTD("center", "100px", data.strDeliver);
 		}
 		tr += createTD("center", "100px", data.customerName);
