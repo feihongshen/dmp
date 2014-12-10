@@ -1016,6 +1016,7 @@ src/main/java/cn/explink/domain/SmsConfigModel.java -text
 src/main/java/cn/explink/domain/SmsSend.java -text
 src/main/java/cn/explink/domain/SmtOrder.java -text
 src/main/java/cn/explink/domain/SmtOrderContainer.java -text
+src/main/java/cn/explink/domain/Smtcount.java -text
 src/main/java/cn/explink/domain/StockDetail.java -text
 src/main/java/cn/explink/domain/StockResult.java -text
 src/main/java/cn/explink/domain/Switch.java -text

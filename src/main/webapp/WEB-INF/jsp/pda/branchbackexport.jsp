@@ -166,8 +166,8 @@ function exportUntreadWarehouse(pname,scancwb,branchid,driverid,truckid,requestb
 }
 
 $(function(){
-	getTuiHuoOutSum('<%=request.getContextPath()%>',$("#branchid").val());
-	getTuiHuoYiOutSum($("#branchid").val());
+<%-- 	getTuiHuoOutSum('<%=request.getContextPath()%>',$("#branchid").val());
+	getTuiHuoYiOutSum($("#branchid").val()); --%>
 	 $("#scancwb").focus();
 });
 //得到当前出库的站点的库存量

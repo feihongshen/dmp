@@ -892,7 +892,7 @@ function chuku(){
 												<%
 													if (showCustomerSign) {
 												%>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView()%></td>
 												<%
 													}
 												%>

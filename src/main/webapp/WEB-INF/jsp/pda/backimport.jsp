@@ -94,8 +94,12 @@ function getcwbsdataForBack(){
 		url:"<%=request.getContextPath() %>/PDA/getBackInSum",
 		dataType:"json",
 		success : function(data) {
-			$("#rukukucundanshu").html(data.weirukucount);
-			$("#successcwbnum").html(data.yirukucount);
+			$("#yps").html(data.yps);
+			$("#ysmt").html(data.ysmt);
+			$("#ysmh").html(data.ysmh);
+			$("#wps").html(data.wps);
+			$("#wsmt").html(data.wsmt);
+			$("#wsmh").html(data.wsmh);
 		}
 	});
 }
@@ -522,9 +526,9 @@ function yiruku(){
 							<td style="color: #030;"><strong>上门换</strong></td>
 						</tr>
 						<tr align="center" valign="bottom">
-							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wpeisong')" id="chukukucundanshu"><strong><%=wpeisongList.size() %></strong></td>
-							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wshangmengtui')" id="chukukucundanshu"><strong><%=wshangmentuiList.size()%></strong></td>
-							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wshangmenghuan')" id="chukukucundanshu"><strong><%=wshangmenhuanList.size() %></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wpeisong')" id="chukukucundanshu"><strong><span id="wps">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wshangmengtui')" id="chukukucundanshu"><strong><span id="wsmt">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_weituihuoruku','wshangmenghuan')" id="chukukucundanshu"><strong><span id="wsmh">0</span></strong></td>
 						</tr>
 					</table>
 					
@@ -543,9 +547,9 @@ function yiruku(){
 							<td style="color: #030;"><strong>上门换</strong></td>
 						</tr>
 						<tr align="center" valign="bottom">
-							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','ypeisong')" id="chukukucundanshu"><strong><%=ypeisonglist.size() %></strong></td>
-							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','yshangmengtui')" id="chukukucundanshu"><strong><%=yshangmentuilist.size() %></strong></td>
-							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','yshangmenghuan')" id="chukukucundanshu"><strong><%=yshangmenhuanlist.size() %></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','ypeisong')" id="chukukucundanshu"><strong><span id="yps">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','yshangmengtui')" id="chukukucundanshu"><strong><span id="ysmt">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_yituihuoruku','yshangmenghuan')" id="chukukucundanshu"><strong><span id="ysmh">0</span></strong></td>
 						</tr>
 					</table>
 		</dl>

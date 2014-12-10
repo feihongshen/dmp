@@ -524,7 +524,7 @@ function tohome(){
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>
-													<td width="100"><%=obj.get("showRemark") %></td>
+													<td width="100"><%=obj.get("showRemark")==null?"":obj.get("showRemark") %></td>
 												<%} %>
 												<td width="100" align="center"><%=obj.get("errorinfo") %></td>
 											</tr>

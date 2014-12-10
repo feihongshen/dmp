@@ -385,8 +385,9 @@ function exportYifankui(){
 							<tbody>
 							<%if(deliverList != null && deliverList.size()>0){ %>
 								<%for(JSONObject jd : deliverList){ %>
-								<tr class="font_1" height="30" style="background-color: rgb(255, 255, 255); ">
-									<td width="120" rowspan="3" align="center" valign="middle"><%=jd.getString("delivername") %></td>
+								<tr class="font_1" height="55" style="background-color: rgb(255, 255, 255); ">
+								
+									<td width="120"  rowspan="3" align="center" valign="middle"><%=jd.getString("delivername") %></td>
 									<td align="center" valign="middle" bgcolor="#FFFFFF" >&nbsp;</td>
 								</tr>
 								<tr class="font_1" height="30" style="background-color: rgb(255, 255, 255); ">

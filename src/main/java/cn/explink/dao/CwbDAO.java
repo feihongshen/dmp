@@ -29,6 +29,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.SmtOrder;
+import cn.explink.domain.Smtcount;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -416,6 +417,18 @@ public class CwbDAO {
 			CwbOrder obj = new CwbOrder();
 			obj.setOpscwbid(rs.getLong("opscwbid"));
 			obj.setSendcarnum(rs.getLong("sendcarnum"));
+			return obj;
+		}
+	}
+
+	private final class SmtCountMapper implements RowMapper<Smtcount> {
+		@Override
+		public Smtcount mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Smtcount obj = new Smtcount();
+			obj.setCount(rs.getLong("count"));
+			obj.setPscount(rs.getLong("pscount"));
+			obj.setSmhcount(rs.getLong("smhcount"));
+			obj.setSmtcount(rs.getLong("smtcount"));
 			return obj;
 		}
 	}
@@ -1902,10 +1915,31 @@ public class CwbDAO {
 								+ FlowOrderTypeEnum.TuiHuoChuZhan.getValue() + "' and state=1 ", branchid);
 	}
 
+	public Smtcount getBackRukubyBranchidsmt(long branchid) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
+		sql += "WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.TuiHuoChuZhan.getValue() + "' and state=1 ";
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
+	}
+
 	// 退货站已入库订单
 	public long getBackYiRukubyBranchid(long branchid) {
 		return this.jdbcTemplate.queryForLong("SELECT COUNT(1) FROM express_ops_cwb_detail WHERE currentbranchid=? and flowordertype=? and state=1 ", branchid,
 				FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
+	}
+
+	public Smtcount getBackYiRukubyBranchidsmt(long branchid) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_cwb_detail FORCE INDEX(detail_currentbranchid_idx) ";
+		sql += " WHERE currentbranchid=? and flowordertype=? and state=1";
+
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 	}
 
 	// 退货站已入库订单列表
@@ -2005,9 +2039,17 @@ public class CwbDAO {
 	}
 
 	public List<String> getTodayWeiLingDaohuoCwbsbyBranchid(long branchid, String cwbs) {
+
 		String sql = "SELECT cwb FROM express_ops_cwb_detail WHERE  currentbranchid=" + branchid + " and flowordertype in('" + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + "','"
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "') and state=1 and cwb in(" + cwbs + ")";
 
+		/*
+		 * String sql =
+		 * "SELECT cwb FROM express_ops_cwb_detail WHERE   flowordertype in('" +
+		 * FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + "','"
+		 * + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() +
+		 * "') and state=1 and cwb in(" + cwbs + ")";
+		 */
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
@@ -2114,6 +2156,16 @@ public class CwbDAO {
 	public long getTGYSCKbyBranchid(long branchid) {
 		String sql = "SELECT COUNT(1) FROM express_ops_cwb_detail WHERE currentbranchid =? and cwbstate=? and flowordertype <>? and state=1 ";
 		return this.jdbcTemplate.queryForLong(sql, branchid, CwbStateEnum.TuiGongYingShang.getValue(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
+	}
+
+	public Smtcount getTGYSCKbyBranchidsmt(long branchid) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_cwb_detail FORCE INDEX(detail_currentbranchid_idx) ";
+		sql += " WHERE currentbranchid =? and cwbstate=? and flowordertype <>? and state=1 ";
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid, CwbStateEnum.TuiGongYingShang.getValue(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
 	}
 
 	/**
@@ -4438,6 +4490,16 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
+	public Smtcount getTGYSYCKsmt(long branchid) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_cwb_detail a  , express_ops_operation_time b  FORCE INDEX(OTime_Branchid_Idx) ";
+		sql += " WHERE a.cwb=b.cwb and a.state=1 and b.branchid=" + branchid + " AND b.flowordertype=" + FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue();
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper());
+	}
+
 	/**
 	 * 退供货商 未出库 导出
 	 *
@@ -4826,8 +4888,8 @@ public class CwbDAO {
 	 * @param strings
 	 * @return
 	 */
-	public List<CwbOrder> getCwbOrderByFlowordertypeAndCwbs(String types, String cwbs) {
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  state=1 and cwb in (" + cwbs + ") and flowordertype in (" + types + ")";
+	public List<CwbOrder> getCwbOrderByFlowordertypeAndCwbs(long branchid, String types, String cwbs) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + branchid + " and state=1 and cwb in (" + cwbs + ") and flowordertype in (" + types + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 

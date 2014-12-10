@@ -50,6 +50,7 @@ import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbSearchDelivery;
@@ -919,6 +920,7 @@ public class DeliveryController {
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
+		List<Branch> branchList = this.branchDAO.getAllBranches();// 获取供货商列表
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
@@ -996,6 +998,7 @@ public class DeliveryController {
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("objList", objList);
+		model.addAttribute("branchList", branchList);
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
