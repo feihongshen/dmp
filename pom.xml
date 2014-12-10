@@ -1865,6 +1865,30 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>PXWL-TEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.70.37:3306/pxwl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_gzpx.png</logoimgurl>
+				<label>PXWL-TEST</label>
+				<addresscustomerid>2</addresscustomerid>
+				<addressid>2</addressid>
+				<addresspassword>123</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
 			<id>BJXXHK</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
