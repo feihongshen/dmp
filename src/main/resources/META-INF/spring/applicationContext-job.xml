@@ -65,7 +65,7 @@
 			              	 <ref bean="doTime_mskbranchsyn"/>
 			              	 <ref bean="doTime_happigou23"/>
 			              	 <ref bean="doTime_smile"/>
-			              	 <ref bean="doAlan"/>
+			              	<!--  <ref bean="doAlan"/> -->
 			              	<!--  <ref bean="doTime_xiaoxi" /> -->
 			              	 <ref bean="doTime_liantong" />
 			              	 <ref bean="doTime_KouKuan" />
