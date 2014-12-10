@@ -45,7 +45,7 @@
 			type:"post",
 			dataType:"json",
 			async:true,
-			url:"<%=request.getContextPath()%>/meh/redistributionbranch",
+			url:"<%=request.getContextPath()%>/meh/redistributionbranch" + "?timestamp=" + new Date().getTime(),
 			data:{
 				cwb : orderNo,
 				branchid:branchid
@@ -114,7 +114,7 @@
 		$.ajax({
 			type:"post",
 			async:true,
-			url:"<%=request.getContextPath()%>/meh/querymatchexceptionorder",
+			url:"<%=request.getContextPath()%>/meh/querymatchexceptionorder" + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
 			data : {
 				today : today,

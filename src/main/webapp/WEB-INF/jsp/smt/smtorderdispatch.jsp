@@ -137,7 +137,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
  
 function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabIndex){
 	 $.ajax({
-		 url:"<%=request.getContextPath()%>/smt/querysmtorder",
+		 url:"<%=request.getContextPath()%>/smt/querysmtorder" + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
 			async : false,
 			data:{
@@ -173,7 +173,7 @@ function setCurrentDataFilterCond(dataType , timeType , dispatched)
 function loadTodayOutAreaOrder(){
 	 $.ajax({
 		 type:"post",
-		 url:'<%=request.getContextPath()+ "/smt/querytodayoutareaorder"%>',
+		 url:'<%=request.getContextPath()+ "/smt/querytodayoutareaorder"%>'  + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
 			async : false,
 			success : function(data) {
@@ -268,7 +268,7 @@ function loadTodayOutAreaOrder(){
 	function confirmOutArea() {
 		$.ajax({
 			type:"post",
-			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>',
+			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>'  + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
 			async : false,
 			data : {

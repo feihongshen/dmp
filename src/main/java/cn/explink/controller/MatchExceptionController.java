@@ -511,7 +511,7 @@ public class MatchExceptionController {
 		// 站点条件.
 		sql.appendCondition(this.getTransferBranchWhereCond(transfer));
 		// 订单类型条件.
-		this.getOrderTypeWhereCond();
+		sql.appendCondition(this.getOrderTypeWhereCond());
 		// 转单条件.
 		sql.appendCondition(this.getTransferWhereCond(transfer));
 		// 时间条件.
