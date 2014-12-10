@@ -54,7 +54,7 @@ http://cxf.apache.org/schemas/jaxws.xsd
     
     <context:spring-configured/>
     
-<!--     <bean id="dataSource"  
+    <bean id="dataSource"  
         class="org.apache.commons.dbcp.BasicDataSource"  
         destroy-method="close">  
         <property name="driverClassName" value="${drivers}" />  
@@ -67,21 +67,8 @@ http://cxf.apache.org/schemas/jaxws.xsd
 	    <property name="poolPreparedStatements" value="true"/>
 	    <property name="testOnBorrow" value="true"/>
         <property name="validationQuery" value="SELECT 1"/>
-    </bean>    -->  
-   <bean id="dataSource"  
-        class="org.apache.commons.dbcp.BasicDataSource"  
-        destroy-method="close">  
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />  
-        <property name="url" value="jdbc:mysql://192.168.0.217:3306/dmp_pxwl_smt?characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;useCursorFetch=true&amp;defaultFetchSize=1000" />  
-        <property name="username" value="dmp" />  
-        <property name="password" value="dmp" />
-		<property name="initialSize" value="25" />
-		<property name="maxActive" value="50" />
-		<property name="maxWait" value="60000" />
-	    <property name="poolPreparedStatements" value="true"/>
-	    <property name="testOnBorrow" value="true"/>
-        <property name="validationQuery" value="SELECT 1"/>
     </bean>     
+  
    <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
     <bean id = "transactionManager"   
          class = "org.springframework.jdbc.datasource.DataSourceTransactionManager">   
