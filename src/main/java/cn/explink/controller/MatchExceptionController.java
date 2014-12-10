@@ -503,7 +503,7 @@ public class MatchExceptionController {
 		if (match) {
 			return "f.branchid = " + this.getCurrentBranchId();
 		} else {
-			return "d.currentbranchid = " + this.getCurrentBranchId();
+			return "d.nextbranchid = " + this.getCurrentBranchId();
 		}
 	}
 
