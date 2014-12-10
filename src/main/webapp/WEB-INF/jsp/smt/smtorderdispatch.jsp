@@ -13,9 +13,6 @@ Integer tNorNotDisCnt = (Integer)request.getAttribute("tNorNotDisCnt");
 Integer tTraNotDisCnt = (Integer)request.getAttribute("tTraNotDisCnt");
 SmtOrderContainer ctn = (SmtOrderContainer)request.getAttribute("tNotDisData");
 List<SmtOrder> tNotDisData= ctn.getSmtOrderList();
-//历史未分派.
-Integer hNorNotDisCnt = (Integer)request.getAttribute("hNorNotDisCnt");
-Integer hTraNotDisCnt = (Integer)request.getAttribute("hTraNotDisCnt");
 //今日已分派.
 Integer tNorDisCnt = (Integer)request.getAttribute("tNorDisCnt");
 Integer tTraDisCnt = (Integer)request.getAttribute("tTraDisCnt");
