@@ -5785,6 +5785,17 @@ ADD COLUMN `thzrkcount`  int(4) NULL DEFAULT 0 COMMENT '退货站入库数量' A
 		</sql>
 	</changeSet>
 	
+		<changeSet id="wangyonghe-2014-12-10-1" author="wangyonghe">
+		<sql>
+		delete from  express_set_menu_info_new where menuname='供应商单量查询' ;
+		</sql>
+	</changeSet>
+		<changeSet id="wangyonghe-2014-12-10-2" author="wangyonghe">
+		<sql>
+INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '供货商单量查询', '${omsUrl}datastatistics/dianshangdanliang', '3', 'sj22', '1118', 'images/dsdlcx.png', NULL);
+		</sql>
+	</changeSet>
+	
 	
 	
 </databaseChangeLog>
