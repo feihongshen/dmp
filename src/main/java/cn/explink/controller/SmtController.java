@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -138,7 +140,8 @@ public class SmtController {
 	public String smtOrderDispatch(Model model) {
 		this.addBranchDelvierToModel(model);
 		this.addTodayNotDispatchedData(model);
-		this.addHistoryNotDispatchedData(model);
+		// 采用异步加载策略.
+		// this.addHistoryNotDispatchedData(model);
 		this.addTodayDispatchData(model);
 		this.addTodayOutAreaData(model);
 
@@ -199,6 +202,18 @@ public class SmtController {
 	public void exportExceptionData(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		SmtOrderContainer order = this.queryExceptionData(request);
 		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
+	}
+
+	@RequestMapping("/querysmthistoryordercount")
+	@ResponseBody
+	public JSONObject querySmtHistoryOrderCount(HttpServletRequest request) {
+		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
+		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("hNorNotDisCnt", hNorNotDisCnt);
+		jsonObj.put("hTraNotDisCnt", hTraNotDisCnt);
+
+		return jsonObj;
 	}
 
 	private String getTodayOutAreaCountSql() {

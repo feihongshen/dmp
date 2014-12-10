@@ -268,7 +268,7 @@ function loadTodayOutAreaOrder(){
 	function confirmOutArea() {
 		$.ajax({
 			type:"post",
-			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>'  + "?timestamp=" + new Date().getTime(),
+			url:'<%=request.getContextPath() + "/smt/smtorderoutarea"%>'+ "?timestamp=" + new Date().getTime(),
 			dataType : "json",
 			async : false,
 			data : {
@@ -375,6 +375,25 @@ function loadTodayOutAreaOrder(){
 		$("#cwbs", $from).val(cwbs);
 		$from.submit();
 	}
+
+	$(function() {
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			url:'<%=request.getContextPath() + "/smt/querysmthistoryordercount"%>'+ "?timestamp=" + new Date().getTime(),
+			data:{},
+			success:function(data){
+				$("#history_normal_not_dispatched").empty();
+				$("#history_normal_not_dispatched").html(data.hNorNotDisCnt);
+				$("#history_transfer_not_dispatched").empty();
+				$("#history_transfer_not_dispatched").html(data.hTraNotDisCnt);
+			},
+			error:function(data){
+				alert(data);
+			}
+			
+		});
+	});
 </script>
 <style>
 dl dt span {
@@ -435,9 +454,11 @@ dl dd span {
 				</dt>
 				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','history',false,1,'history_table',1)"><a href="#"
-						id="history_normal_not_dispatched"><%=hNorNotDisCnt%></a></span> <span
+						id="history_normal_not_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="loadSmtOrder('transfer','history',false,1,'history_table',1)"><a href="#"
-						id="history_transfer_not_dispatched"><%=hTraNotDisCnt%></a></span>
+						id="history_transfer_not_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -550,7 +571,7 @@ dl dd span {
 											%>
 											<tr cwb="<%=so.getCwb()%>" class="cwbids">
 												<td width="40" align="center"><input type="checkbox"></input></td>
-												<td width="100" align="center" ><%=so.getCwb()%></td>
+												<td width="100" align="center"><%=so.getCwb()%></td>
 												<td width="100" align="center"><%=so.getMatchBranch()%></td>
 												<td width="100" align="center"><%=so.getReceivedFee()%></td>
 												<td width="100" align="center"><%=so.getCustomerName()%></td>
