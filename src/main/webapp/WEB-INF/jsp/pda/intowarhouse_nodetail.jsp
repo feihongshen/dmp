@@ -234,14 +234,17 @@ function initEmailDateUI(ed){
 									/* if (data.body.cwbOrder.scannum == 1) {
 										$("#successcwbnum").html(parseInt($("#successcwbnum").html()) + 1);
 									} */
-
+									if($("#updateswitch").attr('checked')=='checked')
+									{
 									if (rk_switch == "rkbq_01") {
+										
 										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
-									}
+											}
+										
 									else if (rk_switch == "rkbq_03") {
 										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
 									}
-
+									}
 									<%-- if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
 										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
 															+ "&a="+ Math.random());
