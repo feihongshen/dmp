@@ -717,7 +717,7 @@ public class PDAController {
 		List<CwbOrder> jinriweidaohuolist = new ArrayList<CwbOrder>();
 		if (jinriweidaohuocwbslist.size() > 0) {
 			jinriweidaohuocwbs = this.getStrings(jinriweidaohuocwbslist);
-			jinriweidaocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, this.getSessionUser().getBranchid(), jinriweidaohuocwbs);
+			jinriweidaocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, jinriweidaohuocwbs);
 			// 历史未到货订单list
 			jinriweidaohuolist = this.cwbDAO.getJinRiDaoHuoByBranchidForList(flowordertypes, 1, jinriweidaohuocwbs);
 		}
@@ -726,7 +726,7 @@ public class PDAController {
 		List<CwbOrder> historyweidaohuolist = new ArrayList<CwbOrder>();
 		if (lishiweidaohuocwbslist.size() > 0) {
 			lishiweidaohuocwbs = this.getStrings(lishiweidaohuocwbslist);
-			historyweidaocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, this.getSessionUser().getBranchid(), lishiweidaohuocwbs);
+			historyweidaocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, lishiweidaohuocwbs);
 			historyweidaohuolist = this.cwbDAO.getHistoryDaoHuoByBranchidForList(flowordertypes, this.getSessionUser().getBranchid(), 1, lishiweidaohuocwbs);
 		}
 		// 今日未到货订单list
@@ -5307,9 +5307,9 @@ public class PDAController {
 			yidaohuoorder = "'--'";
 		}
 
-		long jinriweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, this.getSessionUser().getBranchid(), jinriweidaohuocwbs);
-		long historyweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, this.getSessionUser().getBranchid(), lishiweidaohuocwbs);
-		long yidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "", this.getSessionUser().getBranchid(), yidaohuoorder);
+		long jinriweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, jinriweidaohuocwbs);
+		long historyweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, lishiweidaohuocwbs);
+		long yidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "", yidaohuoorder);
 
 		// long historyweidaohuocount =
 		// cwbDAO.getHistoryWeiDaoHuoCount(b.getBranchid(),flowordertypes,jinriweidaohuocwbs);
