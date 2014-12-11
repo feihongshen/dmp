@@ -335,7 +335,7 @@ public class MatchExceptionController {
 
 	private List<MatchExceptionOrder> queryTransferOrder(boolean today, boolean transfer, int page) {
 		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getQueryTransferOrderSql(today, transfer, page), false);
-		this.fillMatchExceptionOrder(meoList);
+		this.fillMatchExceptionOrder(meoList, transfer);
 
 		return meoList;
 	}
@@ -363,14 +363,14 @@ public class MatchExceptionController {
 
 	private List<MatchExceptionOrder> queryMatchOrder(boolean today, boolean match, int page) {
 		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(this.getMatchOrderSql(today, match, page), false);
-		this.fillMatchExceptionOrder(meoList);
+		this.fillMatchExceptionOrder(meoList, match);
 
 		return meoList;
 	}
 
-	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList) {
+	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList, boolean handled) {
 		for (MatchExceptionOrder meo : meoList) {
-			if (meo.getOutareaFlag() == 0) {
+			if ((meo.getOutareaFlag() == 0) && !handled) {
 				meo.setReportOutAreaBranchId(0);
 				meo.setReportOutAreaBranchName("");
 				meo.setReportOutAreaTime("");
@@ -380,12 +380,12 @@ public class MatchExceptionController {
 		}
 	}
 
-	private void fillMatchExceptionOrder(List<MatchExceptionOrder> meoList) {
+	private void fillMatchExceptionOrder(List<MatchExceptionOrder> meoList, boolean handled) {
 		if (meoList.isEmpty()) {
 			return;
 		}
 		// 匹配异常站点要去掉超区人信息.
-		this.clearMatchUserInfo(meoList);
+		this.clearMatchUserInfo(meoList, handled);
 		this.fillBranchName(meoList);
 		this.fillUserName(meoList);
 	}
@@ -456,7 +456,7 @@ public class MatchExceptionController {
 			sql = this.getQueryWaitHandleOrderSql(today, page);
 		}
 		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(sql, true);
-		this.fillMatchExceptionOrder(meoList);
+		this.fillMatchExceptionOrder(meoList, transfer && match);
 
 		return meoList;
 	}
