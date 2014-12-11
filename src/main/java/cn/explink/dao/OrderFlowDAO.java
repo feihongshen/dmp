@@ -162,7 +162,8 @@ public class OrderFlowDAO {
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue())
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue())
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())
-				|| (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) {
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ChaoQu.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue())) {
 			JSONObject orderJson = JSONObject.fromObject(of.getFloworderdetail()).getJSONObject("cwbOrder");
 			String outWarehouseTime = "";
 			if (of.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {

@@ -1,9 +1,7 @@
 package cn.explink.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +219,7 @@ public class SmtController {
 
 	private String getTodayOutAreaCountSql() {
 		StringBuilder sql = new StringBuilder();
-		sql.append(this.getSelectCountPart());
+		sql.append(this.getSelectTodayOutAreaCountPart());
 		this.appendTodayOutAreaWhereCond(sql);
 
 		return sql.toString();
@@ -229,7 +227,7 @@ public class SmtController {
 
 	private String getTodayOutAreaOrderSql(int page) {
 		StringBuilder sql = new StringBuilder();
-		sql.append(this.getSelectOrderPart());
+		sql.append(this.getSelectTodayOutAreaPart());
 		this.appendTodayOutAreaWhereCond(sql);
 		this.appendLimit(sql, page);
 
@@ -468,17 +466,13 @@ public class SmtController {
 		// 时间过滤条件.
 		this.appendTimeTypeWhereCond(sql, timeType);
 		// 转单数据可能存在多次分站到货.
-		this.appendFlowNowWhereCond(sql, dataType);
+		// this.appendFlowNowWhereCond(sql, dataType);
 		// 加入订单失效条件.
 		this.appendEffectiveWhereCond(sql);
 	}
 
 	private void appendEffectiveWhereCond(StringBuilder sql) {
 		sql.append("and d.state = 1 ");
-	}
-
-	private void appendFlowNowWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
-		sql.append("and f.isnow = 1 ");
 	}
 
 	private void appendBranchWhereCond(StringBuilder sql) {
@@ -522,7 +516,7 @@ public class SmtController {
 		} else {
 			sql.append("<");
 		}
-		sql.append("'" + this.getTodayZeroTimeString() + "' ");
+		sql.append(this.getTodayZeroTimeString() + " ");
 	}
 
 	@SuppressWarnings("unused")
@@ -573,11 +567,19 @@ public class SmtController {
 	}
 
 	private String getSelectOrderPart() {
-		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_operation_time f on d.cwb = f.cwb where ";
 	}
 
 	private String getSelectCountPart() {
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_operation_time f on d.cwb = f.cwb where ";
+	}
+
+	private String getSelectTodayOutAreaCountPart() {
 		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
+	}
+
+	private String getSelectTodayOutAreaPart() {
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private long getCurrentUserId() {
@@ -598,9 +600,8 @@ public class SmtController {
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
-		Date date = new Date(cal.getTimeInMillis());
-		// 大写HH为24小时,小写hh为12小时.
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+
+		return Long.toString(cal.getTimeInMillis());
 	}
 
 	private class ExportHandler extends ExcelUtils {
