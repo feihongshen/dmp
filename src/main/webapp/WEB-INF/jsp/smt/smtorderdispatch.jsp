@@ -126,7 +126,7 @@ function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabInd
 	 $.ajax({
 		 url:"<%=request.getContextPath()%>/smt/querysmtorder" + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
-			async : false,
+			async : true,
 			data:{
 				dataType:dataType,
 				timeType:timeType,
@@ -161,7 +161,7 @@ function loadTodayOutAreaOrder(){
 		 type:"post",
 		 url:'<%=request.getContextPath()+ "/smt/querytodayoutareaorder"%>'  + "?timestamp=" + new Date().getTime(),
 			dataType : "json",
-			async : false,
+			async : true,
 			success : function(data) {
 				var dataList = data.smtOrderList;
 				refreshTable("out_area_table", dataList, 4, false,true);

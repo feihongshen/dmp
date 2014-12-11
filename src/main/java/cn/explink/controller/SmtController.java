@@ -359,6 +359,7 @@ public class SmtController {
 		return colNameList.toArray(new String[0]);
 	}
 
+	@SuppressWarnings("unused")
 	private void addTodayNotDispatchedData(Model model) {
 		int tNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false);
 		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, false);
@@ -377,6 +378,7 @@ public class SmtController {
 		model.addAttribute("hTraNotDisCnt", hTraNotDisCnt);
 	}
 
+	@SuppressWarnings("unused")
 	private void addTodayDispatchData(Model model) {
 		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
 		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, true);

@@ -283,36 +283,43 @@ public class MatchExceptionController {
 		model.addAttribute("branchList", branchList);
 	}
 
+	@SuppressWarnings("unused")
 	private void addTWaitTransferOrderCnt(Model model) {
 		int tWaitTraOrdCnt = this.queryWaitTransferOrderCount(true);
 		model.addAttribute("tWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addHWaitTransferOrderCnt(Model model) {
 		int tWaitTraOrdCnt = this.queryWaitTransferOrderCount(false);
 		model.addAttribute("hWaitTraOrdCnt", Integer.valueOf(tWaitTraOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addTWaitMatchOrderCnt(Model model) {
 		int tWaitMatOrdCnt = this.queryMatchOrderCount(true, false);
 		model.addAttribute("tWaitMatOrdCnt", Integer.valueOf(tWaitMatOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addHWaitMatchOrderCnt(Model model) {
 		int hWaitMatOrdCnt = this.queryMatchOrderCount(false, false);
 		model.addAttribute("hWaitMatOrdCnt", Integer.valueOf(hWaitMatOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addTTransferCount(Model model) {
 		int tTraOrdCnt = this.queryTransferOrderCount(true);
 		model.addAttribute("tTraOrdCnt", Integer.valueOf(tTraOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addTMatchOrderCnt(Model model) {
 		int tMatOrdCnt = this.queryMatchOrderCount(true, true);
 		model.addAttribute("tMatOrdCnt", Integer.valueOf(tMatOrdCnt));
 	}
 
+	@SuppressWarnings("unused")
 	private void addTodayWaitHandleOrder(Model model) {
 		List<MatchExceptionOrder> tWaitHanOrdList = this.queryHandleOrder(true, Boolean.FALSE, Boolean.FALSE, 1);
 		model.addAttribute("tWaitHanOrdList", tWaitHanOrdList);
@@ -363,7 +370,7 @@ public class MatchExceptionController {
 
 	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList) {
 		for (MatchExceptionOrder meo : meoList) {
-			if (meo.getOutareaFlag() == 1) {
+			if (meo.getOutareaFlag() != 0) {
 				continue;
 			}
 			meo.setReportOutAreaBranchId(0);
