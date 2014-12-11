@@ -1953,10 +1953,20 @@ public class CwbDAO {
 				FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
+	public List<CwbOrder> getBackYiRukuListbyBranchid(long branchid, long page, long cwbordertypeid) {
+		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and flowordertype=? and state=1 and cwbordertypeid=? limit ?,?", new CwbMapper(), branchid,
+				FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+
 	// 退货入库list
 	public List<CwbOrder> getBackRukuByBranchidForList(long branchid, long page) {
 		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and state=1 limit ?,? ", new CwbMapper(), branchid,
 				FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+
+	public List<CwbOrder> getBackRukuByBranchidForList(long branchid, long page, long cwbordertypeid) {
+		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and state=1 and cwbordertypeid=? limit ?,? ",
+				new CwbMapper(), branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	public long getWeiLingbyBranchid(long branchid) {
@@ -2184,6 +2194,12 @@ public class CwbDAO {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid =? and cwbstate=?  and flowordertype<>? and state=1 ";
 		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, CwbStateEnum.TuiGongYingShang.getValue(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
+	}
+
+	public List<CwbOrder> getTGYSCKListbyBranchid(long branchid, long page, long cwbordertypeid) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid =? and cwbstate=?  and flowordertype<>? and state=1 and cwbordertypeid=?";
+		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, CwbStateEnum.TuiGongYingShang.getValue(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), cwbordertypeid);
 	}
 
 	// 退供货商出库已出库数据
@@ -4468,6 +4484,13 @@ public class CwbDAO {
 	public List<CwbOrder> getTuiGongHuoShangYiChuKu(long branchid, long page) {
 		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
 				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 ";
+		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
+	public List<CwbOrder> getTuiGongHuoShangYiChuKu(long branchid, long page, long cwbordertypeid) {
+		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
+				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 and cwbordertypeid=" + cwbordertypeid;
 		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
