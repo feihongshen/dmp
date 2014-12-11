@@ -80,22 +80,61 @@ public class MatchExceptionController {
 	public String matchExpectionHandle(Model model) {
 		// 站点列表.
 		this.addBranchList(model);
-		// 今日待转单.
-		this.addTWaitTransferOrderCnt(model);
-		// 今日待匹配订单.
-		this.addTWaitMatchOrderCnt(model);
-		// 历史待处理转单.
-		this.addHWaitTransferOrderCnt(model);
-		// 历史待匹配订单.
-		this.addHWaitMatchOrderCnt(model);
-		// 今日已转单.
-		this.addTTransferCount(model);
-		// 今日已匹配.
-		this.addTMatchOrderCnt(model);
-		// 今日待处理订单.
-		this.addTodayWaitHandleOrder(model);
+		// // 今日待转单.
+		// this.addTWaitTransferOrderCnt(model);
+		// // 今日待匹配订单.
+		// this.addTWaitMatchOrderCnt(model);
+		// // 历史待处理转单.
+		// this.addHWaitTransferOrderCnt(model);
+		// // 历史待匹配订单.
+		// this.addHWaitMatchOrderCnt(model);
+		// // 今日已转单.
+		// this.addTTransferCount(model);
+		// // 今日已匹配.
+		// this.addTMatchOrderCnt(model);
+		// // 今日待处理订单.
+		// this.addTodayWaitHandleOrder(model);
 
 		return "meh/matchexceptionhandle";
+	}
+
+	@RequestMapping("/querytoadywaithandleorder")
+	@ResponseBody
+	public JSONObject queryToadyWaitHandleOrder() {
+		int tWaitTraOrdCnt = this.queryWaitTransferOrderCount(true);
+		int tWaitMatOrdCnt = this.queryMatchOrderCount(true, false);
+		List<MatchExceptionOrder> tWaitHanOrdList = this.queryHandleOrder(true, Boolean.FALSE, Boolean.FALSE, 1);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("tWaitTraOrdCnt", tWaitTraOrdCnt);
+		jsonObj.put("tWaitMatOrdCnt", tWaitMatOrdCnt);
+		jsonObj.put("tWaitHanOrdList", tWaitHanOrdList);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/queryhistorywaithandleorder")
+	@ResponseBody
+	public JSONObject queryHistoryWaitHandleOrder() {
+		int hWaitTraOrdCnt = this.queryWaitTransferOrderCount(false);
+		int hWaitMatOrdCnt = this.queryMatchOrderCount(false, false);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("hWaitTraOrdCnt", hWaitTraOrdCnt);
+		jsonObj.put("hWaitMatOrdCnt", hWaitMatOrdCnt);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/querytodayhandledorder")
+	@ResponseBody
+	public JSONObject queryTodayHandledOrder() {
+		int tTraOrdCnt = this.queryTransferOrderCount(true);
+		int tMatOrdCnt = this.queryMatchOrderCount(true, true);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("tTraOrdCnt", tTraOrdCnt);
+		jsonObj.put("tMatOrdCnt", tMatOrdCnt);
+
+		return jsonObj;
 	}
 
 	@RequestMapping("/querymatchexceptionorder")

@@ -8,16 +8,6 @@
 <%@page import="cn.explink.domain.SmtOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-	//今日未分派.
-Integer tNorNotDisCnt = (Integer)request.getAttribute("tNorNotDisCnt");
-Integer tTraNotDisCnt = (Integer)request.getAttribute("tTraNotDisCnt");
-SmtOrderContainer ctn = (SmtOrderContainer)request.getAttribute("tNotDisData");
-List<SmtOrder> tNotDisData= ctn.getSmtOrderList();
-//今日已分派.
-Integer tNorDisCnt = (Integer)request.getAttribute("tNorDisCnt");
-Integer tTraDisCnt = (Integer)request.getAttribute("tTraDisCnt");
-//今日超区.
-Integer tOutAreaCnt = (Integer)request.getAttribute("tOutAreaCnt");
 //小件员.
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 %>
@@ -154,7 +144,6 @@ function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabInd
 				setCurrentDataFilterCond(dataType , timeType , dispatched);
 			},
 			error : function(data) {
-				alert(data);
 			}
 		});
 }
@@ -178,7 +167,6 @@ function loadTodayOutAreaOrder(){
 				refreshTable("out_area_table", dataList, 4, false,true);
 			},
 			error : function(data) {
-				alert(data);
 			}
 		});
 	}
@@ -316,9 +304,16 @@ function loadTodayOutAreaOrder(){
 		}
 		var $RSpan = $("#" + rSpan + "not_dispatched");
 		var $ASpan = $("#" + aSpan + "dispatched");
-		$RSpan.html(parseInt($RSpan.html()) - 1);
-		$ASpan.html(parseInt($ASpan.html()) + 1);
 		
+		var $Aimg = $ASpan.find("img");
+		if($Aimg.length == 0){
+			$ASpan.html(parseInt($ASpan.html()) + 1);
+		}
+		
+		var $Rimg = $RSpan.find("img");
+		if($Rimg.length == 0){
+			$RSpan.html(parseInt($RSpan.html()) - 1);
+		}
 		removeScanCwb(data);
 	}
 	
@@ -405,11 +400,71 @@ function loadTodayOutAreaOrder(){
 								data.hTraNotDisCnt);
 					},
 					error : function(data) {
-						alert(data);
 					}
 
 				});
 	});
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/smt/querysmttodaynotdisordercount"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#today_normal_not_dispatched").empty();
+						$("#today_normal_not_dispatched").html(data.tNorNotDisCnt);
+						$("#today_transfer_not_dispatched").empty();
+						$("#today_transfer_not_dispatched").html(data.tTraNotDisCnt);
+						refreshTable("today_table",data.tNotDisData.smtOrderList,0 ,true,false);
+					},
+					error : function(data) {
+					}
+
+				});
+	});
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/smt/querysmttodaydisordercount"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#today_normal_dispatched").empty();
+						$("#today_normal_dispatched").html(data.tNorDisCnt);
+						$("#today_transfer_dispatched").empty();
+						$("#today_transfer_dispatched").html(data.tTraDisCnt);
+					},
+					error : function(data) {
+					}
+				});
+	});
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/smt/querysmttodayoutareacount"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#t_out_area").empty();
+						$("#t_out_area").html(data.tOutAreaCnt);
+					},
+					error : function(data) {
+					}
+
+				});
+	});
+	
+	
+	
 </script>
 <style>
 dl dt span {
@@ -457,9 +512,11 @@ dl dd span {
 				</dt>
 				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','today',false, 1 ,'today_table',0)"><a href="#"
-						id="today_normal_not_dispatched"><%=tNorNotDisCnt%></a></span> <span
+						id="today_normal_not_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="loadSmtOrder('transfer','today',false, 1 ,'today_table',0)"><a href="#"
-						id="today_transfer_not_dispatched"><%=tTraNotDisCnt%></a></span>
+						id="today_transfer_not_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -484,9 +541,11 @@ dl dd span {
 				</dt>
 				<dd style="cursor: pointer">
 					<span onclick="loadSmtOrder('normal','today',true,1,'today_dispatch_table',2)"><a
-						href="#" id="today_normal_dispatched"><%=tNorDisCnt%></a></span> <span
+						href="#" id="today_normal_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="loadSmtOrder('transfer','today',true,1,'today_dispatch_table',2)"><a href="#"
-						id="today_transfer_dispatched"><%=tTraDisCnt%></a></span>
+						id="today_transfer_dispatched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -494,7 +553,8 @@ dl dd span {
 			<dl class="red">
 				<dt>今日超区</dt>
 				<dd style="cursor: pointer">
-					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#"><%=tOutAreaCnt%></a></span>
+					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
@@ -582,21 +642,6 @@ dl dd span {
 									<div style="height: 170px; overflow-y: scroll">
 										<table id="today_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
-											<%
-												for (SmtOrder so : tNotDisData) {
-											%>
-											<tr cwb="<%=so.getCwb()%>" class="cwbids">
-												<td width="40" align="center"><input type="checkbox"></input></td>
-												<td width="100" align="center"><%=so.getCwb()%></td>
-												<td width="100" align="center"><%=so.getMatchBranch()%></td>
-												<td width="100" align="center"><%=so.getReceivedFee()%></td>
-												<td width="100" align="center"><%=so.getCustomerName()%></td>
-												<td width="150" align="center"><%=so.getPhone()%></td>
-												<td align="center"><%=so.getAddress()%></td>
-											</tr>
-											<%
-												}
-											%>
 										</table>
 									</div>
 								</td>

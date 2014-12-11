@@ -8,14 +8,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<Branch> branchList = (List<Branch>) request.getAttribute("branchList");
-	Integer tWaitTraOrdCnt = (Integer) request.getAttribute("tWaitTraOrdCnt");
-	Integer hWaitTraOrdCnt = (Integer) request.getAttribute("hWaitTraOrdCnt");
-	Integer tWaitMatOrdCnt = (Integer) request.getAttribute("tWaitMatOrdCnt");
-	Integer hWaitMatOrdCnt = (Integer) request.getAttribute("hWaitMatOrdCnt");
-	Integer tTraOrdCnt = (Integer) request.getAttribute("tTraOrdCnt");
-	Integer tMatOrdCnt = (Integer) request.getAttribute("tMatOrdCnt");
-	
-	List<MatchExceptionOrder> tWaitHanOrdList = (List<MatchExceptionOrder>) request.getAttribute("tWaitHanOrdList");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -210,6 +202,67 @@
 		$("#data", $exeForm).val(exeData);
 		$exeForm.submit();
 	}
+	
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/meh/querytoadywaithandleorder"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#today_transfer_not_matched").empty();
+						$("#today_transfer_not_matched").html(data.tWaitTraOrdCnt);
+						$("#today_normal_not_matched").empty();
+						$("#today_normal_not_matched").html(data.tWaitMatOrdCnt);
+						refreshTableData("t_wait_handle_table", data.tWaitHanOrdList, 0);
+					},
+					error : function(data) {
+					}
+
+				});
+	});
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/meh/queryhistorywaithandleorder"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#history_transfer_not_matched").empty();
+						$("#history_transfer_not_matched").html(data.hWaitTraOrdCnt);
+						$("#history_normal_not_matched").empty();
+						$("#history_normal_not_matched").html(data.hWaitMatOrdCnt);
+					},
+					error : function(data) {
+					}
+				});
+	});
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/meh/querytodayhandledorder"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#today_transfer_matched").empty();
+						$("#today_transfer_matched").html(data.tTraOrdCnt);
+						$("#today_normal_matched").empty();
+						$("#today_normal_matched").html(data.tMatOrdCnt);
+					},
+					error : function(data) {
+					}
+				});
+	});
+	
+	
 </script>
 
 <style>
@@ -258,9 +311,11 @@ dl dd span {
 				</dt>
 				<dd style="cursor: pointer">
 					<span onclick="queryOrder('t_wait_handle_table',0,true,false,null)"><a href="#"
-						id="today_transfer_not_matched"><%=tWaitTraOrdCnt%></a></span> <span
+						id="today_transfer_not_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="queryOrder('t_wait_handle_table',0,true,null,false)"><a href="#"
-						id="today_normal_not_matched"><%=tWaitMatOrdCnt%></a></span>
+						id="today_normal_not_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -271,9 +326,11 @@ dl dd span {
 				</dt>
 				<dd>
 					<span onclick="queryOrder('h_wait_handle_table',1,false,false,null)"><a href="#"
-						id="history_transfer_not_matched"><%=hWaitTraOrdCnt%></a></span> <span
+						id="history_transfer_not_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="queryOrder('h_wait_handle_table',1,false,null,false)"><a href="#"
-						id="history_normal_not_matched"><%=hWaitMatOrdCnt%></a></span>
+						id="history_normal_not_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -283,9 +340,11 @@ dl dd span {
 				</dt>
 				<dd>
 					<span onclick="queryOrder('t_handle_table',2,true,true,null)"><a href="#"
-						id="today_transfer_matched"><%=tTraOrdCnt %></a></span> <span
+						id="today_transfer_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span> <span
 						onclick="queryOrder('t_handle_table',2,true,null,true)"><a href="#"
-						id="today_normal_matched"><%=tMatOrdCnt %></a></span>
+						id="today_normal_matched"><img
+							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 
@@ -362,24 +421,6 @@ dl dd span {
 									<div style="height: 160px; overflow-y: scroll">
 										<table id="t_wait_handle_table" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
-											<%
-												for (MatchExceptionOrder meo : tWaitHanOrdList) {
-											%>
-											<tr cwb="<%=meo.getCwb()%>" class="cwbids">
-												<td width="100" align="center"><%=meo.getCwb()%></td>
-												<td width="150" align="center"><%=meo.getReportOutAreaTime()%></td>
-												<td width="100" align="center"><%=meo.getReportOutAreaBranchName()%></td>
-												<td width="100" align="center"><%=meo.getReportOutAreaUserName()%></td>
-												<td width="100" align="center"><%=meo.getReportOutAreaBranchName()%></td>
-												<td width="100" align="center"><%=meo.getCustomerName()%></td>
-												<td width="150" align="center"><%=meo.getCustomerPhone()%></td>
-												<td width="100" align="right"><%=meo.getReceivedFee()%></td>
-												<td align="center"><%=meo.getCustomerAddress()%></td>
-											</tr>
-											<%
-												}
-											%>
-
 										</table>
 									</div>
 								</td>

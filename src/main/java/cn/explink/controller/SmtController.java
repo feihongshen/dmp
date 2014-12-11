@@ -137,11 +137,11 @@ public class SmtController {
 	@RequestMapping("/smtorderdispatch")
 	public String smtOrderDispatch(Model model) {
 		this.addBranchDelvierToModel(model);
-		this.addTodayNotDispatchedData(model);
+		// this.addTodayNotDispatchedData(model);
 		// 采用异步加载策略.
 		// this.addHistoryNotDispatchedData(model);
-		this.addTodayDispatchData(model);
-		this.addTodayOutAreaData(model);
+		// this.addTodayDispatchData(model);
+		// this.addTodayOutAreaData(model);
 
 		return "smt/smtorderdispatch";
 	}
@@ -202,6 +202,46 @@ public class SmtController {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("hNorNotDisCnt", hNorNotDisCnt);
 		jsonObj.put("hTraNotDisCnt", hTraNotDisCnt);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/querysmttodaynotdisordercount")
+	@ResponseBody
+	public JSONObject querySmtTodayNotDisOrderCount(HttpServletRequest request) {
+		int tNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false);
+		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, false);
+		SmtOrderContainer tNotDisData = this.querySmtOrder(OrderTypeEnum.All, OptTimeTypeEnum.Today, 1, false);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("tNorNotDisCnt", tNorNotDisCnt);
+		jsonObj.put("tTraNotDisCnt", tTraNotDisCnt);
+		jsonObj.put("tNotDisData", tNotDisData);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/querysmttodaydisordercount")
+	@ResponseBody
+	public JSONObject querySmtTodayDisOrderCount(HttpServletRequest request) {
+		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
+		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, true);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("tNorDisCnt", tNorDisCnt);
+		jsonObj.put("tTraDisCnt", tTraDisCnt);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/querysmttodayoutareacount")
+	@ResponseBody
+	public JSONObject queryTodayOutAreaCount() {
+		String sql = this.getTodayOutAreaCountSql();
+		int count = this.cwbDAO.querySmtOrderCount(sql);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("tOutAreaCnt", count);
 
 		return jsonObj;
 	}
@@ -344,11 +384,6 @@ public class SmtController {
 		model.addAttribute("tTraDisCnt", tTraDisCnt);
 	}
 
-	private void addTodayOutAreaData(Model model) {
-		int tOutAreaCnt = this.queryTodayOutAreaCount();
-		model.addAttribute("tOutAreaCnt", tOutAreaCnt);
-	}
-
 	private SmtOrderContainer querySmtOrder(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched) {
 		String sql = this.getOrderListQuerySql(dataType, timeType, page, dispatched);
 
@@ -394,12 +429,6 @@ public class SmtController {
 
 	private OrderTypeEnum getDataType(HttpServletRequest request) {
 		return OrderTypeEnum.getDataType(request.getParameter("dataType"));
-	}
-
-	private int queryTodayOutAreaCount() {
-		String sql = this.getTodayOutAreaCountSql();
-
-		return this.cwbDAO.querySmtOrderCount(sql);
 	}
 
 	private OptTimeTypeEnum getTimeType(HttpServletRequest request) {
