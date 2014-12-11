@@ -497,9 +497,13 @@ public class SmtController {
 		// 时间过滤条件.
 		this.appendTimeTypeWhereCond(sql, timeType);
 		// 转单数据可能存在多次分站到货.
-		// this.appendFlowNowWhereCond(sql, dataType);
+		this.appendFlowNowWhereCond(sql, dataType);
 		// 加入订单失效条件.
 		this.appendEffectiveWhereCond(sql);
+	}
+
+	private void appendFlowNowWhereCond(StringBuilder sql, OrderTypeEnum dataType) {
+		sql.append("and f.isnow = 1 ");
 	}
 
 	private void appendEffectiveWhereCond(StringBuilder sql) {
@@ -598,11 +602,11 @@ public class SmtController {
 	}
 
 	private String getSelectOrderPart() {
-		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_operation_time f on d.cwb = f.cwb where ";
+		return "select " + this.getSmtOrderQryFields() + " from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private String getSelectCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_operation_time f on d.cwb = f.cwb where ";
+		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb where ";
 	}
 
 	private String getSelectTodayOutAreaCountPart() {
