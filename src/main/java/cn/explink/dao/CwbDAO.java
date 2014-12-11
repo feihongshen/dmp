@@ -1884,6 +1884,11 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
+	public List<CwbOrder> getHistoryDaoHuoByBranchidForList(String flowordertypes, long page, String cwbs) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  flowordertype in(" + flowordertypes + ") and state=1  and cwb  in(" + cwbs + ")  limit ?,? ";
+		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+
 	public List<String> getJinRiDaoHuoByBranchidForListNoPage(long nextbranchid, String flowordertypes, String cwbs) {
 		String sql = "SELECT cwb FROM express_ops_cwb_detail WHERE nextbranchid =? and flowordertype in(" + flowordertypes + ") and state=1 and cwb in(" + cwbs + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class, nextbranchid);
@@ -4490,7 +4495,7 @@ public class CwbDAO {
 
 	public List<CwbOrder> getTuiGongHuoShangYiChuKu(long branchid, long page, long cwbordertypeid) {
 		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
-				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 and cwbordertypeid=" + cwbordertypeid;
+				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 and b.cwbordertypeid=" + cwbordertypeid;
 		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
