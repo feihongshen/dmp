@@ -295,14 +295,14 @@ function loadTodayOutAreaOrder(){
 	}
 
 	function afterDispatch(data) {
-		if (date.body.isRepeatPicking) {
+		if (data.body.isRepeatPicking) {
 			return;
 		}
 		var today = data.body.isTodayFlow;
 		var outarea = data.body.cwbOrder.outareaflag;
 		var rSpan = "";
 		var aSpan = "today_";
-		if (today) {
+	if (today) {
 			rSpan += "today_";
 		} else {
 			rSpan += "history_";
@@ -318,8 +318,24 @@ function loadTodayOutAreaOrder(){
 		var $ASpan = $("#" + aSpan + "dispatched");
 		$RSpan.html(parseInt($RSpan.html()) - 1);
 		$ASpan.html(parseInt($ASpan.html()) + 1);
+		
+		removeScanCwb(data);
 	}
-
+	
+	function removeScanCwb(data){
+		var cwb= data.body.cwbOrder.cwb;
+		var $today_table = $("#today_table");
+		var $history_table = $("#history_table");
+		removeTableData($today_table , cwb);
+		removeTableData($history_table , cwb);
+	}
+	
+	
+	function removeTableData($table , cwb){
+		var $tr = $table.find("tr[cwb=" + cwb + "]");
+		$tr.remove();
+	}
+	
 	function reduceNotHandleNumber(length) {
 		var dataType = $("#dataType").val();
 		var timeType = $("#timeType").val();
@@ -375,21 +391,24 @@ function loadTodayOutAreaOrder(){
 
 	$(function() {
 		$.ajax({
-			type:"post",
-			dataType:"json",
-			url:'<%=request.getContextPath() + "/smt/querysmthistoryordercount"%>'+ "?timestamp=" + new Date().getTime(),
-			data:{},
-			success:function(data){
-				$("#history_normal_not_dispatched").empty();
-				$("#history_normal_not_dispatched").html(data.hNorNotDisCnt);
-				$("#history_transfer_not_dispatched").empty();
-				$("#history_transfer_not_dispatched").html(data.hTraNotDisCnt);
-			},
-			error:function(data){
-				alert(data);
-			}
-			
-		});
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/smt/querysmthistoryordercount"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#history_normal_not_dispatched").empty();
+						$("#history_normal_not_dispatched").html(
+								data.hNorNotDisCnt);
+						$("#history_transfer_not_dispatched").empty();
+						$("#history_transfer_not_dispatched").html(
+								data.hTraNotDisCnt);
+					},
+					error : function(data) {
+						alert(data);
+					}
+
+				});
 	});
 </script>
 <style>

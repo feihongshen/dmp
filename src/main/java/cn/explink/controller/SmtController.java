@@ -171,30 +171,22 @@ public class SmtController {
 
 	@RequestMapping("/querytodayoutareaorder")
 	public @ResponseBody SmtOrderContainer queryTodayOutAreaOrder() {
-		String sql = this.getTodayOutAreaOrderSql();
-
-		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
-		this.fillUserName(orderList);
-		SmtOrderContainer ctn = new SmtOrderContainer();
-		ctn.setSmtOrderList(orderList);
-
-		return ctn;
+		return this.queryTodayOutAreaOrder(1);
 	}
 
 	@RequestMapping("/exportdata")
 	public void exportData(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		OrderTypeEnum dataType = this.getDataType(request);
 		OptTimeTypeEnum timeType = this.getTimeType(request);
-		int page = this.getQueryPage(request);
 		boolean dispatched = this.getDipatched(request);
-		SmtOrderContainer ctn = this.querySmtOrder(dataType, timeType, page, dispatched);
+		SmtOrderContainer ctn = this.querySmtOrder(dataType, timeType, -1, dispatched);
 
 		this.exportData(response, ctn, dataType, timeType, dispatched);
 	}
 
 	@RequestMapping("/exporttodayoutareadata")
 	public void exportOutAreaData(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		SmtOrderContainer order = this.queryTodayOutAreaOrder();
+		SmtOrderContainer order = this.queryTodayOutAreaOrder(-1);
 		this.exportTodayOutAreaData(response, order, SmtController.TODAY_OUT_AREA_FN);
 	}
 
@@ -216,6 +208,17 @@ public class SmtController {
 		return jsonObj;
 	}
 
+	private SmtOrderContainer queryTodayOutAreaOrder(int page) {
+		String sql = this.getTodayOutAreaOrderSql(1);
+
+		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
+		this.fillUserName(orderList);
+		SmtOrderContainer ctn = new SmtOrderContainer();
+		ctn.setSmtOrderList(orderList);
+
+		return ctn;
+	}
+
 	private String getTodayOutAreaCountSql() {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.getSelectCountPart());
@@ -224,10 +227,11 @@ public class SmtController {
 		return sql.toString();
 	}
 
-	private String getTodayOutAreaOrderSql() {
+	private String getTodayOutAreaOrderSql(int page) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.getSelectOrderPart());
 		this.appendTodayOutAreaWhereCond(sql);
+		this.appendLimit(sql, page);
 
 		return sql.toString();
 	}
@@ -327,6 +331,7 @@ public class SmtController {
 		model.addAttribute("tNotDisData", tNotDisData);
 	}
 
+	@SuppressWarnings("unused")
 	private void addHistoryNotDispatchedData(Model model) {
 		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
 		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false);

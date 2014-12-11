@@ -88,7 +88,24 @@
 		var $aSpan = $("#" +aSpan + "matched");
 		 $rSpan.html(parseInt($rSpan.html()) - 1);
 	 	$aSpan.html(parseInt($aSpan.html()) + 1);
+	 	
+	 	removeScanCwb(data);
 	}
+	function removeScanCwb(data){
+		var cwb= data.meo.cwb;
+		var $today_table = $("#t_wait_handle_table");
+		var $history_table = $("#h_wait_handle_table");
+		removeTableData($today_table , cwb);
+		removeTableData($history_table , cwb);
+	}
+	
+	
+	function removeTableData($table , cwb){
+		var $tr = $table.find("tr[cwb=" + cwb + "]");
+		$tr.remove();
+	}
+	
+	
 	
 	function addExceptionData(data){
 		if(data.meo == undefined){
