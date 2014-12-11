@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -276,7 +277,7 @@ public class SmtController {
 
 	private void appendTodayOutAreaWhereCond(StringBuilder sql) {
 		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
-		sql.append("and f.credate >= '" + this.getTodayZeroTimeString() + "' ");
+		sql.append("and f.credate >= '" + this.getTodayOutAreaZeroTimeString() + "' ");
 		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
 		sql.append("and d.state = 1 ");
 	}
@@ -633,6 +634,15 @@ public class SmtController {
 		cal.set(Calendar.SECOND, 0);
 
 		return Long.toString(cal.getTimeInMillis());
+	}
+
+	private String getTodayOutAreaZeroTimeString() {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTimeInMillis());
 	}
 
 	private class ExportHandler extends ExcelUtils {

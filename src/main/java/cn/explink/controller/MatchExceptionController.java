@@ -370,14 +370,13 @@ public class MatchExceptionController {
 
 	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList) {
 		for (MatchExceptionOrder meo : meoList) {
-			if (meo.getOutareaFlag() != 0) {
-				continue;
+			if (meo.getOutareaFlag() == 0) {
+				meo.setReportOutAreaBranchId(0);
+				meo.setReportOutAreaBranchName("");
+				meo.setReportOutAreaTime("");
+				meo.setReportOutAreaUserId(0);
+				meo.setReportOutAreaUserName("");
 			}
-			meo.setReportOutAreaBranchId(0);
-			meo.setReportOutAreaBranchName("");
-			meo.setReportOutAreaTime("");
-			meo.setReportOutAreaUserId(0);
-			meo.setReportOutAreaUserName("");
 		}
 	}
 
