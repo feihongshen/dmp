@@ -1941,28 +1941,34 @@ public class PDAController {
 		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
-		for (CwbOrder cwb : yichuzhanlist) {
-			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				ypeisong.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				yshangmenhuan.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				yshangmentui.add(cwb);
-			}
-		}
+		ypeisong = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		yshangmenhuan = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		yshangmentui = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+		/*
+		 * for (CwbOrder cwb : yichuzhanlist) { if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Peisong.getValue()) { ypeisong.add(cwb); } else if
+		 * (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { yshangmenhuan.add(cwb);
+		 * } else if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { yshangmentui.add(cwb); }
+		 * }
+		 */
 		List<CwbOrder> cwbAllList = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1);
 		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
-		for (CwbOrder cwb : cwbAllList) {
-			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				wpeisong.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				wshangmenhuan.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				wshangmentui.add(cwb);
-			}
-		}
+		wpeisong = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		wshangmenhuan = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		wshangmentui = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+		/*
+		 * for (CwbOrder cwb : cwbAllList) { if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Peisong.getValue()) { wpeisong.add(cwb); } else if
+		 * (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { wshangmenhuan.add(cwb);
+		 * } else if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { wshangmentui.add(cwb); }
+		 * }
+		 */
 		model.addAttribute("ypeisong", ypeisong);
 		model.addAttribute("yshangmenhuan", yshangmenhuan);
 		model.addAttribute("yshangmentui", yshangmentui);
@@ -2098,27 +2104,34 @@ public class PDAController {
 		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
-		for (CwbOrder cwb : yitghsckList) {
-			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				ypeisong.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				yshangmenhuan.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				yshangmentui.add(cwb);
-			}
-		}
+
+		ypeisong = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		yshangmenhuan = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		yshangmentui = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+		/*
+		 * for (CwbOrder cwb : yitghsckList) { if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Peisong.getValue()) { ypeisong.add(cwb); } else if
+		 * (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { yshangmenhuan.add(cwb);
+		 * } else if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { yshangmentui.add(cwb); }
+		 * }
+		 */
 		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
-		for (CwbOrder cwb : weitghsckList) {
-			if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				wpeisong.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				wshangmenhuan.add(cwb);
-			} else if (cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				wshangmentui.add(cwb);
-			}
-		}
+		wpeisong = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		wshangmenhuan = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		wshangmentui = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+		/*
+		 * for (CwbOrder cwb : weitghsckList) { if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Peisong.getValue()) { wpeisong.add(cwb); } else if
+		 * (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { wshangmenhuan.add(cwb);
+		 * } else if (cwb.getCwbordertypeid() ==
+		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { wshangmentui.add(cwb); }
+		 * }
+		 */
 
 		model.addAttribute("ypeisong", ypeisong);
 		model.addAttribute("yshangmenhuan", yshangmenhuan);
@@ -6032,7 +6045,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6044,16 +6057,16 @@ public class PDAController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 *
+					 * 
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 *
+					 * 
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 *
+					 * 
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -6066,7 +6079,7 @@ public class PDAController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 *
+					 * 
 					 * }});
 					 */
 
@@ -6114,7 +6127,7 @@ public class PDAController {
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	 * if(clist.size()>0){ for(CwbOrder c: clist){ CwbOrderView cwbOrderView =
 	 * new CwbOrderView();
-	 *
+	 * 
 	 * cwbOrderView.setCwb(c.getCwb());
 	 * cwbOrderView.setEmaildate(c.getEmaildate());
 	 * cwbOrderView.setCarrealweight(c.getCarrealweight());
@@ -6129,7 +6142,7 @@ public class PDAController {
 	 * cwbOrderView.setConsigneephone(c.getConsigneephone());
 	 * cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 	 * cwbOrderView.setResendtime(c.getResendtime()==null?"":c.getResendtime());
-	 *
+	 * 
 	 * cwbOrderView.setCustomerid(c.getCustomerid());
 	 * cwbOrderView.setCustomername
 	 * (dataStatisticsService.getQueryCustomerName(customerList,
@@ -6159,7 +6172,7 @@ public class PDAController {
 	 * cwbOrderView.setReceivablefee(c.getReceivablefee());
 	 * cwbOrderView.setCaramount(c.getCaramount());
 	 * cwbOrderView.setPaybackfee(c.getPaybackfee());
-	 *
+	 * 
 	 * DeliveryState deliverystate =
 	 * dataStatisticsService.getDeliveryByCwb(c.getCwb());
 	 * cwbOrderView.setPaytype
@@ -6179,7 +6192,7 @@ public class PDAController {
 	 * currentBranch =dataStatisticsService.getQueryBranchName(branchList,
 	 * c.getCurrentbranchid());
 	 * cwbOrderView.setCurrentbranchname(currentBranch);
-	 *
+	 * 
 	 * Date ruku =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
 	 * FlowOrderTypeEnum.RuKu.getValue()).getCredate(); Date chukusaomiao
 	 * =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
@@ -6237,9 +6250,9 @@ public class PDAController {
 	 * .getInwarhouseRemarks(remarkList).
 	 * get(c.getCwb()).get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 	 * cwbOrderView.setCwbordertypeid(c.getCwbordertypeid()+"");//订单类型
-	 *
+	 * 
 	 * cwbOrderViewList.add(cwbOrderView);
-	 *
+	 * 
 	 * } } return cwbOrderViewList; }
 	 */
 
@@ -6486,7 +6499,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6681,7 +6694,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -6890,7 +6903,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7084,7 +7097,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7362,7 +7375,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7587,7 +7600,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
