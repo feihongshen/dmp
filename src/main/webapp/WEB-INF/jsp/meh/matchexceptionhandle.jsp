@@ -425,7 +425,7 @@ dl dd span {
 										<tr>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">处理时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">处理站点</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">处理机构</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">处理人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">分配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
