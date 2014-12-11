@@ -108,7 +108,7 @@ public class MatchExceptionController {
 		boolean today = this.isToday(request);
 		Boolean transfer = this.getBooleanValue(request, "transfer");
 		Boolean match = this.getBooleanValue(request, "match");
-		List<MatchExceptionOrder> meoList = this.queryOrder(today, transfer, match, 1);
+		List<MatchExceptionOrder> meoList = this.queryOrder(today, transfer, match, -1);
 		ExportHandler handler = new ExportHandler(meoList);
 		handler.exportExcel(response, this.getExportFileName(today, transfer, match));
 	}
