@@ -12,7 +12,7 @@
 <%
 List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
-
+/* List<Branch> branchList = (List<Branch>)request.getAttribute("branchList"); */
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
 long deliverystateid = request.getAttribute("deliverystateid")==null?0:(Long)request.getAttribute("deliverystateid");
 long paytype = request.getAttribute("paytype")==null?-1:(Long)request.getAttribute("paytype");
@@ -187,7 +187,7 @@ function resub(form){
 					<td align="center" valign="middle"><%=obj.getString("cwb") %></td>
 					<td align="center" valign="middle"><%=obj.get("customer")==null?"":obj.getString("customer") %></td>
 					<td align="center" valign="middle"><%=obj.get("cwbOrder")==null?"":obj.getJSONObject("cwbOrder").getString("emaildate") %></td>
-					<td align="center" valign="middle"><%=obj.get("cwbOrder")==null?"":obj.getJSONObject("cwbOrder").getString("emaildate") %></td>
+					<td align="center" valign="middle"><%=obj.get("cwbOrder")==null?"":obj.getJSONObject("cwbOrder").getString("excelbranch") %></td>
 					<td align="center" valign="middle"><%=obj.getString("daohuoTime")==null?"":obj.getString("daohuoTime") %></td>
 					<td align="center" valign="middle">
 						<label for="select2"></label>

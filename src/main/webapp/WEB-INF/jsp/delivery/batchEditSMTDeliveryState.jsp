@@ -12,7 +12,7 @@
 <%
 List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
-List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
+/* List<Branch> branchList = (List<Branch>)request.getAttribute("branchList"); */
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
@@ -214,7 +214,7 @@ function load(deliverystateid)
 						successcount ++;
 						continue;
 					}
-					String branchname="";
+					/* String branchname="";
 					long branchid=obj.get("cwbOrder")==null?0:obj.getJSONObject("cwbOrder").getLong("deliverybranchid");
 					for(Branch b:branchList)
 					{
@@ -222,13 +222,13 @@ function load(deliverystateid)
 						{
 							branchname=b.getBranchname();
 						}
-					}
+					} */
 				%>
 				<tr>
 					<td align="center" valign="middle"><%=obj.getString("cwb") %></td>
 					<td align="center" valign="middle"><%=obj.get("customer")==null?"":obj.getString("customer") %></td>
 					<td align="center" valign="middle"><%=obj.get("cwbOrder")==null?"":obj.getJSONObject("cwbOrder").getString("emaildate") %></td>
-					<td align="center" valign="middle"><%=branchname %></td>
+					<td align="center" valign="middle"><%=obj.get("cwbOrder")==null?"":obj.getJSONObject("cwbOrder").getString("excelbranch")  %></td>
 					<td align="center" valign="middle"><%=obj.getString("daohuoTime")==null?"":obj.getString("daohuoTime") %></td>
 					<td align="center" valign="middle">
 						<label for="select2"></label>
