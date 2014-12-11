@@ -363,7 +363,7 @@ public class MatchExceptionController {
 
 	private void clearMatchUserInfo(List<MatchExceptionOrder> meoList) {
 		for (MatchExceptionOrder meo : meoList) {
-			if (meo.getOutareaFlag() != 1) {
+			if (meo.getOutareaFlag() == 1) {
 				continue;
 			}
 			meo.setReportOutAreaBranchId(0);
