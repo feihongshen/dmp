@@ -1,7 +1,9 @@
 package cn.explink.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,14 +196,22 @@ public class SmtController {
 		this.exportTodayOutAreaData(response, order, SmtController.EXCEPTION_DATA_FN);
 	}
 
-	@RequestMapping("/querysmthistoryordercount")
+	@RequestMapping("/querysmthistorytraordercount")
 	@ResponseBody
-	public JSONObject querySmtHistoryOrderCount(HttpServletRequest request) {
-		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
+	public JSONObject querySmtHistoryTraOrderCount(HttpServletRequest request) {
 		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false);
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("hNorNotDisCnt", hNorNotDisCnt);
 		jsonObj.put("hTraNotDisCnt", hTraNotDisCnt);
+
+		return jsonObj;
+	}
+
+	@RequestMapping("/querysmthistorynorordercount")
+	@ResponseBody
+	public JSONObject querySmtHistoryNorOrderCount(HttpServletRequest request) {
+		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("hNorNotDisCnt", hNorNotDisCnt);
 
 		return jsonObj;
 	}
@@ -551,7 +561,7 @@ public class SmtController {
 		} else {
 			sql.append("<");
 		}
-		sql.append(this.getTodayZeroTimeString() + " ");
+		sql.append("'" + this.getTodayZeroTimeString() + "' ");
 	}
 
 	@SuppressWarnings("unused")
@@ -636,7 +646,9 @@ public class SmtController {
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 
-		return Long.toString(cal.getTimeInMillis());
+		Date date = new Date(cal.getTimeInMillis());
+		// 大写HH为24小时,小写hh为12小时.
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
 
 	private class ExportHandler extends ExcelUtils {

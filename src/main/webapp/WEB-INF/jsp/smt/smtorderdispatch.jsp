@@ -388,22 +388,37 @@ function loadTodayOutAreaOrder(){
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : '<%=request.getContextPath() + "/smt/querysmthistoryordercount"%>'+ "?timestamp=" + new Date().getTime(),
+			url : '<%=request.getContextPath() + "/smt/querysmthistorytraordercount"%>'+ "?timestamp=" + new Date().getTime(),
 					data : {},
 					async : true,
 					success : function(data) {
-						$("#history_normal_not_dispatched").empty();
-						$("#history_normal_not_dispatched").html(
-								data.hNorNotDisCnt);
 						$("#history_transfer_not_dispatched").empty();
-						$("#history_transfer_not_dispatched").html(
-								data.hTraNotDisCnt);
+						$("#history_transfer_not_dispatched").html(data.hTraNotDisCnt);
 					},
 					error : function(data) {
 					}
 
 				});
 	});
+	
+	
+	$(function() {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : '<%=request.getContextPath() + "/smt/querysmthistorynorordercount"%>'+ "?timestamp=" + new Date().getTime(),
+					data : {},
+					async : true,
+					success : function(data) {
+						$("#history_normal_not_dispatched").empty();
+						$("#history_normal_not_dispatched").html(data.hNorNotDisCnt);
+					},
+					error : function(data) {
+					}
+
+				});
+	});
+	
 	
 	
 	$(function() {
