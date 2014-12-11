@@ -1787,6 +1787,11 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
+	public long getJinRiWeiDaoHuoCount(String flowordertypes, String cwbs) {
+		String sql = "SELECT COUNT(1) count FROM express_ops_cwb_detail WHERE   flowordertype in(" + flowordertypes + ") and state=1 and cwb in(" + cwbs + ")";
+		return this.jdbcTemplate.queryForLong(sql);
+	}
+
 	public long getYuyueCount(String flowordertypes, String cwbs) {
 		String sql = "SELECT COUNT(1) count FROM express_ops_cwb_detail WHERE  flowordertype in(" + flowordertypes + ") and state=1 and cwb in(" + cwbs + ")  and customercommand like '%预约%'";
 		return this.jdbcTemplate.queryForLong(sql);
