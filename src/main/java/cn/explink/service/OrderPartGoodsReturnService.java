@@ -1,5 +1,6 @@
 package cn.explink.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.controller.DeliveryController;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OrderPartGoodsRtDAO;
@@ -45,7 +45,7 @@ public class OrderPartGoodsReturnService {
 	 * @return
 	 */
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -75,7 +75,7 @@ public class OrderPartGoodsReturnService {
 			}
 			customerids = customerids.length() > 0 ? customerids.substring(0, customerids.length() - 1) : "";
 		}
-		List<OrderPartGoodsRt> orderPartGoodsRtList = orderPartGoodsRtDAO.getOrderPartGoodsRtList(page, userid, customerid, userids, customerids);
+		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsRtDAO.getOrderPartGoodsRtList(page, userid, customerid, userids, customerids);
 		return orderPartGoodsRtList;
 	}
 
@@ -105,7 +105,7 @@ public class OrderPartGoodsReturnService {
 			}
 			customerids = customerids.length() > 0 ? customerids.substring(0, customerids.length() - 1) : "";
 		}
-		long count = orderPartGoodsRtDAO.getOrderPartGoodsRtCount(userid, customerid, userids, customerids);
+		long count = this.orderPartGoodsRtDAO.getOrderPartGoodsRtCount(userid, customerid, userids, customerids);
 		return count;
 	}
 
@@ -115,9 +115,9 @@ public class OrderPartGoodsReturnService {
 	 * @param goodsList
 	 */
 	public void updateOrderGoods(List<OrderGoods> goodsList) {
-		if (goodsList != null && goodsList.size() > 0) {
+		if ((goodsList != null) && (goodsList.size() > 0)) {
 			for (OrderGoods orderGoods : goodsList) {
-				orderGoodsDao.updateOrderGoodsById(orderGoods);
+				this.orderGoodsDao.updateOrderGoodsById(orderGoods);
 			}
 		}
 	}
@@ -145,7 +145,7 @@ public class OrderPartGoodsReturnService {
 			customerids += "" + cus.getCustomerid() + ",";
 		}
 		customerids = customerids.length() > 0 ? customerids.substring(0, customerids.length() - 1) : "";
-		List<OrderPartGoodsRt> orderPartGoodsRtList = orderPartGoodsRtDAO.getOrderPartGoodsRtBycwb(cwbs, userids, customerids);
+		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsRtDAO.getOrderPartGoodsRtBycwb(cwbs, userids, customerids);
 		return orderPartGoodsRtList;
 	}
 
@@ -159,14 +159,21 @@ public class OrderPartGoodsReturnService {
 	public String partgoodsreturn(String cwb, String shangmenlanshoutime, int returngoodscount) {
 		try {
 			// 成功订单
-			logger.info("反馈(批量)-上门退订单,cwb:{}", cwb);
+			this.logger.info("反馈(批量)-上门退订单,cwb:{}", cwb);
 			Map<String, Object> parameters = new HashMap<String, Object>();
 
-			DeliveryState deliveryState = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+			DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 			if (returngoodscount > 0) {
 				parameters.put("podresultid", (long) DeliveryStateEnum.ShangMenTuiChengGong.getValue());
+
+				if (deliveryState != null) {
+					parameters.put("infactfare", deliveryState.getShouldfare());
+				}
 			} else {
 				parameters.put("podresultid", (long) DeliveryStateEnum.ShangMenJuTui.getValue());
+				if (deliveryState != null) {
+					parameters.put("infactfare", BigDecimal.ZERO);
+				}
 			}
 			parameters.put("backreasonid", 0l);
 			parameters.put("leavedreasonid", 0l);
@@ -175,8 +182,8 @@ public class OrderPartGoodsReturnService {
 			parameters.put("checkremark", "");
 			parameters.put("deliverstateremark", "");
 			parameters.put("owgid", 0);
-			parameters.put("sessionbranchid", getSessionUser().getBranchid());
-			parameters.put("sessionuserid", getSessionUser().getUserid());
+			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+			parameters.put("sessionuserid", this.getSessionUser().getUserid());
 			parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
 			parameters.put("isbatch", true);
@@ -184,11 +191,9 @@ public class OrderPartGoodsReturnService {
 			parameters.put("resendtime", "");
 			parameters.put("zhiliuremark", "");
 			parameters.put("deliverstateremark", "");
-			if (deliveryState != null) {
-				parameters.put("infactfare", deliveryState.getShouldfare());
-			}
-			deliveryStateDAO.updateShangmenlanshoutime(cwb, shangmenlanshoutime);
-			cwbOrderService.deliverStatePod(getSessionUser(), cwb, cwb, parameters);
+
+			this.deliveryStateDAO.updateShangmenlanshoutime(cwb, shangmenlanshoutime);
+			this.cwbOrderService.deliverStatePod(this.getSessionUser(), cwb, cwb, parameters);
 
 		} catch (Exception e) {
 			e.printStackTrace();
