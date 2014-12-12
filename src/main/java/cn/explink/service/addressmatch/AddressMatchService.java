@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -165,6 +166,18 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		return ordervo;
 	}
 
+	/**
+	 * 生成applicationVo
+	 */
+	private OrderVo getOrderVoByDuiJie(String orderId, String address) {
+		OrderVo ordervo = new OrderVo();
+		ordervo.setOrderId(orderId);
+		ordervo.setAddressLine(address);
+		ordervo.setVendorId(null);
+		ordervo.setCustomerId(Long.parseLong(ResourceBundleUtil.addresscustomerid));
+		return ordervo;
+	}
+
 	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
 		this.logger.info("start address match for {}", cwb);
 		try {
@@ -239,8 +252,20 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		this.logger.info("唯品会匹配站点: 地址： {} 开始", Address);
 		JSONObject json = new JSONObject();
 		try {
-			JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""),
-					"POST"));
+
+			JSONArray addressList = new JSONArray();
+
+			String addressenabled = this.systemInstallService.getParameter("newaddressenabled"); // 新旧地址库
+
+			if ((addressenabled != null) && addressenabled.equals("1")) {
+
+				addressList = this.invokeNewAddressMatchService(itemno, Address);
+
+			} else {
+				addressList = JSONArray
+						.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""), "POST"));
+			}
+
 			Branch b = null;
 			if ((addressList != null) && (addressList.size() > 0)) {
 				try {
@@ -276,6 +301,45 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			this.logger.error("唯品会未匹配到站点,接口异常", e);
 		}
 		return json;
+	}
+
+	private JSONArray invokeNewAddressMatchService(String itemno, String Address) {
+		// TODO 启用新地址库 调用webservice
+		List<OrderVo> orderVoList = new ArrayList<OrderVo>();
+		try {
+			JSONArray addressList = new JSONArray();
+
+			String orderId = UUID.randomUUID().toString() + itemno;
+			String address = Address;
+			orderVoList.add(this.getOrderVoByDuiJie(orderId, address));
+			AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+			int successFlag = addressreturn.getResultCode().getCode();
+			if (successFlag != 0) {
+				return null;
+			}
+
+			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(orderId);
+			if (mappingresult != null) {
+				List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
+
+				if (deliveryStationList.size() == 0) {
+					return null;
+				}
+				Set<Long> set = new HashSet<Long>();
+				for (DeliveryStationVo desvo : deliveryStationList) {
+					set.add(desvo.getExternalId());
+				}
+				if (set.size() == 1) {
+					JSONObject jsonobj = new JSONObject();
+					jsonobj.put("station", deliveryStationList.get(0).getExternalId());
+					addressList.add(jsonobj);
+					return addressList;
+				}
+			}
+		} catch (Exception e) {
+			this.logger.error("error while doing address match for vipshop");
+		}
+		return null;
 	}
 
 	/**

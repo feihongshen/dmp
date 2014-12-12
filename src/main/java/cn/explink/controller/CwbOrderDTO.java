@@ -14,7 +14,7 @@ public class CwbOrderDTO {
 	long opscwbid;
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -77,11 +77,11 @@ public class CwbOrderDTO {
 	long paywayid;// 支付方式（导入数据的时候会导入）
 	String newpaywayid;// 新的支付方式（反馈的时候可能会更改的支付方式）
 	long customerid;
-	BigDecimal shouldfare;
-	BigDecimal infactfare;
+	BigDecimal shouldfare = BigDecimal.ZERO;
+	BigDecimal infactfare = BigDecimal.ZERO;
 
 	public BigDecimal getShouldfare() {
-		return shouldfare;
+		return this.shouldfare;
 	}
 
 	public void setShouldfare(BigDecimal shouldfare) {
@@ -90,7 +90,7 @@ public class CwbOrderDTO {
 
 	public void setShouldfare(String shouldfare) {
 		try {
-			if (shouldfare == null || shouldfare.length() == 0) {
+			if ((shouldfare == null) || (shouldfare.length() == 0)) {
 				shouldfare = "0";
 			}
 			this.shouldfare = new BigDecimal(shouldfare);
@@ -100,7 +100,7 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getInfactfare() {
-		return infactfare;
+		return this.infactfare;
 	}
 
 	public void setInfactfare(BigDecimal infactfare) {
@@ -111,7 +111,7 @@ public class CwbOrderDTO {
 	String timelimited;// 地址库匹配时效
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -128,7 +128,7 @@ public class CwbOrderDTO {
 	String printtime = "";// 打印时间
 
 	public long getIsaudit() {
-		return isaudit;
+		return this.isaudit;
 	}
 
 	public void setIsaudit(long isaudit) {
@@ -136,7 +136,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCommoncwb() {
-		return commoncwb;
+		return this.commoncwb;
 	}
 
 	public void setCommoncwb(String commoncwb) {
@@ -144,7 +144,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getMulti_shipcwb() {
-		return multi_shipcwb;
+		return this.multi_shipcwb;
 	}
 
 	public void setMulti_shipcwb(String multi_shipcwb) {
@@ -152,7 +152,7 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getCargovolume() {
-		return cargovolume;
+		return this.cargovolume;
 	}
 
 	public void setCargovolume(BigDecimal cargovolume) {
@@ -160,7 +160,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getConsignoraddress() {
-		return consignoraddress;
+		return this.consignoraddress;
 	}
 
 	public void setConsignoraddress(String consignoraddress) {
@@ -168,7 +168,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getTmall_notifyid() {
-		return tmall_notifyid;
+		return this.tmall_notifyid;
 	}
 
 	public void setTmall_notifyid(String tmall_notifyid) {
@@ -176,7 +176,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getStartbranchid() {
-		return startbranchid;
+		return this.startbranchid;
 	}
 
 	public void setStartbranchid(long startbranchid) {
@@ -184,7 +184,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getDeliverybranchid() {
-		return deliverybranchid;
+		return this.deliverybranchid;
 	}
 
 	public void setDeliverybranchid(long deliverybranchid) {
@@ -192,7 +192,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getMultipbranchflag() {
-		return multipbranchflag;
+		return this.multipbranchflag;
 	}
 
 	public void setMultipbranchflag(long multipbranchflag) {
@@ -200,7 +200,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getMultipdeliverflag() {
-		return multipdeliverflag;
+		return this.multipdeliverflag;
 	}
 
 	public void setMultipdeliverflag(long multipdeliverflag) {
@@ -208,7 +208,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getCstypeid() {
-		return cstypeid;
+		return this.cstypeid;
 	}
 
 	public void setCstypeid(long cstypeid) {
@@ -248,7 +248,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getExcelimportuserid() {
-		return excelimportuserid;
+		return this.excelimportuserid;
 	}
 
 	public void setExcelimportuserid(String excelimportuserid) {
@@ -267,15 +267,15 @@ public class CwbOrderDTO {
 	SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
-		this.cwb = removeZero(cwb);
+		this.cwb = this.removeZero(cwb);
 	}
 
 	public String getConsigneename() {
-		return consigneename;
+		return this.consigneename;
 	}
 
 	public void setConsigneename(String consigneename) {
@@ -283,7 +283,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getConsigneeaddress() {
-		return consigneeaddress;
+		return this.consigneeaddress;
 	}
 
 	public void setConsigneeaddress(String consigneeaddress) {
@@ -295,26 +295,26 @@ public class CwbOrderDTO {
 	}
 
 	public String getConsigneepostcode() {
-		return consigneepostcode;
+		return this.consigneepostcode;
 	}
 
 	public void setConsigneepostcode(String consigneepostcode) {
-		this.consigneepostcode = removeZero(consigneepostcode);
+		this.consigneepostcode = this.removeZero(consigneepostcode);
 	}
 
 	public String getConsigneephone() {
-		return consigneephone;
+		return this.consigneephone;
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
 		this.consigneephone = consigneephone;
 		if (guessMobile) {
-			setConsigneemobile(consigneephone);
+			this.setConsigneemobile(consigneephone);
 		}
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile;
+		return this.consigneemobile;
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
@@ -322,7 +322,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getSendcargoname() {
-		return sendcargoname;
+		return this.sendcargoname;
 	}
 
 	public void setSendcargoname(String sendcargoname) {
@@ -330,7 +330,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getBackcargoname() {
-		return backcargoname;
+		return this.backcargoname;
 	}
 
 	public void setBackcargoname(String backcargoname) {
@@ -338,12 +338,12 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getReceivablefee() {
-		return receivablefee;
+		return this.receivablefee;
 	}
 
 	public void setReceivablefee(String receivablefee) {
 		try {
-			if (receivablefee == null || receivablefee.length() == 0) {
+			if ((receivablefee == null) || (receivablefee.length() == 0)) {
 				receivablefee = "0";
 			}
 			this.receivablefee = new BigDecimal(receivablefee);
@@ -357,12 +357,12 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getPaybackfee() {
-		return paybackfee;
+		return this.paybackfee;
 	}
 
 	public void setPaybackfee(String paybackfee) {
 		try {
-			if (paybackfee == null || paybackfee.length() == 0) {
+			if ((paybackfee == null) || (paybackfee.length() == 0)) {
 				paybackfee = "0";
 			}
 			this.paybackfee = new BigDecimal(paybackfee);
@@ -372,12 +372,12 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getCargorealweight() {
-		return cargorealweight;
+		return this.cargorealweight;
 	}
 
 	public void setCargorealweight(String cargorealweight) {
 		try {
-			if (cargorealweight == null || cargorealweight.length() == 0) {
+			if ((cargorealweight == null) || (cargorealweight.length() == 0)) {
 				cargorealweight = "0";
 			}
 			this.cargorealweight = new BigDecimal(cargorealweight);
@@ -387,7 +387,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCwbremark() {
-		return cwbremark;
+		return this.cwbremark;
 	}
 
 	public void setCwbremark(String cwbremark) {
@@ -395,7 +395,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getAccountarea() {
-		return accountarea;
+		return this.accountarea;
 	}
 
 	public void setAccountarea(String accountarea) {
@@ -403,7 +403,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getEmaildateid() {
-		return emaildateid;
+		return this.emaildateid;
 	}
 
 	public void setEmaildateid(long emaildateid) {
@@ -411,7 +411,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getEmaildate() {
-		return emaildate;
+		return this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -419,7 +419,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getExcelbranchid() {
-		return excelbranchid;
+		return this.excelbranchid;
 	}
 
 	public void setExcelbranchid(long excelbranchid) {
@@ -427,16 +427,16 @@ public class CwbOrderDTO {
 	}
 
 	public String getShipcwb() {
-		return shipcwb;
+		return this.shipcwb;
 	}
 
 	public void setShipcwb(String shipcwb) {
-		shipcwb = removeZero(shipcwb);
+		shipcwb = this.removeZero(shipcwb);
 		this.shipcwb = shipcwb;
 	}
 
 	public String getExceldeliver() {
-		return exceldeliver;
+		return this.exceldeliver;
 	}
 
 	public void setExceldeliver(String exceldeliver) {
@@ -444,15 +444,15 @@ public class CwbOrderDTO {
 	}
 
 	public String getConsigneeno() {
-		return consigneeno;
+		return this.consigneeno;
 	}
 
 	public void setConsigneeno(String consigneeno) {
-		this.consigneeno = removeZero(consigneeno);
+		this.consigneeno = this.removeZero(consigneeno);
 	}
 
 	public String getExcelbranch() {
-		return excelbranch;
+		return this.excelbranch;
 	}
 
 	public void setExcelbranch(String excelbranch) {
@@ -460,12 +460,12 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getCargoamount() {
-		return cargoamount;
+		return this.cargoamount;
 	}
 
 	public void setCargoamount(String cargoamount) {
 		try {
-			if (cargoamount == null || cargoamount.length() == 0) {
+			if ((cargoamount == null) || (cargoamount.length() == 0)) {
 				cargoamount = "0";
 			}
 			this.cargoamount = new BigDecimal(cargoamount);
@@ -475,7 +475,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCustomercommand() {
-		return customercommand;
+		return this.customercommand;
 	}
 
 	public void setCustomercommand(String customercommand) {
@@ -483,7 +483,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCargotype() {
-		return cargotype;
+		return this.cargotype;
 	}
 
 	public void setCargotype(String cargotype) {
@@ -491,7 +491,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCargosize() {
-		return cargosize;
+		return this.cargosize;
 	}
 
 	public void setCargosize(String cargosize) {
@@ -499,12 +499,12 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getBackcargoamount() {
-		return backcargoamount;
+		return this.backcargoamount;
 	}
 
 	public void setBackcargoamount(String backcargoamount) {
 		try {
-			if (backcargoamount == null || backcargoamount.length() == 0) {
+			if ((backcargoamount == null) || (backcargoamount.length() == 0)) {
 				backcargoamount = "0";
 			}
 			this.backcargoamount = new BigDecimal(backcargoamount);
@@ -514,7 +514,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getDestination() {
-		return destination;
+		return this.destination;
 	}
 
 	public void setDestination(String destination) {
@@ -522,7 +522,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getTransway() {
-		return transway;
+		return this.transway;
 	}
 
 	public void setTransway(String transway) {
@@ -530,37 +530,37 @@ public class CwbOrderDTO {
 	}
 
 	public int getSendcargonum() {
-		return sendcargonum;
+		return this.sendcargonum;
 	}
 
 	public void setSendcargonum(String sendcargonum) {
 		try {
-			if (sendcargonum == null || sendcargonum.length() == 0) {
+			if ((sendcargonum == null) || (sendcargonum.length() == 0)) {
 				sendcargonum = "1";
 			}
-			this.sendcargonum = Integer.parseInt(removeZero(sendcargonum));
+			this.sendcargonum = Integer.parseInt(this.removeZero(sendcargonum));
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("货物数量不是有效的數字格式:" + sendcargonum);
 		}
 	}
 
 	public int getBackcargonum() {
-		return backcargonum;
+		return this.backcargonum;
 	}
 
 	public void setBackcargonum(String backcargonum) {
 		try {
-			if (backcargonum == null || backcargonum.length() == 0) {
+			if ((backcargonum == null) || (backcargonum.length() == 0)) {
 				backcargonum = "1";
 			}
-			this.backcargonum = Integer.parseInt(removeZero(backcargonum));
+			this.backcargonum = Integer.parseInt(this.removeZero(backcargonum));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("退货数量不是有效的數字格式:" + sendcargonum);
+			throw new IllegalArgumentException("退货数量不是有效的數字格式:" + this.sendcargonum);
 		}
 	}
 
 	public long getCwbdelivertypeid() {
-		return cwbdelivertypeid;
+		return this.cwbdelivertypeid;
 	}
 
 	public void setCwbdelivertypeid(long cwbdelivertypeid) {
@@ -568,7 +568,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCwbprovince() {
-		return cwbprovince;
+		return this.cwbprovince;
 	}
 
 	public void setCwbprovince(String cwbprovince) {
@@ -576,7 +576,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCwbcity() {
-		return cwbcity;
+		return this.cwbcity;
 	}
 
 	public void setCwbcity(String cwbcity) {
@@ -584,7 +584,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getCwbcounty() {
-		return cwbcounty;
+		return this.cwbcounty;
 	}
 
 	public void setCwbcounty(String cwbcounty) {
@@ -596,15 +596,15 @@ public class CwbOrderDTO {
 	 * setOrdercwb(String ordercwb) { this.ordercwb = ordercwb; }
 	 */
 	public String getTranscwb() {
-		return transcwb;
+		return this.transcwb;
 	}
 
 	public void setTranscwb(String transcwb) {
-		this.transcwb = removeZero(transcwb);
+		this.transcwb = this.removeZero(transcwb);
 	}
 
 	public String getPaisongArea() {
-		return paisongArea;
+		return this.paisongArea;
 	}
 
 	public void setPaisongArea(String paisongArea) {
@@ -620,7 +620,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(long cwbordertypeid) {
@@ -650,16 +650,16 @@ public class CwbOrderDTO {
 	}
 
 	public void setDefaultCargoName() {
-		if (this.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue() && !StringUtils.hasLength(this.getSendcargoname())) {
+		if ((this.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) && !StringUtils.hasLength(this.getSendcargoname())) {
 			this.setSendcargoname("");
 		}
-		if (this.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue() && !StringUtils.hasLength(this.getBackcargoname())) {
+		if ((this.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && !StringUtils.hasLength(this.getBackcargoname())) {
 			this.setBackcargoname("");
 		}
 	}
 
 	public long getAccountareaid() {
-		return accountareaid;
+		return this.accountareaid;
 	}
 
 	public void setAccountareaid(long accountareaid) {
@@ -667,7 +667,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getServiceareaid() {
-		return serviceareaid;
+		return this.serviceareaid;
 	}
 
 	public void setServiceareaid(long serviceareaid) {
@@ -675,7 +675,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getShipperid() {
-		return shipperid;
+		return this.shipperid;
 	}
 
 	public void setShipperid(long shipperid) {
@@ -683,7 +683,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getCustomerwarehouseid() {
-		return customerwarehouseid;
+		return this.customerwarehouseid;
 	}
 
 	public void setCustomerwarehouseid(long customerwarehouseid) {
@@ -691,7 +691,7 @@ public class CwbOrderDTO {
 	}
 
 	public Common getCommon() {
-		return common;
+		return this.common;
 	}
 
 	public void setCommon(Common common) {
@@ -699,7 +699,7 @@ public class CwbOrderDTO {
 	}
 
 	public BigDecimal getPrimitivemoney() {
-		return primitivemoney;
+		return this.primitivemoney;
 	}
 
 	public void setPrimitivemoney(BigDecimal primitivemoney) {
@@ -707,7 +707,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getModelname() {
-		return modelname;
+		return this.modelname;
 	}
 
 	public void setModelname(String modelname) {
@@ -715,7 +715,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getRemark1() {
-		return remark1;
+		return this.remark1;
 	}
 
 	public void setRemark1(String remark1) {
@@ -723,7 +723,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getRemark2() {
-		return remark2;
+		return this.remark2;
 	}
 
 	public void setRemark2(String remark2) {
@@ -731,7 +731,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getRemark3() {
-		return remark3;
+		return this.remark3;
 	}
 
 	public void setRemark3(String remark3) {
@@ -739,7 +739,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getRemark4() {
-		return remark4;
+		return this.remark4;
 	}
 
 	public void setRemark4(String remark4) {
@@ -747,7 +747,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getRemark5() {
-		return remark5;
+		return this.remark5;
 	}
 
 	public void setRemark5(String remark5) {
@@ -755,7 +755,7 @@ public class CwbOrderDTO {
 	}
 
 	public long getPaywayid() {
-		return paywayid;
+		return this.paywayid;
 	}
 
 	public void setPaywayid(long paywayid) {
@@ -763,7 +763,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getNewpaywayid() {
-		return newpaywayid;
+		return this.newpaywayid;
 	}
 
 	public void setNewpaywayid(String newpaywayid) {
@@ -771,7 +771,7 @@ public class CwbOrderDTO {
 	}
 
 	public int getAddresscodeedittype() {
-		return addresscodeedittype;
+		return this.addresscodeedittype;
 	}
 
 	public void setAddresscodeedittype(int addresscodeedittype) {
@@ -779,7 +779,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getPrinttime() {
-		return printtime;
+		return this.printtime;
 	}
 
 	public void setPrinttime(String printtime) {
@@ -787,7 +787,7 @@ public class CwbOrderDTO {
 	}
 
 	public String getTimelimited() {
-		return timelimited;
+		return this.timelimited;
 	}
 
 	public void setTimelimited(String timelimited) {

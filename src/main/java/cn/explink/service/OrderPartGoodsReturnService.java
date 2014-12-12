@@ -59,7 +59,7 @@ public class OrderPartGoodsReturnService {
 	 * @param customerList
 	 * @return
 	 */
-	public List<OrderPartGoodsRt> getOrderPartGoodsRtList(long page, long userid, long customerid, List<User> userList, List<Customer> customerList) {
+	public List<OrderPartGoodsRt> getOrderPartGoodsRtList(long page, long userid, long customerid, List<User> userList, List<Customer> customerList, long userBranchId) {
 
 		String userids = "";
 		String customerids = "";
@@ -75,7 +75,8 @@ public class OrderPartGoodsReturnService {
 			}
 			customerids = customerids.length() > 0 ? customerids.substring(0, customerids.length() - 1) : "";
 		}
-		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsRtDAO.getOrderPartGoodsRtList(page, userid, customerid, userids, customerids);
+
+		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsRtDAO.getOrderPartGoodsRtList(page, userid, customerid, userids, customerids, userBranchId);
 		return orderPartGoodsRtList;
 	}
 

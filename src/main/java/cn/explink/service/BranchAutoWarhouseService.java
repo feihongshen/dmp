@@ -2,6 +2,8 @@ package cn.explink.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class BranchAutoWarhouseService {
 	CustomerDAO customerDAO;
 	@Autowired
 	JointService jointService;
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public void branchAutointoWarhouse(CwbOrder cwbOrder, Branch branch) {
 
@@ -37,6 +40,9 @@ public class BranchAutoWarhouseService {
 		}
 
 		Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
+
+		this.logger.info("自动到货cwb={},b2cenum={}", cwbOrder.getCwb(), customer.getB2cEnum());
+
 		if ((customer.getB2cEnum() != null) && !customer.getB2cEnum().equals(this.getB2cEnumKeys(customer, "vipshop"))) {
 			return;
 		}

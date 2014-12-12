@@ -94,8 +94,10 @@ public class OrderPartGoodsReturnController {
 		} else {
 			userList = this.userDAO.getUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 		}
+		long userBranchId = this.getSessionUser().getBranchid();
+
 		List<Customer> customerList = this.getCustomerList();
-		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsReturnService.getOrderPartGoodsRtList(page, userid, customerid, userList, customerList);
+		List<OrderPartGoodsRt> orderPartGoodsRtList = this.orderPartGoodsReturnService.getOrderPartGoodsRtList(page, userid, customerid, userList, customerList, userBranchId);
 		String customer = this.systemInstallService.getParameter("pxwl");
 		// count =
 		// orderPartGoodsReturnService.getOrderPartGoodsRtCount(page,userid,customerid,userList,customerList);
@@ -178,7 +180,8 @@ public class OrderPartGoodsReturnController {
 	 */
 	@SuppressWarnings("deprecation")
 	@RequestMapping("/ordergoodsreturn")
-	public @ResponseBody String orderGoodsReturn(Model model, @RequestParam(value = "orderjson", defaultValue = "", required = false) String orderjson) {
+	public @ResponseBody
+	String orderGoodsReturn(Model model, @RequestParam(value = "orderjson", defaultValue = "", required = false) String orderjson) {
 
 		JSONArray json = JSONArray.fromObject(orderjson);
 		@SuppressWarnings("rawtypes")

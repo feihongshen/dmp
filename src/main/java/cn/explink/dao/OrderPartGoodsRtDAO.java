@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.OrderPartGoodsRt;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
-import cn.explink.util.Page;
 
 @Component
 public class OrderPartGoodsRtDAO {
@@ -47,17 +46,19 @@ public class OrderPartGoodsRtDAO {
 	 * @param customerids
 	 * @return
 	 */
-	public List<OrderPartGoodsRt> getOrderPartGoodsRtList(long page, long userid, long customerid, String userids, String customerids) {
+	public List<OrderPartGoodsRt> getOrderPartGoodsRtList(long page, long userid, long customerid, String userids, String customerids, long deliverybranchid) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT cd.cwb, cd.consigneename, cd.consigneeaddress, cd.receivablefee, ds.createtime, '' customer, '' collectiontime, 0 rtwarehouseid, '' rtwarehouseaddress ");
 		sql.append(" FROM express_ops_cwb_detail cd, express_ops_delivery_state ds ");
 		sql.append(" WHERE cd.cwb = ds.cwb ");
 		sql.append(" AND cd.cwbordertypeid = ? ");
 		sql.append(" AND ds.deliverystate = ? ");
+		sql.append(" AND ds.deliverybranchid =" + deliverybranchid);
+		sql.append(" AND cd.state=1 AND ds.state=1 ");
 		if (userid != -1) {
 			sql.append(" AND ds.deliveryid = " + userid);
 		} else {
-			if (userids != null && userids.trim().length() > 0) {
+			if ((userids != null) && (userids.trim().length() > 0)) {
 				sql.append(" AND ds.deliveryid IN (" + userids).append(")");
 			} else {
 				return null;
@@ -66,7 +67,7 @@ public class OrderPartGoodsRtDAO {
 		if (customerid != -1) {
 			sql.append(" AND cd.customerid = " + customerid);
 		} else {
-			if (customerids != null && customerids.trim().length() > 0) {
+			if ((customerids != null) && (customerids.trim().length() > 0)) {
 				sql.append(" AND cd.customerid IN (" + customerids).append(")");
 			} else {
 				return null;
@@ -74,7 +75,7 @@ public class OrderPartGoodsRtDAO {
 		}
 		// sql.append(" ORDER BY ds.createtime ASC LIMIT "+(page-1)*Page.ONE_PAGE_NUMBER+" ,"+Page.ONE_PAGE_NUMBER);
 		sql.append(" ORDER BY ds.createtime ASC ");
-		return jdbcTemplate.query(sql.toString(), new OrderPartGoodsRtRowMapper(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
+		return this.jdbcTemplate.query(sql.toString(), new OrderPartGoodsRtRowMapper(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
 	}
 
 	/**
@@ -95,17 +96,17 @@ public class OrderPartGoodsRtDAO {
 		sql.append(" AND cd.cwbordertypeid = ? ");
 		sql.append(" AND ds.deliverystate = ? ");
 		sql.append(" AND ds.cwb IN(" + cwbs).append(")");
-		if (userids != null && userids.trim().length() > 0) {
+		if ((userids != null) && (userids.trim().length() > 0)) {
 			sql.append(" AND ds.deliveryid IN (" + userids).append(")");
 		} else {
 			return null;
 		}
-		if (customerids != null && customerids.trim().length() > 0) {
+		if ((customerids != null) && (customerids.trim().length() > 0)) {
 			sql.append(" AND cd.customerid IN (" + customerids).append(")");
 		} else {
 			return null;
 		}
-		return jdbcTemplate.query(sql.toString(), new OrderPartGoodsRtRowMapper(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
+		return this.jdbcTemplate.query(sql.toString(), new OrderPartGoodsRtRowMapper(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
 	}
 
 	/**
@@ -127,7 +128,7 @@ public class OrderPartGoodsRtDAO {
 		if (userid != -1) {
 			sql.append(" AND ds.deliveryid = " + userid);
 		} else {
-			if (userids != null && userids.trim().length() > 0) {
+			if ((userids != null) && (userids.trim().length() > 0)) {
 				sql.append(" AND ds.deliveryid IN (" + userids).append(")");
 			} else {
 				return 0;
@@ -136,12 +137,12 @@ public class OrderPartGoodsRtDAO {
 		if (customerid != -1) {
 			sql.append(" AND cd.customerid = " + customerid);
 		} else {
-			if (customerids != null && customerids.trim().length() > 0) {
+			if ((customerids != null) && (customerids.trim().length() > 0)) {
 				sql.append(" AND cd.customerid IN (" + customerids).append(")");
 			} else {
 				return 0;
 			}
 		}
-		return jdbcTemplate.queryForLong(sql.toString(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
+		return this.jdbcTemplate.queryForLong(sql.toString(), CwbOrderTypeIdEnum.Shangmentui.getValue(), DeliveryStateEnum.WeiFanKui.getValue());
 	}
 }
