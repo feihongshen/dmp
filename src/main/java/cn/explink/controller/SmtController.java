@@ -250,7 +250,7 @@ public class SmtController {
 	}
 
 	private SmtOrderContainer queryTodayOutAreaOrder(int page) {
-		String sql = this.getTodayOutAreaOrderSql(1);
+		String sql = this.getTodayOutAreaOrderSql(page);
 
 		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
 		this.fillUserName(orderList);
