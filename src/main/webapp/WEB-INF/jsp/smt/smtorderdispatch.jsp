@@ -8,7 +8,7 @@
 <%@page import="cn.explink.domain.SmtOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-//小件员.
+	//小件员.
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -227,7 +227,6 @@ function loadTodayOutAreaOrder(){
 
 	var currentOutAreaTableId;
 	var currentCwbs;
-
 	function outArea(tableId) {
 		var cwbs = this.getSelectedCwbs(tableId);
 		if (cwbs.length == 0) {
@@ -238,15 +237,22 @@ function loadTodayOutAreaOrder(){
 		currentCwbs = cwbs;
 		showConfrimDialog();
 	}
-
+	
 	function getSelectedCwbs(tableId) {
-		var $table = $("#" + tableId);
+		var $qickOutAreaField = $("#"+tableId + "_quick");
+		var qCwb =  $qickOutAreaField.val();
 		var cwbs = [];
-		$table.find("input[type='checkbox']").filter(":checked").each(
-				function() {
-					var cwb = $(this).closest("tr").attr("cwb");
-					cwbs.push(cwb);
-				});
+		if(qCwb.length != 0){
+			cwbs.push(qCwb);
+		}
+		else{
+			var $table = $("#" + tableId);
+			$table.find("input[type='checkbox']").filter(":checked").each(
+			function() {
+				var cwb = $(this).closest("tr").attr("cwb");
+				cwbs.push(cwb);
+			});
+		}
 		return cwbs;
 	}
 
@@ -280,6 +286,8 @@ function loadTodayOutAreaOrder(){
 		reduceNotHandleNumber(length);
 
 		closeConfirmDialog();
+		
+		$("#" + tableId + "_quick").val("");
 	}
 
 	function afterDispatch(data) {
@@ -450,7 +458,8 @@ function loadTodayOutAreaOrder(){
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : '<%=request.getContextPath() + "/smt/querysmttodayoutareacount"%>'+ "?timestamp=" + new Date().getTime(),
+			url : '<%=request.getContextPath() + "/smt/querysmttodayoutareacount"%>'
+							+ "?timestamp=" + new Date().getTime(),
 					data : {},
 					async : true,
 					success : function(data) {
@@ -462,9 +471,6 @@ function loadTodayOutAreaOrder(){
 
 				});
 	});
-	
-	
-	
 </script>
 <style>
 dl dt span {
@@ -622,7 +628,10 @@ dl dd span {
 			<div id="ViewList" class="tabbox">
 				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
 					onclick='exportData()' /> <input type="button" id="btnval0" value="超区" class="input_button1"
-					onclick="outArea('today_table')" />
+					onclick="outArea('today_table')" /><label style="margin-left:20px">快捷超区</label> <input type="text" id="today_table_quick"
+					name="today_table_quick" value=""
+					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" />
+
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -650,7 +659,9 @@ dl dd span {
 					</table></li>
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="超区"
-					class="input_button1" onclick="outArea('history_table')" />
+					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left:20px">快捷超区</label> <input type="text"
+					id="history_table_quick" name="history_table_quick" value=""
+					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('history_table');}" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
