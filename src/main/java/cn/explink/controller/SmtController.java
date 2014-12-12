@@ -154,6 +154,7 @@ public class SmtController {
 		// 更新订单表设定订单状态为超区.
 		this.cwbDAO.updateOrderOutAreaStatus(cwbs, branchMap);
 		// 更新订单流程表加入超区流程.
+		// 存在多次超区可能需要修改超区流程的isnow = 1.
 		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
 
 		return "";

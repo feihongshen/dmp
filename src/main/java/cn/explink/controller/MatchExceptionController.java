@@ -271,7 +271,7 @@ public class MatchExceptionController {
 
 	private Boolean getBooleanValue(HttpServletRequest request, String name) {
 		String parameter = request.getParameter(name);
-		if ((parameter == null) || parameter.equals("null")) {
+		if ((parameter == null) || parameter.equals("null") || parameter.isEmpty()) {
 			return null;
 		}
 		return Boolean.valueOf(parameter);
@@ -580,7 +580,7 @@ public class MatchExceptionController {
 			return "f.branchid = " + this.getCurrentBranchId();
 		} else {
 			// 未转订单的当前站点为库房.
-			return "d.currentbranchid = " + this.getCurrentBranchId();
+			return "d.nextbranchid = " + this.getCurrentBranchId();
 		}
 	}
 

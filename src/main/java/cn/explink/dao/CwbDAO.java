@@ -5180,7 +5180,7 @@ public class CwbDAO {
 
 	public void updateOrderOutAreaStatus(String[] cwbs, Map<String, Long> branchMap) {
 		// 上报超区时需要改变超区标识和将当前站点改为入库库房站点.
-		String sql = "update express_ops_cwb_detail set outareaflag = 1,flowordertype = 60,currentbranchid = ? where cwb = ?";
+		String sql = "update express_ops_cwb_detail set outareaflag = 1,flowordertype = 60,nextbranchid = ? where cwb = ?";
 		this.jdbcTemplate.batchUpdate(sql, this.getOutAreaParaList(cwbs, branchMap));
 	}
 
