@@ -86,8 +86,9 @@ function sub(){
 	var isReasonRequired="<%=isReasonRequired%>";
 	var deliverystate=$("#deliverystate7").attr("checked");
 	if(isReasonRequired=='yes'&&deliverystate=='checked')
-	{	if($("#backreasonid").val()=="0"){
-		alert("请选择对接原因");
+	{	
+		if($("#backreasonid").val()=="0"||$("#backreasonid").val()==null){
+		alert("请选择拒退原因");
 		return false;
 	}}
 	if($("#cwbs").val()==""){
@@ -175,7 +176,7 @@ function load(deliverystateid)
 							 <select name="backreasonid" id="backreasonid">
 					        	<option value ="0" selected="selected">请选择</option>
 					        	<%for(Reason r : backlist){ %>
-			           				<option value="<%=r.getReasonid()%>"  <%if(backreasonid==r.getReasonid()){%> selected="selected"<%} %>><%=r.getReasoncontent() %></option>
+			           				<option value="<%=r.getReasonid()%>" <%if((backreasonid==r.getReasonid())&&r.getReasoncontent()!=null){%> selected="selected"<%} %>><%=r.getReasoncontent() %></option>
 			           			<%} %>
 					        </select>
 						
