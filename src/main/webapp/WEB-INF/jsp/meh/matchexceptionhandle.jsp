@@ -159,7 +159,7 @@
 
 	function createTR(data) {
 		var tr = "<tr cwb="+ data.cwb +">";
-		tr += createTD("center", "100px", data.cwb);
+		tr += createTD("center", "120px", data.cwb);
 		tr += createTD("center", "150px", data.reportOutAreaTime);
 		tr += createTD("center", "100px", data.reportOutAreaBranchName);
 		tr += createTD("center", "100px", data.reportOutAreaUserName);
@@ -407,7 +407,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
@@ -435,7 +435,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>
@@ -464,7 +464,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">处理时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">处理机构</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">处理人</td>
@@ -493,7 +493,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="150" align="center" bgcolor="#f1f1f1">上报超区时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">上报超区人</td>

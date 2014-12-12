@@ -203,7 +203,7 @@ function loadTodayOutAreaOrder(){
 		if (widthCheckBox) {
 			tr += createTD("center", "40px", "<input type='checkbox'></input>");
 		}
-		tr += createTD("center", "100px", data.cwb);
+		tr += createTD("center", "120px", data.cwb);
 		tr += createTD("center", "100px", data.matchBranch);
 		tr += createTD("right", "100px", data.receivedFee);
 		if (data.strDeliver != undefined && !widthCheckBox && !outArea) {
@@ -640,7 +640,7 @@ dl dd span {
 										<tr>
 											<td width="40" align="center" bgcolor="#f1f1f1"><input id="today_checkbox"
 												type="checkbox"></input></td>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
@@ -670,7 +670,7 @@ dl dd span {
 										<tr>
 											<td width="40px" align="center" bgcolor="#f1f1f1"><input id="history_checkbox"
 												type="checkbox"></input></td>
-											<td width="100px" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120px" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100px" align="center" bgcolor="#f1f1f1">退件人姓名</td>
@@ -696,7 +696,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">小件员</td>
@@ -723,7 +723,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>
@@ -748,7 +748,7 @@ dl dd span {
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">匹配站点</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">应收运费</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">退件人姓名</td>

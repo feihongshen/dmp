@@ -506,8 +506,8 @@ public class MatchExceptionController {
 		if (page == -1) {
 			return "";
 		}
-		int start = (page - 1) * 100;
-		int end = page * 100;
+		int start = (page - 1) * 200;
+		int end = page * 200;
 
 		return "limit " + start + "," + end;
 	}
