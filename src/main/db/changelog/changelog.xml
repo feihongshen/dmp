@@ -5795,7 +5795,11 @@ ADD COLUMN `thzrkcount`  int(4) NULL DEFAULT 0 COMMENT '退货站入库数量' A
 INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '供货商单量查询', '${omsUrl}datastatistics/dianshangdanliang', '3', 'sj22', '1118', 'images/dsdlcx.png', NULL);
 		</sql>
 	</changeSet>
-	
+	<changeSet id="zhangpengkai-2014-12-12-1" author="zhangpengkai">
+		<sql>
+			DELETE FROM express_set_menu_info_new WHERE menuname='上门退运费结算';
+		</sql>
+	</changeSet>
 	
 	
 </databaseChangeLog>
