@@ -28,6 +28,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
@@ -148,8 +149,12 @@ public class SmtController {
 	}
 
 	@RequestMapping("/smtorderoutarea")
-	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
+	public @ResponseBody JSONObject smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
+		JSONObject errorObj = this.validateOutArea(cwbs);
+		if (!errorObj.getBoolean("successed")) {
+			return errorObj;
+		}
 		Map<String, Long> branchMap = this.cwbDAO.getImprotDataBranchMap(cwbs);
 		// 更新订单表设定订单状态为超区.
 		this.cwbDAO.updateOrderOutAreaStatus(cwbs, branchMap);
@@ -157,7 +162,40 @@ public class SmtController {
 		// 存在多次超区可能需要修改超区流程的isnow = 1.
 		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
 
-		return "";
+		return errorObj;
+	}
+
+	private JSONObject validateOutArea(String[] cwbs) {
+		JSONObject obj = new JSONObject();
+		obj.put("successed", true);
+		obj.put("msg", "");
+		if (cwbs.length != 1) {
+			return obj;
+		}
+		String cwb = cwbs[0];
+		CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+		if (order == null) {
+			obj.put("successed", false);
+			obj.put("msg", "订单不存在");
+		} else {
+			FlowOrderTypeEnum flowOrderType = FlowOrderTypeEnum.getText(order.getFlowordertype());
+			boolean cond1 = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType);
+			boolean cond2 = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType);
+			if (!(cond1 || cond2)) {
+				obj.put("successed", false);
+				obj.put("msg", this.getOutAreaFlowErrorMsg(flowOrderType));
+			}
+		}
+		return obj;
+	}
+
+	private String getOutAreaFlowErrorMsg(FlowOrderTypeEnum flowOrderType) {
+		StringBuilder msg = new StringBuilder();
+		msg.append("订单状态为[");
+		msg.append(flowOrderType.getText());
+		msg.append("]非[分站到货]或[到错货]状态无法超区.");
+
+		return msg.toString();
 	}
 
 	@RequestMapping("/querysmtorder")

@@ -266,28 +266,28 @@ function loadTodayOutAreaOrder(){
 				cwbs : currentCwbs.join(",")
 			},
 			success : function(data) {
-				handleOutAreaSuccess(currentOutAreaTableId, currentCwbs);
+				handleOutAreaSuccess(data , currentOutAreaTableId, currentCwbs);
 			},
 			error : function(data) {
 			}
 		});
 	}
 
-	function handleOutAreaSuccess(tableId, cwbs) {
-		var $table = $("#" + tableId);
-		for (var i = 0; i < cwbs.length; i++) {
-			$table.find("tr[cwb='" + cwbs[i] + "']").remove();
+	function handleOutAreaSuccess(data , tableId, cwbs) {
+		if(data.successed){		
+			var $table = $("#" + tableId);
+			for (var i = 0; i < cwbs.length; i++) {
+				$table.find("tr[cwb='" + cwbs[i] + "']").remove();
+			}
+			var length = cwbs.length;
+			var $tOutArea = $("#t_out_area");
+			var oriCnt = $tOutArea.html();
+			$tOutArea.html(parseInt(oriCnt) + length);
+			reduceNotHandleNumber(length);
 		}
-		var length = cwbs.length;
-		var $tOutArea = $("#t_out_area");
-		var oriCnt = $tOutArea.html();
-		$tOutArea.html(parseInt(oriCnt) + length);
-
-		reduceNotHandleNumber(length);
-
 		closeConfirmDialog();
-		
 		$("#" + tableId + "_quick").val("");
+		$("#" + tableId + "_msg").html(data.msg);
 	}
 
 	function afterDispatch(data) {
@@ -628,10 +628,10 @@ dl dd span {
 			<div id="ViewList" class="tabbox">
 				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
 					onclick='exportData()' /> <input type="button" id="btnval0" value="超区" class="input_button1"
-					onclick="outArea('today_table')" /><label style="margin-left:20px">快捷超区</label> <input type="text" id="today_table_quick"
-					name="today_table_quick" value=""
-					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" />
-
+					onclick="outArea('today_table')" /><label style="margin-left: 20px">快捷超区</label> <input
+					type="text" id="today_table_quick" name="today_table_quick" value=""
+					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
+					id="today_table_msg" style="color: red"></label>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -659,9 +659,10 @@ dl dd span {
 					</table></li>
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="超区"
-					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left:20px">快捷超区</label> <input type="text"
-					id="history_table_quick" name="history_table_quick" value=""
-					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('history_table');}" />
+					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left: 20px">快捷超区</label>
+					<input type="text" id="history_table_quick" name="history_table_quick" value=""
+					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('history_table');}" /> <label
+					id="history_table_msg" style="color: red"></label>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
