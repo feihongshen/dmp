@@ -2,6 +2,7 @@ package cn.explink.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -188,8 +189,18 @@ public class MatchExceptionHandleService {
 		meo.setCustomerAddress(order.getConsigneeaddress());
 		meo.setMatchBranchName(order.getExcelbranch());
 		meo.setReceivedFee(order.getShouldfare().doubleValue());
-
+		if (order.getOutareaflag() != 0) {
+			OrderFlow of = this.flowDAO.queryFlow(order.getCwb(), FlowOrderTypeEnum.ChaoQu);
+			meo.setReportOutAreaBranchId(of.getBranchid());
+			meo.setReportOutAreaUserId(of.getUserid());
+			meo.setReportOutAreaTime(this.formatDate(of.getCredate()));
+			this.fillMatchExceptionOrder(Arrays.asList(meo));
+		}
 		return meo;
+	}
+
+	private String formatDate(Date date) {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
 
 	private JSONObject validateOutAreaOrderFlow(CwbOrder order, FlowOrderTypeEnum currentFlow) {

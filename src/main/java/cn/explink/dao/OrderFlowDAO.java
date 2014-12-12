@@ -1014,6 +1014,15 @@ public class OrderFlowDAO {
 		}
 	}
 
+	public OrderFlow queryFlow(String cwb, FlowOrderTypeEnum flowType) {
+		try {
+			String sql = "select * from express_ops_order_flow where cwb= ? and flowordertype = ? order by credate desc limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper(), cwb, flowType.getValue());
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+
 	public void updateCommentByCwb(String cwb, String comment) {
 		String sql = "update express_ops_order_flow set comment=? where cwb=? and isnow=1 ";
 		this.jdbcTemplate.update(sql, comment, cwb);

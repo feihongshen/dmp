@@ -174,6 +174,7 @@ public class MatchExceptionController {
 	}
 
 	private String getCwb(HttpServletRequest request) {
+
 		return request.getParameter("cwb");
 	}
 
