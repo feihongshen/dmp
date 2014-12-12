@@ -5300,7 +5300,9 @@ public class PDAController {
 		// 今日出库(未到货)订单数
 		List<String> jinriweidaohuocwbslist = this.operationTimeDAO.getOrderFlowJinRiChuKuORRuKuListAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
 		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
-		List<String> yidaohuocwbs = this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+		// List<String> yidaohuocwbs =
+		// this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(),
+		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		String jinriweidaohuocwbs = "";
 		if (jinriweidaohuocwbslist.size() > 0) {
 			jinriweidaohuocwbs = this.getStrings(jinriweidaohuocwbslist);
@@ -5313,16 +5315,17 @@ public class PDAController {
 		} else {
 			lishiweidaohuocwbs = "'--'";
 		}
-		String yidaohuoorder = "";
-		if (yidaohuocwbs.size() > 0) {
-			yidaohuoorder = this.getStrings(yidaohuocwbs);
-		} else {
-			yidaohuoorder = "'--'";
-		}
+		/*
+		 * String yidaohuoorder = ""; if (yidaohuocwbs.size() > 0) {
+		 * yidaohuoorder = this.getStrings(yidaohuocwbs); } else { yidaohuoorder
+		 * = "'--'"; }
+		 */
 
 		long jinriweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, jinriweidaohuocwbs);
 		long historyweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, lishiweidaohuocwbs);
-		long yidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "", this.getSessionUser().getBranchid(), yidaohuoorder);
+		// long yidaohuocount =
+		// this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
+		// + "", this.getSessionUser().getBranchid(), yidaohuoorder);
 
 		// long historyweidaohuocount =
 		// cwbDAO.getHistoryWeiDaoHuoCount(b.getBranchid(),flowordertypes,jinriweidaohuocwbs);
@@ -5330,7 +5333,7 @@ public class PDAController {
 		obj.put("branch", b);
 		obj.put("jinriweidaohuocount", jinriweidaohuocount);
 		obj.put("historyweidaohuocount", historyweidaohuocount);
-		obj.put("yidaohuonum", yidaohuocount);
+		obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
 		return obj;
 	}
 
