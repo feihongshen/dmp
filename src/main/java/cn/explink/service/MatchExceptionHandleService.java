@@ -151,11 +151,12 @@ public class MatchExceptionHandleService {
 
 	private boolean isCurrentBranchOrder(CwbOrder order) {
 		long compareBranchid = 0;
-		if (order.getOutareaflag() != 0) {
-			compareBranchid = order.getCurrentbranchid();
-		} else {
-			compareBranchid = order.getNextbranchid();
-		}
+		// if (order.getOutareaflag() != 0) {
+		// compareBranchid = order.getCurrentbranchid();
+		// } else {
+		// compareBranchid = order.getNextbranchid();
+		// }
+		compareBranchid = order.getNextbranchid();
 		long curBranchId = this.getCurrentBranchId();
 		if (compareBranchid == curBranchId) {
 			return true;
