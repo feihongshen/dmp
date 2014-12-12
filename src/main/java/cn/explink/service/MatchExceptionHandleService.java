@@ -192,9 +192,8 @@ public class MatchExceptionHandleService {
 	}
 
 	private JSONObject validateOutAreaOrderFlow(CwbOrder order, FlowOrderTypeEnum currentFlow) {
-		boolean fzdhCond = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(currentFlow);
-		boolean dchCond = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(currentFlow);
-		if (fzdhCond || dchCond) {
+		boolean outAreaFlow = FlowOrderTypeEnum.ChaoQu.equals(currentFlow);
+		if (outAreaFlow) {
 			return this.createResult(true, null, this.queyMatchExceptionOrderOutAreaByCwb(order.getCwb()));
 		}
 		return this.createFlowWrongResult(order, currentFlow);

@@ -5178,10 +5178,9 @@ public class CwbDAO {
 
 	}
 
-	public void updateOrderOutAreaStatus(String[] cwbs) {
+	public void updateOrderOutAreaStatus(String[] cwbs, Map<String, Long> branchMap) {
 		// 上报超区时需要改变超区标识和将当前站点改为入库库房站点.
-		Map<String, Long> branchMap = this.getImprotDataBranchMap(cwbs);
-		String sql = "update express_ops_cwb_detail set outareaflag = 1,currentbranchid = ? where cwb = ?";
+		String sql = "update express_ops_cwb_detail set outareaflag = 1,flowordertype = 60,currentbranchid = ? where cwb = ?";
 		this.jdbcTemplate.batchUpdate(sql, this.getOutAreaParaList(cwbs, branchMap));
 	}
 
@@ -5196,7 +5195,7 @@ public class CwbDAO {
 		return paraList;
 	}
 
-	private Map<String, Long> getImprotDataBranchMap(String[] cwbs) {
+	public Map<String, Long> getImprotDataBranchMap(String[] cwbs) {
 		Map<String, Long> branchMap = new HashMap<String, Long>();
 		String strInPara = this.getInPara(cwbs);
 		String sql = "select cwb , branchid from express_ops_order_flow where cwb in(" + strInPara + ") and flowordertype = 1";

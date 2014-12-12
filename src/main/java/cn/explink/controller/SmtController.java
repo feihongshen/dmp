@@ -150,10 +150,11 @@ public class SmtController {
 	@RequestMapping("/smtorderoutarea")
 	public @ResponseBody String smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
+		Map<String, Long> branchMap = this.cwbDAO.getImprotDataBranchMap(cwbs);
 		// 更新订单表设定订单状态为超区.
-		this.cwbDAO.updateOrderOutAreaStatus(cwbs);
+		this.cwbDAO.updateOrderOutAreaStatus(cwbs, branchMap);
 		// 更新订单流程表加入超区流程.
-		this.orderFlowDAO.batchInsertOutAreaFlow(cwbs, this.getCurrentBranchId(), this.getCurrentUserId());
+		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
 
 		return "";
 	}

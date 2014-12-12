@@ -1023,15 +1023,56 @@ public class OrderFlowDAO {
 	/**
 	 * 批量插入订单超区流程.
 	 */
-	public void batchInsertOutAreaFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId) {
+	public void batchOutArea(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId, Map<String, Long> branchMap) {
+		this.batchInsertOutAreaFlow(cwbs, reportOutAreaBranchId, reportOutAreaUserId, branchMap);
+	}
+
+	private void batchInsertOutAreaFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId, Map<String, Long> branchMap) {
+		this.batchRestNowFlow(cwbs);
+		this.batchInsertOrderFlow(cwbs, reportOutAreaBranchId, reportOutAreaUserId);
+		this.batchUpdateOperationTime(cwbs, reportOutAreaBranchId, branchMap);
+	}
+
+	private void batchInsertOrderFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype)values(? , ");
+		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype ,isnow)values(? , ");
 		sql.append(Long.toString(reportOutAreaBranchId) + " , ");
 		sql.append("'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " ', ");
 		sql.append(Long.toString(reportOutAreaUserId) + " , ");
-		sql.append(Integer.toString(FlowOrderTypeEnum.ChaoQu.getValue()) + ")");
+		sql.append(Integer.toString(FlowOrderTypeEnum.ChaoQu.getValue()) + ",");
+		sql.append(Integer.toString(1) + ")");
 
 		this.jdbcTemplate.batchUpdate(sql.toString(), this.getOutAreaOrderParaList(cwbs));
+	}
+
+	private void batchRestNowFlow(String[] cwbs) {
+		String sql = "update express_ops_order_flow set isnow = 0 where cwb in (" + this.getInPara(cwbs) + ")";
+		this.jdbcTemplate.execute(sql);
+	}
+
+	private void batchUpdateOperationTime(String[] cwbs, long reportOutAreaBranchId, Map<String, Long> branchMap) {
+		String sql = "update express_ops_operation_time set flowordertype = 60,branchid = ?,nextbranchid=? where cwb = ?";
+		this.jdbcTemplate.batchUpdate(sql, this.getUpdateOptTimePara(cwbs, reportOutAreaBranchId, branchMap));
+	}
+
+	private List<Object[]> getUpdateOptTimePara(String[] cwbs, long reportOutAreaBranchId, Map<String, Long> branchMap) {
+		List<Object[]> paraList = new ArrayList<Object[]>();
+		for (String cwb : cwbs) {
+			Object[] para = new Object[3];
+			para[0] = reportOutAreaBranchId;
+			para[1] = branchMap.get(cwb);
+			para[2] = cwb;
+			paraList.add(para);
+		}
+		return paraList;
+	}
+
+	private String getInPara(String[] cwbs) {
+		StringBuilder inPara = new StringBuilder();
+		for (String cwb : cwbs) {
+			inPara.append("'" + cwb + "',");
+		}
+		return inPara.substring(0, inPara.length() - 1);
 	}
 
 	private List<Object[]> getOutAreaOrderParaList(String[] cwbs) {
