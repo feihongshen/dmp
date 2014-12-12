@@ -5322,7 +5322,7 @@ public class PDAController {
 
 		long jinriweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, jinriweidaohuocwbs);
 		long historyweidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(flowordertypes, lishiweidaohuocwbs);
-		long yidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "", yidaohuoorder);
+		long yidaohuocount = this.cwbDAO.getJinRiWeiDaoHuoCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "", this.getSessionUser().getBranchid(), yidaohuoorder);
 
 		// long historyweidaohuocount =
 		// cwbDAO.getHistoryWeiDaoHuoCount(b.getBranchid(),flowordertypes,jinriweidaohuocwbs);
