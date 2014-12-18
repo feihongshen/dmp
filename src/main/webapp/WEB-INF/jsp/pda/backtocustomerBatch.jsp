@@ -158,6 +158,14 @@ function yichuku(){
 			<form action="<%=request.getContextPath()%>/PDA/cwbbacktocustomerBatch" method="post">
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
+					<p>
+						供货商：<select id="customerid" name="customerid">
+						<option value="-1">请选择供货商</option>
+						<%for(Customer customer:cList){ %>
+						<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
+						<%} %>
+						</select>
+						</p>
 					<p><span>订单号：</span>
 						<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>
 					</p>

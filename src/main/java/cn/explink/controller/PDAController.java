@@ -2096,7 +2096,7 @@ public class PDAController {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		List<CwbOrder> weitghsckList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
 		List<CwbOrder> yitghsckList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1);
-
+        List<Customer> customersList=customerDAO.getAllCustomers();
 		model.addAttribute("weitghsckList", weitghsckList);
 		model.addAttribute("yitghsckList", yitghsckList);
 		model.addAttribute("customerlist", cList);
@@ -2140,6 +2140,8 @@ public class PDAController {
 		model.addAttribute("wpeisong", wpeisong);
 		model.addAttribute("wshangmenhuan", wshangmenhuan);
 		model.addAttribute("wshangmentui", wshangmentui);
+
+		model.addAttribute("customersList", customersList);
 
 		return "pda/backtocustomer";
 	}
@@ -4455,12 +4457,16 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno) {// 为包号修改
+			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid
+			) {// 为包号修改
 		String scancwb = cwb;
+		
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
 				.getAttribute(baleno + "-TuigonghuoshangsuccessCount").toString());
 		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder co = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, baleno, false);
+		
+		CwbOrder co = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, baleno, false,customerid);
 		co.setPackagecode(baleno);
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(co));
@@ -4495,7 +4501,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbacktocustomerBatch")
-	public String cwbbacktocustomerBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
+	public String cwbbacktocustomerBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			 @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid
+			) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
@@ -4511,7 +4519,7 @@ public class PDAController {
 			cwb = this.cwborderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, "", false);// ""为包号修改
+				CwbOrder cwbOrder = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, "", false,customerid);// ""为包号修改
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
