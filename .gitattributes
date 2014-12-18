@@ -645,6 +645,7 @@ src/main/java/cn/explink/controller/AdvancedQueryController.java -text
 src/main/java/cn/explink/controller/AppearWindowContrller.java -text
 src/main/java/cn/explink/controller/ApplyEditDeliverystateController.java -text
 src/main/java/cn/explink/controller/BackSummaryController.java -text
+src/main/java/cn/explink/controller/BackimportprintController.java -text
 src/main/java/cn/explink/controller/BaleController.java -text
 src/main/java/cn/explink/controller/BatchSelectCwbController.java -text
 src/main/java/cn/explink/controller/BranchController.java -text
@@ -790,6 +791,7 @@ src/main/java/cn/explink/dao/AppearWindowDao.java -text
 src/main/java/cn/explink/dao/ApplyEditDeliverystateDAO.java -text
 src/main/java/cn/explink/dao/AutomaticSetDAO.java -text
 src/main/java/cn/explink/dao/BackDetailDAO.java -text
+src/main/java/cn/explink/dao/BackIntoprintDAO.java -text
 src/main/java/cn/explink/dao/BackMiddleDAO.java -text
 src/main/java/cn/explink/dao/BackSummaryDAO.java -text
 src/main/java/cn/explink/dao/BaleCwbDao.java -text
@@ -920,6 +922,7 @@ src/main/java/cn/explink/domain/AutomaticSet.java -text
 src/main/java/cn/explink/domain/BackDetail.java -text
 src/main/java/cn/explink/domain/BackMiddle.java -text
 src/main/java/cn/explink/domain/BackSummary.java -text
+src/main/java/cn/explink/domain/Backintowarehouse_print.java -text
 src/main/java/cn/explink/domain/Bale.java -text
 src/main/java/cn/explink/domain/BaleCwb.java -text
 src/main/java/cn/explink/domain/BaleView.java -text
@@ -1643,6 +1646,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/yihaodian.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yihaodianAddmatch.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yixun.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yonghui.jsp -text
+src/main/webapp/WEB-INF/jsp/backimportprint/list.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/bacthselectcwb/list.jsp -text
