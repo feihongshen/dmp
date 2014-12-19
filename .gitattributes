@@ -1647,6 +1647,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/yihaodianAddmatch.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yixun.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yonghui.jsp -text
 src/main/webapp/WEB-INF/jsp/backimportprint/list.jsp -text
+src/main/webapp/WEB-INF/jsp/backimportprint/print.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/bacthselectcwb/list.jsp -text

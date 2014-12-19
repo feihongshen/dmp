@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import cn.explink.dao.BackIntoprintDAO;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.dao.GroupDetailDao;
+import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Backintowarehouse_print;
-import cn.explink.domain.Role;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.BranchService;
@@ -38,6 +38,10 @@ public class BackimportprintController {
 	@Autowired
 	BranchService branchService;
 	@Autowired
+	CustomerDAO customerDAO;
+	@Autowired
+	ReasonDao reasonDao;
+	@Autowired
 	CwbDAO cwbDAO;
 	@Autowired
 	UserDAO userDAO;
@@ -47,38 +51,64 @@ public class BackimportprintController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
-				.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(
-			Model model,
-			@PathVariable("page") long page,
-			HttpServletRequest request,
-			@RequestParam(value = "branchid", required = false, defaultValue = "0") String[] branchid,
-			@RequestParam(value = "begincredate", required = false, defaultValue = "") String begincredate,
-			@RequestParam(value = "endcredate", required = false, defaultValue = "") String endcredate,
-			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+	public String list(Model model, @PathVariable("page") long page, HttpServletRequest request, @RequestParam(value = "branchid", required = false, defaultValue = "0") String[] branchid,
+			@RequestParam(value = "begincredate", required = false, defaultValue = "") String begincredate, @RequestParam(value = "endcredate", required = false, defaultValue = "") String endcredate,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "flag", required = false, defaultValue = "0") long flag,
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
-		model.addAttribute("branches",
-				branchDAO.getBranchesByKuFangAndZhanDian());
-		model.addAttribute("userList",
-				userDAO.getUserByRole(3));
-		model.addAttribute("driverid",
-				driverid);
+		model.addAttribute("branches", this.branchDAO.getBranchesByKuFangAndZhanDian());
+		model.addAttribute("driverList", this.userDAO.getUserByRole(3));
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("driverid", driverid);
+		model.addAttribute("flag", flag);
+		model.addAttribute("begincredate", begincredate);
+		model.addAttribute("endcredate", endcredate);
 		List<String> branchArrlist = new ArrayList<String>();
-		if (branchid != null && branchid.length > 0) {
+		if ((branchid != null) && (branchid.length > 0)) {
 			for (String str : branchid) {
 				branchArrlist.add(str);
 			}
 		}
-		String branchids=getStringByBranchids(branchid);
+		String branchids = this.getStringByBranchids(branchid);
 		long flowordertype = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue();
-		List<Backintowarehouse_print> backIntoprintList = backIntoprintDAO.getBackintoPrint(begincredate, endcredate, flowordertype, branchids, driverid, 0);
+		List<Backintowarehouse_print> backIntoprintList = new ArrayList<Backintowarehouse_print>();
+		if (isshow > 0) {
+			backIntoprintList = this.backIntoprintDAO.getBackintoPrint(begincredate, endcredate, flowordertype, branchids, driverid, flag, this.getSessionUser());
+		}
+		model.addAttribute("backIntoprintList", backIntoprintList);
+		model.addAttribute("reasonList", this.reasonDao.getAllReason());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 		model.addAttribute("branchArrlist", branchArrlist);
 		return "backimportprint/list";
+	}
+
+	@RequestMapping("/print")
+	public String print(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
+			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+		String cwbs = "";
+		for (int i = 0; i < isprint.length; i++) {
+			if (isprint[i].trim().length() == 0) {
+				continue;
+			}
+			cwbs += "'" + isprint[i] + "',";
+		}
+		if (cwbs.length() > 0) {
+			cwbs = cwbs.substring(0, cwbs.length() - 1);
+		}
+		List<Backintowarehouse_print> bPrints = new ArrayList<Backintowarehouse_print>();
+		bPrints = this.backIntoprintDAO.getBackintoPrintList(starttime, endtime, cwbs, this.getSessionUser());
+		model.addAttribute("branches", this.branchDAO.getBranchesByKuFangAndZhanDian());
+		model.addAttribute("driverList", this.userDAO.getUserByRole(3));
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("bPrints", bPrints);
+		model.addAttribute("reasonList", this.reasonDao.getAllReason());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		return "backimportprint/print";
+
 	}
 
 	private String getStringByBranchids(String[] branchid) {
