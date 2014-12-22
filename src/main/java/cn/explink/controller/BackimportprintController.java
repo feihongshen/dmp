@@ -83,12 +83,15 @@ public class BackimportprintController {
 		model.addAttribute("reasonList", this.reasonDao.getAllReason());
 		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 		model.addAttribute("branchArrlist", branchArrlist);
+		model.addAttribute("branchids", branchids);
 		return "backimportprint/list";
 	}
 
 	@RequestMapping("/print")
 	public String print(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
-			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+			@RequestParam(value = "flag", defaultValue = "0", required = true) long flag, @RequestParam(value = "driverid", defaultValue = "0", required = true) long driverid,
+			@RequestParam(value = "branchids", defaultValue = "0", required = true) String branchids, @RequestParam(value = "starttime", required = false, defaultValue = "") String starttime,
+			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
 		String cwbs = "";
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
@@ -100,7 +103,8 @@ public class BackimportprintController {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 		}
 		List<Backintowarehouse_print> bPrints = new ArrayList<Backintowarehouse_print>();
-		bPrints = this.backIntoprintDAO.getBackintoPrintList(starttime, endtime, cwbs, this.getSessionUser());
+		bPrints = this.backIntoprintDAO.getBackintoPrint(starttime, endtime, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), branchids, driverid, flag, this.getSessionUser(), cwbs);
+		this.backIntoprintDAO.updateBackintoPrint(starttime, endtime, cwbs, this.getSessionUser());
 		model.addAttribute("branches", this.branchDAO.getBranchesByKuFangAndZhanDian());
 		model.addAttribute("driverList", this.userDAO.getUserByRole(3));
 		model.addAttribute("userList", this.userDAO.getAllUser());

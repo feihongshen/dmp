@@ -18,6 +18,7 @@
   List<User> driverList = (List<User>)request.getAttribute("driverList");
   List branchArrlist =(List) request.getAttribute("branchArrlist");
   String  driverid =request.getAttribute("driverid").toString();
+  String  branchids =request.getAttribute("branchids").toString();
   String  flag =request.getAttribute("flag").toString();
   String  begincredate =request.getAttribute("begincredate").toString();
   String  endcredate =request.getAttribute("endcredate").toString();
@@ -336,6 +337,9 @@
 		</div>
 		<input type="hidden" value="<%=begincredate%>" name="starttime" id="starttime"/>
 		<input type="hidden" value="<%=endcredate%>" name="endtime" id="endtime"/>
+		<input type="hidden" value="<%=branchids%>" name="branchids" id="branchids"/>
+		<input type="hidden" value="<%=driverid%>" name="driverid" id="driverid"/>
+		<input type="hidden" value="<%=flag%>" name="flag" id="flag"/>
 		</form>
 
 	</div>

@@ -4,13 +4,18 @@
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.domain.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%  int num=30;
+<%  int num=26;
+
 	List<Backintowarehouse_print> backIntoprintList = (List<Backintowarehouse_print>) request.getAttribute("bPrints");
 	 List<User> driverList = (List<User>)request.getAttribute("driverList");
 	  List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 	  List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
 	  List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	  List<User> userList = (List<User>)request.getAttribute("userList");
+	  int count=backIntoprintList.size()/num;
+	  int isno=backIntoprintList.size()%num;
+	  if(count==0){count=1;}
+	  if(backIntoprintList.size()>num&&isno>0){count+=1;}
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -50,23 +55,16 @@ function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
 	LODOP.PRINT_INIT("上门退交接单打印");
  	//LODOP.SET_PRINT_PAGESIZE(0,"840","800","");
- 		var count=<%=backIntoprintList.size()/num%>;
- 	
+ 		var count=<%=count%>;
 	LODOP.SET_PRINT_STYLE("FontSize",18);
 	LODOP.SET_PRINT_STYLE("Bold",1);
-
+	LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
 	for(var i=0;i<count;i++)
 		{
 		var table="#table"+i;
 	var height=$(table).height();
 	var width=$(table).width();
-	if(i%2==0){
-	LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
-	}
-	else{
-	LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "A4");
-	}
-	LODOP.ADD_PRINT_HTM(0,10,width,height,document.getElementById("form"+i).innerHTML);
+	LODOP.ADD_PRINT_HTM(30,10,width,height+15,document.getElementById("form"+i).innerHTML);
 	LODOP.NEWPAGE();
 		}
 };
