@@ -679,8 +679,6 @@
 				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
 			</properties>
 		</profile>
-
-
 		<profile>
 			<id>version</id>
 			<properties>
@@ -705,7 +703,6 @@
 				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
 			</properties>
 		</profile>
-
 		<profile>
 			<id>dmp_pxwl_41030</id>
 			<properties>
