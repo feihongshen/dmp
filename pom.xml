@@ -458,6 +458,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>dmp_pxwl_smt</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
