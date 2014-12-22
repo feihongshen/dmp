@@ -601,25 +601,10 @@
 					<update>true</update>
 				</configuration>
 			</plugin>
-<!-- 			<plugin>
-				<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-				<artifactId>svn-revision-number-maven-plugin</artifactId>
-				<version>1.13</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<entries>
-						<entry>
-							<prefix>SVN</prefix>
-						</entry>
-					</entries>
-				</configuration>
-			</plugin> -->
+			<!-- <plugin> <groupId>com.google.code.maven-svn-revision-number-plugin</groupId> <artifactId>svn-revision-number-maven-plugin</artifactId> 
+				<version>1.13</version> <executions> <execution> <goals> <goal>revision</goal> </goals> </execution> 
+				</executions> <configuration> <entries> <entry> <prefix>SVN</prefix> </entry> </entries> </configuration> 
+				</plugin> -->
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
@@ -673,21 +658,25 @@
 		<profile>
 			<id>test</id>
 			<properties>
-				<tomcat.manager.url>http://192.168.180.2:9080/manager</tomcat.manager.url>
+				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
-				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://localhost:3306/peisongdata_dmp_test?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>root</expressurl.user>
-				<expressurl.password>123456</expressurl.password>
+				<expressurl.maxconn>50</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pxwl_smt?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>dmp</expressurl.user>
+				<expressurl.password>dmp</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>vm://localhost3314?brokerConfig=xbean:activemq.xml</jms.brokerURL>
-				<uploadimgPath>/home/explink/data/uploadimg/</uploadimgPath>
+				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<wavPath>/home/explink/data/wav/</wavPath>
 				<filePath>/home/explink/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>
+				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>test</label>
+				<label>local</label>
+				<addresscustomerid>4</addresscustomerid>
+				<addressid>4</addressid>
+				<addresspassword>gxpx</addresspassword>
+				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
