@@ -4,7 +4,7 @@
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.domain.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%  int num=26;
+<%  int num=30;
 
 	List<Backintowarehouse_print> backIntoprintList = (List<Backintowarehouse_print>) request.getAttribute("bPrints");
 	 List<User> driverList = (List<User>)request.getAttribute("driverList");
@@ -73,9 +73,9 @@ function CreateOneFormPage(){
 </script>
 </head>
 <body marginwidth="0" marginheight="0" style="font-size: 14px" onload="load()">
-	<div id="noImage">
+	<div>
 	<a href="javascript:prn1_preview()">打印预览</a>
-	<a href="javascript:nowprint()">直接打印</a>
+	<a href="javascript:prn1_print()">直接打印</a>
 	</div>
 <div id="form0" align="center">
 		<table id="table0" width="80%" border="1" cellspacing="0" cellpadding="0"
@@ -171,7 +171,10 @@ function CreateOneFormPage(){
 				%>
 			</table>
 	</div>
-	
+	<div>
+	<a href="javascript:prn1_preview()">打印预览</a>
+	<a href="javascript:prn1_print()">直接打印</a>
+	</div>
 
 	
 </body>
