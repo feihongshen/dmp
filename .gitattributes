@@ -1,4 +1,15 @@
 * text=auto !eol
+/.classpath -text
+/.project -text
+.settings/.jsdtscope -text
+.settings/org.eclipse.core.resources.prefs -text
+.settings/org.eclipse.jdt.core.prefs -text
+.settings/org.eclipse.m2e.core.prefs -text
+.settings/org.eclipse.wst.common.component -text
+.settings/org.eclipse.wst.common.project.facet.core.xml -text
+.settings/org.eclipse.wst.jsdt.ui.superType.container -text
+.settings/org.eclipse.wst.jsdt.ui.superType.name -text
+.settings/org.eclipse.wst.validation.prefs -text
 /LOCAL-dmp-3_0.sql -text
 /PDA.txt -text
 lib/winxuan-api-sdk-1.0.jar -text
@@ -315,6 +326,9 @@ src/main/java/cn/explink/b2c/lefeng/result.java -text
 src/main/java/cn/explink/b2c/lefeng/ws/ITracerService.java -text
 src/main/java/cn/explink/b2c/lefeng/ws/TracerService.java -text
 src/main/java/cn/explink/b2c/lefeng/ws/TracerServiceClient.java -text
+src/main/java/cn/explink/b2c/lefengdms/Lefengdms.java -text
+src/main/java/cn/explink/b2c/lefengdms/LefengdmsController.java -text
+src/main/java/cn/explink/b2c/lefengdms/LefengdmsService.java -text
 src/main/java/cn/explink/b2c/letv/Letv.java -text
 src/main/java/cn/explink/b2c/letv/LetvController.java -text
 src/main/java/cn/explink/b2c/letv/LetvService.java -text
@@ -1613,6 +1627,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/lechong.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong/addXml.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong/delXml.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lefeng.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/lefengdms.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/letv.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/liantong.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/liantong/liantongtest.jsp -text

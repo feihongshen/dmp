@@ -58,15 +58,15 @@ public class CustomerDAO {
 	private JdbcTemplate jdbcTemplate;
 
 	public List<Customer> getAllCustomers() {
-		return jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1", new CustomerRowMapper());
 	}
 
 	public List<Customer> getAllIsAutoProductcwbCustomers() {
-		return jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1 and isAutoProductcwb=1", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1 and isAutoProductcwb=1", new CustomerRowMapper());
 	}
 
 	public List<Customer> getCustomersByQuanKai() {
-		return jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1 and isAutoProductcwb=1 and isUsetranscwb=0 and isypdjusetranscwb=1", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1 and isAutoProductcwb=1 and isUsetranscwb=0 and isypdjusetranscwb=1", new CustomerRowMapper());
 	}
 
 	public Map<Long, Customer> getAllCustomersToMap() {
@@ -78,23 +78,23 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomersByExistRules() {
-		return jdbcTemplate.query(
+		return this.jdbcTemplate.query(
 				"select * from (select customerid from express_set_excel_column ) co left join express_set_customer_info ci on co.customerid=ci.customerid where ci.ifeffectflag='1' ",
 				new CustomerRowMapper());
 	}
 
 	public List<Customer> getCustomerByCustomername(String customername, String code, long customerid) {
 		String sql = "SELECT * from express_set_customer_info where (customername = ? or customercode=? ) and customerid<>?";
-		return jdbcTemplate.query(sql, new CustomerRowMapper(), customername, code, customerid);
+		return this.jdbcTemplate.query(sql, new CustomerRowMapper(), customername, code, customerid);
 	}
 
 	public List<Customer> getCustomerByCustomername(String customername, String code) {
 		String sql = "SELECT * from express_set_customer_info where customername = ? or customercode=? ";
-		return jdbcTemplate.query(sql, new CustomerRowMapper(), customername, code);
+		return this.jdbcTemplate.query(sql, new CustomerRowMapper(), customername, code);
 	}
 
 	public List<Customer> getCustomerByCustomernameCheck(String customername) {
-		List<Customer> customerList = jdbcTemplate.query("SELECT * from express_set_customer_info where customername=?", new CustomerRowMapper(), customername);
+		List<Customer> customerList = this.jdbcTemplate.query("SELECT * from express_set_customer_info where customername=?", new CustomerRowMapper(), customername);
 		return customerList;
 	}
 
@@ -103,8 +103,8 @@ public class CustomerDAO {
 		if (customername.length() > 0) {
 			sql += " where customername like '%" + customername + "%'";
 		}
-		sql += " order by ifeffectflag desc limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		List<Customer> customerList = jdbcTemplate.query(sql, new CustomerRowMapper());
+		sql += " order by ifeffectflag desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		List<Customer> customerList = this.jdbcTemplate.query(sql, new CustomerRowMapper());
 		return customerList;
 	}
 
@@ -113,13 +113,14 @@ public class CustomerDAO {
 		if (customer.length() > 0) {
 			sql += " where customername like '%" + customer + "%'";
 		}
-		return jdbcTemplate.queryForInt(sql);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public void creCustomer(final Customer customer) {
 		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(insertsql, new String[] { "id" });
 				ps.setString(1, customer.getCustomername());
@@ -145,13 +146,13 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getCustomerByPaytype(long paytype) {
-		return jdbcTemplate.query("select * from express_set_customer_info where paytype = ? and ifeffectflag='1'", new CustomerRowMapper(), paytype);
+		return this.jdbcTemplate.query("select * from express_set_customer_info where paytype = ? and ifeffectflag='1'", new CustomerRowMapper(), paytype);
 	}
 
 	@Cacheable(value = "customerCache", key = "#customerid")
 	public Customer getCustomerById(long customerid) {
 		try {
-			return jdbcTemplate.queryForObject("select * from express_set_customer_info where customerid = ? ", new CustomerRowMapper(), customerid);
+			return this.jdbcTemplate.queryForObject("select * from express_set_customer_info where customerid = ? ", new CustomerRowMapper(), customerid);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return new Customer();
@@ -161,7 +162,7 @@ public class CustomerDAO {
 	@CacheEvict(value = "customerCache", key = "#customer.customerid")
 	public void save(final Customer customer) {
 
-		jdbcTemplate
+		this.jdbcTemplate
 				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=?"
 						+ " where customerid = ? ", new PreparedStatementSetter() {
 
@@ -192,12 +193,12 @@ public class CustomerDAO {
 
 	@CacheEvict(value = "customerCache", key = "#customerid")
 	public void delCustomer(long customerid) {
-		jdbcTemplate.update("update express_set_customer_info set ifeffectflag=(ifeffectflag+1)%2 where customerid=?", customerid);
+		this.jdbcTemplate.update("update express_set_customer_info set ifeffectflag=(ifeffectflag+1)%2 where customerid=?", customerid);
 	}
 
 	public List<Customer> getCustomerByIds(String customerids) {
 		if (customerids.length() > 0) {
-			List<Customer> customer = jdbcTemplate.query("select * from express_set_customer_info where customerid in(" + customerids + ")", new CustomerRowMapper());
+			List<Customer> customer = this.jdbcTemplate.query("select * from express_set_customer_info where customerid in(" + customerids + ")", new CustomerRowMapper());
 			return customer;
 		} else {
 			return null;
@@ -207,7 +208,7 @@ public class CustomerDAO {
 
 	public List<Customer> getCustomerByIdsAndId(String customerids, long customerid) {
 		if (customerids.length() > 0) {
-			List<Customer> customer = jdbcTemplate.query("select * from express_set_customer_info where customerid in(" + customerids + ") and customerid=" + customerid, new CustomerRowMapper());
+			List<Customer> customer = this.jdbcTemplate.query("select * from express_set_customer_info where customerid in(" + customerids + ") and customerid=" + customerid, new CustomerRowMapper());
 			return customer;
 		} else {
 			return null;
@@ -217,7 +218,7 @@ public class CustomerDAO {
 
 	public List<Customer> getCustomerByNoInIds(String customerids) {
 		if (customerids.length() > 0) {
-			List<Customer> customer = jdbcTemplate.query("select * from express_set_customer_info where customerid not in(" + customerids + ")", new CustomerRowMapper());
+			List<Customer> customer = this.jdbcTemplate.query("select * from express_set_customer_info where customerid not in(" + customerids + ")", new CustomerRowMapper());
 			return customer;
 		} else {
 			return null;
@@ -233,9 +234,9 @@ public class CustomerDAO {
 			for (int i = 0; i < oldCustormeridstr.length; i++) {
 				oldCustormeridstrs += oldCustormeridstr[i] + ",";
 			}
-			if (oldCustormeridstr != null && oldCustormeridstr.length > 0) {
+			if ((oldCustormeridstr != null) && (oldCustormeridstr.length > 0)) {
 				// 先清空原来的配置
-				jdbcTemplate.update("update express_set_customer_info set b2cEnum=0 where customerid in(" + oldCustormeridstrs.substring(0, oldCustormeridstrs.length() - 1) + ")");
+				this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=0 where customerid in(" + oldCustormeridstrs.substring(0, oldCustormeridstrs.length() - 1) + ")");
 			}
 		}
 		if (!"".equals(customerids)) {
@@ -244,21 +245,21 @@ public class CustomerDAO {
 			for (int i = 0; i < custormeridstr.length; i++) {
 				custormeridstrs += custormeridstr[i] + ",";
 			}
-			if (custormeridstr != null && custormeridstr.length > 0) {
+			if ((custormeridstr != null) && (custormeridstr.length > 0)) {
 				// 更新前台传递过来的参数
-				jdbcTemplate.update("update express_set_customer_info set b2cEnum=? where customerid in(" + custormeridstrs.substring(0, custormeridstrs.length() - 1) + ")", joint_num);
+				this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=? where customerid in(" + custormeridstrs.substring(0, custormeridstrs.length() - 1) + ")", joint_num);
 			}
 		}
 	}
 
 	// 获取全部供货商 不管是否已经停用
 	public List<Customer> getAllCustomersNew() {
-		return jdbcTemplate.query("select * from express_set_customer_info", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info", new CustomerRowMapper());
 	}
 
 	// 获取全部使用一票多件的供货商 不管是否已经停用
 	public List<Customer> getAllCustomersByYPDJ() {
-		return jdbcTemplate.query("select * from express_set_customer_info where isypdjusetranscwb=1 ", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info where isypdjusetranscwb=1 ", new CustomerRowMapper());
 	}
 
 }

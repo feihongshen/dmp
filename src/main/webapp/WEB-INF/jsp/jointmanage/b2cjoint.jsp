@@ -389,6 +389,10 @@ function delSuccess(data){
 		else if(obj=='20089'){
 			$("#edit").val('<%=request.getContextPath()%>/wenxuan/show/');
 			$("#del").val('<%=request.getContextPath()%>/wenxuan/del/');
+			
+		}else if(obj=='20093'){
+			$("#edit").val('<%=request.getContextPath()%>/lefengdms/show/');
+			$("#del").val('<%=request.getContextPath()%>/lefengdms/del/');
 		}
 
 		else{
