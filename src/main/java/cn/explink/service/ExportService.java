@@ -270,7 +270,7 @@ public class ExportService {
 		cloumnName2[1] = "Customername";
 		cloumnName1[2] = "发货时间";
 		cloumnName2[2] = "Emaildate";
-		cloumnName1[3] = "当前状态";
+		cloumnName1[3] = "当时状态";
 		cloumnName2[3] = "FlowordertypeName";
 		cloumnName1[4] = "配送站点";
 		cloumnName2[4] = "Deliverybranchname";
@@ -548,7 +548,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 *
+	 * 
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -561,7 +561,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 *
+	 * 
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -622,7 +622,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 *
+	 * 
 	 * }
 	 */
 

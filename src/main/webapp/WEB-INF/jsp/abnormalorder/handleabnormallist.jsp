@@ -124,7 +124,7 @@ function check(){
 		return false;
 	}
 	if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
-		alert("时间跨度不能大于3天！");
+		alert("时间跨度不能大于31天！");
 		return false;
 	}
 	if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
@@ -168,7 +168,7 @@ function Days(day1,day2){
 	var date2 = new Date(y2, m2, d2);   
 	var minsec = Date.parse(date2) - Date.parse(date1);          
 	var days = minsec / 1000 / 60 / 60 / 24;  
-	if(days>3){
+	if(days>31){
 		return false;
 	}        
 	return true;
@@ -248,7 +248,7 @@ function checkstate(){
 							<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当时状态</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>

@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.AbnormalWriteBack;
+import cn.explink.domain.CwbOrder;
 
 @Component
 public class AbnormalWriteBackDAO {
@@ -123,6 +124,19 @@ public class AbnormalWriteBackDAO {
 	public void deleteAbnormalWritebycwb(String cwb) {
 		try {
 			this.jdbcTemplate.update("DELETE FROM express_ops_abnormal_write_back where cwb=?", cwb);
+		} catch (DataAccessException e) {
+		}
+	}
+
+	public List<AbnormalWriteBack> getAbnormalOrderByOpscwbids(String opscwbids) {
+		String sql = "select *  from  express_ops_abnormal_write_back where opscwbid in(" + opscwbids + ") ORDER BY credatetime";
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper());
+	}
+
+	public void abnormaldataMoveofcwb(CwbOrder co) {
+		try {
+			String sql = "update express_ops_abnormal_write_back set cwb='" + co.getCwb() + "' where opscwbid='" + co.getOpscwbid() + "' ";
+			this.jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
 		}
 	}

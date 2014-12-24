@@ -39,6 +39,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalType;
+import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
@@ -387,6 +388,37 @@ public class AbnormalOrderController {
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+		}
+	}
+
+	@RequestMapping("/abnormaldataMove")
+	public String abnormaldataMove(@RequestParam(value = "opscwbids", defaultValue = "", required = false) String opscwbids,
+			@RequestParam(value = "ishandle", defaultValue = "0", required = false) long ishandle) {
+		try {
+			StringBuffer w = new StringBuffer();
+			w.append("");
+			if (!opscwbids.equals("")) {
+				for (String opscwbid : opscwbids.split("\r\n")) {
+					w.append("'" + opscwbid.trim() + "',");
+				}
+			}
+			w.append("''");
+			if (ishandle > 0) {
+				List<AbnormalWriteBack> abnormalWriteBack = this.abnormalWriteBackDAO.getAbnormalOrderByOpscwbids(w.toString());
+
+				List<String> cwbList = this.cwbDAO.getCwbByOpscwbids(w.toString());
+				for (String cwb : cwbList) {
+					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+					this.abnormalOrderDAO.abnormaldataMove(co);
+					this.abnormalWriteBackDAO.abnormaldataMoveofcwb(co);
+				}
+				for (AbnormalWriteBack awb : abnormalWriteBack) {
+					this.abnormalOrderDAO.abnormaldataMoveofhandletime(awb);
+				}
+			}
+			return "/abnormalorder/abnormaldataMove";
+		} catch (Exception e) {
+			return "/abnormalorder/abnormaldataMove";
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.AbnormalOrder;
+import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
 import cn.explink.util.Page;
 
@@ -404,6 +405,23 @@ public class AbnormalOrderDAO {
 	public void deleteAbnormalOrderbycwb(String cwb) {
 		try {
 			this.jdbcTemplate.update("DELETE FROM express_ops_abnormal_order where cwb=?", cwb);
+		} catch (DataAccessException e) {
+		}
+	}
+
+	public void abnormaldataMove(CwbOrder co) {
+		try {
+			String sql = "update express_ops_abnormal_order set cwb='" + co.getCwb() + "',deliverybranchid='" + co.getDeliverybranchid() + "',emaildate='" + co.getEmaildate() + "',flowordertype='"
+					+ co.getFlowordertype() + "' where opscwbid='" + co.getOpscwbid() + "'";
+			this.jdbcTemplate.update(sql);
+		} catch (DataAccessException e) {
+		}
+	}
+
+	public void abnormaldataMoveofhandletime(AbnormalWriteBack awb) {
+		try {
+			String sql = "update express_ops_abnormal_order set handletime='" + awb.getCredatetime() + "' where opscwbid='" + awb.getOpscwbid() + "' ";
+			this.jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
 		}
 	}
