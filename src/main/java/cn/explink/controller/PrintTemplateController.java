@@ -32,7 +32,7 @@ public class PrintTemplateController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -45,21 +45,24 @@ public class PrintTemplateController {
 	public @ResponseBody String create(Model model, @RequestParam(value = "name", required = true) String name, @RequestParam(value = "customname", required = true) String customname,
 			@RequestParam(value = "detail", required = true) String detail, @RequestParam(value = "shownum", required = false, defaultValue = "1") long shownum,
 			@RequestParam(value = "opertatetype", required = false) long opertatetype) {
-		List<PrintTemplate> ptList = printTemplateDAO.getPrintTemplateByWhere(name, detail, shownum, opertatetype, customname);
+		List<PrintTemplate> ptList = this.printTemplateDAO.getPrintTemplateByWhere(name, detail, shownum, opertatetype, customname);
 
 		if (ptList.size() > 0) {
 			return "{\"errorCode\":0,\"error\":\"该模版设置已存在\"}";
 		} else {
-			if (opertatetype % 2 == 0) {
+			if ((opertatetype % 2) == 0) {
 				shownum = 1;
 			}
 
 			long templatetype = 1;
 
-			if (opertatetype == PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()
-					|| opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()
-					|| opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue()) {
+			if ((opertatetype == PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue()) || (opertatetype == PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue())
+					|| (opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()) || (opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue())
+					|| (opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue()) || (opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue())) {
 				templatetype = 2;
+			}
+			if (opertatetype == PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue()) {
+				templatetype = 3;
 			}
 			PrintTemplate pt = new PrintTemplate();
 
@@ -69,8 +72,8 @@ public class PrintTemplateController {
 			pt.setOpertatetype(opertatetype);
 			pt.setCustomname(customname);
 			pt.setTemplatetype(templatetype);
-			long id = printTemplateDAO.crePrintTemplate(pt);
-			logger.info("operatorUser={},交接单模版设置->create", getSessionUser().getUsername());
+			long id = this.printTemplateDAO.crePrintTemplate(pt);
+			this.logger.info("operatorUser={},交接单模版设置->create", this.getSessionUser().getUsername());
 			return "{\"errorCode\":" + id + ",\"error\":\"创建成功\"}";
 		}
 	}
@@ -78,15 +81,15 @@ public class PrintTemplateController {
 	@RequestMapping("/list/{page}")
 	public String list(Model model, @PathVariable("page") long page, @RequestParam(value = "name", required = false, defaultValue = "") String name,
 			@RequestParam(value = "opertatetype", required = false, defaultValue = "0") long opertatetype) {
-		List<PrintTemplate> ptList = printTemplateDAO.getPrintTemplateByPage(page, name, "", opertatetype);
+		List<PrintTemplate> ptList = this.printTemplateDAO.getPrintTemplateByPage(page, name, "", opertatetype);
 		model.addAttribute("ptList", ptList);
-		model.addAttribute("page_obj", new Page(printTemplateDAO.getPrintTemplateCount(name, "", opertatetype), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.printTemplateDAO.getPrintTemplateCount(name, "", opertatetype), page, Page.ONE_PAGE_NUMBER));
 		return "/template/list";
 	}
 
 	@RequestMapping("/edit/{id}")
 	public String edit(Model model, @PathVariable("id") int id) {
-		model.addAttribute("printtemplate", printTemplateDAO.getPrintTemplate(id));
+		model.addAttribute("printtemplate", this.printTemplateDAO.getPrintTemplate(id));
 		return "/template/edit";
 	}
 
@@ -94,24 +97,24 @@ public class PrintTemplateController {
 	public @ResponseBody String save(@PathVariable("id") int id, @RequestParam(value = "name", required = true) String name, @RequestParam(value = "customname", required = true) String customname,
 			@RequestParam(value = "detail", required = true) String detail, @RequestParam(value = "shownum", required = false, defaultValue = "1") long shownum,
 			@RequestParam(value = "opertatetype", required = false) long opertatetype) throws Exception {
-		List<PrintTemplate> ptList = printTemplateDAO.getPrintTemplateByWhere(name, detail, shownum, opertatetype, customname);
+		List<PrintTemplate> ptList = this.printTemplateDAO.getPrintTemplateByWhere(name, detail, shownum, opertatetype, customname);
 
 		if (ptList.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该模版设置已存在\"}";
 		} else {
-			PrintTemplate pt = printTemplateDAO.getPrintTemplate(id);
-			if (opertatetype % 2 == 0) {
+			PrintTemplate pt = this.printTemplateDAO.getPrintTemplate(id);
+			if ((opertatetype % 2) == 0) {
 				shownum = 1;
 			}
-			printTemplateDAO.savePrintTemplateById(name, detail, id, shownum, opertatetype, customname, pt.getTemplatetype());
-			logger.info("operatorUser={},交接单模版设置->save", getSessionUser().getUsername());
+			this.printTemplateDAO.savePrintTemplateById(name, detail, id, shownum, opertatetype, customname, pt.getTemplatetype());
+			this.logger.info("operatorUser={},交接单模版设置->save", this.getSessionUser().getUsername());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 		}
 	}
 
 	@RequestMapping("/testprinting_default/{id}")
 	public String outbillprinting_default(Model model, @PathVariable("id") long id) {
-		PrintTemplate printTemplate = printTemplateDAO.getPrintTemplate(id);
+		PrintTemplate printTemplate = this.printTemplateDAO.getPrintTemplate(id);
 
 		model.addAttribute("template", printTemplate);
 
@@ -119,14 +122,16 @@ public class PrintTemplateController {
 			return "/template/testprinting_template";
 		} else if (printTemplate.getTemplatetype() == 2) {
 			return "/template/testhuizongprinting_template";
+		} else if (printTemplate.getTemplatetype() == 3) {
+			return "/template/tuihuozhanruku_template";
 		}
 		return null;
 	}
 
 	@RequestMapping("/del/{id}")
 	public @ResponseBody String del(@PathVariable("id") int id) throws Exception {
-		printTemplateDAO.delPrintTemplateById(id);
-		logger.info("operatorUser={},交接单模版设置->del", getSessionUser().getUsername());
+		this.printTemplateDAO.delPrintTemplateById(id);
+		this.logger.info("operatorUser={},交接单模版设置->del", this.getSessionUser().getUsername());
 		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
 	}
 }

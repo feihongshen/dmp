@@ -1,17 +1,21 @@
 <%@page import="java.text.SimpleDateFormat"%>
+<%@page import="cn.explink.print.template.PrintColumn"%>
+<%@page import="cn.explink.print.template.PrintTemplate"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="net.sf.json.JSONArray"%>
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.domain.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%  int num=30;
-
+	PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("pt");
+	List<Map<String, String>> listMap  = (List<Map<String, String>>) request.getAttribute("listMap");
 	List<Backintowarehouse_print> backIntoprintList = (List<Backintowarehouse_print>) request.getAttribute("bPrints");
 	 List<User> driverList = (List<User>)request.getAttribute("driverList");
 	  List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 	  List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
 	  List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	  List<User> userList = (List<User>)request.getAttribute("userList");
+	  Branch branch = request.getAttribute("branch")==null?new Branch():(Branch)request.getAttribute("branch");
 	  int count=backIntoprintList.size()/num;
 	  int isno=backIntoprintList.size()%num;
 	  if(count==0){count=1;}
@@ -54,19 +58,17 @@ function prn1_print() {
 function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
 	LODOP.PRINT_INIT("上门退交接单打印");
- 	//LODOP.SET_PRINT_PAGESIZE(0,"840","800","");
- 		var count=<%=count%>;
 	LODOP.SET_PRINT_STYLE("FontSize",18);
 	LODOP.SET_PRINT_STYLE("Bold",1);
-	LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
-	for(var i=0;i<count;i++)
-		{
-		var table="#table"+i;
+	LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "A4");
+	var table="#table0";
 	var height=$(table).height();
 	var width=$(table).width();
-	LODOP.ADD_PRINT_HTM(30,10,width,height+15,document.getElementById("form"+i).innerHTML);
+	var top=30;height+=15;
+	
+	if(<%=backIntoprintList.size()%><5){height+=50;}
+	LODOP.ADD_PRINT_TABLE(top,10,width/1.9,height,document.getElementById("form0").innerHTML);
 	LODOP.NEWPAGE();
-		}
 };
 
 
@@ -78,96 +80,33 @@ function CreateOneFormPage(){
 	<a href="javascript:prn1_print()">直接打印</a>
 	</div>
 <div id="form0" align="center">
-		<table id="table0" width="80%" border="1" cellspacing="0" cellpadding="0"
-				>
+		<table  id="table0" width="100%" border="1" cellspacing="0" cellpadding="0"
+				><tr>
+				<td border="0" colspan="<%=printTemplate.getColumns().size()+1%>"><p align="center">
+			<%
+				String branchname = branch.getBranchname();
+				out.print(branchname+"退货入库交接单");
+			%></p></td></tr>
 				<tr class="font_1">
-					<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">运单号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">上一站</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">扫描人</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">退货站入库时间</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">退货原因</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">司机</td>
-				</tr>
-				<%
-					int i = 0;
-				int k=0;
-					for (Backintowarehouse_print pv : backIntoprintList) {
-						
-						if(i%num==0&&i>0){
-							k++;
+					<td width="60px"  align="center" valign="middle" bgcolor="#eef6ff">序号</td>
+					<% 
+					for (PrintColumn printColumn:printTemplate.getColumns()) {
 							%>
-							</table>
-							</div>
-							<div id=<%="form"+k %> align="center">
-				<table id=<%="table"+k %> width="80%" border="1" cellspacing="0" cellpadding="0"
-				>
-				<tr class="font_1">
-					<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">运单号</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">上一站</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">扫描人</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">退货站入库时间</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">退货原因</td>
-					<td align="center" valign="middle" bgcolor="#eef6ff">司机</td>
+					<td align="center" valign="middle" bgcolor="#eef6ff" width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px" style="font-size: 9.5000pt;" ><%=printColumn.getColumnName()%></td>
+					<%}%>
 				</tr>
-							<%
-							
-						}
-						i++;
-				%>
+				<% int i=1;
+				for (Map<String, String> map : listMap) { %>
 				<tr>
-					<td width="10%" align="center" valign="middle"><%=i%></td>
-					<td align="center" valign="middle"><%=pv.getCwb()%></td>
-					<td align="center" valign="middle"><%=pv.getTranscwb()%></td>
-					<td align="center" valign="middle">
-						<%
-							for (Customer c : customerList) {
-									if (c.getCustomerid() == pv.getCustomerid())
-										out.print(c.getCustomername());
-								}
-						%>
-					</td>
-					<td align="center" valign="middle">
-						<%
-							for (Branch b : branchList) {
-									if (b.getBranchid() == pv.getStartbranchid())
-										out.print(b.getBranchname());
-								}
-						%>
-					</td>
-					<td align="center" valign="middle">
-						<%
-							for (User u : userList) {
-									if (u.getUserid() == pv.getUserid())
-										out.print(u.getRealname());
-								}
-						%>
-					</td>
-					<td align="center" valign="middle"><%=pv.getCreatetime()%></td>
-					<td align="center" valign="middle">
-						<%
-							for (Reason r : reasonList) {
-									if (r.getReasonid() == pv.getBackreasonid())
-										out.print(r.getReasoncontent());
-								}
-						%>
-					</td>
-					<td align="center" valign="middle">
-						<%
-							for (User u : userList) {
-									if (u.getUserid() == pv.getDriverid())
-										out.print(u.getRealname());
-								}
-						%>
-					</td>
+				<td  width="60px" align="center" valign="middle"><%=i%></td>
+				<% 
+					for (PrintColumn printColumn:printTemplate.getColumns()) {
+						%> 
+			<td  align="center" valign="middle"  width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px" style="font-size: 9.5000pt;" ><%=map.get(printColumn.getField())%></td>
+					<%}%>
 				</tr>
 				<%
-					}
+				i++;} 
 				%>
 			</table>
 	</div>

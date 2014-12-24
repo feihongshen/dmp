@@ -64,7 +64,22 @@ jQuery.extend({
         }      
     }    
 });
+function show(){
+	$("#columnSetting input[field=index]").parent().parent().hide();
+	$("#columnSetting input[field=index]").attr("checked",false);
+	$("#columnSetting input[field=transcwb]").parent().parent().hide();
+	$("#columnSetting input[field=transcwb]").attr("checked",false);
+	$("#columnSetting input[field=startbranchid]").parent().parent().hide();
+	$("#columnSetting input[field=startbranchid]").attr("checked",false);
+	$("#columnSetting input[field=backintotime]").parent().parent().hide();
+	$("#columnSetting input[field=backintotime]").attr("checked",false);
+	$("#columnSetting input[field=backreason]").parent().parent().hide();
+	$("#columnSetting input[field=backreason]").attr("checked",false);
+	$("#columnSetting input[field=driver]").parent().parent().hide();
+	$("#columnSetting input[field=driver]").attr("checked",false);
+}
 $(function(){
+	show();
 	if(<%=pt.getOpertatetype()%>%2==0){
 		$('#num').hide();
 	}else{
@@ -136,9 +151,31 @@ $(function(){
 		$("#columnSetting input[field=carsize]").parent().parent().show();
 		$("#columnSetting input[field=carsize]").attr("checked",false);
 	}
-	
+	if(<%=pt.getOpertatetype()%>==<%=PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() %>){
+		$(":checkbox").parent().parent().hide();
+		$("#num").hide();
+		$("#columnSetting input[field=index]").parent().parent().show();
+		$("#columnSetting input[field=index]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().show();
+		$("#columnSetting input[field=cwb]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().show();
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=customername]").parent().parent().show();
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=startbranchid]").parent().parent().show();
+		$("#columnSetting input[field=startbranchid]").attr("checked",false);
+		$("#columnSetting input[field=opreator]").parent().parent().show();
+		$("#columnSetting input[field=opreator]").attr("checked",false);
+		$("#columnSetting input[field=backintotime]").parent().parent().show();
+		$("#columnSetting input[field=backintotime]").attr("checked",false);
+		$("#columnSetting input[field=backreason]").parent().parent().show();
+		$("#columnSetting input[field=backreason]").attr("checked",false);
+		$("#columnSetting input[field=driver]").parent().parent().show();
+		$("#columnSetting input[field=driver]").attr("checked",false);
+	}
 	
 	$("#opertatetype").change(function(){
+		show();
 		if($(this).val()==<%=PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuAnDan.getValue() %>){
 			$("#opreator").show();
 			$("#columnSetting input[field=opreator]").attr("checked",false);
@@ -206,6 +243,28 @@ $(function(){
 			$("#columnSetting input[field=cwbremark]").attr("checked",false);
 			$("#columnSetting input[field=carsize]").parent().parent().show();
 			$("#columnSetting input[field=carsize]").attr("checked",false);
+		}
+		if($(this).val()==<%=PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() %>){
+			$(":checkbox").parent().parent().hide();
+			$("#num").hide();
+			$("#columnSetting input[field=index]").parent().parent().show();
+			$("#columnSetting input[field=index]").attr("checked",false);
+			$("#columnSetting input[field=cwb]").parent().parent().show();
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().show();
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=startbranchid]").parent().parent().show();
+			$("#columnSetting input[field=startbranchid]").attr("checked",false);
+			$("#columnSetting input[field=opreator]").parent().parent().show();
+			$("#columnSetting input[field=opreator]").attr("checked",false);
+			$("#columnSetting input[field=backintotime]").parent().parent().show();
+			$("#columnSetting input[field=backintotime]").attr("checked",false);
+			$("#columnSetting input[field=backreason]").parent().parent().show();
+			$("#columnSetting input[field=backreason]").attr("checked",false);
+			$("#columnSetting input[field=driver]").parent().parent().show();
+			$("#columnSetting input[field=driver]").attr("checked",false);
 		}
 	});
 	
@@ -343,20 +402,26 @@ $(function(){
 		<div style="height:60px"></div>
 		
 		<table width="100%" border="0" cellspacing="0" cellpadding="0"  id="columnSetting">
-			<tr>
+<tr>
 				<td width="33%">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
 							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="customername" columnName="供货商"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>供货商</strong></td>
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwb" columnName="订单号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="transcwb" columnName="运单号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>运单号</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwb" columnName="订单号"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="customername" columnName="供货商"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>供货商</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -373,7 +438,7 @@ $(function(){
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="sendcarnum" columnName="发货数量"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货数量</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -388,8 +453,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							
-							
+						
 						</tbody>
 					</table>
 				</td>
@@ -435,6 +499,14 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranchid" columnName="上一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+						
 						</tbody>
 					</table>
 				</td>
@@ -450,7 +522,7 @@ $(function(){
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="receivablefee" columnName="应收金额"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>应收金额</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -465,7 +537,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<tr style="background-color: rgb(249, 252, 253);display:none " id="opreator">
+							<tr id="opreator" style="background-color: rgb(249, 252, 253);display:none">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="opreator" columnName="操作人"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>操作人</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
@@ -477,7 +549,24 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							
+												<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="backintotime" columnName="退货站入库时间"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货站入库时间</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="backreason" columnName="退货原因"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货原因</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="driver" columnName="司机"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>司机</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 						</tbody>
 					</table>
 				</td>

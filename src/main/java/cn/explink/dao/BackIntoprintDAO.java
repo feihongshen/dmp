@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,11 @@ public class BackIntoprintDAO {
 	}
 
 	public List<Backintowarehouse_print> getBackintoPrint(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user) {
+
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+		if (issignprint != 0) {
+			sql = "select * from express_ops_backintowarehous_print where printtime>=? and printtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+		}
 		if (driverid > 0) {
 			sql += " and driverid=" + driverid;
 		}
@@ -65,6 +70,10 @@ public class BackIntoprintDAO {
 
 	public List<Backintowarehouse_print> getBackintoPrint(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user, String cwbs) {
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+		if (issignprint != 0) {
+			sql = "select * from express_ops_backintowarehous_print where printtime>=? and printtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+
+		}
 		if (driverid > 0) {
 			sql += " and driverid=" + driverid;
 		}
@@ -78,10 +87,17 @@ public class BackIntoprintDAO {
 		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype, issignprint);
 	}
 
-	public int updateBackintoPrint(String starttime, String endtime, String cwbs, User user) {
-		String sql = "update express_ops_backintowarehous_print set issignprint=1 where createtime>='" + starttime + "' and createtime<='" + endtime + "' and  cwb in (" + cwbs + ") and branchid="
-				+ user.getBranchid();
+	public int updateBackintoPrint(String starttime, String endtime, String cwbs, User user, long flowordertype) {
+		String sql = "update express_ops_backintowarehous_print set issignprint=1,printtime=NOW() where flowordertype='" + flowordertype + "' and createtime>='" + starttime + "' and createtime<='"
+				+ endtime + "' and  cwb in (" + cwbs + ") and branchid=" + user.getBranchid();
 
 		return this.jdbcTemplate.update(sql);
+	}
+
+	public void deletebackintowarehous_printbycwb(String cwb) {
+		try {
+			this.jdbcTemplate.update("DELETE FROM express_ops_backintowarehous_print where cwb=?", cwb);
+		} catch (DataAccessException e) {
+		}
 	}
 }

@@ -2095,6 +2095,7 @@ src/main/webapp/WEB-INF/jsp/template/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/template/list.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testprinting_template.jsp -text
+src/main/webapp/WEB-INF/jsp/template/tuihuozhanruku_template.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/edit.jsp -text
