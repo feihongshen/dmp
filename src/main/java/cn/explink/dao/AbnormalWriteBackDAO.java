@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class AbnormalWriteBackDAO {
 			abnormalWriteBack.setType(rs.getLong("type"));
 			abnormalWriteBack.setAbnormalorderid(rs.getLong("abnormalorderid"));
 			abnormalWriteBack.setAbnormalordertype(rs.getLong("abnormalordertype"));
+			abnormalWriteBack.setCwb(rs.getString("cwb"));
 			return abnormalWriteBack;
 		}
 	}
@@ -34,9 +36,9 @@ public class AbnormalWriteBackDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid) {
-		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`) values(?,?,?,?,?,?,?)";
-		jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid);
+	public void creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb) {
+		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`) values(?,?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb);
 	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByWhere(String begindate, String enddate, long ishandle, long abnormaltypeid, long creuserid) {
@@ -53,60 +55,60 @@ public class AbnormalWriteBackDAO {
 		if (abnormaltypeid > 0) {
 			sql += " and `abnormalordertype` =" + abnormaltypeid;
 		}
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), creuserid);
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), creuserid);
 	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByOpscwbid(long opscwbid) {
 		String sql = "select * from express_ops_abnormal_write_back where `opscwbid`=? order by credatetime ASC";
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), opscwbid);
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), opscwbid);
 	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByParam(long opscwbid, long type) {
 		String sql = "select * from express_ops_abnormal_write_back where `opscwbid`=? and `type`=? order by `credatetime` desc";
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), opscwbid, type);
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), opscwbid, type);
 	}
 
 	public List<String> getAbnormalOrderByCredatetime(String begindate, String enddate) {
 		String sql = "select opscwbid from express_ops_abnormal_write_back where " + " credatetime >= ?  and credatetime <= ? ";
-		return jdbcTemplate.queryForList(sql, String.class, begindate, enddate);
+		return this.jdbcTemplate.queryForList(sql, String.class, begindate, enddate);
 	}
 
 	public void saveAbnormalOrder(long opscwbid, String describe, long creuserid, String credatetime, long type) {
 		String sql = " UPDATE express_ops_abnormal_write_back SET `describe`=?,credatetime=?,creuserid=? WHERE opscwbid=? AND type=? ";
-		jdbcTemplate.update(sql, describe, credatetime, creuserid, opscwbid, type);
+		this.jdbcTemplate.update(sql, describe, credatetime, creuserid, opscwbid, type);
 	}
 
 	/**
 	 * 根据opscwbid type
-	 * 
+	 *
 	 * @param string
 	 * @param value
 	 * @return
 	 */
 	public List<AbnormalWriteBack> getAbnormalOrderByOpscwbidAndType(String opscwbids, int value) {
 		String sql = "select *  from  express_ops_abnormal_write_back where opscwbid in(" + opscwbids + ") and type=" + value;
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper());
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper());
 	}
 
 	/**
 	 * 根据 异常订单的id 获取相应的记录
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
 	public List<AbnormalWriteBack> getAbnormalOrderByOrderid(long id) {
 		String sql = "select * from express_ops_abnormal_write_back where `abnormalorderid`=? order by credatetime ASC";
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), id);
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), id);
 	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByOrderidAndType(long orderid, int type) {
 		String sql = " select *  from  express_ops_abnormal_write_back where abnormalorderid=? and type=?  order by `credatetime` desc";
-		return jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), orderid, type);
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(), orderid, type);
 	}
 
 	/**
 	 * 数据迁移 更新
-	 * 
+	 *
 	 * @param opscwbid
 	 * @param abnormalorderid
 	 * @param abnormalordertypeid
@@ -114,8 +116,14 @@ public class AbnormalWriteBackDAO {
 	public void updateForQianyi(long opscwbid, long abnormalorderid, long abnormalordertypeid) {
 
 		String sql = "update express_ops_abnormal_write_back set abnormalorderid=?,abnormalordertype=? where opscwbid=?";
-		jdbcTemplate.update(sql, abnormalorderid, abnormalordertypeid, opscwbid);
+		this.jdbcTemplate.update(sql, abnormalorderid, abnormalordertypeid, opscwbid);
 
 	}
 
+	public void deleteAbnormalWritebycwb(String cwb) {
+		try {
+			this.jdbcTemplate.update("DELETE FROM express_ops_abnormal_write_back where cwb=?", cwb);
+		} catch (DataAccessException e) {
+		}
+	}
 }

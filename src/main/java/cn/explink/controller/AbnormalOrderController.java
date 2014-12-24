@@ -162,9 +162,9 @@ public class AbnormalOrderController {
 				continue;
 			}
 			String[] cwb_id = reason.split("_s_");
-			if (cwb_id.length == 3) {
+			if (cwb_id.length == 4) {
 				try {
-					if (!cwb_id[0].equals("0") && (cwb_id[2].split("_").length == 2) && !cwb_id[2].split("_")[0].equals("0") && !cwb_id[2].split("_")[1].equals("0")) {
+					if (!cwb_id[3].equals("") && !cwb_id[0].equals("0") && (cwb_id[2].split("_").length == 2) && !cwb_id[2].split("_")[0].equals("0") && !cwb_id[2].split("_")[1].equals("0")) {
 						SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date date = new Date();
 						String nowtime = df.format(date);
@@ -177,7 +177,7 @@ public class AbnormalOrderController {
 						// 改成修改 abnormalenum 添加新的类型
 
 						this.abnormalWriteBackDAO.creAbnormalOrder(Long.parseLong(cwb_id[0]), cwb_id[1], this.getSessionUser().getUserid(), AbnormalWriteBackEnum.XiuGai.getValue(), nowtime,
-								Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]));
+								Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]), cwb_id[3]);
 						AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderByOId(Long.parseLong(cwb_id[2].split("_")[1]));
 						CwbOrder co = this.cwbDAO.getCwbOrderByOpscwbid(Long.parseLong(cwb_id[0]));
 						List<User> kefurole = this.userDAO.getUserByRole(1);
@@ -239,6 +239,7 @@ public class AbnormalOrderController {
 
 		List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 		int count = 0;
+
 		if (isshow == 1) {
 			if (ishandle == 2) {
 
@@ -263,6 +264,7 @@ public class AbnormalOrderController {
 				if (enddate.length() == 0) {
 					enddate = DateTimeUtil.getNowTime();
 				}
+
 				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
 			}
@@ -322,9 +324,9 @@ public class AbnormalOrderController {
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.YiChuLi.getValue());
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.YiChuLi.getValue(), nowtime);
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
-					ab.getAbnormaltypeid());
+					ab.getAbnormaltypeid(), cwb);
 			String json = "订单：" + cwb + "已处理";
 			this.appearWindowDao.creWindowTime(json, "4", ab.getCreuserid(), "1");
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -374,7 +376,7 @@ public class AbnormalOrderController {
 			AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderById(id);
 			this.abnormalOrderDAO.saveAbnormalOrderForNohandle(id, AbnormalOrderHandleEnum.WeiChuLi.getValue());
 			this.abnormalWriteBackDAO.creAbnormalOrder(abnormalOrder.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.HuiFu.getValue(), nowtime,
-					abnormalOrder.getId(), abnormalOrder.getAbnormaltypeid());
+					abnormalOrder.getId(), abnormalOrder.getAbnormaltypeid(), cwb);
 			String json = "订单：" + cwb + "待处理";
 			List<User> kefurole = this.userDAO.getUserByRole(1);
 			if (abnormalOrder != null) {
@@ -427,7 +429,8 @@ public class AbnormalOrderController {
 				cwbs = cwbs1.substring(0, cwbs1.length() - 1);
 			}
 			// 根据时间去abnormalWriteBack表查询符合条件的opscwbid
-			List<String> abnormalWriteBackOpscwbidList = new ArrayList<String>();
+			// List<String> abnormalWriteBackOpscwbidList = new
+			// ArrayList<String>();
 			List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 			if (ishandle == 2) {
 
@@ -440,8 +443,8 @@ public class AbnormalOrderController {
 				// abnormalWriteBackOpscwbidList =
 				// this.abnormalOrderDAO.getAbnormalOrderByCredatetime(chuangjianbegindate,
 				// chuangjianenddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(1, cwbs, branchid, abnormaltypeid, ishandle, chuangjianbegindate,
-						chuangjianenddate);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndNohandles(chuangjianbegindate, chuangjianenddate, cwbs, branchid,
+						abnormaltypeid, ishandle);
 
 			} else {
 				if (begindate.length() == 0) {
@@ -453,7 +456,7 @@ public class AbnormalOrderController {
 				// abnormalWriteBackOpscwbidList =
 				// this.abnormalWriteBackDAO.getAbnormalOrderByCredatetime(begindate,
 				// enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(2, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(begindate, enddate, cwbs, branchid, abnormaltypeid, ishandle);
 			}
 
 			// 根据条件查询和上一步中查出的opscwbid来查询

@@ -49,7 +49,7 @@ function sub(){
 		if($("#abnormaltypeid<%=cwb.getOpscwbid()%>").val()==0){
 			noMsg +=1;
 		}else{
-			datavalue=  datavalue +  "\"<%=cwb.getOpscwbid()%>_s_"+$("#describe<%=cwb.getOpscwbid()%>").val()+"_s_"+$("#abnormaltypeid<%=cwb.getOpscwbid()%>").val()+"\",";
+			datavalue=  datavalue +  "\"<%=cwb.getOpscwbid()%>_s_"+$("#describe<%=cwb.getOpscwbid()%>").val()+"_s_"+$("#abnormaltypeid<%=cwb.getOpscwbid()%>").val()+"_s_"+<%=cwb.getCwb()%>+"\",";
 		}
 	<%}%>
 	if(noMsg>0){

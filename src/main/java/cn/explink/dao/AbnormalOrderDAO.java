@@ -8,6 +8,7 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.AbnormalOrder;
+import cn.explink.domain.CwbOrder;
 import cn.explink.util.Page;
 
 @Component
@@ -108,6 +110,10 @@ public class AbnormalOrderDAO {
 		this.jdbcTemplate.update("update express_ops_abnormal_order set `isnow`='0' where `opscwbid`=?", opscwbid);
 	}
 
+	public void saveAbnormalOrderByOpscwb(String cwb) {
+		this.jdbcTemplate.update("update express_ops_abnormal_order set `isnow`='0' where `cwb`=?", cwb);
+	}
+
 	public void creAbnormalOrder(long opscwbid, long customerid, String describe, long creuserid, long branchid, long abnormaltypeid, String credatetime) {
 		this.saveAbnormalOrderByOpscwbid(opscwbid);
 
@@ -132,6 +138,33 @@ public class AbnormalOrderDAO {
 				ps.setLong(6, abnormaltypeid);
 				ps.setString(7, credatetime);
 				ps.setLong(8, 1);
+				return ps;
+			}
+		}, key);
+		return key.getKey().longValue();
+	}
+
+	public long creAbnormalOrderLong(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime) {
+		this.saveAbnormalOrderByOpscwb(co.getCwb());
+		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		KeyHolder key = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement(sql, new String[] { "id" });
+				ps.setLong(1, co.getOpscwbid());
+				ps.setLong(2, co.getCustomerid());
+				ps.setString(3, describe);
+				ps.setLong(4, creuserid);
+				ps.setLong(5, branchid);
+				ps.setLong(6, abnormaltypeid);
+				ps.setString(7, credatetime);
+				ps.setLong(8, 1);
+				ps.setString(9, co.getEmaildate());
+				ps.setLong(10, co.getFlowordertype());
+				ps.setLong(11, co.getDeliverybranchid());
+				ps.setString(12, co.getCwb());
 				return ps;
 			}
 		}, key);
@@ -163,48 +196,38 @@ public class AbnormalOrderDAO {
 		return this.jdbcTemplate.queryForLong(sql, creuserid, begindate, enddate);
 	}
 
-	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(int type, String cwb, long branchid, long abnormaltypeid, long ishandle, String start, String end) {
-		String sql = "SELECT ao.*,cd.`cwb`,cd.`customerid`,cd.`emaildate`,cd.`flowordertype`,cd.`deliverybranchid` FROM `express_ops_abnormal_order` ao "
-				+ "LEFT JOIN `express_ops_cwb_detail` cd  ON ao.`opscwbid`=cd.`opscwbid`  WHERE  cd.state=1";
-		if (cwb.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwb + ")";
+	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndNohandles(String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid,
+			long abnormaltypeid, long ishandle) {
+		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
+		if (cwbs.length() > 0) {
+			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
-		}
-		if (type == 1) {
-			if ((start != null) && (end != null)) {
-				sql += " AND ao.credatetime >=" + "'" + start + "' and ao.credatetime<=" + "'" + end + "' ";
-			}
-		} else if (type == 2) {
-			if ((start != null) && (end != null)) {
-				sql += " AND ao.opscwbid in (select opscwbid from express_ops_abnormal_write_back where " + " credatetime >= '" + start + "'  and credatetime <= '" + end + "' )";
-			}
+			sql += " AND `ishandle`=" + ishandle;
 		}
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 
 	}
 
-	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(String opscwbids, String cwb, long branchid, long abnormaltypeid, long ishandle) {
-		String sql = "SELECT ao.*,cd.`cwb`,cd.`customerid`,cd.`emaildate`,cd.`flowordertype`,cd.`deliverybranchid` FROM `express_ops_abnormal_order` ao "
-				+ "LEFT JOIN `express_ops_cwb_detail` cd  ON ao.`opscwbid`=cd.`opscwbid`  WHERE  cd.state=1" + " and ao.`opscwbid` in(" + opscwbids + ")";
-		if (cwb.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwb + ")";
+	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(String begindate, String enddate, String cwbs, long branchid, long abnormaltypeid, long ishandle) {
+		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "handletime >= '" + begindate + "' " + "and handletime <= '" + enddate + "' ";
+		if (cwbs.length() > 0) {
+			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
+			sql += " AND `ishandle`=" + ishandle;
 		}
 
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
@@ -250,9 +273,9 @@ public class AbnormalOrderDAO {
 
 	}
 
-	public void saveAbnormalOrderForIshandle(long id, long ishandle) {
-		String sql = "update express_ops_abnormal_order set `ishandle`=?  where `id`=? ";
-		this.jdbcTemplate.update(sql, ishandle, id);
+	public void saveAbnormalOrderForIshandle(long id, long ishandle, String handletime) {
+		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=?  where `id`=? ";
+		this.jdbcTemplate.update(sql, ishandle, handletime, id);
 	}
 
 	public void saveAbnormalOrderForNohandle(long id, long ishandle) {
@@ -295,21 +318,18 @@ public class AbnormalOrderDAO {
 	}
 
 	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle) {
-		String sql = "SELECT ao.*,cd.`cwb`,cd.`customerid`,cd.`emaildate`,cd.`flowordertype`,cd.`deliverybranchid`  FROM `express_ops_abnormal_order` ao LEFT JOIN `express_ops_cwb_detail` cd  "
-				+ "ON ao.`opscwbid`=cd.`opscwbid`  " + "WHERE   " + "ao.credatetime >= '" + chuangjianbegindate + "' " + "and ao.credatetime <= '" + chuangjianenddate + "' "
-				// + "AND ao.isnow=1 "
-				+ "AND cd.state=1 ";
+		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
 		if (cwbs.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwbs + ")";
+			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
+			sql += " AND `ishandle`=" + ishandle;
 		}
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
@@ -317,43 +337,41 @@ public class AbnormalOrderDAO {
 	}
 
 	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle) {
-		String sql = "SELECT count(1) FROM `express_ops_abnormal_order` ao LEFT JOIN `express_ops_cwb_detail` cd  " + "ON ao.`opscwbid`=cd.`opscwbid`  " + "WHERE   " + "ao.credatetime >= '"
-				+ chuangjianbegindate + "' " + "and ao.credatetime <= '" + chuangjianenddate + "' "
-				// + "AND ao.isnow=1 "
-				+ "AND cd.state=1 ";
+		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
 		if (cwbs.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwbs + ")";
+			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
+			sql += " AND `ishandle`=" + ishandle;
 		}
-
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public int getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate, String enddate) {
-		String opscwbidsql = "select opscwbid from express_ops_abnormal_write_back where " + " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate + "' ";
+		// String opscwbidsql =
+		// "select opscwbid from express_ops_abnormal_write_back where " +
+		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
+		// + "' ";
 
-		String sql = "SELECT count(1) FROM `express_ops_abnormal_order` ao " + "LEFT JOIN `express_ops_cwb_detail` cd  ON ao.`opscwbid`=cd.`opscwbid`  WHERE  cd.state=1" + " and ao.`opscwbid` in("
-				+ opscwbidsql + ")";
+		String sql = "SELECT count(1) FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' ";
 
 		if (cwb.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwb + ")";
+			sql += " AND `cwb` IN(" + cwb + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
+			sql += " AND `ishandle`=" + ishandle;
 		}
 		// sql +=" AND ao.isnow=1 ";
 		return this.jdbcTemplate.queryForInt(sql);
@@ -361,24 +379,32 @@ public class AbnormalOrderDAO {
 
 	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(long page, String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate,
 			String enddate) {
-		String opscwbidsql = "select opscwbid from express_ops_abnormal_write_back where " + " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate + "' ";
-		String sql = "SELECT ao.*,cd.`cwb`,cd.`customerid`,cd.`emaildate`,cd.`flowordertype`,cd.`deliverybranchid` FROM `express_ops_abnormal_order` ao "
-				+ "LEFT JOIN `express_ops_cwb_detail` cd  ON ao.`opscwbid`=cd.`opscwbid`  WHERE  cd.state=1" + " and ao.`opscwbid` in(" + opscwbidsql + ")";
+		// String opscwbidsql =
+		// "select opscwbid from express_ops_abnormal_write_back where " +
+		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
+		// + "' ";
+		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' ";
 		if (cwb.length() > 0) {
-			sql += " AND cd.`cwb` IN(" + cwb + ")";
+			sql += " AND `cwb` IN(" + cwb + ")";
 		}
 		if (branchid > 0) {
-			sql += " AND ao.`branchid`=" + branchid;
+			sql += " AND `branchid`=" + branchid;
 		}
 		if (abnormaltypeid > 0) {
-			sql += " AND ao.`abnormaltypeid`=" + abnormaltypeid;
+			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
 		if (ishandle > -1) {
-			sql += " AND ao.`ishandle`=" + ishandle;
+			sql += " AND `ishandle`=" + ishandle;
 		}
 		// sql +=" AND ao.isnow=1 ";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println("问题件sql：" + sql);
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+	}
+
+	public void deleteAbnormalOrderbycwb(String cwb) {
+		try {
+			this.jdbcTemplate.update("DELETE FROM express_ops_abnormal_order where cwb=?", cwb);
+		} catch (DataAccessException e) {
+		}
 	}
 }
