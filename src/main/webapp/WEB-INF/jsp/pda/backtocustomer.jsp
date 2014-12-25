@@ -63,7 +63,7 @@ $(function(){
 	
 }) 
 function addAndRemoval(cwb,tab,isRemoval){
-	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
+	var trObj = $("#ViewList tr[id='ATR"+cwb+"']");
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
@@ -564,7 +564,7 @@ function chuku(){
 										<table id="weituihuochukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%for(CwbOrder co : weitghsckList){ %>
-											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
@@ -735,7 +735,6 @@ function chuku(){
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td width="200" align="center" bgcolor="#f1f1f1">地址</td>
-											<td align="center" bgcolor="#f1f1f1">异常原因</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">

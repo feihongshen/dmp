@@ -85,7 +85,7 @@ function tabView(tab,tip){
 }
 
 function addAndRemoval(cwb,tab,isRemoval){
-	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
+	var trObj = $("#ViewList tr[id='ATR"+cwb+"']");
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
@@ -723,7 +723,7 @@ function chuku(){
 										<table id="weituihuochukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%for(CwbDetailView co : weichukuList){ %>
-											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
