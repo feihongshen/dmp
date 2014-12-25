@@ -24,11 +24,13 @@
 
 </head>
 <body style="background:#eef9ff;overflow: hidden;" marginwidth="0" marginheight="0">
+<div style="margin-left: 20px;margin-top: 20px">问题件数据迁移
 <form action="<%=request.getContextPath()%>/abnormalOrder/abnormaldataMove" method="post">
-<textarea  id="opscwbids" name="opscwbids"></textarea>
+<textarea  id="opscwbids" name="opscwbids"rows="30"></textarea>
 <input type="hidden" name="ishandle" value="1">
 <input type="submit"/>
 </form>
+</div>
 </body>
 </html>
 
