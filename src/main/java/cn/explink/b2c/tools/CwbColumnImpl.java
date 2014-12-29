@@ -12,6 +12,7 @@ import cn.explink.b2c.efast.CwbColumnSetEfast;
 import cn.explink.b2c.explink.core_down.CwbColumnSetEpaiAPI;
 import cn.explink.b2c.gome.CwbColumnSetGome;
 import cn.explink.b2c.gzabc.CwbColumnSetGZABC;
+import cn.explink.b2c.gztl.CwbClolumSetGztl;
 import cn.explink.b2c.haoxgou.CwbColumnSetHXG;
 import cn.explink.b2c.happyGo.CwbColumnSetHappy;
 import cn.explink.b2c.homegobj.CwbColumnSetHomegobj;
@@ -107,6 +108,9 @@ public class CwbColumnImpl implements CwbColumnSet {
 	@Autowired
 	CwbColumnSetWenxuan cwbColumnSetWenxuan;
 
+	@Autowired
+	CwbClolumSetGztl cwbClolumSetGztl;
+
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
 	 */
@@ -114,76 +118,78 @@ public class CwbColumnImpl implements CwbColumnSet {
 	public ExcelColumnSet getEexcelColumnSetByB2cJoint(String b2cFlag) {
 		// TODO Auto-generated method stub
 		if (b2cFlag.equals(B2cEnum.Tmall.getMethod())) {
-			return cwbColumnSetTmall.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetTmall.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.contains("vipshop")) {
-			return cwbColumnSetVipShop.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetVipShop.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.contains(B2cEnum.Yihaodian.getMethod())) { // 主体部分
 																		// yihaodian
-			return cwbColumnSetYihaodian.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetYihaodian.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.YiXun.getMethod())) {
-			return cwbColumnSetYiXun.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetYiXun.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.contains("rufengda")) {
-			return cwbColumnSetRufengda.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetRufengda.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Gome.getMethod())) {
-			return cwbColumnSetGome.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetGome.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.DangDang_daoru.getMethod())) {
-			return cwbColumnSetDangDang.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetDangDang.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.YangGuang.getMethod())) {
-			return cwbColumnSetYangGuang.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetYangGuang.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.GuangZhouABC.getMethod())) {
-			return cwbColumnSetGZABC.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetGZABC.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.HangZhouABC.getMethod())) {
-			return cwbColumnSetHZABC.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHZABC.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.DongFangCJ.getMethod())) {
-			return cwbColumnSetDongFangCJ.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetDongFangCJ.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.HaoXiangGou.getMethod())) {
-			return cwbColumnSetHXG.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHXG.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Amazon.getMethod())) {
-			return cwbColumnSetAmazon.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetAmazon.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.DPFoss1.getMethod())) {
-			return cwbColumnSetDpfoss.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetDpfoss.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.HomeGou.getMethod())) {
-			return cwbColumnSetHomegou.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHomegou.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Maikaolin.getMethod())) {
-			return columnSetMaikaolin.getEexcelColumnSetByB2c(b2cFlag);
+			return this.columnSetMaikaolin.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Huitongtx.getMethod())) {
-			return cwbColumnSetHuitongtx.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHuitongtx.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.happyGo.getMethod())) {
-			return columnSetHappy.getEexcelColumnSetByB2c(b2cFlag);
+			return this.columnSetHappy.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.benlaishenghuo.getMethod())) {
-			return columnSetBenlaishenghuo.getEexcelColumnSetByB2c(b2cFlag);
+			return this.columnSetBenlaishenghuo.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.saohuobang.getMethod())) {
-			return columnSetSaohuobang.getEexcelColumnSetByB2c(b2cFlag);
+			return this.columnSetSaohuobang.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Telecomshop.getMethod())) {
-			return cwbColumnSetTelecom.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetTelecom.getEexcelColumnSetByB2c(b2cFlag);
 		}
 		// 易派系统对接入口
 		else if (b2cFlag.equals("epai")) {
-			return cwbColumnSetEpaiAPI.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetEpaiAPI.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.EfastERP.getMethod())) {
-			return cwbColumnSetEfast.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetEfast.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Smile.getMethod())) {
-			return cwbColumnSetSmile.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetSmile.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Liantong.getMethod())) {
-			return cwbColumnSetLiantong.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetLiantong.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.YongHuics.getMethod())) {
-			return cwbColumnSetYonghui.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetYonghui.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Hxgdms.getMethod())) {
-			return cwbColumnSetHxgdms.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHxgdms.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Wangjiu.getMethod())) {
-			return cwbColumnSetWangjiu.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetWangjiu.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.HomegoBJ.getMethod())) {
-			return cwbColumnSetHomegobj.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHomegobj.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.SFexpressXHM.getMethod())) {
-			return cwbColumnSetSfxhm.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetSfxhm.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.LeChong.getMethod())) {
-			return cwbColumnSetHomegobj.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetHomegobj.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.SFexpressXHM.getMethod())) {
-			return cwbColumnSetSfxhm.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetSfxhm.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Zhongliang.getMethod())) {
-			return cwbColumnSetZhongliang.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetZhongliang.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Wenxuan.getMethod())) {
-			return cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
+		} else if (b2cFlag.equals(B2cEnum.Guangzhoutonglu.getMethod())) {
+			return this.cwbClolumSetGztl.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

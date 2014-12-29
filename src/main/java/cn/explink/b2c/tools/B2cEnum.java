@@ -73,8 +73,7 @@ public enum B2cEnum {
 			"sfexpress", 0), EfastERP_bak(20082, "中兴云购ERP", "efastERP_bak", 0), Wangjiu(20083, "网酒网", "wangjiu", 0), HomegoBJ(20084, "家有购物（北京）", "homegoubj", 0),
 
 	LeChong(20085, "乐宠（科捷）", "lechong", 0), Smiled(20086, "思迈下游", "smiled", 0), SFexpressXHM(20087, "顺丰快递(小红帽)", "sfexpressxhm", 0), Zhongliang(20088, "中粮(我买网)", "zhongliang", 0), Wenxuan(20089,
-			"文轩网", "wenxuan", 0),
-			lefengwang(20093,"乐蜂网_对接","lefengwang_statereturn",0)
+			"文轩网", "wenxuan", 0), lefengwang(20093, "乐蜂网_对接", "lefengwang_statereturn", 0), Guangzhoutonglu(20095, "广州通路_对接", "guangzhoutonglu", 0)
 
 	;
 
@@ -84,7 +83,7 @@ public enum B2cEnum {
 	private int api_type; // 接口类型
 
 	public int getApi_type() {
-		return api_type;
+		return this.api_type;
 	}
 
 	public void setApi_type(int api_type) {
@@ -99,7 +98,7 @@ public enum B2cEnum {
 	}
 
 	public String getMethod() {
-		return method;
+		return this.method;
 	}
 
 	public void setMethod(String method) {
@@ -107,7 +106,7 @@ public enum B2cEnum {
 	}
 
 	public int getKey() {
-		return key;
+		return this.key;
 	}
 
 	public void setKey(int key) {
@@ -115,7 +114,7 @@ public enum B2cEnum {
 	}
 
 	public String getText() {
-		return text;
+		return this.text;
 	}
 
 	public void setText(String text) {
