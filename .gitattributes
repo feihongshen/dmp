@@ -203,6 +203,8 @@ src/main/java/cn/explink/b2c/gztl/GuangZhouTongLuInsertCwbDetailTimmer.java -tex
 src/main/java/cn/explink/b2c/gztl/Gztl.java -text
 src/main/java/cn/explink/b2c/gztl/GztlController.java -text
 src/main/java/cn/explink/b2c/gztl/GztlService.java -text
+src/main/java/cn/explink/b2c/gztl/xmldto/GztlXmlElement.java -text
+src/main/java/cn/explink/b2c/gztl/xmldto/Order.java -text
 src/main/java/cn/explink/b2c/haoxgou/CwbColumnSetHXG.java -text
 src/main/java/cn/explink/b2c/haoxgou/DESUtil.java -text
 src/main/java/cn/explink/b2c/haoxgou/HXGInsertCwbDetailTimmer.java -text
