@@ -1619,6 +1619,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/gome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/getgome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/testgome.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglu.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gzabc.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/happy.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/homegobj.jsp -text
