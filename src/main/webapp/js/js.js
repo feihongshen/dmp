@@ -1296,7 +1296,13 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 	
 	if(podresultid==7&&deliverystate==0){
 		
-		$("#infactfare").val(0)
+		$("#infactfare").val(0);
+		
+	}
+	$("#infactfare").removeAttr('disabled');
+	if(podresultid==7){
+		
+		$("#infactfare").attr('disabled','true');
 		
 	}
 	init_deliverystate();
