@@ -29,7 +29,7 @@ function prn1_preview(scancwb) {
 };
 function prn1_print(scancwb) {		
 	CreateOneFormPage(scancwb);
-	//LODOP.PRINT();
+	LODOP.PRINT();
 	$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
 };
 function CreateOneFormPage(scancwb){
@@ -180,7 +180,7 @@ function cwbscan(scancwb){
 <body  <% if(request.getParameter("scancwb")!=null&&request.getParameter("scancwb").length()!=0){ %>onload="cwbscan('<%=request.getParameter("scancwb") %>');" <%} %>>
 <% if(request.getParameter("scancwb")!=null){ %>
 			<div id="form1">     
-		<table border='1' style="width:50mm;height:30mm; display: table; "  cellspacing="0" cellpadding="0" >
+		<table border='0' style="width:50mm;height:30mm; display: table; "  cellspacing="0" cellpadding="0" >
 			<tr>
 				<td style="margin: -20;padding: -20;display: table-cell;">
 					<div style="font-size:3mm ;height: 4mm;line-height: 4mm;" align="center" id="branchname"/>
