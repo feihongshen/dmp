@@ -737,6 +737,7 @@ src/main/java/cn/explink/controller/SmtController.java -text
 src/main/java/cn/explink/controller/SwitchController.java -text
 src/main/java/cn/explink/controller/SystemInstallController.java -text
 src/main/java/cn/explink/controller/SystemStateController.java -text
+src/main/java/cn/explink/controller/TimeEffectiveController.java -text
 src/main/java/cn/explink/controller/TranscwbOrderFlowView.java -text
 src/main/java/cn/explink/controller/TransferReasonStasticsController.java -text
 src/main/java/cn/explink/controller/TransferResMatchController.java -text
@@ -880,6 +881,7 @@ src/main/java/cn/explink/dao/StockResultDAO.java -text
 src/main/java/cn/explink/dao/SwitchDAO.java -text
 src/main/java/cn/explink/dao/SysConfigDAO.java -text
 src/main/java/cn/explink/dao/SystemInstallDAO.java -text
+src/main/java/cn/explink/dao/TimeEffectiveDAO.java -text
 src/main/java/cn/explink/dao/TranscwbOrderFlowDAO.java -text
 src/main/java/cn/explink/dao/TransferReasonStasticsDao.java -text
 src/main/java/cn/explink/dao/TransferResMatchDao.java -text
@@ -1024,6 +1026,8 @@ src/main/java/cn/explink/domain/StockDetail.java -text
 src/main/java/cn/explink/domain/StockResult.java -text
 src/main/java/cn/explink/domain/Switch.java -text
 src/main/java/cn/explink/domain/SystemInstall.java -text
+src/main/java/cn/explink/domain/TimeEffectiveVO.java -text
+src/main/java/cn/explink/domain/TimeTypeEnum.java -text
 src/main/java/cn/explink/domain/TransferReason.java -text
 src/main/java/cn/explink/domain/TransferReasonStastics.java -text
 src/main/java/cn/explink/domain/TransferResMatch.java -text
@@ -1408,6 +1412,7 @@ src/main/java/cn/explink/service/SmsConfigService.java -text
 src/main/java/cn/explink/service/SmsSendService.java -text
 src/main/java/cn/explink/service/SystemConfigChangeListner.java -text
 src/main/java/cn/explink/service/SystemInstallService.java -text
+src/main/java/cn/explink/service/TimeEffectiveService.java -text
 src/main/java/cn/explink/service/TruckService.java -text
 src/main/java/cn/explink/service/UserBranchService.java -text
 src/main/java/cn/explink/service/UserDetailService.java -text
@@ -2086,6 +2091,7 @@ src/main/webapp/WEB-INF/jsp/template/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/template/list.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testprinting_template.jsp -text
+src/main/webapp/WEB-INF/jsp/time_effective/timeeffective.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/edit.jsp -text
