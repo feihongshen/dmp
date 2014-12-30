@@ -1,7 +1,10 @@
 package cn.explink.b2c.gztl;
 
+import org.springframework.stereotype.Service;
+
 import cn.explink.domain.ExcelColumnSet;
 
+@Service
 public class CwbClolumSetGztl {
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
