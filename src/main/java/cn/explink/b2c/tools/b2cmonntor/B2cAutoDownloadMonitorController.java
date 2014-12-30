@@ -42,16 +42,16 @@ public class B2cAutoDownloadMonitorController {
 		if (endtime.equals("")) {
 			endtime = DateTimeUtil.getNowTime();
 		}
-		model.addAttribute("customerlist", customerDAO.getAllCustomers());
-		model.addAttribute("downloadlist", b2cAutoDownloadMonitorDAO.selectB2cMonitorDataList(customerid, starttime, endtime, page));
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+		model.addAttribute("downloadlist", this.b2cAutoDownloadMonitorDAO.selectB2cMonitorDataList(customerid, starttime, endtime, page));
 
-		model.addAttribute("page_obj", new Page(b2cAutoDownloadMonitorDAO.selectB2cMonitorDataCount(customerid, starttime, endtime), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.b2cAutoDownloadMonitorDAO.selectB2cMonitorDataCount(customerid, starttime, endtime), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 
-		List<EpaiApi> epailist = epaiApiDAO.getEpaiApiList();
+		List<EpaiApi> epailist = this.epaiApiDAO.getEpaiApiList();
 		model.addAttribute("epailist", epailist);
 
-		saveModel(model, customerid, starttime, endtime);
+		this.saveModel(model, customerid, starttime, endtime);
 
 		// 保存查询条件到request
 		return "b2cdj/autodownloadmonitorlist";
@@ -72,6 +72,6 @@ public class B2cAutoDownloadMonitorController {
 			@RequestParam(value = "send_b2c_flag", required = false, defaultValue = "3") long send_b2c_flag,
 			@RequestParam(value = "hand_deal_flag", required = false, defaultValue = "0") long hand_deal_flag, HttpServletResponse response) {
 
-		b2cJointMonitorService.exportB2cDataExptInfo(cwb, customerid, flowordertype, starttime, endtime, send_b2c_flag, hand_deal_flag, response);
+		this.b2cJointMonitorService.exportB2cDataExptInfo(cwb, customerid, flowordertype, starttime, endtime, send_b2c_flag, hand_deal_flag, response);
 	}
 }

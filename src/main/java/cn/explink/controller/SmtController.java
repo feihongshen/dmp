@@ -28,13 +28,13 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.SmtService;
 import cn.explink.util.ExcelUtils;
 
 @Controller
@@ -65,6 +65,9 @@ public class SmtController {
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	@Autowired
+	private SmtService smtService = null;
 
 	private enum OrderTypeEnum {
 		Normal("normal"), Transfer("transfer"), All("all");
@@ -151,43 +154,10 @@ public class SmtController {
 	@RequestMapping("/smtorderoutarea")
 	public @ResponseBody JSONObject smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
-		JSONObject errorObj = this.validateOutArea(cwbs);
-		if (!errorObj.getBoolean("successed")) {
-			return errorObj;
-		}
-		Map<String, Long> branchMap = this.cwbDAO.getImprotDataBranchMap(cwbs);
-		// 更新订单表设定订单状态为超区.
-		this.cwbDAO.updateOrderOutAreaStatus(cwbs, branchMap);
-		// 更新订单流程表加入超区流程.
-		// 存在多次超区可能需要修改超区流程的isnow = 1.
-		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
+		long curBranchId = this.getCurrentBranchId();
+		long curUserId = this.getCurrentUserId();
 
-		return errorObj;
-	}
-
-	private JSONObject validateOutArea(String[] cwbs) {
-		JSONObject obj = new JSONObject();
-		obj.put("successed", true);
-		obj.put("msg", "");
-		if (cwbs.length != 1) {
-			return obj;
-		}
-		String cwb = cwbs[0];
-		CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
-		if (order == null) {
-			obj.put("successed", false);
-			obj.put("msg", "订单不存在");
-		}
-		/*
-		 * 超区不对订单状态做限制. else { FlowOrderTypeEnum flowOrderType =
-		 * FlowOrderTypeEnum.getText(order.getFlowordertype()); boolean cond1 =
-		 * FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType); boolean
-		 * cond2 =
-		 * FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType
-		 * ); if (!(cond1 || cond2)) { obj.put("successed", false);
-		 * obj.put("msg", this.getOutAreaFlowErrorMsg(flowOrderType)); } }
-		 */
-		return obj;
+		return this.getSmtService().smtOrderOutArea(cwbs, curBranchId, curUserId);
 	}
 
 	@SuppressWarnings("unused")
@@ -746,6 +716,10 @@ public class SmtController {
 		private SmtOrderContainer getContianer() {
 			return this.contianer;
 		}
-
 	}
+
+	public SmtService getSmtService() {
+		return this.smtService;
+	}
+
 }
