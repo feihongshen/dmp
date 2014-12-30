@@ -29,7 +29,7 @@ function prn1_preview(scancwb) {
 };
 function prn1_print(scancwb) {		
 	CreateOneFormPage(scancwb);
-	LODOP.PRINT();
+	//LODOP.PRINT();
 	$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
 };
 function CreateOneFormPage(scancwb){
@@ -58,8 +58,110 @@ function cwbscan(scancwb){
 					$("#transcwb").html(data.body.cwbOrder.transcwb);//运单号
 					$("#branchcode").html(data.body.branchcode);//站点分拣编码
 				var len=data.body.branchcode.length;
-				if(len>3){
-					$("#branchcode").attr('style','width:40mm;height: 18mm;font-family:黑体; font: bolder;font-size:18mm;font-weight:bolder;line-height: 18mm;margin:2mm;');
+				var length=100-Math.floor(len/2)+3+"mm";
+				var length2=45-len;
+				if(len==4){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"21mm",
+						"font-weight":"bolder",
+						"display":"block",
+						"line-height":"18mm",
+						
+					});
+				}else if(len==5){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"19mm",
+						"font-weight":"bolder",
+						"display":"block",
+						
+					});
+				}
+				else if(len==6){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"16mm",
+						"font-weight":"bolder",
+						"display":"block",
+						
+					});
+				}else if(len==7||len==8||len==9){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"15mm",
+						"line-height":"9mm",
+						"font-weight":"bolder",
+						"display":"block",
+						"word-wrap":"break-word",
+					});
+				}else if(len==10||len==11||len==12){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"12mm",
+						"line-height":"9mm",
+						"font-weight":"bolder",
+						"display":"block",
+						"word-wrap":"break-word",
+					});
+				}else if(len==13||len==14||len==15){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"9mm",
+						"line-height":"9mm",
+						"font-weight":"bolder",
+						"display":"block",
+						"word-wrap":"break-word",
+					});
+				}else if(len==16||len==17||len==18){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"8mm",
+						"line-height":"6mm",
+						"font-weight":"bolder",
+						"line-height":"9mm",
+						"display":"block",
+						"word-wrap":"break-word",
+					});
+				}else if(len==19||len==20||len==21){
+					$("#branchcode").css({
+						"width":"40mm",
+						"height":"18mm",
+						"font-family":"黑体",
+						"font":"bolder",
+						"font-size":"7mm",
+						"line-height":"6mm",
+						"font-weight":"bolder",
+						"line-height":"9mm",
+						"display":"block",
+						"word-wrap":"break-word",
+					});
+				}else{
+					$("#branchcode").css({
+						"line-height":"20mm",
+						
+					});
 				}
 					prn1_print(scancwb);
 
@@ -78,7 +180,7 @@ function cwbscan(scancwb){
 <body  <% if(request.getParameter("scancwb")!=null&&request.getParameter("scancwb").length()!=0){ %>onload="cwbscan('<%=request.getParameter("scancwb") %>');" <%} %>>
 <% if(request.getParameter("scancwb")!=null){ %>
 			<div id="form1">     
-		<table border='0' style="width:50mm;height:30mm; display: table;"  cellspacing="0" cellpadding="0" >
+		<table border='1' style="width:50mm;height:30mm; display: table; "  cellspacing="0" cellpadding="0" >
 			<tr>
 				<td style="margin: -20;padding: -20;display: table-cell;">
 					<div style="font-size:3mm ;height: 4mm;line-height: 4mm;" align="center" id="branchname"/>
@@ -86,7 +188,7 @@ function cwbscan(scancwb){
 			</tr>
 			<tr style="width:50mm;height: 20mm;">
 				<td style="padding:-20;margin:-20 ;width:50mm;height: 20mm;">
-					<div style="width:50mm;height: 20mm;font-family:黑体; font: bolder;font-size:26mm;font-weight:bolder;line-height: 20mm;" align="center" id="branchcode"/>
+					<div style="width:50mm;height: 20mm;font-family:黑体; font: bolder;font-size:26mm;font-weight:bolder;" align="center" id="branchcode"/>
 				</td>
 			</tr>
 			<tr>
