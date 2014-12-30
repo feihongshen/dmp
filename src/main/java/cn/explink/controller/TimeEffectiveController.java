@@ -35,7 +35,7 @@ public class TimeEffectiveController {
 	}
 
 	@RequestMapping("/submit")
-	public String submit(HttpServletRequest request, Model model) {
+	public String submit(HttpServletRequest request, Model model) throws Exception {
 		List<TimeEffectiveVO> teVOList = this.resolveData(request);
 		List<TimeEffectiveVO> afterUpdateVOList = this.getService().updateTimeEffective(teVOList);
 		model.addAttribute("teTypeList", afterUpdateVOList);
@@ -76,5 +76,4 @@ public class TimeEffectiveController {
 	private TimeEffectiveService getService() {
 		return this.service;
 	}
-
 }
