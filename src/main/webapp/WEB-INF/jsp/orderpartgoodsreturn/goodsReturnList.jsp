@@ -360,31 +360,30 @@ function returnGoods(){
 								<input type="button" value="部分退货" class="input_button2" onclick="returnGoods()">
 							</form>
 						</div> --%>
-						
+						<div  style="overflow: auto;height:500px">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="table_orders" style="overflow:auto;">
 							<tbody>
 								<tr class="font_1" height="30" >
 								    <td width="50" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">应收金额[元]</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">取件承运商</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">领货时间</td>
+									<td width="130" align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">应收金额[元]</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">取件承运商</td>
+									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">领货时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">上门揽收时间</td>									
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">退货仓库地址</td>
 								</tr>
-								
 								<%if(orderPartGoodsRtList!=null&&orderPartGoodsRtList.size()>0)
 									for(OrderPartGoodsRt ort : orderPartGoodsRtList){ %>
 								<tr id="order<%=ort.getCwb() %>">
 								    <td width="50"  align="center" valign="middle" name="checkbox"><input type="checkbox" value="order<%=ort.getCwb() %>" name="ordercheckbox"></td>
 									<td width="120" align="center" valign="middle" name="cwb"><span><%=ort.getCwb() %></span><%-- &nbsp&nbsp<img src="<%=request.getContextPath()%>/images/sum.png" id="sub<%=ort.getCwb() %>" > --%></td>
 									<td width="100" align="center" valign="middle" name="consigneename"><%=ort.getConsigneename()%></td>
-									<td width="120" align="center" valign="middle" name="consigneeaddress"><%=ort.getConsigneeaddress()%></td>
-									<td width="100" align="center" valign="middle" name="receivablefee"><%=ort.getReceivablefee()%></td>
-									<td width="100" align="center" valign="middle" name="customer"><%=ort.getCustomer()%></td>
-									<td width="100" align="center" valign="middle" name="createtime"><%=ort.getCreatetime()%></td>
+									<td width="130" align="center" valign="middle" name="consigneeaddress"><%=ort.getConsigneeaddress()%></td>
+									<td width="80" align="center" valign="middle" name="receivablefee"><%=ort.getReceivablefee()%></td>
+									<td width="80" align="center" valign="middle" name="customer"><%=ort.getCustomer()%></td>
+									<td width="120" align="center" valign="middle" name="createtime"><%=ort.getCreatetime()%></td>
 									<td width="100" align="center" valign="middle" name="collectiontime">
 										<span style="height: 25">
 										<input type="text" id="collectiontime<%=ort.getCwb() %>" name="collectiontime<%=ort.getCwb() %>" value="<%=ort.getCollectiontime()==null||ort.getCollectiontime().equals("")? nowtime:ort.getCollectiontime()%>">
@@ -431,6 +430,7 @@ function returnGoods(){
 								<%}} %>
 							</tbody>
 						</table>
+						</div>
 					</div>
 				</div>
 				<%-- <%if(page_obj.getMaxpage()>1){ %>
