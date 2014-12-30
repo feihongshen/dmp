@@ -360,7 +360,7 @@ function returnGoods(){
 								<input type="button" value="部分退货" class="input_button2" onclick="returnGoods()">
 							</form>
 						</div> --%>
-						
+						<div  style="overflow: auto;height:500px">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="table_orders" style="overflow:auto;">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -431,6 +431,7 @@ function returnGoods(){
 								<%}} %>
 							</tbody>
 						</table>
+						</div>
 					</div>
 				</div>
 				<%-- <%if(page_obj.getMaxpage()>1){ %>
