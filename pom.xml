@@ -2321,7 +2321,7 @@
 				<expressurl.maxconn>100</expressurl.maxconn>
 				<expressurl.url>jdbc:mysql://192.168.61.12:3306/cqhy_oms?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
-				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.password></expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
@@ -2329,7 +2329,7 @@
 				<filePath>/home/appusr/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>
-				<logoimgurl>images/logo_cqhy2.jpg</logoimgurl>
+				<logoimgurl>images/logo_cqhy2.png</logoimgurl>
 				<label>CQHY</label>
 				<addresscustomerid>1</addresscustomerid>
 				<addressid>1</addressid>
