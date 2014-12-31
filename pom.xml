@@ -2422,7 +2422,7 @@
 				<addresscustomerid>1</addresscustomerid>
 				<addressid>1</addressid>
 				<addresspassword>123</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
 			</properties>
 		</profile>
 	</profiles>
