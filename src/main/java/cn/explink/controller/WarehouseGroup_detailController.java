@@ -76,9 +76,11 @@ import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.print.template.PrintTemplate;
@@ -150,6 +152,8 @@ public class WarehouseGroup_detailController {
 	BaleDao baleDAO;
 	@Autowired
 	TruckDAO truckDAO;
+	
+	
 	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -497,6 +501,7 @@ public class WarehouseGroup_detailController {
 		List<Branch> bList = getNextPossibleBranches();
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tList = this.truckDAO.getAllTruck();
+		System.out.println(baleno);
 		model.addAttribute("branchlist", bList);
 		String branchids = getStrings(branchid);
 		if (isshow > 0) {
@@ -648,7 +653,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("branchids", branchids);
 		model.addAttribute("time", "出站时间");
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-		return "warehousegroup/outdetaillist";
+		return "warehousegroup/outdetaillist2";
 	}
 
 	/**
@@ -702,7 +707,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("branchids", branchids);
 		model.addAttribute("time", "出站时间");
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-		return "warehousegroup/outdetaillist";
+		return "warehousegroup/outdetaillist2";
 	}
 
 	/**
@@ -799,7 +804,6 @@ public class WarehouseGroup_detailController {
 				cwbs = cwbs.substring(0, cwbs.length() - 1);
 			}
 		}
-
 		List<OrderFlow> flowList = orderFlowDAO.getCwbByFlowordertypeAndCwbs(FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), cwbs);
 		Map<String, String> mapForOperatorName = new HashMap<String, String>();
 		for (OrderFlow of : flowList) {
@@ -829,7 +833,59 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbList", cwbJson);
 			return "warehousegroup/outbillhuizongprinting_history";
 		}else if(printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 5){
-			return "warehousegroup/outtongluprintint_template";
+			List<CwbOrder> cwbList2 = cwbDao.getCwbByCwbs(cwbs);
+			
+			List<WarehouseGroupPrintDto> printDtos=new ArrayList<WarehouseGroupPrintDto>();
+			
+			for (int i = 0; i < cwbList2.size(); i++) {
+				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+				warehouseGroupPrintDto.setBackcarnum(cwbList2.get(i).getBackcarnum());
+				warehouseGroupPrintDto.setCaramount(cwbList2.get(i).getCaramount());
+				warehouseGroupPrintDto.setCarrealweight(cwbList2.get(i).getCarrealweight());
+				warehouseGroupPrintDto.setCarsize(cwbList2.get(i).getCarsize());
+				warehouseGroupPrintDto.setCarwarehouse(branchDAO.getBranchById(Long.parseLong(cwbList2.get(i).getCarwarehouse())).getBranchname());
+				warehouseGroupPrintDto.setConsigneeaddress(cwbList2.get(i).getConsigneeaddress());
+				warehouseGroupPrintDto.setConsigneemobile(cwbList2.get(i).getConsigneemobile());
+				warehouseGroupPrintDto.setConsigneename(cwbList2.get(i).getConsigneename());
+				warehouseGroupPrintDto.setConsigneephone(cwbList2.get(i).getConsigneephone());
+				warehouseGroupPrintDto.setConsigneepostcode(cwbList2.get(i).getConsigneepostcode());
+				warehouseGroupPrintDto.setCustomername(customerDAO.getCustomerById(cwbList2.get(i).getCustomerid()).getCustomername());
+				warehouseGroupPrintDto.setCwb(cwbList2.get(i).getCwb());
+				warehouseGroupPrintDto.setCwbordertypeid(CwbOrderTypeIdEnum.getByValue(cwbList2.get(i).getCwbordertypeid()).getText());
+				if(cwbList.get(i).getCwbremark().length()>=30){
+					warehouseGroupPrintDto.setCwbremark(cwbList2.get(i).getCwbremark().substring(0, 30));
+				}else {
+					warehouseGroupPrintDto.setCwbremark(cwbList2.get(i).getCwbremark());
+				}
+				warehouseGroupPrintDto.setEmaildate(cwbList2.get(i).getEmaildate());
+				warehouseGroupPrintDto.setPaybackfee(cwbList2.get(i).getPaybackfee());
+				warehouseGroupPrintDto.setTuihuozhanrukutime(tuihuoRecordDAO.getTuihuoRecordByCwb(cwbList2.get(i).getCwb()).get(0).getTuihuozhanrukutime());
+				warehouseGroupPrintDto.setTranscwb(cwbList2.get(i).getTranscwb());
+				warehouseGroupPrintDto.setPaywayid(PaytypeEnum.getByValue(Integer.parseInt(cwbList2.get(i).getPaywayid()+"")).getText());
+				/*System.out.println(cwbList.get(i).getBackreasonid());
+				System.out.println(cwbList.get(i).getBackreason());
+				System.out.println(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent());*/
+				if(cwbList2.get(i).getBackreasonid()==0){
+					warehouseGroupPrintDto.setReasoncontent("无");
+				}else{
+					if(reasonDao.getReasonByReasonid(cwbList2.get(i).getBackreasonid()).getReasoncontent().length()>=30){
+						warehouseGroupPrintDto.setReasoncontent(reasonDao.getReasonByReasonid(cwbList2.get(i).getBackreasonid()).getReasoncontent().substring(0, 30));				
+					}else {
+						warehouseGroupPrintDto.setReasoncontent(reasonDao.getReasonByReasonid(cwbList2.get(i).getBackreasonid()).getReasoncontent());
+					}
+				}
+				warehouseGroupPrintDto.setCredate(orderFlowDAO.getOrderCurrentFlowByCwb(cwbList2.get(i).getCwb()).getCredate().toString());
+				warehouseGroupPrintDto.setReceivablefee(cwbList2.get(i).getReceivablefee());
+				warehouseGroupPrintDto.setSendcarname(cwbList2.get(i).getSendcarname());
+				warehouseGroupPrintDto.setSendcarnum(cwbList2.get(i).getScannum());
+				warehouseGroupPrintDto.setStartbranch(branchDAO.getBranchByBranchid(cwbList2.get(i).getStartbranchid()).getBranchname());
+				warehouseGroupPrintDto.setBackcarname(cwbList2.get(i).getBackcarname());
+				printDtos.add(warehouseGroupPrintDto);
+			}
+			
+			model.addAttribute("cwbOrderList",cwbList2);
+			model.addAttribute("printDtos", printDtos);
+			return "warehousegroup/outbilltongluprinting_history";
 		}
 		return null;
 	}

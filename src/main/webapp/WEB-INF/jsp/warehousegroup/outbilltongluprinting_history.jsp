@@ -1,3 +1,4 @@
+<%@page import="cn.explink.controller.WarehouseGroupPrintDto"%>
 <%@page import="cn.explink.enumutil.PrintTemplateOpertatetypeEnum"%>
 <%@page import="cn.explink.enumutil.OutwarehousegroupOperateEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -32,15 +33,8 @@ Map usermap = (Map) session.getAttribute("usermap");
 String cwbs = (String)request.getAttribute("cwbs");
 
 long cwbcount = 0,jianshucount = 0;
-
-for(int i=0;i<cwbList.size();i++){ 
-	cwbcount += Long.parseLong(cwbList.get(i).getString("cwbcount"));
-	 for(PrintColumn printColumn:printTemplate.getColumns()){if(printColumn.getField().equals("sendcarnum")){ 
-		jianshucount += cwbList.get(i).getLong("sendcarnum"); 
-	}else if(printColumn.getField().equals("backcarnum")){ 
-		jianshucount += cwbList.get(i).getLong("backcarnum"); 
-	}} 
-}
+List<WarehouseGroupPrintDto> brDtos=(List<WarehouseGroupPrintDto>)request.getAttribute("printDtos");
+List<CwbOrder> cwbOrderList=(List<CwbOrder>)request.getAttribute("cwbOrderList");
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -104,143 +98,58 @@ function nowprint(){
 	<form id="form1">
 		<!--StartFragment-->
 		<div class="Section0" style="layout-grid: 15.6000pt;">
-			<table  border="1" cellspacing="0" cellpadding="0">
-				<tr>
-					<td colspan="6" align="center">
+			<table id="table1" border="1" cellspacing="0" cellpadding="0" style="width: 100%">
+				<%-- <tr>
+					<td colspan="<%=printTemplate.getColumns().size() %>" align="center" >
 						<span style="font-family: '宋体'; font-size: 10.5000pt">
-							<%if(iscustomer==1){ %>
-								<%=printTemplate.getCustomname() %>—退供货商出库交接单（补打）
-							<%}else if(operatetype==OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()){%>
-								<%=printTemplate.getCustomname() %>—领货清单（补打）
-							<%}else{ %>
-								<%if(printTemplate.getOpertatetype()==PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue()||printTemplate.getOpertatetype()==PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue()){ %>
-									<%=printTemplate.getCustomname() %>—中转出站至<%=branchname %>清单（补打）
-								<%}else if(printTemplate.getOpertatetype()==PrintTemplateOpertatetypeEnum.ZhanDianChuZhanAnDan.getValue()||printTemplate.getOpertatetype()==PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue()){ %>
-									<%=printTemplate.getCustomname() %>—站点出站至<%=branchname %>清单（补打）
-								<%}else{ %>
-									<%=printTemplate.getCustomname() %>—出库至<%=branchname %>清单（补打）
-								<%} %>
-							<%} %>
+							//<%if(iscustomer==2){ %>
+								站点: <%=localbranchname%>
+							<%}%>
 						</span>
 					</td>
-				</tr>
-				<%if(operatetype!=OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()){ %>
+				</tr> --%>
 				<tr>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">线路编码</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td colspan="5"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt; "><%=localbranchname %> - <%=branchname%><span
-											style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-						<o:p></o:p>
-					</span> </span></td>
-				</tr>
-				<% }%>
-				<%if(islinghuo==1){ %>
-						<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-												style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">时间</span><span
-												style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-							<o:p></o:p>
-						</span></span></td>
-						<td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=datetime %><span
-												style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-							<o:p></o:p>
-						</span> </span>
-						</td>
-						<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-												style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">配送员：<%for(User user : userlist){if(cwbList.get(0).getLong("deliverid")==user.getUserid()){%><%=user.getRealname() %><%}} %></span><span
-												style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-							<o:p></o:p>
-						</span></span></td>
-						<td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;">配送站点：<%=localbranchname %><span
-												style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-							<o:p></o:p>
-						</span> </span></td>
-					<%}else{ %>
-						<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-												style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">时间</span><span
-												style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-							<o:p></o:p>
-						</span></span></td>
-						<td colspan="5"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=datetime %><span
-												style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-							<o:p></o:p>
-						</span> </span>
-						</td>
-					<%} %>
-				<tr>
-		<td colspan="6"><table  border="1" cellspacing="0" cellpadding="0">
-			<tr>
-				<%for(int i=0;i<printTemplate.getShownum();i++){
-				for(PrintColumn printColumn:printTemplate.getColumns()){%>
-					<td width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px"  style="font-size: 9.5000pt;" align="center" ><%=printColumn.getColumnName() %></td>
-				<%}}%>
-			</tr>
-				<%for(int i=0;i<cwbList.size();i++){ %>
-				<%if(i%printTemplate.getShownum()==0){out.print("<tr style=\"height: 15.9000pt;\">");} %>
-				<% for(PrintColumn printColumn:printTemplate.getColumns()){ %>
-					<td width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px"  style="font-size: 9.5000pt;" align="center" >
-						<%=PropertyUtils.getProperty(cwbList.get(i), printColumn.getField()) %>
+					<td colspan="<%=printTemplate.getColumns().size() %>" >
+						<table  border="1" cellspacing="0" cellpadding="0" style="width: 100%;">
+							
+							<tr>
+								<td  colspan="<%=printTemplate.getColumns().size()+1%>" align="center">
+									<span style="font-family: '宋体'; font-size: 10.5000pt">
+						
+											站点: <%=localbranchname%>
+								
+									</span>
+								</td>
+							</tr>
+							
+							<tr>
+								<td width="4%"  style="font-size: 9.5000pt;" align="center">序号</td>
+								<%for(int i=0;i<printTemplate.getShownum();i++){
+									for(PrintColumn printColumn:printTemplate.getColumns()){%>
+										<td width="auto"  style="font-size: 9.5000pt;" align="center"><%=printColumn.getColumnName() %></td>
+									<%}}%>
+							</tr>
+							<%for(int i=0;i<cwbOrderList.size();i++){ %>
+								<tr>
+									<%for(int j=0;j<printTemplate.getColumns().size();j++){
+											if(j==0){%>
+											<td width="auto"  style="font-size: 9.5000pt;"  align="center"><%=i+1 %></td>
+										<%
+										}
+										%>
+										<td width="auto"  style="font-size: 9.5000pt;"  align="center">
+											<%-- <%=PropertyUtils.getProperty(cwbList.get(i), printColumn.getField())%> --%>
+											<%=PropertyUtils.getProperty(brDtos.get(i),printTemplate.getColumns().get(j).getField())%>
+											<%-- <%=printTemplate.getColumns().get(j).getField()%> --%>
+										</td>
+									<%} %>
+								</tr>
+							<%} %>
+								
+						</table>
 					</td>
-				<%}if(i%printTemplate.getShownum()==printTemplate.getShownum()-1||i==cwbList.size()-1){out.print("</tr>");} %>
-				<%} %>
-				</table></td>
-		</tr>
-				
-				<tr>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">合计</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=cwbcount %>单</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=jianshucount %>件</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
 				</tr>
-				<tr>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">出库人</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%if(islinghuo!=1){%><%=usermap.get("realname") %><%} %></span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">司机</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-					<o:p></o:p>
-					：
-					</span></span></td>
-					<td>&nbsp;</td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">收货人：</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td colspan="6"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">异常说明：</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					</tr>
-			</table>
+			</table> 
 			 <p class=p0 style="margin-bottom: 0pt; margin-top: 0pt;">
 				<span
 					style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: 'Times New Roman';"><o:p></o:p></span>
