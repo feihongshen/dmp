@@ -5880,7 +5880,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	
 	<changeSet id="wangyonghe-2014-12-31-1" author="wangyonghe">
 		<sql>
-	update express_set_menu_info_new  set menuname='订单号/包号打印' where menuurl like '%cwbLablePrint/barcodeprint%'
+	update express_set_menu_info_new  set menuname='预制条码打印' where menuurl like '%cwbLablePrint/barcodeprint%'
 		</sql>
 	</changeSet>
 	
