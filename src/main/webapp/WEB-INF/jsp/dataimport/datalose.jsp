@@ -46,6 +46,7 @@ function checkSel(){
 			<li><a href="editBranchonBranch" >匹配站按站</a></li>
 			<li><a href="editBatchBranch" >批量匹配站</a></li>
 			<li><a href="reproducttranscwb" >运单号生成</a></li>
+			<li><a href="addresslibrarymatching">手动匹配</a></li>
 			<li><font color="red">地址库已开启</font></li>
 		</ul>
 	</div>

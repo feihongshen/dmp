@@ -787,4 +787,93 @@ public class DataImportController {
 		AddressCodeEditType = types.substring(0, types.length() - 1).toString();
 		return AddressCodeEditType;
 	}
+	
+	
+	
+	
+	
+	//此时正在进行测试！！！。。。。
+//	@RequestMapping("/editexcel2/{cwb2}")
+//	public @ResponseBody String editexcel2(@PathVariable("cwb2") String cwb2, @RequestParam(value = "excelbranch2", required = false) String excelbranch2, HttpServletRequest request) throws Exception {
+//		List<Branch> lb = new ArrayList<Branch>();
+//		List<Branch> branchnamelist = branchDAO.getBranchByBranchnameCheck(excelbranch2);
+//		if (branchnamelist.size() > 0) {
+//			lb = branchnamelist;
+//		} else {
+//			lb = branchDAO.getBranchByBranchcode(excelbranch2);
+//		}
+//		if (lb.size() == 0) {
+//			return "{\"errorCode\":1,\"error\":\"没有找到指定站点\"}";
+//		}
+//		
+////		
+//		CwbOrder co = cwbDAO.getCwbByCwb(cwb2);
+//		CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+//		if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+//																																													// 都将匹配状态变更为修改
+//			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+//		} else if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+//																																																// 或者是人工匹配的
+//																																																// 都将匹配状态变更为人工修改
+//			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+//		}
+//		try {
+//			cwbOrderService.updateDeliveryBranch(getSessionUser(), co, lb.get(0), addressCodeEditType);
+//			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb2\":\"" + cwb2 + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
+//		} catch (CwbException ce) {
+//			return "{\"errorCode\":" + ce.getError().getValue() + ",\"error\":\"" + ce.getMessage() + "\",\"cwb\":\"" + cwb2 + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
+//		}
+////
+//	}
+	
+	
+	@RequestMapping("/addresslibrarymatching")
+	public String editBrancheachPage() {
+		return "dataimport/addresslibrarymatching";
+	}
+	//测试所用方法
+	@RequestMapping("/addresslibrarymatchingpage")
+	public @ResponseBody  String match( String cwbs,String branches,HttpServletRequest request) {
+		cwbs = request.getParameter("cwbs");
+		branches = request.getParameter("branches");
+		String[] realnamecwbs = cwbs.split("\r\n");
+		String[] realnamebranches = branches.split("\r\n");
+		
+	
+		String cwbss="";
+		for(int i=0;i<realnamecwbs.length;i++){
+			try {
+				CwbOrder co = cwbDAO.getCwbByCwb(realnamecwbs[i]);
+				if(co==null){
+					throw new RuntimeException("订单不存在");
+				}
+				Branch branch=branchDAO.getBranchByBranchname(realnamebranches[i]);
+				if(branch.getBranchid()==0){
+					throw new RuntimeException("站点"+realnamebranches[i]+"不存在");
+				}
+				
+				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+				if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+				} else if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+																																																		// 都将匹配状态变更为人工修改
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+				}
+				
+				
+			
+				cwbOrderService.updateDeliveryBranch(getSessionUser(), co, branch, addressCodeEditType);
+				
+			} catch (Exception ce) {
+				cwbss+=realnamecwbs[i];
+			}
+			
+		}
+		if(!cwbss.isEmpty()){
+			//return "{\"errorCode\":" + 1 + ",\"error\":\"" + "更新失败" + "\",\"cwb\":\"" + cwbs+"}";
+			return "{\"errorCode\":1,\"error\":\"更新失败\",\"cwb\":\""+cwbss+"\"}";
+		}
+		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		
+	}
 }
