@@ -14,6 +14,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
+import cn.explink.domain.OverdueExMoCondVO;
 import cn.explink.domain.TimeTypeEnum;
 
 /**
@@ -33,14 +34,14 @@ public class OverdueExMoController {
 	private BranchDAO branchDAO = null;
 
 	@RequestMapping("/{page}")
-	public ModelAndView list(@PathVariable("page") int page) {
+	public ModelAndView list(@PathVariable("page") int page, OverdueExMoCondVO condVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("time_type_map", this.getTimeTypeMap());
 		mav.addObject("time_type", TimeTypeEnum.SystemAcceptTime.ordinal());
-
 		mav.addObject("vender_map", this.getVenderMap());
-
 		mav.addObject("org_map", this.getOrgMap());
+		mav.addObject("show_col_map", this.getShowColMap());
+		mav.addObject("cond", condVO);
 
 		mav.setViewName("/orverdueexmo/overdueexmo");
 
@@ -73,12 +74,35 @@ public class OverdueExMoController {
 		return branchMap;
 	}
 
+	private Map<Integer, String> getShowColMap() {
+		Map<Integer, String> showColMap = new LinkedHashMap<Integer, String>();
+		for (ShowColEnum showCol : ShowColEnum.values()) {
+			showColMap.put(showCol.ordinal(), showCol.getColName());
+		}
+		return showColMap;
+	}
+
 	private CustomerDAO getCustomerDAO() {
 		return this.customerDAO;
 	}
 
 	private BranchDAO getBranchDAO() {
 		return this.branchDAO;
+	}
+
+	private enum ShowColEnum {
+		SystemAccept("系统接收"), OutAreaTransfer("超区转单"), NotMatched("未匹配"), StationAccept("站点接收"), Print("打印"), Dispatch("分派"), RptOutArea("上报超区"), GetBack("揽退");
+
+		String colName;
+
+		ShowColEnum(String colName) {
+			this.colName = colName;
+		}
+
+		public String getColName() {
+			return this.colName;
+		}
+
 	}
 
 }

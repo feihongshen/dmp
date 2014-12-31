@@ -877,6 +877,7 @@ src/main/java/cn/explink/dao/ShipperDAO.java -text
 src/main/java/cn/explink/dao/SmsConfigDAO.java -text
 src/main/java/cn/explink/dao/SmsConfigModelDAO.java -text
 src/main/java/cn/explink/dao/SmsManageDao.java -text
+src/main/java/cn/explink/dao/SmtOverdueTimeDAO.java -text
 src/main/java/cn/explink/dao/StockDetailDAO.java -text
 src/main/java/cn/explink/dao/StockResultDAO.java -text
 src/main/java/cn/explink/dao/SwitchDAO.java -text
@@ -1000,6 +1001,7 @@ src/main/java/cn/explink/domain/OrderGoods.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRtList.java -text
 src/main/java/cn/explink/domain/OutWarehouseGroup.java -text
+src/main/java/cn/explink/domain/OverdueExMoCondVO.java -text
 src/main/java/cn/explink/domain/ParameterDetail.java -text
 src/main/java/cn/explink/domain/PayUp.java -text
 src/main/java/cn/explink/domain/PayWay.java -text
