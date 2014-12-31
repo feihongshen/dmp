@@ -100,7 +100,7 @@ function CreateOneFormPage(){
 	LODOP.ADD_PRINT_TABLE(10,10,1050,1000,document.getElementById("table1").innerHTML);
 };	                     
 function setcreowg(){
-	var operatetype = <%=OutwarehousegroupOperateEnum.ChuKu.getValue()%>;
+	var operatetype = <%=OutwarehousegroupOperateEnum.TuiGongYingShangChuKu.getValue()%>;
 	<%if(isback.equals("1")){%>
 		operatetype = <%=OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue()%>;
 	<%}else if(iscustomer==1){%>

@@ -492,7 +492,7 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/outlist/{page}")
 	public String outlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-1") String[] branchid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno) {
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = getNextPossibleBranches();
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -525,7 +525,7 @@ public class WarehouseGroup_detailController {
 		// warehouseGroupDetailService.getChuKuView(orderlist, gdList,
 		// customerList, branchList);
 		model.addAttribute("printtemplateList",
-				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue()));
+				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()));
 		model.addAttribute("printList", printList);
 		model.addAttribute("type", 1);
 		model.addAttribute("time", "出库时间");
@@ -535,6 +535,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("time", "出库时间");
 		model.addAttribute("uList",uList);
 		model.addAttribute("tList",tList);
+		model.addAttribute("baleno",baleno);
 		return "warehousegroup/outdetaillist";
 	}
 
@@ -585,7 +586,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("time", "出库时间");
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue());
 		model.addAttribute("branchids", branchids);
-		return "warehousegroup/outdetaillist";
+		return "warehousegroup/outdetaillist2";
 	}
 
 	private String getStrings(String[] branchid) {
@@ -827,6 +828,8 @@ public class WarehouseGroup_detailController {
 
 			model.addAttribute("cwbList", cwbJson);
 			return "warehousegroup/outbillhuizongprinting_history";
+		}else if(printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 5){
+			return "warehousegroup/outtongluprintint_template";
 		}
 		return null;
 	}

@@ -10,12 +10,8 @@
     List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
     List<PrintView> printList = (List<PrintView>)request.getAttribute("printList");
     List<PrintTemplate> pList = (List<PrintTemplate>)request.getAttribute("printtemplateList");
-    List<User> uList = (List<User>)request.getAttribute("uList");
-    List<Truck> tList = (List<Truck>)request.getAttribute("tList");
-    
     String strtime=request.getParameter("strtime")==null?"":(String)request.getParameter("strtime");
     String endtime=request.getParameter("endtime")==null?"":(String)request.getParameter("endtime");
-    //String baleno=request.getParameter("baleno")==null?"":(String)request.getParameter("baleno");
     String[] branchidList=request.getParameterValues("branchid");
 %>
 
@@ -44,7 +40,6 @@
 <script type="text/javascript">
 function cwbfind(){
 	var branchid = $('input[name="branchid"]:checked').length;
-	var baleno = $('input[name="baleno"]').length;
 	 
 	if($("#endtime").val() !=''&& $("#strtime").val() !=''&&$("#strtime").val()>$("#endtime").val()){
 		alert("开始时间不能大于结束时间");
@@ -163,26 +158,6 @@ function cwbexport(){
 				到
 				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>"/>
 				（未打印订单只保留15天）
-				<br/>
-				<!-- 添加包号查询 -->
-				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value=""/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<!-- 添加驾驶员-->
-				驾驶员：
-				<select id="driverid" name="driverid" style="width: 160px">
-					<option value="-1" selected>请选择</option>
-					<%for(User u : uList){ %>
-						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
-					<%} %>
-		        </select>
-		        <!--添加车辆  -->
-				车辆：
-				<select id="truckid" name="truckid" style="width: 160px">
-					<option value="-1" selected>请选择</option>
-					<%for(Truck t : tList){ %>
-						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
-					<%} %>
-		        </select>
-		        &nbsp;&nbsp;
 		      　　<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
 		      <%if(printList!=null&&printList.size()>0){ %>
 		      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />
@@ -194,7 +169,7 @@ function cwbexport(){
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
-						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">订单号/包号</td>
+						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">出库站点</td>
 						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">当前状态</td>
 						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">出库时间</td>
@@ -216,7 +191,6 @@ function cwbexport(){
 					<input id="nextbranchid" name="nextbranchid" value="<%=request.getAttribute("branchids")%>" type="hidden"/>
 					<input id="printtemplateid" name="printtemplateid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("templateid"))%>" type="hidden"/>
 					<input name="type" value="<%=request.getAttribute("type") %>" type="hidden"/>
-					<input name="baleno" value="<%=request.getAttribute("baleno") %>" type="hidden"/>
 				</form>
 				<div class="jg_10"></div><div class="jg_10"></div>
 				</div>

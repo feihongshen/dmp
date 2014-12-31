@@ -2158,6 +2158,7 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/inlist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_print.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outbillanbaoprinting_templatenew.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_templatenew.jsp -text
@@ -2168,7 +2169,9 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_templatenew.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_txd.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_yz.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outbilltongluprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist2.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outlist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outtongluprintint_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_default.jsp -text

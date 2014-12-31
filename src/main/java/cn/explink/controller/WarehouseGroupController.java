@@ -800,7 +800,7 @@ public class WarehouseGroupController {
 		model.addAttribute(
 				"printtemplateList",
 				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuAnDan.getValue() + ","
-						+ PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()));
+						+ PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.TongLuTuiHuoShangChuKu.getValue()));
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("page", page);
 		return "warehousegroup/historybacktocustomerlist";
@@ -831,7 +831,16 @@ public class WarehouseGroupController {
 				if (branchid == 0) {
 					branchid = getSessionUser().getBranchid();
 				}
-				cwbOrderService.checkResponseBatchno(getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbs, customerid);
+				String[] strs=cwbs.split(",");
+				String cwbsString="";
+				for (int i = 0; i < strs.length; i++) {
+					String string =strs[i].replaceAll("'","");
+					cwbsString=cwbsString+"-H-"+string;	
+				}
+				cwbsString=cwbsString.substring(3);
+				
+				
+				cwbOrderService.checkResponseBatchno(getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid);
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {
 				return "{\"errorCode\":1,\"error\":\"错误,没有订单号\"}";
