@@ -13,7 +13,7 @@ List<String> List = request.getAttribute("list")==null?null:(List<String>)reques
     	}
     }
     huizongcwbs = huizongcwb + huizongcwbs+"'";
-
+    String typeid=request.getAttribute("typeid")==null?"cwb": request.getAttribute("typeid").toString();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -113,6 +113,16 @@ function nowprint(){
 		prn1_print(<%=huizongcwbs%>);
 	}
 }
+function tip(val){
+	if(val.value=='cwb')
+		{
+		$("#tip").html("多个订单号用回车隔开,单量小于或等于1000（订单号不可大于9位）");		
+		}
+	if(val.value=='baleno')
+		{
+		$("#tip").html("多个包号用回车隔开,单量小于或等于1000（包号不可大于21位）");		
+		}
+}
 </script>
 <style type="text/css"id="style1">
 *{font-size:12px; margin:0; padding:0; line-height:24px}
@@ -129,8 +139,8 @@ function nowprint(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">手工输入生成订单号</a></li>
-				<li><a href="./randomcodeprint">随机生成订单号</a></li>
+				<li><a href="#" class="light">手工输入生成单号</a></li>
+				<li><a href="./randomcodeprint">随机生成单号</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -138,12 +148,13 @@ function nowprint(){
 			<tr>
 				<td><form action="<%=request.getContextPath() %>/cwbLablePrint/barcodeprint" method="post" id="formsubmit">
 						
-						订单号：
+						<input type="radio" name="typeid" <%if(typeid.equals("cwb")) {%> checked="checked"<%} %> value="cwb" onclick="tip(this);"/>订单号&nbsp;
+						<input type="radio" name="typeid" <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="baleno" onclick="tip(this);"/>包	号<br>
 						<textarea name="textfield" cols="20"  id="textfield" class="kfsh_text"  style="vertical-align:middle"  rows="3" name="cwb"><%=textfield %></textarea>
 						<input type="hidden" value="1" name="isshow" id="isshow">
-						<input name="button" type="button" class="input_button2" id="button1" value="生成订单号"  onclick="sub();"/>
+						<input name="button" type="button" class="input_button2" id="button1" value="生成"  onclick="sub();"/>
 						<input type="button" value="打印" onclick='submitCwbPrint();' class="input_button2" >
-						多个订单用回车隔开，订单量小于或等于100（订单号不可大于9位）
+						<span id="tip">多个订单用回车隔开,单量小于或等于100（订单号不可大于9位）</span>
 						<!-- <input name="btnval" type="button" class="input_button2" id="button3" value="导出"  onclick="exportExcel();"/> -->
 					</form></td>
 				<td>&nbsp;</td>

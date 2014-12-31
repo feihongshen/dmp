@@ -4,6 +4,7 @@
     <%
     List<String> List = request.getAttribute("slist")==null?null:(List<String>)request.getAttribute("slist");
     Object num=request.getAttribute("textfield")==null?"0": request.getAttribute("textfield");
+    String typeid=request.getAttribute("typeid")==null?"cwb": request.getAttribute("typeid").toString();
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -52,26 +53,38 @@ function isgetallcheck(){
 			alert("没有做查询操作，不能打印！");
 		};
 	}
+ function tip(val){
+		if(val.value=='cwb')
+			{
+			$("#tip").html("多个订单号用回车隔开,单量小于或等于1000（订单号不可大于9位）");		
+			}
+		if(val.value=='baleno')
+			{
+			$("#tip").html("多个包号用回车隔开,单量小于或等于1000（包号不可大于21位）");		
+			}
+	}
 </script>
 </head>
 <div class="saomiao_box2">
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="./barcodeprint" >手工输入生成订单号</a></li>
-				<li><a href="#" class="light">随机生成订单号</a></li>
+				<li><a href="./barcodeprint" >手工输入生成单号</a></li>
+				<li><a href="#" class="light">随机生成单号</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
 			<table width="100%" border="0" cellspacing="10" cellpadding="0">
 			<tr>
 				<td><form action="" method="post">
-						
-						订单号：<input name="textfield" type="text" id="textfield" style="vertical-align:middle" value="<%=num %>" size="50" />
+						<input type="radio" name="typeid"  <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="cwb" />订单号&nbsp;
+						<input type="radio" name="typeid"  <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="baleno" />包	号<br>
+						 随机生成数量<input name="textfield" type="text" id="textfield" style="vertical-align:middle" value="<%=num %>" size="10" />
 						<input type="hidden" value="1" name="isshow" id="isshow">
 						<input name="button" type="submit" class="input_button2" id="button" value="随机生成" />
 						<input type="button" value="打印" onclick='submitCwbPrint();' class="input_button2">
-						 随机生成订单数量
+						<span>数量不能超过1000</span>
+						
 					</form></td>
 				<td>&nbsp;</td>
 			</tr>
