@@ -5874,7 +5874,7 @@ INTO
 
 
 
-	<changeSet id="zhaoshb-2014-12-29-2" author="zhaoshb">
+	<changeSet id="zhaoshb-2014-12-29-3" author="zhaoshb">
 		<sql>
 
 CREATE TABLE express_ops_smt_cwb_opt_time (
