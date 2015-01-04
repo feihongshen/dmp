@@ -139,8 +139,8 @@ function tip(val){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">手工输入生成单号</a></li>
-				<li><a href="./randomcodeprint">随机生成单号</a></li>
+				<li><a href="#" class="light">手工输入生成</a></li>
+				<li><a href="./randomcodeprint">随机生成</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -154,7 +154,7 @@ function tip(val){
 						<input type="hidden" value="1" name="isshow" id="isshow">
 						<input name="button" type="button" class="input_button2" id="button1" value="生成"  onclick="sub();"/>
 						<input type="button" value="打印" onclick='submitCwbPrint();' class="input_button2" >
-						<span id="tip">多个订单用回车隔开,单量小于或等于100（订单号不可大于9位）</span>
+						<span id="tip">多个订单用回车隔开,数量小于或等于100（订单号不可大于9位）</span>
 						<!-- <input name="btnval" type="button" class="input_button2" id="button3" value="导出"  onclick="exportExcel();"/> -->
 					</form></td>
 				<td>&nbsp;</td>
@@ -164,13 +164,15 @@ function tip(val){
 				<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="gd_table" >
 						<tr class="font_1">
 							<td width="60" align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
-							<td align="center" bgcolor="#e7f4e3">订单号</td>
+							<td align="center" bgcolor="#e7f4e3">序号</td>
+							<td align="center" bgcolor="#e7f4e3"><%if(typeid.equals("baleno")) {%>包号<%}else {%>订单号<%} %></td>
 							</tr>
-							<%if(List!=null&&List.size()>0){for(String s:List){ %>
+							<%if(List!=null&&List.size()>0){int i=1;for(String s:List){ %>
 						<tr>
 							<td align="center">
 							<input id="isprint" type="checkbox" value="<%=s %>" name="isprint"/>
 							</td>
+							<td align="center" ><%=i++ %></td>
 							<td align="center"><%=s %></td>
 							</tr>
 						<%} }%>

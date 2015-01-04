@@ -69,8 +69,8 @@ function isgetallcheck(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="./barcodeprint" >手工输入生成单号</a></li>
-				<li><a href="#" class="light">随机生成单号</a></li>
+				<li><a href="./barcodeprint" >手工输入生成</a></li>
+				<li><a href="#" class="light">随机生成</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -95,7 +95,7 @@ function isgetallcheck(){
 						<tr class="font_1">
 								<td width="60" align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
 								<td align="center" bgcolor="#e7f4e3">序号</td>
-							<td align="center" bgcolor="#e7f4e3">订单号</td>
+							<td align="center" bgcolor="#e7f4e3"><%if(typeid.equals("baleno")) {%>包号<%}else {%>订单号<%} %></td>
 							</tr>
 							<%int i=1; %>
 						<%for(String l:List){ %>
