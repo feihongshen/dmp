@@ -98,7 +98,7 @@ public class GuangZhouTongLuInsertCwbDetailTimmer {
 		} else {
 			User user = new User();
 			user.setUserid(1);
-			long warehouse_id = Long.parseLong(gzabc.getExportbranchid());
+			long warehouse_id = gzabc.getWarehouseid();
 			long warehouseid = warehouse_id != 0 ? warehouse_id : this.dataImportService_B2c.getTempWarehouseIdForB2c(); // 获取虚拟库房
 			// Id,所有的B2C对接都会导入默认的虚拟库房里面，方便能够统计到。
 			user.setBranchid(warehouseid);
@@ -119,5 +119,4 @@ public class GuangZhouTongLuInsertCwbDetailTimmer {
 		}
 		this.dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
 	}
-
 }
