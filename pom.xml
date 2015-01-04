@@ -2357,8 +2357,8 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>NXPJ</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
+				<addresscustomerid>7</addresscustomerid>
+				<addressid>7</addressid>
 				<addresspassword>nxpj</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
