@@ -56,7 +56,7 @@ function isgetallcheck(){
  function tip(val){
 		if(val.value=='cwb')
 			{
-			$("#tip").html("多个订单号用回车隔开,单量小于或等于1000（订单号不可大于9位）");		
+			$("#tip").html("多个订单号用回车隔开,数量小于或等于1000（订单号不可大于9位）");		
 			}
 		if(val.value=='baleno')
 			{
