@@ -796,6 +796,15 @@ public class BranchDAO {
 		return nameMap;
 	}
 
+	public Map<Long, String> getBranchNameMap(Set<Long> branchIdSet, int page) {
+		int start = (page - 1) * 10;
+		String sql = "select branchid,branchname from  express_set_branch where branchid in (" + this.getBranchIdInPara(branchIdSet) + ") limit " + start + ",10";
+		Map<Long, String> nameMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
+
+		return nameMap;
+	}
+
 	private String getBranchIdInPara(Set<Long> idSet) {
 		StringBuilder inPara = new StringBuilder();
 		for (Long id : idSet) {

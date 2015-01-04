@@ -2,6 +2,9 @@ package cn.explink.domain;
 
 import java.util.ArrayList;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * 超期异常监控条件VO.
  *
@@ -17,11 +20,24 @@ public class OverdueExMoCondVO {
 
 	private ArrayList<Long> orgs = new ArrayList<Long>();
 
-	private ArrayList<Long> venders = new ArrayList<Long>();
+	private Long venderId = Long.valueOf(0);
 
 	private ArrayList<Integer> showCols = new ArrayList<Integer>();
 
 	private boolean enableTEQuery = false;
+
+	public OverdueExMoCondVO() {
+	}
+
+	public OverdueExMoCondVO(JSONObject jsonObject) {
+		this.optTimeType = jsonObject.getInt("optTimeType");
+		this.startTime = jsonObject.getString("startTime");
+		this.endTime = jsonObject.getString("endTime");
+		this.orgs = this.getLongArrayList(jsonObject, "orgs");
+		this.venderId = jsonObject.getLong("venderId");
+		this.showCols = this.getIntegerArrayList(jsonObject, "showCols");
+		this.enableTEQuery = jsonObject.getBoolean("enableTEQuery");
+	}
 
 	public int getOptTimeType() {
 		return this.optTimeType;
@@ -55,12 +71,12 @@ public class OverdueExMoCondVO {
 		this.orgs = orgs;
 	}
 
-	public ArrayList<Long> getVenders() {
-		return this.venders;
+	public Long getVenderId() {
+		return this.venderId;
 	}
 
-	public void setVenders(ArrayList<Long> venders) {
-		this.venders = venders;
+	public void setVenderId(Long venderId) {
+		this.venderId = venderId;
 	}
 
 	public ArrayList<Integer> getShowCols() {
@@ -77,6 +93,24 @@ public class OverdueExMoCondVO {
 
 	public void setEnableTEQuery(boolean enableTEQuery) {
 		this.enableTEQuery = enableTEQuery;
+	}
+
+	private ArrayList<Long> getLongArrayList(JSONObject jsonObject, String name) {
+		JSONArray array = jsonObject.getJSONArray(name);
+		ArrayList<Long> arrayList = new ArrayList<Long>();
+		for (int i = 0; i < array.size(); i++) {
+			arrayList.add(array.getLong(i));
+		}
+		return arrayList;
+	}
+
+	private ArrayList<Integer> getIntegerArrayList(JSONObject jsonObject, String name) {
+		JSONArray array = jsonObject.getJSONArray(name);
+		ArrayList<Integer> arrayList = new ArrayList<Integer>();
+		for (int i = 0; i < array.size(); i++) {
+			arrayList.add(array.getInt(i));
+		}
+		return arrayList;
 	}
 
 }

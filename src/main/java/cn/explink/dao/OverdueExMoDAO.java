@@ -8,7 +8,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.OrderFlow;
 
 @Repository
-public class SmtOverdueTimeDAO {
+public class OverdueExMoDAO {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate = null;

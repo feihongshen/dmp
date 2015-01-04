@@ -86,11 +86,6 @@
 			noneSelected : '请选择'
 		});
 
-		$("#venders").multiSelect({
-			oneOrMoreSelected : '*',
-			noneSelected : '请选择'
-		});
-
 		$("#timeType").multiSelect({
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
@@ -108,6 +103,82 @@
 			}
 		});
 	});
+
+	$(function() {
+		var branchIds = getBranchIds();
+		var condVO = getSearchFormValueObject();
+		for (var i = 0; i < branchIds.length; i++) {
+			sendRequest(branchIds[i], condVO);
+		}
+	});
+
+	function getBranchIds() {
+		var branchs = $("td[id='branch_id']");
+		var branchIds = [];
+		for (var i = 0; i < branchs.length; i++) {
+			branchIds.push($(branchs[i]).html());
+		}
+		return branchIds;
+	}
+
+	function sendRequest(branchId, condVO) {
+		$.ajax({
+			type : "post",
+			url : "${ctx_path}/overdueexmo/getbranchdata/" + branchId + "?"
+					+ Math.random(),
+			dataType : "json",
+			async : true,
+			data : {
+				cond : JSON.stringify(condVO)
+			},
+			success : function(result) {
+				showRowData(result);
+			}
+		});
+	}
+
+	function showRowData(result) {
+		var branchId = result.branchId;
+		var trs =$('#static_table tr');
+		var index = -1;
+		for (var i = 1; i < trs.length; i++) {
+			if ($(trs[i]).find("td").eq(0).html() == branchId) {
+				index = i;
+				break;
+			}
+		}
+		var $tr = $("#dynamic_table").find("tr").eq(index);
+		$tr.empty();
+		var resultList = result.resultList;
+		for (var i = 0; i < resultList.length; i++) {
+			$($tr).append("<td>" + resultList[i] + "</td>");
+		}
+	}
+
+	function getSearchFormValueObject() {
+		var $searchForm = $("#searchForm");
+		var vo = {};
+		vo.optTimeType = $("#optTimeType").val();
+		vo.startTime = $("#startTime").val();
+		vo.endTime = $("#endTime").val();
+		vo.orgs = getMultiSelectValues("orgs");
+		vo.venderId = $("#venderId").val();
+		vo.enableTEQuery = $("#enableTEQuery").attr("checked") == undefined? false:true;
+		vo.showCols = getMultiSelectValues("showCols");
+
+		return vo;
+	}
+
+	function getMultiSelectValues(name) {
+		var $fields = $("input[name='" + name + "']");
+		var fieldIds = [];
+		for (var i = 0; i < $fields.length; i++) {
+			if ($($fields[i]).attr("checked") != undefined) {
+				fieldIds.push($($fields[i]).val());
+			}
+		}
+		return fieldIds;
+	}
 </script>
 
 <style>
@@ -130,6 +201,10 @@
 .search_div div {
 	padding: 3px;
 }
+
+.hide_td {
+	display: none;
+}
 </style>
 
 </head>
@@ -140,30 +215,29 @@
 			method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
-					<c:forEach items="${time_type_map}" var="entry">
+					<c:forEach items="${const.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
 					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称： <select id="orgs"
 					name="orgs" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${org_map}" var="entry">
+					<c:forEach items="${const.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venders"
-					name="venders" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${vender_map}" var="entry">
-						<option value="${entry.key}"
-							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venderId"
+					name="venderId" style="width: 100px;">
+					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
+					<c:forEach items="${const.venderMap}" var="entry">
+						<option value="${entry.key}" <c:if test="${cond.venderId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>]
+				</select>
 			</div>
 			<div>
-				<input name="enableTEQuery" type="checkbox" class="sys_query_checkbox"
+				<input id="enableTEQuery" name="enableTEQuery" type="checkbox" class="sys_query_checkbox"
 					<c:if test="${cond.enableTEQuery}">checked</c:if>>启用时效设置 列表展示选择：<select id="showCols"
 					name="showCols" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${show_col_map}" var="entry">
+					<c:forEach items="${const.showColMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.showCols,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
@@ -183,12 +257,32 @@
 					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
 					<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">生成单量</td>
 				</tr>
+				<c:forEach items="${result.branchMap}" var="entry">
+					<tr>
+						<td id="branch_id" class="hide_td">${entry.key}</td>
+						<td>${entry.value}</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</c:forEach>
 			</table>
 		</div>
 
 		<div style="width: 80%; overflow: auto;">
 			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" id="dynamic_table"
 				class="table_2">
+				<tr>
+					<c:forEach items="${result.showColList}" var="colName">
+						<td>${colName}</td>
+					</c:forEach>
+				</tr>
+				<c:forEach items="${result.branchMap}" var="entry">
+					<tr>
+						<c:forEach items="${result.showColList}" var="colName">
+							<td>&nbsp;</td>
+						</c:forEach>
+					</tr>
+				</c:forEach>
 			</table>
 		</div>
 	</div>
@@ -198,17 +292,17 @@
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 			<tr>
 				<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdue_ex_mo/list/1');$('#searchForm').submit();">第一页</a>
+					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/1');$('#searchForm').submit();">第一页</a>
 					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdue_ex_mo/list/${page - 1}');$('#searchForm').submit();">上一页</a>
+					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page - 1}');$('#searchForm').submit();">上一页</a>
 					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdue_ex_mo/list/');$('#searchForm').submit();">下一页</a>
+					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page + 1}');$('#searchForm').submit();">下一页</a>
 					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdue_ex_mo/list/${pageCount}');$('#searchForm').submit();">最后一页</a>
-					共${pageCount}页 共${count}条记录 当前第<select id="select"
-					onchange="$('#searchForm').attr('action','${ctx_path}/overdue_ex_mo/list/'+$(this).val());$('#searchForm').submit()">
-						<c:forEach var="i" begin="1" end="${pageCount}" step="1">
-							<option value="${i}">${i}</option>
+					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
+					共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"
+					onchange="$('#searchForm').attr('action','${ctx_path}/overdueexmo/'+$(this).val());$('#searchForm').submit()">
+						<c:forEach var="i" begin="1" end="${result.pageCount}" step="1">
+							<option value="${i}" <c:if test="${result.page == i}">selected</c:if>>${i}</option>
 						</c:forEach>
 				</select>页</td>
 			</tr>
