@@ -12,7 +12,7 @@ import cn.explink.b2c.efast.CwbColumnSetEfast;
 import cn.explink.b2c.explink.core_down.CwbColumnSetEpaiAPI;
 import cn.explink.b2c.gome.CwbColumnSetGome;
 import cn.explink.b2c.gzabc.CwbColumnSetGZABC;
-import cn.explink.b2c.gztl.CwbClolumSetGztl;
+import cn.explink.b2c.gztl.CwbColumnSetGztl;
 import cn.explink.b2c.haoxgou.CwbColumnSetHXG;
 import cn.explink.b2c.happyGo.CwbColumnSetHappy;
 import cn.explink.b2c.homegobj.CwbColumnSetHomegobj;
@@ -109,7 +109,7 @@ public class CwbColumnImpl implements CwbColumnSet {
 	CwbColumnSetWenxuan cwbColumnSetWenxuan;
 
 	@Autowired
-	CwbClolumSetGztl cwbClolumSetGztl;
+	CwbColumnSetGztl cwbClolumSetGztl;
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
