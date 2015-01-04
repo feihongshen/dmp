@@ -841,6 +841,7 @@ public class DataImportController {
 		
 	
 		String cwbss="";
+		String cwbbranches = "";
 		for(int i=0;i<realnamecwbs.length;i++){
 			try {
 				CwbOrder co = cwbDAO.getCwbByCwb(realnamecwbs[i]);
@@ -860,12 +861,12 @@ public class DataImportController {
 					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 				}
 				
-				
+				cwbbranches+=realnamecwbs[i]+" "+realnamebranches[i]+"  ";
 			
 				cwbOrderService.updateDeliveryBranch(getSessionUser(), co, branch, addressCodeEditType);
 				
 			} catch (Exception ce) {
-				cwbss+=realnamecwbs[i];
+				cwbss+=realnamecwbs[i]+"  ";
 			}
 			
 		}
@@ -873,7 +874,8 @@ public class DataImportController {
 			//return "{\"errorCode\":" + 1 + ",\"error\":\"" + "更新失败" + "\",\"cwb\":\"" + cwbs+"}";
 			return "{\"errorCode\":1,\"error\":\"更新失败\",\"cwb\":\""+cwbss+"\"}";
 		}
-		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		//return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwbbranches\":\""+cwbbranches+"\"}";
 		
 	}
 }

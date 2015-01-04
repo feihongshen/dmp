@@ -77,7 +77,7 @@ function getOs()
 			return false;
 		}
 		/* $(".tishi_box",parent.document).hide(); */
-		if(branchArray.length =cwbArray.length){
+		if(branchArray.length = cwbArray.length){
 			$.ajax({
 				type:"post",
 				url:$(form).attr("action"),
@@ -89,9 +89,11 @@ function getOs()
 					$(".tishi_box",parent.document).show();
 					setTimeout( "$(\".tishi_box \",parent.document).hide(1000)", 2000); */
 					if(data.errorCode==0){
-						alert('更新成功');
+						//alert('更新成功');
+						//alert('更新成功!单号,站点:'+data.cwbbranches);
+						$("#msg").html('更新成功!单号,站点:'+data.cwbbranches);
 					}else{
-						alert('更新失败,单号：'+data.cwb+',原因:'+data.error);
+						alert('更新失败,单号:'+data.cwb+',原因:'+data.error);
 					}
 				}
 				
@@ -138,6 +140,14 @@ function getOs()
 				</table>
 			</form>
 		</div>
+		<div class="saomiao_right2" style="overflow: auto;" height="20%" >
+			<p id="msg" name="msg" ></p>
+					
+		</div>
+
+
+
+		
 	</div>
 </body>
 </html>
