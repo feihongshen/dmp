@@ -79,14 +79,16 @@ public class GztlService {
 		gztl.setSearch_number(Long.parseLong(request.getParameter("search_number")));
 		gztl.setSearch_url(request.getParameter("search_url"));
 		gztl.setPassword(request.getParameter("password"));
-		gztl.setAgentId(request.getParameter("agentId"));
-		gztl.setAgentName(request.getParameter("agentName"));
-		gztl.setAgentPhone(request.getParameter("agentPhone"));
-		gztl.setAgentWebsite(request.getParameter("agentWebsite"));
-		gztl.setExportbranchid(request.getParameter("exportbranchid"));
+		// gztl.setAgentId(request.getParameter("agentId"));
+		// gztl.setAgentName(request.getParameter("agentName"));
+		// gztl.setAgentPhone(request.getParameter("agentPhone"));
+		// gztl.setAgentWebsite(request.getParameter("agentWebsite"));
+		gztl.setWarehouseid(Long.parseLong(request.getParameter("warehouseid")));
+		gztl.setPrivate_key(request.getParameter("private_key"));
 		gztl.setSign(request.getParameter("sign"));
 		gztl.setCode(request.getParameter("code"));
 		gztl.setInvokeMethod("invokeMethod");
+		gztl.setReceive_url("receive_url");
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(gztl);
@@ -140,7 +142,7 @@ public class GztlService {
 
 			List<Map<String, String>> xmllist = this.getOrderDetailParms(gztl, orderlist);
 
-			this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(gztl.getCustomerids()), B2cEnum.Guangzhoutonglu.getMethod(), xmllist, Long.parseLong(gztl.getExportbranchid()), true);
+			this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(gztl.getCustomerids()), B2cEnum.Guangzhoutonglu.getMethod(), xmllist, gztl.getWarehouseid(), true);
 			for (Order map : orderlist) {
 				cwb += map.getOrderid() + ",";
 			}
@@ -192,7 +194,9 @@ public class GztlService {
 			xmlMap.put("remark1", "到货时间：" + order.getArrivedate());// （本系统）签收时间与到货时间（过来的数据）
 			xmlMap.put("remark2", "入库时间：" + order.getPushtime() + ",订单生成时间：" + order.getOrderDate());// 发货时间与入库时间
 			xmlMap.put("remark3", "配送区域:" + order.getSclientcode());// 配送区域？？？？？deliverarea
-			xmlMap.put("remark4", "交接单号:" + order.getOrderBatchNo());
+			// xmlMap.put("remark4", "交接单号:" + order.getOrderBatchNo());//
+			// 交接单号????????
+			xmlMap.put("remark4", order.getShipperid());
 			xmlMap.put("remark5",
 					"发货人名称:" + order.getConsignorname() + "," + "发货地址:" + order.getConsignoraddress() + "," + "手机:" + order.getConsignormobile() + "," + "电话:" + order.getConsignorphone());// 发货人信息
 
