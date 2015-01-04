@@ -1,7 +1,6 @@
-<%@page import="cn.explink.b2c.gztl.Gztl"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
-<%@page import="cn.explink.b2c.lefengdms.*"%>
+<%@page import="cn.explink.b2c.gztl.*"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -30,8 +29,11 @@
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value="<%=gztl.getCustomerids()%>"  size="30" > 
 						</li>
-						<li><span>提供URL：</span>
+						<li><span>状态回传URL：</span>
 	 						<input type ="text" id="search_url" name ="search_url"  maxlength="300"  value="<%=gztl.getSearch_url()%>"  size="30" > 
+						</li>
+						<li><span>推送接收URL：</span>
+	 						<input type ="text" id="receive_url" name ="receive_url"  maxlength="300"  value="<%=gztl.getReceive_url()%>"  size="30" > 
 						</li>
 							<li><span>查询条数：</span>
 	 						<input type ="text" id="search_number" name ="search_number"  maxlength="300"  value="<%=gztl.getSearch_number()%>"  size="30"> 
@@ -45,23 +47,11 @@
 							<li><span>接口名称(FBI)：</span>
 	 						<input type ="text" id="invokeMethod" name ="invokeMethod"  maxlength="300"  value="<%=gztl.getInvokeMethod()%>"  size="30"> 
 						</li>
-							</li>
-							<li><span>承运商id号：</span>
-	 						<input type ="text" id="agentId" name ="agentId"  maxlength="300"  value="<%=gztl.getAgentId()%>"  size="30"> 
-						</li>
-						</li>
-							<li><span>承运商名：</span>
-	 						<input type ="text" id="agentName" name ="agentName"  maxlength="300"  value="<%=gztl.getAgentName()%>"  size="30"> 
+							<li><span>私匙：</span>
+	 						<input type ="text" id="private_key" name ="private_key"  maxlength="300"  value="<%=gztl.getPrivate_key()%>"  size="30"> 
 						</li>
 							</li>
-							<li><span>承运商电话：</span>
-	 						<input type ="text" id="agentPhone" name ="agentPhone"  maxlength="300"  value="<%=gztl.getAgentPhone()%>"  size="30"> 
-						</li>
-							</li>
-							<li><span>承运商网站：</span>
-	 						<input type ="text" id="agentWebsite" name ="agentWebsite"  maxlength="300"  value="<%=gztl.getAgentWebsite()%>"  size="30"> 
-						</li>
-						<li><span>订单导入库房：</span>
+						 <li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
 								<%for(Branch b:warehouselist){
@@ -69,7 +59,7 @@
 									<option value="<%=b.getBranchid()%>" <%if(gztl.getWarehouseid()==b.getBranchid()){%>selected<%}%>><%=b.getBranchname() %></option>
 								<%}%>
 							</select>
-						</li>
+						</li> 
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="300" size="30" > 
 						</li>
@@ -77,8 +67,11 @@
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value=""  size="30" > 
 						</li>
-						<li><span>提供URL：</span>
+						<li><span>状态回传URL：</span>
 	 						<input type ="text" id="search_url" name ="search_url"  maxlength="300"  value=""  size="30" > 
+						</li>
+						<li><span>推送接收URL：</span>
+	 						<input type ="text" id="receive_url" name ="receive_url"  maxlength="300"  value=""  size="30" > 
 						</li>
 							<li><span>查询条数：</span>
 	 						<input type ="text" id="search_number" name ="search_number"  maxlength="300"  value=""  size="30"> 
@@ -92,23 +85,11 @@
 							<li><span>接口名称(FBI)：</span>
 	 						<input type ="text" id="invokeMethod" name ="invokeMethod"  maxlength="300"  value=""  size="30"> 
 						</li>
+							<li><span>私匙：</span>
+	 						<input type ="text" id="private_key" name ="private_key"  maxlength="300"  value=""  size="30"> 
 						</li>
-							<li><span>承运商id号：</span>
-	 						<input type ="text" id="agentId" name ="agentId"  maxlength="300"  value=""  size="30"> 
 						</li>
-						</li>
-							<li><span>承运商名：</span>
-	 						<input type ="text" id="agentName" name ="agentName"  maxlength="300"  value=""  size="30"> 
-						</li>
-							</li>
-							<li><span>承运商电话：</span>
-	 						<input type ="text" id="agentPhone" name ="agentPhone"  maxlength="300"  value=""  size="30"> 
-						</li>
-							</li>
-							<li><span>承运商网站：</span>
-	 						<input type ="text" id="agentWebsite" name ="agentWebsite"  maxlength="300"  value=""  size="30"> 
-						</li>
-							<li><span>订单导入库房：</span>
+							 <li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
 								<%for(Branch b:warehouselist){
@@ -116,7 +97,7 @@
 									<option value="<%=b.getBranchid()%>" ><%=b.getBranchname() %></option>
 								<%}%>
 							</select>
-						</li>
+						</li> 
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="300" size="30" > 
 						</li>
