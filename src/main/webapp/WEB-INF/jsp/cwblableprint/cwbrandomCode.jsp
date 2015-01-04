@@ -60,7 +60,7 @@ function isgetallcheck(){
 			}
 		if(val.value=='baleno')
 			{
-			$("#tip").html("多个包号用回车隔开,单量小于或等于1000（包号不可大于21位）");		
+			$("#tip").html("多个包号用回车隔开,数量小于或等于1000（包号不可大于21位）");		
 			}
 	}
 </script>
