@@ -116,9 +116,19 @@ function nowprint(){
 function tip(val){
 	if(val.value=='cwb')
 		{
-		$("#tip").html("多个订单号用回车隔开,单量小于或等于1000（订单号不可大于9位）");		
+		$("#tip").html("多个订单号用回车隔开,数量小于或等于1000（订单号不可大于9位）");		
 		}
 	if(val.value=='baleno')
+		{
+		$("#tip").html("多个包号用回车隔开,数量小于或等于1000（包号不可大于21位）");		
+		}
+}
+function load(val){
+	if(val=='cwb')
+		{
+		$("#tip").html("多个订单号用回车隔开,数量小于或等于1000（订单号不可大于9位）");		
+		}
+	if(val=='baleno')
 		{
 		$("#tip").html("多个包号用回车隔开,数量小于或等于1000（包号不可大于21位）");		
 		}
@@ -134,7 +144,7 @@ function tip(val){
 .border_t{border-top:1px solid #ccc}
 </style>
 
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#eef9ff" marginwidth="0" marginheight="0" onload="load('<%=typeid%>')">
 <div class="saomiao_box2">
 	<div>
 		<div class="kfsh_tabbtn">
@@ -154,7 +164,7 @@ function tip(val){
 						<input type="hidden" value="1" name="isshow" id="isshow">
 						<input name="button" type="button" class="input_button2" id="button1" value="生成"  onclick="sub();"/>
 						<input type="button" value="打印" onclick='submitCwbPrint();' class="input_button2" >
-						<span id="tip">多个订单用回车隔开,数量小于或等于100（订单号不可大于9位）</span>
+						<span id="tip"></span>
 						<!-- <input name="btnval" type="button" class="input_button2" id="button3" value="导出"  onclick="exportExcel();"/> -->
 					</form></td>
 				<td>&nbsp;</td>
