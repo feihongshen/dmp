@@ -105,6 +105,7 @@
  		
  		<intercept-url pattern="/expressSysMonitor/**" access="permitAll" />
  		<intercept-url pattern="/checkbranch/**" access="permitAll" />
+ 		<intercept-url pattern="/gztl/**" access="permitAll" />
 	
 
 

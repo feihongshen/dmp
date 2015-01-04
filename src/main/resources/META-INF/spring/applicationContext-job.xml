@@ -83,6 +83,7 @@
 							 <ref bean="doTime_sfxhm" />
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
+							 <ref bean="doTime_gztl" />
 							 
 			           </list>                 
 	               </property>         
@@ -774,6 +775,25 @@
          </property>
          <property name="targetMethod">
              <value>getWenxuan_Task</value>
+         </property>
+     </bean>
+     
+     
+      <bean id="doTime_gztl" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getGztl" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getGztl" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getGztlCwbDetail_Task</value>
          </property>
      </bean>
      
