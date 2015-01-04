@@ -198,7 +198,6 @@ src/main/java/cn/explink/b2c/gzabc/GuangZhouABCController.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCService.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCTestController.java -text
-src/main/java/cn/explink/b2c/gztl/CwbClolumSetGztl.java -text
 src/main/java/cn/explink/b2c/gztl/CwbColumnSetGztl.java -text
 src/main/java/cn/explink/b2c/gztl/GuangZhouTongLuInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/gztl/Gztl.java -text
