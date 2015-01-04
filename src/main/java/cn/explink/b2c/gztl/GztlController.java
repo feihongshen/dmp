@@ -39,7 +39,6 @@ public class GztlController {
 	public String jointShow(@PathVariable("id") int key, Model model) {
 		model.addAttribute("guangzhoutongluObject", this.gztlService.getGztl(key));
 		model.addAttribute("warehouselist", this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
-
 		model.addAttribute("joint_num", key);
 		return "b2cdj/guangzhoutonglu";
 	}
@@ -63,12 +62,12 @@ public class GztlController {
 	/**
 	 * 订单导入接口
 	 */
-	@RequestMapping("/")
+	@RequestMapping("/importgztl")
 	public @ResponseBody String requestByGuangZhouABC(HttpServletRequest request, HttpServletResponse response) {
 		String xml = null;
 		try {
 
-			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.GuangZhouABC.getKey());
+			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Guangzhoutonglu.getKey());
 			if (isOpenFlag == 0) {
 				return "未开启0广州ABC0查询接口";
 			}
@@ -80,6 +79,7 @@ public class GztlController {
 			this.logger.info("广州通路请求参数xml={},MD5={}", xml, MD5);
 
 			String localSignString = MD5Util.md5(xml + gztl.getPrivate_key());
+			System.out.println(localSignString);
 			if (!MD5.equalsIgnoreCase(localSignString)) {
 				this.logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
 				return "签名验证失败";
@@ -96,5 +96,10 @@ public class GztlController {
 	public @ResponseBody void ExcuteTimmerMethod_tmall(HttpServletRequest request, HttpServletResponse response) {
 		this.guangZhouTongLuInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.Guangzhoutonglu.getKey());
 		this.logger.info("执行了广州通路查询临时表的定时器!");
+	}
+
+	@RequestMapping("/test11111")
+	public String test11111111111() {
+		return "b2cdj/test11111111111111111";
 	}
 }
