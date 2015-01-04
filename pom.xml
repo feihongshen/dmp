@@ -2340,7 +2340,7 @@
 		
 		
 		<profile>
-			<id>HXPJ</id>
+			<id>NXPJ</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
@@ -2356,7 +2356,7 @@
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>HXPJ</label>
+				<label>NXPJ</label>
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>nxpj</addresspassword>
