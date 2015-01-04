@@ -9,17 +9,7 @@ public class Gztl {
 
 	private String password;// 密码
 
-	private String agentName;// agent名
-
-	private String agentPhone;// agent电话
-
-	private String agentWebsite;// agent网址
-
-	private String agentId;// 代理id
-
 	private String private_key;// 私匙
-
-	private String exportbranchid;// 订单导入库房id
 
 	private String sign;// MD5加密（详细见7.1MD5数字验签）
 
@@ -27,12 +17,24 @@ public class Gztl {
 
 	private String code;// 客户编码（由飞远提供）
 
-	public String getExportbranchid() {
-		return this.exportbranchid;
+	private String receive_url;// 推送接收url
+
+	private long warehouseid; // 订单入库库房
+
+	public long getWarehouseid() {
+		return this.warehouseid;
 	}
 
-	public void setExportbranchid(String exportbranchid) {
-		this.exportbranchid = exportbranchid;
+	public void setWarehouseid(long warehouseid) {
+		this.warehouseid = warehouseid;
+	}
+
+	public String getReceive_url() {
+		return this.receive_url;
+	}
+
+	public void setReceive_url(String receive_url) {
+		this.receive_url = receive_url;
 	}
 
 	public String getPassword() {
@@ -65,38 +67,6 @@ public class Gztl {
 
 	public void setSearch_number(long search_number) {
 		this.search_number = search_number;
-	}
-
-	public String getAgentName() {
-		return this.agentName;
-	}
-
-	public void setAgentName(String agentName) {
-		this.agentName = agentName;
-	}
-
-	public String getAgentPhone() {
-		return this.agentPhone;
-	}
-
-	public void setAgentPhone(String agentPhone) {
-		this.agentPhone = agentPhone;
-	}
-
-	public String getAgentWebsite() {
-		return this.agentWebsite;
-	}
-
-	public void setAgentWebsite(String agentWebsite) {
-		this.agentWebsite = agentWebsite;
-	}
-
-	public String getAgentId() {
-		return this.agentId;
-	}
-
-	public void setAgentId(String agentId) {
-		this.agentId = agentId;
 	}
 
 	public String getPrivate_key() {
