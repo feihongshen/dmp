@@ -77,7 +77,7 @@ function isgetallcheck(){
 			<table width="100%" border="0" cellspacing="10" cellpadding="0">
 			<tr>
 				<td><form action="" method="post">
-						<input type="radio" name="typeid"  <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="cwb" />订单号&nbsp;
+						<input type="radio" name="typeid"  <%if(typeid.equals("cwb")) {%> checked="checked"<%} %> value="cwb" />订单号&nbsp;
 						<input type="radio" name="typeid"  <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="baleno" />包	号<br>
 						 随机生成数量<input name="textfield" type="text" id="textfield" style="vertical-align:middle" value="<%=num %>" size="10" />
 						<input type="hidden" value="1" name="isshow" id="isshow">
