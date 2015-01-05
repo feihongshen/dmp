@@ -72,18 +72,18 @@ function CreateOneFormPage(){
 	<%}else{ %>
 		LODOP.PRINT_INIT("<%=printTemplate.getCustomname() %>出库至<%=branchname%>清单打印");
 	<%} %>
+	LODOP.SET_PRINT_MODE("FULL_WIDTH_FOR_OVERFLOW",true);
+	LODOP.SET_PRINT_PAGESIZE(2,0,0,"A4");
+	//LODOP.SET_PRINT_MODE("FULL_HEIGHT_FOR_OVERFLOW",true); 
 	LODOP.SET_PRINT_STYLE("FontSize",18);
 	LODOP.SET_PRINT_STYLE("Bold",1);
-	
-	<%-- <%if(iscustomer==1){ %>
-		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>退供货商出库交接单打印");
-	<%}else if(operatetype==OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()){%>
-		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>领货清单打印");
-	<%}else{ %>
-		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>出库至<%=branchname%>清单打印");
-	<%} %> --%>
-	
-	LODOP.ADD_PRINT_HTM(15,21,740,1100,document.getElementById("form1").innerHTML);
+	/* var width=$("#table1").width();
+	if(width>600&&width<1800)
+		{width=740;}
+	if(width>1800)
+	{width=$("#table1").width()/2;} */
+	//LODOP.ADD_PRINT_HTM(15,21,1050,50,document.getElementById("form1").innerHTML);
+	LODOP.ADD_PRINT_TABLE(10,10,1050,1000,document.getElementById("table1").innerHTML);
 };	                     
 
 function nowprint(){
