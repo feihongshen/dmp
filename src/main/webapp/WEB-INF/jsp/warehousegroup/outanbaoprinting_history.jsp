@@ -1,6 +1,4 @@
 <%@page import="cn.explink.controller.WarehouseGroupPrintDto"%>
-<%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
-<%@page import="groovy.json.JsonOutput"%>
 <%@page import="cn.explink.enumutil.PrintTemplateOpertatetypeEnum"%>
 <%@page import="cn.explink.enumutil.OutwarehousegroupOperateEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -13,37 +11,33 @@
 <%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer,cn.explink.domain.Branch,cn.explink.domain.User"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+List<WarehouseGroupPrintDto> printList=(List<WarehouseGroupPrintDto>)request.getAttribute("printList");
+String truckname=(String)request.getAttribute("truckid");
+String branchname=(String)request.getAttribute("branchname");
+WarehouseGroupPrintDto total=(WarehouseGroupPrintDto)request.getAttribute("total");
 PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("template");
-//List<JSONObject> cwbList = (List<JSONObject>)request.getAttribute("cwbList");
+List<JSONObject> cwbList = (List<JSONObject>)request.getAttribute("cwbList");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
-List<User> userlist = (List<User>)request.getAttribute("userlist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
-//long nextbranchid = (Long) request.getAttribute("nextbranchid");
-long deliverid = request.getAttribute("deliverid")==null?0:Long.parseLong(request.getAttribute("deliverid").toString());
-
+List<User> userlist = (List<User>)request.getAttribute("userlist");
 
 String localbranchname = (String )request.getAttribute("localbranchname");
+
+long operatetype = (Long)request.getAttribute("operatetype");
+
+
 
 long iscustomer = (Long)request.getAttribute("iscustomer");
 String isback = request.getAttribute("isback")==null?"":(String)request.getAttribute("isback");
 long islinghuo = request.getAttribute("islinghuo")==null?0:Long.parseLong(request.getAttribute("islinghuo").toString());;
-
 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 Date date = new Date();
 String datetime = df.format(date);
 Map usermap = (Map) session.getAttribute("usermap");
-String huizongcwbs = (String)request.getAttribute("cwbs");
-//Map<Long,List<JSONObject>> mapJson=(Map<Long,List<JSONObject>>)request.getAttribute("mapjson");
-Map<Long,List<CwbOrder>>  mapBybranchid =(Map<Long,List<CwbOrder>>)request.getAttribute("mapBybranchid");
-//Map<Long, Map<Long, JSONObject>> huizongMap=(Map<Long, Map<Long, JSONObject>>)request.getAttribute("huizongmap");
-Map<Long,List<JSONObject>> sumMap=(Map<Long,List<JSONObject>>) request.getAttribute("huizongmap");
-String type=(String)request.getAttribute("flowtype");
-Long flowtype=Long.parseLong(type);
-Set<Long> branchids=mapBybranchid.keySet();
-List<WarehouseGroupPrintDto> printList=(List<WarehouseGroupPrintDto>)request.getAttribute("printList");
-String branchname=(String)request.getAttribute("branchname");
-String truckname=(String)request.getAttribute("truckid");
-WarehouseGroupPrintDto total=(WarehouseGroupPrintDto)request.getAttribute("total");
+String cwbs = (String)request.getAttribute("cwbs");
+
+long cwbcount = 0,jianshucount = 0;
+
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -60,7 +54,8 @@ WarehouseGroupPrintDto total=(WarehouseGroupPrintDto)request.getAttribute("total
 </object>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js"
+	type="text/javascript"></script>
 <script type="text/javascript">
 var LODOP; //声明为全局变量 
 function prn1_preview() {	
@@ -73,65 +68,37 @@ function prn1_print() {
 };
 function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
+	<%if(iscustomer==1){ %>
+		LODOP.PRINT_INIT("<%=printTemplate.getCustomname() %>退供货商出库交接单打印");
+	<%}else if(operatetype==OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()){%>
+		LODOP.PRINT_INIT("<%=printTemplate.getCustomname() %>领货清单打印");
+	<%}else{ %>
+		LODOP.PRINT_INIT("<%=printTemplate.getCustomname() %>出库至<%=branchname%>清单打印");
+	<%} %>
 	LODOP.SET_PRINT_STYLE("FontSize",18);
 	LODOP.SET_PRINT_STYLE("Bold",1);
-
-	LODOP.ADD_PRINT_HTM(15,21,740,1100,document.getElementById("form1").innerHTML);	
-	//LODOP.NEWPAGEA();
+	
+	<%-- <%if(iscustomer==1){ %>
+		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>退供货商出库交接单打印");
+	<%}else if(operatetype==OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()){%>
+		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>领货清单打印");
+	<%}else{ %>
+		LODOP.ADD_PRINT_TEXT(50,231,260,39,"<%=printTemplate.getCustomname() %>出库至<%=branchname%>清单打印");
+	<%} %> --%>
+	
+	LODOP.ADD_PRINT_HTM(15,21,740,1100,document.getElementById("form1").innerHTML);
 };	                     
-function setcreowg(){
-	var operatetype = <%=OutwarehousegroupOperateEnum.ChuKu.getValue()%>;
-	<%if(isback.equals("1")){%>
-		operatetype = <%=OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue()%>;
-	<%}else if(iscustomer==1){%>
-		operatetype = <%=OutwarehousegroupOperateEnum.TuiGongYingShangChuKu.getValue()%>;
-	<%}else if(islinghuo==1){%>
-		operatetype = <%=OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()%>;
-	<%}else if(flowtype>0&&flowtype==FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()){%>
-		operatetype = <%=OutwarehousegroupOperateEnum.KuDuiKuChuKu.getValue()%>;
-	<%}%>
-	
-	 $.ajax({
-		type: "POST",
-		url:"<%=request.getContextPath()%>/warehousegroup/creowgnew",
-		data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>},
-		dataType:"json",
-		success : function(data) {
-			if(data.errorCode==0){
-				prn1_print();
-			}
-		},error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert(XMLHttpRequest.status+"---"+XMLHttpRequest.responseText);
-        }
-	}); 
-	
-	 
-}
+
 function nowprint(){
-	var con=confirm("您确认要打印该页吗？");
+	var con = confirm("您确认要打印该页吗？");
 	if(con==true){
-		setcreowg();
+		prn1_print();
 	}
 }
 </script>
 <body style="tab-interval: 21pt;">
 <a href="javascript:nowprint()">直接打印</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:prn1_preview()">预览</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:history.go(-1);">返回</a>
-	<%-- <%
-		if(!sumMap.isEmpty()){
-			for(Long branchid:sumMap.keySet()){
-				List<JSONObject> cwbs=sumMap.get(branchid);
-				if(cwbs.size()>0){
-					long cwbcount = 0,jianshucount = 0;
-					for(int i=0;i<cwbs.size();i++){ 
-						cwbcount+=cwbs.get(i).getLong("cwbcount");
-						 for(PrintColumn printColumn:printTemplate.getColumns()){if(printColumn.getField().equals("sendcarnum")){ 
-							jianshucount += cwbs.get(i).getLong("sendcarnum"); 
-						}else if(printColumn.getField().equals("backcarnum")){ 
-							jianshucount += cwbs.get(i).getLong("backcarnum"); 
-						}} 
-					}
-				%> --%>
-
+	
 	<form id="form1">
 		<!--StartFragment-->
 		<div class="Section0" style="layout-grid: 15.6000pt;">
@@ -155,13 +122,7 @@ function nowprint(){
 			</span><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=branchname %><span
 									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
 				<o:p></o:p>
-			</span> </span></span></td>
-			<!--显示下一站站名  -->
-			<!-- <td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;">北京西站<span
-									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-				<o:p></o:p>
-			</span> </span></td> -->
-			
+			</span> </span></span></td>	
 			<td style="border-right: none;border-left: none"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;">车牌号:<span
 									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
 				<o:p></o:p>
@@ -169,11 +130,6 @@ function nowprint(){
 									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
 				<o:p></o:p>
 			</span> </span></span></td>
-			<!--显示车牌号  -->
-			<!-- <td ><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;">CF123456<span
-									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-				<o:p></o:p>
-			</span> </span></td> -->
 			<!-- 显示时间 -->
 			<td style="border-left: none;float: right;"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
 								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">时间:</span>
@@ -187,11 +143,6 @@ function nowprint(){
 			<o:p></o:p>
 			</span>&nbsp;
 			</span></td>
-		
-			<%-- <td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=datetime %><span
-									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
-				<o:p></o:p>
-			</span> </span></td> --%>
 	</tr>
 	
 	<tr>

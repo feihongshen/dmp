@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.stringtemplate.v4.compiler.STParser.list_return;
 
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
@@ -297,12 +300,18 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("userlist", userDAO.getAllUser());
 		model.addAttribute("nextbranchid", Long.parseLong(nextbranchid));
 		model.addAttribute("deliverid", deliverid);
-
 		if (printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
 
 			model.addAttribute("cwbList", cwbList);
 			return "warehousegroup/outbillprinting_template";
 		} else if (printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
+
+			List<JSONObject> cwbJson = cwbDao.getDetailForChuKuPrint(cwbs);
+
+			model.addAttribute("cwbList", cwbJson);
+			model.addAttribute("cwbArr", cwbArr);
+			return "warehousegroup/outbillhuizongprinting_template";
+		}else if (printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
 
 			List<JSONObject> cwbJson = cwbDao.getDetailForChuKuPrint(cwbs);
 
@@ -325,7 +334,10 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "isback", defaultValue = "", required = true) String isback, @RequestParam(value = "iscustomer", required = false, defaultValue = "0") long iscustomer,
 			@RequestParam(value = "islinghuo", defaultValue = "0", required = true) long islinghuo, @RequestParam(value = "currentdeliverid", defaultValue = "0", required = true) long deliverid,
 			@RequestParam(value = "nextbranchid", defaultValue = "-1", required = false) String nextbranchid,
-			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid) {
+			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid,
+			@RequestParam(value = "baleno", defaultValue = "", required = false) String  baleno,
+			@RequestParam(value = "driverid", defaultValue = "0", required = false) long driverid,
+			@RequestParam(value = "truckid", defaultValue = "0", required = false) long truckid) {
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
 		String[] cwbArr = new String[isprint.length];
@@ -464,6 +476,130 @@ public class WarehouseGroup_detailController {
 			}
 			model.addAttribute("huizongmap", hmap);
 			return "warehousegroup/outbillhuizongprinting_templatenew";
+		}else if(printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 4){
+			List<WarehouseGroupPrintDto> printlist=new ArrayList<WarehouseGroupPrintDto>();
+			WarehouseGroupPrintDto printDto=new WarehouseGroupPrintDto();
+			int danshu=0;
+			int jianshu=0;
+			BigDecimal carryweight=BigDecimal.ZERO;
+			if(!baleno.equals("")){
+				List<CwbOrder> cwbOrders=cwbDao.getCwbByPackageCode(baleno);
+				for (int i = 0; i < cwbOrders.size(); i++) {
+					jianshu+=cwbOrders.get(i).getSendcarnum();
+					carryweight=carryweight.add(cwbOrders.get(i).getCarrealweight());
+				}
+				printDto.setDanshu(cwbOrders.size());
+				printDto.setJianshu(jianshu);
+				printDto.setCarrealweight(carryweight);
+				printDto.setChengzhong(BigDecimal.ZERO);
+				printDto.setCwbremark("");
+				printDto.setBaleno(baleno);
+				printlist.add(printDto);
+				model.addAttribute("printList", printlist);
+				String[] nextBranchid=nextbranchid.split(",");
+				String nextBranch="";
+				for (int i = 1; i < nextBranchid.length; i++) {
+					nextBranch=nextBranch+branchDAO.getBranchByBranchid(Long.parseLong(nextBranchid[i])).getBranchname()+",";
+				}
+				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
+				model.addAttribute("branchname",nextBranch);
+				model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+				
+				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+				warehouseGroupPrintDto.setBaleno("1");
+				warehouseGroupPrintDto.setDanshu(cwbOrders.size());
+				warehouseGroupPrintDto.setJianshu(jianshu);
+				warehouseGroupPrintDto.setCarrealweight(carryweight);
+				warehouseGroupPrintDto.setChengzhong(BigDecimal.ZERO);
+				warehouseGroupPrintDto.setCwbremark("");
+				model.addAttribute("total",warehouseGroupPrintDto);
+				
+			}else {
+				Set<String> baleSet=new HashSet<String>();
+				List<CwbOrder> cwbOrders=new ArrayList<CwbOrder>();
+				List<WarehouseGroupPrintDto> printDtos=new ArrayList<WarehouseGroupPrintDto>();//没有合包的订单重新新建一个list保存
+				for(int i = 0; i < cwbList.size(); i++){
+					cwbOrders.add(cwbDao.getCwbByCwb(cwbList.get(i).getCwb()));
+				}
+				for(int i = 0; i < cwbOrders.size(); i++){
+					if(!cwbOrders.get(i).getPackagecode().equals("")){
+						baleSet.add(cwbOrders.get(i).getPackagecode());
+					}else{
+						WarehouseGroupPrintDto printDto2=new WarehouseGroupPrintDto();
+						printDto2.setBaleno(cwbOrders.get(i).getCwb()+"(订单)");
+						printDto2.setDanshu(1);
+						printDto2.setJianshu(cwbOrders.get(i).getSendcarnum());
+						printDto2.setCarrealweight(cwbOrders.get(i).getCarrealweight());
+						printDto2.setChengzhong(BigDecimal.ZERO);
+						if(cwbOrders.get(i).getCwbremark().length()>30){
+							printDto2.setCwbremark(cwbOrders.get(i).getCwbremark().substring(0,30));							
+						}else {
+							printDto2.setCwbremark(cwbOrders.get(i).getCwbremark());
+						}
+						printDtos.add(printDto2);//将创建的新的打印对象添加到没有合包的list中
+					}	
+				}
+				if(printDtos.size()!=0){
+					for(int i=0;i<printDtos.size();i++){
+						printlist.add(printDtos.get(i));
+					}
+				}
+				for (String string : baleSet) {
+					List<CwbOrder> cwbOrders2=cwbDao.getCwbByPackageCode(string);
+					WarehouseGroupPrintDto printDto2=new WarehouseGroupPrintDto();
+					for(int i=0;i<cwbOrders2.size();i++){
+						jianshu+=cwbOrders2.get(i).getSendcarnum();
+						carryweight=carryweight.add(cwbOrders2.get(i).getCarrealweight());
+					}
+					printDto2.setDanshu(cwbOrders2.size());
+					printDto2.setJianshu(jianshu);
+					printDto2.setCarrealweight(carryweight);
+					printDto2.setChengzhong(BigDecimal.ZERO);
+					printDto2.setCwbremark("");
+					printDto2.setBaleno(string);
+					printlist.add(printDto2);
+					
+				}
+				
+				model.addAttribute("printList", printlist);
+				String[] nextBranchid=nextbranchid.split(",");
+				String nextBranch="";
+				for (int i = 1; i < nextBranchid.length; i++) {
+					nextBranch=nextBranch+branchDAO.getBranchByBranchid(Long.parseLong(nextBranchid[i])).getBranchname()+",";
+				}
+				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
+				model.addAttribute("branchname",nextBranch);
+				if(truckid==-1){
+					model.addAttribute("truckid","_____");
+				}else {
+					
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+				}
+				//添加统计总和信息
+				
+				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+				int jianshuTotal=0;
+				int danshuTotal=0;
+				BigDecimal carrweightTotal=BigDecimal.ZERO;
+				for (int i = 0; i < printlist.size(); i++) {
+					jianshuTotal+=printlist.get(i).getJianshu();
+					danshuTotal+=printlist.get(i).getDanshu();
+					carrweightTotal=carrweightTotal.add(printlist.get(i).getCarrealweight());	
+				}
+				warehouseGroupPrintDto.setBaleno(printlist.size()+"");
+				warehouseGroupPrintDto.setJianshu(jianshuTotal);
+				warehouseGroupPrintDto.setDanshu(danshuTotal);
+				warehouseGroupPrintDto.setCarrealweight(carrweightTotal);
+				warehouseGroupPrintDto.setChengzhong(BigDecimal.ZERO);
+				warehouseGroupPrintDto.setCwbremark("");
+				
+				model.addAttribute("total",warehouseGroupPrintDto);
+				
+			}
+			/*Map<String , List<CwbOrder>> baleMap=new HashMap<String, List<CwbOrder>>();
+			map.put(baleno, value);*/
+			
+			return "warehousegroup/outbillanbaoprinting_templatenew";
 		}
 		return null;
 	}
@@ -496,15 +632,16 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/outlist/{page}")
 	public String outlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-1") String[] branchid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid,@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid) {
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = getNextPossibleBranches();
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tList = this.truckDAO.getAllTruck();
-		System.out.println(baleno);
 		model.addAttribute("branchlist", bList);
 		String branchids = getStrings(branchid);
 		if (isshow > 0) {
+			
 			List<GroupDetail> gdList = groupDetailDao.getCwbForChuKuPrintTimeNew(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");
 			List<CwbOrder> orderlist = new ArrayList<CwbOrder>();
 			String cwbs = "";
@@ -512,12 +649,14 @@ public class WarehouseGroup_detailController {
 				cwbs += "'" + deliveryZhiLiu.getCwb() + "',";
 			}
 			cwbs = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
-			if (cwbs.length() > 0) {
+			if(!baleno.equals("")){
+				orderlist=cwbDao.getCwbByPackageCode(baleno);
+			}else if(cwbs.length() > 0) {
 				orderlist = cwbDao.getCwbOrderByCwbs(cwbs);
 			}
 			List<Customer> customerList = customerDAO.getAllCustomers();
 			List<Branch> branchList = branchDAO.getAllBranches();
-			printList = warehouseGroupDetailService.getChuKuView(orderlist, gdList, customerList, branchList);
+			printList = warehouseGroupDetailService.getChuKuView(orderlist, gdList, customerList, branchList);	
 		}
 		// LKN 这段代码没用
 		// cwbs = cwbs.length()>0?cwbs.substring(0, cwbs.length()-1):"";
@@ -541,6 +680,8 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("uList",uList);
 		model.addAttribute("tList",tList);
 		model.addAttribute("baleno",baleno);
+		model.addAttribute("truckid",truckid);
+		model.addAttribute("driverid",driverid);
 		return "warehousegroup/outdetaillist";
 	}
 
@@ -725,8 +866,9 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate) {
 		List<Branch> blist = getNextPossibleBranches();
+		List<Truck> tList =truckDAO.getAllTruck();
 		List<PrintTemplate> printtemplateList = printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + ","
-				+ PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue());
+				+ PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue());
 		if (type == 2) {
 			// 中转出站
 			printtemplateList = printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue() + ","
@@ -769,6 +911,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("printtemplateList", printtemplateList);
 		model.addAttribute("page", page);
 		model.addAttribute("type", type);
+		model.addAttribute("trucks",tList);
 		return "warehousegroup/historyoutlist";
 	}
 
@@ -821,7 +964,6 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("islinghuo", islinghuo);
 		model.addAttribute("branchlist", branchDAO.getAllEffectBranches());
 		model.addAttribute("operatetype", outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getOperatetype());
-
 		if (printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
 
 			model.addAttribute("cwbList", cwbList);
@@ -886,6 +1028,128 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbOrderList",cwbList2);
 			model.addAttribute("printDtos", printDtos);
 			return "warehousegroup/outbilltongluprinting_history";
+		}else if(printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 4){
+			//只知道需要打印的cwb
+			List<CwbOrder> cwbList2 = cwbDao.getCwbByCwbs(cwbs);//根据cwbs查询出需要打印的记录
+			Set<String> baleSet=new HashSet<String>();
+			List<WarehouseGroupPrintDto> warehouseGroupPrintDtos=new ArrayList<WarehouseGroupPrintDto>();//显示值需要的list
+			//得到需要打印的合包号
+			for(CwbOrder cwbOrder :cwbList2){
+				if(!cwbOrder.getPackagecode().equals("")){
+					baleSet.add(cwbOrder.getPackagecode());					
+				}
+			}
+			if(baleSet.size()==0){
+				//表示全部是订单没有合包
+				for(CwbOrder cwbOrder:cwbList2){
+					//重新创建一个打印dto
+					WarehouseGroupPrintDto printDto=new WarehouseGroupPrintDto();
+					printDto.setBaleno(cwbOrder.getCwb());
+					printDto.setJianshu(cwbOrder.getSendcarnum());
+					printDto.setDanshu(1);
+					printDto.setCarrealweight(cwbOrder.getCarrealweight());
+					printDto.setChengzhong(BigDecimal.ZERO);
+					if(cwbOrder.getCwbremark().length()>30){
+						printDto.setCwbremark(cwbOrder.getCwbremark().substring(0,30));
+					}else {
+						printDto.setCwbremark(cwbOrder.getCwbremark());
+					}
+					warehouseGroupPrintDtos.add(printDto);
+				}
+				model.addAttribute("printList", warehouseGroupPrintDtos);
+				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
+				model.addAttribute("truckid","_______");
+				//设置汇总的值
+				WarehouseGroupPrintDto wPrintDtoTotal=new WarehouseGroupPrintDto();
+				int danshu=0;
+				int jianshu=0;
+				BigDecimal carryweight=BigDecimal.ZERO;
+				for(CwbOrder cwbOrder:cwbList2){
+					jianshu+=cwbOrder.getSendcarnum();
+					carryweight=carryweight.add(cwbOrder.getCarrealweight());
+				}
+				danshu=cwbList2.size();
+				wPrintDtoTotal.setBaleno(cwbList2.size()+"");
+				wPrintDtoTotal.setDanshu(danshu);
+				wPrintDtoTotal.setJianshu(jianshu);
+				wPrintDtoTotal.setCarrealweight(carryweight);
+				wPrintDtoTotal.setChengzhong(BigDecimal.ZERO);
+				wPrintDtoTotal.setCwbremark("");
+				model.addAttribute("total",wPrintDtoTotal);
+			}else{
+				//表示有好几个打印包号,包括了输入包号打印
+				List<CwbOrder> cwbOrders=new ArrayList<CwbOrder>();//创建一个新的list用户装含有包号的cwborder
+				List<CwbOrder> cwbOrders2=new ArrayList<CwbOrder>();//创建一个list用于装没有包号的cwborder
+				for(String baleno:baleSet){
+					for(CwbOrder cwbOrder:cwbList2){
+						if(cwbOrder.getPackagecode().equals(baleno)){
+							cwbOrders.add(cwbOrder);
+						}
+					}
+				}
+				
+				for(CwbOrder cwbOrder:cwbList2){
+					if(cwbOrder.getPackagecode().equals("")){
+						cwbOrders.add(cwbOrder);
+					}
+				}
+				//将每一个包号中含有的cwborder做汇总
+				for(String baleno:baleSet){
+					WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+					int danshu=0;
+					int jianshu=0;
+					BigDecimal carryweight=BigDecimal.ZERO;
+					for(CwbOrder cwbOrder:cwbOrders){
+						if(cwbOrder.getPackagecode().equals(baleno)){
+							jianshu+=cwbOrder.getSendcarnum();
+							danshu++;
+							carryweight=carryweight.add(cwbOrder.getCarrealweight());
+						}
+					}
+					warehouseGroupPrintDto.setBaleno(baleno);
+					warehouseGroupPrintDto.setDanshu(danshu);
+					warehouseGroupPrintDto.setJianshu(jianshu);
+					warehouseGroupPrintDto.setCwbremark("");
+					warehouseGroupPrintDto.setCarrealweight(carryweight);
+					warehouseGroupPrintDto.setChengzhong(BigDecimal.ZERO);
+					
+					warehouseGroupPrintDtos.add(warehouseGroupPrintDto);
+					
+				}				
+				for (CwbOrder cwbOrder:cwbOrders2) {
+					WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
+					warehouseGroupPrintDto.setBaleno(cwbOrder.getCwb());
+					warehouseGroupPrintDto.setDanshu(1);
+					warehouseGroupPrintDto.setJianshu(cwbOrder.getSendcarnum());
+					warehouseGroupPrintDto.setCarrealweight(cwbOrder.getCarrealweight());
+					warehouseGroupPrintDto.setChengzhong(BigDecimal.ZERO);
+					if(cwbOrder.getCwbremark().length()>30){
+						warehouseGroupPrintDto.setCwbremark(cwbOrder.getCwbremark().substring(0,30));
+					}else {
+						warehouseGroupPrintDto.setCwbremark(cwbOrder.getCwbremark());
+					}
+					warehouseGroupPrintDtos.add(warehouseGroupPrintDto);
+				}
+				model.addAttribute("printList", warehouseGroupPrintDtos);
+				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
+				model.addAttribute("truckid","_______");
+				//设置汇总值
+				WarehouseGroupPrintDto warehouseGroupPrintDtoTotal=new WarehouseGroupPrintDto();
+				warehouseGroupPrintDtoTotal.setBaleno(cwbOrders.size()+cwbOrders2.size()+"");
+				warehouseGroupPrintDtoTotal.setDanshu(cwbList2.size());
+				int jianshu2=0;
+				BigDecimal carryweight=BigDecimal.ZERO;
+				for (CwbOrder cwbOrder:cwbList2) {
+					jianshu2+=cwbOrder.getSendcarnum();
+					carryweight=carryweight.add(cwbOrder.getCarrealweight());
+				}
+				warehouseGroupPrintDtoTotal.setJianshu(jianshu2);
+				warehouseGroupPrintDtoTotal.setCarrealweight(carryweight);
+				warehouseGroupPrintDtoTotal.setChengzhong(BigDecimal.ZERO);
+				warehouseGroupPrintDtoTotal.setCwbremark("");
+				model.addAttribute("total",warehouseGroupPrintDtoTotal);
+			}	
+			return "warehousegroup/outanbaoprinting_history";
 		}
 		return null;
 	}

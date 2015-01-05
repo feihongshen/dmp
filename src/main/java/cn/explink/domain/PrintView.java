@@ -130,6 +130,16 @@ public class PrintView {
 	private String customername;
 	private String nextbranchname;
 	private String deliverybranch;
+	
+	private String baleno;
+
+	public String getBaleno() {
+		return baleno;
+	}
+
+	public void setBaleno(String baleno) {
+		this.baleno = baleno;
+	}
 
 	public PrintView() {
 		if (this.sendcarnum == 0 && this.backcarnum == 0) {

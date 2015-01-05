@@ -5124,7 +5124,7 @@ public class CwbOrderService {
 		// 更改批次中间表中该订单的打印状态为1（已打印），0为未打印(若交接单机制更改的功能上线后历史数据中不存在未打印的了，该段代码可删除）
 		for (String cwb : cwbs.split("-H-")) {
 			cwb = cwb.replaceAll("'", "");
-			this.groupDetailDAO.updateGroupDetailByCwb(cwb, requestbatchno);
+			this.groupDetailDAO.updateGroupDetailByCwb2(cwb, requestbatchno);
 		}
 
 		return requestbatchno;

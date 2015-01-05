@@ -769,8 +769,8 @@ $(function(){
 			
 			break;
 		case "14":
-			$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().show();//隐藏称重
-			$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().show();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			$("#columnSetting input[field=jianshu]").parent().parent().show();//隐藏件数
 			$("#columnSetting input[field=jianshu]").attr("checked",false);
 			$("#columnSetting input[field=danshu]").parent().parent().show();//隐藏单数
@@ -972,7 +972,7 @@ $(function(){
 		<div style="height:60px"></div>
 		
 		<table width="100%" border="0" cellspacing="0" cellpadding="0"  id="columnSetting">
-<tr>
+			<tr>
 				<td width="33%">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
@@ -999,12 +999,7 @@ $(function(){
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单类型</strong></td>
 								<td align="center" valign="middle"><input name="textfield2" type="text" id="textfield2" value="100" size="10"/>cm</td>
 							</tr>
-							<tr id="cwbcount" style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbcount" columnName="订单数量"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单数量</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>
+							
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="sendcarnum" columnName="发货数量"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货数量</strong></td>
@@ -1023,6 +1018,28 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							<tr id="cwbcount" style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbcount" columnName="订单数量"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单数量</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 添加上一站ID   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranch" columnName="上一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 添加包号   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="baleno" columnName="订单号/包号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号/包号</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 							<!-- 添加发货仓库   -->
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="carwarehouse" columnName="发货仓库"/></td>
@@ -1030,10 +1047,12 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<!-- 添加上一站ID   -->
-							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranch" columnName="上一站"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
+							
+							
+							<!-- 单数-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="danshu" columnName="单数"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>单数</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
@@ -1069,6 +1088,15 @@ $(function(){
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							
+							
+							<!-- 件数-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="jianshu" columnName="件数"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>件数</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="carrealweight" columnName="重量"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>重量</strong></td>
@@ -1089,7 +1117,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							
+
 							<!-- 添加运单号 -->
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="transcwb" columnName="运单号"/></td>
@@ -1111,13 +1139,26 @@ $(function(){
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货商品</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>				
+							</tr>
+							
+							
+							
+							<!-- 添加代收货款   -->
+							<!-- <tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="receivablefee" columnName="代收货款"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>代收货款</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<td><button class="upButton">上移</button><button class="downButton">下移</button></td>
+							</tr> -->
+
+							
 								<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranchid" columnName="上一站"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+
 						</tbody>
 					</table>
 				</td>
@@ -1154,12 +1195,15 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbremark" columnName="备注"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>备注</strong></td>
+							<!-- 称重重量-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="chengzhong" columnName="称重重量"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>称重重量</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							
+							
 							<!-- 退货原因   reason -->
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="reasoncontent" columnName="退货原因"/></td>
@@ -1167,6 +1211,49 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							
+							<!-- 添加取货商品   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="backcarname" columnName="取货商品"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>取货商品</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<!-- 驾驶员  realname -->
+							<!-- <tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="realname" columnName="驾驶员"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>驾驶员</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<td><button class="upButton">上移</button><button class="downButton">下移</button></td>
+							</tr> -->
+							
+							<!-- 发货日期  emaildate-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="emaildate" columnName="发货日期"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货日期</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							<!-- 下一站-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="nextbranchid" columnName="下一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>下一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							
+							
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbremark" columnName="备注"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>备注</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="backintotime" columnName="退货站入库时间"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货站入库时间</strong></td>
@@ -1185,29 +1272,6 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<!-- 添加取货商品   -->
-							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="backcarname" columnName="取货商品"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>取货商品</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>
-							<!-- 驾驶员  realname -->
-							<!-- <tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="realname" columnName="驾驶员"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>驾驶员</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<td><button class="upButton">上移</button><button class="downButton">下移</button></td>
-							</tr> -->
-							
-							<!-- 发货日期  emaildate-->
-							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="emaildate" columnName="发货日期"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货日期</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>
-							
 						</tbody>
 					</table>
 				</td>

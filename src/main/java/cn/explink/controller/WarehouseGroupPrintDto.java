@@ -35,7 +35,44 @@ public class WarehouseGroupPrintDto {
 	private String tuihuozhanrukutime;//退货站入库时间
 	private String emaildate;// 发货时间
 	private String sendcarname;//发货商品
-	private String backcarname;//取货商品
+	private String backcarname;//取货商品'
+	private long jianshu;//件数
+	private BigDecimal chengzhong;//称重重量
+	private String baleno;//包号
+	private long danshu;//单数
+	
+	public long getDanshu() {
+		return danshu;
+	}
+
+	public void setDanshu(long danshu) {
+		this.danshu = danshu;
+	}
+
+	public long getJianshu() {
+		return jianshu;
+	}
+
+	public void setJianshu(long jianshu) {
+		this.jianshu = jianshu;
+	}
+
+	public BigDecimal getChengzhong() {
+		return chengzhong;
+	}
+
+	public void setChengzhong(BigDecimal chengzhong) {
+		this.chengzhong = chengzhong;
+	}
+
+	public String getBaleno() {
+		return baleno;
+	}
+
+	public void setBaleno(String baleno) {
+		this.baleno = baleno;
+	}
+
 	public String getBackcarname() {
 		return backcarname;
 	}

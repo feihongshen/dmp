@@ -2155,6 +2155,7 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/inbillprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inboxbillprinting_default.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inboxlist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inlist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outanbaoprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_print.jsp -text

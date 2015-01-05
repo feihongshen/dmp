@@ -118,6 +118,10 @@ public class GroupDetailDao {
 		String sql = "update express_ops_groupdetail set groupid=?,issignprint=? where cwb=? and issignprint=0 and branchid=0";
 		jdbcTemplate.update(sql, groupid, System.currentTimeMillis(), cwb);
 	}
+	public void updateGroupDetailByCwb2(String cwb, long groupid) {
+		String sql="update express_ops_groupdetail set groupid="+groupid+",issignprint=1 where  RTrim(cwb)='"+cwb+"' and issignprint=0 ";
+		jdbcTemplate.execute(sql);
+	}
 
 	/**
 	 * 按包号查询订单list

@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Truck"%>
 <%@page import="cn.explink.print.template.PrintTemplate"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -12,6 +13,7 @@
     List<Branch> allbranch=(List<Branch>) request.getAttribute("allbranch");
     Page page_obj =(Page)request.getAttribute("page_obj");
     Map usermap = (Map) session.getAttribute("usermap");
+    List<Truck> tList=(List<Truck>)request.getAttribute("trucks");
 %>
 
 
@@ -85,7 +87,15 @@ function bdprint(id,printtemplateid){
 					            </select>　
 					        上次打印时间：从<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>&nbsp;到
 					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
-				      　　<input type="submit" id="find" value="查询" class="input_button2" />
+				      　　
+						      车辆：
+						<select id="truckid" name="truckid" style="width: 160px">
+							<option value="-1" selected>请选择</option>
+							<%for(Truck t : tList){ %>
+								<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
+							<%} %>
+				        </select>
+				      <input type="submit" id="find" value="查询" class="input_button2" />
 				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1">返回未打印列表 >></a>
 				</form>
 				</div>
