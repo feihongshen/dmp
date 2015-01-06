@@ -1,9 +1,9 @@
 package cn.explink.vo;
 
 public class Information {
-	private String error;
-	private String cwb;
-	private String branch;
+	private String error;//匹配错误信息描述
+	private String cwb;//错误的订单
+	private String branch;//错误的站点
 	public String getBranch() {
 		return branch;
 	}

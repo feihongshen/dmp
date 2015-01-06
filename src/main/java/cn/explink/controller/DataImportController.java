@@ -872,12 +872,10 @@ public class DataImportController {
 				}
 				Branch branch=branchDAO.getBranchByBranchname(realnamebranches[i]);
 				if(branch==null){
-//					info.setCwb(realnamecwbs[i]);
 					brancherror = "站点<font color='red'>["+realnamebranches[i]+"]</font>不存在  ";
 					info.setBranch(realnamebranches[i]);
 				}
 				else if(branch!=null&&branch.getBranchid()==0){
-//					info.setCwb(realnamecwbs[i]);
 					brancherror = "站点<font color='red'>["+realnamebranches[i]+"]</font>不存在  ";
 					info.setBranch(realnamebranches[i]);
 				}
