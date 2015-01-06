@@ -54,6 +54,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
 import cn.explink.service.DataImportService;
@@ -67,6 +68,7 @@ import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
+import cn.explink.vo.Information;
 
 @Controller
 @RequestMapping("/dataimport")
@@ -833,49 +835,81 @@ public class DataImportController {
 	}
 	//测试所用方法
 	@RequestMapping("/addresslibrarymatchingpage")
-	public @ResponseBody  String match( String cwbs,String branches,HttpServletRequest request) {
+	public @ResponseBody  List<Information> match(
+			@RequestParam(value="cwbs",required=false,defaultValue="") 
+			String cwbs,
+			@RequestParam(value="branches",required=false,defaultValue="") 
+			String branches,
+			HttpServletRequest request
+			) {
+		
+		
+		List<Information> infolist = new ArrayList<Information>();
+		
 		cwbs = request.getParameter("cwbs");
 		branches = request.getParameter("branches");
 		String[] realnamecwbs = cwbs.split("\r\n");
 		String[] realnamebranches = branches.split("\r\n");
 		
-	
-		String cwbss="";
+//		request.setAttribute("cwbs", realnamecwbs);
+//		request.setAttribute("branches", realnamebranches);
+		
+		String cwberror = "";
+		String brancherror = "";
+//		String cwbss="";
 		String cwbbranches = "";
 		for(int i=0;i<realnamecwbs.length;i++){
+			Information info = new Information();
 			try {
 				CwbOrder co = cwbDAO.getCwbByCwb(realnamecwbs[i]);
 				if(co==null){
-					throw new RuntimeException("订单不存在");
+					info.setCwb(realnamecwbs[i]);
+					cwberror = "订单<font color='red'>["+realnamecwbs[i]+"]</font>不存在  ";
+					
+				}
+				else{
+					info.setCwb(realnamecwbs[i]);
 				}
 				Branch branch=branchDAO.getBranchByBranchname(realnamebranches[i]);
-				if(branch.getBranchid()==0){
-					throw new RuntimeException("站点"+realnamebranches[i]+"不存在");
+				if(branch==null){
+//					info.setCwb(realnamecwbs[i]);
+					brancherror = "站点<font color='red'>["+realnamebranches[i]+"]</font>不存在  ";
+					info.setBranch(realnamebranches[i]);
 				}
-				
-				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
-				if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
-					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
-				} else if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
-																																																		// 都将匹配状态变更为人工修改
-					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+				else if(branch!=null&&branch.getBranchid()==0){
+//					info.setCwb(realnamecwbs[i]);
+					brancherror = "站点<font color='red'>["+realnamebranches[i]+"]</font>不存在  ";
+					info.setBranch(realnamebranches[i]);
 				}
-				
-				cwbbranches+=realnamecwbs[i]+" "+realnamebranches[i]+"  ";
-			
-				cwbOrderService.updateDeliveryBranch(getSessionUser(), co, branch, addressCodeEditType);
+				else{
+					info.setBranch(realnamebranches[i]);
+				}
+				cwbbranches = cwberror+brancherror;
+				info.setError(cwbbranches);
+				cwberror="";
+				brancherror="";
+				if(co!=null){
+					CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+					if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+					} else if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+																																																			// 都将匹配状态变更为人工修改
+						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+					}
+					cwbOrderService.updateDeliveryBranch(getSessionUser(), co, branch, addressCodeEditType);
+				}
 				
 			} catch (Exception ce) {
-				cwbss+=realnamecwbs[i]+"  ";
+				info.setCwb(realnamecwbs[i]);
+				info.setError(ce.getMessage());
+			}	
+			
+			if(!info.getError().isEmpty()){
+				infolist.add(info);
 			}
 			
+			 
 		}
-		if(!cwbss.isEmpty()){
-			//return "{\"errorCode\":" + 1 + ",\"error\":\"" + "更新失败" + "\",\"cwb\":\"" + cwbs+"}";
-			return "{\"errorCode\":1,\"error\":\"更新失败\",\"cwb\":\""+cwbss+"\"}";
-		}
-		//return "{\"errorCode\":0,\"error\":\"操作成功\"}";
-		return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwbbranches\":\""+cwbbranches+"\"}";
-		
+		return infolist;
 	}
 }

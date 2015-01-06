@@ -1,3 +1,4 @@
+<%@page import="cn.explink.vo.Information"%>
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
@@ -9,6 +10,7 @@
 <%@page import="java.util.List,java.util.ArrayList"%>
 <%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.Branch"%>
+<%@page import="cn.explink.dao.CwbDAO"%>
 <%@page import="cn.explink.util.Page"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
@@ -76,25 +78,43 @@ function getOs()
 			alert("订单号和站点数量不一致!请检查！");
 			return false;
 		}
-		/* $(".tishi_box",parent.document).hide(); */
+		
+		//$(".tishi_box",parent.document).hide();
 		if(branchArray.length = cwbArray.length){
+			var tableinformation = "";
 			$.ajax({
 				type:"post",
 				url:$(form).attr("action"),
 				data:$(form).serialize(),
-				dataType:"json",
 				success:function(data){
-					/* alert('chegnggg');
-					$(".tishi_box",parent.document).html(data.error);
-					$(".tishi_box",parent.document).show();
-					setTimeout( "$(\".tishi_box \",parent.document).hide(1000)", 2000); */
-					if(data.errorCode==0){
-						//alert('更新成功');
-						//alert('更新成功!单号,站点:'+data.cwbbranches);
-						$("#msg").html('更新成功!单号,站点:'+data.cwbbranches);
+					$("#Order").empty();
+					tableinformation += "<tr class='font_1'>"
+						+"<th width='20%' align='center' height='19'  valign='middle' bgcolor='#eef6ff'>订单号</th>"
+						+"<th width='20%' align='center'  valign='middle' bgcolor='#eef6ff'>匹配站点</th>"
+						+"<th width='60%' align='center'  valign='middle' bgcolor='#eef6ff'>匹配结果描述</th>"
+						+"</tr>";
+					if(data.length>0){
+						//$(".tishi_box",parent.document).html('部分更新成功！');
+						//$(".tishi_box",parent.document).show();
+						//setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 00);
+						//alert('部分更新成功！');
+						for(var i=0;i<data.length;i++){
+							tableinformation += "<tr>"
+							+"<td width='20%' align='center' height='19'  valign='middle'>"+data[i].cwb+"</td>"
+							+"<td width='20%' align='center'  valign='middle' >"+data[i].branch+"</td>"
+							+"<td width='60%' align='center'  valign='middle' >"+data[i].error+"</td>"
+							+"</tr>";
+						}
+					$("#Order").append(tableinformation);
 					}else{
-						alert('更新失败,单号:'+data.cwb+',原因:'+data.error);
+						alert('更新完毕');
 					}
+					var total = branchArray.length;
+					var errortotal = data.length;
+					var truthtotal = branchArray.length-data.length;
+					var infostr = "进行匹配的总数为:"+total+",匹配成功数为:"+truthtotal+",匹配失败数为:"+errortotal;
+					
+					$("#msg").html(infostr);				
 				}
 				
 			});
@@ -132,9 +152,9 @@ function getOs()
 				<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">
 					<tr id="customertr" class=VwCtr style="display:">
 						<td width="100%" colspan="2">
-						订单号：<textarea cols="20" rows="20" name="cwbs" id="cwbs"></textarea> 
-						需匹配站点：<textarea cols="20" rows="20" name="branches" id="branches"></textarea> 
-						<input type="submit" class="" value="匹配更新" />
+						订单号：<textarea cols="15" rows="15" name="cwbs" id="cwbs"></textarea> 
+						匹配站点：<textarea cols="15" rows="15" name="branches" id="branches"></textarea> 
+						<input type="submit" class="" value="确认匹配" />
 						</td>
 					</tr>
 				</table>
@@ -144,8 +164,28 @@ function getOs()
 			<p id="msg" name="msg" ></p>
 					
 		</div>
-
-
+		<table id="Order" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" >
+      				
+      				<tr class="font_1">
+						<td width="20%" align="center" height="19" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+						<td width="20%" align="center" align="center" valign="middle" bgcolor="#eef6ff">匹配站点</td>
+						<td width="60%" align="center" align="center" valign="middle" bgcolor="#eef6ff">匹配结果描述</td>
+      				</tr>
+      	</table>			
+				<%-- 	<% 
+						List<Information> infolist = (List<Information>)request.getAttribute("infolist");
+						
+						for(Information info:infolist){
+							
+					%>
+				<table>	
+					<td width="10%"  align="center" height="19" ><%=info.getCwb() %></td>
+					<td width="10%"  align="center"  ><%=info.getBranch() %></td>
+					<td width="80%"  align="center"  ><%=info.getError() %></td>
+				</table>
+					<%	
+						}
+					%> --%>
 
 		
 	</div>

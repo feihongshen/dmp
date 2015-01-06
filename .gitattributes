@@ -1518,6 +1518,7 @@ src/main/java/cn/explink/util/pos/CertificateCoderUtil.java -text
 src/main/java/cn/explink/util/pos/DesUtils.java -text
 src/main/java/cn/explink/util/pos/RSACoder.java -text
 src/main/java/cn/explink/util/pos/mgw.cer -text
+src/main/java/cn/explink/vo/Information.java -text
 src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java -text
 src/main/java/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.java -text
 src/main/java/org/springframework/security/web/authentication/Http403ForbiddenEntryPoint.java -text
