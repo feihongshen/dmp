@@ -108,9 +108,9 @@ function getOs()
 					var total = branchArray.length;
 					var errortotal = data.length;
 					var truthtotal = branchArray.length-data.length;
-					var infostr = "进行匹配总数为:"+total+",匹配成功数为:"+truthtotal+",匹配失败数为:"+errortotal+",失败信息如下:";
-					
-					$("#msg").html(infostr);				
+					var infostr = "进行匹配总数为:<font color='red'>"+total+"</font>,匹配成功数为:<font color='red'>"+truthtotal+"</font>,匹配失败数为:<font color='red'>"+errortotal+"</font>,失败信息如下:";
+					var infor = "<span size='15px'>"+infostr+"</span>";
+					$("#msg").html(infor);				
 				}
 				
 			});
@@ -156,8 +156,8 @@ function getOs()
 				</table>
 			</form>
 		</div>
-		<div class="saomiao_right2" style="overflow: auto;" height="20%" >
-			<p id="msg" name="msg" ></p>
+		<div style="overflow: auto;" height="20%" >
+			<p id="msg" name="msg" color=green ></p>
 					
 		</div>
 		<table id="Order" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" >
