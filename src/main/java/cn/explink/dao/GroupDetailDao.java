@@ -147,7 +147,26 @@ public class GroupDetailDao {
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
-
+	/**
+	 * 
+	 * @param baleno
+	 * @return
+	 */
+	
+	public List<GroupDetail> getCwbListByBalenoExport(String baleId) {
+		String sql = "select * from express_ops_groupdetail where baleno=? ";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
+	}
+	public List<GroupDetail> getCwbListByBalenoExportByTruckid(long truckid) {
+		String sql = "select * from express_ops_groupdetail where truckid=? ";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), truckid);
+	}
+	public List<GroupDetail> getCwbListByBalenoExportBydriverid(long driverid) {
+		String sql = "select * from express_ops_groupdetail where driverid=? ";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), driverid);
+	}
+	
+	
 	/**
 	 * 按单号查询
 	 * 
@@ -243,6 +262,42 @@ public class GroupDetailDao {
 		sql += " order by createtime desc";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
+	
+	public List<GroupDetail> getCwbForChuKuPrintTimeNewByDriverid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid;
+		if (strtime.length() > 0) {
+			sql += " and createtime>'" + strtime + "'";
+		}
+		if (endtime.length() > 0) {
+			sql += " and createtime<'" + endtime + "'";
+		}
+		if (!"".equals(baleno)) {
+			sql += " and baleno='" + baleno + "'";
+		}
+
+		sql += " order by createtime desc";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
+	}
+	
+	public List<GroupDetail> getCwbForChuKuPrintTimeNewByTruckid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long truckid) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND truckid="+truckid;
+		if (strtime.length() > 0) {
+			sql += " and createtime>'" + strtime + "'";
+		}
+		if (endtime.length() > 0) {
+			sql += " and createtime<'" + endtime + "'";
+		}
+		if (!"".equals(baleno)) {
+			sql += " and baleno='" + baleno + "'";
+		}
+
+		sql += " order by createtime desc";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
+	}
+	
+	
+	
+	
 	public void updateGroupDetailByBale(long baleid, String baleno, String cwb, long branchid) {
 		String sql = "update express_ops_groupdetail set baleid=?,baleno=? where cwb=? and branchid=?";
 		jdbcTemplate.update(sql, baleid, baleno, cwb, branchid);

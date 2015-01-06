@@ -503,7 +503,11 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+				if(truckid==-1){
+					model.addAttribute("truckid","___________");	
+				}else {
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());					
+				}
 				
 				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
 				warehouseGroupPrintDto.setBaleno("1");
@@ -643,14 +647,25 @@ public class WarehouseGroup_detailController {
 		if (isshow > 0) {
 			List<GroupDetail> gdList=new ArrayList<GroupDetail>();
 			if(baleno.equals("")){
-				if(driverid==-1&&truckid==-1){
-					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");
+				if(driverid==-1||truckid==-1){
+					if(truckid!=-1){
+						gdList=groupDetailDao.getCwbForChuKuPrintTimeNewByTruckid(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",truckid);
+					}else if(driverid!=-1){
+						gdList=groupDetailDao.getCwbForChuKuPrintTimeNewByDriverid(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid);
+					}else {
+						gdList = groupDetailDao.getCwbForChuKuPrintTimeNew(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");						
+					}					
 				}else {
+					//驾驶员  和  车牌号都有值  
 					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew2(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid,truckid);
 				}
-			}else{
-				if(!(driverid==-1&&truckid==-1)){
-					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew2(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid,truckid);			
+			}else {
+				if(truckid!=-1){
+					gdList=groupDetailDao.getCwbListByBalenoExportByTruckid(truckid);
+				}else if(driverid!=-1){
+					gdList=groupDetailDao.getCwbListByBalenoExportBydriverid(driverid);
+				}else {
+					gdList=groupDetailDao.getCwbListByBalenoExport(baleno);											
 				}
 			}
 			List<CwbOrder> orderlist = new ArrayList<CwbOrder>();

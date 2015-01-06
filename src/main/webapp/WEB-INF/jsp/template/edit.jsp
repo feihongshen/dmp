@@ -976,6 +976,13 @@ $(function(){
 				<td width="33%">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
+							<!-- 退货日期   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="credate" columnName="退货日期"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货日期</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwb" columnName="订单号"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号</strong></td>
@@ -1056,13 +1063,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<!-- 退货日期   -->
-							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="credate" columnName="退货日期"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货日期</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>
+							
 						</tbody>
 					</table>
 				</td>
