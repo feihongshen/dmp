@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BackIntoprintDAO;
 import cn.explink.dao.BranchDAO;
@@ -115,7 +116,6 @@ public class BackimportprintController {
 		PrintTemplate pt = this.printTemplateDAO.getPrintTemplate(printid);
 		List<Backintowarehouse_print> bPrints = new ArrayList<Backintowarehouse_print>();
 		bPrints = this.backIntoprintDAO.getBackintoPrint(starttime, endtime, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), branchids, driverid, flag, this.getSessionUser(), cwbs);
-		this.backIntoprintDAO.updateBackintoPrint(starttime, endtime, cwbs, this.getSessionUser(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 		List<Reason> reasonList = this.reasonDao.getAllReason();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<User> driverList = this.userDAO.getUserByRole(3);
@@ -126,6 +126,9 @@ public class BackimportprintController {
 		model.addAttribute("userList", userList);
 		model.addAttribute("bPrints", bPrints);
 		model.addAttribute("pt", pt);
+		model.addAttribute("starttime", starttime);
+		model.addAttribute("endtime", endtime);
+		model.addAttribute("cwbs", cwbs);
 		model.addAttribute("reasonList", reasonList);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branch", this.branchDAO.getBranchById(this.getSessionUser().getBranchid()));
@@ -185,6 +188,12 @@ public class BackimportprintController {
 		model.addAttribute("listMap", listMap);
 		return "backimportprint/print";
 
+	}
+
+	@RequestMapping("/updateprint")
+	public @ResponseBody Object print(Model model, @RequestParam(value = "starttime", required = false, defaultValue = "") String starttime,
+			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
+		return this.backIntoprintDAO.updateBackintoPrint(starttime, endtime, cwbs, this.getSessionUser(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 	}
 
 	private String getStringByBranchids(String[] branchid) {

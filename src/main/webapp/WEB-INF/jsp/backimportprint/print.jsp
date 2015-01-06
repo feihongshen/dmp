@@ -15,6 +15,9 @@
 	  List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
 	  List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	  List<User> userList = (List<User>)request.getAttribute("userList");
+	  String starttime = request.getAttribute("starttime").toString();
+	  String endtime = request.getAttribute("endtime").toString();
+	  String cwbs = request.getAttribute("cwbs").toString();
 	  Branch branch = request.getAttribute("branch")==null?new Branch():(Branch)request.getAttribute("branch");
 	  int count=backIntoprintList.size()/num;
 	  int isno=backIntoprintList.size()%num;
@@ -70,6 +73,16 @@ function CreateOneFormPage(){
 	LODOP.ADD_PRINT_TABLE(top,10,width/1.9,height,document.getElementById("form0").innerHTML);
 	LODOP.NEWPAGE();
 };
+function print(){
+if(confirm("确定打印吗！")){
+	$.ajax({
+		type:"post",
+		url:$("#print").attr("action"),
+		data:$("#print").serialize(),
+		success:function(data){
+			if(data>0){prn1_print();}
+		}});}
+}
 
 
 </script>
@@ -77,7 +90,8 @@ function CreateOneFormPage(){
 <body marginwidth="0" marginheight="0" style="font-size: 14px" onload="load()">
 	<div>
 	<a href="javascript:prn1_preview()">打印预览</a>
-	<a href="javascript:prn1_print()">直接打印</a>
+	<a href="javascript:print()">直接打印</a>
+	<a href="javascript:history.go(-1)">返回</a>
 	</div>
 <div id="form0" align="center">
 		<table  id="table0" width="100%" border="1" cellspacing="0" cellpadding="0"
@@ -112,9 +126,14 @@ function CreateOneFormPage(){
 	</div>
 	<div>
 	<a href="javascript:prn1_preview()">打印预览</a>
-	<a href="javascript:prn1_print()">直接打印</a>
+	<a href="javascript:print()">直接打印</a>
+	<a href="javascript:history.go(-1)">返回</a>
 	</div>
-
+<form  id="print" action="<%=request.getContextPath()%>/backimportprint/updateprint">
+<input name="cwbs" type="hidden" value="<%=cwbs%>">
+<input name="starttime" type="hidden" value="<%=starttime%>">
+<input name="endtime" type="hidden" value="<%=endtime%>">
+</form>
 	
 </body>
 </html>
