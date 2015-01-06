@@ -3,10 +3,6 @@ package cn.explink.enumutil;
 public enum BackTypeEnum {
 	TuiHuoChuZhan(1, "退货出站"), TuiGongHuoShangChuKu(2, "退供应商出库"), KuFangRuKu(3, "库房入库"), TuiHuoChuZhan24(4, "24H超期未到退货中心"), TuiHuoChuZhan72(5, "24H超期未到退货中心"), ;
 
-	Ruku(FlowOrderTypeEnum.Ruku.getValue(),"出入库","收件"),
-	Ruku(FlowOrderTypeEnum.Ruku.getValue(),"出入库","收件"),
-	Ruku(FlowOrderTypeEnum.Ruku.getValue(),"出入","到件"),
-	
 	private int value;
 	private String text;
 
