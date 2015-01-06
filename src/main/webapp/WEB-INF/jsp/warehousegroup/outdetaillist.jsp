@@ -163,7 +163,7 @@ function cwbexport(){
 				（未打印订单只保留15天）
 				<br/>
 				<!-- 添加包号查询 -->
-				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>"/>&nbsp;&nbsp;
 				<!-- 添加驾驶员-->
 				驾驶员：
 				<select id="driverid" name="driverid" style="width: 160px">

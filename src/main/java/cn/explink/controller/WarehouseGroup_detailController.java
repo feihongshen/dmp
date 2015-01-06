@@ -1075,8 +1075,8 @@ public class WarehouseGroup_detailController {
 					printDto.setDanshu(1);
 					printDto.setCarrealweight(cwbOrder.getCarrealweight());
 					printDto.setChengzhong(BigDecimal.ZERO);
-					
-					truckname=truckDAO.getTruckByTruckid(groupDetailDao.getGroupDetailListByBale(cwbOrder.getPackagecode()).get(0).getTurckid()).getTruckno();
+
+					truckname="_____________";
 					
 					if(cwbOrder.getCwbremark().length()>30){
 						printDto.setCwbremark(cwbOrder.getCwbremark().substring(0,30));
