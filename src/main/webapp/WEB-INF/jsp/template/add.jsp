@@ -717,7 +717,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-
+							
 							<!-- 添加运单号 -->
 					<!-- 		<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="transcwb" columnName="运单号"/></td>

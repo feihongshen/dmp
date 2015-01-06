@@ -70,8 +70,8 @@ for(int i=0;i<cwbList.size();i++){
 <script type="text/javascript">
 var LODOP; //声明为全局变量 
 function prn1_preview() {	
-	CreateOneFormPage();	
-	LODOP.PREVIEW();	
+	CreateOneFormPage();
+	LODOP.PREVIEW();
 };
 function prn1_print() {		
 	CreateOneFormPage();
@@ -137,15 +137,6 @@ function nowprint(){
 		<!--StartFragment-->
 		<div class="Section0" style="layout-grid: 15.6000pt;">
 			<table id="table1" border="1" cellspacing="0" cellpadding="0" style="width: 100%">
-				<%-- <tr>
-					<td colspan="<%=printTemplate.getColumns().size() %>" align="center" >
-						<span style="font-family: '宋体'; font-size: 10.5000pt">
-							//<%if(iscustomer==2){ %>
-								站点: <%=localbranchname%>
-							<%}%>
-						</span>
-					</td>
-				</tr> --%>
 				<tr>
 					<td colspan="<%=printTemplate.getColumns().size() %>" >
 						<table  border="1" cellspacing="0" cellpadding="0" style="width: 100%;">
@@ -183,40 +174,11 @@ function nowprint(){
 									<%} %>
 								</tr>
 							<%} %>
-								<%-- <%for(int i=0;i<cwbList.size();i++){ %>
-									<%if(i%printTemplate.getShownum()==0){out.print("<tr style=\"height: 15.9000pt;\">");} %>
-								<% for(PrintColumn printColumn:printTemplate.getColumns()){ %>
-									<td width="<%=printColumn.getWidth()==""?30:Float.parseFloat(printColumn.getWidth()) %>*28 px"  style="font-size: 9.5000pt;"  align="center">
-										<%=PropertyUtils.getProperty(cwbList.get(i), printColumn.getField()) %>
-									</td>
-								<%}if(i%printTemplate.getShownum()==printTemplate.getShownum()-1||i==cwbList.size()-1){out.print("</tr>");} %>
-							<%} %> --%>
+
 						</table>
 					</td>
 				</tr>
-				
-				<%-- <tr>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">合计</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=cwbcount %>单</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-											style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=jianshucount %>件</span><span
-											style="font-size: 9.5000pt; font-family: 'Times New Roman';">
-						<o:p></o:p>
-					</span></span></td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
-				 --%>
-				
+			
 			</table> 
 			 <p class=p0 style="margin-bottom: 0pt; margin-top: 0pt;">
 				<span

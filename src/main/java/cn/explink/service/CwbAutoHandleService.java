@@ -128,13 +128,13 @@ public class CwbAutoHandleService {
 						flowtye = FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue();
 					}
 				}
-				groupDetailDAO.creGroupDetail(co.getCwb(), 0, user.getUserid(), flowtye, co.getStartbranchid(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid());
+				groupDetailDAO.creGroupDetail(co.getCwb(), 0, user.getUserid(), flowtye, co.getStartbranchid(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid(),0,0,"");
 
 			} else if (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
 				// 当订单当前状态为入库时，自动补充出库环节
 				co = isOutWarehouse(user, co, requestbatchno, comment, scancwb, iszhongzhuanout, credate);
 				groupDetailDAO.creGroupDetail(co.getCwb(), 0, user.getUserid(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), Long.parseLong(co.getCarwarehouse()), co.getNextbranchid(),
-						co.getDeliverid(), co.getCustomerid());
+						co.getDeliverid(), co.getCustomerid(),0,0,"");
 			}/*
 			 * else
 			 * if(co.getFlowordertype()==FlowOrderTypeEnum.ChuKuSaoMiao.getValue

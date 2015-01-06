@@ -641,8 +641,18 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("branchlist", bList);
 		String branchids = getStrings(branchid);
 		if (isshow > 0) {
-			
-			List<GroupDetail> gdList = groupDetailDao.getCwbForChuKuPrintTimeNew(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");
+			List<GroupDetail> gdList=new ArrayList<GroupDetail>();
+			if(baleno.equals("")){
+				if(driverid==-1&&truckid==-1){
+					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");
+				}else {
+					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew2(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid,truckid);
+				}
+			}else{
+				if(!(driverid==-1&&truckid==-1)){
+					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew2(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid,truckid);			
+				}
+			}
 			List<CwbOrder> orderlist = new ArrayList<CwbOrder>();
 			String cwbs = "";
 			for (GroupDetail deliveryZhiLiu : gdList) {
@@ -1040,6 +1050,7 @@ public class WarehouseGroup_detailController {
 				}
 			}
 			if(baleSet.size()==0){
+				String truckname="________";
 				//表示全部是订单没有合包
 				for(CwbOrder cwbOrder:cwbList2){
 					//重新创建一个打印dto
@@ -1049,6 +1060,9 @@ public class WarehouseGroup_detailController {
 					printDto.setDanshu(1);
 					printDto.setCarrealweight(cwbOrder.getCarrealweight());
 					printDto.setChengzhong(BigDecimal.ZERO);
+					
+					truckname=truckDAO.getTruckByTruckid(groupDetailDao.getGroupDetailListByBale(cwbOrder.getPackagecode()).get(0).getTurckid()).getTruckno();
+					
 					if(cwbOrder.getCwbremark().length()>30){
 						printDto.setCwbremark(cwbOrder.getCwbremark().substring(0,30));
 					}else {
@@ -1058,7 +1072,7 @@ public class WarehouseGroup_detailController {
 				}
 				model.addAttribute("printList", warehouseGroupPrintDtos);
 				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
-				model.addAttribute("truckid","_______");
+				model.addAttribute("truckid",truckname);
 				//设置汇总的值
 				WarehouseGroupPrintDto wPrintDtoTotal=new WarehouseGroupPrintDto();
 				int danshu=0;

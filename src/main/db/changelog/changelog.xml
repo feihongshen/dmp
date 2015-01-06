@@ -5883,7 +5883,13 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	update express_set_menu_info_new  set menuname='预制条码打印' where menuurl like '%cwbLablePrint/barcodeprint%'
 		</sql>
 	</changeSet>
-	
+	<changeSet id="suyun-2015-01-05-1" author="suyun">
+		<sql>
+		ALTER TABLE `express_ops_groupdetail`
+		ADD COLUMN `driverid`  int(4) NULL AFTER `baleno`,
+		ADD COLUMN `truckid`  int(4) NULL AFTER `driverid`;
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  

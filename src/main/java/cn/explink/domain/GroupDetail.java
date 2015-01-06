@@ -14,6 +14,26 @@ public class GroupDetail {
 	private long deliverid;
 	private long customerid;
 	private String baleno;
+	private long turckid;
+	private long driverid;
+
+	
+	
+	public long getTurckid() {
+		return turckid;
+	}
+
+	public void setTurckid(long turckid) {
+		this.turckid = turckid;
+	}
+
+	public long getDriverid() {
+		return driverid;
+	}
+
+	public void setDriverid(long driverid) {
+		this.driverid = driverid;
+	}
 
 	public String getBaleno() {
 		return baleno;

@@ -213,7 +213,11 @@ function cwbexport(){
 					<%for(PrintView pv:printList){ %>
 						 <tr>
 						 	<td width="10%" align="center" valign="middle"><input id="isprint" name="isprint" type="checkbox" value="<%=pv.getCwb() %>" checked="checked"/></td>
-							<td width="25%" align="center" valign="middle"><%=pv.getCwb() %>/<%=pv.getBaleno() %></td>
+							<%if(!pv.getBaleno().equals("")){ %>
+							<td width="25%" align="center" valign="middle"><%=pv.getCwb() %>--<%=pv.getBaleno() %></td>
+							<%}else{ %>
+							<td width="25%" align="center" valign="middle"><%=pv.getCwb() %></td>
+							<%} %>
 							<td width="25%" align="center" valign="middle"><%=pv.getNextbranchname()%></td>
 						    <td width="20%" align="center" valign="middle"><%=pv.getFlowordertypeMethod()%></td>
 						    <td width="20%" align="center" valign="middle"><%=pv.getOutstoreroomtime()%></td>

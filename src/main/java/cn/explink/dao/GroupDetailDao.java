@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -59,9 +60,9 @@ public class GroupDetailDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void creGroupDetail(String cwb, long groupid, long userid, long flowordertype, long branchid, long nextbranchid, long deliverid, long customerid) {
-		String sql = "insert into express_ops_groupdetail(cwb,groupid,userid,createtime,flowordertype,branchid,nextbranchid,deliverid,customerid) values(?,?,?,NOW(),?,?,?,?,?)";
-		jdbcTemplate.update(sql, cwb, groupid, userid, flowordertype, branchid, nextbranchid, deliverid, customerid);
+	public void creGroupDetail(String cwb, long groupid, long userid, long flowordertype, long branchid, long nextbranchid, long deliverid, long customerid,long driverid,long truckid,String packagecode) {
+		String sql = "insert into express_ops_groupdetail(cwb,groupid,userid,createtime,flowordertype,branchid,nextbranchid,deliverid,customerid,driverid,truckid,baleno) values(?,?,?,NOW(),?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql, cwb, groupid, userid, flowordertype, branchid, nextbranchid, deliverid, customerid,driverid,truckid,packagecode);
 	}
 
 	public void saveGroupDetailByBranchidAndCwb(long userid, long nextbranchid, String cwb, long branchid, long deliverid, long customerid) {
@@ -227,6 +228,21 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 
+	public List<GroupDetail> getCwbForChuKuPrintTimeNew2(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid,long truckid) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid+" AND truckid="+truckid;
+		if (strtime.length() > 0) {
+			sql += " and createtime>'" + strtime + "'";
+		}
+		if (endtime.length() > 0) {
+			sql += " and createtime<'" + endtime + "'";
+		}
+		if (!"".equals(baleno)) {
+			sql += " and baleno='" + baleno + "'";
+		}
+
+		sql += " order by createtime desc";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
+	}
 	public void updateGroupDetailByBale(long baleid, String baleno, String cwb, long branchid) {
 		String sql = "update express_ops_groupdetail set baleid=?,baleno=? where cwb=? and branchid=?";
 		jdbcTemplate.update(sql, baleid, baleno, cwb, branchid);
