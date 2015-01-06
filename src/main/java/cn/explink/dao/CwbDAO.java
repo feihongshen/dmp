@@ -47,6 +47,7 @@ public class CwbDAO {
 	private Logger logger = LoggerFactory.getLogger(CwbDAO.class);
 
 	private final class CwbMapper implements RowMapper<CwbOrder> {
+
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrder cwbOrder = new CwbOrder();
@@ -5261,5 +5262,11 @@ public class CwbDAO {
 		}
 		sql.append(", flowordertype = 1 where cwb= ?");
 		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
+	}
+
+	public int getCwbOrderType(String cwb) {
+		String sql = "selet cwbordertypeid from express_ops_cwb_detail where cwb = ?";
+
+		return this.jdbcTemplate.queryForInt(sql, cwb);
 	}
 }

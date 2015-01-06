@@ -805,6 +805,11 @@ public class BranchDAO {
 		return nameMap;
 	}
 
+	public List<Long> getAllBranchId() {
+		String sql = " select branchid from express_set_branch";
+		return this.jdbcTemplate.queryForList(sql, Long.class);
+	}
+
 	private String getBranchIdInPara(Set<Long> idSet) {
 		StringBuilder inPara = new StringBuilder();
 		for (Long id : idSet) {

@@ -1,18 +1,18 @@
 package cn.explink.schedule.worker;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
-import cn.explink.dao.BranchDAO;
-import cn.explink.domain.Customer;
-import cn.explink.domain.SystemInstall;
-import cn.explink.domain.User;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.ScheduledTask;
+import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressSyncServiceResult;
 import cn.explink.domain.addressvo.ApplicationVo;
 import cn.explink.domain.addressvo.DelivererVo;
@@ -22,7 +22,6 @@ import cn.explink.exception.ExplinkRuntimeException;
 import cn.explink.schedule.Constants;
 import cn.explink.service.addressmatch.AddressSyncService;
 import cn.explink.util.ResourceBundleUtil;
-import cn.explink.util.WebServiceHandler;
 
 @Service
 public class SynAddressTaskWrapper {
@@ -53,75 +52,75 @@ public class SynAddressTaskWrapper {
 		 * }else{ addrwpathsurl = addrwsurl.getValue(); }
 		 */
 		if (Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE.equals(taskType)) {
-			List<User> userList = userDAO.getUserByid(synAddressId);
+			List<User> userList = this.userDAO.getUserByid(synAddressId);
 			User user = userList.get(0);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.createDeliverer(setApplicationVo(), setDelivererVo(user, addresscustomerid));
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.createDeliverer(this.setApplicationVo(), this.setDelivererVo(user, addresscustomerid));
 			// System.out.println("小件员同步地址库 create"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 小件员同步地址库 create");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY.equals(taskType)) {
-			List<User> userList = userDAO.getUserByid(synAddressId);
+			List<User> userList = this.userDAO.getUserByid(synAddressId);
 			User user = userList.get(0);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.updateDeliverer(setApplicationVo(), setDelivererVo(user, addresscustomerid));
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.updateDeliverer(this.setApplicationVo(), this.setDelivererVo(user, addresscustomerid));
 			// System.out.println("小件员同步地址库 modify"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 小件员同步地址库 modify");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE.equals(taskType)) {
 			// TODO 小件员同步地址库
-			List<User> userList = userDAO.getUserByid(synAddressId);
+			List<User> userList = this.userDAO.getUserByid(synAddressId);
 			User user = userList.get(0);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.deleteDeliverer(setApplicationVo(), setDelivererVo(user, addresscustomerid));
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.deleteDeliverer(this.setApplicationVo(), this.setDelivererVo(user, addresscustomerid));
 			// System.out.println("小件员同步地址库 delete"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 小件员同步地址库 delete");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE.equals(taskType)) {
-			Branch branch = branchDAO.getBranchByBranchid(synAddressId);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.createDeliveryStation(setApplicationVo(), setDeliveryStationVo(branch, addresscustomerid));
+			Branch branch = this.branchDAO.getBranchByBranchid(synAddressId);
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.createDeliveryStation(this.setApplicationVo(), this.setDeliveryStationVo(branch, addresscustomerid));
 			// System.out.println("站点同步地址库 create "+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
-				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 站点同步地址库 create");
+				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 站点同步地址库 create " + addressSyncServiceResult.getMessage());
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY.equals(taskType)) {
-			Branch branch = branchDAO.getBranchByBranchid(synAddressId);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.updateDeliveryStation(setApplicationVo(), setDeliveryStationVo(branch, addresscustomerid));
+			Branch branch = this.branchDAO.getBranchByBranchid(synAddressId);
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.updateDeliveryStation(this.setApplicationVo(), this.setDeliveryStationVo(branch, addresscustomerid));
 			// System.out.println("站点同步地址库 modify"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 站点同步地址库 modify");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_DELETE.equals(taskType)) {
 			// TODO 站点同步地址库
-			Branch branch = branchDAO.getBranchByBranchid(synAddressId);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.deleteDeliveryStation(setApplicationVo(), setDeliveryStationVo(branch, addresscustomerid));
+			Branch branch = this.branchDAO.getBranchByBranchid(synAddressId);
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.deleteDeliveryStation(this.setApplicationVo(), this.setDeliveryStationVo(branch, addresscustomerid));
 			// System.out.println("站点同步地址库 delete"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 站点同步地址库 delete");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_CUSTOMER_CREATE.equals(taskType)) {
-			Customer customer = customerDao.getCustomerById(synAddressId);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.createVendor(setApplicationVo(), setVendorVo(customer, addresscustomerid));
+			Customer customer = this.customerDao.getCustomerById(synAddressId);
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.createVendor(this.setApplicationVo(), this.setVendorVo(customer, addresscustomerid));
 			// System.out.println("供货商同步地址库 create"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 供货商同步地址库 create");
 			}
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_CUSTOMER_MODIFY.equals(taskType)) {
-			Customer customer = customerDao.getCustomerById(synAddressId);
-			AddressSyncServiceResult addressSyncServiceResult = addressService.updateVendor(setApplicationVo(), setVendorVo(customer, addresscustomerid));
+			Customer customer = this.customerDao.getCustomerById(synAddressId);
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.updateVendor(this.setApplicationVo(), this.setVendorVo(customer, addresscustomerid));
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 供货商同步地址库 modify");
 			}
 			// System.out.println("供货商同步地址库 modify"+addressSyncServiceResult.toString());
 		} else if (Constants.TASK_TYPE_SYN_ADDRESS_CUSTOMER_DELETE.equals(taskType)) {
 			// TODO 供货商同步地址库
-			Customer customer = customerDao.getCustomerById(synAddressId);
+			Customer customer = this.customerDao.getCustomerById(synAddressId);
 			/*
 			 * Object []prams = {setApplicationVo(),
 			 * setVendorVo(customer,addresscustomerid)};
 			 * WebServiceHandler.invokeWs(addrwpathsurl, "deleteVendor", prams);
 			 */
-			AddressSyncServiceResult addressSyncServiceResult = addressService.deleteVendor(setApplicationVo(), setVendorVo(customer, addresscustomerid));
+			AddressSyncServiceResult addressSyncServiceResult = this.addressService.deleteVendor(this.setApplicationVo(), this.setVendorVo(customer, addresscustomerid));
 			// System.out.println("供货商同步地址库 delete"+addressSyncServiceResult.toString());
 			if (addressSyncServiceResult.getResultCode().getCode() != 0) {
 				throw new ExplinkRuntimeException(scheduledTask.getTaskType() + " is not a valid synaddress task 供货商同步地址库 delete");
@@ -145,7 +144,7 @@ public class SynAddressTaskWrapper {
 
 	/**
 	 * 生成userVo
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -159,7 +158,7 @@ public class SynAddressTaskWrapper {
 
 	/**
 	 * 生成branchVo
-	 * 
+	 *
 	 * @param branch
 	 * @return
 	 */
@@ -173,7 +172,7 @@ public class SynAddressTaskWrapper {
 
 	/**
 	 * 生成customerVo
-	 * 
+	 *
 	 * @param customer
 	 * @return
 	 */
@@ -203,7 +202,7 @@ public class SynAddressTaskWrapper {
 		 * "http://127.0.0.1:8080/address/service/AddressSyncService?wsdl");
 		 * Object []r = client.invoke("updateDeliveryStation", params);
 		 * System.out.print(r);
-		 * 
+		 *
 		 * WebServiceHandler.invokeWs(
 		 * "http://localhost:8080/address/service/AddressSyncService?wsdl",
 		 * "createDeliveryStation", params); System.exit(0);

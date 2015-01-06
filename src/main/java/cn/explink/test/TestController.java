@@ -1,13 +1,16 @@
 package cn.explink.test;
 
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import cn.explink.b2c.happyGo.HappyGo;
 import cn.explink.b2c.happyGo.HappyGoService;
 import cn.explink.b2c.jumei.AnalyzXMLJuMeiHandler;
@@ -27,21 +30,21 @@ public class TestController {
 		String start = request.getParameter("start");
 		String end = request.getParameter("end");
 		String number = request.getParameter("number");
-		HappyGo happy = happyGoService.getHappyGo(B2cEnum.happyGo.getKey());
+		HappyGo happy = this.happyGoService.getHappyGo(B2cEnum.happyGo.getKey());
 		String xml = "<Program><parameters>" + "<from_date>" + start + "</from_date>" + "<to_date>" + end + "</to_date></parameters>"
 				+ "<page><page_size>200</page_size><page_no>0</page_no ></page></Program>";
 		StringBuffer sbSystemArgs = new StringBuffer(); // 系统参数
-		String sign = getMD5GetherForSign(happy, xml, number, sbSystemArgs);
-		logger.info("sign={},url={}", sign, happy.getPostUrl() + "?" + sbSystemArgs.toString() + "&sign=" + sign);
-		String retrun_xml = happyGoService.doRequest(xml, happy.getPostUrl() + "?" + sbSystemArgs.toString() + "&sign=" + sign, happy);
-		logger.info("获得返回快乐购" + number + "的xml{}", retrun_xml);
+		String sign = this.getMD5GetherForSign(happy, xml, number, sbSystemArgs);
+		this.logger.info("sign={},url={}", sign, happy.getPostUrl() + "?" + sbSystemArgs.toString() + "&sign=" + sign);
+		String retrun_xml = HappyGoService.doRequest(xml, happy.getPostUrl() + "?" + sbSystemArgs.toString() + "&sign=" + sign, happy);
+		this.logger.info("获得返回快乐购" + number + "的xml{}", retrun_xml);
 		Map<String, Object> map;
 		try {
 			map = AnalyzXMLJuMeiHandler.parserXmlToJSONObjectByArray(retrun_xml);
 
-			happyGoService.manageShappygo(number, map);
+			this.happyGoService.manageShappygo(number, map);
 		} catch (Exception e) {
-			logger.error("快乐购异常" + e);
+			this.logger.error("快乐购异常" + e);
 		}
 
 	}

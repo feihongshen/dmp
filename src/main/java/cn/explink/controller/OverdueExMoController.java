@@ -152,7 +152,6 @@ public class OverdueExMoController {
 		case GetBack:
 			showColNameList.add("揽退成功量");
 			showColNameList.add("揽退成功率");
-			showColNameList.add("揽退失败率");
 			break;
 		case NotMatched:
 			showColNameList.add("未匹配量");
@@ -195,9 +194,9 @@ public class OverdueExMoController {
 
 	private Map<Integer, String> getTimeTypeMap() {
 		Map<Integer, String> timeTypeMap = new LinkedHashMap<Integer, String>();
-		for (TimeTypeEnum timeType : TimeTypeEnum.values()) {
-			timeTypeMap.put(timeType.ordinal(), timeType.getName());
-		}
+		timeTypeMap.put(TimeTypeEnum.OrderCreateTime.ordinal(), TimeTypeEnum.OrderCreateTime.getName());
+		timeTypeMap.put(TimeTypeEnum.SystemAcceptTime.ordinal(), TimeTypeEnum.SystemAcceptTime.getName());
+
 		return timeTypeMap;
 	}
 

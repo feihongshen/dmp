@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
 
@@ -456,6 +457,19 @@ public class UserDAO {
 
 	}
 
+	public Map<Long, String> getAllDeliverMap() {
+		String sql = "select userid , realname from express_set_user where roleid in (2 , 4)";
+		final Map<Long, String> deliverMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new RowCallbackHandler() {
+
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				deliverMap.put(rs.getLong("userid"), rs.getString("realname"));
+			}
+		});
+		return deliverMap;
+	}
+
 	public List<User> getUserListByBranchid(long branchid, long deliveryid) {
 		String sql = "SELECT * FROM express_set_user WHERE branchid=?";
 		if (deliveryid > 0) {
@@ -733,6 +747,10 @@ public class UserDAO {
 		return nameMap;
 	}
 
+	public Map<Long, String> getUserNameMap(Set<Long> idList) {
+		return this.getUserNameMap(new ArrayList<Long>(idList));
+	}
+
 	private class UserIdNameRCH implements RowCallbackHandler {
 
 		private Map<Long, String> nameMap = null;
@@ -770,5 +788,11 @@ public class UserDAO {
 			return sqlInParam.toString();
 		}
 		return sqlInParam.substring(0, sqlInParam.length() - 1);
+	}
+
+	public List<Long> getAllDeliverId() {
+		String sql = "select userid from express_set_user where roleid in (2,4)";
+
+		return this.jdbcTemplate.queryForList(sql, Long.class);
 	}
 }

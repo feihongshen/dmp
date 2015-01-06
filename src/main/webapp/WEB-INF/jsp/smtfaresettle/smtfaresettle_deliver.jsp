@@ -86,11 +86,12 @@
 			noneSelected : '请选择'
 		});
 
-		$("#timeType").multiSelect({
+		$("#venders").multiSelect({
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
 		});
-		$("#showCols").multiSelect({
+
+		$("#delivers").multiSelect({
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
 		});
@@ -105,27 +106,37 @@
 	});
 
 	$(function() {
-		var branchIds = getBranchIds();
+		var branchIds = getDeliverIds();
+		var venderIds = getVenderIds();
 		var condVO = getSearchFormValueObject();
 		for (var i = 0; i < branchIds.length; i++) {
-			sendRequest(branchIds[i], condVO);
+			sendRequest(branchIds[i], venderIds[i], condVO);
 		}
 	});
 
-	function getBranchIds() {
-		var branchs = $("td[id='branch_id']");
-		var branchIds = [];
-		for (var i = 0; i < branchs.length; i++) {
-			branchIds.push($(branchs[i]).html());
+	function getDeliverIds() {
+		var delivers = $("td[id='deliver_id']");
+		var deliverIds = [];
+		for (var i = 0; i < delivers.length; i++) {
+			deliverIds.push($(delivers[i]).html());
 		}
-		return branchIds;
+		return deliverIds;
 	}
 
-	function sendRequest(branchId, condVO) {
+	function getVenderIds() {
+		var venders = $("td[id='vender_id']");
+		var venderIds = [];
+		for (var i = 0; i < venders.length; i++) {
+			venderIds.push($(venders[i]).html());
+		}
+		return venderIds;
+	}
+
+	function sendRequest(branchId, venderId, condVO) {
 		$.ajax({
 			type : "post",
-			url : "${ctx_path}/overdueexmo/getbranchdata/" + branchId + "?"
-					+ Math.random(),
+			url : "${ctx_path}/smtfaresettle/getdeliverdata/" + branchId + "/"
+					+ venderId + "?" + Math.random(),
 			dataType : "json",
 			async : true,
 			data : {
@@ -138,20 +149,20 @@
 	}
 
 	function showRowData(result) {
-		var branchId = result.branchId;
-		var trs =$('#static_table tr');
-		var index = -1;
+		var deliverId = result.deliverId;
+		var venderId = result.venderId;
+		var trs = $('#static_table tr');
 		for (var i = 1; i < trs.length; i++) {
-			if ($(trs[i]).find("td").eq(0).html() == branchId) {
-				index = i;
-				break;
+			var $tr = $(trs[i]);
+			var cond1 = $tr.find("td").eq(0).html() == deliverId;
+			var cond2 = $tr.find("td").eq(2).html() == venderId;
+			if (cond1 && cond2) {
+				var tds = $tr.find("td");
+				$(tds[4]).html(result.deliverPickingCnt);
+				$(tds[5]).html(result.smtSuccessedCnt);
+				$(tds[6]).html(result.shouldFee);
+				$(tds[7]).html(result.receivedFee);
 			}
-		}
-		var $tr = $("#dynamic_table").find("tr").eq(index);
-		$tr.empty();
-		var resultList = result.resultList;
-		for (var i = 0; i < resultList.length; i++) {
-			$($tr).append("<td>" + resultList[i] + "</td>");
 		}
 	}
 
@@ -161,10 +172,6 @@
 		vo.optTimeType = $("#optTimeType").val();
 		vo.startTime = $("#startTime").val();
 		vo.endTime = $("#endTime").val();
-		vo.orgs = getMultiSelectValues("orgs");
-		vo.venderId = $("#venderId").val();
-		vo.enableTEQuery = $("#enableTEQuery").attr("checked") == undefined? false:true;
-		vo.showCols = getMultiSelectValues("showCols");
 
 		return vo;
 	}
@@ -186,7 +193,7 @@
 	padding: 5px;
 	z-index: 9;
 	width: 100%;
-	background: url(../images/repeatx.png) repeat-x 0 -485px;
+	background: url(/images/repeatx.png) repeat-x 0 -485px;
 	border: 1px solid #86AFD5;
 }
 
@@ -211,103 +218,103 @@
 
 <body style="background: #eef9ff">
 	<div class="search_div">
-		<form id="searchForm" name="searchForm" action="${pageContext.request.contextPath}/overdueexmo/1"
-			method="post">
+		<form id="searchForm" name="searchForm"
+			action="${pageContext.request.contextPath}/smtfaresettle/deliver/1" method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
 					<c:forEach items="${const.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称： <select id="orgs"
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 站点： <select id="orgs"
 					name="orgs" multiple="multiple" style="width: 100px;">
 					<c:forEach items="${const.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venderId"
-					name="venderId" style="width: 100px;">
-					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venders"
+					name="venders" style="width: 100px;" multiple="multiple">
 					<c:forEach items="${const.venderMap}" var="entry">
-						<option value="${entry.key}" <c:if test="${cond.venderId == entry.key}">selected</c:if>>${entry.value}</option>
+						<option value="${entry.key}"
+							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select>
+				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>]
 			</div>
 			<div>
-				<input id="enableTEQuery" name="enableTEQuery" type="checkbox" class="sys_query_checkbox"
-					<c:if test="${cond.enableTEQuery}">checked</c:if>>启用时效设置 列表展示选择：<select id="showCols"
-					name="showCols" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${const.showColMap}" var="entry">
+				小件员：<select id="delivers" name="delivers" multiple="multiple" style="width: 100px;">
+					<c:forEach items="${const.deliverMap}" var="entry">
 						<option value="${entry.key}"
-							<c:if test="${fn:contains(cond.showCols,entry.key)}">selected</c:if>>${entry.value}</option>
+							<c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('showCols',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('showCols',0,'请选择');">取消全选</a>] <input type="button" id="find"
+				</select> [<a href="javascript:multiSelectAll('delivers',1,'请选择');">全选</a>] [<a
+					href="javascript:multiSelectAll('delivers',0,'请选择');">取消全选</a>] <input type="button" id="find"
 					value="查询" class="input_button2" /> <input type="button" id="btnval" value="导出"
 					class="input_button2" />
 			</div>
 		</form>
 	</div>
 	<div class="table_div">
-		<div style="float: left; width: 20%">
+		<div style="width: 100%">
 			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
 				id="static_table">
 				<tr class="font_1">
-					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
-					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">生成单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">领件单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门退成功单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
 				</tr>
-				<c:forEach items="${result.branchMap}" var="entry">
+				<c:forEach items="${result.resultList}" var="tmp">
 					<tr>
-						<td id="branch_id" class="hide_td">${entry.key}</td>
-						<td>${entry.value}</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
+						<td id="deliver_id" class="hide_td">${tmp.deliverId}</td>
+						<td width="100">${tmp.deliverName}</td>
+						<td id="vender_id" class="hide_td">${tmp.venderId}</td>
+						<td width="100">${tmp.venderName}</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
 					</tr>
 				</c:forEach>
 			</table>
 		</div>
 
-		<div style="width: 80%; overflow: auto;">
-			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" id="dynamic_table"
-				class="table_2">
+
+
+		<div class="iframe_bottom">
+
+			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
+				id="total_table">
+				<tr class="font_1">
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">领件单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门退成功单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
+				</tr>
+			</table>
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
-					<c:forEach items="${result.showColList}" var="colName">
-						<td>${colName}</td>
-					</c:forEach>
+					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/1');$('#searchForm').submit();">第一页</a>
+						<a
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/${result.page - 1}');$('#searchForm').submit();">上一页</a>
+						<a
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/${result.page + 1}');$('#searchForm').submit();">下一页</a>
+						<a
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
+						共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"
+						onchange="$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/'+$(this).val());$('#searchForm').submit()">
+							<c:forEach var="i" begin="1" end="${result.pageCount}" step="1">
+								<option value="${i}" <c:if test="${result.page == i}">selected</c:if>>${i}</option>
+							</c:forEach>
+					</select>页</td>
 				</tr>
-				<c:forEach items="${result.branchMap}" var="entry">
-					<tr>
-						<c:forEach items="${result.showColList}" var="colName">
-							<td>&nbsp;</td>
-						</c:forEach>
-					</tr>
-				</c:forEach>
 			</table>
 		</div>
-	</div>
-
-
-	<div class="iframe_bottom">
-		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
-			<tr>
-				<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/1');$('#searchForm').submit();">第一页</a>
-					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page - 1}');$('#searchForm').submit();">上一页</a>
-					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page + 1}');$('#searchForm').submit();">下一页</a>
-					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
-					共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"
-					onchange="$('#searchForm').attr('action','${ctx_path}/overdueexmo/'+$(this).val());$('#searchForm').submit()">
-						<c:forEach var="i" begin="1" end="${result.pageCount}" step="1">
-							<option value="${i}" <c:if test="${result.page == i}">selected</c:if>>${i}</option>
-						</c:forEach>
-				</select>页</td>
-			</tr>
-		</table>
-	</div>
 </body>
 </html>
 
