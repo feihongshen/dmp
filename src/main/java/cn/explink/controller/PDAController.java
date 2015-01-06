@@ -245,7 +245,7 @@ public class PDAController {
 
 	@RequestMapping("/changeGoodsType")
 	public String changeGoodsType() {
-		return "pda/changeGoodsType"; 
+		return "pda/changeGoodsType";
 	}
 
 	@RequestMapping("/submitGoodsTypeChange")
@@ -305,7 +305,7 @@ public class PDAController {
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 
 		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
-		
+
 		return "pda/intowarhouse_nodetail";
 	}
 
@@ -2097,7 +2097,7 @@ public class PDAController {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		List<CwbOrder> weitghsckList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
 		List<CwbOrder> yitghsckList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1);
-        List<Customer> customersList=customerDAO.getAllCustomers();
+		List<Customer> customersList = this.customerDAO.getAllCustomers();
 		model.addAttribute("weitghsckList", weitghsckList);
 		model.addAttribute("yitghsckList", yitghsckList);
 		model.addAttribute("customerlist", cList);
@@ -4415,7 +4415,7 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
-	
+
 	@RequestMapping("/cwbscancwbbranchnew/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportnew(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
@@ -4445,18 +4445,16 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
-	
+
 	@RequestMapping("/cwbscancwbbranchruku/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportruku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
-		cwb = this.cwborderService.translateCwb(cwb);//获取到运单号
-		//获取到该订单的对应所有数据
+		cwb = this.cwborderService.translateCwb(cwb);// 获取到运单号
+		// 获取到该订单的对应所有数据
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-		
-		
-		
+
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-		
+
 		PrintStyle print = new PrintStyle();
 
 		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
@@ -4479,9 +4477,7 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
-	
-	
-	
+
 	/**
 	 * 退供货商出库
 	 *
@@ -4494,16 +4490,14 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
-			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid
-			) {// 为包号修改
+			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {// 为包号修改
 		String scancwb = cwb;
-		
+
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
 				.getAttribute(baleno + "-TuigonghuoshangsuccessCount").toString());
 		cwb = this.cwborderService.translateCwb(cwb);
-		
-		CwbOrder co = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, baleno, false,customerid);
+
+		CwbOrder co = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, baleno, false, customerid);
 		co.setPackagecode(baleno);
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(co));
@@ -4539,8 +4533,7 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbacktocustomerBatch")
 	public String cwbbacktocustomerBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			 @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid
-			) {
+			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
@@ -4556,7 +4549,7 @@ public class PDAController {
 			cwb = this.cwborderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, "", false,customerid);// ""为包号修改
+				CwbOrder cwbOrder = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, 0, "", false, customerid);// ""为包号修改
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
@@ -6742,7 +6735,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7909,4 +7902,108 @@ public class PDAController {
 
 		return explinkResponse;
 	}
+
+	// ------------------------入库排序-----------------
+	@RequestMapping("/orderbyweiruku")
+	public @ResponseBody List<CwbDetailView> orderbyweiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
+		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+		// 供货商
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<CwbOrder> weirukulist = this.cwbDAO.getRukuByBranchidForList(b.getBranchid(), b.getSitetype(), orderby, customerid, emaildate, asc);
+		List<CwbDetailView> weirukuVeiwList = this.getcwbDetail(weirukulist, customerList, showCustomerjSONArray, null, 0);
+		return weirukuVeiwList;
+
+	}
+
+	@RequestMapping("/orderbyyiruku")
+	public @ResponseBody List<CwbDetailView> orderbyyiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+		// 供货商
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<CwbOrder> yiruku = this.cwbDAO.getYiRukubyBranchidList(this.getSessionUser().getBranchid(), customerid, orderby, emaildate, asc);
+		List<CwbDetailView> yirukuVeiwList = this.getcwbDetail(yiruku, customerList, showCustomerjSONArray, null, 0);
+		return yirukuVeiwList;
+
+	}
+
+	@RequestMapping("/orderbygetrukucwbquejiandataList")
+	public String orderbygetrukucwbquejiandataList(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, orderby, emaildate, asc);
+		for (JSONObject obj : quejianList) {
+			String transcwb = "";
+			if (obj.getString("transcwb").indexOf("explink") > -1) {
+
+			} else if (obj.getString("transcwb").indexOf("havetranscwb") > -1) {
+				transcwb = obj.getString("transcwb").split("_")[1];
+			}
+			obj.put("transcwb", transcwb);
+			obj.put("customername", this.dataStatisticsService.getQueryCustomerName(customerList, obj.getLong("customerid")));
+		}
+		model.addAttribute("quejianList", quejianList);
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+		model.addAttribute("flowordertype", FlowOrderTypeEnum.RuKu.getValue());
+		model.addAttribute("customerid", customerid);
+		model.addAttribute("page", 1);
+		return "pda/quejianlist";
+	}
+
+	// ------------------------出库排序-----------------
+	@RequestMapping("/orderbyweichuku")
+	public @ResponseBody List<CwbDetailView> orderbyweichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
+		Branch localbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
+		int cwbstate = CwbStateEnum.PeiShong.getValue();
+		if (localbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+			cwbstate = CwbStateEnum.TuiHuo.getValue();
+		}
+
+		List<CwbOrder> cList = this.cwbDAO.getChukuForCwbOrderByBranchid(localbranch.getBranchid(), cwbstate, orderby, branchid, asc);
+
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+		// 供货商
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<CwbDetailView> weichukuVeiwList = this.getcwbDetail(cList, customerList, showCustomerjSONArray, null, 0);
+
+		return weichukuVeiwList;
+
+	}
+
+	@RequestMapping("/orderbyyichuku")
+	public @ResponseBody List<CwbDetailView> orderbyyichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "0") String orderby,
+			@RequestParam(value = "flowordertype", defaultValue = "6") long flowordertype, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+		List<String> cwbyichukuList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(this.getSessionUser().getBranchid(), branchid, flowordertype);
+
+		String cwbs = "";
+		if (cwbyichukuList.size() > 0) {
+			cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbyichukuList);
+		} else {
+			cwbs = "'--'";
+		}
+
+		List<CwbOrder> cList = this.cwbDAO.getCwbByCwbsPage(orderby, cwbs, asc);
+
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+		// 供货商
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<CwbDetailView> yichukuVeiwList = this.getcwbDetail(cList, customerList, showCustomerjSONArray, null, 0);
+
+		return yichukuVeiwList;
+
+	}
+
 }

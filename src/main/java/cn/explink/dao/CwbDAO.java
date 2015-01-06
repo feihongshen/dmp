@@ -5262,4 +5262,81 @@ public class CwbDAO {
 		sql.append(", flowordertype = 1 where cwb= ?");
 		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
 	}
+
+	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, String orderby, long customerid, long emaildateid, long asc) {
+
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1 and flowordertype<>" + FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+		if (sitetype == BranchEnum.ZhanDian.getValue()) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "' and state=1 ";
+		}
+		if (sitetype == BranchEnum.ZhongZhuan.getValue()) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1 and flowordertype=" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+		}
+		if (customerid > 0) {
+			sql += " and customerid=" + customerid;
+		}
+		if (emaildateid > 0) {
+			sql += " and emaildateid =" + emaildateid;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		System.out.println(sql);
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
+	}
+
+	public List<CwbOrder> getYiRukubyBranchidList(long branchid, long customerid, String orderby, long emaildateid, long asc) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype=" + FlowOrderTypeEnum.RuKu.getValue();
+		if (customerid > 0) {
+			sql += " and customerid =" + customerid;
+		}
+		if (emaildateid > 0) {
+			sql += " and emaildateid =" + emaildateid;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
+	}
+
+	public List<CwbOrder> getChukuForCwbOrderByBranchid(long currentbranchid, int cwbstate, String orderby, long nextbranchid, long asc) {
+		String sql = "";
+		if (nextbranchid > 0) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + currentbranchid + " and nextbranchid=" + nextbranchid + "  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+					+ " and state=1 ";
+		} else {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + currentbranchid + " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue() + " and state=1 ";
+		}
+		if (cwbstate > -1) {
+			sql += " and cwbstate=" + cwbstate;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
+	public List<CwbOrder> getCwbByCwbsPage(String orderby, String cwbs, long asc) {
+		String sql = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
 }
