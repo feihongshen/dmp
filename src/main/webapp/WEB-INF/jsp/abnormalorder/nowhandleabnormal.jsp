@@ -81,7 +81,8 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
 				<%} 
 				else if(showabnomal.equals("0")&&role.getRolename().equals("客服")) {%>
-				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
+				<input type="submit" value="完成处理" class="button">
+				<!-- <input type="button" value="完成处理" class="button" onclick="yichuli1();"> -->
 				<%} 
 				else { %>
 				<input type="submit" value="处理" class="button">
