@@ -129,8 +129,8 @@ public class TlmposService {
 		String isshowPhone = request.getParameter("isshowPhone"); // 是否显示电话 0不显示
 																	// 1显示
 		String isshowPaytype = request.getParameter("isshowPaytype"); // 是否显示支付方式放在remark列
-																		// 0不显示
-																		// 1显示
+		String private_key = request.getParameter("private_key"); // 0不显示
+		// 1显示
 
 		tlmpos.setRequester(requester);
 		tlmpos.setTargeter(targeter);
@@ -144,7 +144,7 @@ public class TlmposService {
 
 		tlmpos.setIsshowPhone(Integer.valueOf(isshowPhone));
 		tlmpos.setIsshowPaytype(Integer.valueOf(isshowPaytype));
-
+		tlmpos.setPrivate_key(private_key);
 		JSONObject jsonObj = JSONObject.fromObject(tlmpos);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
