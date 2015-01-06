@@ -109,12 +109,11 @@ function getOs()
 					var errortotal = data.length;
 					var truthtotal = branchArray.length-data.length;
 					var infostr = "进行匹配总数为:<font color='red'>"+total+"</font>,匹配成功数为:<font color='red'>"+truthtotal+"</font>,匹配失败数为:<font color='red'>"+errortotal+"</font>,失败信息如下:";
-					var infor = "<span size='15px'>"+infostr+"</span>";
+					var infor = "<span style='font-size:14px'>"+infostr+"</span>";
 					$("#msg").html(infor);				
 				}
 				
 			});
-		
 		
 		}
 		
@@ -157,7 +156,7 @@ function getOs()
 			</form>
 		</div>
 		<div style="overflow: auto;" height="20%" >
-			<p id="msg" name="msg" color=green ></p>
+			<p  id="msg" name="msg" color=green ></p>
 					
 		</div>
 		<table id="Order" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" >
