@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMapp;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.pos.tonglianpos.xmldto.Transaction;
 import cn.explink.pos.tools.PosEnum;
@@ -115,6 +116,10 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		String idx3 = "0";
 
 		String normal_code = idx1 + idx2 + idx3 + end4str;
+
+		if (tlmposRespNote.getCwbOrder().getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+			normal_code = "0";
+		}
 
 		tlmposRespNote.setMerchant_code(normal_code); // 支付方判断.
 

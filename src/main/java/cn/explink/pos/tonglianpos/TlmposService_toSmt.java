@@ -115,7 +115,7 @@ public class TlmposService_toSmt extends TlmposService {
 			parameters.put("receivedfeeother", BigDecimal.ZERO);
 			parameters.put("paybackedfee", BigDecimal.ZERO);
 			parameters.put("podremarkid", 0l);
-			parameters.put("posremark", "");
+			parameters.put("posremark", remark);
 			parameters.put("checkremark", "");
 			parameters.put("deliverstateremark", remark);
 			parameters.put("owgid", 0);
