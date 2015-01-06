@@ -1093,6 +1093,7 @@ src/main/java/cn/explink/enumutil/AccountTongjiEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEditDeliverystateIshandleEnum.java -text
 src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
+src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text

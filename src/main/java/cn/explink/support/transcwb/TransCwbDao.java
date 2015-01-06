@@ -76,5 +76,5 @@ public class TransCwbDao {
 		String sql = " select * from express_ops_transcwb where transcwb in(" + temporders + ")";
 		return jdbcTemplate.query(sql, new TranscwbRowMapper());
 	}
-
+	
 }

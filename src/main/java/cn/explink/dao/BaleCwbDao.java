@@ -3,6 +3,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,6 +61,11 @@ public class BaleCwbDao {
 	public long getBaleCount(long baleid, String cwb) {
 		String sql = "select count(1) from express_ops_bale_cwb where baleid=? and cwb=?";
 		return jdbcTemplate.queryForLong(sql, baleid, cwb);
+	}
+	
+	public List<String> getCwbsByBale(String baleid) {
+		String sql = "select cwb from express_ops_bale_cwb where baleid=";
+		return jdbcTemplate.queryForList(sql+baleid, String.class);
 	}
 
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {

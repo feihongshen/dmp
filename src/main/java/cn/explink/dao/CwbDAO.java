@@ -5262,6 +5262,12 @@ public class CwbDAO {
 		sql.append(", flowordertype = 1 where cwb= ?");
 		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
 	}
+	
+	public Map<String,Object> getCwbIDsByBale(String baleid) {
+		String sql = "select count(cwb) as cwbnum,IFNULL(sum(sendcarnum)+sum(backcarnum),0) as transcwbnum from express_ops_cwb_detail where state=1 and packagecode = "+baleid;
+		return jdbcTemplate.queryForMap(sql);
+		
+	}
 
 	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, String orderby, long customerid, long emaildateid, long asc) {
 
