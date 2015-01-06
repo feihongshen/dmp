@@ -93,11 +93,7 @@ function getOs()
 						+"<th width='20%' align='center'  valign='middle' bgcolor='#eef6ff'>匹配站点</th>"
 						+"<th width='60%' align='center'  valign='middle' bgcolor='#eef6ff'>匹配结果描述</th>"
 						+"</tr>";
-					if(data.length>0){
-						//$(".tishi_box",parent.document).html('部分更新成功！');
-						//$(".tishi_box",parent.document).show();
-						//setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 00);
-						//alert('部分更新成功！');
+					if(data.length>0){ 
 						for(var i=0;i<data.length;i++){
 							tableinformation += "<tr>"
 							+"<td width='20%' align='center' height='19'  valign='middle'>"+data[i].cwb+"</td>"
@@ -112,7 +108,7 @@ function getOs()
 					var total = branchArray.length;
 					var errortotal = data.length;
 					var truthtotal = branchArray.length-data.length;
-					var infostr = "进行匹配的总数为:"+total+",匹配成功数为:"+truthtotal+",匹配失败数为:"+errortotal;
+					var infostr = "进行匹配总数为:"+total+",匹配成功数为:"+truthtotal+",匹配失败数为:"+errortotal+",失败信息如下:";
 					
 					$("#msg").html(infostr);				
 				}
@@ -172,20 +168,6 @@ function getOs()
 						<td width="60%" align="center" align="center" valign="middle" bgcolor="#eef6ff">匹配结果描述</td>
       				</tr>
       	</table>			
-				<%-- 	<% 
-						List<Information> infolist = (List<Information>)request.getAttribute("infolist");
-						
-						for(Information info:infolist){
-							
-					%>
-				<table>	
-					<td width="10%"  align="center" height="19" ><%=info.getCwb() %></td>
-					<td width="10%"  align="center"  ><%=info.getBranch() %></td>
-					<td width="80%"  align="center"  ><%=info.getError() %></td>
-				</table>
-					<%	
-						}
-					%> --%>
 
 		
 	</div>
