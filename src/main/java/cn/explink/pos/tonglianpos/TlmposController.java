@@ -1,6 +1,7 @@
 package cn.explink.pos.tonglianpos;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,25 +38,26 @@ public class TlmposController {
 	DeliveryService deliveryService;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") int key, Model model) {
-		model.addAttribute("tlmposlist", tlmposService.gettlmposSettingMethod(PosEnum.TongLianPos.getKey()));
+		model.addAttribute("tlmposlist", this.tlmposService.gettlmposSettingMethod(PosEnum.TongLianPos.getKey()));
 		model.addAttribute("joint_num", key);
 		return "jointmanage/tlmpos/edit";
 
 	}
 
 	@RequestMapping("/save/{id}")
-	public @ResponseBody String save(@PathVariable("id") int joint_num, HttpServletRequest request) {
+	public @ResponseBody
+	String save(@PathVariable("id") int joint_num, HttpServletRequest request) {
 
 		String password = request.getParameter("password");
-		if (password != null && "explink".equals(password)) {
-			tlmposService.edit(request, joint_num);
-			logger.info("operatorUser={},alipay->save", getSessionUser().getUsername());
+		if ((password != null) && "explink".equals(password)) {
+			this.tlmposService.edit(request, joint_num);
+			this.logger.info("operatorUser={},alipay->save", this.getSessionUser().getUsername());
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} else {
 			return "{\"errorCode\":0,\"error\":\"密码错误！\"}";
@@ -63,9 +65,10 @@ public class TlmposController {
 	}
 
 	@RequestMapping("/del/{state}/{id}")
-	public @ResponseBody String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
-		tlmposService.update(key, state);
-		logger.info("operatorUser={},alipay->del", getSessionUser().getUsername());
+	public @ResponseBody
+	String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
+		this.tlmposService.update(key, state);
+		this.logger.info("operatorUser={},alipay->del", this.getSessionUser().getUsername());
 		// 保存
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 
@@ -79,35 +82,41 @@ public class TlmposController {
 	 * @return
 	 */
 	@RequestMapping("/")
-	public @ResponseBody String requestByAliPay(HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody
+	String requestByAliPay(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("text/xml;charset=UTF-8");
-			Tlmpos tlmpos = tlmposService.gettlmposSettingMethod(PosEnum.TongLianPos.getKey()); // 获取配置信息
-			int isOpenFlag = jointDAO.getStateByJointKey(PosEnum.TongLianPos.getKey());
+			Tlmpos tlmpos = this.tlmposService.gettlmposSettingMethod(PosEnum.TongLianPos.getKey()); // 获取配置信息
+			int isOpenFlag = this.jointDAO.getStateByJointKey(PosEnum.TongLianPos.getKey());
 			if (isOpenFlag == 0) {
 				return "未开启通联POS对接";
 			}
 			InputStream input = new BufferedInputStream(request.getInputStream());
 			String XMLDOC = Dom4jParseUtil.getStringByInputStream(input); // 读取文件流，获得xml字符串
 
-			logger.info("通联pos请求XML={}", XMLDOC);
+			this.logger.info("通联pos请求XML={}", XMLDOC);
 
-			return tlmposService.AnalyzXMLBytlmpos(tlmpos, XMLDOC);
+			return this.tlmposService.AnalyzXMLBytlmpos(tlmpos, XMLDOC);
 		} catch (Exception e) {
-			logger.error("AlipayController遇见不可预知的错误！", e);
+			this.logger.error("AlipayController遇见不可预知的错误！", e);
 
 			return "未知异常!";
 		}
 
 	}
-	
 
 	@RequestMapping("/delivery")
-	public @ResponseBody String test(HttpServletRequest request){
-		
-		return deliveryService.delivery(request);
+	public @ResponseBody
+	String test(HttpServletRequest request) throws IOException {
+
+		InputStream input = new BufferedInputStream(request.getInputStream());
+		String XMLDOC = Dom4jParseUtil.getStringByInputStream(input); // 读取文件流，获得xml字符串
+
+		this.logger.info("读取POS机领货流文件：xml={}", XMLDOC);
+
+		return this.deliveryService.delivery(request, XMLDOC);
 	}
 
 }
