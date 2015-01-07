@@ -710,7 +710,7 @@ function chuku(){
 					td.innerHTML = value.errorreasion;
 			 	});
 	 			errorvedioplay("<%=request.getContextPath()%>",data);
-	 			successvedioplay("<%=request.getContextPath()%>",data);
+	 			
 			}else{
 				
 				successvedioplay("<%=request.getContextPath()%>",data);
