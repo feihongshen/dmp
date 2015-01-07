@@ -3408,6 +3408,13 @@ function errorvedioplay(pname, data) {
 	newPlayWav(url);
 }
 
+function successvedioplay(pname, data) {
+	// $("#wavPlay", parent.document).attr("src",
+	// pname + "/wavPlay?wavPath=" + data.wavPath + "&a=" + Math.random());
+	var url = pname + "/images/waverror/success.wav"
+	newPlayWav(url);
+}
+
 function playGoodsTypeWav(contextPath, data) {
 	var goodsTypeWav = data.body.goodsTypeWav;
 	if (goodsTypeWav != "") {
