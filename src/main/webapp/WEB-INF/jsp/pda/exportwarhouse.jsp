@@ -710,8 +710,10 @@ function chuku(){
 					td.innerHTML = value.errorreasion;
 			 	});
 	 			errorvedioplay("<%=request.getContextPath()%>",data);
+	 			successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
-				batchPlayWav(data.wavList);
+				
+				successvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
 			$("#baleno").val("");
