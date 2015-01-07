@@ -854,7 +854,8 @@ public class WarehouseGroupController {
 	// /出库打印 站点出站打印 中转出站 打印
 	@RequestMapping("/creowgnew")
 	public @ResponseBody String creowgnew(@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "operatetype", required = false, defaultValue = "0") long operatetype, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid) {
+			@RequestParam(value = "operatetype", required = false, defaultValue = "0") long operatetype, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid) {
 		try {
 			if (cwbs.trim().length() > 0) {
 				String[] cwbsList = cwbs.split("-HH-");
@@ -886,7 +887,7 @@ public class WarehouseGroupController {
 				}
 
 				for (Long branchid : branchList) {
-					cwbOrderService.checkResponseBatchno(getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
+					cwbOrderService.checkResponseBatchno(getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
 				}
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {

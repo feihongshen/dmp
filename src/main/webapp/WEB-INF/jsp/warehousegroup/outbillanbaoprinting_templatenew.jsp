@@ -44,6 +44,7 @@ List<WarehouseGroupPrintDto> printList=(List<WarehouseGroupPrintDto>)request.get
 String branchname=(String)request.getAttribute("branchname");
 String truckname=(String)request.getAttribute("truckid");
 WarehouseGroupPrintDto total=(WarehouseGroupPrintDto)request.getAttribute("total");
+Long truckid=(Long)request.getAttribute("mytruckid");
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -94,7 +95,7 @@ function setcreowg(){
 	 $.ajax({
 		type: "POST",
 		url:"<%=request.getContextPath()%>/warehousegroup/creowgnew",
-		data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>},
+		data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>,"truckid":"<%=truckid%>"},
 		dataType:"json",
 		success : function(data) {
 			if(data.errorCode==0){

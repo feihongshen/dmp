@@ -338,6 +338,7 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "baleno", defaultValue = "", required = false) String  baleno,
 			@RequestParam(value = "driverid", defaultValue = "0", required = false) long driverid,
 			@RequestParam(value = "truckid", defaultValue = "0", required = false) long truckid) {
+		model.addAttribute("mytruckid",truckid);
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
 		String[] cwbArr = new String[isprint.length];
@@ -393,6 +394,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("userlist", userDAO.getAllUser());
 		// model.addAttribute("nextbranchid", Long.parseLong(nextbranchid));
 		model.addAttribute("deliverid", deliverid);
+		
 
 		String[] branchids = nextbranchid.split(",");
 		Map<Long, List<CwbOrder>> map = new HashMap<Long, List<CwbOrder>>();
@@ -954,6 +956,9 @@ public class WarehouseGroup_detailController {
 
 		List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
 		OutWarehouseGroup owg = outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid);
+		long truckid=owg.getTruckid();
+		
+		
 		String cwbs = "";
 
 		if (owg.getSign() == 1) {
@@ -1065,19 +1070,16 @@ public class WarehouseGroup_detailController {
 				}
 			}
 			if(baleSet.size()==0){
-				String truckname="________";
 				//表示全部是订单没有合包
 				for(CwbOrder cwbOrder:cwbList2){
 					//重新创建一个打印dto
 					WarehouseGroupPrintDto printDto=new WarehouseGroupPrintDto();
-					printDto.setBaleno(cwbOrder.getCwb());
+					printDto.setBaleno(cwbOrder.getCwb()+"(订单)");
 					printDto.setJianshu(cwbOrder.getSendcarnum());
 					printDto.setDanshu(1);
 					printDto.setCarrealweight(cwbOrder.getCarrealweight());
 					printDto.setChengzhong(BigDecimal.ZERO);
-
-					truckname="_____________";
-					
+					//获取车牌号
 					if(cwbOrder.getCwbremark().length()>30){
 						printDto.setCwbremark(cwbOrder.getCwbremark().substring(0,30));
 					}else {
@@ -1085,9 +1087,14 @@ public class WarehouseGroup_detailController {
 					}
 					warehouseGroupPrintDtos.add(printDto);
 				}
+				if(truckid!=0&&truckid!=-1){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+				}else {
+					model.addAttribute("truckid","________");
+				}
+				
 				model.addAttribute("printList", warehouseGroupPrintDtos);
 				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
-				model.addAttribute("truckid",truckname);
 				//设置汇总的值
 				WarehouseGroupPrintDto wPrintDtoTotal=new WarehouseGroupPrintDto();
 				int danshu=0;
@@ -1116,10 +1123,10 @@ public class WarehouseGroup_detailController {
 						}
 					}
 				}
-				
+				//循环匹配没有包号订单
 				for(CwbOrder cwbOrder:cwbList2){
 					if(cwbOrder.getPackagecode().equals("")){
-						cwbOrders.add(cwbOrder);
+						cwbOrders2.add(cwbOrder);
 					}
 				}
 				//将每一个包号中含有的cwborder做汇总
@@ -1147,7 +1154,7 @@ public class WarehouseGroup_detailController {
 				}				
 				for (CwbOrder cwbOrder:cwbOrders2) {
 					WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
-					warehouseGroupPrintDto.setBaleno(cwbOrder.getCwb());
+					warehouseGroupPrintDto.setBaleno(cwbOrder.getCwb()+"(订单)");
 					warehouseGroupPrintDto.setDanshu(1);
 					warehouseGroupPrintDto.setJianshu(cwbOrder.getSendcarnum());
 					warehouseGroupPrintDto.setCarrealweight(cwbOrder.getCarrealweight());
@@ -1159,9 +1166,14 @@ public class WarehouseGroup_detailController {
 					}
 					warehouseGroupPrintDtos.add(warehouseGroupPrintDto);
 				}
+				
+				if(truckid!=0&&truckid!=-1){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+				}else {
+					model.addAttribute("truckid","________");
+				}
 				model.addAttribute("printList", warehouseGroupPrintDtos);
 				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
-				model.addAttribute("truckid","_______");
 				//设置汇总值
 				WarehouseGroupPrintDto warehouseGroupPrintDtoTotal=new WarehouseGroupPrintDto();
 				warehouseGroupPrintDtoTotal.setBaleno(cwbOrders.size()+cwbOrders2.size()+"");

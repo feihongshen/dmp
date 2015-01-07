@@ -341,4 +341,10 @@ public class GroupDetailDao {
 		}
 		return jdbcTemplate.queryForLong(sql, branchid);
 	}
+	
+	public List<GroupDetail> getGroupDetailListByCwb(String cwb) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE cwb=?";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), cwb);
+	}
+	
 }

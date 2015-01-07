@@ -168,8 +168,8 @@ $(function(){
 		$("#columnSetting input[field=danshu]").attr("checked",false);
 		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
 		$("#columnSetting input[field=jianshu]").attr("checked",false);
-		$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-		$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
 		break;
 	case 2:
 	case 4:
@@ -236,8 +236,8 @@ $(function(){
 		$("#columnSetting input[field=emaildate]").attr("checked",false);
 		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 		$("#columnSetting input[field=danshu]").attr("checked",false);
-		$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-		$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
 		break;
 	case 6:
 		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
@@ -300,8 +300,8 @@ $(function(){
 		$("#columnSetting input[field=emaildate]").attr("checked",false);
 		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 		$("#columnSetting input[field=danshu]").attr("checked",false);
-		$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-		$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
 		break;
 	case 15:
 		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
@@ -364,13 +364,13 @@ $(function(){
 		$("#columnSetting input[field=emaildate]").attr("checked",false);
 		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 		$("#columnSetting input[field=danshu]").attr("checked",false);
-		$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-		$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
 		
 		break;
 	case 14:
-		$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().show();//隐藏称重
-		$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().show();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
 		$("#columnSetting input[field=jianshu]").parent().parent().show();//隐藏件数
 		$("#columnSetting input[field=jianshu]").attr("checked",false);
 		$("#columnSetting input[field=danshu]").parent().parent().show();//隐藏单数
@@ -568,8 +568,8 @@ $(function(){
 			$("#columnSetting input[field=danshu]").attr("checked",false);
 			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
 			$("#columnSetting input[field=jianshu]").attr("checked",false);
-			$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-			$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			break;
 		case "2":
 		case "4":
@@ -636,8 +636,8 @@ $(function(){
 			$("#columnSetting input[field=emaildate]").attr("checked",false);
 			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 			$("#columnSetting input[field=danshu]").attr("checked",false);
-			$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-			$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			break;
 		case "6":
 			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
@@ -700,8 +700,8 @@ $(function(){
 			$("#columnSetting input[field=emaildate]").attr("checked",false);
 			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 			$("#columnSetting input[field=danshu]").attr("checked",false);
-			$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-			$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			break;
 		case "15":
 			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
@@ -764,8 +764,8 @@ $(function(){
 			$("#columnSetting input[field=emaildate]").attr("checked",false);
 			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
 			$("#columnSetting input[field=danshu]").attr("checked",false);
-			$("#columnSetting input[field=chengzhongzhongliang]").parent().parent().hide();//隐藏称重
-			$("#columnSetting input[field=chengzhongzhongliang]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			
 			break;
 		case "14":
