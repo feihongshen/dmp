@@ -742,11 +742,14 @@ public class CwbOrderPDAController {
 					baleService.baleaddcwbzhongzhuanchuzhanCheck(getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
 				} else if (iType == 4) {// 退供货商出库
 					baleService.baleaddcwbToCustomerCheck(getSessionUser(), baleNO, orderNO, getSessionUser().getBranchid(), nextBranchid);
+				}else{
+					statuscode="100001";
+					PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+					return PDAResponse;
 				}
 			
-				baleService.baleaddcwb(getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);
-				
-				
+				baleService.baleaddcwb(getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);				
+				statuscode="000000";
 			
 			}
 			else{
@@ -757,18 +760,21 @@ public class CwbOrderPDAController {
 			return PDAResponse;
 		}
 		catch(DocumentException e) {
+			statuscode="100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
 		catch(CwbException cwbException){
+			statuscode="100001";
 			errorinfo = cwbException.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
 		catch(Exception e){
+			statuscode="100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
