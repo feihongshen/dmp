@@ -1,8 +1,6 @@
 package cn.explink.controller;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +14,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.json.JSONObject;
 
@@ -24,7 +24,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.junit.Test;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +91,7 @@ import cn.explink.dao.TruckDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Bale;
+import cn.explink.domain.BaleView;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Common;
 import cn.explink.domain.Complaint;
@@ -108,7 +112,9 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.BalePDAEnum;
+import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -121,6 +127,7 @@ import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
+import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
@@ -155,6 +162,8 @@ public class CwbOrderPDAController {
 	ReasonDao reasonDAO;
 	@Autowired
 	CwbOrderService cwborderService;
+	@Autowired
+	BaleService baleService;
 	@Autowired
 	OutWarehouseGroupDAO outWarehouseGroupDAO;
 	@Autowired
@@ -545,11 +554,12 @@ public class CwbOrderPDAController {
 			}else if(requestparam.equals("packageexport_generatepackageno")){//生成包号
 				return generatePackageNO(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
 			}else if(requestparam.equals("packageexport_checkorder")){//校验单号站点
-				
+				return checkOrderForPackage(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
 			}else if(requestparam.equals("packageexport_package")){//合包
-				
+				return packageProcess(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
 			}else if(requestparam.equals("packageexport_outstore")){//出库
-				
+				return outStore(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+
 			}
 			throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.Invalid_Operation);
 		} catch (CwbException e) {
@@ -558,6 +568,174 @@ public class CwbOrderPDAController {
 					0, 0, 0, "");
 			PDAResponse PDAResponse = new PDAResponse(CwbOrderPDAEnum.SYS_ERROR.getCode(), e.getMessage());
 			PDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			return PDAResponse;
+		}
+
+	}
+
+	private PDAResponse outStore(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
+
+		String baleNO;
+		String nextbranch;
+		long nextBranchid;
+		try{
+			Document document = DocumentHelper.parseText(strPara);  
+			Element rootElt = document.getRootElement(); 
+			baleNO = rootElt.elementTextTrim("baleNO");
+			nextbranch = rootElt.elementTextTrim("nextBranch");
+			nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+		}
+		catch(DocumentException e){
+			errorinfo = e.getMessage();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		
+		// 根据包号查找订单信息
+		List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleNO.trim());
+		List<CwbOrder> errorList = new ArrayList<CwbOrder>();
+		List<BaleView> errorListView = new ArrayList<BaleView>();
+		if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+			long successCount = 0;
+			long errorCount = 0;
+			for (CwbOrder co : cwbOrderList) {
+				try {
+					// 订单出库
+					CwbOrder cwbOrder = cwborderService.outWarehous(getSessionUser(), co.getCwb(), co.getCwb(), 0, 0, nextBranchid, 0, false, "", baleNO, 0, false, true);
+					successCount++;		
+
+				} catch (CwbException e) {
+					errorCount++;
+					co.setRemark1(e.getMessage());// 异常原因
+					errorList.add(co);
+					// exceptionCwbDAO.createExceptionCwb(cwb,
+					// ce.getFlowordertye(), ce.getMessage(),
+					// getSessionUser().getBranchid(),
+					// getSessionUser().getUserid(),
+					// cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0,
+					// 0, "");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (successCount > 0) {//成功
+				// 更改包的状态
+				baleDao.updateBalesate(baleNO, BaleStateEnum.YiFengBaoChuKu.getValue());
+				statuscode="000000";
+				errorinfo = "成功"+String.valueOf(successCount)+"件,失败"+String.valueOf(errorCount)+"件";
+				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+				PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+				return PDAResponse;
+				
+			} else {//失败			
+				
+				errorinfo = "成功"+String.valueOf(successCount)+"件,失败"+String.valueOf(errorCount)+"件";				
+				PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+				return PDAResponse;
+			}
+
+		}
+		
+		errorinfo = "出库失败";
+		errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+		return PDAResponse;
+
+	}
+
+	/**
+	 * 合包
+	 * @param strPara
+	 * @param requestbatchno
+	 * @param body
+	 * @param statuscode
+	 * @param errorinfo
+	 * @param errorinfovediurl
+	 * @param request
+	 * @return
+	 */
+	private PDAResponse packageProcess(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {		
+		
+		try{
+			Document document = DocumentHelper.parseText(strPara);  
+			Element rootElt = document.getRootElement(); 
+			String baleNO = rootElt.elementTextTrim("baleNO");
+			String nextbranch = rootElt.elementTextTrim("nextBranch");
+			long nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
+			statuscode="000000";
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		catch(DocumentException e){
+			errorinfo = e.getMessage();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		
+	}
+
+	private PDAResponse checkOrderForPackage(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {		
+		
+		try{
+			boolean isForceOutstore;
+			Document document = DocumentHelper.parseText(strPara);  
+			Element rootElt = document.getRootElement(); 
+			String baleNO = rootElt.elementTextTrim("baleNO");
+			String orderNO = rootElt.elementTextTrim("orderNO");
+			String nextbranch = rootElt.elementTextTrim("nextBranch");
+			long nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			String flag = rootElt.elementTextTrim("isForceOutstore");
+			if("1".equals(flag)){
+				isForceOutstore=true;
+			}
+			else{
+				isForceOutstore=false;
+			}
+			CwbOrderPDAEnum cwbOrderPDAEnum = verficationCwb(orderNO);
+			if(CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())){
+			
+				int iType=cwbDAO.getCwbByCwb(orderNO).getCwbordertypeid();
+				if (iType == 1) {// 库房出库
+					baleService.baleaddcwbChukuCheck(getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+				} else if (iType == 2) {// 退货出站
+					baleService.baleaddcwbTuiHuoCheck(getSessionUser(), baleNO, orderNO, isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+				} else if (iType == 3) {// 中转出站
+					baleService.baleaddcwbzhongzhuanchuzhanCheck(getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+				} else if (iType == 4) {// 退供货商出库
+					baleService.baleaddcwbToCustomerCheck(getSessionUser(), baleNO, orderNO, getSessionUser().getBranchid(), nextBranchid);
+				}
+			
+				baleService.baleaddcwb(getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);
+				
+				statuscode="000000";
+			
+			}
+			else{
+				errorinfo = cwbOrderPDAEnum.getError();
+				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + cwbOrderPDAEnum.getVediourl();
+			}
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		catch(DocumentException e) {
+			errorinfo = e.getMessage();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		catch(CwbException cwbException){
+			errorinfo = cwbException.getMessage();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+		catch(Exception e){
+			errorinfo = e.getMessage();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
 
@@ -575,9 +753,9 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse generatePackageNO(String bale, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
-
-		
-		return null;
+		body.append("<baleNO>").append(new Date().getTime()).append("</baleNO>");
+		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+		return PDAResponse;
 	}
 
 	/**
@@ -601,7 +779,10 @@ public class CwbOrderPDAController {
 		statuscode = balePDAEnum.getCode();
 		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
 			Bale co = baleDao.getBaleOneByBaleno(bale);
-			body.append("<bale>").append(co.getBaleno()).append("</bale>");
+			if(null!=co){
+				
+				body.append("<bale>").append(co.getBaleno()).append("</bale>");
+			}
 		}
 		else {
 			errorinfo = balePDAEnum.getError();
