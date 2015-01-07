@@ -559,7 +559,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 * 
+	 *
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -572,7 +572,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 * 
+	 *
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -633,7 +633,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 * 
+	 *
 	 * }
 	 */
 
@@ -881,13 +881,9 @@ public class ExportService {
 				if ((ds != null)
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
-					if (this.getSessionUser().getShownameflag() == 1) {
-						a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
-					} else {
-						a = "******";
-					}
+					a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
+
 				}
-				System.out.println("******" + a + "ssssssss");
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
 				if ((ds != null)
@@ -954,6 +950,7 @@ public class ExportService {
 				}
 			} else {
 				a = mapRow.get(cloumname);
+				a = setAbyUser(a, cloumname);
 			}
 		} catch (Exception e) {
 			// System.out.println(cloumname);
@@ -961,6 +958,25 @@ public class ExportService {
 		// System.out.println("pp:"+System.currentTimeMillis());
 		return a;
 
+	}
+
+	private Object setAbyUser(Object a, String cloumname) {
+		if (cloumname.equals("consigneename")) {
+			if (this.getSessionUser().getShownameflag() != 1) {
+				a = "******";
+			}
+		}
+		if (cloumname.equals("consigneephone")) {
+			if (this.getSessionUser().getShowphoneflag() != 1) {
+				a = "******";
+			}
+		}
+		if (cloumname.equals("consigneemobile")) {
+			if (this.getSessionUser().getShowmobileflag() != 1) {
+				a = "******";
+			}
+		}
+		return a;
 	}
 
 	public Object setObjectB(String[] cloumnName3, CwbOrder co, TuihuoRecord tuihuo, int i, List<User> uList, Map<Long, Customer> cMap, List<Branch> bList, List<Common> commonList, DeliveryState ds,
@@ -1179,11 +1195,8 @@ public class ExportService {
 				if ((ds != null)
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
-					if (this.getSessionUser().getShownameflag() == 1) {
-						a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
-					} else {
-						a = "******";
-					}
+					a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
+
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
