@@ -3411,7 +3411,7 @@ function errorvedioplay(pname, data) {
 function successvedioplay(pname, data) {
 	// $("#wavPlay", parent.document).attr("src",
 	// pname + "/wavPlay?wavPath=" + data.wavPath + "&a=" + Math.random());
-	var url = pname + "/images/waverror/success.wav"
+	var url = pname + "/images/waverror/success.wav";
 	newPlayWav(url);
 }
 
