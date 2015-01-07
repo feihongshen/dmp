@@ -654,11 +654,13 @@ function fengbao(){
 			$("#msg").html("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
+				$("#wavPlay",parent.document).attr("src",<%=request.getContextPath()%>+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
 			}else{
 				$("#msg").html("（封包异常）"+data.body.errorinfo);
+				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
 		}
 	});
 }
@@ -706,10 +708,14 @@ function chuku(){
 					var td = tr.insertCell(7);
 					td.innerHTML = value.errorreasion;
 			 	});
+	 			errorvedioplay("<%=request.getContextPath()%>",data);
+			}else{
+				$("#wavPlay",parent.document).attr("src",<%=request.getContextPath()%>+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
 			}
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
+			
 		}
 	});
 }
