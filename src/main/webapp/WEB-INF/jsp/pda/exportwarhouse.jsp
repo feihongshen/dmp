@@ -711,7 +711,7 @@ function chuku(){
 			 	});
 	 			errorvedioplay("<%=request.getContextPath()%>",data);
 			}else{
-				successvedioplay("<%=request.getContextPath()%>",data);
+				batchPlayWav(data.wavList);
 			}
 			$("#scancwb").val("");
 			$("#baleno").val("");
