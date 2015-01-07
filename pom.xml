@@ -673,9 +673,9 @@
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>local</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
-				<addresspassword>gxpx</addresspassword>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
 				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
 			</properties>
 		</profile>
