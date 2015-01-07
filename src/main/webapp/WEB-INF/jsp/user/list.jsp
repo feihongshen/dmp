@@ -20,7 +20,13 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript">
+</script>
+<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet"
+	type="text/css" />
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 var BranchKeyAndValue = new Array();
 <%for(Branch b : branchList) {%> BranchKeyAndValue[<%=b.getBranchid() %>]='<%=b.getBranchname() %>';<%} %>
@@ -32,7 +38,6 @@ var RoleKeyAndValue = new Array();
 function getRoleValue(key,userid){
 	$("#Roleid_"+key+"_"+userid).html(RoleKeyAndValue[key]);
 }
-
 function userInit(){
 /* 	$("#realname", parent.document).blur(function(event){
 		window.parent.checkRealname();
@@ -82,6 +87,12 @@ function editSuccess(data){
 function delSuccess(data){
 	$("#searchForm").submit();
 }
+
+$(function(){
+	$("#showflag").multiSelect({
+		oneOrMoreSelected : '*',
+		noneSelected : '请选择'
+	});});
 </script>
 </head>
 
@@ -120,7 +131,7 @@ function delSuccess(data){
 	</div>
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-
+<br></br>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">编号</td>

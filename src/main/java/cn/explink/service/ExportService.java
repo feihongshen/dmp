@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.InvalidResultSetAccessException;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.AbnormalView;
@@ -77,6 +78,8 @@ public class ExportService {
 
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -415,9 +418,17 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("customername")) {
 				a = views.get(k).getCustomername();
 			} else if (cloumnName3[i].equals("consigneename")) {
-				a = views.get(k).getConsigneename();
+				if (this.getSessionUser().getShownameflag() == 1) {
+					a = views.get(k).getConsigneename();
+				} else {
+					a = "******";
+				}
 			} else if (cloumnName3[i].equals("consigneemobile")) {
-				a = views.get(k).getConsigneemobile();
+				if (this.getSessionUser().getShowmobileflag() == 1) {
+					a = views.get(k).getConsigneemobile();
+				} else {
+					a = "******";
+				}
 			} else if (cloumnName3[i].equals("emaildate")) {
 				a = views.get(k).getEmaildate();
 			} else if (cloumnName3[i].equals("Createtime")) {
@@ -870,8 +881,13 @@ public class ExportService {
 				if ((ds != null)
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
-					a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
+					if (this.getSessionUser().getShownameflag() == 1) {
+						a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
+					} else {
+						a = "******";
+					}
 				}
+				System.out.println("******" + a + "ssssssss");
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
 				if ((ds != null)
@@ -1163,7 +1179,11 @@ public class ExportService {
 				if ((ds != null)
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
-					a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
+					if (this.getSessionUser().getShownameflag() == 1) {
+						a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
+					} else {
+						a = "******";
+					}
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
@@ -2721,5 +2741,10 @@ public class ExportService {
 			e.printStackTrace();
 		}
 		return a;
+	}
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
 	}
 }

@@ -64,25 +64,25 @@ public class UserController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/")
 	public @ResponseBody List<User> getUserByBranchid(@RequestParam("branchid") long branchid) {
-		return userDAO.getUserByBranchid(branchid);
+		return this.userDAO.getUserByBranchid(branchid);
 	}
 
 	@RequestMapping("/usercheck")
 	public @ResponseBody boolean usercheck(@RequestParam("username") String username) throws Exception {
-		List<User> list = userDAO.getUsersByUsername(username);
+		List<User> list = this.userDAO.getUsersByUsername(username);
 		return list.size() == 0;
 	}
 
 	@RequestMapping("/userrealnamecheck")
 	public @ResponseBody boolean userrealnameCheck(@RequestParam("realname") String realname) throws Exception {
 		realname = new String(realname.getBytes("ISO8859-1"), "utf-8");
-		List<User> list = userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
 		return list.size() == 0;
 	}
 
@@ -90,8 +90,8 @@ public class UserController {
 	public @ResponseBody String crossCapablePDA(@RequestParam("branchid") long branchid, @RequestParam("roleid") long roleid) throws Exception {
 		String reMenu = "";
 
-		List<Menu> ms = menuDAO.getMenusByUserRoleidToPDA(roleid);
-		Branch b = branchDAO.getBranchById(branchid);
+		List<Menu> ms = this.menuDAO.getMenusByUserRoleidToPDA(roleid);
+		Branch b = this.branchDAO.getBranchById(branchid);
 		try {
 			for (Menu m : ms) {
 				if (b.getFunctionids().indexOf(m.getMenuno()) > -1) {
@@ -105,8 +105,8 @@ public class UserController {
 
 	@RequestMapping("/add")
 	public String add(Model model) throws Exception {
-		model.addAttribute("branches", branchDAO.getAllEffectBranches());
-		model.addAttribute("roles", roleDAO.getRoles());
+		model.addAttribute("branches", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("roles", this.roleDAO.getRoles());
 		return "user/add";
 	}
 
@@ -114,34 +114,34 @@ public class UserController {
 	public @ResponseBody String create(Model model, @RequestParam("branchid") long branchid, @RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
+			list = this.userDAO.getUsersByUsername(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
-				User user = userService.loadFormForUser(request, roleid, branchid, null);
-				userService.addUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				User user = this.userService.loadFormForUser(request, roleid, branchid, null);
+				this.userService.addUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->create", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
-					String adressenabled = systemInstallService.getParameter("newaddressenabled");
-					if (adressenabled != null && adressenabled.equals("1")) {
+					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
-							list = userDAO.getUsersByUsername(username);
-							scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
+							list = this.userDAO.getUsersByUsername(username);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
 						}
 					}
 				}
-				userMonitorService.userMonitorByUsername(user.getUsername());
+				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\"}";
 			}
 		}
@@ -152,34 +152,34 @@ public class UserController {
 			@RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
+			list = this.userDAO.getUsersByUsername(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
-				User user = userService.loadFormForUser(request, roleid, branchid, file);
-				userService.addUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				User user = this.userService.loadFormForUser(request, roleid, branchid, file);
+				this.userService.addUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->createFile", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
-					String adressenabled = systemInstallService.getParameter("newaddressenabled");
-					if (adressenabled != null && adressenabled.equals("1")) {
+					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
-							list = userDAO.getUsersByUsername(username);
-							scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
+							list = this.userDAO.getUsersByUsername(username);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
 						}
 					}
 				}
-				userMonitorService.userMonitorByUsername(user.getUsername());
+				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
 			}
 		}
@@ -189,20 +189,20 @@ public class UserController {
 	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "username", required = false, defaultValue = "") String username,
 			@RequestParam(value = "realname", required = false, defaultValue = "") String realname, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "roleid", required = false, defaultValue = "-1") long roleid) {
-		model.addAttribute("userList", userDAO.getUsersByPage(page, username, realname, branchid, roleid));
-		model.addAttribute("brancheEffectList", branchDAO.getAllEffectBranches());
-		model.addAttribute("branches", branchDAO.getAllBranches());
-		model.addAttribute("roles", roleDAO.getRoles());
-		model.addAttribute("page_obj", new Page(userDAO.getUserCount(username, realname, branchid, roleid), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("userList", this.userDAO.getUsersByPage(page, username, realname, branchid, roleid));
+		model.addAttribute("brancheEffectList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("branches", this.branchDAO.getAllBranches());
+		model.addAttribute("roles", this.roleDAO.getRoles());
+		model.addAttribute("page_obj", new Page(this.userDAO.getUserCount(username, realname, branchid, roleid), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		return "user/list";
 	}
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") long userid, Model model) {
-		model.addAttribute("branches", branchDAO.getAllBranches());
-		model.addAttribute("user", userDAO.getUserByUserid(userid));
-		model.addAttribute("roles", roleDAO.getRoles());
+		model.addAttribute("branches", this.branchDAO.getAllBranches());
+		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
+		model.addAttribute("roles", this.roleDAO.getRoles());
 		return "user/edit";
 	}
 
@@ -211,44 +211,45 @@ public class UserController {
 			@RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
-		String oldrealname = userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = userDAO.getUserByUserid(userid).getEmployeestatus();
-		User user = userService.loadFormForUserToEdit(request, roleid, branchid, file);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
+		System.out.println(request.getParameter("consigneephone"));
+		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
+		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, file);
 		user.setUserid(userid);
-		if (list.size() > 0 && list.get(0).getUserid() != userid) {
+		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
-			if (list.size() > 0 && list.get(0).getUserid() != userid) {
+			list = this.userDAO.getUsersByUsername(username);
+			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
-				userService.editUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				this.userService.editUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->saveFile", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
-					String adressenabled = systemInstallService.getParameter("newaddressenabled");
-					if (adressenabled != null && adressenabled.equals("1")) {
+					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
 							if (oldemployeestatus != 3) {
 								if (!realname.equals(oldrealname)) {
-									scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 								}
 							} else {
-								scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 							}
 						} else {
-							scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
 					}
 				}
-				userMonitorService.userMonitorById(userid);
+				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
 			}
 		}
@@ -260,44 +261,44 @@ public class UserController {
 			throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
-		String oldrealname = userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = userDAO.getUserByUserid(userid).getEmployeestatus();
-		User user = userService.loadFormForUserToEdit(request, roleid, branchid, null);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
+		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
+		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, null);
 		user.setUserid(userid);
-		if (list.size() > 0 && list.get(0).getUserid() != userid) {
+		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
-			if (list.size() > 0 && list.get(0).getUserid() != userid) {
+			list = this.userDAO.getUsersByUsername(username);
+			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
-				userService.editUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				this.userService.editUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->save", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
-					String adressenabled = systemInstallService.getParameter("newaddressenabled");
-					if (adressenabled != null && adressenabled.equals("1")) {
+					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
 							if (oldemployeestatus != 3) {
 								if (!realname.equals(oldrealname)) {
-									scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 								}
 							} else {
-								scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 							}
 						} else {
-							scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
 					}
 				}
-				userMonitorService.userMonitorById(userid);
+				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 			}
 		}
@@ -307,8 +308,8 @@ public class UserController {
 	@RequestMapping("updatepassword")
 	public String updatePassword(@RequestParam("password") String password, @RequestParam("confirmpassword") String confirmpassword, ExplinkUserDetail userDetail, Model model) {
 		if (password.equals(confirmpassword)) {
-			jdbcTemplate.update("update express_set_user set password=? where userid=?", password, getSessionUser().getUserid());
-			logger.info("operatorUser={},用户管理->updatepassword", getSessionUser().getUsername());
+			this.jdbcTemplate.update("update express_set_user set password=? where userid=?", password, this.getSessionUser().getUserid());
+			this.logger.info("operatorUser={},用户管理->updatepassword", this.getSessionUser().getUsername());
 			model.addAttribute("message", "修改成功");
 		} else {
 			model.addAttribute("message", "两次输入的密码不一致");
@@ -320,7 +321,7 @@ public class UserController {
 
 	@RequestMapping("/addBranch")
 	public String addBranch(Model model) throws Exception {
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()));
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
 		return "user/addbranch";
 	}
 
@@ -328,32 +329,32 @@ public class UserController {
 	public @ResponseBody String createBranch(Model model, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
+			list = this.userDAO.getUsersByUsername(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
-				User user = userService.loadFormForUser(request, 2, getSessionUser().getBranchid(), null);
-				userService.addUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				User user = this.userService.loadFormForUser(request, 2, this.getSessionUser().getBranchid(), null);
+				this.userService.addUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->createFile", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				String adressenabled = systemInstallService.getParameter("newaddressenabled");
-				if (adressenabled != null && adressenabled.equals("1")) {
+				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
-						list = userDAO.getUsersByUsername(username);
-						scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
+						list = this.userDAO.getUsersByUsername(username);
+						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
 					}
 				}
-				userMonitorService.userMonitorByUsername(username);
+				this.userMonitorService.userMonitorByUsername(username);
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
 			}
 		}
@@ -361,8 +362,8 @@ public class UserController {
 
 	@RequestMapping("/editBranch/{id}")
 	public String editBranch(@PathVariable("id") long userid, Model model) {
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()));
-		model.addAttribute("user", userDAO.getUserByUserid(userid));
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
+		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		return "user/editbranch";
 	}
 
@@ -370,42 +371,42 @@ public class UserController {
 	public @ResponseBody String saveBranch(@PathVariable("id") long userid, Model model, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = userDAO.getUsersByRealname(realname);
-		String oldrealname = userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = userDAO.getUserByUserid(userid).getEmployeestatus();
-		User user = userService.loadFormForUserToEdit(request, 2, getSessionUser().getBranchid(), null);
+		List<User> list = this.userDAO.getUsersByRealname(realname);
+		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
+		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User user = this.userService.loadFormForUserToEdit(request, 2, this.getSessionUser().getBranchid(), null);
 		user.setUserid(userid);
-		if (list.size() > 0 && list.get(0).getUserid() != userid) {
+		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			list = userDAO.getUsersByUsername(username);
-			if (list.size() > 0 && list.get(0).getUserid() != userid) {
+			list = this.userDAO.getUsersByUsername(username);
+			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
-				userService.editUser(user);
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() != 3) {
-					courierService.courierUpdate(user);
+				this.userService.editUser(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				if ((user.getRoleid() == 2 || user.getRoleid() == 4) && user.getEmployeestatus() == 3) {
-					courierService.carrierDel(user);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
 				}
-				logger.info("operatorUser={},用户管理->saveFile", getSessionUser().getUsername());
+				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				String adressenabled = systemInstallService.getParameter("newaddressenabled");
-				if (adressenabled != null && adressenabled.equals("1")) {
+				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
 						if (oldemployeestatus != 3) {
 							if (!realname.equals(oldrealname)) {
-								scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 							}
 						} else {
-							scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
 					} else {
-						scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 					}
 				}
-				userMonitorService.userMonitorById(userid);
+				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
 			}
 		}
@@ -415,9 +416,9 @@ public class UserController {
 	@RequestMapping("/listbranch/{page}")
 	public String listbranch(@PathVariable("page") long page, Model model, @RequestParam(value = "username", required = false, defaultValue = "") String username,
 			@RequestParam(value = "realname", required = false, defaultValue = "") String realname) {
-		model.addAttribute("branch", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()));
-		model.addAttribute("userList", userDAO.getUsersForUserBranchByPage(page, username, realname, getSessionUser().getBranchid()));
-		model.addAttribute("page_obj", new Page(userDAO.getUserForUserBranchCount(username, realname, getSessionUser().getBranchid()), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
+		model.addAttribute("userList", this.userDAO.getUsersForUserBranchByPage(page, username, realname, this.getSessionUser().getBranchid()));
+		model.addAttribute("page_obj", new Page(this.userDAO.getUserForUserBranchCount(username, realname, this.getSessionUser().getBranchid()), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		return "user/listbranch";
 	}

@@ -988,5 +988,4 @@ public class CwbOrder {
 	public void setOutareaflag(int outareaflag) {
 		this.outareaflag = outareaflag;
 	}
-
 }

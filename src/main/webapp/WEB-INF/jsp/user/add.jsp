@@ -4,7 +4,6 @@
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 %>
-
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
@@ -43,12 +42,17 @@
 					<li><span>登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
 			        <li><span>确认密码：</span><input type="password" id="password1" name="password1" value="" maxlength="50"/>*</li>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_cre_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe></li>
-	           		<li><span>导出时联系方式：</span>
+	           	<!-- 	<li><span>导出时联系方式：</span>
 	           			<select id="showphoneflag" name="showphoneflag">
 							<option value="-1" selected>----请选择----</option>
 							<option value="0">不可见</option>
 							<option value="1">可见</option>
 						</select>*
+					</li> -->
+					<li><span>导出时是否可见：</span>
+					 <input  type="checkbox" value="1" id="consigneename" name="consigneename">收件人</input>
+					 <input type="checkbox"  value="1" id="consigneephone" name="consigneephone">收件人电话</input>
+					 <input type="checkbox"  value="1" id="consigneemobile" name="consigneemobile">收件人手机</input>
 					</li>
 					<li><span>　</span>选择不可见 订单电话/手机在页面显示/导出excel全部隐藏</li>
 			        <li><span>工作状态：</span>

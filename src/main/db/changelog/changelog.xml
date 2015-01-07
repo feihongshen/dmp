@@ -5890,6 +5890,13 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		ADD COLUMN `truckid`  int(4) NULL AFTER `driverid`;
 		</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-01-07-1" author="wangyonghe">
+		<sql>
+	alter table `express_set_user`
+	add column `shownameflag`  varchar(50) null default 0 after `lasttime`,
+	add column `showmobileflag`  varchar(50) null default 0 after `shownameflag`;
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  

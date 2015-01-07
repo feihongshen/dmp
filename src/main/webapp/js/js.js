@@ -991,10 +991,10 @@ function check_user() {
 		alert("请选择员工所在机构");
 		return false;
 	}
-	if ($("#showphoneflag").val() == -1) {
+/*	if ($("#showphoneflag").val() == -1) {
 		alert("请选择员工 订单电话/手机是否可见");
 		return false;
-	}
+	}*/
 	if ($("#update").contents().find("#wavText").val().length > 4
 			&& $("#update").contents().find("#wavText").val().substring($("#update").contents().find("#wavText").val().length - 4) != ".wav"
 			&& $("#update").contents().find("#wavText").val().substring($("#wavText").val().length - 4) != ".WAV") {
