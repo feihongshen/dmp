@@ -573,6 +573,17 @@ public class CwbOrderPDAController {
 
 	}
 
+	/**
+	 * 出库
+	 * @param strPara
+	 * @param requestbatchno
+	 * @param body
+	 * @param statuscode
+	 * @param errorinfo
+	 * @param errorinfovediurl
+	 * @param request
+	 * @return
+	 */
 	private PDAResponse outStore(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 
 		String baleNO;
@@ -596,7 +607,7 @@ public class CwbOrderPDAController {
 			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
 		} catch (CwbException e) {			
 			statuscode=CwbOrderPDAEnum.Feng_Bao.getCode();
-			errorinfo = CwbOrderPDAEnum.Feng_Bao.getError();
+			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
@@ -690,6 +701,17 @@ public class CwbOrderPDAController {
 		
 	}
 
+	/**
+	 * 扫描单号
+	 * @param strPara
+	 * @param requestbatchno
+	 * @param body
+	 * @param statuscode
+	 * @param errorinfo
+	 * @param errorinfovediurl
+	 * @param request
+	 * @return
+	 */
 	private PDAResponse checkOrderForPackage(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {		
 		
 		try{
