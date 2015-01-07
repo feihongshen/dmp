@@ -586,11 +586,23 @@ public class CwbOrderPDAController {
 			nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
 		}
 		catch(DocumentException e){
+			statuscode="100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
+		try {
+			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
+		} catch (CwbException e) {			
+			statuscode=CwbOrderPDAEnum.Feng_Bao.getCode();
+			errorinfo = CwbOrderPDAEnum.Feng_Bao.getError();
+			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl();
+			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
+			return PDAResponse;
+		}
+
+
 		
 		// 根据包号查找订单信息
 		List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleNO.trim());
@@ -629,14 +641,14 @@ public class CwbOrderPDAController {
 				return PDAResponse;
 				
 			} else {//失败			
-				
+				statuscode="100001";
 				errorinfo = "成功"+String.valueOf(successCount)+"件,失败"+String.valueOf(errorCount)+"件";				
 				PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 				return PDAResponse;
 			}
 
 		}
-		
+		statuscode="100001";
 		errorinfo = "出库失败";
 		errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -669,6 +681,7 @@ public class CwbOrderPDAController {
 			return PDAResponse;
 		}
 		catch(DocumentException e){
+			statuscode="1000001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -695,6 +708,7 @@ public class CwbOrderPDAController {
 				isForceOutstore=false;
 			}
 			CwbOrderPDAEnum cwbOrderPDAEnum = verficationCwb(orderNO);
+			statuscode=cwbOrderPDAEnum.getCode();
 			if(CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())){
 			
 				int iType=cwbDAO.getCwbByCwb(orderNO).getCwbordertypeid();
@@ -710,11 +724,11 @@ public class CwbOrderPDAController {
 			
 				baleService.baleaddcwb(getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);
 				
-				statuscode="000000";
+				
 			
 			}
 			else{
-				errorinfo = cwbOrderPDAEnum.getError();
+				errorinfo = cwbOrderPDAEnum.getError();				
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + cwbOrderPDAEnum.getVediourl();
 			}
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
