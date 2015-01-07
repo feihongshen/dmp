@@ -680,6 +680,9 @@ function chuku(){
 			$("#msg").html("");
 			$("#msg").html(data.body.errorinfo);
 			$("#errorTable").html("");
+			
+			
+			
 			if(data.body.errorListView!=null){
 	 			$.each(data.body.errorListView, function(key, value) {
 	 				var tr = document.getElementById("errorTable").insertRow();
@@ -709,15 +712,17 @@ function chuku(){
 					var td = tr.insertCell(7);
 					td.innerHTML = value.errorreasion;
 			 	});
-	 			errorvedioplay("<%=request.getContextPath()%>",data);
 	 			
-			}else{
-				
-				successvedioplay("<%=request.getContextPath()%>",data);
+	 			
 			}
+			
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			
+			if(data.body.errorcode=="000000"){
+				successvedioplay("<%=request.getContextPath()%>",data);
+			}else{
+				errorvedioplay("<%=request.getContextPath()%>",data);
+			}
 			
 		}
 	});
