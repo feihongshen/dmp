@@ -90,7 +90,7 @@
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
 		});
-		
+
 		$("#venders").multiSelect({
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
@@ -105,27 +105,39 @@
 	});
 
 	$(function() {
-		var branchIds = getBranchIds();
+		var stationIds = getStationIds();
+		var venderIds = getVenderIds();
 		var condVO = getSearchFormValueObject();
-		for (var i = 0; i < branchIds.length; i++) {
-			sendRequest(branchIds[i], condVO);
+		for (var i = 0; i < stationIds.length; i++) {
+			sendRequest(stationIds[i], venderIds[i], condVO);
 		}
 	});
 
-	function getBranchIds() {
-		var branchs = $("td[id='branch_id']");
-		var branchIds = [];
-		for (var i = 0; i < branchs.length; i++) {
-			branchIds.push($(branchs[i]).html());
+	function getStationIds() {
+		var tds = $("td[id='station_id']");
+		var stationIds = [];
+		for (var i = 0; i < tds.length; i++) {
+			stationIds.push($(tds[i]).html());
 		}
-		return branchIds;
+		return stationIds;
 	}
 
-	function sendRequest(branchId, condVO) {
+	function getVenderIds() {
+		var tds = $("td[id='vender_id']");
+		var venderIds = [];
+		for (var i = 0; i < tds.length; i++) {
+			venderIds.push($(tds[i]).html());
+		}
+		return venderIds;
+	}
+
+	var sendCount = 0;
+
+	function sendRequest(stationId, venderId, condVO) {
 		$.ajax({
 			type : "post",
-			url : "${ctx_path}/overdueexmo/getbranchdata/" + branchId + "?"
-					+ Math.random(),
+			url : "${ctx_path}/smtfaresettle/getstationdata/" + stationId + "/"
+					+ venderId + "?" + Math.random(),
 			dataType : "json",
 			async : true,
 			data : {
@@ -133,26 +145,59 @@
 			},
 			success : function(result) {
 				showRowData(result);
+				summaryData();
 			}
 		});
 	}
 
 	function showRowData(result) {
-		var branchId = result.branchId;
+		var stationId = result.stationId;
+		var venderId = result.venderId;
 		var trs = $('#static_table tr');
-		var index = -1;
 		for (var i = 1; i < trs.length; i++) {
-			if ($(trs[i]).find("td").eq(0).html() == branchId) {
-				index = i;
-				break;
+			var $tr = $(trs[i]);
+			var cond1 = $tr.find("td").eq(0).html() == stationId;
+			var cond2 = $tr.find("td").eq(2).html() == venderId;
+			if (cond1 && cond2) {
+				var tds = $tr.find("td");
+				$(tds[4]).html(makeCell(i, result.stationAcceptCnt));
+				$(tds[5]).html(makeCell(i, result.smtSuccessedCnt));
+				$(tds[6]).html(makeCell(i, result.shouldFee));
+				$(tds[7]).html(makeCell(i, result.receivedFee));
 			}
 		}
-		var $tr = $("#dynamic_table").find("tr").eq(index);
-		$tr.empty();
-		var resultList = result.resultList;
-		for (var i = 0; i < resultList.length; i++) {
-			$($tr).append("<td>" + resultList[i] + "</td>");
+	}
+
+	function makeCell(trIndex, content) {
+		return "<a href='javascript:showDetail(" + trIndex + ")'>" + content
+				+ "</a>";
+	}
+
+	function summaryData() {
+		var $staticTable = $("#static_table");
+		var trs = $staticTable.find("tr");
+		var rowCnt = trs.length;
+		if (rowCnt != ++sendCount) {
+			return;
 		}
+		var total = 0;
+		var successCnt = 0;
+		var shouldFee = 0;
+		var receivedFee = 0;
+		for (var i = 0; i < rowCnt; i++) {
+			var $tr = $(trs[i]);
+			var tds = $tr.find("td");
+			total += $(tds[4]).html();
+			successCnt += $(tds[5]).html();
+			shouldFee += $(tds[6]).html();
+			receivedFee += $(tds[7]).html();
+		}
+		var $summaryTable = $("#summary_table");
+		tds = $summaryTable.find("td");
+		$(tds[2]).html(total);
+		$(tds[3]).html(successCnt);
+		$(tds[4]).html(shouldFee);
+		$(tds[5]).html(receivedFee);
 	}
 
 	function getSearchFormValueObject() {
@@ -161,11 +206,6 @@
 		vo.optTimeType = $("#optTimeType").val();
 		vo.startTime = $("#startTime").val();
 		vo.endTime = $("#endTime").val();
-		vo.orgs = getMultiSelectValues("orgs");
-		vo.venderId = $("#venderId").val();
-		vo.enableTEQuery = $("#enableTEQuery").attr("checked") == undefined ? false
-				: true;
-		vo.showCols = getMultiSelectValues("showCols");
 
 		return vo;
 	}
@@ -180,6 +220,19 @@
 		}
 		return fieldIds;
 	}
+
+	function showDetail(trIndex) {
+		var $tr = $($("#static_table").find("tr").eq(trIndex));
+		var tds = $tr.find("td");
+		var stationId = $(tds[0]).html();
+		var venderId = $(tds[2]).html();
+
+		var $detailForm = $("#detailForm");
+		$("#stationId", $detailForm).val(stationId);
+		$("#venderId", $detailForm).val(venderId);
+
+		$detailForm.submit();
+	}
 </script>
 
 <style>
@@ -187,7 +240,7 @@
 	padding: 5px;
 	z-index: 9;
 	width: 100%;
-	background: url(../images/repeatx.png) repeat-x 0 -485px;
+	background: url(/images/repeatx.png) repeat-x 0 -485px;
 	border: 1px solid #86AFD5;
 }
 
@@ -233,8 +286,9 @@
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] <input type="button" id="find" value="查询" class="input_button2" /> <input type="button"
-					id="btnval" value="导出" class="input_button2" />
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] <input type="button" id="find"
+					value="查询" class="input_button2" /> <input type="button" id="btnval" value="导出"
+					class="input_button2" />
 			</div>
 		</form>
 	</div>
@@ -250,12 +304,16 @@
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
 				</tr>
-				<c:forEach items="${result.branchMap}" var="entry">
+				<c:forEach items="${result.resultList}" var="entry">
 					<tr>
-						<td id="branch_id" class="hide_td">${entry.key}</td>
-						<td>${entry.value}</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
+						<td id="station_id" class="hide_td">${entry.stationId}</td>
+						<td width="100">${entry.stationName}</td>
+						<td id="vender_id" class="hide_td">${entry.venderId}</td>
+						<td width="100">${entry.venderName}</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
+						<td width="100">&nbsp;</td>
 					</tr>
 				</c:forEach>
 			</table>
@@ -265,29 +323,29 @@
 
 		<div class="iframe_bottom">
 
-			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
-				id="static_table">
+			<table id="summary_table" style="width: 100%" border="0" cellspacing="1" cellpadding="0"
+				class="table_2">
 				<tr class="font_1">
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">领件单量</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门退成功单量</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">汇总</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">&nbsp;</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
 				</tr>
 			</table>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/1');$('#searchForm').submit();">第一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/1');$('#searchForm').submit();">第一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page - 1}');$('#searchForm').submit();">上一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page - 1}');$('#searchForm').submit();">上一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page + 1}');$('#searchForm').submit();">下一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page + 1}');$('#searchForm').submit();">下一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
 						共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"
-						onchange="$('#searchForm').attr('action','${ctx_path}/overdueexmo/'+$(this).val());$('#searchForm').submit()">
+						onchange="$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/'+$(this).val());$('#searchForm').submit()">
 							<c:forEach var="i" begin="1" end="${result.pageCount}" step="1">
 								<option value="${i}" <c:if test="${result.page == i}">selected</c:if>>${i}</option>
 							</c:forEach>
@@ -295,6 +353,14 @@
 				</tr>
 			</table>
 		</div>
+
+		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_s/1"
+			method="post">
+			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
+				type="hidden" id="startTime" name="startTime" value="${cond.startTime}" /> <input type="hidden"
+				id="endTime" name="endTime" value="${cond.endTime}" /> <input type="hidden" id="stationId"
+				name="stationId" /> <input type="hidden" id="venderId" name="venderId" />
+		</form>
 </body>
 </html>
 

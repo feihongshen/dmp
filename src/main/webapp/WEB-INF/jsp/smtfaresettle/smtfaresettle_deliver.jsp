@@ -106,11 +106,11 @@
 	});
 
 	$(function() {
-		var branchIds = getDeliverIds();
+		var deliverIds = getDeliverIds();
 		var venderIds = getVenderIds();
 		var condVO = getSearchFormValueObject();
-		for (var i = 0; i < branchIds.length; i++) {
-			sendRequest(branchIds[i], venderIds[i], condVO);
+		for (var i = 0; i < deliverIds.length; i++) {
+			sendRequest(deliverIds[i], venderIds[i], condVO);
 		}
 	});
 
@@ -144,8 +144,38 @@
 			},
 			success : function(result) {
 				showRowData(result);
+				summaryData();
 			}
 		});
+	}
+
+	var sendCount = 0;
+
+	function summaryData() {
+		var $staticTable = $("#static_table");
+		var trs = $staticTable.find("tr");
+		var rowCnt = trs.length;
+		if (rowCnt != ++sendCount) {
+			return;
+		}
+		var total = 0;
+		var successCnt = 0;
+		var shouldFee = 0;
+		var receivedFee = 0;
+		for (var i = 0; i < rowCnt; i++) {
+			var $tr = $(trs[i]);
+			var tds = $tr.find("td");
+			total += $(tds[4]).html();
+			successCnt += $(tds[5]).html();
+			shouldFee += $(tds[6]).html();
+			receivedFee += $(tds[7]).html();
+		}
+		var $summaryTable = $("#summary_table");
+		tds = $summaryTable.find("td");
+		$(tds[2]).html(total);
+		$(tds[3]).html(successCnt);
+		$(tds[4]).html(shouldFee);
+		$(tds[5]).html(receivedFee);
 	}
 
 	function showRowData(result) {
@@ -158,12 +188,17 @@
 			var cond2 = $tr.find("td").eq(2).html() == venderId;
 			if (cond1 && cond2) {
 				var tds = $tr.find("td");
-				$(tds[4]).html(result.deliverPickingCnt);
-				$(tds[5]).html(result.smtSuccessedCnt);
-				$(tds[6]).html(result.shouldFee);
-				$(tds[7]).html(result.receivedFee);
+				$(tds[4]).html(makeCell(i, result.deliverPickingCnt));
+				$(tds[5]).html(makeCell(i, result.smtSuccessedCnt));
+				$(tds[6]).html(makeCell(i, result.shouldFee));
+				$(tds[7]).html(makeCell(i, result.receivedFee));
 			}
 		}
+	}
+
+	function makeCell(trIndex, content) {
+		return "<a href='javascript:showDetail(" + trIndex + ")'>" + content
+				+ "</a>";
 	}
 
 	function getSearchFormValueObject() {
@@ -185,6 +220,60 @@
 			}
 		}
 		return fieldIds;
+	}
+
+	$(function() {
+		var $fields = $("input[name='orgs']").bind("click", function() {
+			var $orgs = getMultiSelectValues("orgs");
+			var stationIds = getStationIds($orgs);
+			fillStationDeliver(stationIds);
+		});
+	});
+
+	function getStationIds($orgs) {
+		var stationIds = "";
+		for (var i = 0; i < $orgs.length; i++) {
+			stationIds += $orgs[i] + ",";
+		}
+		return stationIds.substring(0, stationIds.length - 1);
+	}
+
+	function fillDeliverInfo(data) {
+		var $deliverId = $("#deliverId");
+		$deliverId.empty();
+		$deliverId.append("<option value='0'>请选择</option>");
+		for ( var p in data) {
+			$deliverId.append("<option value='" + p + "'>" + data[p]
+					+ "</option>");
+		}
+	}
+
+	function fillStationDeliver(stationIds) {
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "${ctx_patch}/smtfaresettle/getstationdeliver?"
+					+ Math.random(),
+			data : {
+				stationIds : stationIds
+			},
+			success : function(data) {
+				fillDeliverInfo(data);
+			}
+		});
+	}
+
+	function showDetail(trIndex) {
+		var $tr = $($("#static_table").find("tr").eq(trIndex));
+		var tds = $tr.find("td");
+		var deliverId = $(tds[0]).html();
+		var venderId = $(tds[2]).html();
+
+		var $detailForm = $("#detailForm");
+		$("#deliverId", $detailForm).val(deliverId);
+		$("#venderId", $detailForm).val(venderId);
+
+		$detailForm.submit();
 	}
 </script>
 
@@ -239,18 +328,13 @@
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>]
-			</div>
-			<div>
-				小件员：<select id="delivers" name="delivers" multiple="multiple" style="width: 100px;">
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 小件员：<select id="deliverId"
+					name="deliverId" style="width: 100px;">
 					<c:forEach items="${const.deliverMap}" var="entry">
-						<option value="${entry.key}"
-							<c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>
+						<option value="${entry.key}" <c:if test="${entry.key == cond.deliverId}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('delivers',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('delivers',0,'请选择');">取消全选</a>] <input type="button" id="find"
-					value="查询" class="input_button2" /> <input type="button" id="btnval" value="导出"
-					class="input_button2" />
+				</select> <input type="button" id="find" value="查询" class="input_button2" /> <input type="button"
+					id="btnval" value="导出" class="input_button2" />
 			</div>
 		</form>
 	</div>
@@ -285,15 +369,15 @@
 
 		<div class="iframe_bottom">
 
-			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
-				id="total_table">
+			<table id="summary_table" style="width: 100%" border="0" cellspacing="1" cellpadding="0"
+				class="table_2" id="total_table">
 				<tr class="font_1">
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">领件单量</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门退成功单量</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">汇总</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">&nbsp;</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
 				</tr>
 			</table>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
@@ -315,6 +399,14 @@
 				</tr>
 			</table>
 		</div>
+
+		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_d/1"
+			method="post">
+			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
+				type="hidden" id="startTime" name="startTime" value="${cond.startTime}" /> <input type="hidden"
+				id="endTime" name="endTime" value="${cond.endTime}" /> <input type="hidden" id="deliverId"
+				name="deliverId" /> <input type="hidden" id="venderId" name="venderId" />
+		</form>
 </body>
 </html>
 

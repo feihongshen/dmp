@@ -1030,6 +1030,9 @@ src/main/java/cn/explink/domain/SmsConfigModel.java -text
 src/main/java/cn/explink/domain/SmsSend.java -text
 src/main/java/cn/explink/domain/SmtFareSettleCondVO.java -text
 src/main/java/cn/explink/domain/SmtFareSettleConstVO.java -text
+src/main/java/cn/explink/domain/SmtFareSettleDetailCondVO.java -text
+src/main/java/cn/explink/domain/SmtFareSettleDetailResultVO.java -text
+src/main/java/cn/explink/domain/SmtFareSettleDetailVO.java -text
 src/main/java/cn/explink/domain/SmtFareSettleResultVO.java -text
 src/main/java/cn/explink/domain/SmtFareSettleVO.java -text
 src/main/java/cn/explink/domain/SmtOrder.java -text
@@ -2099,6 +2102,7 @@ src/main/webapp/WEB-INF/jsp/smsSendto/smsSendRole.jsp -text
 src/main/webapp/WEB-INF/jsp/smt/confirm.jsp -text
 src/main/webapp/WEB-INF/jsp/smt/smtorderdispatch.jsp -text
 src/main/webapp/WEB-INF/jsp/smtfaresettle/smtfaresettle_deliver.jsp -text
+src/main/webapp/WEB-INF/jsp/smtfaresettle/smtfaresettle_detail.jsp -text
 src/main/webapp/WEB-INF/jsp/smtfaresettle/smtfaresettle_station.jsp -text
 src/main/webapp/WEB-INF/jsp/systeminstall/add.jsp -text
 src/main/webapp/WEB-INF/jsp/systeminstall/edit.jsp -text

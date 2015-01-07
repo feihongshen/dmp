@@ -2,7 +2,6 @@ package cn.explink.domain;
 
 import java.util.ArrayList;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -23,7 +22,7 @@ public class SmtFareSettleCondVO {
 
 	private ArrayList<Long> venders = new ArrayList<Long>();
 
-	private ArrayList<Long> delivers = new ArrayList<Long>();
+	private long deliverId = 0;
 
 	public SmtFareSettleCondVO() {
 
@@ -75,29 +74,12 @@ public class SmtFareSettleCondVO {
 		this.venders = venders;
 	}
 
-	public ArrayList<Long> getDelivers() {
-		return this.delivers;
+	public long getDeliverId() {
+		return this.deliverId;
 	}
 
-	public void setDelivers(ArrayList<Long> delivers) {
-		this.delivers = delivers;
+	public void setDeliverId(long deliverId) {
+		this.deliverId = deliverId;
 	}
 
-	private ArrayList<Long> getLongArrayList(JSONObject jsonObject, String name) {
-		JSONArray array = jsonObject.getJSONArray(name);
-		ArrayList<Long> arrayList = new ArrayList<Long>();
-		for (int i = 0; i < array.size(); i++) {
-			arrayList.add(array.getLong(i));
-		}
-		return arrayList;
-	}
-
-	private ArrayList<Integer> getIntegerArrayList(JSONObject jsonObject, String name) {
-		JSONArray array = jsonObject.getJSONArray(name);
-		ArrayList<Integer> arrayList = new ArrayList<Integer>();
-		for (int i = 0; i < array.size(); i++) {
-			arrayList.add(array.getInt(i));
-		}
-		return arrayList;
-	}
 }

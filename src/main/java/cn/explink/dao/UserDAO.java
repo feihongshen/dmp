@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -747,8 +748,8 @@ public class UserDAO {
 		return nameMap;
 	}
 
-	public Map<Long, String> getUserNameMap(Set<Long> idList) {
-		return this.getUserNameMap(new ArrayList<Long>(idList));
+	public Map<Long, String> getUserNameMap(Set<Long> idSet) {
+		return this.getUserNameMap(new ArrayList<Long>(idSet));
 	}
 
 	private class UserIdNameRCH implements RowCallbackHandler {
@@ -772,7 +773,7 @@ public class UserDAO {
 
 	}
 
-	private <T extends Number> String getSqlInParam(List<T> idList) {
+	private <T extends Number> String getSqlInParam(Collection<T> idList) {
 		StringBuilder sqlInParam = new StringBuilder();
 		if ((idList == null) || idList.isEmpty()) {
 			return sqlInParam.toString();
@@ -795,4 +796,19 @@ public class UserDAO {
 
 		return this.jdbcTemplate.queryForList(sql, Long.class);
 	}
+
+	public Map<Long, String> getDeliverNameMapByBranch(Set<Long> branchIdSet) {
+		String inPara = this.getSqlInParam(branchIdSet);
+
+		return this.getDeliverNameMapByBranch(inPara);
+	}
+
+	public Map<Long, String> getDeliverNameMapByBranch(String inPara) {
+		String sql = "select userid,realname from express_set_user where roleid in (2,4) and branchid in (" + inPara + ")";
+		Map<Long, String> deliverNameMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new UserIdNameRCH(deliverNameMap));
+
+		return deliverNameMap;
+	}
+
 }

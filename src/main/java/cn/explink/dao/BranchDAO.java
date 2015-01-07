@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -800,6 +801,14 @@ public class BranchDAO {
 		int start = (page - 1) * 10;
 		String sql = "select branchid,branchname from  express_set_branch where branchid in (" + this.getBranchIdInPara(branchIdSet) + ") limit " + start + ",10";
 		Map<Long, String> nameMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
+
+		return nameMap;
+	}
+
+	public Map<Long, String> getBranchNameMap(int siteType) {
+		String sql = "select branchid,branchname from  express_set_branch where siteType = " + siteType;
+		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
 		return nameMap;
