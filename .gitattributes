@@ -17,8 +17,6 @@ src/main/java/cn/explink/aspect/OperationRecord.java -text
 src/main/java/cn/explink/aspect/OperationRecordMore.aj -text
 src/main/java/cn/explink/aspect/OrderFlowOperation.java -text
 src/main/java/cn/explink/aspect/SmtOptTimeAspect.java -text
-src/main/java/cn/explink/aspect/SmtOrderFlowAspect.java -text
-src/main/java/cn/explink/aspect/TestAOP.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLine.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLineController.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLineService.java -text
