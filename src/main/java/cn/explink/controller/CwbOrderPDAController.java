@@ -723,6 +723,7 @@ public class CwbOrderPDAController {
 			String nextbranch = rootElt.elementTextTrim("nextBranch");
 			long nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
 			String flag = rootElt.elementTextTrim("isForceOutstore");
+			//强制出库标识
 			if("1".equals(flag)){
 				isForceOutstore=true;
 			}
