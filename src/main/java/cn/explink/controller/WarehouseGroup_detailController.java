@@ -602,11 +602,10 @@ public class WarehouseGroup_detailController {
 				if(trucksSet.size()>1){
 					model.addAttribute("truckid","________");
 				}else {
-					if(truckid==-1){
-						model.addAttribute("truckid","_____");
+					if(truckid>0){
+						model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());	
 					}else {
-						
-						model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+						model.addAttribute("truckid","________");
 					}
 				}
 				
