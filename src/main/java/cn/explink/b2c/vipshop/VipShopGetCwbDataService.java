@@ -379,6 +379,7 @@ public class VipShopGetCwbDataService {
 			int paywayid = ext_pay_type.equals("1") ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String attemper_no = VipShopGetCwbDataService.convertEmptyString("attemper_no", datamap); // 托运单号，根据此字段生成批次.
 			String created_dtm_loc = VipShopGetCwbDataService.convertEmptyString("created_dtm_loc", datamap); // 批次时间，绑定托运单号
+			String rec_create_time = VipShopGetCwbDataService.convertEmptyString("rec_create_time", datamap); // 生成时间
 
 			String order_delivery_batch = VipShopGetCwbDataService.convertEmptyString("order_delivery_batch", datamap); // 1（默认）-一配订单：2-二配订单
 			if ("1".equals(order_delivery_batch)) {
@@ -432,7 +433,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("sendcargoname", "[发出商品]");
 			dataMap.put("customerid", vipshop.getCustomerids());
 			dataMap.put("remark1", order_batch_no); // 交接单号
-			dataMap.put("remark2", add_time); // 出仓时间
+			dataMap.put("remark2", rec_create_time); // 2015-01-08记录生成时间
 
 			dataMap.put("cargorealweight", original_weight); // 重量
 			dataMap.put("paywayid", String.valueOf(paywayid)); // 支付方式
