@@ -542,21 +542,12 @@ public class WarehouseGroup_detailController {
 				Set<String> baleSet=new HashSet<String>();
 				List<CwbOrder> cwbOrders=new ArrayList<CwbOrder>();
 				List<WarehouseGroupPrintDto> printDtos=new ArrayList<WarehouseGroupPrintDto>();//没有合包的订单重新新建一个list保存
-				Set<Long> trucksSet=new HashSet<Long>();
 				for(int i = 0; i < cwbList.size(); i++){
 					cwbOrders.add(cwbDao.getCwbByCwb(cwbList.get(i).getCwb()));
 				}
 				List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 				for(int i = 0; i < cwbOrders.size(); i++){
 					groupDetails=groupDetailDao.getGroupDetailListByCwb(cwbOrders.get(i).getCwb());
-					if(groupDetails.size()>0){
-						for (GroupDetail groupDetail : groupDetails) {
-							trucksSet.add(groupDetail.getTruckid());
-						}
-					}
-					
-					
-					
 					if(!cwbOrders.get(i).getPackagecode().equals("")){
 						baleSet.add(cwbOrders.get(i).getPackagecode());
 					}else{
@@ -604,16 +595,12 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				if(trucksSet.size()>2){
-					model.addAttribute("truckid","________");
+			
+				if(truckid>0){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());	
 				}else {
-					if(truckid>0){
-						model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());	
-					}else {
-						model.addAttribute("truckid","________");
-					}
-				}
-				
+					model.addAttribute("truckid","________");
+				}			
 				//添加统计总和信息
 				
 				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
