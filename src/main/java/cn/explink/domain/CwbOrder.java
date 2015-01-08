@@ -122,6 +122,9 @@ public class CwbOrder {
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
 	private int outareaflag = 0;// 超区标识.
+	private String consigneenameOfkf;
+	private String consigneemobileOfkf;
+	private String consigneephoneOfkf;
 
 	public CwbOrder() {
 		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {
@@ -988,4 +991,29 @@ public class CwbOrder {
 	public void setOutareaflag(int outareaflag) {
 		this.outareaflag = outareaflag;
 	}
+
+	public String getConsigneenameOfkf() {
+		return this.consigneenameOfkf;
+	}
+
+	public void setConsigneenameOfkf(String consigneenameOfkf) {
+		this.consigneenameOfkf = consigneenameOfkf;
+	}
+
+	public String getConsigneemobileOfkf() {
+		return this.consigneemobileOfkf;
+	}
+
+	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
+		this.consigneemobileOfkf = consigneemobileOfkf;
+	}
+
+	public String getConsigneephoneOfkf() {
+		return this.consigneephoneOfkf;
+	}
+
+	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
+		this.consigneephoneOfkf = consigneephoneOfkf;
+	}
+
 }
