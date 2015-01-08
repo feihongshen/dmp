@@ -56,40 +56,51 @@ public class CwbDAO {
 		return userDetail.getUser();
 	}
 
+	private User getUser() {
+		return CwbDAO.this.getSessionUser() == null ? new User() : CwbDAO.this.getSessionUser();
+	}
+
 	private void setValueByUser(ResultSet rs, CwbOrder cwbOrder) throws SQLException {
-		if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+		if (CwbDAO.this.getUser().getShownameflag() != 1) {
 			cwbOrder.setConsigneename("******");
 		} else {
 			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 		}
-		if (CwbDAO.this.getSessionUser().getShowphoneflag() != 1) {
+		if (CwbDAO.this.getUser().getShowphoneflag() != 1) {
 			cwbOrder.setConsigneephone("******");
 		} else {
 			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 		}
-		if (CwbDAO.this.getSessionUser().getShowmobileflag() != 1) {
+		if (CwbDAO.this.getUser().getShowmobileflag() != 1) {
 			cwbOrder.setConsigneemobile("******");
 		} else {
 			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 		}
+		cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+
 	}
 
 	private void setValueByUser(ResultSet rs, JSONObject obj) throws SQLException {
-		if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+		if (CwbDAO.this.getUser().getShownameflag() != 1) {
 			obj.put("consigneename", "******");
 		} else {
 			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 		}
-		if (CwbDAO.this.getSessionUser().getShowphoneflag() != 1) {
+		if (CwbDAO.this.getUser().getShowphoneflag() != 1) {
 			obj.put("consigneephone", "******");
 		} else {
 			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 		}
-		if (CwbDAO.this.getSessionUser().getShowmobileflag() != 1) {
+		if (CwbDAO.this.getUser().getShowmobileflag() != 1) {
 			obj.put("consigneemobile", "******");
 		} else {
 			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 		}
+		obj.put("consigneemobileOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		obj.put("consigneenameOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		obj.put("consigneephoneOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 	}
 
 	private final class CwbMapper implements RowMapper<CwbOrder> {
@@ -128,7 +139,6 @@ public class CwbDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
@@ -194,6 +204,7 @@ public class CwbDAO {
 			cwbOrder.setHistorybranchname(rs.getString("historybranchname"));
 			cwbOrder.setGoodsType(rs.getInt("goods_type"));
 			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
 		}
@@ -598,7 +609,7 @@ public class CwbDAO {
 			JSONObject obj = new JSONObject();
 			obj.put("deliveryid", rs.getLong("deliveryid"));
 			obj.put("customerid", rs.getLong("customerid"));
-			if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+			if (CwbDAO.this.getUser().getShownameflag() != 1) {
 				obj.put("consigneename", "******");
 			} else {
 				obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
