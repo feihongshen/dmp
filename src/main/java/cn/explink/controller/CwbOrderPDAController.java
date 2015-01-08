@@ -729,6 +729,9 @@ public class CwbOrderPDAController {
 			else{
 				isForceOutstore=false;
 			}
+			//校验包号
+			baleService.validateBaleCheck(getSessionUser(), baleNO, orderNO, nextBranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+			
 			CwbOrderPDAEnum cwbOrderPDAEnum = verficationCwb(orderNO);
 			statuscode=cwbOrderPDAEnum.getCode();
 			if(CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())){
@@ -801,7 +804,7 @@ public class CwbOrderPDAController {
 	}
 
 	/**
-	 * 
+	 * 校验包号合法性
 	 * @param cwb
 	 * @param requestbatchno
 	 * @param body
@@ -812,24 +815,24 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse checkPackageIllegal(String bale, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
-
-		BalePDAEnum balePDAEnum = verficationBaleNO(bale);
-		//对于包号校验来说，找不到包号应该合法的
-		if(BalePDAEnum.CHA_XUN_YI_CHANG_BAO_HAO_BU_CUN_ZAI.equals(balePDAEnum)){
-			balePDAEnum=BalePDAEnum.OK;
-		}
-		statuscode = balePDAEnum.getCode();
-		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
-			Bale co = baleDao.getBaleOneByBaleno(bale);
-			if(null!=co){
-				
-				body.append("<bale>").append(co.getBaleno()).append("</bale>");
-			}
+		
+		String reg = "^[a-zA-Z0-9-_*]+$";
+		Pattern pattern = Pattern.compile(reg);
+		Matcher matcher = pattern.matcher(bale);
+		BalePDAEnum balePDAEnum;
+		if (bale.length() != 0 && matcher.matches()) {
+			 balePDAEnum=BalePDAEnum.OK;
 		}
 		else {
+			balePDAEnum=BalePDAEnum.YI_CHANG_BAO_HAO;
+		} 
+		
+		statuscode = balePDAEnum.getCode();
+		if (!statuscode.equals(BalePDAEnum.OK.getCode())) {
 			errorinfo = balePDAEnum.getError();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + balePDAEnum.getVediourl();
 		}
+
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 		return PDAResponse;
 	}
