@@ -397,6 +397,9 @@ function delSuccess(data){
 		}else if(obj=='20095'){
 			$("#edit").val('<%=request.getContextPath()%>/gztl/show/');
 			$("#del").val('<%=request.getContextPath()%>/gztl/del/');
+		}else if(obj=='20096'){
+			$("#edit").val('<%=request.getContextPath()%>/gztlfeedback/show/');
+			$("#del").val('<%=request.getContextPath()%>/gztlfeedback/del/');
 		}
 
 		else{

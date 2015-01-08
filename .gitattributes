@@ -203,8 +203,13 @@ src/main/java/cn/explink/b2c/gztl/GuangZhouTongLuInsertCwbDetailTimmer.java -tex
 src/main/java/cn/explink/b2c/gztl/Gztl.java -text
 src/main/java/cn/explink/b2c/gztl/GztlController.java -text
 src/main/java/cn/explink/b2c/gztl/GztlService.java -text
+src/main/java/cn/explink/b2c/gztl/feedbackxmldto/InsertFeedbackOrderData.java -text
+src/main/java/cn/explink/b2c/gztl/feedbackxmldto/OrderFeedback.java -text
 src/main/java/cn/explink/b2c/gztl/xmldto/GztlXmlElement.java -text
 src/main/java/cn/explink/b2c/gztl/xmldto/Order.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedback.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedbackController.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedbackService.java -text
 src/main/java/cn/explink/b2c/haoxgou/CwbColumnSetHXG.java -text
 src/main/java/cn/explink/b2c/haoxgou/DESUtil.java -text
 src/main/java/cn/explink/b2c/haoxgou/HXGInsertCwbDetailTimmer.java -text
@@ -1622,6 +1627,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/gome/getgome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/testgome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglu.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglufeedback.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gzabc.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/happy.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/homegobj.jsp -text

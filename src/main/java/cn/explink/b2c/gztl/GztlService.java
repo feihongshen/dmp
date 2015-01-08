@@ -14,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
+import net.sf.json.util.NewBeanInstanceStrategy;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -87,8 +88,8 @@ public class GztlService {
 		gztl.setPrivate_key(request.getParameter("private_key"));
 		gztl.setSign(request.getParameter("sign"));
 		gztl.setCode(request.getParameter("code"));
-		gztl.setInvokeMethod("invokeMethod");
-		gztl.setReceive_url("receive_url");
+		gztl.setInvokeMethod(request.getParameter("invokeMethod"));
+		gztl.setReceive_url(request.getParameter("receive_url"));
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(gztl);
@@ -217,6 +218,14 @@ public class GztlService {
 		return xmllist;
 	}
 
+	/**
+	 * 响应给客户的xml格式的信息
+	 *
+	 * @param cwb
+	 * @param flag
+	 * @param remark
+	 * @return
+	 */
 	private String responseXml(String cwb, String flag, String remark) {
 		StringBuffer xmlBuffer = new StringBuffer();
 		xmlBuffer.append("<MSD>");
@@ -238,11 +247,13 @@ public class GztlService {
 
 	public static void main(String[] args) throws JAXBException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><MSD><Orders><Order><typeid>1</typeid><orderid>14062502938911</orderid><sclientcode>14062502938911</sclientcode><shipperid>广州唯品会</shipperid><consignorname/><consignoraddress/><consignormobile/><consignorphone/><customername>沈晓庆</customername><customeraddress>沈晓庆</customeraddress><customermobile>138****6001</customermobile><customerphone>****</customerphone><deliverygoods/><returngoods/><deliverygoodsprice/><returngoodsprice/><weight>0.0</weight><shouldreceive>0.0</shouldreceive><accuallyreceive/><remark/><arrivedate>2014-06-25 18:34:49</arrivedate><pushtime>2014-06-25 18:34:49</pushtime><goodsnum>1</goodsnum><deliverarea/><extPayType>0</extPayType><orderBatchNo>BTH140625077453</orderBatchNo><otherservicefee/><orderDate>2014-06-26 10:05:39</orderDate></Order></Orders></MSD>";
-		StringReader stringReader = new StringReader(xml);
-		JAXBContext jaxbContext = JAXBContext.newInstance(GztlXmlElement.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		GztlService gztlService=new GztlService();
+		GztlXmlElement person = (GztlXmlElement)gztlService.xmlToObj(xml, new GztlXmlElement());
+		//StringReader stringReader = new StringReader(xml);
+		//JAXBContext jaxbContext = JAXBContext.newInstance(GztlXmlElement.class);
+		//Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-		GztlXmlElement person = (GztlXmlElement) unmarshaller.unmarshal(stringReader);
+		//GztlXmlElement person = (GztlXmlElement) unmarshaller.unmarshal(stringReader);
 
 		List<Order> students2 = person.getOrders();
 		for (Iterator<Order> iterator = students2.iterator(); iterator.hasNext();) {
@@ -268,6 +279,13 @@ public class GztlService {
 
 	}
 
+	/**
+	 * jaxb将xml转化为对象
+	 *
+	 * @param xml
+	 * @param object
+	 * @return
+	 */
 	public Object xmlToObj(String xml, Object object) {
 		StringReader stringReader = new StringReader(xml);
 		Object obj = null;
@@ -281,6 +299,7 @@ public class GztlService {
 		}
 		return obj;
 	}
+
 	// @SuppressWarnings({ "unchecked", "rawtypes" })
 	// public String getParamsString(Order order, String params) {
 	// String first = params.substring(0, 1).toUpperCase();
@@ -310,4 +329,5 @@ public class GztlService {
 	// <Order>******</Order>
 	// </Orders>
 	// </MSD>
+
 }
