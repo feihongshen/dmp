@@ -41,6 +41,7 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -51,13 +52,18 @@ public class CwbDAO {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	private User getSessionUser() {
-		/*
-		 * ExplinkUserDetail userDetail = (ExplinkUserDetail)
-		 * this.securityContextHolderStrategy
-		 * .getContext().getAuthentication().getPrincipal(); return
-		 * userDetail.getUser();
-		 */
-		return new User();
+		ExplinkUserDetail userDetail = new ExplinkUserDetail();
+		try {
+			userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		} catch (Exception e) {
+			User u = new User();
+			u.setShowmobileflag(1);
+			u.setShowphoneflag(1);
+			u.setShownameflag(1);
+			return u;
+		}
+		return userDetail.getUser();
+
 	}
 
 	private User getUser() {
