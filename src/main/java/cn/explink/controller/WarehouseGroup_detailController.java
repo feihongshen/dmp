@@ -729,12 +729,8 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("baleno",baleno);
 		List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 		groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
-		long truckid2=-1;
 		if(groupDetails.size()>0){
-			for (int i = 0; i < groupDetails.size(); i++) {
-				truckid2=groupDetails.get(i).getTruckid();
-			}
-			model.addAttribute("truckid", truckid2);
+			model.addAttribute("truckid", truckid);
 		}else {
 			model.addAttribute("truckid", groupDetailDao.getGroupDetailListByBale(baleno));			
 		}
