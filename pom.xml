@@ -2419,9 +2419,9 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>GZTL</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>123</addresspassword>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
 				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
 			</properties>
 		</profile>
