@@ -505,7 +505,7 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				/*if(truckid==-1){
+				/*if(truckid-1){
 					model.addAttribute("truckid","___________");	
 				}else {
 					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());					
@@ -517,11 +517,16 @@ public class WarehouseGroup_detailController {
 				for (GroupDetail gDetail : groupDetails) {
 					groupDetail=gDetail;
 				}
-				if(groupDetail.getTruckid()>0){
-					model.addAttribute("truckid",truckDAO.getTruckByTruckid(groupDetail.getTruckid()).getTruckno());			
+				if(truckid>0){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
 				}else {
-					model.addAttribute("truckid","________");
+					if(groupDetail.getTruckid()>0){
+						model.addAttribute("truckid",truckDAO.getTruckByTruckid(groupDetail.getTruckid()).getTruckno());			
+					}else {
+						model.addAttribute("truckid","________");
+					}
 				}
+				
 				
 				
 				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
@@ -599,7 +604,7 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				if(trucksSet.size()>1){
+				if(trucksSet.size()>2){
 					model.addAttribute("truckid","________");
 				}else {
 					if(truckid>0){

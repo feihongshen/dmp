@@ -74,10 +74,12 @@ public class TruckDAO {
 	}
 
 	public Truck getTruckByTruckid(long truckid) {
+		Truck truck=new Truck();
+		truck.setTruckno("_________");
 		try {
 			return jdbcTemplate.queryForObject("select * from express_set_truck where truckid =?", new TruckRowMapper(), truckid);
 		} catch (Exception e) {
-			return new Truck();
+			return truck;
 		}
 	}
 
