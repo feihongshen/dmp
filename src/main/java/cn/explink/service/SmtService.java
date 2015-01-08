@@ -33,7 +33,7 @@ public class SmtService {
 		this.getCwbDAO().updateOrderOutAreaStatus(cwbs, branchMap);
 		// 更新订单流程表加入超区流程.
 		// 存在多次超区可能需要修改超区流程的isnow = 1.
-		this.getOrderFlowDAO().batchOutArea(cwbs, curBranchId, curBranchId, branchMap);
+		this.getOrderFlowDAO().batchOutArea(cwbs, curBranchId, curUserId, branchMap);
 
 		return errorObj;
 	}

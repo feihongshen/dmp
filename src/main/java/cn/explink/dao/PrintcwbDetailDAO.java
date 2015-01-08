@@ -10,11 +10,11 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.PrintcwbDetail;
 
-@Component
+@Repository
 public class PrintcwbDetailDAO {
 
 	private final class PrintcwbDetailRowMapper implements RowMapper<PrintcwbDetail> {
@@ -36,13 +36,14 @@ public class PrintcwbDetailDAO {
 
 	/**
 	 * 创建一条打印记录
-	 * 
+	 *
 	 * @param pd
 	 * @return key
 	 */
 	public long crePrintcwbDetail(final PrintcwbDetail pd) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_printcwb_detail (userid,credate,operatetype,printdetail) " + "values(?,?,?,? )", new String[] { "floworderid" });

@@ -5265,7 +5265,7 @@ public class CwbDAO {
 	}
 
 	public int getCwbOrderType(String cwb) {
-		String sql = "selet cwbordertypeid from express_ops_cwb_detail where cwb = ?";
+		String sql = "select cwbordertypeid from express_ops_cwb_detail where cwb = ?";
 
 		return this.jdbcTemplate.queryForInt(sql, cwb);
 	}

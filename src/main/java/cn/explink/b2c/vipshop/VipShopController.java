@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
@@ -35,8 +34,8 @@ public class VipShopController {
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
-		model.addAttribute("vipshopObject", vipshopService.getVipShop(key));
-		model.addAttribute("warehouselist", branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
+		model.addAttribute("vipshopObject", this.vipshopService.getVipShop(key));
+		model.addAttribute("warehouselist", this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
 		model.addAttribute("joint_num", key);
 		return "b2cdj/vipshop";
 
@@ -45,9 +44,9 @@ public class VipShopController {
 	@RequestMapping("/saveVipShop/{id}")
 	public @ResponseBody String tmallSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 
-		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
+		if ((request.getParameter("password") != null) && "explink".equals(request.getParameter("password"))) {
 
-			vipshopService.edit(request, key);
+			this.vipshopService.edit(request, key);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
@@ -58,7 +57,7 @@ public class VipShopController {
 
 	@RequestMapping("/del/{state}/{id}")
 	public @ResponseBody String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
-		vipshopService.update(key, state);
+		this.vipshopService.update(key, state);
 		// 保存
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 
@@ -66,7 +65,7 @@ public class VipShopController {
 
 	/**
 	 * vipshop请求接口 2012-10-25
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 * @return
@@ -74,7 +73,7 @@ public class VipShopController {
 	@RequestMapping("/test")
 	public @ResponseBody String requestByVipShop(HttpServletRequest request, HttpServletResponse response) {
 
-		vipShopService.excuteVipshopDownLoadTask();
+		this.vipShopService.excuteVipshopDownLoadTask();
 
 		return "手动请求下载成功";
 
