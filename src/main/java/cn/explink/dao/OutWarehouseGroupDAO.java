@@ -93,6 +93,46 @@ public class OutWarehouseGroupDAO {
 		jdbcTemplate.update("update express_ops_outwarehousegroup set state=? where id =?", state, id);
 	}
 
+	private String getOutWarehouseGroupByPageWhereSql2(String sql, long branchid, String beginemaildate, String endemaildate, long driverid,long truckid, long operatetype, long customerid, long currentbranchid) {
+		if (branchid > 0 || beginemaildate.length() > 0 || endemaildate.length() > 0 || driverid > 0 || operatetype > 0 || customerid > 0) {
+			StringBuffer w = new StringBuffer();
+			sql += " where ";
+			if(truckid>0){
+				w.append(" and truckid=" + truckid);
+			}
+			if (branchid > 0) {
+				w.append(" and branchid=" + branchid);
+			}
+			if (driverid > 0) {
+				w.append(" and driverid=" + driverid);
+			}
+			if (beginemaildate.length() > 0) {
+				w.append(" and credate > '" + beginemaildate + "'");
+			}
+			if (endemaildate.length() > 0) {
+				w.append(" and credate < '" + endemaildate + "'");
+			}
+			if (customerid > 0) {
+				w.append(" and customerid=" + customerid);
+			}
+			if (operatetype == OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()) {
+				w.append(" and state in(" + OutWarehouseGroupEnum.PaiSongZhong.getValue() + "," + OutWarehouseGroupEnum.FengBao.getValue() + ") and operatetype=" + operatetype);
+			} else {
+				w.append(" and state in(" + OutWarehouseGroupEnum.SaoMiaoZhong.getValue() + "," + OutWarehouseGroupEnum.FengBao.getValue() + ") and operatetype=" + operatetype);
+			}
+			sql += w.substring(4, w.length());
+		}
+		if (sql.length() == 0) {
+			sql += " where currentbranchid=" + currentbranchid + " order by printtime desc";
+		} else {
+			sql += " and currentbranchid=" + currentbranchid + " order by printtime desc";
+		}
+		return sql;
+	}
+
+	
+	
+	
 	// //////////////////////////////////////分页查询部分///////////////////////////////////////////////////
 	private String getOutWarehouseGroupByPageWhereSql(String sql, long branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid, long currentbranchid) {
 		if (branchid > 0 || beginemaildate.length() > 0 || endemaildate.length() > 0 || driverid > 0 || operatetype > 0 || customerid > 0) {
@@ -161,6 +201,15 @@ public class OutWarehouseGroupDAO {
 			long currentbranchid) {
 		String sql = "select * from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid, currentbranchid);
+		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		List<OutWarehouseGroup> outwarehouseList = jdbcTemplate.query(sql, new OutWarehouseGroupRowMapper());
+		return outwarehouseList;
+	}
+	
+	public List<OutWarehouseGroup> getOutWarehouseGroupByPage2(long page, long branchid, String beginemaildate, String endemaildate, long driverid,long truckid, long operatetype, long customerid,
+			long currentbranchid) {
+		String sql = "select * from express_ops_outwarehousegroup";
+		sql = this.getOutWarehouseGroupByPageWhereSql2(sql, branchid, beginemaildate, endemaildate, driverid,truckid, operatetype, customerid, currentbranchid);
 		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		List<OutWarehouseGroup> outwarehouseList = jdbcTemplate.query(sql, new OutWarehouseGroupRowMapper());
 		return outwarehouseList;

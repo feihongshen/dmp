@@ -891,7 +891,8 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/historyoutlist/{page}/{type}")
 	public String historyoutlist(Model model, @PathVariable("page") long page, @PathVariable("type") long type, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
-			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate) {
+			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate,
+			 @RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid) {
 		List<Branch> blist = getNextPossibleBranches();
 		List<Truck> tList =truckDAO.getAllTruck();
 		List<PrintTemplate> printtemplateList = printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + ","
@@ -927,8 +928,14 @@ public class WarehouseGroup_detailController {
 			}
 			blist = lastList;
 		}
-		model.addAttribute("outwarehousegroupList",
-				outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0, OutwarehousegroupOperateEnum.ChuKu.getValue(), 0, getSessionUser().getBranchid()));
+		if(truckid>0){
+			model.addAttribute("outwarehousegroupList",
+					outwarehousegroupDao.getOutWarehouseGroupByPage2(page, branchid, beginemaildate, endemaildate, 0,truckid, OutwarehousegroupOperateEnum.ChuKu.getValue(), 0, getSessionUser().getBranchid()));
+		}else {
+			model.addAttribute("outwarehousegroupList",
+					outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0, OutwarehousegroupOperateEnum.ChuKu.getValue(), 0, getSessionUser().getBranchid()));
+		}
+		
 		model.addAttribute("page_obj",
 				new Page(outwarehousegroupDao.getOutWarehouseGroupCount(branchid, beginemaildate, endemaildate, 0, OutwarehousegroupOperateEnum.ChuKu.getValue(), 0, getSessionUser().getBranchid()),
 						page, Page.ONE_PAGE_NUMBER));
