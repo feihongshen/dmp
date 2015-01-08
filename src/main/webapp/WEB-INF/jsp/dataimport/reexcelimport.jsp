@@ -25,7 +25,7 @@
 	//判断是否为成功记录翻页操作
 	String isSuccess = request.getParameter("isSuccess")==null?"":request.getParameter("isSuccess");
 	
-	String showphoneflag = session.getAttribute("showphoneflag")==null?"0":(String)session.getAttribute("showphoneflag");
+	String showphoneflag = session.getAttribute("showphoneflag")==null?"0":session.getAttribute("showphoneflag").toString();
 %>
 <html>
 <head>
