@@ -677,7 +677,7 @@ public class WarehouseGroup_detailController {
 		if (isshow > 0) {
 			List<GroupDetail> gdList=new ArrayList<GroupDetail>();
 			if(baleno.equals("")){
-				if(driverid==-1||truckid==-1){
+				if(driverid==-1||truckid==-1||truckid==0){
 					if(truckid!=-1){
 						gdList=groupDetailDao.getCwbForChuKuPrintTimeNewByTruckid(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",truckid);
 					}else if(driverid!=-1){

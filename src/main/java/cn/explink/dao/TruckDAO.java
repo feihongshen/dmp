@@ -4,11 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.Truck;
 import cn.explink.util.Page;
 
@@ -71,7 +74,11 @@ public class TruckDAO {
 	}
 
 	public Truck getTruckByTruckid(long truckid) {
-		return jdbcTemplate.queryForObject("select * from express_set_truck where truckid =?", new TruckRowMapper(), truckid);
+		try {
+			return jdbcTemplate.queryForObject("select * from express_set_truck where truckid =?", new TruckRowMapper(), truckid);
+		} catch (Exception e) {
+			return new Truck();
+		}
 	}
 
 	public List<Truck> getTruckByTruckname(String truckname) {
