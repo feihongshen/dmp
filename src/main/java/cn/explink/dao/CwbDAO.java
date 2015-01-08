@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
@@ -30,6 +31,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.Smtcount;
+import cn.explink.domain.User;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -39,12 +41,56 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class CwbDAO {
 	private Logger logger = LoggerFactory.getLogger(CwbDAO.class);
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
+
+	private void setValueByUser(ResultSet rs, CwbOrder cwbOrder) throws SQLException {
+		if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+			cwbOrder.setConsigneename("******");
+		} else {
+			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		}
+		if (CwbDAO.this.getSessionUser().getShowphoneflag() != 1) {
+			cwbOrder.setConsigneephone("******");
+		} else {
+			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+		}
+		if (CwbDAO.this.getSessionUser().getShowmobileflag() != 1) {
+			cwbOrder.setConsigneemobile("******");
+		} else {
+			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		}
+	}
+
+	private void setValueByUser(ResultSet rs, JSONObject obj) throws SQLException {
+		if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+			obj.put("consigneename", "******");
+		} else {
+			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		}
+		if (CwbDAO.this.getSessionUser().getShowphoneflag() != 1) {
+			obj.put("consigneephone", "******");
+		} else {
+			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+		}
+		if (CwbDAO.this.getSessionUser().getShowmobileflag() != 1) {
+			obj.put("consigneemobile", "******");
+		} else {
+			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		}
+	}
 
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		@Override
@@ -82,10 +128,9 @@ public class CwbDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -97,7 +142,6 @@ public class CwbDAO {
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setShipperid(rs.getLong("shipperid"));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -153,6 +197,7 @@ public class CwbDAO {
 
 			return cwbOrder;
 		}
+
 	}
 
 	private final class CwbPayMapper implements RowMapper<JSONObject> {
@@ -192,10 +237,10 @@ public class CwbDAO {
 			obj.put("customerid", rs.getLong("customerid"));
 			obj.put("shipcwb", StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			obj.put("consigneeno", StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+
+			CwbDAO.this.setValueByUser(rs, obj);
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("consigneepostcode", StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			obj.put("cwbremark", StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			obj.put("customercommand", StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			obj.put("transway", StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -207,7 +252,6 @@ public class CwbDAO {
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			obj.put("shipperid", rs.getLong("shipperid"));
 			obj.put("cwbordertypeid", rs.getInt("cwbordertypeid"));
-			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			obj.put("transcwb", StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			obj.put("destination", StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			obj.put("cwbdelivertypeid", StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -250,6 +294,7 @@ public class CwbDAO {
 			obj.put("pushtime", rs.getString("pushtime"));
 			return obj;
 		}
+
 	}
 
 	private final class CwbBackPayMapper implements RowMapper<JSONObject> {
@@ -289,10 +334,8 @@ public class CwbDAO {
 			obj.put("customerid", rs.getLong("customerid"));
 			obj.put("shipcwb", StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			obj.put("consigneeno", StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("consigneepostcode", StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			obj.put("cwbremark", StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			obj.put("customercommand", StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			obj.put("transway", StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -304,7 +347,6 @@ public class CwbDAO {
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			obj.put("shipperid", rs.getLong("shipperid"));
 			obj.put("cwbordertypeid", rs.getInt("cwbordertypeid"));
-			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			obj.put("transcwb", StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			obj.put("destination", StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			obj.put("cwbdelivertypeid", StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -346,6 +388,7 @@ public class CwbDAO {
 			obj.put("receivedfee", rs.getBigDecimal("receivedfee"));
 			obj.put("deliverystate", rs.getInt("deliverystate"));
 			obj.put("deliverytime", rs.getString("deliverytime"));
+			CwbDAO.this.setValueByUser(rs, obj);
 			return obj;
 		}
 	}
@@ -374,17 +417,15 @@ public class CwbDAO {
 			cwbOrder.setBackcarnum(rs.getLong("backcarnum"));
 			cwbOrder.setCaramount(rs.getBigDecimal("caramount"));
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			cwbOrder.setPaybackfee(rs.getBigDecimal("paybackfee"));
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setPaywayid(rs.getLong("paywayid"));
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			return cwbOrder;
 		}
 
@@ -557,7 +598,11 @@ public class CwbDAO {
 			JSONObject obj = new JSONObject();
 			obj.put("deliveryid", rs.getLong("deliveryid"));
 			obj.put("customerid", rs.getLong("customerid"));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			if (CwbDAO.this.getSessionUser().getShownameflag() != 1) {
+				obj.put("consigneename", "******");
+			} else {
+				obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			}
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("receivablefee", rs.getBigDecimal("receivablefee"));
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
@@ -605,10 +650,8 @@ public class CwbDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -620,7 +663,6 @@ public class CwbDAO {
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setShipperid(rs.getLong("shipperid"));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -671,7 +713,7 @@ public class CwbDAO {
 
 			cwbOrder.setFankuitime(rs.getString("fankuitime"));
 			cwbOrder.setShenhetime(rs.getString("shenhetime"));
-
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			try {
 				if (rs.getString("chuzhantime") != null) {
 					cwbOrder.setChuzhantime(rs.getString("chuzhantime"));
@@ -5262,11 +5304,11 @@ public class CwbDAO {
 		sql.append(", flowordertype = 1 where cwb= ?");
 		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
 	}
-	
-	public Map<String,Object> getCwbIDsByBale(String baleid) {
-		String sql = "select count(cwb) as cwbnum,IFNULL(sum(sendcarnum)+sum(backcarnum),0) as transcwbnum from express_ops_cwb_detail where state=1 and packagecode = "+baleid;
-		return jdbcTemplate.queryForMap(sql);
-		
+
+	public Map<String, Object> getCwbIDsByBale(String baleid) {
+		String sql = "select count(cwb) as cwbnum,IFNULL(sum(sendcarnum)+sum(backcarnum),0) as transcwbnum from express_ops_cwb_detail where state=1 and packagecode = " + baleid;
+		return this.jdbcTemplate.queryForMap(sql);
+
 	}
 
 	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, String orderby, long customerid, long emaildateid, long asc) {
