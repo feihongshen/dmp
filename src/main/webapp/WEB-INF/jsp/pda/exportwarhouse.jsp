@@ -720,7 +720,7 @@ function chuku(){
 			$("#baleno").val("");
 			if(data.statuscode=="000000"){
 				successvedioplay("<%=request.getContextPath()%>",data);
-			}else if(data.body.erroecode=='111111'){
+			}else if(data.body.errorcode=='111111'){
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			
