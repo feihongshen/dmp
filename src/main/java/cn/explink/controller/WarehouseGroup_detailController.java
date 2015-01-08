@@ -505,11 +505,24 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				if(truckid==-1){
+				/*if(truckid==-1){
 					model.addAttribute("truckid","___________");	
 				}else {
 					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());					
+				}*/
+				
+				List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
+				groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
+				GroupDetail groupDetail=new GroupDetail();
+				for (GroupDetail gDetail : groupDetails) {
+					groupDetail=gDetail;
 				}
+				if(groupDetail.getTruckid()>0){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(groupDetail.getTruckid()).getTruckno());			
+				}else {
+					model.addAttribute("truckid","________");
+				}
+				
 				
 				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
 				warehouseGroupPrintDto.setBaleno("1");
@@ -524,10 +537,21 @@ public class WarehouseGroup_detailController {
 				Set<String> baleSet=new HashSet<String>();
 				List<CwbOrder> cwbOrders=new ArrayList<CwbOrder>();
 				List<WarehouseGroupPrintDto> printDtos=new ArrayList<WarehouseGroupPrintDto>();//没有合包的订单重新新建一个list保存
+				Set<Long> trucksSet=new HashSet<Long>();
 				for(int i = 0; i < cwbList.size(); i++){
 					cwbOrders.add(cwbDao.getCwbByCwb(cwbList.get(i).getCwb()));
 				}
+				List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 				for(int i = 0; i < cwbOrders.size(); i++){
+					groupDetails=groupDetailDao.getGroupDetailListByCwb(cwbOrders.get(i).getCwb());
+					if(groupDetails.size()>0){
+						for (GroupDetail groupDetail : groupDetails) {
+							trucksSet.add(groupDetail.getTruckid());
+						}
+					}
+					
+					
+					
 					if(!cwbOrders.get(i).getPackagecode().equals("")){
 						baleSet.add(cwbOrders.get(i).getPackagecode());
 					}else{
@@ -575,12 +599,17 @@ public class WarehouseGroup_detailController {
 				}
 				nextBranch=nextBranch.substring(0, nextBranch.length()-1);
 				model.addAttribute("branchname",nextBranch);
-				if(truckid==-1){
-					model.addAttribute("truckid","_____");
+				if(trucksSet.size()>1){
+					model.addAttribute("truckid","________");
 				}else {
-					
-					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+					if(truckid==-1){
+						model.addAttribute("truckid","_____");
+					}else {
+						
+						model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+					}
 				}
+				
 				//添加统计总和信息
 				
 				WarehouseGroupPrintDto warehouseGroupPrintDto=new WarehouseGroupPrintDto();
@@ -707,7 +736,17 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("uList",uList);
 		model.addAttribute("tList",tList);
 		model.addAttribute("baleno",baleno);
-		model.addAttribute("truckid",truckid);
+		List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
+		groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
+		long truckid2=-1;
+		if(groupDetails.size()>0){
+			for (int i = 0; i < groupDetails.size(); i++) {
+				truckid2=groupDetails.get(i).getTruckid();
+			}
+			model.addAttribute("truckid", truckid2);
+		}else {
+			model.addAttribute("truckid", groupDetailDao.getGroupDetailListByBale(baleno));			
+		}
 		model.addAttribute("driverid",driverid);
 		return "warehousegroup/outdetaillist";
 	}
@@ -1174,11 +1213,17 @@ public class WarehouseGroup_detailController {
 					warehouseGroupPrintDtos.add(warehouseGroupPrintDto);
 				}
 				
-				if(truckid!=0&&truckid!=-1){
-					model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
-				}else {
-					model.addAttribute("truckid","________");
+				if(baleSet.size()==1){
+					model.addAttribute("truckid",truckDAO.getTruckByTruckid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getTruckid()).getTruckno());
+				}else{
+					
+					if(truckid!=0&&truckid!=-1){
+						model.addAttribute("truckid",truckDAO.getTruckByTruckid(truckid).getTruckno());
+					}else {
+						model.addAttribute("truckid","________");
+					}
 				}
+
 				model.addAttribute("printList", warehouseGroupPrintDtos);
 				model.addAttribute("branchname",branchDAO.getBranchByBranchid(outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
 				//设置汇总值

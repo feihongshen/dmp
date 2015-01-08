@@ -31,6 +31,8 @@ public class GroupDetailDao {
 			groupDetail.setDeliverid(rs.getLong("deliverid"));
 			groupDetail.setCustomerid(rs.getLong("customerid"));
 			groupDetail.setBaleno(rs.getString("baleno"));
+			groupDetail.setTruckid(rs.getLong("truckid"));
+			groupDetail.setDriverid(rs.getLong("driverid"));
 			return groupDetail;
 		}
 	}
