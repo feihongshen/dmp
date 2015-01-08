@@ -685,7 +685,7 @@ public class CwbOrderPDAController {
 			Element rootElt = document.getRootElement(); 
 			String baleNO = rootElt.elementTextTrim("baleNO");
 			String nextbranch = rootElt.elementTextTrim("nextBranch");
-			long nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			long nextBranchid=Long.parseLong(nextbranch);//branchDAO.getBranchByBranchname(nextbranch).getBranchid();
 			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
 			statuscode="000000";
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -721,7 +721,7 @@ public class CwbOrderPDAController {
 			String baleNO = rootElt.elementTextTrim("baleNO");
 			String orderNO = rootElt.elementTextTrim("orderNO");
 			String nextbranch = rootElt.elementTextTrim("nextBranch");
-			long nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			long nextBranchid=Long.parseLong(nextbranch);//branchDAO.getBranchByBranchname(nextbranch).getBranchid();
 			String flag = rootElt.elementTextTrim("isForceOutstore");
 			//强制出库标识
 			if("1".equals(flag)){
