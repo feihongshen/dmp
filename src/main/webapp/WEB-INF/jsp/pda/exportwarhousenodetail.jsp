@@ -404,7 +404,7 @@ function chuku(){
 			$("#msg").html(data.body.errorinfo);
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			if(data.body.statuscode=='000000'){
+			if(data.statuscode=='000000'){
 				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
 				errorvedioplay("<%=request.getContextPath()%>",data);
