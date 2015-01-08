@@ -718,10 +718,11 @@ function chuku(){
 			
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			if(data.statuscode=="000000"){
-				successvedioplay("<%=request.getContextPath()%>",data);
-			}else if(data.body.errorcode=='111111'){
+			
+		 	if(data.body.errorcode=='111111'){
 				errorvedioplay("<%=request.getContextPath()%>",data);
+			}else if(data.statuscode=="000000"){
+				successvedioplay("<%=request.getContextPath()%>",data);
 			}
 			
 		}
