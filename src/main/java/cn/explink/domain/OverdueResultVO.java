@@ -8,6 +8,10 @@ public class OverdueResultVO {
 
 	private Map<Long, String> branchMap = null;
 
+	private long venderId = -1;
+
+	private String venderName = null;
+
 	private Integer page = Integer.valueOf(1);
 
 	private Integer pageCount = Integer.valueOf(1);
@@ -52,6 +56,22 @@ public class OverdueResultVO {
 
 	public void setCount(Integer count) {
 		this.count = count;
+	}
+
+	public long getVenderId() {
+		return this.venderId;
+	}
+
+	public void setVenderId(long venderId) {
+		this.venderId = venderId;
+	}
+
+	public String getVenderName() {
+		return this.venderName;
+	}
+
+	public void setVenderName(String venderName) {
+		this.venderName = venderName;
 	}
 
 }

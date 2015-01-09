@@ -106,9 +106,10 @@
 
 	$(function() {
 		var branchIds = getBranchIds();
+		var venderIds = getVenderIds();
 		var condVO = getSearchFormValueObject();
 		for (var i = 0; i < branchIds.length; i++) {
-			sendRequest(branchIds[i], condVO);
+			sendRequest(branchIds[i], venderIds[i], condVO);
 		}
 	});
 
@@ -121,11 +122,20 @@
 		return branchIds;
 	}
 
-	function sendRequest(branchId, condVO) {
+	function getVenderIds() {
+		var venders = $("td[id='vender_id']");
+		var venderIds = [];
+		for (var i = 0; i < venders.length; i++) {
+			venderIds.push($(venders[i]).html());
+		}
+		return venderIds;
+	}
+
+	function sendRequest(branchId, venderId, condVO) {
 		$.ajax({
 			type : "post",
-			url : "${ctx_path}/overdueexmo/getbranchdata/" + branchId + "?"
-					+ Math.random(),
+			url : "${ctx_path}/overdueexmo/getbranchdata/" + branchId + "/"
+					+ venderId + "?" + Math.random(),
 			dataType : "json",
 			async : true,
 			data : {
@@ -139,7 +149,7 @@
 
 	function showRowData(result) {
 		var branchId = result.branchId;
-		var trs =$('#static_table tr');
+		var trs = $('#static_table tr');
 		var index = -1;
 		for (var i = 1; i < trs.length; i++) {
 			if ($(trs[i]).find("td").eq(0).html() == branchId) {
@@ -163,7 +173,8 @@
 		vo.endTime = $("#endTime").val();
 		vo.orgs = getMultiSelectValues("orgs");
 		vo.venderId = $("#venderId").val();
-		vo.enableTEQuery = $("#enableTEQuery").attr("checked") == undefined? false:true;
+		vo.enableTEQuery = $("#enableTEQuery").attr("checked") == undefined ? false
+				: true;
 		vo.showCols = getMultiSelectValues("showCols");
 
 		return vo;
@@ -255,14 +266,13 @@
 				<tr class="font_1">
 					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
 					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">生成单量</td>
 				</tr>
 				<c:forEach items="${result.branchMap}" var="entry">
 					<tr>
 						<td id="branch_id" class="hide_td">${entry.key}</td>
 						<td>${entry.value}</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
+						<td id="vender_id" class="hide_td">${result.venderId}</td>
+						<td>${result.venderName}</td>
 					</tr>
 				</c:forEach>
 			</table>
@@ -294,9 +304,15 @@
 				<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
 					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/1');$('#searchForm').submit();">第一页</a>
 					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page - 1}');$('#searchForm').submit();">上一页</a>
+					<c:choose>  
+                <c:when test="${result.page != 1}">href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page - 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>上一页</a>
 					<a
-					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page + 1}');$('#searchForm').submit();">下一页</a>
+					<c:choose>  
+                <c:when test="${(result.page != result.pageCount) and (result.page != 1)}">href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.page + 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>下一页</a>
 					<a
 					href="javascript:$('#searchForm').attr('action','${ctx_path}/overdueexmo/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
 					共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"

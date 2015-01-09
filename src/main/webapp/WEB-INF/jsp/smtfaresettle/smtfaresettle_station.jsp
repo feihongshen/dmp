@@ -339,9 +339,15 @@
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
 						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/1');$('#searchForm').submit();">第一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page - 1}');$('#searchForm').submit();">上一页</a>
+						<c:choose>  
+                <c:when test="${result.page != 1}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page - 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>上一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page + 1}');$('#searchForm').submit();">下一页</a>
+						<c:choose>  
+                <c:when test="${(result.page != result.pageCount) and (result.page != 1)}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.page + 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>下一页</a>
 						<a
 						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
 						共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"

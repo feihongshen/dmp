@@ -815,8 +815,21 @@ public class BranchDAO {
 	}
 
 	public List<Long> getAllBranchId() {
-		String sql = " select branchid from express_set_branch";
+		String sql = " select branchid from express_set_branch where sitetype = 2";
 		return this.jdbcTemplate.queryForList(sql, Long.class);
+	}
+
+	public List<Long> getAllBranchAndWarehouseId() {
+		String sql = " select branchid from express_set_branch where sitetype in(1,2)";
+		return this.jdbcTemplate.queryForList(sql, Long.class);
+	}
+
+	public Map<Long, String> getBranchAndWarehouseNameMap() {
+		String sql = "select branchid , branchname from express_set_branch where sitetype in(1,2)";
+		Map<Long, String> nameMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
+
+		return nameMap;
 	}
 
 	private String getBranchIdInPara(Set<Long> idSet) {
@@ -840,7 +853,7 @@ public class BranchDAO {
 		public void processRow(ResultSet rs) throws SQLException {
 			long id = rs.getLong("branchid");
 			String name = rs.getString("branchname");
-			this.nameMap.put(Long.valueOf(id), name);
+			this.getNameMap().put(Long.valueOf(id), name);
 		}
 
 		private Map<Long, String> getNameMap() {

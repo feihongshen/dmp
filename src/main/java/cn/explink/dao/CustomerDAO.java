@@ -269,6 +269,13 @@ public class CustomerDAO {
 		return this.jdbcTemplate.queryForList(sql, Long.class);
 	}
 
+	public String getCustomerName(long customerId) {
+		String sql = "select customername from express_set_customer_info where customerid = ?";
+		Object[] paras = new Object[] { customerId };
+
+		return this.jdbcTemplate.queryForObject(sql, paras, String.class);
+	}
+
 	public Map<Long, String> getCustomerNameMap(Set<Long> customerIdSet) {
 		final Map<Long, String> customerNameMap = new HashMap<Long, String>();
 		String inPara = this.getInPara(customerIdSet);
