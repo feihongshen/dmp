@@ -68,9 +68,12 @@ public class QuickSelectView {
 	String exceldeliver;// 指定小件员（用于地址库匹配）
 	String excelbranch;// 指定派送分站（用于地址库匹配）
 	String timelimited;// 地址库匹配时效
+	String consigneenameOfkf;
+	String consigneemobileOfkf;
+	String consigneephoneOfkf;
 
 	public String getTimelimited() {
-		return timelimited;
+		return this.timelimited;
 	}
 
 	public void setTimelimited(String timelimited) {
@@ -120,7 +123,7 @@ public class QuickSelectView {
 	List<TranscwbOrderFlowView> transcwborderFlowList;
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -128,7 +131,7 @@ public class QuickSelectView {
 	}
 
 	public long getStartbranchid() {
-		return startbranchid;
+		return this.startbranchid;
 	}
 
 	public void setStartbranchid(long startbranchid) {
@@ -136,7 +139,7 @@ public class QuickSelectView {
 	}
 
 	public long getCurrentbranchid() {
-		return currentbranchid;
+		return this.currentbranchid;
 	}
 
 	public void setCurrentbranchid(long currentbranchid) {
@@ -144,7 +147,7 @@ public class QuickSelectView {
 	}
 
 	public long getNextbranchid() {
-		return nextbranchid;
+		return this.nextbranchid;
 	}
 
 	public void setNextbranchid(long nextbranchid) {
@@ -152,7 +155,7 @@ public class QuickSelectView {
 	}
 
 	public long getDeliverybranchid() {
-		return deliverybranchid;
+		return this.deliverybranchid;
 	}
 
 	public void setDeliverybranchid(long deliverybranchid) {
@@ -160,7 +163,7 @@ public class QuickSelectView {
 	}
 
 	public String getBacktocustomer_awb() {
-		return backtocustomer_awb == null ? "" : backtocustomer_awb;
+		return this.backtocustomer_awb == null ? "" : this.backtocustomer_awb;
 	}
 
 	public void setBacktocustomer_awb(String backtocustomer_awb) {
@@ -168,10 +171,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getCarrealweight() {
-		if (carrealweight == null) {
-			carrealweight = new BigDecimal("0.00");
+		if (this.carrealweight == null) {
+			this.carrealweight = new BigDecimal("0.00");
 		}
-		return carrealweight;
+		return this.carrealweight;
 	}
 
 	public void setCarrealweight(BigDecimal carrealweight) {
@@ -179,7 +182,7 @@ public class QuickSelectView {
 	}
 
 	public String getCartype() {
-		return cartype == null ? "" : cartype;
+		return this.cartype == null ? "" : this.cartype;
 	}
 
 	public void setCartype(String cartype) {
@@ -187,7 +190,7 @@ public class QuickSelectView {
 	}
 
 	public String getCarwarehouse() {
-		return carwarehouse == null ? "" : carwarehouse;
+		return this.carwarehouse == null ? "" : this.carwarehouse;
 	}
 
 	public void setCarwarehouse(String carwarehouse) {
@@ -195,7 +198,7 @@ public class QuickSelectView {
 	}
 
 	public String getCarsize() {
-		return carsize == null ? "" : carsize;
+		return this.carsize == null ? "" : this.carsize;
 	}
 
 	public void setCarsize(String carsize) {
@@ -203,10 +206,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getBackcaramount() {
-		if (backcaramount == null) {
-			backcaramount = new BigDecimal("0.00");
+		if (this.backcaramount == null) {
+			this.backcaramount = new BigDecimal("0.00");
 		}
-		return backcaramount;
+		return this.backcaramount;
 	}
 
 	public void setBackcaramount(BigDecimal backcaramount) {
@@ -214,7 +217,7 @@ public class QuickSelectView {
 	}
 
 	public long getSendcarnum() {
-		return sendcarnum;
+		return this.sendcarnum;
 	}
 
 	public void setSendcarnum(long sendcarnum) {
@@ -222,7 +225,7 @@ public class QuickSelectView {
 	}
 
 	public long getBackcarnum() {
-		return backcarnum;
+		return this.backcarnum;
 	}
 
 	public void setBackcarnum(long backcarnum) {
@@ -230,10 +233,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getCaramount() {
-		if (caramount == null) {
-			caramount = new BigDecimal("0.00");
+		if (this.caramount == null) {
+			this.caramount = new BigDecimal("0.00");
 		}
-		return caramount;
+		return this.caramount;
 	}
 
 	public void setCaramount(BigDecimal caramount) {
@@ -241,7 +244,7 @@ public class QuickSelectView {
 	}
 
 	public String getBackcarname() {
-		return backcarname == null ? "" : backcarname;
+		return this.backcarname == null ? "" : this.backcarname;
 	}
 
 	public void setBackcarname(String backcarname) {
@@ -249,7 +252,7 @@ public class QuickSelectView {
 	}
 
 	public String getSendcarname() {
-		return sendcarname == null ? "" : sendcarname;
+		return this.sendcarname == null ? "" : this.sendcarname;
 	}
 
 	public void setSendcarname(String sendcarname) {
@@ -257,7 +260,7 @@ public class QuickSelectView {
 	}
 
 	public long getDeliverid() {
-		return deliverid;
+		return this.deliverid;
 	}
 
 	public void setDeliverid(long deliverid) {
@@ -265,7 +268,7 @@ public class QuickSelectView {
 	}
 
 	public int getEmailfinishflag() {
-		return emailfinishflag;
+		return this.emailfinishflag;
 	}
 
 	public void setEmailfinishflag(int emailfinishflag) {
@@ -273,7 +276,7 @@ public class QuickSelectView {
 	}
 
 	public int getReacherrorflag() {
-		return reacherrorflag;
+		return this.reacherrorflag;
 	}
 
 	public void setReacherrorflag(int reacherrorflag) {
@@ -281,7 +284,7 @@ public class QuickSelectView {
 	}
 
 	public long getOrderflowid() {
-		return orderflowid;
+		return this.orderflowid;
 	}
 
 	public void setOrderflowid(long orderflowid) {
@@ -289,7 +292,7 @@ public class QuickSelectView {
 	}
 
 	public long getFlowordertype() {
-		return flowordertype;
+		return this.flowordertype;
 	}
 
 	public void setFlowordertype(long flowordertype) {
@@ -297,7 +300,7 @@ public class QuickSelectView {
 	}
 
 	public long getCwbreachbranchid() {
-		return cwbreachbranchid;
+		return this.cwbreachbranchid;
 	}
 
 	public void setCwbreachbranchid(long cwbreachbranchid) {
@@ -305,7 +308,7 @@ public class QuickSelectView {
 	}
 
 	public long getCwbreachdeliverbranchid() {
-		return cwbreachdeliverbranchid;
+		return this.cwbreachdeliverbranchid;
 	}
 
 	public void setCwbreachdeliverbranchid(long cwbreachdeliverbranchid) {
@@ -313,7 +316,7 @@ public class QuickSelectView {
 	}
 
 	public String getPodfeetoheadflag() {
-		return podfeetoheadflag == null ? "" : podfeetoheadflag;
+		return this.podfeetoheadflag == null ? "" : this.podfeetoheadflag;
 	}
 
 	public void setPodfeetoheadflag(String podfeetoheadflag) {
@@ -321,7 +324,7 @@ public class QuickSelectView {
 	}
 
 	public String getPodfeetoheadtime() {
-		return podfeetoheadtime == null ? "" : podfeetoheadtime;
+		return this.podfeetoheadtime == null ? "" : this.podfeetoheadtime;
 	}
 
 	public void setPodfeetoheadtime(String podfeetoheadtime) {
@@ -329,7 +332,7 @@ public class QuickSelectView {
 	}
 
 	public String getPodfeetoheadchecktime() {
-		return podfeetoheadchecktime == null ? "" : podfeetoheadchecktime;
+		return this.podfeetoheadchecktime == null ? "" : this.podfeetoheadchecktime;
 	}
 
 	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
@@ -337,7 +340,7 @@ public class QuickSelectView {
 	}
 
 	public String getPodfeetoheadcheckflag() {
-		return podfeetoheadcheckflag == null ? "" : podfeetoheadcheckflag;
+		return this.podfeetoheadcheckflag == null ? "" : this.podfeetoheadcheckflag;
 	}
 
 	public void setPodfeetoheadcheckflag(String podfeetoheadcheckflag) {
@@ -345,7 +348,7 @@ public class QuickSelectView {
 	}
 
 	public long getLeavedreasonid() {
-		return leavedreasonid;
+		return this.leavedreasonid;
 	}
 
 	public void setLeavedreasonid(long leavedreasonid) {
@@ -353,7 +356,7 @@ public class QuickSelectView {
 	}
 
 	public String getDeliversubscribeday() {
-		return deliversubscribeday == null ? "" : deliversubscribeday;
+		return this.deliversubscribeday == null ? "" : this.deliversubscribeday;
 	}
 
 	public void setDeliversubscribeday(String deliversubscribeday) {
@@ -361,7 +364,7 @@ public class QuickSelectView {
 	}
 
 	public String getCustomerwarehouseid() {
-		return customerwarehouseid == null ? "" : customerwarehouseid;
+		return this.customerwarehouseid == null ? "" : this.customerwarehouseid;
 	}
 
 	public void setCustomerwarehouseid(String customerwarehouseid) {
@@ -369,7 +372,7 @@ public class QuickSelectView {
 	}
 
 	public long getEmaildateid() {
-		return emaildateid;
+		return this.emaildateid;
 	}
 
 	public void setEmaildateid(long emaildateid) {
@@ -377,7 +380,7 @@ public class QuickSelectView {
 	}
 
 	public String getEmaildate() {
-		return emaildate == null ? "" : emaildate;
+		return this.emaildate == null ? "" : this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -385,7 +388,7 @@ public class QuickSelectView {
 	}
 
 	public long getServiceareaid() {
-		return serviceareaid;
+		return this.serviceareaid;
 	}
 
 	public void setServiceareaid(long serviceareaid) {
@@ -393,7 +396,7 @@ public class QuickSelectView {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -401,7 +404,7 @@ public class QuickSelectView {
 	}
 
 	public String getShipcwb() {
-		return shipcwb == null ? "" : shipcwb;
+		return this.shipcwb == null ? "" : this.shipcwb;
 	}
 
 	public void setShipcwb(String shipcwb) {
@@ -409,7 +412,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneeno() {
-		return consigneeno == null ? "" : consigneeno;
+		return this.consigneeno == null ? "" : this.consigneeno;
 	}
 
 	public void setConsigneeno(String consigneeno) {
@@ -417,7 +420,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneename() {
-		return consigneename == null ? "" : consigneename;
+		return this.consigneename == null ? "" : this.consigneename;
 	}
 
 	public void setConsigneename(String consigneename) {
@@ -425,7 +428,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneeaddress() {
-		return consigneeaddress == null ? "" : consigneeaddress;
+		return this.consigneeaddress == null ? "" : this.consigneeaddress;
 	}
 
 	public void setConsigneeaddress(String consigneeaddress) {
@@ -433,7 +436,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneepostcode() {
-		return consigneepostcode == null ? "" : consigneepostcode;
+		return this.consigneepostcode == null ? "" : this.consigneepostcode;
 	}
 
 	public void setConsigneepostcode(String consigneepostcode) {
@@ -441,7 +444,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneephone() {
-		return consigneephone == null ? "" : consigneephone;
+		return this.consigneephone == null ? "" : this.consigneephone;
 	}
 
 	public void setConsigneephone(String consigneephone) {
@@ -449,7 +452,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwbremark() {
-		return cwbremark == null ? "" : cwbremark;
+		return this.cwbremark == null ? "" : this.cwbremark;
 	}
 
 	public void setCwbremark(String cwbremark) {
@@ -457,7 +460,7 @@ public class QuickSelectView {
 	}
 
 	public String getCustomercommand() {
-		return customercommand == null ? "" : customercommand;
+		return this.customercommand == null ? "" : this.customercommand;
 	}
 
 	public void setCustomercommand(String customercommand) {
@@ -465,7 +468,7 @@ public class QuickSelectView {
 	}
 
 	public String getTransway() {
-		return transway == null ? "" : transway;
+		return this.transway == null ? "" : this.transway;
 	}
 
 	public void setTransway(String transway) {
@@ -473,7 +476,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwbprovince() {
-		return cwbprovince == null ? "" : cwbprovince;
+		return this.cwbprovince == null ? "" : this.cwbprovince;
 	}
 
 	public void setCwbprovince(String cwbprovince) {
@@ -481,7 +484,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwbcity() {
-		return cwbcity == null ? "" : cwbcity;
+		return this.cwbcity == null ? "" : this.cwbcity;
 	}
 
 	public void setCwbcity(String cwbcity) {
@@ -489,7 +492,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwbcounty() {
-		return cwbcounty == null ? "" : cwbcounty;
+		return this.cwbcounty == null ? "" : this.cwbcounty;
 	}
 
 	public void setCwbcounty(String cwbcounty) {
@@ -497,10 +500,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getReceivablefee() {
-		if (receivablefee == null) {
-			receivablefee = new BigDecimal("0.00");
+		if (this.receivablefee == null) {
+			this.receivablefee = new BigDecimal("0.00");
 		}
-		return receivablefee;
+		return this.receivablefee;
 	}
 
 	public void setReceivablefee(BigDecimal receivablefee) {
@@ -508,10 +511,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getPaybackfee() {
-		if (paybackfee == null) {
-			paybackfee = new BigDecimal("0.00");
+		if (this.paybackfee == null) {
+			this.paybackfee = new BigDecimal("0.00");
 		}
-		return paybackfee;
+		return this.paybackfee;
 	}
 
 	public void setPaybackfee(BigDecimal paybackfee) {
@@ -519,7 +522,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwb() {
-		return cwb == null ? "" : cwb;
+		return this.cwb == null ? "" : this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -527,7 +530,7 @@ public class QuickSelectView {
 	}
 
 	public long getShipperid() {
-		return shipperid;
+		return this.shipperid;
 	}
 
 	public void setShipperid(long shipperid) {
@@ -535,7 +538,7 @@ public class QuickSelectView {
 	}
 
 	public int getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(int cwbordertypeid) {
@@ -543,7 +546,7 @@ public class QuickSelectView {
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile == null ? "" : consigneemobile;
+		return this.consigneemobile == null ? "" : this.consigneemobile;
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
@@ -551,7 +554,7 @@ public class QuickSelectView {
 	}
 
 	public String getTranscwb() {
-		return transcwb == null ? "" : transcwb;
+		return this.transcwb == null ? "" : this.transcwb;
 	}
 
 	public void setTranscwb(String transcwb) {
@@ -559,7 +562,7 @@ public class QuickSelectView {
 	}
 
 	public String getDestination() {
-		return destination == null ? "" : destination;
+		return this.destination == null ? "" : this.destination;
 	}
 
 	public void setDestination(String destination) {
@@ -567,7 +570,7 @@ public class QuickSelectView {
 	}
 
 	public String getCwbdelivertypeid() {
-		return cwbdelivertypeid == null ? "" : cwbdelivertypeid;
+		return this.cwbdelivertypeid == null ? "" : this.cwbdelivertypeid;
 	}
 
 	public void setCwbdelivertypeid(String cwbdelivertypeid) {
@@ -575,7 +578,7 @@ public class QuickSelectView {
 	}
 
 	public String getExceldeliver() {
-		return exceldeliver == null ? "" : exceldeliver;
+		return this.exceldeliver == null ? "" : this.exceldeliver;
 	}
 
 	public void setExceldeliver(String exceldeliver) {
@@ -583,7 +586,7 @@ public class QuickSelectView {
 	}
 
 	public String getExcelbranch() {
-		return excelbranch == null ? "" : excelbranch;
+		return this.excelbranch == null ? "" : this.excelbranch;
 	}
 
 	public void setExcelbranch(String excelbranch) {
@@ -591,7 +594,7 @@ public class QuickSelectView {
 	}
 
 	public long getExcelimportuserid() {
-		return excelimportuserid;
+		return this.excelimportuserid;
 	}
 
 	public void setExcelimportuserid(long excelimportuserid) {
@@ -599,7 +602,7 @@ public class QuickSelectView {
 	}
 
 	public long getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(long state) {
@@ -607,7 +610,7 @@ public class QuickSelectView {
 	}
 
 	public String getPrinttime() {
-		return printtime == null ? "" : printtime;
+		return this.printtime == null ? "" : this.printtime;
 	}
 
 	public void setPrinttime(String printtime) {
@@ -615,7 +618,7 @@ public class QuickSelectView {
 	}
 
 	public long getCommonid() {
-		return commonid;
+		return this.commonid;
 	}
 
 	public void setCommonid(long commonid) {
@@ -623,7 +626,7 @@ public class QuickSelectView {
 	}
 
 	public String getCommoncwb() {
-		return commoncwb == null ? "" : commoncwb;
+		return this.commoncwb == null ? "" : this.commoncwb;
 	}
 
 	public void setCommoncwb(String commoncwb) {
@@ -631,7 +634,7 @@ public class QuickSelectView {
 	}
 
 	public String getModelname() {
-		return modelname == null ? "" : modelname;
+		return this.modelname == null ? "" : this.modelname;
 	}
 
 	public void setModelname(String modelname) {
@@ -639,7 +642,7 @@ public class QuickSelectView {
 	}
 
 	public long getScannum() {
-		return scannum;
+		return this.scannum;
 	}
 
 	public void setScannum(long scannum) {
@@ -647,7 +650,7 @@ public class QuickSelectView {
 	}
 
 	public long getIsaudit() {
-		return isaudit;
+		return this.isaudit;
 	}
 
 	public void setIsaudit(long isaudit) {
@@ -655,7 +658,7 @@ public class QuickSelectView {
 	}
 
 	public String getBackreason() {
-		return backreason == null ? "" : backreason;
+		return this.backreason == null ? "" : this.backreason;
 	}
 
 	public void setBackreason(String backreason) {
@@ -663,7 +666,7 @@ public class QuickSelectView {
 	}
 
 	public String getLeavedreason() {
-		return leavedreason == null ? "" : leavedreason;
+		return this.leavedreason == null ? "" : this.leavedreason;
 	}
 
 	public void setLeavedreason(String leavedreason) {
@@ -671,7 +674,7 @@ public class QuickSelectView {
 	}
 
 	public long getPaywayid() {
-		return paywayid;
+		return this.paywayid;
 	}
 
 	public void setPaywayid(long paywayid) {
@@ -679,7 +682,7 @@ public class QuickSelectView {
 	}
 
 	public String getNewpaywayid() {
-		return newpaywayid == null ? "" : newpaywayid;
+		return this.newpaywayid == null ? "" : this.newpaywayid;
 	}
 
 	public void setNewpaywayid(String newpaywayid) {
@@ -687,7 +690,7 @@ public class QuickSelectView {
 	}
 
 	public long getTuihuoid() {
-		return tuihuoid;
+		return this.tuihuoid;
 	}
 
 	public void setTuihuoid(long tuihuoid) {
@@ -695,7 +698,7 @@ public class QuickSelectView {
 	}
 
 	public long getCwbstate() {
-		return cwbstate;
+		return this.cwbstate;
 	}
 
 	public void setCwbstate(long cwbstate) {
@@ -703,11 +706,11 @@ public class QuickSelectView {
 	}
 
 	public String getOrderType() {
-		return CwbOrderTypeIdEnum.getByValue(cwbordertypeid).getText();
+		return CwbOrderTypeIdEnum.getByValue(this.cwbordertypeid).getText();
 	}
 
 	public String getPaytypeNameOld() {
-		PaytypeEnum text = PaytypeEnum.getByValue((int) paywayid);
+		PaytypeEnum text = PaytypeEnum.getByValue((int) this.paywayid);
 		return text == null ? "" : text.getText();
 		// return (paywayid + "").replace("1",
 		// PaytypeEnum.Xianjin.getText()).replace("2",
@@ -717,7 +720,7 @@ public class QuickSelectView {
 	}
 
 	public String getPaytypeName() {
-		PaytypeEnum text = PaytypeEnum.getByValue(Integer.parseInt(newpaywayid));
+		PaytypeEnum text = PaytypeEnum.getByValue(Integer.parseInt(this.newpaywayid));
 		return text == null ? "" : text.getText();
 		// return (newpaywayid + "").replace("1",
 		// PaytypeEnum.Xianjin.getText()).replace("2",
@@ -727,12 +730,12 @@ public class QuickSelectView {
 	}
 
 	public String getFlowordertypeMethod() {
-		CwbFlowOrderTypeEnum text = CwbFlowOrderTypeEnum.getText(flowordertype);
+		CwbFlowOrderTypeEnum text = CwbFlowOrderTypeEnum.getText(this.flowordertype);
 		return text == null ? "" : text.getText();
 	}
 
 	public List<OrderFlowView> getOrderFlowList() {
-		return orderFlowList;
+		return this.orderFlowList;
 	}
 
 	public void setOrderFlowList(List<OrderFlowView> orderFlowList) {
@@ -740,7 +743,7 @@ public class QuickSelectView {
 	}
 
 	public List<TranscwbOrderFlowView> getTranscwborderFlowList() {
-		return transcwborderFlowList;
+		return this.transcwborderFlowList;
 	}
 
 	public void setTranscwborderFlowList(List<TranscwbOrderFlowView> transcwborderFlowList) {
@@ -748,7 +751,7 @@ public class QuickSelectView {
 	}
 
 	public long getDeliveryid() {
-		return deliveryid;
+		return this.deliveryid;
 	}
 
 	public void setDeliveryid(long deliveryid) {
@@ -756,10 +759,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getReceivedfee() {
-		if (receivedfee == null) {
-			receivedfee = new BigDecimal("0.00");
+		if (this.receivedfee == null) {
+			this.receivedfee = new BigDecimal("0.00");
 		}
-		return receivedfee;
+		return this.receivedfee;
 	}
 
 	public void setReceivedfee(BigDecimal receivedfee) {
@@ -767,10 +770,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getReturnedfee() {
-		if (returnedfee == null) {
-			returnedfee = new BigDecimal("0.00");
+		if (this.returnedfee == null) {
+			this.returnedfee = new BigDecimal("0.00");
 		}
-		return returnedfee;
+		return this.returnedfee;
 	}
 
 	public void setReturnedfee(BigDecimal returnedfee) {
@@ -778,10 +781,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getBusinessfee() {
-		if (businessfee == null) {
-			businessfee = new BigDecimal("0.00");
+		if (this.businessfee == null) {
+			this.businessfee = new BigDecimal("0.00");
 		}
-		return businessfee;
+		return this.businessfee;
 	}
 
 	public void setBusinessfee(BigDecimal businessfee) {
@@ -789,7 +792,7 @@ public class QuickSelectView {
 	}
 
 	public long getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(long deliverystate) {
@@ -797,10 +800,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getCash() {
-		if (cash == null) {
-			cash = new BigDecimal("0.00");
+		if (this.cash == null) {
+			this.cash = new BigDecimal("0.00");
 		}
-		return cash;
+		return this.cash;
 	}
 
 	public void setCash(BigDecimal cash) {
@@ -808,10 +811,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getPos() {
-		if (pos == null) {
-			pos = new BigDecimal("0.00");
+		if (this.pos == null) {
+			this.pos = new BigDecimal("0.00");
 		}
-		return pos;
+		return this.pos;
 	}
 
 	public void setPos(BigDecimal pos) {
@@ -819,7 +822,7 @@ public class QuickSelectView {
 	}
 
 	public String getPosremark() {
-		return posremark;
+		return this.posremark;
 	}
 
 	public void setPosremark(String posremark) {
@@ -827,7 +830,7 @@ public class QuickSelectView {
 	}
 
 	public Timestamp getMobilepodtime() {
-		return mobilepodtime;
+		return this.mobilepodtime;
 	}
 
 	public void setMobilepodtime(Timestamp mobilepodtime) {
@@ -835,10 +838,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getCheckfee() {
-		if (checkfee == null) {
-			checkfee = new BigDecimal("0.00");
+		if (this.checkfee == null) {
+			this.checkfee = new BigDecimal("0.00");
 		}
-		return checkfee;
+		return this.checkfee;
 	}
 
 	public void setCheckfee(BigDecimal checkfee) {
@@ -846,7 +849,7 @@ public class QuickSelectView {
 	}
 
 	public String getCheckremark() {
-		return checkremark == null ? "" : checkremark;
+		return this.checkremark == null ? "" : this.checkremark;
 	}
 
 	public void setCheckremark(String checkremark) {
@@ -854,7 +857,7 @@ public class QuickSelectView {
 	}
 
 	public long getReceivedfeeuser() {
-		return receivedfeeuser;
+		return this.receivedfeeuser;
 	}
 
 	public void setReceivedfeeuser(long receivedfeeuser) {
@@ -862,7 +865,7 @@ public class QuickSelectView {
 	}
 
 	public String getCreatetime() {
-		return createtime == null ? "" : createtime;
+		return this.createtime == null ? "" : this.createtime;
 	}
 
 	public void setCreatetime(String createtime) {
@@ -870,10 +873,10 @@ public class QuickSelectView {
 	}
 
 	public BigDecimal getOtherfee() {
-		if (otherfee == null) {
-			otherfee = new BigDecimal("0.00");
+		if (this.otherfee == null) {
+			this.otherfee = new BigDecimal("0.00");
 		}
-		return otherfee;
+		return this.otherfee;
 	}
 
 	public void setOtherfee(BigDecimal otherfee) {
@@ -881,7 +884,7 @@ public class QuickSelectView {
 	}
 
 	public long getPodremarkid() {
-		return podremarkid;
+		return this.podremarkid;
 	}
 
 	public void setPodremarkid(long podremarkid) {
@@ -889,7 +892,7 @@ public class QuickSelectView {
 	}
 
 	public String getDeliverstateremark() {
-		return deliverstateremark == null ? "" : deliverstateremark;
+		return this.deliverstateremark == null ? "" : this.deliverstateremark;
 	}
 
 	public void setDeliverstateremark(String deliverstateremark) {
@@ -897,7 +900,7 @@ public class QuickSelectView {
 	}
 
 	public long getIsout() {
-		return isout;
+		return this.isout;
 	}
 
 	public void setIsout(long isout) {
@@ -905,7 +908,7 @@ public class QuickSelectView {
 	}
 
 	public long getPos_feedback_flag() {
-		return pos_feedback_flag;
+		return this.pos_feedback_flag;
 	}
 
 	public void setPos_feedback_flag(long pos_feedback_flag) {
@@ -913,7 +916,7 @@ public class QuickSelectView {
 	}
 
 	public long getUserid() {
-		return userid;
+		return this.userid;
 	}
 
 	public void setUserid(long userid) {
@@ -921,7 +924,7 @@ public class QuickSelectView {
 	}
 
 	public long getGcaid() {
-		return gcaid;
+		return this.gcaid;
 	}
 
 	public void setGcaid(long gcaid) {
@@ -929,7 +932,7 @@ public class QuickSelectView {
 	}
 
 	public int getSign_typeid() {
-		return sign_typeid;
+		return this.sign_typeid;
 	}
 
 	public void setSign_typeid(int sign_typeid) {
@@ -937,7 +940,7 @@ public class QuickSelectView {
 	}
 
 	public String getSign_man() {
-		return sign_man == null ? "" : sign_man;
+		return this.sign_man == null ? "" : this.sign_man;
 	}
 
 	public void setSign_man(String sign_man) {
@@ -945,7 +948,7 @@ public class QuickSelectView {
 	}
 
 	public String getSign_time() {
-		return sign_time == null ? "" : sign_time;
+		return this.sign_time == null ? "" : this.sign_time;
 	}
 
 	public void setSign_time(String sign_time) {
@@ -953,13 +956,38 @@ public class QuickSelectView {
 	}
 
 	public String getCwbdelivertypeStr() {
-		return cwbdelivertypeid.equals("2") ? "加急" : "普通";
+		return this.cwbdelivertypeid.equals("2") ? "加急" : "普通";
+	}
+
+	public String getConsigneenameOfkf() {
+		return this.consigneenameOfkf;
+	}
+
+	public void setConsigneenameOfkf(String consigneenameOfkf) {
+		this.consigneenameOfkf = consigneenameOfkf;
+	}
+
+	public String getConsigneemobileOfkf() {
+		return this.consigneemobileOfkf;
+	}
+
+	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
+		this.consigneemobileOfkf = consigneemobileOfkf;
+	}
+
+	public String getConsigneephoneOfkf() {
+		return this.consigneephoneOfkf;
+	}
+
+	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
+		this.consigneephoneOfkf = consigneephoneOfkf;
 	}
 
 	public String getDeliveryStateText() {
 		for (DeliveryStateEnum fote : DeliveryStateEnum.values()) {
-			if (fote.getValue() == deliverystate)
+			if (fote.getValue() == this.deliverystate) {
 				return fote.getText();
+			}
 		}
 		return "";
 	}
