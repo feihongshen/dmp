@@ -69,7 +69,8 @@ public class GztlController {
 
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Guangzhoutonglu.getKey());
 			if (isOpenFlag == 0) {
-				return "未开启0广州通路0查询接口";
+				return this.errorReturnData("F", "未开启0广州通路0推进接口");
+
 			}
 			Gztl gztl = this.gztlService.getGztl(B2cEnum.Guangzhoutonglu.getKey());
 
@@ -82,13 +83,13 @@ public class GztlController {
 			System.out.println(localSignString);
 			if (!MD5.equalsIgnoreCase(localSignString)) {
 				this.logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
-				return "签名验证失败";
+				return this.errorReturnData("F", "签名验证失败");
 			}
 
 			return this.gztlService.orderDetailExportInterface(xml, gztl);
 		} catch (Exception e) {
-			this.logger.error("0广州ABC0处理业务逻辑异常！" + xml, e);
-			return "处理业务逻辑异常";
+			this.logger.error("0广州通路处理业务逻辑异常！" + xml, e);
+			return this.errorReturnData("F", "处理业务逻辑异常");
 		}
 	}
 
@@ -96,34 +97,6 @@ public class GztlController {
 	public @ResponseBody void ExcuteTimmerMethod_tmall(HttpServletRequest request, HttpServletResponse response) {
 		this.guangZhouTongLuInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.Guangzhoutonglu.getKey());
 		this.logger.info("执行了广州通路查询临时表的定时器!");
-	}
-
-	/**
-	 * 外发单订单反馈推送接口
-	 *
-	 * @return
-	 */
-	@RequestMapping("/feedbackimportgztl")
-	public @ResponseBody String requestByGuangZhouABC(HttpServletRequest request, HttpServletResponse response) {
-		String xml = null;
-		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Guangzhoutonglu.getKey());
-		if (isOpenFlag == 0) {
-			return this.errorReturnData("F", "未开启0广州通路0推进接口");
-		}
-		Gztl gztl = this.gztlService.getGztl(B2cEnum.Guangzhoutonglu.getKey());
-
-		xml = request.getParameter("XML");
-		String MD5 = request.getParameter("MD5");
-
-		this.logger.info("外发单订单反馈推送接口推送参数xml={},MD5={}", xml, MD5);
-		String localSignString = MD5Util.md5(xml + gztl.getPrivate_key());
-		System.out.println(localSignString);
-		if (!MD5.equalsIgnoreCase(localSignString)) {
-			this.logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
-			return this.errorReturnData("F", "签名验证失败");
-		}
-
-		return null;
 	}
 
 	public String errorReturnData(String flag, String remark) {
