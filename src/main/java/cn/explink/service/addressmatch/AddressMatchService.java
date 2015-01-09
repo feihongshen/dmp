@@ -290,6 +290,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("remark", "未匹配到站点");
 					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
+			} else {
+				json.put("itemno", itemno);
+				json.put("netid", "");
+				json.put("netpoint", "");
+				json.put("remark", "未匹配到站点");
+				this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 			}
 
 		} catch (Exception e) {
@@ -322,7 +328,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			if (mappingresult != null) {
 				List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
 
-				if (deliveryStationList.size() == 0) {
+				if ((deliveryStationList == null) || (deliveryStationList.size() == 0)) {
 					return null;
 				}
 				Set<Long> set = new HashSet<Long>();
@@ -337,7 +343,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				}
 			}
 		} catch (Exception e) {
-			this.logger.error("error while doing address match for vipshop");
+			this.logger.error("error while doing address match for vipshop", e);
 		}
 		return null;
 	}
