@@ -14,7 +14,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
-import net.sf.json.util.NewBeanInstanceStrategy;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -147,7 +146,7 @@ public class GztlService {
 			for (Order map : orderlist) {
 				cwb += map.getOrderid() + ",";
 			}
-			cwb = cwb.substring(0, orderlist.size() - 1);
+			cwb = cwb.substring(0, cwb.length() - 1);
 
 			this.logger.info("处理广州通路导入后的订单信息成功,cwb={}", cwb);
 
@@ -247,13 +246,15 @@ public class GztlService {
 
 	public static void main(String[] args) throws JAXBException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><MSD><Orders><Order><typeid>1</typeid><orderid>14062502938911</orderid><sclientcode>14062502938911</sclientcode><shipperid>广州唯品会</shipperid><consignorname/><consignoraddress/><consignormobile/><consignorphone/><customername>沈晓庆</customername><customeraddress>沈晓庆</customeraddress><customermobile>138****6001</customermobile><customerphone>****</customerphone><deliverygoods/><returngoods/><deliverygoodsprice/><returngoodsprice/><weight>0.0</weight><shouldreceive>0.0</shouldreceive><accuallyreceive/><remark/><arrivedate>2014-06-25 18:34:49</arrivedate><pushtime>2014-06-25 18:34:49</pushtime><goodsnum>1</goodsnum><deliverarea/><extPayType>0</extPayType><orderBatchNo>BTH140625077453</orderBatchNo><otherservicefee/><orderDate>2014-06-26 10:05:39</orderDate></Order></Orders></MSD>";
-		GztlService gztlService=new GztlService();
-		GztlXmlElement person = (GztlXmlElement)gztlService.xmlToObj(xml, new GztlXmlElement());
-		//StringReader stringReader = new StringReader(xml);
-		//JAXBContext jaxbContext = JAXBContext.newInstance(GztlXmlElement.class);
-		//Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		GztlService gztlService = new GztlService();
+		GztlXmlElement person = (GztlXmlElement) gztlService.xmlToObj(xml, new GztlXmlElement());
+		// StringReader stringReader = new StringReader(xml);
+		// JAXBContext jaxbContext =
+		// JAXBContext.newInstance(GztlXmlElement.class);
+		// Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-		//GztlXmlElement person = (GztlXmlElement) unmarshaller.unmarshal(stringReader);
+		// GztlXmlElement person = (GztlXmlElement)
+		// unmarshaller.unmarshal(stringReader);
 
 		List<Order> students2 = person.getOrders();
 		for (Iterator<Order> iterator = students2.iterator(); iterator.hasNext();) {
