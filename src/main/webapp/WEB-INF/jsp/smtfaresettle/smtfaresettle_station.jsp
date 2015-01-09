@@ -177,20 +177,20 @@
 		var $staticTable = $("#static_table");
 		var trs = $staticTable.find("tr");
 		var rowCnt = trs.length;
-		if (rowCnt != ++sendCount) {
+		if (rowCnt - 1 != ++sendCount) {
 			return;
 		}
 		var total = 0;
 		var successCnt = 0;
 		var shouldFee = 0;
 		var receivedFee = 0;
-		for (var i = 0; i < rowCnt; i++) {
+		for (var i = 1; i < rowCnt; i++) {
 			var $tr = $(trs[i]);
 			var tds = $tr.find("td");
-			total += $(tds[4]).html();
-			successCnt += $(tds[5]).html();
-			shouldFee += $(tds[6]).html();
-			receivedFee += $(tds[7]).html();
+			total += parseInt($(tds[4]).find("a").html());
+			successCnt += parseInt($(tds[5]).find("a").html());
+			shouldFee += parseInt($(tds[6]).find("a").html());
+			receivedFee += parseInt($(tds[7]).find("a").html());
 		}
 		var $summaryTable = $("#summary_table");
 		tds = $summaryTable.find("td");

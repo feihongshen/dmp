@@ -131,29 +131,42 @@ public class SmtFareSettleController {
 		return mav;
 	}
 
-	@RequestMapping("/exportdetail")
-	public void exportDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
-		String sql = this.getDetialSql(-1, condVO, true, false);
+	@RequestMapping("/export/detail_s")
+	public void exportStationDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
+		String sql = this.getDetialSql(-1, condVO, false, false);
 		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
 		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
 		ExportDetailUtil util = new ExportDetailUtil(result);
 		util.export(response, "sheet1", "配送明细.xls");
 	}
 
-	private SmtFareSettleDetailResultVO getStationDetialResult(int page, SmtFareSettleDetailCondVO condVO) {
-		String sql = this.getDetialSql(page, condVO, true, true);
-		String cntSql = this.getDetailCntSql(condVO, true);
-		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
+	@RequestMapping("/export/detail_d")
+	public void exportDeliverDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
+		String sql = this.getDetialSql(-1, condVO, true, false);
+		Object[] paras = new Object[] { condVO.getDeliverId(), condVO.getVenderId() };
+		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
+		ExportDetailUtil util = new ExportDetailUtil(result);
+		util.export(response, "sheet1", "配送明细.xlsx");
+	}
 
-		return this.queryDetailResult(page, sql, cntSql, paras);
+	private SmtFareSettleDetailResultVO getStationDetialResult(int page, SmtFareSettleDetailCondVO condVO) {
+		String sql = this.getDetialSql(page, condVO, false, true);
+		String cntSql = this.getDetailCntSql(condVO, false);
+		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
+		SmtFareSettleDetailResultVO result = this.queryDetailResult(page, sql, cntSql, paras);
+		result.setDetail("detail_s");
+
+		return result;
 	}
 
 	private SmtFareSettleDetailResultVO getDeliverDetialResult(int page, SmtFareSettleDetailCondVO condVO) {
 		String sql = this.getDetialSql(page, condVO, true, true);
 		String cntSql = this.getDetailCntSql(condVO, true);
 		Object[] paras = new Object[] { condVO.getDeliverId(), condVO.getVenderId() };
+		SmtFareSettleDetailResultVO result = this.queryDetailResult(page, sql, cntSql, paras);
+		result.setDetail("detail_d");
 
-		return this.queryDetailResult(page, sql, cntSql, paras);
+		return result;
 	}
 
 	private SmtFareSettleDetailResultVO queryDetailResult(int page, String sql, String cntSql, Object[] paras) {
@@ -224,7 +237,7 @@ public class SmtFareSettleController {
 		if (deliver) {
 			sql.append("where deliver_id = ? ");
 		} else {
-			sql.append("where station_id = ? ");
+			sql.append("where deliver_station_id = ? ");
 		}
 		sql.append("and vender_id = ? ");
 		sql.append("and " + this.getTimeWhereCond(condVO));
@@ -242,7 +255,7 @@ public class SmtFareSettleController {
 		if (deliver) {
 			sql.append("where deliver_id = ? ");
 		} else {
-			sql.append("where station_id = ? ");
+			sql.append("where deliver_station_id = ? ");
 		}
 		sql.append("and vender_id = ? ");
 		sql.append("and " + this.getTimeWhereCond(condVO));
@@ -350,7 +363,18 @@ public class SmtFareSettleController {
 			deliverIdList.add(deliverId);
 			return deliverIdList;
 		}
-		return this.getUserDAO().getAllDeliverId();
+		Set<Long> branchIdSet = this.getBranchIdSet(cond);
+		if (branchIdSet.isEmpty()) {
+			return this.getUserDAO().getAllDeliverId();
+		}
+		return this.getUserDAO().getBranchDeliverId(branchIdSet);
+	}
+
+	private Set<Long> getBranchIdSet(SmtFareSettleCondVO cond) {
+		List<Long> orgIdList = cond.getOrgs();
+		Set<Long> orgIdSet = new HashSet<Long>(orgIdList);
+
+		return orgIdSet;
 	}
 
 	private List<Long> getCustomerIdList(SmtFareSettleCondVO cond) {
@@ -579,7 +603,7 @@ public class SmtFareSettleController {
 		@Override
 		public SmtFareSettleDetailVO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			SmtFareSettleDetailVO dtVO = new SmtFareSettleDetailVO();
-			dtVO.setStationId(rs.getLong("station_id"));
+			dtVO.setStationId(rs.getLong("deliver_station_id"));
 			dtVO.setDeliverId(rs.getLong("deliver_id"));
 			dtVO.setCwb(rs.getString("cwb"));
 			dtVO.setShouldFee(SmtFareSettleController.this.formatDecimal(rs.getDouble("should_fee")));

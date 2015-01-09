@@ -12,6 +12,8 @@ public class SmtFareSettleDetailResultVO {
 
 	private List<SmtFareSettleDetailVO> resultList = null;
 
+	private String detail = null;
+
 	public int getPage() {
 		return this.page;
 	}
@@ -42,6 +44,14 @@ public class SmtFareSettleDetailResultVO {
 
 	public void setResultList(List<SmtFareSettleDetailVO> resultList) {
 		this.resultList = resultList;
+	}
+
+	public String getDetail() {
+		return this.detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
 	}
 
 }

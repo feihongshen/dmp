@@ -55,6 +55,8 @@
 </style>
 <script>
 	function exportData() {
+		var action = "${ctx_path}/smtfaresettle/export/${result.detail}";
+		$("#searchForm").attr("action", action);
 		$("#searchForm").submit();
 	}
 </script>
@@ -63,13 +65,14 @@
 <body style="background: #eef9ff">
 	<div class="search_div">
 		<form id="searchForm" name="searchForm" class="search_form"
-			action="${ctx_path}/smtfaresettle/exportdetail" method="post">
+			action="${ctx_path}/smtfaresettle/export/${result.detail}" method="post">
 			<input type="hidden" name="optTimeType" value="${cond.optTimeType}" /> <input type="hidden"
 				name="startTime" value="${cond.startTime}" /> <input type="hidden" name="endTime"
-				value="${cond.endTime}" /> <input type="hidden" name="deliverId" value="${cond.deliverId}" />
-			<input type="hidden" name="venderId" value="${cond.venderId}" /> <input type="button"
-				id="btnval" value="返回" class="input_button2" onclick="javascript:history.back(-1);" /> <input
-				type="button" id="btnval" value="导出" class="input_button2" onclick="exportData()" />
+				value="${cond.endTime}" /> <input type="hidden" name="stationId" value="${cond.stationId}" />
+			<input type="hidden" name="deliverId" value="${cond.deliverId}" /> <input type="hidden"
+				name="venderId" value="${cond.venderId}" /> <input type="button" id="btnval" value="返回"
+				class="input_button2" onclick="javascript:history.back(-1);" /> <input type="button"
+				id="btnval" value="导出" class="input_button2" onclick="exportData()" />
 
 		</form>
 	</div>
@@ -108,19 +111,26 @@
 
 
 
+
 		<div class="iframe_bottom">
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/detail_d/1');$('#searchForm').submit();">第一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/1');$('#searchForm').submit();">第一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/detail_d/${result.page - 1}');$('#searchForm').submit();">上一页</a>
+						<c:choose>  
+                <c:when test="${result.page != 1}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/${result.page - 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>上一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/detail_d/${result.page + 1}');$('#searchForm').submit();">下一页</a>
+						<c:choose>  
+                <c:when test="${(result.page != result.count) and (result.page != 1)}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/${result.page + 1}');$('#searchForm').submit();"</c:when>  
+                <c:otherwise>href="#"</c:otherwise>  
+        		</c:choose>>下一页</a>
 						<a
-						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/detail_d/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
+						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/${result.pageCount}');$('#searchForm').submit();">最后一页</a>
 						共${result.pageCount}页 共${result.count}条记录 当前第<select id="select"
-						onchange="$('#searchForm').attr('action','${ctx_path}/smtfaresettle/detail_d/'+$(this).val());$('#searchForm').submit()">
+						onchange="$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/'+$(this).val());$('#searchForm').submit()">
 							<c:forEach var="i" begin="1" end="${result.pageCount}" step="1">
 								<option value="${i}" <c:if test="${result.page == i}">selected</c:if>>${i}</option>
 							</c:forEach>
