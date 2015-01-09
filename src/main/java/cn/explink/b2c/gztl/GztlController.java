@@ -108,7 +108,7 @@ public class GztlController {
 		String xml = null;
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Guangzhoutonglu.getKey());
 		if (isOpenFlag == 0) {
-			return "未开启0广州ABC0查询接口";
+			return this.errorReturnData("F", "未开启0广州通路0推进接口");
 		}
 		Gztl gztl = this.gztlService.getGztl(B2cEnum.Guangzhoutonglu.getKey());
 
@@ -120,10 +120,24 @@ public class GztlController {
 		System.out.println(localSignString);
 		if (!MD5.equalsIgnoreCase(localSignString)) {
 			this.logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
-			return "签名验证失败";
+			return this.errorReturnData("F", "签名验证失败");
 		}
 
 		return null;
+	}
+
+	public String errorReturnData(String flag, String remark) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<MSD>");
+		buffer.append("<Orders>");
+		buffer.append("<Order>");
+		buffer.append("<orderno></iorderno>");
+		buffer.append("<result>" + flag + "</result>");
+		buffer.append("<remark>" + remark + "</remark>");
+		buffer.append("</Order>");
+		buffer.append("</Orders>");
+		buffer.append("</MSD>");
+		return buffer.toString();
 	}
 
 	@RequestMapping("/test11111")
