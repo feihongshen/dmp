@@ -681,6 +681,9 @@ public class WarehouseGroup_detailController {
 					//驾驶员  和  车牌号都有值  
 					gdList = groupDetailDao.getCwbForChuKuPrintTimeNew2(getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "",driverid,truckid);
 				}
+				//包号为空将truckid传入 目的是不让报错
+				model.addAttribute("truckid", truckid);
+				
 			}else {
 				if(truckid!=-1){
 					gdList=groupDetailDao.getCwbListByBalenoExportByTruckid(truckid);
@@ -689,6 +692,14 @@ public class WarehouseGroup_detailController {
 				}else {
 					gdList=groupDetailDao.getCwbListByBalenoExport(baleno);											
 				}
+				//包号不为空 查询groupDetail表将truckid查询出来  
+				
+				List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
+				groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
+				if(groupDetails.size()>0){	
+					model.addAttribute("truckid", groupDetails.get(0).getTruckid());
+				}
+				
 			}
 			List<CwbOrder> orderlist = new ArrayList<CwbOrder>();
 			String cwbs = "";
@@ -727,13 +738,14 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("uList",uList);
 		model.addAttribute("tList",tList);
 		model.addAttribute("baleno",baleno);
-		List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
+		/*List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 		groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
 		if(groupDetails.size()>0){
-			model.addAttribute("truckid", truckid);
+			
+			model.addAttribute("truckid", groupDetails.get(0).getTruckid());
 		}else {
-			model.addAttribute("truckid", groupDetailDao.getGroupDetailListByBale(baleno));			
-		}
+			model.addAttribute("truckid", truckid);			
+		}*/
 		model.addAttribute("driverid",driverid);
 		return "warehousegroup/outdetaillist";
 	}
