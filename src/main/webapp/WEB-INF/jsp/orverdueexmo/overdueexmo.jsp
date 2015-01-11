@@ -195,11 +195,9 @@
 
 	function exportData() {
 		var $exportBtn = $("#btn_export");
-		$exportBtn.attr("disabled", "true");
 		var $searchForm = $("#searchForm");
 		$searchForm.attr("action", "${ctx_path}/overdueexmo/exportdata");
-		$searchForm.Submit();
-		$exportBtn.removeAttr("disabled");
+		$searchForm.submit();
 	}
 </script>
 
@@ -236,20 +234,20 @@
 		<form id="searchForm" name="searchForm" action="${ctx_path}/overdueexmo/1" method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
-					<c:forEach items="${const.timeTypeMap}" var="entry">
+					<c:forEach items="${constant.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
 					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称： <select id="orgs"
 					name="orgs" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${const.orgMap}" var="entry">
+					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
 					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venderId"
 					name="venderId" style="width: 100px;">
 					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
-					<c:forEach items="${const.venderMap}" var="entry">
+					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${cond.venderId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select>
@@ -258,7 +256,7 @@
 				<input id="enableTEQuery" name="enableTEQuery" type="checkbox" class="sys_query_checkbox"
 					<c:if test="${cond.enableTEQuery}">checked</c:if>>启用时效设置 列表展示选择：<select id="showCols"
 					name="showCols" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${const.showColMap}" var="entry">
+					<c:forEach items="${constant.showColMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.showCols,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>

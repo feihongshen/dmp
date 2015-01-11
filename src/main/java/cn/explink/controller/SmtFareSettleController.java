@@ -66,7 +66,7 @@ public class SmtFareSettleController {
 
 	@RequestMapping("/station/{page}")
 	public ModelAndView showStation(@PathVariable("page") int page, SmtFareSettleCondVO cond, ModelAndView mav) {
-		mav.addObject("const", this.getSmtFareSettleConstVO(false, cond));
+		mav.addObject("constant", this.getSmtFareSettleConstVO(false, cond));
 		mav.addObject("result", this.getStationResultVO(page, cond));
 		mav.addObject("cond", cond);
 		mav.setViewName("/smtfaresettle/smtfaresettle_station");
@@ -76,7 +76,7 @@ public class SmtFareSettleController {
 
 	@RequestMapping("/deliver/{page}")
 	public ModelAndView showDeliver(@PathVariable("page") int page, SmtFareSettleCondVO cond, ModelAndView mav) {
-		mav.addObject("const", this.getSmtFareSettleConstVO(true, cond));
+		mav.addObject("constant", this.getSmtFareSettleConstVO(true, cond));
 		mav.addObject("result", this.getDeliverResultVO(page, cond));
 		mav.addObject("cond", cond);
 		mav.setViewName("/smtfaresettle/smtfaresettle_deliver");

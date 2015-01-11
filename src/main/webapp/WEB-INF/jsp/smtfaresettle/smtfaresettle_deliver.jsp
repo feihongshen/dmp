@@ -101,8 +101,7 @@
 		$("#find").click(
 				function() {
 					if (check()) {
-						$("#searchForm").attr("action",
-								"${ctx_ath}/smtfaresettle/deliver/1");
+						$("#searchForm").attr("action","${ctx_path}/smtfaresettle/deliver/1");
 						$("#searchForm").submit();
 					}
 				});
@@ -138,8 +137,7 @@
 	function sendRequest(branchId, venderId, condVO) {
 		$.ajax({
 			type : "post",
-			url : "${ctx_path}/smtfaresettle/getdeliverdata/" + branchId + "/"
-					+ venderId + "?" + Math.random(),
+			url : "${ctx_path}/smtfaresettle/getdeliverdata/" + branchId + "/"+ venderId + "?" + Math.random(),
 			dataType : "json",
 			async : true,
 			data : {
@@ -255,8 +253,7 @@
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : "${ctx_patch}/smtfaresettle/getstationdeliver?"
-					+ Math.random(),
+			url : "${ctx_path}/smtfaresettle/getstationdeliver?"+ Math.random(),
 			data : {
 				stationIds : stationIds
 			},
@@ -319,19 +316,19 @@
 		<form id="searchForm" name="searchForm" action="${ctx_ath}/smtfaresettle/deliver/1" method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
-					<c:forEach items="${const.timeTypeMap}" var="entry">
+					<c:forEach items="${constant.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
 					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 站点： <select id="orgs"
 					name="orgs" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${const.orgMap}" var="entry">
+					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
 					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venders"
 					name="venders" style="width: 100px;" multiple="multiple">
-					<c:forEach items="${const.venderMap}" var="entry">
+					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
@@ -339,7 +336,7 @@
 					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 小件员：<select id="deliverId"
 					name="deliverId" style="width: 100px;">
 					<option value="0">请选择</option>
-					<c:forEach items="${const.deliverMap}" var="entry">
+					<c:forEach items="${constant.deliverMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.deliverId}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> <input type="button" id="find" value="查询" class="input_button2" /> <input type="button"

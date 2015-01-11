@@ -69,7 +69,7 @@ public class OverdueExMoController {
 	public ModelAndView list(@PathVariable("page") int page, OverdueExMoCondVO condVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("cond", condVO);
-		mav.addObject("const", this.getOverdueConstantVO());
+		mav.addObject("constant", this.getOverdueConstantVO());
 		mav.addObject("result", this.getOverdueResultVO(condVO, page));
 		mav.setViewName("/orverdueexmo/overdueexmo");
 
