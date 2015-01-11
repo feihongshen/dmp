@@ -34,6 +34,8 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
+import cn.explink.domain.Pair;
+import cn.explink.domain.PairList;
 import cn.explink.domain.SmtFareSettleCondVO;
 import cn.explink.domain.SmtFareSettleConstVO;
 import cn.explink.domain.SmtFareSettleDetailCondVO;
@@ -131,6 +133,16 @@ public class SmtFareSettleController {
 		return mav;
 	}
 
+	@RequestMapping("/export/station")
+	public void exportStation(SmtFareSettleCondVO condVO, HttpServletResponse response) throws Exception {
+		List<Long> stationIdList = this.getStationIdList(condVO);
+		List<Long> venderIdList = this.getCustomerIdList(condVO);
+		Map<Long, String> staionNameMap = this.getBranchDAO().getBranchNameMap(new HashSet<Long>(stationIdList));
+		Map<Long, String> venderNameMap = this.getCustomerDAO().getCustomerNameMap(new HashSet<Long>(venderIdList));
+		PairList<Long, Long> pairList = this.getPairList(stationIdList, venderIdList);
+		new StationExportUtil(response, condVO, pairList, staionNameMap, venderNameMap).export();
+	}
+
 	@RequestMapping("/export/detail_s")
 	public void exportStationDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
 		String sql = this.getDetialSql(-1, condVO, false, false);
@@ -138,6 +150,16 @@ public class SmtFareSettleController {
 		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
 		ExportDetailUtil util = new ExportDetailUtil(result);
 		util.export(response, "sheet1", "配送明细.xls");
+	}
+
+	@RequestMapping("/export/deliver")
+	public void exportDeliver(SmtFareSettleCondVO condVO, HttpServletResponse response) throws Exception {
+		List<Long> deliverIdList = this.getDeliverIdList(condVO);
+		List<Long> venderIdList = this.getCustomerIdList(condVO);
+		Map<Long, String> staionNameMap = this.getUserDAO().getUserNameMap(new HashSet<Long>(deliverIdList));
+		Map<Long, String> venderNameMap = this.getCustomerDAO().getCustomerNameMap(new HashSet<Long>(venderIdList));
+		PairList<Long, Long> pairList = this.getPairList(deliverIdList, venderIdList);
+		new DeliverExportUtil(response, condVO, pairList, staionNameMap, venderNameMap).export();
 	}
 
 	@RequestMapping("/export/detail_d")
@@ -267,9 +289,14 @@ public class SmtFareSettleController {
 		SmtFareSettleVO resultVO = new SmtFareSettleVO();
 		resultVO.setDeliverId(deliverId);
 		resultVO.setVenderId(venderId);
-		String sql = this.getDeliverSql(condVO);
+
 		Object[] args = new Object[] { deliverId, venderId };
-		this.getJdbcTemplate().query(sql, args, new DeliverRowHander(resultVO));
+
+		String countSql = this.getDeliverCntSql(condVO);
+		this.getJdbcTemplate().query(countSql, args, new DeliverCountRowHander(resultVO));
+
+		String successSql = this.getDeliverSuccessSql(condVO);
+		this.getJdbcTemplate().query(successSql, args, new DeliverSuccessRowHander(resultVO));
 
 		return resultVO;
 	}
@@ -278,9 +305,14 @@ public class SmtFareSettleController {
 		SmtFareSettleVO resultVO = new SmtFareSettleVO();
 		resultVO.setStationId(stationId);
 		resultVO.setVenderId(venderId);
-		String sql = this.getStationSql(condVO);
+
 		Object[] args = new Object[] { stationId, venderId };
-		this.getJdbcTemplate().query(sql, args, new StationRowHander(resultVO));
+
+		String countSql = this.getStationCountSql(condVO);
+		this.getJdbcTemplate().query(countSql, args, new StationCountRowHander(resultVO));
+
+		String successSql = this.getStationSuccessSql(condVO);
+		this.getJdbcTemplate().query(successSql, args, new StationSuccessRowHander(resultVO));
 
 		return resultVO;
 	}
@@ -385,19 +417,37 @@ public class SmtFareSettleController {
 		return this.getCustomerDAO().getAllCustomerId();
 	}
 
-	private String getDeliverSql(SmtFareSettleCondVO cond) {
+	private String getDeliverCntSql(SmtFareSettleCondVO cond) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select count(cwb) total,count(feedback_time) success ,sum(should_fee) should_fee,sum(received_fee) received_fee from express_ops_smt_cwb_opt_time ");
+		sql.append("select count(cwb) total ,sum(should_fee) should_fee from express_ops_smt_cwb_opt_time ");
 		sql.append("where deliver_id = ? and vender_id = ? and ");
 		sql.append(this.getTimeWhereCond(cond));
 
 		return sql.toString();
 	}
 
-	private String getStationSql(SmtFareSettleCondVO cond) {
+	private String getDeliverSuccessSql(SmtFareSettleCondVO cond) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select count(cwb) total,count(feedback_time) success ,sum(should_fee) should_fee,sum(received_fee) received_fee from express_ops_smt_cwb_opt_time ");
+		sql.append("select count(cwb) total , sum(received_fee) received_fee from express_ops_smt_cwb_opt_time ");
+		sql.append("where deliver_id = ? and vender_id = ? and deliver_state = 2 and ");
+		sql.append(this.getTimeWhereCond(cond));
+
+		return sql.toString();
+	}
+
+	private String getStationCountSql(SmtFareSettleCondVO cond) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select count(cwb) total ,sum(should_fee) should_fee from express_ops_smt_cwb_opt_time ");
 		sql.append("where deliver_station_id = ? and vender_id = ? and ");
+		sql.append(this.getTimeWhereCond(cond));
+
+		return sql.toString();
+	}
+
+	private String getStationSuccessSql(SmtFareSettleCondVO cond) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select count(cwb) total ,sum(received_fee) received_fee from express_ops_smt_cwb_opt_time ");
+		sql.append("where deliver_station_id = ? and vender_id = ? and deliver_state = 2 and ");
 		sql.append(this.getTimeWhereCond(cond));
 
 		return sql.toString();
@@ -497,63 +547,41 @@ public class SmtFareSettleController {
 		return this.userDAO;
 	}
 
-	private class PairList<K, V> extends ArrayList<Pair<K, V>> {
-
-		private static final long serialVersionUID = 8855045155045335560L;
-
-		public void add(K v1, V v2) {
-			this.add(new Pair<K, V>(v1, v2));
-		}
-
-		public List<K> getV1List() {
-			List<K> v1List = new ArrayList<K>();
-			for (Pair<K, V> tmp : this) {
-				v1List.add(tmp.getV1());
-			}
-			return v1List;
-		}
-
-		public List<V> getV2List() {
-			List<V> v2List = new ArrayList<V>();
-			for (Pair<K, V> tmp : this) {
-				v2List.add(tmp.getV2());
-			}
-			return v2List;
-		}
-	}
-
-	private class Pair<K, V> {
-		private K v1 = null;
-
-		private V v2 = null;
-
-		public Pair(K k, V v) {
-			this.v1 = k;
-			this.v2 = v;
-		}
-
-		public K getV1() {
-			return this.v1;
-		}
-
-		public V getV2() {
-			return this.v2;
-		}
-	}
-
-	private class DeliverRowHander implements RowCallbackHandler {
+	private class DeliverCountRowHander implements RowCallbackHandler {
 
 		private SmtFareSettleVO vo = null;
 
-		public DeliverRowHander(SmtFareSettleVO vo) {
+		public DeliverCountRowHander(SmtFareSettleVO vo) {
 			this.vo = vo;
 		}
 
 		@Override
 		public void processRow(ResultSet rs) throws SQLException {
 			this.getVo().setDeliverPickingCnt(rs.getString("total"));
-			this.getVo().setSmtSuccessedCnt(rs.getString("success"));
 			this.getVo().setShouldFee(this.formatDecimal(rs.getDouble("should_fee")));
+		}
+
+		private SmtFareSettleVO getVo() {
+			return this.vo;
+		}
+
+		public String formatDecimal(double value) {
+			return SmtFareSettleController.this.formatDecimal(value);
+		}
+
+	}
+
+	private class DeliverSuccessRowHander implements RowCallbackHandler {
+
+		private SmtFareSettleVO vo = null;
+
+		public DeliverSuccessRowHander(SmtFareSettleVO vo) {
+			this.vo = vo;
+		}
+
+		@Override
+		public void processRow(ResultSet rs) throws SQLException {
+			this.getVo().setSmtSuccessedCnt(rs.getString("total"));
 			this.getVo().setReceivedFee(this.formatDecimal(rs.getDouble("received_fee")));
 		}
 
@@ -567,19 +595,41 @@ public class SmtFareSettleController {
 
 	}
 
-	private class StationRowHander implements RowCallbackHandler {
+	private class StationCountRowHander implements RowCallbackHandler {
 
 		private SmtFareSettleVO vo = null;
 
-		public StationRowHander(SmtFareSettleVO vo) {
+		public StationCountRowHander(SmtFareSettleVO vo) {
 			this.vo = vo;
 		}
 
 		@Override
 		public void processRow(ResultSet rs) throws SQLException {
 			this.getVo().setStationAcceptCnt(rs.getString("total"));
-			this.getVo().setSmtSuccessedCnt(rs.getString("success"));
 			this.getVo().setShouldFee(this.formatDecimal(rs.getDouble("should_fee")));
+		}
+
+		private SmtFareSettleVO getVo() {
+			return this.vo;
+		}
+
+		public String formatDecimal(double value) {
+			return SmtFareSettleController.this.formatDecimal(value);
+		}
+
+	}
+
+	private class StationSuccessRowHander implements RowCallbackHandler {
+
+		private SmtFareSettleVO vo = null;
+
+		public StationSuccessRowHander(SmtFareSettleVO vo) {
+			this.vo = vo;
+		}
+
+		@Override
+		public void processRow(ResultSet rs) throws SQLException {
+			this.getVo().setSmtSuccessedCnt(rs.getString("total"));
 			this.getVo().setReceivedFee(this.formatDecimal(rs.getDouble("received_fee")));
 		}
 
@@ -697,6 +747,182 @@ public class SmtFareSettleController {
 
 		public String getName() {
 			return this.name;
+		}
+	}
+
+	private class StationExportUtil extends ExcelUtils {
+
+		private SmtFareSettleCondVO condVO = null;
+
+		private PairList<Long, Long> pairList = null;
+
+		private Map<Long, String> stationNameMap = null;
+
+		private Map<Long, String> venderNameMap = null;
+
+		private HttpServletResponse response = null;
+
+		public StationExportUtil(HttpServletResponse response, SmtFareSettleCondVO condVO, PairList<Long, Long> pairList, Map<Long, String> stationNameMap, Map<Long, String> venderNameMap) {
+			this.response = response;
+			this.condVO = condVO;
+			this.pairList = pairList;
+			this.stationNameMap = stationNameMap;
+			this.venderNameMap = venderNameMap;
+		}
+
+		public void export() throws Exception {
+			super.excel(this.getResponse(), this.getColNames(), "sheet1", "上门退运费结算报表(站点).xlsx");
+		}
+
+		@Override
+		public void fillData(Sheet sheet, CellStyle style) {
+			int rowNum = 1;
+			for (Pair<Long, Long> pair : this.getPairList()) {
+				this.createRow(rowNum++, sheet, pair);
+			}
+		}
+
+		private void createRow(int rowNum, Sheet sheet, Pair<Long, Long> pair) {
+			SmtFareSettleVO resultVO = this.queryStationData(pair.getV1(), pair.getV2());
+			List<String> rowData = this.getRowData(resultVO, pair);
+			Row row = sheet.createRow(rowNum);
+			int colNum = 0;
+			for (String cellData : rowData) {
+				this.createCell(colNum++, row, cellData);
+			}
+		}
+
+		private void createCell(int colNum, Row row, String cellData) {
+			Cell cell = row.createCell(colNum);
+			cell.setCellValue(cellData);
+		}
+
+		private List<String> getRowData(SmtFareSettleVO resultVO, Pair<Long, Long> pair) {
+			List<String> rowData = new ArrayList<String>();
+			rowData.add(this.getStationNameMap().get(pair.getV1()));
+			rowData.add(this.getVenderNameMap().get(pair.getV2()));
+			rowData.add(resultVO.getStationAcceptCnt());
+			rowData.add(resultVO.getSmtSuccessedCnt());
+			rowData.add(resultVO.getShouldFee());
+			rowData.add(resultVO.getReceivedFee());
+
+			return rowData;
+		}
+
+		private HttpServletResponse getResponse() {
+			return this.response;
+		}
+
+		private SmtFareSettleCondVO getCondVO() {
+			return this.condVO;
+		}
+
+		private PairList<Long, Long> getPairList() {
+			return this.pairList;
+		}
+
+		private Map<Long, String> getStationNameMap() {
+			return this.stationNameMap;
+		}
+
+		private Map<Long, String> getVenderNameMap() {
+			return this.venderNameMap;
+		}
+
+		private String[] getColNames() {
+			return new String[] { "站点", "供应商", "站点接收单量", "上门退成功单量", "应缴运费", "实缴运费" };
+		}
+
+		private SmtFareSettleVO queryStationData(long stationId, long venderId) {
+			return SmtFareSettleController.this.queryStationData(stationId, venderId, this.getCondVO());
+		}
+	}
+
+	private class DeliverExportUtil extends ExcelUtils {
+
+		private SmtFareSettleCondVO condVO = null;
+
+		private PairList<Long, Long> pairList = null;
+
+		private Map<Long, String> deliverNameMap = null;
+
+		private Map<Long, String> venderNameMap = null;
+
+		private HttpServletResponse response = null;
+
+		public DeliverExportUtil(HttpServletResponse response, SmtFareSettleCondVO condVO, PairList<Long, Long> pairList, Map<Long, String> deliverNameMap, Map<Long, String> venderNameMap) {
+			this.response = response;
+			this.condVO = condVO;
+			this.pairList = pairList;
+			this.deliverNameMap = deliverNameMap;
+			this.venderNameMap = venderNameMap;
+		}
+
+		public void export() throws Exception {
+			super.excel(this.getResponse(), this.getColNames(), "sheet1", "上门退运费结算报表(站点).xlsx");
+		}
+
+		@Override
+		public void fillData(Sheet sheet, CellStyle style) {
+			int rowNum = 1;
+			for (Pair<Long, Long> pair : this.getPairList()) {
+				this.createRow(rowNum++, sheet, pair);
+			}
+		}
+
+		private void createRow(int rowNum, Sheet sheet, Pair<Long, Long> pair) {
+			SmtFareSettleVO resultVO = this.queryDeliverData(pair.getV1(), pair.getV2());
+			List<String> rowData = this.getRowData(resultVO, pair);
+			Row row = sheet.createRow(rowNum);
+			int colNum = 0;
+			for (String cellData : rowData) {
+				this.createCell(colNum++, row, cellData);
+			}
+		}
+
+		private void createCell(int colNum, Row row, String cellData) {
+			Cell cell = row.createCell(colNum);
+			cell.setCellValue(cellData);
+		}
+
+		private List<String> getRowData(SmtFareSettleVO resultVO, Pair<Long, Long> pair) {
+			List<String> rowData = new ArrayList<String>();
+			rowData.add(this.getStationNameMap().get(pair.getV1()));
+			rowData.add(this.getVenderNameMap().get(pair.getV2()));
+			rowData.add(resultVO.getDeliverPickingCnt());
+			rowData.add(resultVO.getSmtSuccessedCnt());
+			rowData.add(resultVO.getShouldFee());
+			rowData.add(resultVO.getReceivedFee());
+
+			return rowData;
+		}
+
+		private HttpServletResponse getResponse() {
+			return this.response;
+		}
+
+		private SmtFareSettleCondVO getCondVO() {
+			return this.condVO;
+		}
+
+		private PairList<Long, Long> getPairList() {
+			return this.pairList;
+		}
+
+		private Map<Long, String> getStationNameMap() {
+			return this.deliverNameMap;
+		}
+
+		private Map<Long, String> getVenderNameMap() {
+			return this.venderNameMap;
+		}
+
+		private String[] getColNames() {
+			return new String[] { "小件员", "供应商", "领货数量", "上门退成功单量", "应缴运费", "实缴运费" };
+		}
+
+		private SmtFareSettleVO queryDeliverData(long deliverId, long venderId) {
+			return SmtFareSettleController.this.queryDeliverData(deliverId, venderId, this.getCondVO());
 		}
 	}
 }

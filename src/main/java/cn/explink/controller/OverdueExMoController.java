@@ -7,11 +7,17 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -32,6 +38,7 @@ import cn.explink.domain.OverdueExMoCondVO;
 import cn.explink.domain.OverdueResultVO;
 import cn.explink.domain.TimeEffectiveVO;
 import cn.explink.domain.TimeTypeEnum;
+import cn.explink.util.ExcelUtils;
 
 /**
  * 超期异常监控控制器.
@@ -80,12 +87,44 @@ public class OverdueExMoController {
 		if (showColList.isEmpty()) {
 			return resultVO;
 		}
-		Branch branch = this.getBranchDAO().getBranchByBranchid(branchId);
-		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(cond);
-		for (Integer showColIndex : showColList) {
-			resultVO.addResult(this.loadShowData(branch, venderId, showColIndex, cond, teMap));
-		}
+		List<Object> resultList = this.getShowResult(branchId, venderId, cond);
+		resultVO.setResultList(resultList);
+
 		return resultVO;
+	}
+
+	@RequestMapping("/exportdata")
+	public void exportData(OverdueExMoCondVO condVO, HttpServletResponse response) throws Exception {
+		if (condVO.getOrgs().isEmpty() || (condVO.getVenderId() == 0)) {
+			return;
+		}
+		long venderId = condVO.getVenderId();
+		String venderName = this.getCustomerDAO().getCustomerName(venderId);
+
+		Set<Long> stationIdSet = new HashSet<Long>(condVO.getOrgs());
+		Map<Long, String> stationNameMap = this.getBranchDAO().getBranchNameMap(stationIdSet);
+
+		List<List<Object>> dataList = new ArrayList<List<Object>>();
+		for (Long orgId : condVO.getOrgs()) {
+			List<Object> resultList = new ArrayList<Object>();
+			resultList.add(stationNameMap.get(orgId));
+			resultList.add(venderName);
+			resultList.addAll(this.getShowResult(orgId, venderId, condVO));
+
+			dataList.add(resultList);
+		}
+		new ExportDataUtils(response, condVO, dataList).exportData();
+	}
+
+	private List<Object> getShowResult(long branchId, Long venderId, OverdueExMoCondVO condVO) {
+		Branch branch = this.getBranchDAO().getBranchByBranchid(branchId);
+		List<Integer> showColList = condVO.getShowCols();
+		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(condVO);
+		List<Object> resultList = new ArrayList<Object>();
+		for (Integer showColIndex : showColList) {
+			resultList.addAll(this.loadShowData(branch, venderId, showColIndex, condVO, teMap));
+		}
+		return resultList;
 	}
 
 	private Map<ShowColEnum, TimeEffectiveVO> queryTimeEffectiveMap(OverdueExMoCondVO cond) {
@@ -650,6 +689,67 @@ public class OverdueExMoController {
 				}
 			}
 			return sql.toString();
+		}
+	}
+
+	private class ExportDataUtils extends ExcelUtils {
+
+		private OverdueExMoCondVO condVO = null;
+
+		private List<List<Object>> dataList = null;
+
+		private HttpServletResponse response = null;
+
+		public ExportDataUtils(HttpServletResponse response, OverdueExMoCondVO condVO, List<List<Object>> exportDataList) {
+			this.response = response;
+			this.condVO = condVO;
+			this.dataList = exportDataList;
+		}
+
+		public void exportData() throws Exception {
+			this.excel(this.getResponse(), this.getShowColNames(), "sheet1", "超期监控.xlsx");
+		}
+
+		@Override
+		public void fillData(Sheet sheet, CellStyle style) {
+			int rowNum = 1;
+			for (List<Object> rowData : this.getDataList()) {
+				this.createRow(rowNum++, sheet, rowData);
+			}
+		}
+
+		private void createRow(int rowNum, Sheet sheet, List<Object> rowData) {
+			Row row = sheet.createRow(rowNum);
+			int colNum = 0;
+			for (Object cellData : rowData) {
+				this.createCell(colNum++, row, cellData);
+			}
+		}
+
+		private void createCell(int colNum, Row row, Object cellData) {
+			Cell cell = row.createCell(colNum);
+			cell.setCellValue(cellData.toString());
+		}
+
+		private String[] getShowColNames() {
+			List<String> showColNameList = new ArrayList<String>();
+			showColNameList.add("机构名称");
+			showColNameList.add("供应商");
+			showColNameList.addAll(OverdueExMoController.this.getShowColList(this.getCondVO()));
+
+			return showColNameList.toArray(new String[0]);
+		}
+
+		private List<List<Object>> getDataList() {
+			return this.dataList;
+		}
+
+		private OverdueExMoCondVO getCondVO() {
+			return this.condVO;
+		}
+
+		private HttpServletResponse getResponse() {
+			return this.response;
 		}
 	}
 

@@ -98,11 +98,14 @@
 
 	});
 	$(function() {
-		$("#find").click(function() {
-			if (check()) {
-				$("#searchForm").submit();
-			}
-		});
+		$("#find").click(
+				function() {
+					if (check()) {
+						$("#searchForm").attr("action",
+								"${ctx_ath}/smtfaresettle/deliver/1");
+						$("#searchForm").submit();
+					}
+				});
 	});
 
 	$(function() {
@@ -275,6 +278,12 @@
 
 		$detailForm.submit();
 	}
+
+	function exportData() {
+		var $searchForm = $("#searchForm");
+		$searchForm.attr("action", "${ctx_path}/smtfaresettle/export/deliver");
+		$searchForm.submit();
+	}
 </script>
 
 <style>
@@ -307,8 +316,7 @@
 
 <body style="background: #eef9ff">
 	<div class="search_div">
-		<form id="searchForm" name="searchForm"
-			action="${pageContext.request.contextPath}/smtfaresettle/deliver/1" method="post">
+		<form id="searchForm" name="searchForm" action="${ctx_ath}/smtfaresettle/deliver/1" method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
 					<c:forEach items="${const.timeTypeMap}" var="entry">
@@ -335,7 +343,7 @@
 						<option value="${entry.key}" <c:if test="${entry.key == cond.deliverId}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> <input type="button" id="find" value="查询" class="input_button2" /> <input type="button"
-					id="btnval" value="导出" class="input_button2" />
+					id="btnval" value="导出" class="input_button2" onclick="exportData()" />
 			</div>
 		</form>
 	</div>

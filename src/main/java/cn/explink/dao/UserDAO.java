@@ -798,7 +798,7 @@ public class UserDAO {
 	}
 
 	public List<Long> getBranchDeliverId(Set<Long> branchIdSet) {
-		String sql = "select userid from express_set_user where roleid in (2,4) and branchid in " + this.getSqlInParam(branchIdSet) + "'";
+		String sql = "select userid from express_set_user where roleid in (2,4) and branchid in (" + this.getSqlInParam(branchIdSet) + ")";
 
 		return this.jdbcTemplate.queryForList(sql, Long.class);
 	}

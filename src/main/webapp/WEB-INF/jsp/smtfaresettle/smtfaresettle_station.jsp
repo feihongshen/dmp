@@ -233,6 +233,12 @@
 
 		$detailForm.submit();
 	}
+
+	function exportData() {
+		var $searchForm = $("#searchForm");
+		$searchForm.attr("action", "${ctx_path}/smtfaresettle/export/station");
+		$searchForm.submit();
+	}
 </script>
 
 <style>
@@ -265,8 +271,7 @@
 
 <body style="background: #eef9ff">
 	<div class="search_div">
-		<form id="searchForm" name="searchForm"
-			action="${pageContext.request.contextPath}/smtfaresettle/station/1" method="post">
+		<form id="searchForm" name="searchForm" action="${ctx_path}/smtfaresettle/station/1" method="post">
 			<div>
 				操作时间：<select id="optTimeType" name="optTimeType">
 					<c:forEach items="${const.timeTypeMap}" var="entry">
@@ -287,8 +292,8 @@
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
 					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] <input type="button" id="find"
-					value="查询" class="input_button2" /> <input type="button" id="btnval" value="导出"
-					class="input_button2" />
+					value="查询" class="input_button2" /> <input type="button" id="export" value="导出"
+					class="input_button2" onclick="exportData()" />
 			</div>
 		</form>
 	</div>
