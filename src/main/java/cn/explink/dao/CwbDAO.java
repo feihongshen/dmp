@@ -5142,12 +5142,28 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, nextbranchid);
 	}
 
+	public String getWeirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long nextbranchid) {
+		String sql = "select cwb from express_ops_cwb_detail where  flowordertype=" + flowordertype + " and nextbranchid=" + nextbranchid + " AND state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
+	}
+
 	public List<String> getYirukuCwbs(long cwbordertypeid, long flowordertype, long currentbranchid) {
 		String sql = "select cwb from express_ops_cwb_detail where flowordertype=? and currentbranchid=? AND state=1";
 		if (cwbordertypeid != 0) {
 			sql += " and cwbordertypeid=" + cwbordertypeid;
 		}
 		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, currentbranchid);
+	}
+
+	public String getYirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long currentbranchid) {
+		String sql = "select cwb from express_ops_cwb_detail where flowordertype=" + flowordertype + " " + "and currentbranchid=" + currentbranchid + " AND state=1";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
 	}
 
 	public List<SmtOrder> querySmtOrder(String sql) {
