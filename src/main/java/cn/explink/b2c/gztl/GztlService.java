@@ -35,6 +35,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Customer;
 import cn.explink.pos.tools.JacksonMapper;
 
 @Service
@@ -131,18 +132,21 @@ public class GztlService {
 
 			GztlXmlElement gztlElement = (GztlXmlElement) this.xmlToObj(xml, new GztlXmlElement());
 			if (gztlElement == null) {
-				return "通过jaxb生成的GztlXmlElement类为空";
+				this.logger.warn("通过jaxb生成的GztlXmlElement类为空,GztlService类中的orderDetailExportInterface方法里");
+				return this.errorReturnData("F", "请检查xml格式是否正确或验证key双方是否一致.");
 			}
 
 			List<Order> orderlist = gztlElement.getOrders();
 
 			if ((orderlist == null) || (orderlist.size() == 0)) {
-				return "没有参数";
+				return this.errorReturnData("F", "传来的信息里没有订单信息");
 			}
 
 			List<Map<String, String>> xmllist = this.getOrderDetailParms(gztl, orderlist);
+			for (Map<String, String> maps : xmllist) {
+				this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(maps.get("customerid")), B2cEnum.Guangzhoutonglu.getMethod(), xmllist, gztl.getWarehouseid(), true);
+			}
 
-			this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(gztl.getCustomerids()), B2cEnum.Guangzhoutonglu.getMethod(), xmllist, gztl.getWarehouseid(), true);
 			for (Order map : orderlist) {
 				cwb += map.getOrderid() + ",";
 			}
@@ -153,13 +157,15 @@ public class GztlService {
 			return this.responseXml(cwb, "T", "成功");
 		} catch (Exception e) {
 			this.logger.error("处理广州通路异常", e);// ????
-			return "未知异常";
+			return this.errorReturnData("F", "广州通路对接系统未知异常");
 		}
 
 	}
 
 	private List<Map<String, String>> getOrderDetailParms(Gztl gztl, List<Order> orderlist) {
 		List<Map<String, String>> xmllist = new ArrayList<Map<String, String>>();
+
+		List<Customer> customerlist = this.customerDAO.getAllCustomers();
 
 		for (Iterator<Order> iterator = orderlist.iterator(); iterator.hasNext();) {
 			Order order = iterator.next();
@@ -173,6 +179,8 @@ public class GztlService {
 			xmlMap.put("cwbordertypeid", order.getTypeid());// 配送类型
 			xmlMap.put("cwb", order.getOrderid());// 订单号或运单号
 			xmlMap.put("transcwb", order.getSclientcode());// 客户单号
+
+			xmlMap.put("customerid", this.getCustomerIdByCode(customerlist, order) + "");// 客户单号
 
 			xmlMap.put("consigneename", order.getCustomername());// 收货人
 			xmlMap.put("consigneeaddress", order.getCustomeraddress());// 收货人地址
@@ -193,10 +201,10 @@ public class GztlService {
 			xmlMap.put("sendcarnum", order.getGoodsnum());// 发货件数与件数
 			xmlMap.put("remark1", "到货时间：" + order.getArrivedate());// （本系统）签收时间与到货时间（过来的数据）
 			xmlMap.put("remark2", "入库时间：" + order.getPushtime() + ",订单生成时间：" + order.getOrderDate());// 发货时间与入库时间
-			xmlMap.put("remark3", "配送区域:" + order.getSclientcode());// 配送区域？？？？？deliverarea
+			xmlMap.put("remark3", "配送区域:" + order.getDeliverarea());// 配送区域？？？？？deliverarea
 			// xmlMap.put("remark4", "交接单号:" + order.getOrderBatchNo());//
 			// 交接单号????????
-			xmlMap.put("remark4", order.getShipperid());
+			xmlMap.put("remark4", order.getShipperid());// 需要与通路系统基础表对应(由飞远提供)
 			xmlMap.put("remark5",
 					"发货人名称:" + order.getConsignorname() + "," + "发货地址:" + order.getConsignoraddress() + "," + "手机:" + order.getConsignormobile() + "," + "电话:" + order.getConsignorphone());// 发货人信息
 
@@ -215,6 +223,36 @@ public class GztlService {
 		}
 
 		return xmllist;
+	}
+
+	private long getCustomerIdByCode(List<Customer> customerlist, Order order) {
+		for (Customer cu : customerlist) {
+			if (cu.getCustomercode().contains(order.getShipperid())) {
+				return cu.getCustomerid();
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * 广州通路返回异常信息组织形式
+	 *
+	 * @param flag
+	 * @param remark
+	 * @return
+	 */
+	public String errorReturnData(String flag, String remark) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<MSD>");
+		buffer.append("<Orders>");
+		buffer.append("<Order>");
+		buffer.append("<orderno></iorderno>");
+		buffer.append("<result>" + flag + "</result>");
+		buffer.append("<remark>" + remark + "</remark>");
+		buffer.append("</Order>");
+		buffer.append("</Orders>");
+		buffer.append("</MSD>");
+		return buffer.toString();
 	}
 
 	/**
