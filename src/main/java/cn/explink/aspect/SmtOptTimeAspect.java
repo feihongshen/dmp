@@ -125,6 +125,9 @@ public class SmtOptTimeAspect {
 	}
 
 	private ExecutorService getExecuteService() {
+		if (this.executeService == null) {
+			this.executeService = Executors.newFixedThreadPool(2);
+		}
 		return this.executeService;
 	}
 
