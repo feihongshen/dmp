@@ -320,20 +320,22 @@
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 站点： <select id="orgs"
-					name="orgs" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${constant.orgMap}" var="entry">
-						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
-					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venders"
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" />
+					供货商：<select id="venders"
 					name="venders" style="width: 100px;" multiple="multiple">
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 小件员：<select id="deliverId"
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 
+					 站点： <select id="orgs"
+					name="orgs" multiple="multiple" style="width: 100px;">
+					<c:forEach items="${constant.orgMap}" var="entry">
+						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
+					</c:forEach>
+				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 小件员：<select id="deliverId"
 					name="deliverId" style="width: 100px;">
 					<option value="0">请选择</option>
 					<c:forEach items="${constant.deliverMap}" var="entry">
