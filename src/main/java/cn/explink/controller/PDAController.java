@@ -6789,19 +6789,34 @@ public class PDAController {
 			// 查询出数据
 			String sqlstr = "";
 			if (type.length() > 0) {
-				List<String> cwbList = new ArrayList<String>();
+				// List<String> cwbList = new ArrayList<String>();
 				if (type.equals("weiruku")) {
 					if (extype.equals("wall")) {
-						cwbList = this.cwbDAO.getWeirukuCwbs(0, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+						// cwbList = this.cwbDAO.getWeirukuCwbs(0,
+						// FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getWeirukuCwbsToSQL(0, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("wshangmengtui")) {
-						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(),
+						// FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getWeirukuCwbsToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("wshangmenghuan")) {
-						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(),
+						// FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getWeirukuCwbsToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("wpeisong")) {
-						cwbList = this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getWeirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(),
+						// FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getWeirukuCwbsToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid());
 					}
 					// cwbList =
 					// this.operationTimeDAO.getOperationTimeTuiHuoChuZhan(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
@@ -6809,28 +6824,41 @@ public class PDAController {
 				}
 				if (type.equals("yiruku")) {
 					if (extype.equals("yall")) {
-						cwbList = this.cwbDAO.getYirukuCwbs(0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+						// cwbList = this.cwbDAO.getYirukuCwbs(0,
+						// FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getYirukuCwbsToSQL(0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("yshangmengtui")) {
-						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmentui.getValue(),
+						// FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getYirukuCwbsToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("yshangmenghuan")) {
-						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Shangmenhuan.getValue(),
+						// FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getYirukuCwbsToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
 					}
 					if (extype.equals("ypeisong")) {
-						cwbList = this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
+						// cwbList =
+						// this.cwbDAO.getYirukuCwbs(CwbOrderTypeIdEnum.Peisong.getValue(),
+						// FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+						// this.getSessionUser().getBranchid());
+						sqlstr = this.cwbDAO.getYirukuCwbsToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), this.getSessionUser().getBranchid());
 					}
 					// cwbList =
 					// this.operationTimeDAO.getOperationTimeTuiHuoZhanRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
 					// this.getSessionUser().getBranchid());
 				}
-				String cwbs = "";
-				if (cwbList.size() > 0) {
-					cwbs = this.dataStatisticsService.getStrings(cwbList);
-				} else {
-					cwbs = "'---'";
-				}
-				sqlstr = this.cwbDAO.getSqlByCwb(cwbs);
+				/*
+				 * String cwbs = ""; if (cwbList.size() > 0) { cwbs =
+				 * this.dataStatisticsService.getStrings(cwbList); } else { cwbs
+				 * = "'---'"; } sqlstr = this.cwbDAO.getSqlByCwb(cwbs);
+				 */
 			}
 			if (sqlstr.length() == 0) {
 				return;
