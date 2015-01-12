@@ -230,7 +230,7 @@ public class GztlService {
 
 	private long getCustomerIdByCode(List<Customer> customerlist, Order order) {
 		for (Customer cu : customerlist) {
-			if (cu.getCustomercode().contains(order.getShipperid())) {
+			if (cu.getCustomername().contains(order.getShipperid())) {
 				return cu.getCustomerid();
 			}
 		}
