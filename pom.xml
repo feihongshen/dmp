@@ -704,6 +704,30 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>versiont</id>
+			<properties>
+				<tomcat.manager.url>http://192.168.0.217:8011/manager</tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>versiont-smt</label>
+				<addresscustomerid>4</addresscustomerid>
+				<addressid>4</addressid>
+				<addresspassword>gxpx</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
 			<id>dmp_pxwl_41030</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
@@ -1843,6 +1867,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>BJXXHK</label>
+				<addresscustomerid>1</addresscustomerid>
+				<addressid>1</addressid>
+				<addresspassword>bjxxhk</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
