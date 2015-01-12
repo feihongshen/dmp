@@ -143,8 +143,11 @@ public class GztlService {
 			}
 
 			List<Map<String, String>> xmllist = this.getOrderDetailParms(gztl, orderlist);
+
 			for (Map<String, String> maps : xmllist) {
-				this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(maps.get("customerid")), B2cEnum.Guangzhoutonglu.getMethod(), xmllist, gztl.getWarehouseid(), true);
+				List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+				dataList.add(maps);
+				this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(maps.get("customerid")), B2cEnum.Guangzhoutonglu.getMethod(), dataList, gztl.getWarehouseid(), true);
 			}
 
 			for (Order map : orderlist) {
