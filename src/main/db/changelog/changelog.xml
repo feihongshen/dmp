@@ -5838,37 +5838,15 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	<changeSet id="zhaoshb-2014-12-29-2" author="zhaoshb">
 		<sql>
 			INSERT INTO
-			express_set_menu_info_new(menuname,menuurl,menulevel,menuno,parentno,menuimage,adminshowflag)VALUES('上门退时效设置','time_effective','3','TE01','1076','images/bqdy.png',NULL);
+			express_set_menu_info_new(menuname,menuurl,menulevel,menuno,parentno,menuimage,adminshowflag)VALUES('上门退时效设置','time_effective/','3','TE01','1076','images/bqdy.png',NULL);
 		</sql>
 	</changeSet>
 
 	<changeSet id="zhaoshb-2014-12-29-4" author="zhaoshb">
 		<sql>
-			INSERT
-INTO
-    express_set_menu_info_new
-    (
-        menuname,
-        menuurl,
-        menulevel,
-        menuno,
-        parentno,
-        menuimage,
-        adminshowflag
-    )
-    VALUES
-    (
-        '超期异常监控',
-        'overdue_ex_mo/',
-        '3',
-        'OEM_01',
-        '1076',
-        'images/sjjk].png',
-        NULL
-    );
-
-
-
+			INSERT INTO express_set_menu_info_new (menuname, menuurl, menulevel, menuno, parentno, menuimage, adminshowflag) VALUES ('上门退揽收汇总表', 'overdueexmo/1', '3', 'OEM_01', '1076', 'images/kufangrizhi.png', null);
+			INSERT INTO express_set_menu_info_new ( menuname, menuurl, menulevel, menuno, parentno, menuimage, adminshowflag) VALUES ('上门退运费结算报表-站点', 'smtfaresettle/station/1', '3', 'SFS_01', '1076', 'images/kufangrizhi.png', null);
+			INSERT INTO express_set_menu_info_new (menuname, menuurl, menulevel, menuno, parentno, menuimage, adminshowflag) VALUES ('上门退运费结算报表-小件员', 'smtfaresettle/deliver/1', '3', 'SFS_02', '1076', 'images/kufangrizhi.png', null);
 		</sql>
 	</changeSet>
 
