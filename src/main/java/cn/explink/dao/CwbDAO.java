@@ -5143,7 +5143,7 @@ public class CwbDAO {
 	}
 
 	public String getWeirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long nextbranchid) {
-		String sql = "select cwb from express_ops_cwb_detail where  flowordertype=" + flowordertype + " and nextbranchid=" + nextbranchid + " AND state=1 ";
+		String sql = "select * from express_ops_cwb_detail where  flowordertype=" + flowordertype + " and nextbranchid=" + nextbranchid + " AND state=1 ";
 		if (cwbordertypeid != 0) {
 			sql += " and cwbordertypeid=" + cwbordertypeid;
 		}
@@ -5159,7 +5159,7 @@ public class CwbDAO {
 	}
 
 	public String getYirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long currentbranchid) {
-		String sql = "select cwb from express_ops_cwb_detail where flowordertype=" + flowordertype + " " + "and currentbranchid=" + currentbranchid + " AND state=1";
+		String sql = "select * from express_ops_cwb_detail where flowordertype=" + flowordertype + " " + "and currentbranchid=" + currentbranchid + " AND state=1";
 		if (cwbordertypeid != 0) {
 			sql += " and cwbordertypeid=" + cwbordertypeid;
 		}
