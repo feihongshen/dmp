@@ -80,10 +80,6 @@ public class GztlService {
 		gztl.setSearch_number(Long.parseLong(request.getParameter("search_number")));
 		gztl.setSearch_url(request.getParameter("search_url"));
 		gztl.setPassword(request.getParameter("password"));
-		// gztl.setAgentId(request.getParameter("agentId"));
-		// gztl.setAgentName(request.getParameter("agentName"));
-		// gztl.setAgentPhone(request.getParameter("agentPhone"));
-		// gztl.setAgentWebsite(request.getParameter("agentWebsite"));
 		gztl.setWarehouseid(Long.parseLong(request.getParameter("warehouseid")));
 		gztl.setPrivate_key(request.getParameter("private_key"));
 		gztl.setSign(request.getParameter("sign"));
