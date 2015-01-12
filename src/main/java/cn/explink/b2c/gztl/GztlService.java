@@ -249,7 +249,7 @@ public class GztlService {
 		buffer.append("<MSD>");
 		buffer.append("<Orders>");
 		buffer.append("<Order>");
-		buffer.append("<orderno></iorderno>");
+		buffer.append("<orderno></orderno>");
 		buffer.append("<result>" + flag + "</result>");
 		buffer.append("<remark>" + remark + "</remark>");
 		buffer.append("</Order>");
