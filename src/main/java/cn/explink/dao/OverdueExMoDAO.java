@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,6 +25,8 @@ public class OverdueExMoDAO {
 	private JdbcTemplate jdbcTemplate = null;
 
 	private Set<FlowOrderTypeEnum> allowUpdateFlowSet = null;
+
+	private Logger logger = LoggerFactory.getLogger(OverdueExMoDAO.class);
 
 	@Autowired
 	private CwbDAO cwbDAO = null;
@@ -117,6 +121,8 @@ public class OverdueExMoDAO {
 		String createTime = dto.getRemark2();
 		int payType = (int) dto.getPaywayid();
 		BigDecimal shouleFee = dto.getShouldfare();
+
+		this.logger.info("插入上门退订单:" + insertSql);
 		this.getJdbcTemplate().update(insertSql, cwb, venderId, createTime, payType, shouleFee);
 	}
 
