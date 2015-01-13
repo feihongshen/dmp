@@ -893,10 +893,6 @@
 				<word></word>
 				<logoimgurl>images/login_tengxunda.png</logoimgurl>
 				<label>TXD_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -1303,10 +1299,6 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>SXYMJ_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -1375,10 +1367,6 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>SXFY_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -1846,10 +1834,6 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJPX_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -2084,11 +2068,6 @@
 				<word></word>
 				<logoimgurl>images/logo_scpj.png</logoimgurl>
 				<label>SCPJ_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
-				
 			</properties>
 		</profile>
 		<profile>
@@ -2271,10 +2250,6 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJYT_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -2501,10 +2476,6 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>AHPX_SMT</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
