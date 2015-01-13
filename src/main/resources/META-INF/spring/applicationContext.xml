@@ -37,6 +37,7 @@ http://cxf.apache.org/schemas/jaxws.xsd
 			type="annotation" />
 	</context:component-scan>
 
+
 	<context:spring-configured />
 
 	<aop:aspectj-autoproxy proxy-target-class="true" />
