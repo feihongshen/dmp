@@ -2,6 +2,7 @@ package cn.explink.controller;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -27,18 +29,23 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
+import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
@@ -67,17 +74,20 @@ public class ApplyEditDeliverystateController {
 	ExceptionCwbDAO exceptionCwbDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
-
+	@Autowired
+	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
+	@Autowired
+	EditCwbService editCwbService;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	/**
 	 * 进入申请修改订单配送结果页面
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -103,15 +113,15 @@ public class ApplyEditDeliverystateController {
 					continue;
 				}
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
-				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
-				if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
+				DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
+				if ((deliverystate == null) || (deliverystate.getDeliverystate() == 0)) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
-				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
+				} else if ((deliverystate != null) && (deliverystate.getPayupid() == 0) && (deliverystate.getIssendcustomer() == 0)) {
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
-					CwbOrder co = cwbDAO.getCwbByCwbLock(cwbStr);
-					List<ApplyEditDeliverystate> aedsList = applyEditDeliverystateDAO.getApplyEditDeliverystateByCwb(cwbStr, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
-					if (co != null && aedsList.size() == 0) {
-						DeliveryState ds = deliveryStateDAO.getDeliveryByCwb(cwbStr);
+					CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwbStr);
+					List<ApplyEditDeliverystate> aedsList = this.applyEditDeliverystateDAO.getApplyEditDeliverystateByCwb(cwbStr, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
+					if ((co != null) && (aedsList.size() == 0)) {
+						DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwb(cwbStr);
 						ApplyEditDeliverystate aeds = new ApplyEditDeliverystate();
 						aeds.setCwb(cwbStr);
 						aeds.setOpscwbid(co.getOpscwbid());
@@ -121,10 +131,10 @@ public class ApplyEditDeliverystateController {
 						aeds.setNopos(ds.getCash().add(ds.getCheckfee()).add(ds.getOtherfee()));
 						aeds.setPos(ds.getPos());
 						aeds.setDeliverid(ds.getDeliveryid());
-						aeds.setApplyuserid(getSessionUser().getUserid());
-						aeds.setApplybranchid(getSessionUser().getBranchid());
+						aeds.setApplyuserid(this.getSessionUser().getUserid());
+						aeds.setApplybranchid(this.getSessionUser().getBranchid());
 						aeds.setApplytime(nowtime);
-						applyEditDeliverystateDAO.creApplyEditDeliverystate(aeds);
+						this.applyEditDeliverystateDAO.creApplyEditDeliverystate(aeds);
 					}
 				} else {
 					if (deliverystate.getPayupid() > 0) {
@@ -135,12 +145,12 @@ public class ApplyEditDeliverystateController {
 				}
 			}
 			String cwbs1 = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "'--'";
-			count = cwbDAO.getCwbOrderCwbsCount(cwbs1);
+			count = this.cwbDAO.getCwbOrderCwbsCount(cwbs1);
 
-			model.addAttribute("cwbList", cwbDAO.getCwbByCwbsPage(page, cwbs1));
-			model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateDAO.getApplyEditDeliverystateByCwbsPage(page, cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()));
-			model.addAttribute("branchList", branchDAO.getAllEffectBranches());
-			model.addAttribute("userList", userDAO.getAllUser());
+			model.addAttribute("cwbList", this.cwbDAO.getCwbByCwbsPage(page, cwbs1));
+			model.addAttribute("applyEditDeliverystateList", this.applyEditDeliverystateDAO.getApplyEditDeliverystateByCwbsPage(page, cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()));
+			model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+			model.addAttribute("userList", this.userDAO.getAllUser());
 			model.addAttribute("errorCwbs", errorCwbs.toString());
 		}
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
@@ -150,7 +160,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 提交申请的每个订单的修改后的配送结果和原因
-	 * 
+	 *
 	 * @param id
 	 * @param model
 	 * @param editnowdeliverystate
@@ -163,15 +173,15 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "editreason", defaultValue = "", required = true) String editreason) {
 		try {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
-			ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
-			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
-			if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
-				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id, editnowdeliverystate, editreason);
+			ApplyEditDeliverystate applyEditDeliverystate = this.applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
+			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
+			if ((deliverystate != null) && (deliverystate.getPayupid() == 0) && (deliverystate.getIssendcustomer() == 0)) {
+				this.applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id, editnowdeliverystate, editreason);
 				return "{\"errorCode\":0,\"error\":\"提交成功\"}";
 			} else {
-				if (deliverystate == null || deliverystate.getPayupid() > 0) {
+				if ((deliverystate == null) || (deliverystate.getPayupid() > 0)) {
 					return "{\"errorCode\":1,\"error\":\"提交失败,此单已经上交款，不能再申请修改状态\"}";
-				} else if (deliverystate == null || deliverystate.getIssendcustomer() > 0) {
+				} else if ((deliverystate == null) || (deliverystate.getIssendcustomer() > 0)) {
 					return "{\"errorCode\":1,\"error\":\"提交失败,此单状态已推送给电商，不能再申请修改状态\"}";
 				}
 				return "{\"errorCode\":1,\"error\":\"提交失败\"}";
@@ -184,7 +194,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 修改订单配送结果的查询功能
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param begindate
@@ -197,10 +207,11 @@ public class ApplyEditDeliverystateController {
 	public String getApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
 
-		model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, getSessionUser().getBranchid(), ishandle, ""));
-		model.addAttribute("branchList", branchDAO.getAllEffectBranches());
-		model.addAttribute("userList", userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, getSessionUser().getBranchid(), ishandle, ""), page,
+		model.addAttribute("applyEditDeliverystateList",
+				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, this.getSessionUser().getBranchid(), ishandle, ""));
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, this.getSessionUser().getBranchid(), ishandle, ""), page,
 				Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
@@ -208,7 +219,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 客服看到的修改订单配送结果的功能
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -223,54 +234,56 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "applybranchid", defaultValue = "0", required = false) long applybranchid, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
 
-		model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb));
-		model.addAttribute("branchList", branchDAO.getAllEffectBranches());
-		model.addAttribute("userList", userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("applyEditDeliverystateList", this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb));
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb), page, Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/handleApplyEditDeliverystatelist";
 	}
 
 	/**
 	 * 客服进入到某个订单的修改功能
-	 * 
+	 *
 	 * @param id
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping("/handleApplyEditDeliverystateByid/{id}")
 	public String handleApplyEditDeliverystateByid(@PathVariable("id") long id, Model model) {
-		ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
-		DeliveryState ds = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
-		List<Reason> backreasonlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		List<Reason> leavedreasonlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
-		List<Reason> podremarkreasonlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
+		ApplyEditDeliverystate applyEditDeliverystate = this.applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
+		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
+		List<Reason> backreasonlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> podremarkreasonlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
 
-		CwbOrder co = cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
+		CwbOrder co = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
 
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<User> userList = userDAO.getAllUser();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<User> userList = this.userDAO.getAllUser();
 
 		model.addAttribute("cwborder", co);
-		model.addAttribute("deliverystate", getDeliveryStateView(ds, customerList, userList, null));
+		model.addAttribute("deliverystate", this.getDeliveryStateView(ds, customerList, userList, null));
 
-		if (co.getBackreason() != null && co.getBackreason().length() > 0)
-			model.addAttribute("backreasonid", reasonDAO.getReasonByReasonid(co.getBackreasonid()) == null ? 0 : reasonDAO.getReasonByReasonid(co.getBackreasonid()).getReasonid());
-		if (co.getLeavedreason() != null && co.getLeavedreason().length() > 0)
-			model.addAttribute("leavedreasonid", reasonDAO.getReasonByReasonid(co.getLeavedreasonid()) == null ? 0 : reasonDAO.getReasonByReasonid(co.getLeavedreasonid()).getReasonid());
+		if ((co.getBackreason() != null) && (co.getBackreason().length() > 0)) {
+			model.addAttribute("backreasonid", this.reasonDAO.getReasonByReasonid(co.getBackreasonid()) == null ? 0 : this.reasonDAO.getReasonByReasonid(co.getBackreasonid()).getReasonid());
+		}
+		if ((co.getLeavedreason() != null) && (co.getLeavedreason().length() > 0)) {
+			model.addAttribute("leavedreasonid", this.reasonDAO.getReasonByReasonid(co.getLeavedreasonid()) == null ? 0 : this.reasonDAO.getReasonByReasonid(co.getLeavedreasonid()).getReasonid());
+		}
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("podremarkreasonlist", podremarkreasonlist);
 		model.addAttribute("applyEditDeliverystate", applyEditDeliverystate);
-		model.addAttribute("userList", userDAO.getAllUser());
+		model.addAttribute("userList", this.userDAO.getAllUser());
 
 		return "applyeditdeliverystate/handleApplyEditDeliverystate";
 	}
 
 	/**
 	 * 客服对选择的订单进行修改的功能
-	 * 
+	 *
 	 * @param model
 	 * @param id
 	 * @param deliveryid
@@ -298,12 +311,51 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "checkremark", required = false, defaultValue = "") String checkremark,
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark) {
 
-		logger.info("web--进入单票反馈");
-		ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
+		this.logger.info("web--进入单票反馈");
+		ApplyEditDeliverystate applyEditDeliverystate = this.applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
+		Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(applyEditDeliverystate.getCwb());
+
+		// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
+		if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+			// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
+			DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
+			if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
+				// 暂借对象中的备注1字段输出一些提示语
+				co.setRemark1("当前订单运费已交款，不可重置审核状态");
+				return "{\"errorCode\":1,\"error\":\" 当前订单运费已交款，不可重置审核状态  \"}";
+			} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
+
+			} else {
+				// 暂借对象中的备注1字段输出一些提示语
+				co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
+				return "{\"errorCode\":1,\"error\":\" POS刷卡签收的订单审核后不允许重置审核状态  \"}";
+			}
+			List<User> userList = this.userDAO.getUserByid(deliveryid);
+			if (userList != null) {
+				this.logger.info("重置订单审核状态功能 [{}] cwb: {}", this.getSessionUser().getRealname());
+				List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
+				List<String> errorList = new ArrayList<String>();
+
+				try {
+					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(applyEditDeliverystate.getCwb(), deliveryid, this.getSessionUser().getUserid());
+					ecList.add(ec_dsd);
+				} catch (ExplinkException ee) {
+					errorList.add(applyEditDeliverystate.getCwb() + "_" + ee.getMessage());
+					return "{\"errorCode\":1,\"error\":\"" + ee.getMessage() + "\"}";
+				} catch (Exception e) {
+					errorList.add(applyEditDeliverystate.getCwb() + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
+					return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
+				}
+			}
+
+		}
+		// 暂借对象中的备注1字段输出一些提示语
+
 		try {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
-			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
-			if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
+			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
+			if ((deliverystate != null) && (deliverystate.getPayupid() == 0) && (deliverystate.getIssendcustomer() == 0)) {
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put("deliverid", deliveryid);
 				parameters.put("podresultid", podresultid);
@@ -320,26 +372,26 @@ public class ApplyEditDeliverystateController {
 				parameters.put("deliverstateremark", deliverstateremark + "-客服改单");
 				parameters.put("owgid", 0);
 				parameters.put("sessionbranchid", deliverystate.getDeliverybranchid());
-				parameters.put("sessionuserid", getSessionUser().getUserid());
+				parameters.put("sessionuserid", this.getSessionUser().getUserid());
 				parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 				parameters.put("sign_man", "");
 				parameters.put("sign_time", DateTimeUtil.getNowTime());
-				cwborderService.deliverStatePod(getSessionUser(), applyEditDeliverystate.getCwb(), applyEditDeliverystate.getCwb(), parameters);
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
-				DeliveryState deliveryState = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
+				this.cwborderService.deliverStatePod(this.getSessionUser(), applyEditDeliverystate.getCwb(), applyEditDeliverystate.getCwb(), parameters);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
+				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
 
 				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 				cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 				cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
 
 				try {
-					applyEditDeliverystateDAO.agreeSaveApplyEditDeliverystateById(id, receivedfeecash.add(receivedfeecheque).add(receivedfeeother), receivedfeepos, getSessionUser().getUserid(),
-							DateTimeUtil.getNowTime(), new ObjectMapper().writeValueAsString(cwbOrderWithDeliveryState).toString());
+					this.applyEditDeliverystateDAO.agreeSaveApplyEditDeliverystateById(id, receivedfeecash.add(receivedfeecheque).add(receivedfeeother), receivedfeepos, this.getSessionUser()
+							.getUserid(), DateTimeUtil.getNowTime(), new ObjectMapper().writeValueAsString(cwbOrderWithDeliveryState).toString());
 				} catch (Exception e) {
-					logger.error("error while saveing applyEditDeliverystate", e);
+					this.logger.error("error while saveing applyEditDeliverystate", e);
 				}
 			} else {
-				if (deliverystate != null && deliverystate.getPayupid() > 0) {
+				if ((deliverystate != null) && (deliverystate.getPayupid() > 0)) {
 					return "{\"errorCode\":1,\"error\":\"订单已经上交款，不能修改状态\"}";
 				} else {
 					return "{\"errorCode\":1,\"error\":\"订单状态已经推送给电商，不能修改状态\"}";
@@ -347,19 +399,20 @@ public class ApplyEditDeliverystateController {
 			}
 
 		} catch (CwbException ce) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
-			exceptionCwbDAO.createExceptionCwb(applyEditDeliverystate.getCwb(), ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
+			this.exceptionCwbDAO.createExceptionCwb(applyEditDeliverystate.getCwb(), ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 
 			return "{\"errorCode\":1,\"error\":\"" + ce.getMessage() + "\"}";
 		}
+
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 
 	}
 
 	/**
 	 * 得到订单的一些信息功能
-	 * 
+	 *
 	 * @param ds
 	 * @param customerList
 	 * @param userList
@@ -396,7 +449,7 @@ public class ApplyEditDeliverystateController {
 
 		CwbOrder cwbOrder = null;
 		if (clist == null) {
-			cwbOrder = cwbDAO.getCwbByCwb(ds.getCwb());
+			cwbOrder = this.cwbDAO.getCwbByCwb(ds.getCwb());
 		} else {
 			for (CwbOrder c : clist) {
 				if (c.getCwb().equals(ds.getCwb())) {
@@ -406,7 +459,7 @@ public class ApplyEditDeliverystateController {
 			}
 		}
 		if (cwbOrder == null) {
-			logger.warn("cwborder {} not exist" + ds.getCwb());
+			this.logger.warn("cwborder {} not exist" + ds.getCwb());
 			return null;
 		}
 		sdv.setCustomerid(cwbOrder.getCustomerid());
