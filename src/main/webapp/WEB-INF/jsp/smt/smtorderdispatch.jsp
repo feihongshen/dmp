@@ -611,7 +611,7 @@ dl dd span {
 						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
 				<div>
-					<label style="margin-left: 20px">快捷超区</label> <input type="text" id="today_table_quick"
+					快捷超区：<input type="text" id="today_table_quick"
 						name="today_table_quick" value=""
 						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
 						id="today_table_msg" style="color: red"></label>
