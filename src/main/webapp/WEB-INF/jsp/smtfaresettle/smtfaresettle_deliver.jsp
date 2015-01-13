@@ -221,9 +221,9 @@
 	}
 
 	$(function() {
-		var $orgId =$("#orgId"); 
-		$orgId.change(function(){
-			var orgId= $orgId.val();
+		var $orgId = $("#orgId");
+		$orgId.change(function() {
+			var orgId = $orgId.val();
 			fillStationDeliver(orgId);
 		});
 	});
@@ -237,20 +237,25 @@
 	}
 
 	function fillDeliverInfo(data) {
-		var $deliverId = $("#deliverId");
-		$deliverId.empty();
-		$deliverId.append("<option value='0'>请选择</option>");
+		var $deliverArea = $("#deliver_area")
+		$deliverArea.empty();
+		var html = '<select id="delivers" name="delivers" style="width: 100px;" multiple="multiple">'
 		for ( var p in data) {
-			$deliverId.append("<option value='" + p + "'>" + data[p]
-					+ "</option>");
+			html += '<option value="' + p +'">' + data[p] + '</option>'
 		}
+		$deliverArea.append(html);
+		$("#delivers").multiSelect({
+			oneOrMoreSelected : '*',
+			noneSelected : '请选择'
+		});
 	}
 
 	function fillStationDeliver(stationId) {
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : "${ctx_path}/smtfaresettle/getstationdeliver?"+ Math.random(),
+			url : "${ctx_path}/smtfaresettle/getstationdeliver?"
+					+ Math.random(),
 			data : {
 				stationId : stationId
 			},
@@ -325,16 +330,17 @@
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
 					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 站点： <select id="orgId"
-					name="orgId" multiple="multiple" style="width: 100px;">
+					name="orgId" style="width: 100px;">
 					<option value="0">请选择</option>
 					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${cond.orgId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> 小件员：
-				<div id="deliverArea" style="display: inline">
-					<select id="delivers" name="delivers" style="width: 100px;">
+				<div id="deliver_area" style="display: inline">
+					<select id="delivers" name="delivers" style="width: 100px;" multiple="multiple">
 						<c:forEach items="${constant.deliverMap}" var="entry">
-							<option value="${entry.key}" <c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>
+							<option value="${entry.key}"
+								<c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>
 						</c:forEach>
 					</select>
 				</div>

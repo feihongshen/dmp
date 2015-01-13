@@ -531,11 +531,11 @@ public class SmtFareSettleController {
 	}
 
 	private Map<Long, String> getDeliverNameMap(SmtFareSettleCondVO cond) {
-		List<Long> stationIdList = cond.getOrgs();
-		if (stationIdList.isEmpty()) {
+		long orgId = cond.getOrgId();
+		if (orgId == 0) {
 			return new HashMap<Long, String>();
 		}
-		return this.getUserDAO().getDeliverNameMapByBranch(new HashSet<Long>(stationIdList));
+		return this.getUserDAO().getDeliverNameMapByBranch(orgId);
 	}
 
 	private BranchDAO getBranchDAO() {
