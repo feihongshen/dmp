@@ -160,17 +160,17 @@
 			var cond2 = $tr.find("td").eq(2).html() == venderId;
 			if (cond1 && cond2) {
 				var tds = $tr.find("td");
-				$(tds[4]).html(makeCell(i, result.stationAcceptCnt));
-				$(tds[5]).html(makeCell(i, result.smtSuccessedCnt));
-				$(tds[6]).html(makeCell(i, result.shouldFee));
-				$(tds[7]).html(makeCell(i, result.receivedFee));
+				$(tds[4]).html(makeCell(i, 4, result.stationAcceptCnt));
+				$(tds[5]).html(makeCell(i, 5, result.smtSuccessedCnt));
+				$(tds[6]).html(makeCell(i, 6, result.shouldFee));
+				$(tds[7]).html(makeCell(i, 7, result.receivedFee));
 			}
 		}
 	}
 
-	function makeCell(trIndex, content) {
-		return "<a href='javascript:showDetail(" + trIndex + ")'>" + content
-				+ "</a>";
+	function makeCell(trIndex, tdIndex, content) {
+		return "<a href='javascript:showDetail(" + trIndex + " , " + tdIndex
+				+ ")'>" + content + "</a>";
 	}
 
 	function summaryData() {
@@ -221,7 +221,7 @@
 		return fieldIds;
 	}
 
-	function showDetail(trIndex) {
+	function showDetail(trIndex, tdIndex) {
 		var $tr = $($("#static_table").find("tr").eq(trIndex));
 		var tds = $tr.find("td");
 		var stationId = $(tds[0]).html();
@@ -230,6 +230,11 @@
 		var $detailForm = $("#detailForm");
 		$("#stationId", $detailForm).val(stationId);
 		$("#venderId", $detailForm).val(venderId);
+		if (tdIndex == 4 || tdIndex == 6) {
+			$("#type", $detailForm).val("total")
+		} else {
+			$("#type", $detailForm).val("success");
+		}
 
 		$detailForm.submit();
 	}
@@ -370,7 +375,9 @@
 			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
 				type="hidden" id="startTime" name="startTime" value="${cond.startTime}" /> <input type="hidden"
 				id="endTime" name="endTime" value="${cond.endTime}" /> <input type="hidden" id="stationId"
-				name="stationId" /> <input type="hidden" id="venderId" name="venderId" />
+				name="stationId" /> <input type="hidden" id="venderId" name="venderId" /> <input type="hidden"
+				id="type" name="type" />
+
 		</form>
 </body>
 </html>

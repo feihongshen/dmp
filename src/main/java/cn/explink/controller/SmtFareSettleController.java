@@ -264,6 +264,9 @@ public class SmtFareSettleController {
 		}
 		sql.append("and vender_id = ? ");
 		sql.append("and " + this.getTimeWhereCond(condVO));
+		if (condVO.getType().equals("success")) {
+			sql.append(" and deliver_state = 2");
+		}
 		if (limit) {
 			sql.append(" limit " + ((page - 1) * 10) + ",10");
 		}
@@ -282,6 +285,9 @@ public class SmtFareSettleController {
 		}
 		sql.append("and vender_id = ? ");
 		sql.append("and " + this.getTimeWhereCond(condVO));
+		if (condVO.getType().equals("success")) {
+			sql.append(" and deliver_state = 2");
+		}
 
 		return sql.toString();
 	}

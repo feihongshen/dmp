@@ -14,6 +14,8 @@ public class SmtFareSettleDetailCondVO {
 
 	private long deliverId = 0;
 
+	private String type = "";
+
 	public int getOptTimeType() {
 		return this.optTimeType;
 	}
@@ -60,6 +62,14 @@ public class SmtFareSettleDetailCondVO {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }
