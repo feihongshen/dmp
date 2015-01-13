@@ -969,12 +969,15 @@ public class CwbOrderService {
 	 * @return
 	 */
 
-	public CwbOrder changeintoWarehous(User user, String cwb, String scancwb, long customerid, long driverid, long requestbatchno, String comment, String baleno, boolean anbaochuku) {
+	public CwbOrder changeintoWarehous(User user, String cwb, String scancwb, long customerid, long driverid, long requestbatchno, String comment, String baleno, boolean anbaochuku,int checktype,long nextbranchid) {
 		this.logger.info("开始中转站入库处理,cwb:{}", cwb);
 
 		cwb = this.translateCwb(cwb);
-
-		return this.changeintoWarehousHandle(user, cwb, scancwb, user.getBranchid(), customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
+		long branchid = user.getBranchid();
+		if(nextbranchid >0 && checktype ==1 ){
+			branchid = nextbranchid;
+		}
+		return this.changeintoWarehousHandle(user, cwb, scancwb, branchid, customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
 	}
 
 	@Transactional

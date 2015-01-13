@@ -2841,12 +2841,14 @@ public class PDAController {
 	@RequestMapping("/cwbChangeintowarhouse/{cwb}")
 	public @ResponseBody ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, 
+			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
-			cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, requestbatchno, comment, "", false);
+			
+			cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, requestbatchno, comment, "", false,0,0);
 
 			JSONObject obj = new JSONObject();
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -2971,7 +2973,7 @@ public class PDAController {
 			obj.put("cwb", cwb);
 
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, "", "", false);
+				CwbOrder cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, "", "", false,0,0);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
@@ -4405,11 +4407,56 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbackintowarhouse/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbackintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+			@RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+			@RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
 
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
+		CwbOrder cwbOrder = null;
+		if(checktype==1){
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if(co == null){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+			if(co.getCustomerid() != customerid){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.GongHuoShang_Bufu);
+			}
+			OperationTime op = operationTimeDAO.getObjectBycwb(cwb);
+			if(op == null){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+			if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() 
+					|| op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
+				long branchid=0;
+				if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() ){
+					branchid = op.getBranchid();
+				}else{
+					branchid = op.getNextbranchid();
+				}
+				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,1,branchid);
+			}else if(op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() 
+					|| op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
+				if(op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
+					Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
+					if(branch == null || branch.getSitetype() != BranchEnum.ZhongZhuan.getValue()){
+						throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
+					}
+				}
+				long branchid=0;
+				if(op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() ){
+					branchid = op.getBranchid();
+				}else{
+					branchid = op.getNextbranchid();
+				}
+				cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false,1,branchid);
+			}else{
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
+			}
+		}else {
+			cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
+		}
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());

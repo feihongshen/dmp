@@ -197,7 +197,7 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 		}else{//入库
 			$.ajax({
 				type: "POST",
-				url:pname+"/PDA/cwbbackintowarhouse/"+scancwb+"?driverid="+driverid,
+				url:pname+"/PDA/cwbbackintowarhouse/"+scancwb+"?driverid="+driverid+"&customerid="+$("#customerid").val()+"&checktype=1",
 				data:{
 					"comment":comment
 				},
@@ -632,12 +632,12 @@ function yiruku(){
 				</select>
 				&nbsp;&nbsp;供货商：
 				<select name ="customerid" id ="customerid">
-	          <option value ="">请选择</option>
+	          <option value ="-1">请选择</option>
 	          <%if(cList!=null&&cList.size()>0){ %>
 	            <%for(Customer c : cList){ %>
 		          <option value ="<%=c.getCustomerid()%>"  ><%=c.getCustomername()%></option>
 		        <%}}%>
-			</select> *
+			</select> <font color="red">*</font>
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
