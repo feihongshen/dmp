@@ -400,18 +400,11 @@ public class SmtFareSettleController {
 		if (!deliverIdList.isEmpty()) {
 			return deliverIdList;
 		}
-		Set<Long> branchIdSet = this.getBranchIdSet(cond);
-		if (branchIdSet.isEmpty()) {
+		long stationId = cond.getOrgId();
+		if (stationId == 0) {
 			return this.getUserDAO().getAllDeliverId();
 		}
-		return this.getUserDAO().getBranchDeliverId(branchIdSet);
-	}
-
-	private Set<Long> getBranchIdSet(SmtFareSettleCondVO cond) {
-		List<Long> orgIdList = cond.getOrgs();
-		Set<Long> orgIdSet = new HashSet<Long>(orgIdList);
-
-		return orgIdSet;
+		return this.getUserDAO().getBranchDeliverId(stationId);
 	}
 
 	private List<Long> getCustomerIdList(SmtFareSettleCondVO cond) {

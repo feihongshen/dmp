@@ -102,7 +102,6 @@
 					if (check()) {
 						var $searchForm = $("#searchForm");
 						$searchForm.attr("action","${ctx_path}/smtfaresettle/station/1");
-
 						$searchForm.submit();
 					}
 				});
