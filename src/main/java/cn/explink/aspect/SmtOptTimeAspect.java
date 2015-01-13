@@ -53,6 +53,7 @@ public class SmtOptTimeAspect {
 	@Before("execution(* cn.explink.b2c.tools.DataImportDAO_B2c.insertCwbOrder_toTempTable(..))")
 	public void afterImportData(JoinPoint point) {
 		this.getLogger().info("执行上门退订单插入逻辑.");
+		this.getLogger().info("执行上门退订单插入逻辑:" + this.overdueExMODAO);
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
 		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
