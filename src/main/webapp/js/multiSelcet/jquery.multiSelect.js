@@ -52,8 +52,9 @@ if (jQuery) (function($) {
             $(this).each(function() {
                 var select = $(this);
                 var iWidth = select.width() < 40 ? 40 : select.width();
-                var html = '<div class="multiSelect"><input type="text" class="multiSelect_txt" readonly="readonly" value="" /></div>';
-                html += '<div class="multiSelectOptions" style="position: absolute; z-index: 99999; display: none;">';
+               //var  html = '<div style ="display:inline">'
+                 var html = '<div class="multiSelect"><input type="text" class="multiSelect_txt" readonly="readonly" value="" /></div>';
+                html += '<div  class="multiSelectOptions" style="position: absolute; z-index: 99999; display: none;">';
                 if (o.selectAll) html += '<label class="selectAll"><input type="checkbox" class="selectAll" />' + o.selectAllText + '</label>';
                 $(select).find('OPTION').each(function() {
                     if ($(this).val() != '') {
@@ -63,6 +64,7 @@ if (jQuery) (function($) {
                     }
                 });
                 html += '</div>';
+                //html +='</div>';
                 $(select).after(html);
                 // Events
                 $(select).next('.multiSelect').mouseover(function() {
