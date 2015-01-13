@@ -344,7 +344,7 @@ public class CwbOrderPDAController {
 		cwb = cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
-			//cwbOrder=cwborderService.backIntoWarehous(getSessionUser(),cwb,scancwb, driverid, 0,"",false);
+			cwbOrder=cwborderService.backIntoWarehous(getSessionUser(),cwb,scancwb, driverid, 0,"",false);
 			String errorinfo = getErrorInfoForIntoWarehouse(cwbOrder);
 			errorinfo = errorinfo.substring(0,errorinfo.indexOf("#"))+"定入成功！";
 			PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
@@ -400,7 +400,7 @@ public class CwbOrderPDAController {
 		cwb = cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
-			//cwbOrder = cwborderService.changeintoWarehous(getSessionUser(), cwb, scancwb, customerid, deviceid, requestbatchno, comments, baleno, false);
+			cwbOrder = cwborderService.changeintoWarehous(getSessionUser(), cwb, scancwb, customerid, deviceid, requestbatchno, comments, baleno, false);
 			//cwbOrder=cwborderService.changeintoWarehous(getSessionUser(),cwb,scancwb, customerid, 0l, requestbatchno,comments,"",false);
 			String errorinfo = getErrorInfoForIntoWarehouse(cwbOrder);
 			errorinfo = errorinfo.substring(0,errorinfo.indexOf("#"))+"定入成功！";
@@ -697,7 +697,10 @@ public class CwbOrderPDAController {
 			} else if (requestparam.equals("backtocustomerexport_submit")) {// 退供货商出库
 				return backtocustom(cwb, requestbatchno, request);
 
-			} else if (requestparam.equals("customerbackimport_submit")) {// 供货商拒收返库
+			}else if(requestparam.equals("cwbtrack_submit_new")){//订单状态查询（查询单号提交）  （添加）
+	    		return cwbtrack_new(cwb,requestbatchno,new StringBuffer(),CwbOrderPDAEnum.OK.getCode(),CwbOrderPDAEnum.OK.getError(),request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl(),request);
+	    	
+	    	} else if (requestparam.equals("customerbackimport_submit")) {// 供货商拒收返库
 				return customrefuseback(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
 						+ CwbOrderPDAEnum.OK.getVediourl(), request);
 
@@ -2403,7 +2406,7 @@ public class CwbOrderPDAController {
 		String successPattern = systemInstallService.getParameter("prompt.intoWarehouse.successPattern","<co.cwb><fenge><yipiaoduojian><fenge><branch.branchname><branch.branchcode><gaojia>");
 		ST errorInfoST = new ST(successPattern);
 		errorInfoST.add("co",co);
-		errorInfoST.add("fenge", "#");
+		errorInfoST.add("fenge", " ");
 		if(co.getSendcarnum()>1||co.getBackcarnum()>1){ //发货数量   || 取货数量;
 			errorInfoST.add("yipiaoduojian", CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 		}
@@ -2502,8 +2505,191 @@ public class CwbOrderPDAController {
 	
 	}
 
+	/**
+	 *  订单状态查询（查询单号提交） (APP)
+	 * @param cwb
+	 * @param requestbatchno
+	 * @param body
+	 * @param statuscode
+	 * @param errorinfo
+	 * @param errorinfovediurl
+	 * @param request
+	 * @return
+	 */
+	private PDAResponse cwbtrack_new(String cwb,long requestbatchno,StringBuffer body,String statuscode,String errorinfo,String errorinfovediurl,HttpServletRequest request){
+		String scancwb = cwb;
+		cwb = cwborderService.translateCwb(cwb);
+		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+		
+		
+		if(co==null){
+			throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		// 就否是海外环球 no;
+		String isHWHQPDASelect = systemInstallDAO.getSystemInstallByName("isHWHQPDASelect")==null?"no":systemInstallDAO.getSystemInstallByName("isHWHQPDASelect").getValue();
+		// 订单流向表; order_flow 
+		OrderFlow of=orderFlowDAO.getOrderFlowByCwbAndState(cwb, 1);
+		String trackevent = "";
+		String branchname = "";
+		String realname = "";
+		String usermobile = "";  //用户手机号
+		String backreason = "";
+		for(FlowOrderTypeEnum fot : FlowOrderTypeEnum.values()){
+			if(of.getFlowordertype()==fot.getValue()){
+				trackevent=fot.getText();  //操作步骤信息
+			}
+		}
+		// 站点信息  (根据订单号查询站点信息并获得站点的名字;)
+		branchname = branchDAO.getBranchByBranchid(of.getBranchid()).getBranchname();
+		backreason = co.getBackreason();
+		// 根据登录的id号查找 操作人的名字;
+		User user = userDAO.getUserByUserid(of.getUserid());
+		realname = user.getRealname();
+		usermobile = user.getUsermobile();
+		StringBuilder cwbTrackBody=new StringBuilder();
+		
+		//操作详情信息;
+		cwbTrackBody.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
+		cwbTrackBody.append("  ");
+		cwbTrackBody.append(branchname);
+		cwbTrackBody.append("  ");
+		cwbTrackBody.append(trackevent+"（"+realname+"）");  //该句说明了谁进行了怎样的操作;
+		cwbTrackBody.append("  ");
+		cwbTrackBody.append(usermobile);
+		cwbTrackBody.append("  ");
+		cwbTrackBody.append("["+backreason+"]");
+		cwbTrackBody.append("  ");
+		
+		
+		errorinfo = errorinfo + " " +co.getCwb() + "（订单号）" ;
+		if(transCwbDao.getCwbByTransCwb(scancwb)!=null){  //查找 订单号对应的运单号;
+			errorinfo = errorinfo + " /" +scancwb + "（运单号）" ;
+		}
+		
+		
+		CwbTrackBodyPdaResponse PDAResponse=new CwbTrackBodyPdaResponse(statuscode, errorinfo, requestbatchno,errorinfovediurl,new CwbTrackBody());
+		List<String> strings=new ArrayList<String>();
+		if(isHWHQPDASelect.equals("xhm")){
+			strings.add(cwbTrackBody.toString());
+		}else{
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// isypdjusetranscwb;  标识是否一票多件
+			long isypdjusetranscwb = customerDAO.getCustomerById(co.getCustomerid()).getCustomerid()==0?0:customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+			if((co.getSendcarnum()>1||co.getBackcarnum()>1)&&(co.getTranscwb().split(",").length>1 || co.getTranscwb().split(":").length>1 )&&isypdjusetranscwb==1){
+				List<TranscwbOrderFlow> datalist = transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb,cwborderService.translateCwb(scancwb));
+				
+				for (TranscwbOrderFlow transcwborderFlowAll:datalist) {
+					StringBuilder stringBuilder = new StringBuilder();
+					long sitetype = branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchid()==0?0:branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getSitetype();
+					if(isHWHQPDASelect.equals("yes")){
+						if(sitetype==BranchEnum.KuFang.getValue()&&(transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.ChuKuSaoMiao.getValue())){
+							long deliverornextbranchid = transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()?
+									JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid"):JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
+							String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid()==0?"":branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+							
+							stringBuilder.append(simpleDateFormat.format(transcwborderFlowAll.getCredate()));
+							stringBuilder.append("  ");
+							stringBuilder.append(userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname() + "（" + usermobile + "）");
+							stringBuilder.append(" ");
+							stringBuilder.append(transcwborderFlowAll.getFlowordertypeText());
+							stringBuilder.append("\n");
+							stringBuilder.append(bname);
+							stringBuilder.append(" ");
+//							stringBuilder.append(usermobile);
+//							stringBuilder.append(" ");
+							stringBuilder.append("["+getBackReason(transcwborderFlowAll)+"]");
+							strings.add(stringBuilder.toString());
+							stringBuilder.append(" ");
+						}
+					}else{
+						long deliverornextbranchid = (transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.ShouGongXiuGai.getValue())?
+								JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid"):JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
+						String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid()==0?"":branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+						stringBuilder.append(simpleDateFormat.format(transcwborderFlowAll.getCredate()));
+						stringBuilder.append("  ");
+						stringBuilder.append(userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname() + "（" + usermobile + "）");
+						stringBuilder.append("\n");
+						stringBuilder.append(branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchname());
+						stringBuilder.append(" ");
+						stringBuilder.append(transcwborderFlowAll.getFlowordertypeText());
+						if(transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()
+								||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()
+								||transcwborderFlowAll.getFlowordertype()==FlowOrderTypeEnum.ShouGongXiuGai.getValue()){
+							stringBuilder.append("\n");
+							stringBuilder.append(bname);
+//							stringBuilder.append(" ");
+//							stringBuilder.append(usermobile);
+							stringBuilder.append(" ");
+							stringBuilder.append("["+getBackReason(transcwborderFlowAll)+"]");
+							stringBuilder.append(" ");
+						}
+						strings.add(stringBuilder.toString());
+					}
+				}
+			}else{
+				List<OrderFlow> orderFlows = orderFlowDAO.getOrderFlowByCwb(cwb);
+				
+				for(OrderFlow orderFlow:orderFlows){
+					StringBuilder stringBuilder = new StringBuilder();
+					Branch branch = branchDAO.getBranchByBranchid(orderFlow.getBranchid());
+					long sitetype = branch.getBranchid()==0?0:branch.getSitetype();
+					if(isHWHQPDASelect.equals("yes")){
+						if(sitetype==BranchEnum.KuFang.getValue()&&(orderFlow.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()||orderFlow.getFlowordertype()==FlowOrderTypeEnum.ChuKuSaoMiao.getValue())){
+							long deliverornextbranchid = orderFlow.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()?
+									JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid"):JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
+							String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid()==0?"":branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+							
+							stringBuilder.append(simpleDateFormat.format(orderFlow.getCredate()));
+							stringBuilder.append("  ");
+							stringBuilder.append(userDAO.getUserByUserid(orderFlow.getUserid()).getRealname() + "（" + usermobile + "）");
+							stringBuilder.append(" ");
+							stringBuilder.append(orderFlow.getFlowordertypeText());
+							stringBuilder.append("\n");
+							stringBuilder.append(bname);
+//							stringBuilder.append(" ");
+//							stringBuilder.append(usermobile);
+							stringBuilder.append(" ");
+							stringBuilder.append("["+JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getString("backreason")+"]");
+							stringBuilder.append(" ");
+							strings.add(stringBuilder.toString());
+						}
+					}else{
+						long deliverornextbranchid = (orderFlow.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||orderFlow.getFlowordertype()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()||orderFlow.getFlowordertype()==FlowOrderTypeEnum.ShouGongXiuGai.getValue())?
+								JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid"):JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
+						String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid()==0?"":branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+						stringBuilder.append(simpleDateFormat.format(orderFlow.getCredate()));
+						stringBuilder.append("  ");
+						stringBuilder.append(userDAO.getUserByUserid(orderFlow.getUserid()).getRealname() + "（" + usermobile + "）");
+						stringBuilder.append("\n");
+						stringBuilder.append(branchDAO.getBranchByBranchid(orderFlow.getBranchid()).getBranchname());
+						stringBuilder.append(" ");
+						stringBuilder.append(orderFlow.getFlowordertypeText());
+						if(orderFlow.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||orderFlow.getFlowordertype()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()
+								||orderFlow.getFlowordertype()==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||orderFlow.getFlowordertype()==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()
+								||orderFlow.getFlowordertype()==FlowOrderTypeEnum.ShouGongXiuGai.getValue()){
+							stringBuilder.append("\n");
+							stringBuilder.append(bname);
+//							stringBuilder.append(" ");
+//							stringBuilder.append(usermobile);
+							stringBuilder.append(" ");
+							stringBuilder.append("["+JSONObject.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getString("backreason")+"]");
+							stringBuilder.append(" ");
+						}
+						strings.add(stringBuilder.toString());
+					}
+				}
+			}
+		
+		}
+		PDAResponse.setOrderFlows(strings);
+		
+		return PDAResponse;
+	}
 
-
+	/* 获得每一个单据的反馈信息*/
+	public String getBackReason(TranscwbOrderFlow tf){	
+		return JSONObject.fromObject(JSONObject.fromObject(tf.getFloworderdetail()).getString("cwbOrder")).getString("backreason");
+	}
 
 
 
