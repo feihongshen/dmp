@@ -576,7 +576,7 @@ public class DeliveryController {
 			@RequestParam(value = "checkremark", required = false, defaultValue = "") String checkremark,
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark, @RequestParam("weishuakareasonid") long weishuakareasonid,
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
-			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam("infactfare") BigDecimal infactfare) {
+			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare) {
 
 		this.logger.info("web--进入单票反馈");
 		try {
