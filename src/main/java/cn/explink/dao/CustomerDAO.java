@@ -63,6 +63,10 @@ public class CustomerDAO {
 		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1", new CustomerRowMapper());
 	}
 
+	public List<Customer> getAllCustomersWithDisable() {
+		return this.jdbcTemplate.query("select * from express_set_customer_info", new CustomerRowMapper());
+	}
+
 	public List<Customer> getAllIsAutoProductcwbCustomers() {
 		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag=1 and isAutoProductcwb=1", new CustomerRowMapper());
 	}

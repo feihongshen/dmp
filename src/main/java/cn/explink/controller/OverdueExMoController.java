@@ -280,7 +280,7 @@ public class OverdueExMoController {
 
 	private Map<Long, String> getVenderMap() {
 		Map<Long, String> venderMap = new LinkedHashMap<Long, String>();
-		List<Customer> customerList = this.getCustomerDAO().getAllCustomers();
+		List<Customer> customerList = this.getCustomerDAO().getAllCustomersWithDisable();
 		for (Customer customer : customerList) {
 			venderMap.put(customer.getCustomerid(), customer.getCustomername());
 		}

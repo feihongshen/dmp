@@ -5854,22 +5854,41 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 
 	<changeSet id="zhaoshb-2014-12-29-3" author="zhaoshb">
 		<sql>
-
-CREATE TABLE express_ops_smt_cwb_opt_time (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  cwb VARCHAR (100) NOT NULL,
-  warehouse_id BIGINT,
-  deliver_station_id BIGINT,
-  create_time TIMESTAMP,
-  system_accept_time TIMESTAMP,
-  station_accept_time TIMESTAMP,
-  dispatch_time TIMESTAMP,
-  print_time TIMESTAMP,
-  report_outarea_time TIMESTAMP,
-  exception_match_time TIMESTAMP,
-  feedback_time TIMESTAMP,
-  KEY(cwb),KEY(warehouse_id),KEY(deliver_station_id),KEY(create_time),KEY(create_time)
-) ENGINE=INNODB,DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+CREATE TABLE
+    express_ops_smt_cwb_opt_time
+    (
+        id bigint NOT NULL AUTO_INCREMENT,
+        cwb VARCHAR(100) NOT NULL,
+        warehouse_id bigint,
+        deliver_station_id bigint,
+        deliver_id bigint,
+        vender_id bigint,
+        ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON
+    UPDATE
+        CURRENT_TIMESTAMP,
+        create_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        system_accept_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        station_accept_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        dispatch_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        print_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        report_outarea_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        exception_match_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        feedback_result TINYINT,
+        feedback_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+        deliver_state TINYINT,
+        pay_type TINYINT,
+        should_fee DECIMAL,
+        received_fee DECIMAL,
+        PRIMARY KEY (id),
+        INDEX cwb (cwb),
+        INDEX warehouse_id (warehouse_id),
+        INDEX deliver_station_id (deliver_station_id),
+        INDEX deliver_id (deliver_id),
+        INDEX vender_id (vender_id),
+        INDEX create_time (create_time),
+        INDEX system_accept_time (system_accept_time)
+    )
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		</sql>
 	</changeSet>
 

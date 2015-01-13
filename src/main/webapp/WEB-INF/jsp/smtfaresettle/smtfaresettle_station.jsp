@@ -304,7 +304,7 @@
 				<tr class="font_1">
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">站点</td>
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
-					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">领件单量</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">站点接收单量</td>
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门退成功单量</td>
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">应收运费</td>
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">实收运费</td>
