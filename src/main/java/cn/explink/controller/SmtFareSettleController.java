@@ -255,7 +255,7 @@ public class SmtFareSettleController {
 
 	private String getDetialSql(int page, SmtFareSettleDetailCondVO condVO, boolean deliver, boolean limit) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select deliver_station_id , deliver_id , cwb , should_fee , received_fee , pay_type , feedback_result , feedback_time ,system_accept_time , create_time ");
+		sql.append("select deliver_station_id , deliver_id , cwb , should_fee , received_fee , pay_type , deliver_state , feedback_time ,system_accept_time , create_time ");
 		sql.append("from express_ops_smt_cwb_opt_time ");
 		if (deliver) {
 			sql.append("where deliver_id = ? ");
@@ -657,7 +657,7 @@ public class SmtFareSettleController {
 			dtVO.setShouldFee(SmtFareSettleController.this.formatDecimal(rs.getDouble("should_fee")));
 			dtVO.setReceivedFee(SmtFareSettleController.this.formatDecimal(rs.getDouble("received_fee")));
 			dtVO.setPayType(PaytypeEnum.values()[rs.getInt("pay_type")].getText());
-			dtVO.setFeedbackResult(DeliveryStateEnum.values()[rs.getInt("feedback_result")].getText());
+			dtVO.setFeedbackResult(DeliveryStateEnum.values()[rs.getInt("deliver_state")].getText());
 			dtVO.setFeedbackTime(rs.getString("feedback_time"));
 			dtVO.setSystemAcceptTime(rs.getString("system_accept_time"));
 			dtVO.setCreateTime(rs.getString("create_time"));
