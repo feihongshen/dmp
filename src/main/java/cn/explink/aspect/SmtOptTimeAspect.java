@@ -59,6 +59,7 @@ public class SmtOptTimeAspect {
 		if (dto.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			return;
 		}
+		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
 		this.getExecuteService().submit(new CreateOrderTask(dto));
 	}
 
