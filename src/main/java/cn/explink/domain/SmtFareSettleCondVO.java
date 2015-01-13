@@ -24,6 +24,8 @@ public class SmtFareSettleCondVO {
 
 	private long deliverId = 0;
 
+	private ArrayList<Long> delivers = new ArrayList<Long>();
+
 	public SmtFareSettleCondVO() {
 
 	}
@@ -80,6 +82,14 @@ public class SmtFareSettleCondVO {
 
 	public void setDeliverId(long deliverId) {
 		this.deliverId = deliverId;
+	}
+
+	public ArrayList<Long> getDelivers() {
+		return this.delivers;
+	}
+
+	public void setDelivers(ArrayList<Long> delivers) {
+		this.delivers = delivers;
 	}
 
 }

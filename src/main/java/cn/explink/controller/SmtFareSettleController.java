@@ -107,9 +107,10 @@ public class SmtFareSettleController {
 	@RequestMapping("/getstationdeliver")
 	@ResponseBody
 	public Map<Long, String> getStationDeliver(HttpServletRequest request) {
-		String statonId = request.getParameter("stationId");
+		String strStationId = request.getParameter("stationId");
+		long stationId = Long.valueOf(strStationId);
 
-		return this.getUserDAO().getDeliverNameMapByBranch(Long.valueOf(statonId));
+		return this.getUserDAO().getDeliverNameMapByBranch(stationId);
 	}
 
 	@RequestMapping("/detail_d/{page}")

@@ -1545,6 +1545,7 @@ src/main/resources/META-INF/spring/applicationContext-job.xml -text
 src/main/resources/META-INF/spring/applicationContext-security.xml -text
 src/main/resources/META-INF/spring/applicationContext.xml -text
 src/main/resources/META-INF/spring/db.properties -text
+src/main/resources/META-INF/xfire/aop.xml -text
 src/main/resources/activemq.xml -text
 src/main/resources/client.properties -text
 src/main/resources/dbsqlserver.properties -text
