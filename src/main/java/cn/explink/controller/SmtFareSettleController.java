@@ -107,9 +107,9 @@ public class SmtFareSettleController {
 	@RequestMapping("/getstationdeliver")
 	@ResponseBody
 	public Map<Long, String> getStationDeliver(HttpServletRequest request) {
-		String statonIds = request.getParameter("stationIds");
+		String statonId = request.getParameter("stationId");
 
-		return this.getUserDAO().getDeliverNameMapByBranch(statonIds);
+		return this.getUserDAO().getDeliverNameMapByBranch(Long.valueOf(statonId));
 	}
 
 	@RequestMapping("/detail_d/{page}")
@@ -389,10 +389,8 @@ public class SmtFareSettleController {
 	}
 
 	private List<Long> getDeliverIdList(SmtFareSettleCondVO cond) {
-		long deliverId = cond.getDeliverId();
-		if (deliverId != 0) {
-			List<Long> deliverIdList = new ArrayList<Long>();
-			deliverIdList.add(deliverId);
+		List<Long> deliverIdList = cond.getDelivers();
+		if (!deliverIdList.isEmpty()) {
 			return deliverIdList;
 		}
 		Set<Long> branchIdSet = this.getBranchIdSet(cond);

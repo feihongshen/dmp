@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.OverdueExMoVO;
@@ -18,7 +18,7 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.DateTimeUtil;
 
-@Component
+@Repository
 public class OverdueExMoDAO {
 
 	@Autowired
