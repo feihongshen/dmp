@@ -23,6 +23,7 @@ import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.util.ApplicationContextUtil;
 import cn.explink.util.DateTimeUtil;
 
 /**
@@ -59,6 +60,8 @@ public class SmtOptTimeAspect {
 		this.getLogger().info("执行上门退订单插入逻辑.");
 		this.getLogger().info("执行上门退订单插入逻辑:" + this.overdueExMODAO);
 		this.getLogger().info("执行上门退订单插入逻辑:" + this.userDAO);
+		this.getLogger().info("执行上门退订单插入逻辑:" + ApplicationContextUtil.getApplicationContext().getBean(OverdueExMoDAO.class));
+
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
 		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
