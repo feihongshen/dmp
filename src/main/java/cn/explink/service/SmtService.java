@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
+import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @Service
 public class SmtService {
@@ -20,6 +24,9 @@ public class SmtService {
 
 	@Autowired
 	private OrderFlowDAO orderFlowDAO = null;
+
+	@Autowired
+	private DeliveryStateDAO deliverStateDAO = null;
 
 	@Transactional
 	public JSONObject smtOrderOutArea(String[] cwbs, long curBranchId, long curUserId) {
@@ -50,17 +57,23 @@ public class SmtService {
 		if (order == null) {
 			obj.put("successed", false);
 			obj.put("msg", "订单不存在");
+		} else {
+			DeliveryState deliverSate = this.getDeliverStateDAO().getDeliveryByCwb(cwb);
+			FlowOrderTypeEnum flowOrderType = FlowOrderTypeEnum.getText(order.getFlowordertype());
+			boolean cond1 = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType);
+			boolean cond2 = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType);
+			boolean cond3 = DeliveryStateEnum.FenZhanZhiLiu.getValue() == deliverSate.getDeliverystate();
+			if (!(cond1 || cond2 || cond3)) {
+				obj.put("successed", false);
+				obj.put("msg", this.getOutAreaFlowErrorMsg());
+			}
 		}
-		/*
-		 * 超区不对订单状态做限制. else { FlowOrderTypeEnum flowOrderType =
-		 * FlowOrderTypeEnum.getText(order.getFlowordertype()); boolean cond1 =
-		 * FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType); boolean
-		 * cond2 =
-		 * FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType
-		 * ); if (!(cond1 || cond2)) { obj.put("successed", false);
-		 * obj.put("msg", this.getOutAreaFlowErrorMsg(flowOrderType)); } }
-		 */
+
 		return obj;
+	}
+
+	private String getOutAreaFlowErrorMsg() {
+		return "订单状态为[分站到货][到错货][分站滞留]才允许上报超区.";
 	}
 
 	private CwbDAO getCwbDAO() {
@@ -69,6 +82,10 @@ public class SmtService {
 
 	private OrderFlowDAO getOrderFlowDAO() {
 		return this.orderFlowDAO;
+	}
+
+	private DeliveryStateDAO getDeliverStateDAO() {
+		return this.deliverStateDAO;
 	}
 
 }

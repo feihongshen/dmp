@@ -458,8 +458,7 @@ function loadTodayOutAreaOrder(){
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : '<%=request.getContextPath() + "/smt/querysmttodayoutareacount"%>'
-							+ "?timestamp=" + new Date().getTime(),
+			url : '<%=request.getContextPath() + "/smt/querysmttodayoutareacount"%>'+ "?timestamp=" + new Date().getTime(),
 					data : {},
 					async : true,
 					success : function(data) {
@@ -611,6 +610,12 @@ dl dd span {
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
 						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
 				</div>
+				<div>
+					<label style="margin-left: 20px">快捷超区</label> <input type="text" id="today_table_quick"
+						name="today_table_quick" value=""
+						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
+						id="today_table_msg" style="color: red"></label>
+				</div>
 			</div>
 		</div>
 
@@ -628,10 +633,7 @@ dl dd span {
 			<div id="ViewList" class="tabbox">
 				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
 					onclick='exportData()' /> <input type="button" id="btnval0" value="超区" class="input_button1"
-					onclick="outArea('today_table')" /><label style="margin-left: 20px">快捷超区</label> <input
-					type="text" id="today_table_quick" name="today_table_quick" value=""
-					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
-					id="today_table_msg" style="color: red"></label>
+					onclick="outArea('today_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
