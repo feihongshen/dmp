@@ -7,13 +7,14 @@
 
 
 <title></title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<c:set var="ctx_path" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="${ctx_path}/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="${ctx_path}/css/index.css" type="text/css" />
+<script src="${ctx_path}/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="${ctx_path}/js/js.js"></script>
 
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css"
+	href="${ctx_path}/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css"
 	media="all" />
 <style type="text/css">
 .form {
@@ -38,7 +39,7 @@
 
 <body style="background: #eef9ff">
 
-	<form class="form" action="${pageContext.request.contextPath}/time_effective/submit" method="post">
+	<form class="form" action="${ctx_path}/time_effective/submit" method="post">
 		<table width="50%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="modelAndView">
 			<tr class="font_1" style="background-color: rgb(255, 255, 255);">
 				<td align="center" valign="middle" bgcolor="#eef6ff">时效名称</td>
@@ -76,7 +77,7 @@
 					<div class="btn_div">
 						<input type="submit" id="btnval" value="保存" class="input_button2"> <input
 							type="button" id="btnval" value="重置" class="input_button2"
-							onclick="location.href='/time_effective/'">
+							onclick="location.href='${ctx_path}/time_effective/'">
 					</div>
 				</td>
 			</tr>
