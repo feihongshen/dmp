@@ -38,9 +38,6 @@ public class SmtOptTimeAspect {
 
 	private Logger logger = LoggerFactory.getLogger(SmtOptTimeAspect.class);
 
-	@Autowired
-	private OverdueExMoDAO overdueExMODAO = null;
-
 	private ExecutorService executeService = null;
 
 	@Autowired
@@ -57,11 +54,6 @@ public class SmtOptTimeAspect {
 
 	@Before("execution(* cn.explink.b2c.tools.DataImportDAO_B2c.insertCwbOrder_toTempTable(..))")
 	public void afterImportData(JoinPoint point) {
-		this.getLogger().info("执行上门退订单插入逻辑.");
-		this.getLogger().info("执行上门退订单插入逻辑:" + this.overdueExMODAO);
-		this.getLogger().info("执行上门退订单插入逻辑:" + this.userDAO);
-		this.getLogger().info("执行上门退订单插入逻辑:" + ApplicationContextUtil.getApplicationContext().getBean(OverdueExMoDAO.class));
-
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
 		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
@@ -69,8 +61,7 @@ public class SmtOptTimeAspect {
 			return;
 		}
 		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
-		// this.getExecuteService().submit();
-		new CreateOrderTask(dto).run();
+		this.getExecuteService().submit(new CreateOrderTask(dto));
 	}
 
 	@After("execution(* cn.explink.service.CwbOrderService.deliverStatePod(..))")
@@ -130,10 +121,6 @@ public class SmtOptTimeAspect {
 		this.executeService = Executors.newFixedThreadPool(2);
 	}
 
-	public void setOverdueExMODAO(OverdueExMoDAO overdueExMODAO) {
-		this.overdueExMODAO = overdueExMODAO;
-	}
-
 	private Logger getLogger() {
 		return this.logger;
 	}
@@ -147,7 +134,7 @@ public class SmtOptTimeAspect {
 	}
 
 	private OverdueExMoDAO getOverdueExMODAO() {
-		return this.overdueExMODAO;
+		return ApplicationContextUtil.getApplicationContext().getBean(OverdueExMoDAO.class);
 	}
 
 	private ExecutorService getExecuteService() {
