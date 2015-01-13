@@ -174,6 +174,8 @@ public class SmtOptTimeAspect {
 
 		public CreateOrderTask(CwbOrderDTO smtOrderList, long warehouseId, long venderId) {
 			this.smtOrder = smtOrderList;
+			this.warehouseId = warehouseId;
+			this.venderId = venderId;
 		}
 
 		@Override
