@@ -114,7 +114,7 @@ public class OverdueExMoDAO {
 		String insertSql = this.getInsertSql();
 		String cwb = dto.getCwb();
 		long venderId = dto.getCustomerid();
-		String createTime = dto.getRemark4();
+		String createTime = dto.getRemark2();
 		int payType = (int) dto.getPaywayid();
 		BigDecimal shouleFee = dto.getShouldfare();
 		this.getJdbcTemplate().update(insertSql, cwb, venderId, createTime, payType, shouleFee);
