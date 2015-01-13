@@ -957,7 +957,7 @@ public class DeliveryController {
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
 					}
-					if ((deliveryState != null) && (DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate)) {
+					if ((deliveryState != null) && ((DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate))) {
 						parameters.put("infactfare", deliveryState.getShouldfare());
 					}
 
@@ -1285,6 +1285,7 @@ public class DeliveryController {
 			if (cwb_reasonid.length == 2) {
 				String scancwb = cwb_reasonid[0] == null ? "0" : cwb_reasonid[0];
 				obj.put("cwb", scancwb);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("deliverid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? "0" : cwb_reasonid[1]));
@@ -1305,12 +1306,14 @@ public class DeliveryController {
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
 					}
+					if ((cwbOrder != null) && ((DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate))) {
+						parameters.put("infactfare", cwbOrder.getShouldfare());
+					}
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
-					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
 					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 					obj.put("cwbOrder", cwbOrder);
