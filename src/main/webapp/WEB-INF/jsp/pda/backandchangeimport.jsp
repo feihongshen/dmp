@@ -4,17 +4,29 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch,cn.explink.domain.CwbOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+
+
+List<CwbOrder> weituihuorukuList = (List<CwbOrder>)request.getAttribute("weituihuorukuList");
+List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuorukuList");
+
 List<CwbOrder> ypeisonglist = (List<CwbOrder>)request.getAttribute("ypeisong");
 List<CwbOrder> yshangmenhuanlist = (List<CwbOrder>)request.getAttribute("yshangmenhuan");
 List<CwbOrder> yshangmentuilist = (List<CwbOrder>)request.getAttribute("yshangmentui");
-
 List<CwbOrder> wpeisongList = (List<CwbOrder>)request.getAttribute("wpeisong");
 List<CwbOrder> wshangmenhuanList = (List<CwbOrder>)request.getAttribute("wshangmenhuan");
 List<CwbOrder> wshangmentuiList = (List<CwbOrder>)request.getAttribute("wshangmentui");
 
+List<CwbOrder> zweituihuorukuList = (List<CwbOrder>)request.getAttribute("zweituihuorukuList");
+List<CwbOrder> zyituihuorukuList = (List<CwbOrder>)request.getAttribute("zyituihuorukuList");
+
+List<CwbOrder> zypeisong = (List<CwbOrder>)request.getAttribute("zypeisong");
+List<CwbOrder> zyshangmenhuan = (List<CwbOrder>)request.getAttribute("zyshangmenhuan");
+List<CwbOrder> zyshangmentui = (List<CwbOrder>)request.getAttribute("zyshangmentui");
+List<CwbOrder> zwpeisong = (List<CwbOrder>)request.getAttribute("zwpeisong");
+List<CwbOrder> zwshangmenhuan = (List<CwbOrder>)request.getAttribute("zwshangmenhuan");
+List<CwbOrder> zwshangmentui = (List<CwbOrder>)request.getAttribute("zwshangmentui");
+
 List<User> uList = (List<User>)request.getAttribute("userList");
-List<CwbOrder> weituihuorukuList = (List<CwbOrder>)request.getAttribute("weituihuorukuList");
-List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuorukuList");
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 %>
@@ -35,7 +47,7 @@ $(function(){
 });
 
 $(function() {
-	var $menuli = $(".saomiao_tab2 ul li");
+	var $menuli = $(".saomiao_tab ul li");
 	$menuli.click(function() {
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
@@ -55,6 +67,7 @@ function tabView(tab,tip){
 	$("#"+tip).attr('style','height: 160px; overflow-y: scroll;');
 	$("#extype").attr('value',tip);
 	$('#view').attr('style','display:');
+	$('#extype').val(tip);
 	
 }
 function ranCreate(){
@@ -79,7 +92,7 @@ function clearMsg(){
 	$("#cwbgaojia").hide();
 }
 function addAndRemoval(cwb,tab,isRemoval){
-	var trObj = $("#ViewList tr[id='ATR"+cwb+"']");
+	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
@@ -91,7 +104,7 @@ function addAndRemoval(cwb,tab,isRemoval){
 function getcwbsdataForBack(){
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath() %>/PDA/getBackInSum",
+		url:"<%=request.getContextPath() %>/PDA/getBackAndChangeInSum",
 		dataType:"json",
 		success : function(data) {
 			$("#yps").html(data.yps);
@@ -100,6 +113,12 @@ function getcwbsdataForBack(){
 			$("#wps").html(data.wps);
 			$("#wsmt").html(data.wsmt);
 			$("#wsmh").html(data.wsmh);
+			$("#zyps").html(data.zyps);
+			$("#zysmt").html(data.zysmt);
+			$("#zysmh").html(data.zysmh);
+			$("#zwps").html(data.zwps);
+			$("#zwsmt").html(data.zwsmt);
+			$("#zwsmh").html(data.zwsmh);
 		}
 	});
 }
@@ -305,7 +324,7 @@ if(flag){
 	//alert(urlstr);
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/PDA/updategoodthzrkcount?cwb="+$("#cwbgoods").val()+"&driverid="+$("#driverid").val()+"&comment="+$("#comment").val()+"&customerid="+$("#customerid").val()+"&checktype=0",
+		url:"<%=request.getContextPath()%>/PDA/updategoodthzrkcount?cwb="+$("#cwbgoods").val()+"&driverid="+$("#driverid").val()+"&comment="+$("#comment").val()+"&customerid="+$("#customerid").val()+"&checktype=1",
 		//data:{"thzrkcount":$("#thzrkcount").val(),"id":$("#id").val()},
 		//data:"jasonval="+ encodeURI(jsonval),
 		data:"jasonval="+ encodeURI(json),
@@ -379,15 +398,10 @@ function onClik(){
     var jsonuserinfo = $('#form1').serializeObject();  
     alert(JSON.stringify(jsonuserinfo));  
 }  
-function exportField(flag){
+function exportField(){
 	var cwbs = "";
-	if(flag==1){
-		$("#type").val("weiruku");
-		$("#searchForm3").submit();
-	}else if(flag==2){
-		$("#type").val("yiruku");
-		$("#searchForm3").submit();
-	}else if(flag==3){
+	var extype = $("#extype").val();
+	 if(extype == "yichang"){
 		$("#errorTable tr").each(function(){
 			var cwb = $(this).attr("cwb");
 			cwbs += "'" + cwb + "',";
@@ -400,10 +414,13 @@ function exportField(flag){
 			$("#cwbs").val(cwbs);
 			$("#btnval").attr("disabled","disabled");
 		 	$("#btnval").val("请稍后……");
-			$("#searchForm2").submit();
+		 	alert("----");
+			$("#searchForm").submit();
 		}else{
 			alert("没有订单信息，不能导出！");
 		};
+	}else{
+	 $("#searchForm2").submit();
 	}
 }
 
@@ -516,7 +533,7 @@ function yiruku(){
 			<dd id="rukukucundanshu"></dd>
 		</dl> -->
 		<dl class="blue" >
-			<dt>未入库合计</dt>
+			<dt>退货未入库</dt>
 			<!-- <dd  style="cursor:pointer" onclick="tabView('table_weituihuochuku')" id="chukukucundanshu">0</dd> -->
 			
 					<table  style="width: 100%;height:60%;font-size: 15px;" cellpadding="0px" cellspacing="0px">
@@ -538,7 +555,7 @@ function yiruku(){
 			<dd id="successcwbnum" name="successcwbnum">0</dd>
 		</dl> -->
 		<dl class="green">
-			<dt>已入库</dt>
+			<dt>退货已入库</dt>
 			<!-- <dd style="cursor:pointer" onclick="tabView('table_yituihuochuku')" id="alloutnum">0</dd> -->
 					<table  style="width: 100%;height:60%;font-size: 15px;" cellpadding="0px" cellspacing="0px">
 						<tr align="center" valign="middle" bgcolor="#D0E9BC" style="color: #131313;">
@@ -553,7 +570,45 @@ function yiruku(){
 						</tr>
 					</table>
 		</dl>
-		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
+		<dl class="blue" >
+			<dt>中转未入库</dt>
+			<!-- <dd  style="cursor:pointer" onclick="tabView('table_weituihuochuku')" id="chukukucundanshu">0</dd> -->
+			
+					<table  style="width: 100%;height:60%;font-size: 15px;" cellpadding="0px" cellspacing="0px">
+						<tr align="center" valign="middle" bgcolor="#ADCFF3" >
+							<td style="color: #030;"><strong>配送</strong></td>
+							<td style="color: #030;"><strong>上门退</strong></td>
+							<td style="color: #030;"><strong>上门换</strong></td>
+						</tr>
+						<tr align="center" valign="bottom">
+							<td style="cursor:pointer" onclick="tabView('table_zweituihuoruku','wpeisongz')" id="zpchukukucundanshu"><strong><span id="zwps">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_zweituihuoruku','wshangmengtuiz')" id="zstchukukucundanshu"><strong><span id="zwsmt">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_zweituihuoruku','wshangmenghuanz')" id="zshchukukucundanshu"><strong><span id="zwsmh">0</span></strong></td>
+						</tr>
+					</table>
+					
+		</dl>
+		<!-- <dl style="cursor:pointer" onclick="tabView('table_yituihuoruku')" class="green">
+			<dt>已入库</dt>
+			<dd id="successcwbnum" name="successcwbnum">0</dd>
+		</dl> -->
+		<dl class="green">
+			<dt>中转已入库</dt>
+			<!-- <dd style="cursor:pointer" onclick="tabView('table_yituihuochuku')" id="alloutnum">0</dd> -->
+					<table  style="width: 100%;height:60%;font-size: 15px;" cellpadding="0px" cellspacing="0px">
+						<tr align="center" valign="middle" bgcolor="#D0E9BC" style="color: #131313;">
+							<td style="color: #030;"><strong>配送</strong></td>
+							<td style="color: #030;"><strong>上门退</strong></td>
+							<td style="color: #030;"><strong>上门换</strong></td>
+						</tr>
+						<tr align="center" valign="bottom">
+							<td style="cursor:pointer" onclick="tabView('table_zyituihuoruku','ypeisongz')" id="zwpchukukucundanshu"><strong><span id="zyps">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_zyituihuoruku','yshangmengtuiz')" id="zwstchukukucundanshu"><strong><span id="zysmt">0</span></strong></td>
+							<td style="cursor:pointer" onclick="tabView('table_zyituihuoruku','yshangmenghuanz')" id="zwshchukukucundanshu"><strong><span id="zysmh">0</span></strong></td>
+						</tr>
+					</table>
+		</dl>
+		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backandchangeimport'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		<br clear="all">
 	</div>
 	<input id="tip" type="hidden" />
@@ -562,8 +617,8 @@ function yiruku(){
 		<div id="Tag" class="saomiao_tab">
 				<ul id="bigTag">
 					<li><a href="#" id="scancwbTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light">扫描订单</a></li>
-					<li><a href="#" id="scanbaleTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().show();$('#baleno').show();$('#finish').parent().show();$('#finish').show();$('#baleno').val('');$('#baleno').focus();$('#scancwb').val('');$('#scancwb').parent().hide();})">合包到货</a></li>
-					<li><a href="#" id="scancwbTag1" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:none');$('#goods').attr('style','display:');$('#tip').val('goods');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light1">按商品明细入库</a></li>
+					<!-- <li><a href="#" id="scanbaleTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().show();$('#baleno').show();$('#finish').parent().show();$('#finish').show();$('#baleno').val('');$('#baleno').focus();$('#scancwb').val('');$('#scancwb').parent().hide();})">合包到货</a></li>
+					<li><a href="#" id="scancwbTag1" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:none');$('#goods').attr('style','display:');$('#tip').val('goods');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light1">按商品明细入库</a></li> -->
 				</ul>
 			</div>
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
@@ -582,7 +637,7 @@ function yiruku(){
 	            <%for(Customer c : cList){ %>
 		          <option value ="<%=c.getCustomerid()%>"  ><%=c.getCustomername()%></option>
 		        <%}}%>
-			</select>
+			</select> *
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
@@ -636,19 +691,21 @@ function yiruku(){
 		</form>
 		</div>
 		<div id="view">
-			<div class="saomiao_tab2">
+			<div class="saomiao_tab">
 				<span style="float: right; padding: 10px">
-					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'" />
+					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backandchangeimport'" />
 				</span>
 				<ul>
-					<li><a id="table_weituihuoruku" href="javascript:tabView('table_weituihuoruku','wall')" class="light">未入库明细</a></li>
-					<li><a id="table_yituihuoruku" href="javascript:tabView('table_yituihuoruku','yall')">已入库明细</a></li>
-					<li><a href="#">异常单明细</a></li>
+					<li><a id="table_weituihuoruku" href="javascript:tabView('table_weituihuoruku','wall')" class="light">退货未入库明细</a></li>
+					<li><a id="table_yituihuoruku" href="javascript:tabView('table_yituihuoruku','yall')">退货已入库明细</a></li>
+					<li><a id="table_zweituihuoruku" href="javascript:tabView('table_zweituihuoruku','wallz')">中转未入库明细</a></li>
+					<li><a id="table_zyituihuoruku" href="javascript:tabView('table_zyituihuoruku','yallz')">中转已入库明细</a></li>
+					<li><a id="table_yichang" href="javascript:tabView('table_yichang','yichang')">异常单明细</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1);'/>
+					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField();'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -670,7 +727,7 @@ function yiruku(){
 										<table id="weituihuorukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 										<%for(CwbOrder co : weituihuorukuList){ %>
-											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
@@ -734,31 +791,7 @@ function yiruku(){
 											<%} %>
 										</table>
 									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</li>
-				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(2);"/>
-					<table width="100%" border="0" cellspacing="10" cellpadding="0">
-						<tbody>
-							<tr>
-								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2"
-										class="table_5">
-										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">订单类型</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
-											<td align="center" bgcolor="#f1f1f1">地址</td>
-										</tr>
-									</table>
-									<div id="yall" style="height: 160px; overflow-y: scroll">
+									<div id="yall" style="height: 160px; overflow-y: scroll;display: none;">
 										<table id="successTable" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
 										<%for(CwbOrder co : yituihuorukuList){ %>
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
@@ -822,12 +855,150 @@ function yiruku(){
 											<%} %>
 										</table>
 									</div>
+									<div id="wallz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="weituihuorukuTablez" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
+										<%for(CwbOrder co : zweituihuorukuList){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><% for(Customer c:cList){ if(c.getCustomerid()==co.getCustomerid()) {out.print(c.getCustomername());break;} } %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="wpeisongz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="weituihuochukuTablepeisongz" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
+											<%for(CwbOrder co : zwpeisong){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}}  %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="wshangmengtuiz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="weituihuochukuTableshangmengtuiz" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
+											<%for(CwbOrder co : zwshangmentui){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+											    <td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}}  %></td>
+ 												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="wshangmenghuanz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="weituihuochukuTableshangmenghuanz" width="100%" border="0" cellspacing="1" cellpadding="2"
+											class="table_2">
+											<%for(CwbOrder co : zwshangmenhuan){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+ 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+ 												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="yallz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="successTablez" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
+										<%for(CwbOrder co : zyituihuorukuList){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="yshangmenghuanz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="successTableshangmenghuanz" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
+											<%for(CwbOrder co : zyshangmenhuan){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="yshangmengtuiz" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="successTableshangmengtuiz" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
+											<%for(CwbOrder co : zyshangmentui){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									<div id="ypeisongz" style="height: 160px; overflow-y: scroll;display: none;" >
+										<table id="successTablepeisongz" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
+											<%for(CwbOrder co : zypeisong){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr>
+											<%} %>
+										</table>
+									</div>
+									
+									<div id="yichang" style="height: 160px; overflow-y: scroll;display: none;">
+										<table id="errorTable" width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2">
+										</table>
+									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</li>
-				
+				<!-- 
+
 				<li style="display: none">
 					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(3);"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
@@ -837,7 +1008,7 @@ function yiruku(){
 									<table width="100%" border="0" cellspacing="0" cellpadding="2"
 										class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号2</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">订单类型</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
@@ -847,7 +1018,7 @@ function yiruku(){
 											<td align="center" bgcolor="#f1f1f1">地址</td>
 										</tr>
 									</table>
-									<div style="height: 160px; overflow-y: scroll">
+									<div id="yichang" style="height: 160px; overflow-y: scroll;display: none;">
 										<table id="errorTable" width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2">
 										</table>
 									</div>
@@ -855,19 +1026,20 @@ function yiruku(){
 							</tr>
 						</tbody>
 					</table>
-				</li>
+				</li> -->
 			</div>
 		</div>
 	
 	
-	<form action="<%=request.getContextPath()%>/PDA/exportExcle" method="post" id="searchForm2">
+	<form action="<%=request.getContextPath()%>/PDA/exportExcle" method="post" id="searchForm">
 		<input type="hidden" name="cwbs" id="cwbs" value=""/>
 		<input type="hidden" name="exportmould2" id="exportmould2" />
 	</form>
-	<form action="<%=request.getContextPath()%>/PDA/backimportexport" method="post" id="searchForm3">
-		<input  type="hidden"  name="type"  id="type"/>
+	<form action="<%=request.getContextPath()%>/PDA/backandchangeimportexport" method="post" id="searchForm2">
 		<input  type="hidden"  name="extype" value="wall" id="extype"/>
+		<input type="hidden" name="exportmould2" id="exportmould2" />
 	</form>
+	
 	
 </div>
 </body>

@@ -327,6 +327,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
+		
 		return this.consigneemobile;
 	}
 

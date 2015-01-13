@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +196,17 @@ public class CwbOrderController {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
-
+	@RequestMapping("/test")
+	public String test(HttpServletRequest request){
+		  for (Enumeration items = request.getSession().getAttributeNames();
+		            items.hasMoreElements();
+		            )
+		        {
+		            String item = (String) items.nextElement();
+		            request.getSession().removeAttribute(item);
+		        }
+		return null;
+	}
 	@RequestMapping("/list/{page}")
 	public String list(Model model, @PathVariable("page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,

@@ -1494,12 +1494,15 @@ public class CwbOrderService {
 	 * @return
 	 */
 
-	public CwbOrder backIntoWarehous(User user, String cwb, String scancwb, long driverid, long requestbatchno, String comment, boolean anbaochuku) {
+	public CwbOrder backIntoWarehous(User user, String cwb, String scancwb, long driverid, long requestbatchno, String comment, boolean anbaochuku,int checktype,long nextbranchid) {
 		this.logger.info("开始退货站入库处理,cwb:{}", cwb);
 
 		cwb = this.translateCwb(cwb);
-
-		return this.backIntoWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, requestbatchno, comment, anbaochuku);
+		long branchid = user.getBranchid();
+		if(nextbranchid >0 && checktype ==1 ){
+			branchid = nextbranchid;
+		}
+		return this.backIntoWarehousHandle(user, cwb, scancwb, branchid, driverid, requestbatchno, comment, anbaochuku);
 	}
 
 	@Transactional
@@ -3811,7 +3814,7 @@ public class CwbOrderService {
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO.creAndUpdateOperationTime(co.getCwb(), sessionbranchid, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), sessionbranchid, co.getCustomerid(), "",
-				co.getEmaildate());
+				co.getEmaildate(),co.getCwbordertypeid());
 
 		this.logger.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);

@@ -170,7 +170,7 @@ public class OrderFlowDAO {
 				outWarehouseTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate());
 			}
 			this.operationTimeDAO.creAndUpdateOperationTime(of.getCwb(), of.getBranchid(), of.getFlowordertype(), 0, orderJson.getLong("nextbranchid"), orderJson.getLong("customerid"),
-					outWarehouseTime, orderJson.getString("emaildate"));
+					outWarehouseTime, orderJson.getString("emaildate"),orderJson.getInt("cwbordertypeid"));
 		} else if (of.getFlowordertype() == FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()) {
 			this.operationTimeDAO.delOperationTime(of.getCwb());
 		}

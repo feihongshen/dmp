@@ -475,7 +475,7 @@ public class BaleController {
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, cwb, driverid, 0, comment, true);
+					CwbOrder cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, cwb, driverid, 0, comment, true,0,0);
 					// 更改包的状态
 					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");

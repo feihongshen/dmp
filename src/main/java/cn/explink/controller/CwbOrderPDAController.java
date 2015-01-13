@@ -1733,7 +1733,7 @@ public class CwbOrderPDAController {
 			String scancwb = cwb;
 			cwb = cwborderService.translateCwb(cwb);
 			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-			co = cwborderService.backIntoWarehous(getSessionUser(), cwb, scancwb, driverid, requestbatchno, comments, false);
+			co = cwborderService.backIntoWarehous(getSessionUser(), cwb, scancwb, driverid, requestbatchno, comments, false,0,0);
 			PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), co.getCwb() + "成功扫描");
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {

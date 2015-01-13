@@ -5897,6 +5897,12 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	add column `showmobileflag`  varchar(50) null default 0 after `shownameflag`;
 		</sql>
 	</changeSet>
+		<changeSet id="lansheng-2014-12-22-1" author="lansheng">
+		<sql>
+			INSERT INTO `express_set_menu_info_new`(`menuid`,`menuname`,`menuurl`,`menulevel`,`menuno`,`parentno`,`menuimage`,`adminshowflag`) VALUES ( NULL,'退货中转入库','PDA/backandchangeimport','3','kf20','303','images/thrk.png',NULL);
+			ALTER TABLE `express_ops_operation_time` ADD COLUMN `cwbordertypeid` INT(11) NULL AFTER `isupdate`;  
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  

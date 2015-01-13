@@ -2021,6 +2021,7 @@ src/main/webapp/WEB-INF/jsp/payup/viewPayUp.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/add.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/list.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/backandchangeimport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backbranchbackexport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backexport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backimport.jsp -text
