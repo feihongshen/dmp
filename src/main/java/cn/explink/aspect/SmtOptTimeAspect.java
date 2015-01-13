@@ -55,6 +55,7 @@ public class SmtOptTimeAspect {
 		this.getLogger().info("执行上门退订单插入逻辑.");
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
+		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
 		if (dto.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			return;
 		}
