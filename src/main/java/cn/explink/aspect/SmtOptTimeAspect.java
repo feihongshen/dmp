@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.OverdueExMoDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -30,8 +31,8 @@ import cn.explink.util.DateTimeUtil;
  * @author zhaoshb
  * @since DMP3.0
  */
-@Aspect
 @Component
+@Aspect
 public class SmtOptTimeAspect {
 
 	private Logger logger = LoggerFactory.getLogger(SmtOptTimeAspect.class);
@@ -40,6 +41,9 @@ public class SmtOptTimeAspect {
 	private OverdueExMoDAO overdueExMODAO = null;
 
 	private ExecutorService executeService = null;
+
+	@Autowired
+	private UserDAO userDAO;
 
 	@After("execution(* cn.explink.dao.OrderFlowDAO.creAndUpdateOrderFlow(..))")
 	public void afterCreateOrderFlow(JoinPoint point) {
@@ -54,6 +58,7 @@ public class SmtOptTimeAspect {
 	public void afterImportData(JoinPoint point) {
 		this.getLogger().info("执行上门退订单插入逻辑.");
 		this.getLogger().info("执行上门退订单插入逻辑:" + this.overdueExMODAO);
+		this.getLogger().info("执行上门退订单插入逻辑:" + this.userDAO);
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
 		this.getLogger().info("执行上门退订单插入逻辑{订单类型:" + dto.getCwbordertypeid() + "}");
