@@ -249,6 +249,205 @@ public class CwbOrderPDAController {
 		return loginResponseBody;
 	}
 
+	@RequestMapping("/loadWavFile")
+	public void loadWavFile(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam("filename")String filename){
+		//获得文件下载的路径 
+		String path = ResourceBundleUtil.WAVPATH;  
+		InputStream is = null;
+		byte[] data = new byte[1024*4];
+		int len = 0;
+		OutputStream os = null;
+		try {
+			File file = new File(path+filename);
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			is = new FileInputStream(file);
+			os = response.getOutputStream();
+			while((len=is.read(data))!=-1){
+				os.write(data,0,len);
+			}
+			os.flush();
+			os.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping("/newPDA")
+	 public @ResponseBody PDAResponse PDA_NEW(HttpServletResponse response,HttpServletRequest request,
+	    		@RequestParam("deviceid")String deviceid,@RequestParam("authtoken")String authtoken,
+	    		@RequestParam("clientversion")String clientversion,@RequestParam("requestparam")String requestparam,
+	    		@RequestParam(value="cwb",required=false,defaultValue="")String cwb,
+	    		@RequestParam(value="requestbatchno",required=false,defaultValue="0")long requestbatchno
+	    		) throws Exception{
+		
+		logger.info("PDA--开始进行扫描");
+		try{
+			User u = getSessionUser();
+		}catch (Exception e) {
+			return loginError(response, "");
+		}
+		try {
+			if(requestparam.equals("transf_warehouse_submit")){ //中转入库
+				long customerid = Long.parseLong(request.getParameter("customerid")==""?"0":request.getParameter("customerid"));
+				String baleno = "";
+	    		if(request.getParameter("baleno")!=null&&request.getParameter("baleno").length()>0){
+	    			baleno = request.getParameter("baleno");
+	    		}
+				return transfintohouse(cwb,customerid,0,requestbatchno,baleno,request,"");
+	    	}else if(requestparam.equals("back_warehouse_submit")){ //退货入库
+	    		cwb = cwborderService.translateCwb(cwb);
+	    		long driverid = request.getParameter("driverid").length()==0?0:Long.parseLong(request.getParameter("driverid"));
+	    		return backIntoWarehous(cwb,driverid,requestbatchno, request,"");
+	    		
+	    	}else if(requestparam.equals("transf_outputhouse_submit")){//中转出库
+	    		
+	    	}else if(requestparam.equals("back_again_post_submit")){//退货再投
+	    		
+	    	}else if(requestparam.equals("back_supplier_outputhouse_submit")){//退供应商出库
+	    		
+	    	}else if(requestparam.equals("transf_output_station_submit")){//中转出站
+	    		
+	    	}else if(requestparam.equals("back_output_station_submit")){//退货出站
+	    		
+	    	}
+		} catch (CwbException e) {
+			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0, 0, "");
+			PDAResponse PDAResponse=new PDAResponse(CwbOrderPDAEnum.SYS_ERROR.getCode(),e.getMessage());
+			PDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			return PDAResponse;
+		}
+		return null;
+	}
+
+	/**
+	 *  退货入库
+	 * @param cwb
+	 * @param driverid
+	 * @param requestbatchno
+	 * @param request
+	 * @param comment
+	 * @return
+	 */
+    private PDAResponse backIntoWarehous(String cwb, 
+			long driverid, long requestbatchno, HttpServletRequest request,String comment) {
+    	String scancwb = cwb;
+		cwb = cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrder = new CwbOrder();
+		try {
+			//cwbOrder=cwborderService.backIntoWarehous(getSessionUser(),cwb,scancwb, driverid, 0,"",false);
+			String errorinfo = getErrorInfoForIntoWarehouse(cwbOrder);
+			errorinfo = errorinfo.substring(0,errorinfo.indexOf("#"))+"定入成功！";
+			PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
+			pDAResponse.setScannum(cwbOrder.getScannum());
+			pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+			
+			String RUKUPCandPDAaboutYJDPWAV = systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV")==null?"yes":systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue();
+			
+			if(RUKUPCandPDAaboutYJDPWAV.equals("yes")&&(cwbOrder.getSendcarnum()>1||cwbOrder.getBackcarnum()>1)){
+				pDAResponse.setShouldShock(true);
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+			}
+			if(cwbOrder.getDeliverid()!=0){
+				User user = userDAO.getUserByUserid(cwbOrder.getDeliverid());
+				if(user.getUserwavfile()!=null&&user.getUserwavfile().length()>0){
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+user.getUserwavfile());
+				}
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+user.getRealname());
+			}
+			if(cwbOrder.getNextbranchid()!=0){
+				Branch branch=branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				if(branch!=null&&branch.getBranchwavfile()!=null&&branch.getBranchwavfile().length()>0){
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile());
+				}else{
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+				}
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+branch.getBranchname());
+			}
+			if(cwbOrder.getReceivablefee()!=null&&cwbOrder.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee())>0){
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.GAO_JIA.getVediourl());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.GAO_JIA.getError());
+				pDAResponse.setShouldShock(true);
+			}
+			return pDAResponse;
+		}catch (CwbException e) {
+			cwbOrder = cwbDAO.getCwbByCwb(cwb);
+			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0, 0, "");
+			if(e.getError().getValue()==ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()){
+				Branch branch=branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError()+" "+StringUtil.nullConvertToEmptyString(branch.getBranchname()));
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
+				return pDAResponse;
+			}else{
+				throw e;
+			}
+		}	
+	}
+
+	private PDAResponse transfintohouse(String cwb,long customerid,long deviceid,long requestbatchno,String baleno,HttpServletRequest request,String comments) {
+    	String scancwb = cwb;
+		cwb = cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrder = new CwbOrder();
+		try {
+			//cwbOrder = cwborderService.changeintoWarehous(getSessionUser(), cwb, scancwb, customerid, deviceid, requestbatchno, comments, baleno, false);
+			//cwbOrder=cwborderService.changeintoWarehous(getSessionUser(),cwb,scancwb, customerid, 0l, requestbatchno,comments,"",false);
+			String errorinfo = getErrorInfoForIntoWarehouse(cwbOrder);
+			errorinfo = errorinfo.substring(0,errorinfo.indexOf("#"))+"定入成功！";
+			PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
+			pDAResponse.setScannum(cwbOrder.getScannum());
+			pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+			
+			String RUKUPCandPDAaboutYJDPWAV = systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV")==null?"yes":systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue();
+			
+			if(RUKUPCandPDAaboutYJDPWAV.equals("yes")&&(cwbOrder.getSendcarnum()>1||cwbOrder.getBackcarnum()>1)){
+				pDAResponse.setShouldShock(true);
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+			}
+			if(cwbOrder.getDeliverid()!=0){
+				User user = userDAO.getUserByUserid(cwbOrder.getDeliverid());
+				if(user.getUserwavfile()!=null&&user.getUserwavfile().length()>0){
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+user.getUserwavfile());
+				}
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+user.getRealname());
+			}
+			if(cwbOrder.getNextbranchid()!=0){
+				Branch branch=branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				if(branch!=null&&branch.getBranchwavfile()!=null&&branch.getBranchwavfile().length()>0){
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile());
+				}else{
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+				}
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+branch.getBranchname());
+			}
+			if(cwbOrder.getReceivablefee()!=null&&cwbOrder.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee())>0){
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.GAO_JIA.getVediourl());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.GAO_JIA.getError());
+				pDAResponse.setShouldShock(true);
+			}
+			
+			return pDAResponse;
+		} catch (CwbException e) {
+			cwbOrder = cwbDAO.getCwbByCwb(cwb);
+			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0, 0, "");
+			if(e.getError().getValue()==ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()){
+				Branch branch=branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError()+" "+StringUtil.nullConvertToEmptyString(branch.getBranchname()));
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
+				return pDAResponse;
+			}else{
+				throw e;
+			}
+		}	
+	}
+
+
 	@RequestMapping("/")
 	public @ResponseBody PDAResponse PDA(HttpServletResponse response, HttpServletRequest request, @RequestParam("deviceid") String deviceid, @RequestParam("authtoken") String authtoken,
 			@RequestParam("clientversion") String clientversion, @RequestParam("requestparam") String requestparam, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
@@ -284,7 +483,16 @@ public class CwbOrderPDAController {
 					baleno = request.getParameter("baleno");
 				}
 				return intoWarehous(cwb, customerid, driverid, requestbatchno, baleno, request, "");
-			} else if (requestparam.equals("warehouseimport_submit_forremark")) {// 备注
+			}else if(requestparam.equals("warehouseimport_submit_app")){//入库扫描提交
+	    		String customerid = request.getParameter("customerid").length()==0?"-1":request.getParameter("customerid");
+	    		long driverid = request.getParameter("driverid").length()==0?0:Long.parseLong(request.getParameter("driverid"));
+	    		
+	    		String baleno = "";
+	    		if(request.getParameter("baleno")!=null&&request.getParameter("baleno").length()>0){
+	    			baleno = request.getParameter("baleno");
+	    		}
+	    		return intoWarehousAPP(cwb,customerid,driverid,requestbatchno,baleno,request,"");
+	    	} else if (requestparam.equals("warehouseimport_submit_forremark")) {// 备注
 				long csremarkid = Long.parseLong(request.getParameter("csremarkid"));
 				long multicwbnum = Long.parseLong(request.getParameter("multicwbnum"));
 				String comment = request.getParameter("comment");
@@ -342,7 +550,22 @@ public class CwbOrderPDAController {
 				return outWarehous(cwb, driverid, truckid, branchid, confirmflag, reasonid, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), request.getContextPath()
 						+ ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
-			} else if (requestparam.equals("warehouse_finishexport_submit")) {// 出库扫描批次封包确认
+			} else if(requestparam.equals("warehouseexport_submit_app")){//出库扫描提交
+	    		/*首先判断是否传入批次的id，如果没有，创建一个批次（id,编号,司机,车辆,状态[扫入中、已封包、已到货]）
+	    		  然后向这个订单中扫描对应的货单，产生监控记录，当相关人员操作了对此批次进行打印后，此批次进行封包，批次状态变为已封包 */
+	    		
+	    		long branchid = Long.parseLong(request.getParameter("branchid"));
+	    		long driverid = request.getParameter("driverid")==""?-1:Long.parseLong(request.getParameter("driverid"));
+	    		long truckid = request.getParameter("truckid").length()==0?0:Long.parseLong(request.getParameter("truckid"));
+	    		long confirmflag = request.getParameter("confirmflag").length()==0?0:Long.parseLong(request.getParameter("confirmflag"));
+	    		long reasonid = request.getParameter("reasonid")==null?0:Long.parseLong(request.getParameter("reasonid"));
+	    		String baleno = "";
+	    		if(request.getParameter("baleno")!=null&&request.getParameter("baleno").length()>0){
+	    			baleno = request.getParameter("baleno");
+	    		}
+	    		return outWarehousAPP(cwb,driverid,truckid,branchid,confirmflag,reasonid,requestbatchno,baleno,new StringBuffer(),CwbOrderPDAEnum.OK.getCode(),request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl(),request);
+	    	
+	    	} else if (requestparam.equals("warehouse_finishexport_submit")) {// 出库扫描批次封包确认
 				long driverid = request.getParameter("driverid") == "" ? -1 : Long.parseLong(request.getParameter("driverid"));
 				return finishExport(driverid, OutwarehousegroupOperateEnum.ChuKu.getValue(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
 						CwbOrderPDAEnum.OK.getVediourl());
@@ -2093,4 +2316,190 @@ public class CwbOrderPDAController {
 		cloumnName2[6] = "remark";
 
 	}
+
+	/**
+		 *  入库扫描 （APP）
+		 * @param cwb
+		 * @param customerid
+		 * @param driverid
+		 * @param requestbatchno
+		 * @param baleno
+		 * @param request
+		 * @param comments
+		 * @return
+		 */
+		private PDAResponse intoWarehousAPP(String cwb,String customerid,long driverid,long requestbatchno,String baleno,HttpServletRequest request,String comments) {
+			CwbOrder co;
+				try {
+					String scancwb = cwb;
+					cwb = cwborderService.translateCwb(cwb);
+					co=cwbDAO.getCwbByCwb(cwb);
+					
+					Branch userbranch=branchDAO.getBranchById(getSessionUser().getBranchid());
+					if(userbranch.getBranchid()!=0&&userbranch.getSitetype()==BranchEnum.ZhanDian.getValue()){
+						co = cwborderService.substationGoods(getSessionUser(),cwb,scancwb, driverid,requestbatchno,"",baleno,false);
+					}else{
+						co = cwborderService.intoWarehous(getSessionUser(),cwb,scancwb,Long.parseLong(customerid), driverid,requestbatchno,comments,baleno,false);
+					}
+					
+					//String errorinfo = getErrorInfoForIntoWarehouse(co);
+					String errorinfo = getErrorInfoForIntoWarehouseAPP(co);
+					PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
+					pDAResponse.setScannum(co.getScannum());
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+					String RUKUPCandPDAaboutYJDPWAV = systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV")==null?"yes":systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue();
+					
+					if(RUKUPCandPDAaboutYJDPWAV.equals("yes")&&(co.getSendcarnum()>1||co.getBackcarnum()>1)){
+						pDAResponse.setShouldShock(true);
+						pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+						pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					}
+					if(co.getDeliverid()!=0){
+						User user = userDAO.getUserByUserid(co.getDeliverid());
+						if(user.getUserwavfile()!=null&&user.getUserwavfile().length()>0){
+							pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+user.getUserwavfile());
+						}
+						pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+user.getRealname());
+					}
+					if(co.getNextbranchid()!=0){
+						Branch branch=branchDAO.getBranchByBranchid(co.getNextbranchid());
+						if(branch!=null&&branch.getBranchwavfile()!=null&&branch.getBranchwavfile().length()>0){
+							pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile());
+						}else{
+							pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.OK.getVediourl());
+						}
+						pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" 站点："+branch.getBranchname() + " 编号：" + branch.getBranchcode());
+						pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0,errorinfo.indexOf("#"))+"##站点："+branch.getBranchname() + "#编号："+branch.getBranchcode() + "#");
+					}
+					if(co.getReceivablefee()!=null&&co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee())>0){
+						pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.GAO_JIA.getVediourl());
+						pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.GAO_JIA.getError());
+						pDAResponse.setShouldShock(true);
+					}
+					return pDAResponse;
+				} catch (CwbException e) {
+					co = cwbDAO.getCwbByCwb(cwb);
+					exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co==null?0:co.getCustomerid(), 0, 0, 0, "");
+					if(e.getError().getValue()==ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()){
+						Branch branch=branchDAO.getBranchByBranchid(co.getNextbranchid());
+						PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError()+" "+StringUtil.nullConvertToEmptyString(branch.getBranchname()));
+						pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
+						pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
+						return pDAResponse;
+					}else{
+						throw e;
+					}
+				}	
+		}
+
+		/* 新增站点编号字段 */
+	private String getErrorInfoForIntoWarehouseAPP(CwbOrder co) {
+		String successPattern = systemInstallService.getParameter("prompt.intoWarehouse.successPattern","<co.cwb><fenge><yipiaoduojian><fenge><branch.branchname><branch.branchcode><gaojia>");
+		ST errorInfoST = new ST(successPattern);
+		errorInfoST.add("co",co);
+		errorInfoST.add("fenge", "#");
+		if(co.getSendcarnum()>1||co.getBackcarnum()>1){ //发货数量   || 取货数量;
+			errorInfoST.add("yipiaoduojian", CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+		}
+		/*if(co.getDeliverid()!=0){
+			User user = userDAO.getUserByUserid(co.getDeliverid());
+			errorInfoST.add("deliver", user);
+		}*/
+		if(co.getNextbranchid()!=0){  // 下一站目的机构;
+			Branch branch=branchDAO.getBranchByBranchid(co.getNextbranchid());
+			errorInfoST.add("branch",branch);
+		}
+		// 待收货款 应收金额
+		if(co.getReceivablefee()!=null&&co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee())>0){
+			errorInfoST.add("gaojia", CwbOrderPDAEnum.GAO_JIA.getError());
+		}
+		
+		return errorInfoST.render();
+	}
+	
+		/**
+	 *  出库扫描
+	 */
+	private PDAResponse outWarehousAPP(String cwb,long driverid,long truckid,long branchid,long confirmflag,long reasonid,long requestbatchno,String baleno,StringBuffer body,String statuscode,String errorinfovediurl,HttpServletRequest request){
+		
+		CwbOrder co;
+		try {
+			
+			String scancwb = cwb;
+			cwb = cwborderService.translateCwb(cwb);
+			co = cwborderService.outWarehous(getSessionUser(),cwb,scancwb,driverid,truckid,branchid,requestbatchno,confirmflag==1,"",baleno,reasonid,false,false);
+			
+//			String errorinfo = getErrorInfoForIntoWarehouse(co);
+			String errorinfo = getErrorInfoForIntoWarehouseAPP(co);
+			PDAResponse pDAResponse=new StringBodyPdaResponse(statuscode, errorinfo);
+			pDAResponse.setScannum(co.getScannum());
+			pDAResponse.setWavPath(errorinfovediurl);
+			if(co.getSendcarnum()>1||co.getBackcarnum()>1){
+				pDAResponse.setShouldShock(true);
+				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo()+" "+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+			}if(co.getDeliverid()!=0){
+				User user = userDAO.getUserByUserid(co.getDeliverid());
+				if(user.getUserwavfile()!=null&&user.getUserwavfile().length()>0){
+					pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+user.getUserwavfile());
+				}
+				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo()+" "+user.getRealname());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+user.getRealname());
+			}if(co.getNextbranchid()!=0){
+				Branch branch=branchDAO.getBranchByBranchid(co.getNextbranchid());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.wavPath+(branch.getBranchwavfile()==null?"":branch.getBranchwavfile()));
+				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0,errorinfo.indexOf("#"))+"##站点："+branch.getBranchname() + "#编号："+branch.getBranchcode() + "#");
+//				pDAResponse.setPrintinfo(branch.getBranchid()+"");
+				pDAResponse.setPrintinfo(branch.getBranchname() );
+			}if(co.getReceivablefee()!=null&&co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee())>0){
+				pDAResponse.setShouldShock(true);
+				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo()+" "+CwbOrderPDAEnum.GAO_JIA.getError());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.GAO_JIA.getError());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.GAO_JIA.getVediourl());
+			}
+			System.out.println(pDAResponse.getPrintinfo());
+			return pDAResponse;
+			
+		} catch (CwbException e) {
+			co=cwbDAO.getCwbByCwb(cwb);
+			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co==null?0:co.getCustomerid(), 0, 0, 0, "");
+			if(e.getError().getValue()==ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()){
+				PopupConfig popupConfig = new PopupConfig();
+				popupConfig.setText("强制出站?");
+				Map map= new HashMap();
+				map.putAll(request.getParameterMap());
+				map.remove("confirmflag");
+				popupConfig.setOkUrl(request.getScheme()+"://"+ request.getServerName()+":"+request.getServerPort()+request.getRequestURI()+"?"+mapToURL(map,request)+"&confirmflag=1");
+				PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getCode(), CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getError());
+				pDAResponse.setPopupConfig(popupConfig);
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getVediourl());
+				return pDAResponse;
+
+			}else if(e.getError().getValue()==ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()){
+				
+				Branch branch=branchDAO.getBranchByBranchid(co.getNextbranchid());
+				PDAResponse pDAResponse=new PDAResponse(CwbOrderPDAEnum.CHONG_FU_CHU_KU.getCode(), cwb+CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError()+" "+branch.getBranchname());
+				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo()+" "+CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
+				pDAResponse.setWavPath(request.getContextPath()+ServiceUtil.waverrorPath+CwbOrderPDAEnum.CHONG_FU_CHU_KU.getVediourl());
+				String popupOnException=systemInstallService.getParameter("prompt.outwarehouse.popupOnException", "false");
+				if(popupOnException.equals("true")){
+					PopupConfig popupConfig = new PopupConfig();
+					popupConfig.setText(cwb+CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
+					pDAResponse.setPopupConfig(popupConfig);
+				}
+				return pDAResponse;
+			}else{
+				throw e;
+			}
+		}
+	
+	}
+
+
+
+
+
+
+
 }
