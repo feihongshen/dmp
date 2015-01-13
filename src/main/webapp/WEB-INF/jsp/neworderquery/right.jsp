@@ -123,9 +123,9 @@ function remarkPost(){
 						<td bgcolor="#F1F1F1">供货商</td>
 						<td><%=customer.getCustomername()%></td>
 						<td bgcolor="#F1F1F1">收件人姓名</td>
-						<td><%=view.getConsigneename()%></td>
+						<td><%=view.getConsigneenameOfkf()%></td>
 						<td bgcolor="#F1F1F1">手机</td>
-						<td><%=view.getConsigneemobile()%></td>
+						<td><%=view.getConsigneemobileOfkf()%></td>
 					</tr>
 					<tr>
 						<td bgcolor="#F1F1F1">收件人地址</td>
@@ -206,7 +206,7 @@ function remarkPost(){
 						<td bgcolor="#F1F1F1">派送类型</td>
 						<td><%=view.getCwbdelivertypeStr()%></td>
 						<td bgcolor="#F1F1F1">电话</td>
-						<td><%=view.getConsigneephone()%></td>
+						<td><%=view.getConsigneephoneOfkf()%></td>
 						<td bgcolor="#F1F1F1">自定义5</td>
 						<td><%=cwborder.getRemark5()==null?"":cwborder.getRemark5()%></td>
 					</tr>
