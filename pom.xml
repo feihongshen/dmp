@@ -78,11 +78,8 @@
 			<artifactId>activemq-camel</artifactId>
 			<version>5.5.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</ar0tifactId>
-			<version>2.1.3</version>
-		</dependency>
+		<!-- <dependency> <groupId>com.sun.xml.ws</groupId> <artifactId>jaxws-rt</ar0tifactId> <version>2.1.3</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
@@ -877,7 +874,7 @@
 				<label>TXD</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>TXD_SMT</id>
 			<properties>
@@ -898,8 +895,8 @@
 				<label>TXD_SMT</label>
 			</properties>
 		</profile>
-		
-		
+
+
 
 		<profile>
 			<id>TO_XHM</id>
@@ -1281,8 +1278,8 @@
 				<label>SXYMJ</label>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>SXYMJ_SMT</id>
 			<properties>
@@ -1304,9 +1301,9 @@
 				<label>SXYMJ_SMT</label>
 			</properties>
 		</profile>
-		
-		
-		
+
+
+
 		<profile>
 			<id>WPH_SHANGHAI</id>
 			<properties>
@@ -1349,8 +1346,8 @@
 				<label>SXFY</label>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>SXFY_SMT</id>
 			<properties>
@@ -1372,9 +1369,9 @@
 				<label>SXFY_SMT</label>
 			</properties>
 		</profile>
-		
-		
-		
+
+
+
 		<profile>
 			<id>LZHB</id>
 			<properties>
@@ -1816,9 +1813,9 @@
 				<label>XJPX</label>
 			</properties>
 		</profile>
-		
-		
-		
+
+
+
 		<profile>
 			<id>XJPX_SMT</id>
 			<properties>
@@ -1839,8 +1836,8 @@
 				<label>XJPX_SMT</label>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>XJDCB</id>
 			<properties>
@@ -2233,8 +2230,8 @@
 				<label>XJYT</label>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>XJYT_SMT</id>
 			<properties>
@@ -2255,8 +2252,8 @@
 				<label>XJYT_SMT</label>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>KMQY</id>
 			<properties>
@@ -2460,7 +2457,7 @@
 				<label>AHPX</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>AHPX_SMT</id>
 			<properties>
