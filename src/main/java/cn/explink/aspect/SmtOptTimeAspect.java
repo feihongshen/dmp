@@ -14,7 +14,7 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Configuration;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.OverdueExMoDAO;
@@ -33,7 +33,7 @@ import cn.explink.util.DateTimeUtil;
  * @since DMP3.0
  */
 @Aspect
-@Configurable
+@Configuration
 public class SmtOptTimeAspect {
 
 	private Logger logger = LoggerFactory.getLogger(SmtOptTimeAspect.class);
