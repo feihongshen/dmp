@@ -121,6 +121,10 @@ public class SmtOptTimeAspect {
 		this.executeService = Executors.newFixedThreadPool(2);
 	}
 
+	public void setOverdueExMODAO(OverdueExMoDAO overdueExMODAO) {
+		this.overdueExMODAO = overdueExMODAO;
+	}
+
 	private Logger getLogger() {
 		return this.logger;
 	}
