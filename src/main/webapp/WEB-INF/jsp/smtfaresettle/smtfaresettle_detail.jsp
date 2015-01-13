@@ -124,7 +124,7 @@
         		</c:choose>>上一页</a>
 						<a
 						<c:choose>  
-                <c:when test="${(result.page != result.pageCount) and (result.page != 1)}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/${result.page + 1}');$('#searchForm').submit();"</c:when>  
+                <c:when test="${(result.page != result.pageCount)}">href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/${result.detail}/${result.page + 1}');$('#searchForm').submit();"</c:when>  
                 <c:otherwise>href="#"</c:otherwise>  
         		</c:choose>>下一页</a>
 						<a
