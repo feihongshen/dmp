@@ -10,12 +10,11 @@ import javax.annotation.PostConstruct;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.OverdueExMoDAO;
-import cn.explink.dao.UserDAO;
 import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -35,15 +34,16 @@ public class SmtOptTimeAspect {
 
 	private ExecutorService executeService = null;
 
-	@Autowired
-	private UserDAO userDAO;
+	private Logger logger = org.slf4j.LoggerFactory.getLogger(SmtOptTimeAspect.class);
 
 	@After("execution(* cn.explink.dao.OrderFlowDAO.creAndUpdateOrderFlow(..))")
 	public void afterCreateOrderFlow(JoinPoint point) {
+
 		Object[] args = point.getArgs();
 		OrderFlow orderFlow = (OrderFlow) args[0];
 		String strCreateDate = DateTimeUtil.formatDate(orderFlow.getCredate());
 
+		this.getLogger().info("上门退创建订单流程切面:" + orderFlow.getFlowordertype());
 		this.saveOverdueData(orderFlow, strCreateDate);
 	}
 
@@ -114,6 +114,10 @@ public class SmtOptTimeAspect {
 	@PostConstruct
 	public void initExecutorService() {
 		this.executeService = Executors.newFixedThreadPool(2);
+	}
+
+	private Logger getLogger() {
+		return this.logger;
 	}
 
 	private void saveOverdueData(OrderFlow orderFlow, String strCreateDate) {

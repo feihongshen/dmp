@@ -97,11 +97,15 @@
 		});
 	});
 	$(function() {
-		$("#find").click(function() {
-			if (check()) {
-				$("#searchForm").submit();
-			}
-		});
+		$("#find").click(
+				function() {
+					if (check()) {
+						var $searchForm = $("#searchForm");
+						$searchForm.attr("action","${ctx_path}/smtfaresettle/station/1");
+
+						$searchForm.submit();
+					}
+				});
 	});
 
 	$(function() {
