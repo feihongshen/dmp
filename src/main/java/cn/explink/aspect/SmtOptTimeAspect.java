@@ -56,7 +56,9 @@ public class SmtOptTimeAspect {
 		if (dto.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			return;
 		}
-		this.getExecuteService().submit(new CreateOrderTask(dto, stationId, venderId));
+		// this.getExecuteService().submit(new CreateOrderTask(dto, stationId,
+		// venderId));
+		new CreateOrderTask(dto, stationId, venderId).run();
 	}
 
 	@After("execution(* cn.explink.service.CwbOrderService.deliverStatePod(..))")
@@ -68,7 +70,9 @@ public class SmtOptTimeAspect {
 		BigDecimal receivedFee = (BigDecimal) params.get("infactfare");
 		long deliverState = (Long) params.get("podresultid");
 
-		this.submitTask(new UpdateDeliverStateTask(cwb, (int) deliverState, receivedFee));
+		// this.submitTask(new UpdateDeliverStateTask(cwb,
+		// (int)deliverState,receivedFee));
+		new UpdateDeliverStateTask(cwb, (int) deliverState, receivedFee).run();
 	}
 
 	@After("execution(* cn.explink.dao.PrintcwbDetailDAO.crePrintcwbDetail(..))")
@@ -76,7 +80,8 @@ public class SmtOptTimeAspect {
 		Object[] args = point.getArgs();
 		PrintcwbDetail cwb = (PrintcwbDetail) args[0];
 
-		this.submitTask(new UpdatePrintTimeTask(cwb));
+		// this.submitTask(new UpdatePrintTimeTask(cwb));
+		new UpdatePrintTimeTask(cwb).run();
 	}
 
 	@After("execution(* cn.explink.dao.DeliveryStateDAO.creDeliveryState(..))")
@@ -90,7 +95,9 @@ public class SmtOptTimeAspect {
 		User delvier = (User) args[3];
 		String strCreateTime = (String) args[4];
 
-		this.submitTask(new UpdateDeliverInfoTask(cwb, delvier.getUserid(), strCreateTime));
+		// this.submitTask(new UpdateDeliverInfoTask(cwb, delvier.getUserid(),
+		// strCreateTime));
+		new UpdateDeliverInfoTask(cwb, delvier.getUserid(), strCreateTime).run();
 	}
 
 	@After("execution(* cn.explink.dao.OrderFlowDAO.batchOutArea(..))")
@@ -99,7 +106,8 @@ public class SmtOptTimeAspect {
 		String[] cwbs = (String[]) args[0];
 		String strTime = DateTimeUtil.getNowTime();
 
-		this.submitTask(new UpdateOutAreaTimeTask(cwbs, strTime));
+		// this.submitTask(new UpdateOutAreaTimeTask(cwbs, strTime));
+		new UpdateOutAreaTimeTask(cwbs, strTime);
 	}
 
 	@After("execution(* cn.explink.service.MatchExceptionHandleService.redistributionBranch(..))")
@@ -108,7 +116,8 @@ public class SmtOptTimeAspect {
 		String cwb = (String) args[0];
 		String strTime = DateTimeUtil.getNowTime();
 
-		this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
+		// this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
+		new UpdateMEHTimeTask(cwb, strTime);
 	}
 
 	@PostConstruct
@@ -121,9 +130,11 @@ public class SmtOptTimeAspect {
 	}
 
 	private void saveOverdueData(OrderFlow orderFlow, String strCreateDate) {
-		this.getExecuteService().submit(new SaveTask(orderFlow, strCreateDate));
+		// this.getExecuteService().submit(newSaveTask(orderFlow,strCreateDate));
+		new SaveTask(orderFlow, strCreateDate).run();
 	}
 
+	@SuppressWarnings("unused")
 	private void submitTask(Runnable task) {
 		this.getExecuteService().submit(task);
 	}
