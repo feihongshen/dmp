@@ -26,6 +26,8 @@
         <intercept-url pattern="/js/**" access="permitAll" />
         <intercept-url pattern="/cwborderPDA/loginError" access="permitAll" />
         <intercept-url pattern="/cwborderPDA/" access="permitAll" />
+		<intercept-url pattern="/cwborderPDA/newPDA" access="permitAll" />
+        <intercept-url pattern="/cwborderPDA/loadWavFile" access="permitAll" />
         <intercept-url pattern="/cwborderPDA/getSystime" access="permitAll" />
         <intercept-url pattern="/order/orderFlowQueryByCwb/**" access="permitAll" />
         <intercept-url pattern="/order/orderFlowQueryForOutsideByCwb/**" access="permitAll" />
