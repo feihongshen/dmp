@@ -10,9 +10,6 @@ import javax.annotation.PostConstruct;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +33,6 @@ import cn.explink.util.DateTimeUtil;
 @Component
 public class SmtOptTimeAspect {
 
-	private Logger logger = LoggerFactory.getLogger(SmtOptTimeAspect.class);
-
 	private ExecutorService executeService = null;
 
 	@Autowired
@@ -52,14 +47,16 @@ public class SmtOptTimeAspect {
 		this.saveOverdueData(orderFlow, strCreateDate);
 	}
 
-	@Before("execution(* cn.explink.b2c.tools.DataImportDAO_B2c.insertCwbOrder_toTempTable(..))")
+	@After("execution(* cn.explink.b2c.tools.DataImportDAO_B2c.insertCwbOrder_toTempTable(..))")
 	public void afterImportData(JoinPoint point) {
 		Object[] args = point.getArgs();
 		CwbOrderDTO dto = (CwbOrderDTO) args[0];
+		long venderId = (Long) args[1];
+		long stationId = (Long) args[2];
 		if (dto.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			return;
 		}
-		this.getExecuteService().submit(new CreateOrderTask(dto));
+		this.getExecuteService().submit(new CreateOrderTask(dto, stationId, venderId));
 	}
 
 	@After("execution(* cn.explink.service.CwbOrderService.deliverStatePod(..))")
@@ -119,10 +116,6 @@ public class SmtOptTimeAspect {
 		this.executeService = Executors.newFixedThreadPool(2);
 	}
 
-	private Logger getLogger() {
-		return this.logger;
-	}
-
 	private void saveOverdueData(OrderFlow orderFlow, String strCreateDate) {
 		this.getExecuteService().submit(new SaveTask(orderFlow, strCreateDate));
 	}
@@ -175,13 +168,17 @@ public class SmtOptTimeAspect {
 
 		private CwbOrderDTO smtOrder = null;
 
-		public CreateOrderTask(CwbOrderDTO smtOrderList) {
+		private long warehouseId = 0;
+
+		private long venderId = 0;
+
+		public CreateOrderTask(CwbOrderDTO smtOrderList, long warehouseId, long venderId) {
 			this.smtOrder = smtOrderList;
 		}
 
 		@Override
 		public void run() {
-			this.getOverdueExMODAO().insertSmtOrder(this.getSmtOrder());
+			this.getOverdueExMODAO().insertSmtOrder(this.getSmtOrder(), this.getWarehouseId(), this.getVenderId());
 		}
 
 		public CwbOrderDTO getSmtOrder() {
@@ -191,6 +188,15 @@ public class SmtOptTimeAspect {
 		private OverdueExMoDAO getOverdueExMODAO() {
 			return SmtOptTimeAspect.this.getOverdueExMODAO();
 		}
+
+		public long getVenderId() {
+			return this.venderId;
+		}
+
+		public long getWarehouseId() {
+			return this.warehouseId;
+		}
+
 	}
 
 	private class UpdateDeliverStateTask implements Runnable {

@@ -22,7 +22,7 @@ public class SmtFareSettleCondVO {
 
 	private ArrayList<Long> venders = new ArrayList<Long>();
 
-	private long deliverId = 0;
+	private Long orgId = Long.valueOf(0);
 
 	private ArrayList<Long> delivers = new ArrayList<Long>();
 
@@ -76,12 +76,12 @@ public class SmtFareSettleCondVO {
 		this.venders = venders;
 	}
 
-	public long getDeliverId() {
-		return this.deliverId;
+	public Long getOrgId() {
+		return this.orgId;
 	}
 
-	public void setDeliverId(long deliverId) {
-		this.deliverId = deliverId;
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	public ArrayList<Long> getDelivers() {

@@ -81,11 +81,6 @@
 			timeFormat : 'hh:mm:ss',
 			dateFormat : 'yy-mm-dd'
 		});
-		$("#orgs").multiSelect({
-			oneOrMoreSelected : '*',
-			noneSelected : '请选择'
-		});
-
 		$("#venders").multiSelect({
 			oneOrMoreSelected : '*',
 			noneSelected : '请选择'
@@ -101,7 +96,8 @@
 		$("#find").click(
 				function() {
 					if (check()) {
-						$("#searchForm").attr("action","${ctx_path}/smtfaresettle/deliver/1");
+						$("#searchForm").attr("action",
+								"${ctx_path}/smtfaresettle/deliver/1");
 						$("#searchForm").submit();
 					}
 				});
@@ -137,7 +133,8 @@
 	function sendRequest(branchId, venderId, condVO) {
 		$.ajax({
 			type : "post",
-			url : "${ctx_path}/smtfaresettle/getdeliverdata/" + branchId + "/"+ venderId + "?" + Math.random(),
+			url : "${ctx_path}/smtfaresettle/getdeliverdata/" + branchId + "/"
+					+ venderId + "?" + Math.random(),
 			dataType : "json",
 			async : true,
 			data : {
@@ -224,10 +221,10 @@
 	}
 
 	$(function() {
-		var $fields = $("input[name='orgs']").bind("click", function() {
-			var $orgs = getMultiSelectValues("orgs");
-			var stationIds = getStationIds($orgs);
-			fillStationDeliver(stationIds);
+		var $orgId =$("#orgId"); 
+		$orgId.change(function(){
+			var orgId= $orgId.val();
+			fillStationDeliver(orgId);
 		});
 	});
 
@@ -249,13 +246,13 @@
 		}
 	}
 
-	function fillStationDeliver(stationIds) {
+	function fillStationDeliver(stationId) {
 		$.ajax({
 			type : "post",
 			dataType : "json",
 			url : "${ctx_path}/smtfaresettle/getstationdeliver?"+ Math.random(),
 			data : {
-				stationIds : stationIds
+				stationId : stationId
 			},
 			success : function(data) {
 				fillDeliverInfo(data);
@@ -320,29 +317,31 @@
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" />
-					供货商：<select id="venders"
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 供货商：<select id="venders"
 					name="venders" style="width: 100px;" multiple="multiple">
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 
-					 站点： <select id="orgs"
-					name="orgs" multiple="multiple" style="width: 100px;">
-					<c:forEach items="${constant.orgMap}" var="entry">
-						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
-					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 小件员：<select id="deliverId"
-					name="deliverId" style="width: 100px;">
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 站点： <select id="orgId"
+					name="orgId" multiple="multiple" style="width: 100px;">
 					<option value="0">请选择</option>
-					<c:forEach items="${constant.deliverMap}" var="entry">
-						<option value="${entry.key}" <c:if test="${entry.key == cond.deliverId}">selected</c:if>>${entry.value}</option>
+					<c:forEach items="${constant.orgMap}" var="entry">
+						<option value="${entry.key}" <c:if test="${cond.orgId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> <input type="button" id="find" value="查询" class="input_button2" /> <input type="button"
-					id="btnval" value="导出" class="input_button2" onclick="exportData()" />
+				</select> 小件员：
+				<div id="deliverArea" style="display: inline">
+					<select id="delivers" name="delivers" style="width: 100px;">
+						<c:forEach items="${constant.deliverMap}" var="entry">
+							<option value="${entry.key}" <c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>
+						</c:forEach>
+					</select>
+				</div>
+				[<a href="javascript:multiSelectAll('delivers',1,'请选择');">全选</a>] [<a
+					href="javascript:multiSelectAll('delivers',0,'请选择');">取消全选</a>] <input type="button" id="find"
+					value="查询" class="input_button2" /> <input type="button" id="btnval" value="导出"
+					class="input_button2" onclick="exportData()" />
 			</div>
 		</form>
 	</div>

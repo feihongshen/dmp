@@ -50,11 +50,11 @@ public class OverdueExMoDAO {
 		this.getJdbcTemplate().update(sql, deliverState, time, cwb);
 	}
 
-	public void insertSmtOrder(CwbOrderDTO dto) {
+	public void insertSmtOrder(CwbOrderDTO dto, long warehouseId, long venderId) {
 		// 删除存在数据.
 		this.deleteExistData(dto);
 		// 插入数据.
-		this.insertData(dto);
+		this.insertData(dto, warehouseId, venderId);
 	}
 
 	public void updatePrintTime(PrintcwbDetail printDetail) {
@@ -114,16 +114,15 @@ public class OverdueExMoDAO {
 		return "update express_ops_smt_cwb_opt_time set deliver_state = ?, received_fee = ? where cwb = ?";
 	}
 
-	private void insertData(CwbOrderDTO dto) {
+	private void insertData(CwbOrderDTO dto, long warehouseId, long venderId) {
 		String insertSql = this.getInsertSql();
 		String cwb = dto.getCwb();
-		long venderId = dto.getCustomerid();
 		String createTime = dto.getRemark2();
 		int payType = (int) dto.getPaywayid();
 		BigDecimal shouleFee = dto.getShouldfare();
 
 		this.logger.info("插入上门退订单:" + insertSql);
-		this.getJdbcTemplate().update(insertSql, cwb, venderId, createTime, payType, shouleFee);
+		this.getJdbcTemplate().update(insertSql, cwb, warehouseId, venderId, createTime, payType, shouleFee);
 	}
 
 	private void deleteExistData(CwbOrderDTO dto) {
@@ -137,8 +136,8 @@ public class OverdueExMoDAO {
 	private String getInsertSql() {
 		StringBuilder sql = new StringBuilder();
 		sql.append("insert into express_ops_smt_cwb_opt_time");
-		sql.append("(cwb , vender_id , create_time , pay_type , should_fee)");
-		sql.append("values(?,?,?,?,?)");
+		sql.append("(cwb ,warehouse_id , vender_id , create_time , pay_type , should_fee)");
+		sql.append("values(?,?,?,?,?,?)");
 
 		return sql.toString();
 	}
