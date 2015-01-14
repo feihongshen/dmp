@@ -662,7 +662,7 @@ public class OverdueExMoController {
 		protected String getPercent(int count, int total) {
 			DecimalFormat df = new DecimalFormat("######0.00");
 			if (total == 0) {
-				return "100%";
+				return "--";
 			}
 			double percent = ((1.0 * count) / total) * 100;
 
