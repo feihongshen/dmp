@@ -344,6 +344,8 @@ public class OverdueExMoController {
 			teMap.put(ShowColEnum.GetBack, teCodeMap.get("gb_suc"));
 			// 有效接收时效.
 			teMap.put(ShowColEnum.SystemAccept, teCodeMap.get("ef_rev"));
+			// 未分配接收时效.
+			teMap.put(ShowColEnum.NotMatched, teCodeMap.get("not_mat"));
 		}
 		return teMap;
 	}
@@ -368,7 +370,10 @@ public class OverdueExMoController {
 			teMap.put(ShowColEnum.GetBack, teCodeMap.get("gb_suc"));
 			// 有效接收时效.
 			teMap.put(ShowColEnum.SystemAccept, teCodeMap.get("ef_rev"));
+			// 未匹配时效.
+			teMap.put(ShowColEnum.NotMatched, teCodeMap.get("not_mat"));
 		}
+
 		return teMap;
 	}
 

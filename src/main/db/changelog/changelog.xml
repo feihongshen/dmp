@@ -5830,7 +5830,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			INSERT
 			INTO express_set_time_effective(CODE,NAME,TIME_TYPE,SCOPE) VALUES('ef_rev','有效接收时效',0,3*3600);
 			INSERT INTO
-			express_set_time_effective(CODE,NAME,TIME_TYPE,SCOPE)VALUES('not_dis','未分配处理时效',1,3*3600);
+			express_set_time_effective(CODE,NAME,TIME_TYPE,SCOPE)VALUES('not_mat','未分配处理时效',1,3*3600);
 		</sql>
 	</changeSet>
 
