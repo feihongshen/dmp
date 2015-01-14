@@ -765,6 +765,31 @@
 				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>version-address</id>
+			<properties>
+				<tomcat.manager.url>http://192.168.0.217:8012/manager</tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_address_50101?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>version-address-50101</label>
+				<addresscustomerid>5</addresscustomerid>
+				<addressid>5</addressid>
+				<addresspassword>cqhy</addresspassword>
+				<addressWebserviceIp>192.168.0.222:9548/address</addressWebserviceIp>
+			</properties>
+		</profile>
 
 		<profile>
 			<id>dmp_pxwl_41030</id>
