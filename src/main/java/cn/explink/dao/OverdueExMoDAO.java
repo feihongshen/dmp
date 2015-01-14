@@ -40,7 +40,8 @@ public class OverdueExMoDAO {
 
 	public void updateDeliverState(String cwb, int deliverState, BigDecimal receivedFeed) {
 		String updateSql = this.getUpdateDeliverStateSql();
-		this.getJdbcTemplate().update(updateSql, deliverState, receivedFeed, cwb);
+		String nowTime = DateTimeUtil.getNowTime();
+		this.getJdbcTemplate().update(updateSql, deliverState, receivedFeed, nowTime, cwb);
 	}
 
 	public void updateDeliverState(String cwb, int deliverState) {
@@ -104,7 +105,7 @@ public class OverdueExMoDAO {
 	}
 
 	private String getUpdateDeliverStateSql() {
-		return "update express_ops_smt_cwb_opt_time set deliver_state = ?, received_fee = ? where cwb = ?";
+		return "update express_ops_smt_cwb_opt_time set deliver_state = ?, received_fee = ? ,feedback_time = ? where cwb = ?";
 	}
 
 	private void insertData(CwbOrderDTO dto, long warehouseId, long venderId) {

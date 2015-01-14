@@ -828,8 +828,8 @@ public class OverdueExMoController {
 	private class NotMatchAction extends BaseLoadAction {
 		@Override
 		protected TDCell loadData() {
-			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
-			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
+			int total = this.getDAO().queryForInt(this.getSql(true, false), this.getBranchId(), this.getVenderId());
+			int count = this.getDAO().queryForInt(this.getSql(false, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
 			TDCell cell = new TDCell();
 			cell.setCount(count);
@@ -839,13 +839,13 @@ public class OverdueExMoController {
 			return cell;
 		}
 
-		private String getSql(boolean match, boolean enableTEQuery) {
+		private String getSql(boolean notMatch, boolean enableTEQuery) {
 			StringBuilder sql = new StringBuilder();
 			sql.append(this.getSelectPart());
 			sql.append("where warehouse_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
-			if (match) {
-				sql.append(" and station_accept_time != '0000-00-00 00:00:00'");
+			if (notMatch) {
+				sql.append(" and station_accept_time = '0000-00-00 00:00:00'");
 			}
 			if (enableTEQuery) {
 				TimeEffectiveVO teVO = this.getTimeEffectiveVO(ShowColEnum.NotMatched);
@@ -908,7 +908,7 @@ public class OverdueExMoController {
 		private String getSql(boolean match, boolean enableTEQuery) {
 			StringBuilder sql = new StringBuilder();
 			sql.append(this.getSelectPart());
-			sql.append("where warehouse_id = ? and vender_id = ?");
+			sql.append("where deliver_station_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
 			if (match) {
 				sql.append(" and feedback_time != '0000-00-00 00:00:00'");
