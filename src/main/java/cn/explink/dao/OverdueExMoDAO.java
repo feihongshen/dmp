@@ -210,7 +210,6 @@ public class OverdueExMoDAO {
 		flowSet.add(FlowOrderTypeEnum.RuKu);
 		flowSet.add(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
 		flowSet.add(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao);
-		flowSet.add(FlowOrderTypeEnum.FenZhanLingHuo);
 		flowSet.add(FlowOrderTypeEnum.ChaoQu);
 		flowSet.add(FlowOrderTypeEnum.YiChangPiPeiYiChuLi);
 
