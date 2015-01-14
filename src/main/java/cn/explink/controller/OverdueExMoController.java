@@ -917,8 +917,9 @@ public class OverdueExMoController {
 			sql.append("where deliver_station_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
 			if (getBack) {
-				sql.append(" and feedback_time != '0000-00-00 00:00:00'");
+				sql.append(" and deliver_state = 2");
 			}
+			sql.append(" and dispatch_time != '0000-00-00 00:00:00'");
 			if (enableTEQuery) {
 				TimeEffectiveVO teVO = this.getTimeEffectiveVO(ShowColEnum.GetBack);
 				if (teVO != null) {
