@@ -862,7 +862,7 @@ public class OverdueExMoController {
 				TimeEffectiveVO teVO = this.getTimeEffectiveVO(ShowColEnum.NotMatched);
 				if (teVO != null) {
 					String subField = teVO.getTimeType().getField();
-					sql.append(" and (unix_timestamp(station_accept_time) - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
+					sql.append(" and (unix_timestamp(system_accept_time) - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
 				}
 			}
 			return sql.toString();
