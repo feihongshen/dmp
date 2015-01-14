@@ -661,9 +661,9 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pxwl_mo?zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>dmp</expressurl.user>
-				<expressurl.password>dmp</expressurl.password>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pxwl_smt?zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<wavPath>/home/explink/data/wav/</wavPath>
@@ -673,10 +673,10 @@
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>local</label>
-				<addresscustomerid>6</addresscustomerid>
-				<addressid>6</addressid>
-				<addresspassword>gztl</addresspassword>
-				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
+				<addresscustomerid>5</addresscustomerid>
+				<addressid>5</addressid>
+				<addresspassword>cqhy</addresspassword>
+				<addressWebserviceIp>192.168.0.222:9548/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -877,7 +877,7 @@
 				<label>TXD</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>TXD_SMT</id>
 			<properties>
@@ -1283,7 +1283,7 @@
 				<label>SXYMJ</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>SXYMJ_SMT</id>
 			<properties>
@@ -1351,7 +1351,7 @@
 				<label>SXFY</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>SXFY_SMT</id>
 			<properties>
@@ -1377,8 +1377,8 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>LZHB</id>
 			<properties>
@@ -1820,7 +1820,7 @@
 				<label>XJPX</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>XJPX_SMT</id>
 			<properties>
@@ -1845,7 +1845,7 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>XJDCB</id>
 			<properties>
@@ -2058,7 +2058,7 @@
 				<label>SCPX</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>SCPJ_SMT</id>
 			<properties>
@@ -2081,10 +2081,10 @@
 				<addressid>1</addressid>
 				<addresspassword>gxpx</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
-				
+
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>HXDSB</id>
 			<properties>
@@ -2245,7 +2245,7 @@
 				<label>XJYT</label>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>XJYT_SMT</id>
 			<properties>
@@ -2270,7 +2270,7 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>KMQY</id>
 			<properties>
@@ -2573,9 +2573,9 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
-		
-		
+
+
+
 		<profile>
 			<id>WHFY</id>
 			<properties>
@@ -2600,8 +2600,8 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
-		
+
+
 		<profile>
 			<id>FJFY</id>
 			<properties>
@@ -2626,7 +2626,7 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+
 
 	</profiles>
 
