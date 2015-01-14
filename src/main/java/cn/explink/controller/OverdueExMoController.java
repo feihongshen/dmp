@@ -828,8 +828,8 @@ public class OverdueExMoController {
 	private class NotMatchAction extends BaseLoadAction {
 		@Override
 		protected TDCell loadData() {
-			int total = this.getDAO().queryForInt(this.getSql(true, false), this.getBranchId(), this.getVenderId());
-			int count = this.getDAO().queryForInt(this.getSql(false, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
+			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
+			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
 			TDCell cell = new TDCell();
 			cell.setCount(count);
