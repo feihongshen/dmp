@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrderPartGoodsRt;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 
 @Component
 public class OrderPartGoodsRtDAO {
@@ -51,7 +52,8 @@ public class OrderPartGoodsRtDAO {
 		sql.append(" FROM express_ops_cwb_detail cd, express_ops_delivery_state ds ");
 		sql.append(" WHERE cd.cwb = ds.cwb ");
 		sql.append(" AND cd.cwbordertypeid =  " + CwbOrderTypeIdEnum.Shangmentui.getValue());
-		// sql.append(" AND ds.deliverystate = ? ");
+		sql.append(" AND ds.deliverystate = " + DeliveryStateEnum.WeiFanKui.getValue());
+		sql.append(" OR posremark='POS反馈-部分退货'");
 		sql.append(" AND ds.gcaid=0 ");
 		sql.append(" AND ds.deliverybranchid =" + deliverybranchid);
 		sql.append(" AND cd.state=1 AND ds.state=1 ");
@@ -98,7 +100,8 @@ public class OrderPartGoodsRtDAO {
 		sql.append(" FROM `express_ops_cwb_detail` cd, express_ops_delivery_state ds ");
 		sql.append(" WHERE cd.cwb = ds.cwb ");
 		sql.append(" AND cd.cwbordertypeid =  " + CwbOrderTypeIdEnum.Shangmentui.getValue());
-		// sql.append(" AND ds.deliverystate = ? ");
+		sql.append(" AND ds.deliverystate = " + DeliveryStateEnum.WeiFanKui.getValue());
+		sql.append(" OR posremark='POS反馈-部分退货'");
 		sql.append(" AND ds.cwb IN(" + cwbs).append(")");
 		sql.append(" AND ds.gcaid=0 ");
 		if ((userids != null) && (userids.trim().length() > 0)) {
@@ -133,7 +136,8 @@ public class OrderPartGoodsRtDAO {
 		sql.append(" FROM express_ops_cwb_detail cd, express_ops_delivery_state ds ");
 		sql.append(" WHERE cd.cwb = ds.cwb ");
 		sql.append(" AND cd.cwbordertypeid =  " + CwbOrderTypeIdEnum.Shangmentui.getValue());
-		// sql.append(" AND ds.deliverystate = ? ");
+		sql.append(" AND ds.deliverystate = " + DeliveryStateEnum.WeiFanKui.getValue());
+		sql.append(" OR posremark='POS反馈-部分退货'");
 		sql.append(" AND ds.gcaid=0 ");
 		if (userid != -1) {
 			sql.append(" AND ds.deliveryid = " + userid);
