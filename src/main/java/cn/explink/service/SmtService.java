@@ -63,7 +63,8 @@ public class SmtService {
 			boolean cond1 = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType);
 			boolean cond2 = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.equals(flowOrderType);
 			boolean cond3 = DeliveryStateEnum.FenZhanZhiLiu.getValue() == deliverSate.getDeliverystate();
-			if (!(cond1 || cond2 || cond3)) {
+			boolean cond4 = FlowOrderTypeEnum.FenZhanLingHuo.equals(flowOrderType);
+			if (!(cond1 || cond2 || cond3 || cond4)) {
 				obj.put("successed", false);
 				obj.put("msg", this.getOutAreaFlowErrorMsg());
 			}
