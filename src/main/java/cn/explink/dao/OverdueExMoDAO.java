@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.OverdueExMoVO;
-import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.DateTimeUtil;
@@ -57,15 +56,9 @@ public class OverdueExMoDAO {
 		this.insertData(dto, warehouseId, venderId);
 	}
 
-	public void updatePrintTime(PrintcwbDetail printDetail) {
-		String detail = printDetail.getPrintdetail();
-		String[] cwbs = detail.split(",");
-		if (cwbs.length == 0) {
-			return;
-		}
-		String inPara = this.getCwbInPara(cwbs);
-		String sql = this.getUpdatePrintTimeSql(inPara);
-		this.getJdbcTemplate().execute(sql);
+	public void updatePrintTime(String cwb, String printTime) {
+		String sql = this.getUpdatePrintTimeSql();
+		this.getJdbcTemplate().update(sql, printTime, cwb);
 	}
 
 	public void updateDeliverInfo(String cwb, long deliverId, String dispatchTime) {
@@ -96,8 +89,8 @@ public class OverdueExMoDAO {
 		return "update express_ops_smt_cwb_opt_time set deliver_id = ? , dispatch_time = ? where cwb = ?";
 	}
 
-	private String getUpdatePrintTimeSql(String inPara) {
-		return "update express_ops_smt_cwb_opt_time set print_time = ? where cwb in (" + inPara + ")";
+	private String getUpdatePrintTimeSql() {
+		return "update express_ops_smt_cwb_opt_time set print_time = ? where cwb = ? ";
 	}
 
 	private String getCwbInPara(String[] cwbs) {

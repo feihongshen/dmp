@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.OverdueExMoDAO;
-import cn.explink.domain.PrintcwbDetail;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -75,13 +74,14 @@ public class SmtOptTimeAspect {
 		new UpdateDeliverStateTask(cwb, (int) deliverState, receivedFee).run();
 	}
 
-	@After("execution(* cn.explink.dao.PrintcwbDetailDAO.crePrintcwbDetail(..))")
+	@After("execution(* cn.explink.dao.CwbDAO.saveCwbForPrinttime(..))")
 	public void afterPrint(JoinPoint point) {
 		Object[] args = point.getArgs();
-		PrintcwbDetail cwb = (PrintcwbDetail) args[0];
+		String cwb = (String) args[0];
+		String printTime = (String) args[1];
 
 		// this.submitTask(new UpdatePrintTimeTask(cwb));
-		new UpdatePrintTimeTask(cwb).run();
+		new UpdatePrintTimeTask(cwb, printTime).run();
 	}
 
 	@After("execution(* cn.explink.dao.DeliveryStateDAO.creDeliveryState(..))")
@@ -255,19 +255,26 @@ public class SmtOptTimeAspect {
 
 	private class UpdatePrintTimeTask implements Runnable {
 
-		public PrintcwbDetail printDetail = null;
+		public String cwb = null;
 
-		public UpdatePrintTimeTask(PrintcwbDetail printDetail) {
-			this.printDetail = printDetail;
+		private String printTime = null;
+
+		public UpdatePrintTimeTask(String cwb, String printTime) {
+			this.cwb = cwb;
+			this.printTime = printTime;
 		}
 
 		@Override
 		public void run() {
-			this.getOverdueExMODAO().updatePrintTime(this.getPrintDetail());
+			this.getOverdueExMODAO().updatePrintTime(this.getCwb(), this.getPrintTime());
 		}
 
-		public PrintcwbDetail getPrintDetail() {
-			return this.printDetail;
+		private String getCwb() {
+			return this.cwb;
+		}
+
+		private String getPrintTime() {
+			return this.printTime;
 		}
 
 		private OverdueExMoDAO getOverdueExMODAO() {
