@@ -287,7 +287,12 @@ public class OverdueExMoController {
 	private String getQueryDetailTimeEffectiveCond(OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
 		StringBuilder sql = new StringBuilder();
 		String field = this.getDbField(condVO.getShowColIndex());
-		sql.append(field + "!= '0000-00-00 00:00:00' ");
+		if (field.equals("feedback_time")) {
+			sql.append("deliver_state = 2 and dispatch_time != '0000-00-00 00:00:00'");
+		} else {
+			sql.append(field + "!= '0000-00-00 00:00:00' ");
+		}
+
 		if (condVO.isEnableTEQuery()) {
 			TimeEffectiveVO teVO = teMap.get(ShowColEnum.values()[condVO.getShowColIndex()]);
 			String subField = teVO.getTimeType().getField();
