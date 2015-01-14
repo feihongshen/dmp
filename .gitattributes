@@ -3287,6 +3287,7 @@ src/main/webapp/js/jquery.swfupload.js -text
 src/main/webapp/js/jquery.ui.datepicker-zh-CN.js -text
 src/main/webapp/js/jquery.ui.message.min.js -text
 src/main/webapp/js/js.js -text
+src/main/webapp/js/json2.min.js -text
 src/main/webapp/js/lhgDialog/lhgdialog.min.js -text
 src/main/webapp/js/lhgDialog/skins/blue.css -text
 src/main/webapp/js/lhgDialog/skins/blue/blue_s.png -text
