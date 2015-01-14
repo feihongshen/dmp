@@ -132,9 +132,13 @@ public class OverdueExMoController {
 		return mav;
 	}
 
-	@RequestMapping("/exportdetial")
-	public void exportDetial(ModelAndView mav, OverdueExMoDetailCondVO condVO) {
-		// this.getDetailResult(condVO, page));
+	@RequestMapping("/exportdetail")
+	public void exportDetail(HttpServletResponse response, OverdueExMoDetailCondVO condVO) throws Exception {
+		Branch branch = this.getBranchDAO().getBranchByBranchid(condVO.getOrgId());
+		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(condVO);
+		List<OverdueExMoDetailVO> dtList = this.queryDetail(branch, condVO, -1, teMap);
+		ExportDetailUtil util = new ExportDetailUtil(response, dtList);
+		util.export();
 	}
 
 	private OverdueExMoDetailResultVO getDetailResult(OverdueExMoDetailCondVO condVO, int page) {
@@ -255,8 +259,10 @@ public class OverdueExMoController {
 		sql.append(this.getTimeTypeWhereCond(condVO));
 		sql.append(" and ");
 		sql.append(this.getQueryDetailTimeEffectiveCond(condVO, teMap));
-		int start = (page - 1) * 10;
-		sql.append(" limit " + start + " , " + 10);
+		if (page != -1) {
+			int start = (page - 1) * 10;
+			sql.append(" limit " + start + " , " + 10);
+		}
 
 		return sql.toString();
 	}
@@ -1013,13 +1019,58 @@ public class OverdueExMoController {
 
 	private class ExportDetailUtil extends ExcelUtils {
 
-		public void export() {
+		private HttpServletResponse response = null;
 
+		private List<OverdueExMoDetailVO> dtList = null;
+
+		public ExportDetailUtil(HttpServletResponse response, List<OverdueExMoDetailVO> dtList) {
+			this.response = response;
+			this.dtList = dtList;
+		}
+
+		public void export() throws Exception {
+			this.excel(this.getResponse(), this.getTitles(), "sheet1", "汇总明细.xlsx");
 		}
 
 		@Override
 		public void fillData(Sheet sheet, CellStyle style) {
+			int rowIndex = 1;
+			for (OverdueExMoDetailVO dt : this.getDtList()) {
+				this.createRow(sheet, rowIndex++, dt);
+			}
+		}
 
+		private void createRow(Sheet sheet, int rowIndex, OverdueExMoDetailVO dt) {
+			Row row = sheet.createRow(rowIndex);
+			Cell cell = row.createCell(0);
+			cell.setCellValue(dt.getCwb());
+
+			cell = row.createCell(1);
+			cell.setCellValue(dt.getVenderName());
+
+			cell = row.createCell(2);
+			cell.setCellValue(dt.getCreateDate());
+
+			cell = row.createCell(3);
+			cell.setCellValue(dt.getDeliverState());
+
+			cell = row.createCell(4);
+			cell.setCellValue(dt.getWarehouseName());
+
+			cell = row.createCell(5);
+			cell.setCellValue(dt.getDeliverStationName());
+		}
+
+		private HttpServletResponse getResponse() {
+			return this.response;
+		}
+
+		private String[] getTitles() {
+			return new String[] { "订单号", "供应商", "订单创建时间", "配送状态", "仓库", "配送站点" };
+		}
+
+		private List<OverdueExMoDetailVO> getDtList() {
+			return this.dtList;
 		}
 
 	}
