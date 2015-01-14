@@ -150,7 +150,7 @@ public class SmtFareSettleController {
 		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
 		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
 		ExportDetailUtil util = new ExportDetailUtil(result);
-		util.export(response, "sheet1", "配送明细.xls");
+		util.export(response, "sheet1", "配送明细.xlsx");
 	}
 
 	@RequestMapping("/export/deliver")
