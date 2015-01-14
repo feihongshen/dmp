@@ -162,9 +162,19 @@
 		var $tr = $("#dynamic_table").find("tr").eq(index);
 		$tr.empty();
 		var resultList = result.resultList;
+
 		for (var i = 0; i < resultList.length; i++) {
-			$($tr).append("<td>" + resultList[i] + "</td>");
+			$tr.append(makeCell(resultList[i], index));
 		}
+	}
+
+	function makeCell(cell, rowIndex) {
+		var showColIndex = cell.showColIndex;
+		var html = '<td><a href="javascript:showDetail(' + rowIndex + ','+ showColIndex + ')">' + cell.count + '</a></td>';
+		if (cell.percent) {
+			html += '<td>' + cell.percent + '</td>'
+		}
+		return html;
 	}
 
 	function getSearchFormValueObject() {
@@ -198,6 +208,19 @@
 		var $searchForm = $("#searchForm");
 		$searchForm.attr("action", "${ctx_path}/overdueexmo/exportdata");
 		$searchForm.submit();
+	}
+
+	function showDetail(rowIdex, showColIndex) {
+		var $detailForm = $("#detailForm");
+		var tr = $('#static_table tr').eq(rowIdex);
+		var $tr = $(tr);
+		var orgId = $("#branch_id", $tr).html();
+		var venderId = $("#vender_id", $tr).html();
+		$("#orgId", $detailForm).val(orgId);
+		$("#venderId", $detailForm).val(venderId);
+		$("#showColIndex", $detailForm).val(showColIndex);
+
+		$detailForm.submit();
 	}
 </script>
 
@@ -248,8 +271,8 @@
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>]
-				供货商：<select id="venderId" name="venderId" style="width: 100px;">
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venderId"
+					name="venderId" style="width: 100px;">
 					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${cond.venderId == entry.key}">selected</c:if>>${entry.value}</option>
@@ -331,6 +354,15 @@
 			</tr>
 		</table>
 	</div>
+
+	<form id="detailForm" action="${ctx_path}/overdueexmo/showdetail/1">
+		<input name="enableTEQuery" type="hidden" value="${cond.enableTEQuery}" /> <input type="hidden"
+			name="startTime" type="hidden" value="${cond.startTime}" /> <input type="hidden" name="endTime"
+			type="hidden" value="${cond.endTime}" /> <input type="hidden" id="orgId" name="orgId"
+			type="hidden" /> <input type="hidden" id="venderId" name="venderId" type="hidden" /> <input
+			type="hidden" id="showColIndex" name="showColIndex" type="hidden" />
+
+	</form>
 </body>
 </html>
 

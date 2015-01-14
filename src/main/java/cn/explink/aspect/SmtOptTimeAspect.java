@@ -107,7 +107,7 @@ public class SmtOptTimeAspect {
 		String strTime = DateTimeUtil.getNowTime();
 
 		// this.submitTask(new UpdateOutAreaTimeTask(cwbs, strTime));
-		new UpdateOutAreaTimeTask(cwbs, strTime);
+		new UpdateOutAreaTimeTask(cwbs, strTime).run();
 	}
 
 	@After("execution(* cn.explink.service.MatchExceptionHandleService.redistributionBranch(..))")
@@ -117,7 +117,8 @@ public class SmtOptTimeAspect {
 		String strTime = DateTimeUtil.getNowTime();
 
 		// this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
-		new UpdateMEHTimeTask(cwb, strTime);
+		new UpdateMEHTimeTask(cwb, strTime).run();
+		;
 	}
 
 	@PostConstruct

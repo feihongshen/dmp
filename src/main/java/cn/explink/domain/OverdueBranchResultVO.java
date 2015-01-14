@@ -3,11 +3,13 @@ package cn.explink.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.explink.controller.OverdueExMoController.TDCell;
+
 public class OverdueBranchResultVO {
 
 	private Long branchId = null;
 
-	private List<Object> resultList = new ArrayList<Object>();
+	private List<TDCell> resultList = new ArrayList<TDCell>();
 
 	public OverdueBranchResultVO(Long branchId) {
 		this.branchId = branchId;
@@ -21,16 +23,12 @@ public class OverdueBranchResultVO {
 		this.branchId = branchId;
 	}
 
-	public List<Object> getResultList() {
+	public List<TDCell> getResultList() {
 		return this.resultList;
 	}
 
-	public void setResultList(List<Object> resultList) {
+	public void setResultList(List<TDCell> resultList) {
 		this.resultList = resultList;
-	}
-
-	public void addResult(List<Object> resultList) {
-		this.resultList.addAll(resultList);
 	}
 
 }

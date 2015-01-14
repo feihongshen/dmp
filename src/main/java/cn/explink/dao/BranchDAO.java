@@ -832,6 +832,13 @@ public class BranchDAO {
 		return nameMap;
 	}
 
+	public String getBranchName(long branchId) {
+		String sql = "select branchname from express_set_branch where branchid = ?";
+		Object[] paras = new Object[] { branchId };
+
+		return this.jdbcTemplate.queryForObject(sql, paras, String.class);
+	}
+
 	private String getBranchIdInPara(Set<Long> idSet) {
 		StringBuilder inPara = new StringBuilder();
 		for (Long id : idSet) {

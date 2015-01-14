@@ -1,5 +1,7 @@
 package cn.explink.controller;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,9 +38,13 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.OverdueBranchResultVO;
 import cn.explink.domain.OverdueConstantVO;
 import cn.explink.domain.OverdueExMoCondVO;
+import cn.explink.domain.OverdueExMoDetailCondVO;
+import cn.explink.domain.OverdueExMoDetailResultVO;
+import cn.explink.domain.OverdueExMoDetailVO;
 import cn.explink.domain.OverdueResultVO;
 import cn.explink.domain.TimeEffectiveVO;
 import cn.explink.domain.TimeTypeEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.util.ExcelUtils;
 
 /**
@@ -87,7 +94,7 @@ public class OverdueExMoController {
 		if (showColList.isEmpty()) {
 			return resultVO;
 		}
-		List<Object> resultList = this.getShowResult(branchId, venderId, cond);
+		List<TDCell> resultList = this.getShowResult(branchId, venderId, cond);
 		resultVO.setResultList(resultList);
 
 		return resultVO;
@@ -116,13 +123,196 @@ public class OverdueExMoController {
 		new ExportDataUtils(response, condVO, dataList).exportData();
 	}
 
-	private List<Object> getShowResult(long branchId, Long venderId, OverdueExMoCondVO condVO) {
+	@RequestMapping("/showdetail/{page}")
+	public ModelAndView showDetial(@PathVariable("page") int page, ModelAndView mav, OverdueExMoDetailCondVO condVO) {
+		mav.addObject("cond", condVO);
+		mav.addObject("result", this.getDetailResult(condVO, page));
+		mav.setViewName("/orverdueexmo/overdueexmo_detail");
+
+		return mav;
+	}
+
+	@RequestMapping("/exportdetial")
+	public void exportDetial(ModelAndView mav, OverdueExMoDetailCondVO condVO) {
+		// this.getDetailResult(condVO, page));
+	}
+
+	private OverdueExMoDetailResultVO getDetailResult(OverdueExMoDetailCondVO condVO, int page) {
+		Branch branch = this.getBranchDAO().getBranchByBranchid(condVO.getOrgId());
+		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(condVO);
+
+		OverdueExMoDetailResultVO result = new OverdueExMoDetailResultVO();
+		List<OverdueExMoDetailVO> dtList = this.queryDetail(branch, condVO, page, teMap);
+		result.setResultList(dtList);
+
+		this.fillPageInfo(branch, page, result, condVO, teMap);
+
+		return result;
+	}
+
+	private void fillPageInfo(Branch branch, int page, OverdueExMoDetailResultVO result, OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+		result.setPage(page);
+		String cntSql = this.getQueryDetailCountSql(branch, condVO, teMap);
+		Object[] paras = new Object[] { condVO.getOrgId(), condVO.getVenderId() };
+		int total = this.getJdbcTemplate().queryForInt(cntSql, paras);
+		result.setCount(total);
+		result.setPageCount((total % 10) == 0 ? total / 10 : (total / 10) + 1);
+	}
+
+	private List<OverdueExMoDetailVO> queryDetail(Branch branch, OverdueExMoDetailCondVO condVO, int page, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+		String sql = this.getQueryDetailSql(branch, condVO, teMap, page);
+		Object[] paras = new Object[] { condVO.getOrgId(), condVO.getVenderId() };
+		List<OverdueExMoDetailVO> dtList = this.getJdbcTemplate().query(sql, paras, new DetailRowMapper());
+		this.fillExtraInfo(dtList, condVO);
+
+		return dtList;
+	}
+
+	private void fillExtraInfo(List<OverdueExMoDetailVO> dtList, OverdueExMoDetailCondVO condVO) {
+		if (dtList.isEmpty()) {
+			return;
+		}
+		String venderName = this.getVenderName(condVO);
+		Set<Long> orgIdSet = this.getOrgIdSet(dtList);
+		Map<Long, String> orgNameMap = this.getBranchDAO().getBranchNameMap(orgIdSet);
+		for (OverdueExMoDetailVO dt : dtList) {
+			dt.setDeliverStationName(this.getOrgName(orgNameMap, dt.getDeliverStationId()));
+			dt.setWarehouseName(this.getOrgName(orgNameMap, dt.getWarehouseId()));
+			dt.setVenderName(venderName);
+		}
+	}
+
+	private String getVenderName(OverdueExMoDetailCondVO condVO) {
+		return this.getCustomerDAO().getCustomerName(condVO.getVenderId());
+	}
+
+	private String getOrgName(Map<Long, String> orgNameMap, long orgId) {
+		if (!orgNameMap.containsKey(orgId)) {
+			return "";
+		}
+		return orgNameMap.get(orgId);
+	}
+
+	private Set<Long> getOrgIdSet(List<OverdueExMoDetailVO> dtList) {
+		Set<Long> orgIdSet = new HashSet<Long>();
+		for (OverdueExMoDetailVO dt : dtList) {
+			orgIdSet.add(dt.getDeliverStationId());
+			orgIdSet.add(dt.getWarehouseId());
+		}
+		return orgIdSet;
+	}
+
+	private String getDbField(int showColIndex) {
+		ShowColEnum showColEnum = ShowColEnum.values()[showColIndex];
+		switch (showColEnum) {
+		case Dispatch:
+			return "dispatch_time";
+		case GetBack:
+			return "feedback_time";
+		case NotMatched:
+			return "station_accept_time";
+		case OutAreaTransfer:
+			return "exception_match_time";
+		case Print:
+			return "print_time";
+		case RptOutArea:
+			return "report_outarea_time";
+		case StationAccept:
+			return "station_accept_time";
+		case SystemAccept:
+			return "system_accept_time";
+		default:
+			break;
+		}
+		return "";
+	}
+
+	private class DetailRowMapper implements RowMapper<OverdueExMoDetailVO> {
+
+		@Override
+		public OverdueExMoDetailVO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			OverdueExMoDetailVO vo = new OverdueExMoDetailVO();
+			vo.setCwb(rs.getString("cwb"));
+			vo.setCreateDate(rs.getString("create_time"));
+			vo.setDeliverState(DeliveryStateEnum.values()[rs.getInt("deliver_state")].getText());
+			vo.setDeliverStationId(rs.getLong("deliver_station_id"));
+			vo.setWarehouseId(rs.getLong("warehouse_id"));
+
+			return vo;
+		}
+	}
+
+	private String getQueryDetailSql(Branch branch, OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap, int page) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select cwb , create_time , deliver_state , warehouse_id , deliver_station_id from express_ops_smt_cwb_opt_time ");
+		sql.append("where ");
+		if (branch.getSitetype() == 1) {
+			sql.append("warehouse_id = ? ");
+		} else {
+			sql.append("deliver_station_id = ? ");
+		}
+		sql.append("and vender_id = ? and ");
+		sql.append(this.getTimeTypeWhereCond(condVO));
+		sql.append(" and ");
+		sql.append(this.getQueryDetailTimeEffectiveCond(condVO, teMap));
+		int start = (page - 1) * 10;
+		sql.append(" limit " + start + " , " + 10);
+
+		return sql.toString();
+	}
+
+	private String getQueryDetailCountSql(Branch branch, OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select count(cwb) from express_ops_smt_cwb_opt_time ");
+		sql.append("where ");
+		if (branch.getSitetype() == 1) {
+			sql.append("warehouse_id = ? ");
+		} else {
+			sql.append("deliver_station_id = ? ");
+		}
+		sql.append("and vender_id = ? and ");
+		sql.append(this.getTimeTypeWhereCond(condVO));
+		sql.append(" and ");
+		sql.append(this.getQueryDetailTimeEffectiveCond(condVO, teMap));
+
+		return sql.toString();
+	}
+
+	private String getQueryDetailTimeEffectiveCond(OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+		StringBuilder sql = new StringBuilder();
+		sql.append(this.getDbField(condVO.getShowColIndex()) + "!= '0000-00-00 00:00:00' ");
+		if (condVO.isEnableTEQuery()) {
+			TimeEffectiveVO teVO = teMap.get(ShowColEnum.values()[condVO.getShowColIndex()]);
+			String subField = teVO.getTimeType().getField();
+			sql.append(" and (unix_timestamp(system_accept_time) - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
+		}
+		return sql.toString();
+	}
+
+	protected String getTimeTypeWhereCond(OverdueExMoDetailCondVO condVO) {
+		String startTime = condVO.getStartTime();
+		String endTime = condVO.getEndTime();
+		TimeTypeEnum timeType = TimeTypeEnum.values()[condVO.getOptTimeType()];
+		StringBuilder whereCond = new StringBuilder();
+		String field = null;
+		if (TimeTypeEnum.SystemAcceptTime.equals(timeType)) {
+			field = "system_accept_time";
+		} else {
+			field = "create_time";
+		}
+		whereCond.append(field + " >= '" + startTime + "'");
+		whereCond.append(" and " + field + " <= '" + endTime + "'");
+
+		return whereCond.toString();
+	}
+
+	private List<TDCell> getShowResult(long branchId, Long venderId, OverdueExMoCondVO condVO) {
 		Branch branch = this.getBranchDAO().getBranchByBranchid(branchId);
 		List<Integer> showColList = condVO.getShowCols();
 		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(condVO);
-		List<Object> resultList = new ArrayList<Object>();
+		List<TDCell> resultList = new ArrayList<TDCell>();
 		for (Integer showColIndex : showColList) {
-			resultList.addAll(this.loadShowData(branch, venderId, showColIndex, condVO, teMap));
+			resultList.add(this.loadShowData(branch, venderId, showColIndex, condVO, teMap));
 		}
 		return resultList;
 	}
@@ -151,7 +341,31 @@ public class OverdueExMoController {
 		return teMap;
 	}
 
-	private List<Object> loadShowData(Branch branch, long venderId, Integer index, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+	private Map<ShowColEnum, TimeEffectiveVO> queryTimeEffectiveMap(OverdueExMoDetailCondVO cond) {
+		Map<String, TimeEffectiveVO> teCodeMap = new HashMap<String, TimeEffectiveVO>();
+		Map<ShowColEnum, TimeEffectiveVO> teMap = new HashMap<ShowColEnum, TimeEffectiveVO>();
+		if (cond.isEnableTEQuery()) {
+			List<TimeEffectiveVO> teList = this.getTimeEffectiveVO().getAllTimeEffectiveVO();
+			for (TimeEffectiveVO te : teList) {
+				teCodeMap.put(te.getCode(), te);
+			}
+			// 打印时效.
+			teMap.put(ShowColEnum.Print, teCodeMap.get("print"));
+			// 分派时效.
+			teMap.put(ShowColEnum.Dispatch, teCodeMap.get("dispatch"));
+			// 上报超区时效.
+			teMap.put(ShowColEnum.RptOutArea, teCodeMap.get("rpt_oa"));
+			// 超区处理时效.
+			teMap.put(ShowColEnum.OutAreaTransfer, teCodeMap.get("oa_handle"));
+			// 揽退时效.
+			teMap.put(ShowColEnum.GetBack, teCodeMap.get("gb_suc"));
+			// 有效接收时效.
+			teMap.put(ShowColEnum.SystemAccept, teCodeMap.get("ef_rev"));
+		}
+		return teMap;
+	}
+
+	private TDCell loadShowData(Branch branch, long venderId, Integer index, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
 		ShowColEnum showColEnum = ShowColEnum.values()[index];
 		BaseLoadAction loadAction = this.getLoadAction(showColEnum);
 
@@ -346,7 +560,11 @@ public class OverdueExMoController {
 	}
 
 	private interface LoadDataAction extends Cloneable {
-		public List<Object> loadData(Branch branch, long venderId, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap);
+		public TDCell loadData(Branch branch, long venderId, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap);
+	}
+
+	private JdbcTemplate getJdbcTemplate() {
+		return this.jdbcTemplate;
 	}
 
 	private class BaseLoadAction implements LoadDataAction {
@@ -360,7 +578,7 @@ public class OverdueExMoController {
 		private Map<ShowColEnum, TimeEffectiveVO> timeEffectiveMap = null;
 
 		@Override
-		public List<Object> loadData(Branch branch, long venderId, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
+		public TDCell loadData(Branch branch, long venderId, OverdueExMoCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
 			this.branch = branch;
 			this.venderId = venderId;
 			this.condVO = condVO;
@@ -378,7 +596,7 @@ public class OverdueExMoController {
 			return null;
 		}
 
-		protected List<Object> loadData() {
+		protected TDCell loadData() {
 			return null;
 		}
 
@@ -450,14 +668,15 @@ public class OverdueExMoController {
 	private class SystemAcceptAction extends BaseLoadAction {
 
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int count = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int acceptCount = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
-			dataList.add(acceptCount);
-			dataList.add(this.getPercent(acceptCount, count));
+			TDCell cell = new TDCell();
+			cell.setCount(acceptCount);
+			cell.setPercent(this.getPercent(acceptCount, count));
+			cell.setShowColIndex(ShowColEnum.SystemAccept.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean accept, boolean enableTEQuery) {
@@ -481,12 +700,13 @@ public class OverdueExMoController {
 	private class StationAcceptAction extends BaseLoadAction {
 
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int sysAcceptCount = this.getDAO().queryForInt(this.getSql(), this.getBranchId(), this.getVenderId());
-			dataList.add(sysAcceptCount);
+			TDCell cell = new TDCell();
+			cell.setCount(sysAcceptCount);
+			cell.setShowColIndex(ShowColEnum.SystemAccept.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql() {
@@ -502,15 +722,16 @@ public class OverdueExMoController {
 
 	private class PrintAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.Print.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean print, boolean enableTEQuery) {
@@ -534,15 +755,16 @@ public class OverdueExMoController {
 
 	private class DispatchAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.Dispatch.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean print, boolean enableTEQuery) {
@@ -566,15 +788,16 @@ public class OverdueExMoController {
 
 	private class ReportOutAreaAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.RptOutArea.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean rptOutArea, boolean enableTEQuery) {
@@ -598,15 +821,16 @@ public class OverdueExMoController {
 
 	private class NotMatchAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.NotMatched.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean match, boolean enableTEQuery) {
@@ -630,15 +854,16 @@ public class OverdueExMoController {
 
 	private class OutAreaTransferAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.OutAreaTransfer.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean match, boolean enableTEQuery) {
@@ -662,15 +887,16 @@ public class OverdueExMoController {
 
 	private class GetBackAction extends BaseLoadAction {
 		@Override
-		protected List<Object> loadData() {
-			List<Object> dataList = new ArrayList<Object>();
+		protected TDCell loadData() {
 			int total = this.getDAO().queryForInt(this.getSql(false, false), this.getBranchId(), this.getVenderId());
 			int count = this.getDAO().queryForInt(this.getSql(true, this.isEnabelTEQuery()), this.getBranchId(), this.getVenderId());
 
-			dataList.add(count);
-			dataList.add(this.getPercent(count, total));
+			TDCell cell = new TDCell();
+			cell.setCount(count);
+			cell.setPercent(this.getPercent(count, total));
+			cell.setShowColIndex(ShowColEnum.GetBack.ordinal());
 
-			return dataList;
+			return cell;
 		}
 
 		private String getSql(boolean match, boolean enableTEQuery) {
@@ -751,6 +977,51 @@ public class OverdueExMoController {
 		private HttpServletResponse getResponse() {
 			return this.response;
 		}
+	}
+
+	public static class TDCell {
+		private int count = 0;
+
+		private String percent = "";
+
+		private int showColIndex = -1;
+
+		public int getCount() {
+			return this.count;
+		}
+
+		public void setCount(int count) {
+			this.count = count;
+		}
+
+		public String getPercent() {
+			return this.percent;
+		}
+
+		public void setPercent(String percent) {
+			this.percent = percent;
+		}
+
+		public int getShowColIndex() {
+			return this.showColIndex;
+		}
+
+		public void setShowColIndex(int showColIndex) {
+			this.showColIndex = showColIndex;
+		}
+	}
+
+	private class ExportDetailUtil extends ExcelUtils {
+
+		public void export() {
+
+		}
+
+		@Override
+		public void fillData(Sheet sheet, CellStyle style) {
+
+		}
+
 	}
 
 }

@@ -5875,7 +5875,7 @@ CREATE TABLE
         exception_match_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
         feedback_result TINYINT,
         feedback_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-        deliver_state TINYINT,
+        deliver_state TINYINT DEFAULT 0,
         pay_type TINYINT,
         should_fee DECIMAL,
         received_fee DECIMAL,
