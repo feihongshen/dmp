@@ -577,7 +577,7 @@ public class CwbOrderService {
 
 	/**
 	 * 数据更新数据
-	 * 
+	 *
 	 * @param branchid
 	 * @param user
 	 */
@@ -649,7 +649,7 @@ public class CwbOrderService {
 
 	/**
 	 * 提货扫描
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @param driverid
@@ -706,7 +706,7 @@ public class CwbOrderService {
 
 	/**
 	 * 正常入库扫描
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @param driverid
@@ -962,7 +962,7 @@ public class CwbOrderService {
 
 	/**
 	 * 中转站正常入库扫描
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @param driverid
@@ -1154,7 +1154,7 @@ public class CwbOrderService {
 
 	/**
 	 * 在ops_ypdjhandlerecord表产生一票多件订单的记录
-	 * 
+	 *
 	 * @param co
 	 * @param cwb
 	 * @param flowordertype
@@ -1207,7 +1207,7 @@ public class CwbOrderService {
 
 	/**
 	 * 从ops_ypdjhandlerecord表删除当前扫描一票多件对应的运单号的记录
-	 * 
+	 *
 	 * @param co
 	 * @param cwb
 	 * @param flowordertype
@@ -1234,7 +1234,7 @@ public class CwbOrderService {
 
 	/**
 	 * 分站到货扫描
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @param driverid
@@ -1368,6 +1368,13 @@ public class CwbOrderService {
 			String sql1 = "update express_ops_cwb_detail set historybranchname=? where cwb=? and state=1";
 			this.jdbcTemplate.update(sql1, userbranch.getBranchname(), co.getCwb());
 		}
+		if ((co.getNextbranchid() != currentbranchid) && (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue())) {
+			Branch nextbranch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
+			if ((nextbranch != null) && (nextbranch.getSitetype() != BranchEnum.ZhanDian.getValue())) {
+				String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
+				this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
+			}
+		}
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
@@ -1490,19 +1497,19 @@ public class CwbOrderService {
 
 	/**
 	 * 退货站入库扫描
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @param driverid
 	 * @return
 	 */
 
-	public CwbOrder backIntoWarehous(User user, String cwb, String scancwb, long driverid, long requestbatchno, String comment, boolean anbaochuku,int checktype,long nextbranchid) {
+	public CwbOrder backIntoWarehous(User user, String cwb, String scancwb, long driverid, long requestbatchno, String comment, boolean anbaochuku, int checktype, long nextbranchid) {
 		this.logger.info("开始退货站入库处理,cwb:{}", cwb);
 
 		cwb = this.translateCwb(cwb);
 		long branchid = user.getBranchid();
-		if(nextbranchid >0 && checktype ==1 ){
+		if ((nextbranchid > 0) && (checktype == 1)) {
 			branchid = nextbranchid;
 		}
 		return this.backIntoWarehousHandle(user, cwb, scancwb, branchid, driverid, requestbatchno, comment, anbaochuku);
@@ -1696,7 +1703,7 @@ public class CwbOrderService {
 
 	/**
 	 * 创建操作环节
-	 * 
+	 *
 	 * @param user
 	 *            操作用户
 	 * @param branchid
@@ -1780,7 +1787,7 @@ public class CwbOrderService {
 
 	/**
 	 * 出给
-	 * 
+	 *
 	 * @param cwbOrder
 	 * @param outbranchflag
 	 */
@@ -1824,7 +1831,7 @@ public class CwbOrderService {
 
 	/**
 	 * 一级站 出库给二级站点
-	 * 
+	 *
 	 * @param cwbOrder
 	 * @param of
 	 */
@@ -1963,7 +1970,7 @@ public class CwbOrderService {
 
 	/**
 	 * 创建5个任务对应原分发给5个queue
-	 * 
+	 *
 	 * @param of
 	 */
 	private void createOrderFlowTask(OrderFlow of) {
@@ -1992,7 +1999,7 @@ public class CwbOrderService {
 
 	/**
 	 * 中转站出库扫描
-	 * 
+	 *
 	 * @param cwb
 	 * @param owgid
 	 * @param driverid
@@ -2373,7 +2380,7 @@ public class CwbOrderService {
 
 	/**
 	 * 出库扫描
-	 * 
+	 *
 	 * @param cwb
 	 * @param owgid
 	 * @param driverid
@@ -3021,7 +3028,7 @@ public class CwbOrderService {
 
 	/**
 	 * 退货出站扫描
-	 * 
+	 *
 	 * @param cwb
 	 * @param owgid
 	 * @param driverid
@@ -3445,7 +3452,7 @@ public class CwbOrderService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param user
 	 * @param deliveryState
 	 */
@@ -3495,7 +3502,7 @@ public class CwbOrderService {
 
 	/**
 	 * 单票结果反馈
-	 * 
+	 *
 	 * @param co
 	 * @param deliverid
 	 * @param podresultid
@@ -3817,7 +3824,7 @@ public class CwbOrderService {
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO.creAndUpdateOperationTime(co.getCwb(), sessionbranchid, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), sessionbranchid, co.getCustomerid(), "",
-				co.getEmaildate(),co.getCwbordertypeid());
+				co.getEmaildate(), co.getCwbordertypeid());
 
 		this.logger.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
@@ -3825,7 +3832,7 @@ public class CwbOrderService {
 
 	/**
 	 * 更新当前反馈状态需要指定订单的下一站
-	 * 
+	 *
 	 * @param user
 	 *            当前操作的用户所在机构
 	 * @param deliverystate
@@ -3961,7 +3968,7 @@ public class CwbOrderService {
 
 	/**
 	 * 审核为中转
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @param deliverybranchid
@@ -3993,13 +4000,13 @@ public class CwbOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 * 
+	 *
 	 * }
 	 */
 
 	/**
 	 * POS付款
-	 * 
+	 *
 	 * @param cwb
 	 * @param feebackAmount
 	 * @param type
@@ -4081,7 +4088,7 @@ public class CwbOrderService {
 
 	/**
 	 * 验证支付前基本逻辑并返回参数
-	 * 
+	 *
 	 * @param billRespNote
 	 * @return
 	 */
@@ -4105,7 +4112,7 @@ public class CwbOrderService {
 
 	/**
 	 * 撤销交易
-	 * 
+	 *
 	 * @param cwb
 	 * @param branchid
 	 * @param userid
@@ -4123,7 +4130,7 @@ public class CwbOrderService {
 
 	/**
 	 * 审核
-	 * 
+	 *
 	 * @param user
 	 *            审核人
 	 * @param subTrStr
@@ -4356,7 +4363,7 @@ public class CwbOrderService {
 
 	/**
 	 * 退供货商出库
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @return
@@ -4388,7 +4395,7 @@ public class CwbOrderService {
 
 	/**
 	 * 退供货商出库
-	 * 
+	 *
 	 * @param co
 	 * @param customerid
 	 * @return
@@ -4474,7 +4481,7 @@ public class CwbOrderService {
 
 	/**
 	 * 供货商拒收返库
-	 * 
+	 *
 	 * @param co
 	 * @return
 	 */
@@ -4561,7 +4568,7 @@ public class CwbOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 * 
+	 *
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -4574,7 +4581,7 @@ public class CwbOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 * 
+	 *
 	 * } }
 	 */
 
@@ -4603,7 +4610,7 @@ public class CwbOrderService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param cwb
 	 * @param operator
 	 */
@@ -4659,7 +4666,7 @@ public class CwbOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 * 
+		 *
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -4674,7 +4681,7 @@ public class CwbOrderService {
 
 	/**
 	 * 订单拦截
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @param operator
@@ -4691,11 +4698,11 @@ public class CwbOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -4769,7 +4776,7 @@ public class CwbOrderService {
 
 	/**
 	 * 审核为退货再投
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @param operator
@@ -4840,7 +4847,7 @@ public class CwbOrderService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param cwb
 	 * @param operator
 	 */
@@ -4848,12 +4855,12 @@ public class CwbOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()
@@ -4868,7 +4875,7 @@ public class CwbOrderService {
 
 	/**
 	 * 异常单处理
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @param scancwb
@@ -4969,7 +4976,7 @@ public class CwbOrderService {
 
 	/**
 	 * 匹配新地址库成功返回后处理，更新订单表匹配后的信息
-	 * 
+	 *
 	 * @param user
 	 * @param cwbOrder
 	 * @param branch
@@ -5027,7 +5034,7 @@ public class CwbOrderService {
 
 	/**
 	 * 入库备注提交
-	 * 
+	 *
 	 * @param csremarkid
 	 * @param multicwbnum
 	 * @param cwb
@@ -5089,7 +5096,7 @@ public class CwbOrderService {
 
 	/**
 	 * 产生批次号
-	 * 
+	 *
 	 * @param user
 	 * @param requestbatchno
 	 * @param branchid
@@ -5144,7 +5151,7 @@ public class CwbOrderService {
 
 	/**
 	 * 分站到货异常单监控返回
-	 * 
+	 *
 	 * @param parm
 	 *            (cwb,errortype,branchid,userid)
 	 * @return
@@ -5166,7 +5173,7 @@ public class CwbOrderService {
 
 	/**
 	 * 获取对应流程每一个环节进行筛选，获得对应的环节对象
-	 * 
+	 *
 	 * @param ofList
 	 *            对应订单的流程列表
 	 * @param flowOrderTypes
@@ -5184,7 +5191,7 @@ public class CwbOrderService {
 
 	/**
 	 * 按订单串和其他条件一块查询
-	 * 
+	 *
 	 * @param cwbs
 	 * @param begindate
 	 * @param enddate
@@ -5350,7 +5357,7 @@ public class CwbOrderService {
 	/**
 	 * 对orderflow的监听 1.滞留自动领货 2.监听归班的jms，产生待返单记录 3.监听退货出站操作，往退货记录表插入记录
 	 * 4.监听退货站入库操作，往退货记录表更新记录
-	 * 
+	 *
 	 * @param orderFlow
 	 */
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow?concurrentConsumers=5")
@@ -5549,7 +5556,7 @@ public class CwbOrderService {
 
 	/**
 	 * 一般库存list
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -5633,7 +5640,7 @@ public class CwbOrderService {
 
 	/**
 	 * 领货库存list
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -5649,7 +5656,7 @@ public class CwbOrderService {
 
 	/**
 	 * 产生盘点记录信息
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -5682,7 +5689,7 @@ public class CwbOrderService {
 
 	/**
 	 * 处理库存list,在库存详情表产生记录
-	 * 
+	 *
 	 * @param list
 	 * @param user
 	 */
@@ -5716,7 +5723,7 @@ public class CwbOrderService {
 
 	/**
 	 * 盘点功能
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @return
@@ -5765,7 +5772,7 @@ public class CwbOrderService {
 
 	/**
 	 * 盘点完成
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 */
@@ -5936,7 +5943,7 @@ public class CwbOrderService {
 
 	/**
 	 * 执行中转出库，插入中转出库统计表中
-	 * 
+	 *
 	 * @param user
 	 * @param reasonid
 	 * @param inOrOutFlag
