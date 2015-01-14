@@ -31,10 +31,10 @@ public class OverdueExMoDAO {
 	private CwbDAO cwbDAO = null;
 
 	public void updateSmtOverdueTime(OrderFlow orderFlow, String strCreateDate) {
-		int cwbOrderType = this.getCwbOrderType(orderFlow);
-		if (cwbOrderType != 2) {
-			return;
-		}
+		// int cwbOrderType = this.getCwbOrderType(orderFlow);
+		// if (cwbOrderType != 2) {
+		// return;
+		// }
 		this.updateTime(orderFlow, strCreateDate);
 	}
 

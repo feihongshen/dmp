@@ -118,7 +118,6 @@ public class SmtOptTimeAspect {
 
 		// this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
 		new UpdateMEHTimeTask(cwb, strTime).run();
-		;
 	}
 
 	@PostConstruct
