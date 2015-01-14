@@ -70,13 +70,10 @@
 				name="startTime" value="${cond.startTime}" /> <input type="hidden" name="endTime"
 				value="${cond.endTime}" /> <input type="hidden" name="stationId" value="${cond.stationId}" />
 			<input type="hidden" name="deliverId" value="${cond.deliverId}" /> <input type="hidden"
-				name="venderId" value="${cond.venderId}" /> 
-				<input type="hidden"
-				name="type" value="${cond.type}" />
-				
-				<input type="button" id="btnval" value="返回"
-				class="input_button2" onclick="javascript:history.back(-1);" /> <input type="button"
-				id="btnval" value="导出" class="input_button2" onclick="exportData()" />
+				name="venderId" value="${cond.venderId}" /> <input type="hidden" name="type"
+				value="${cond.type}" /> <input type="button" id="btnval" value="返回" class="input_button2"
+				onclick="javascript:history.back(-1);" /> <input type="button" id="btnval" value="导出"
+				class="input_button2" onclick="exportData()" />
 
 		</form>
 	</div>
