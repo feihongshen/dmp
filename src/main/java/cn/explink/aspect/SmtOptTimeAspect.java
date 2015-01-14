@@ -18,6 +18,7 @@ import cn.explink.dao.OverdueExMoDAO;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.util.ApplicationContextUtil;
 import cn.explink.util.DateTimeUtil;
 
@@ -118,6 +119,16 @@ public class SmtOptTimeAspect {
 
 		// this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
 		new UpdateMEHTimeTask(cwb, strTime).run();
+	}
+
+	@After("execution(* cn.explink.dao.CwbDAO.updateForChongZhiShenHe(..))")
+	public void afterResetAuditStatus(JoinPoint point) {
+		Object[] args = point.getArgs();
+		long cwbId = (Long) args[0];
+		DeliveryStateEnum ds = (DeliveryStateEnum) args[5];
+
+		// this.submitTask(new UpdateMEHTimeTask(cwb, strTime));
+		new HandleResetAuditTask(cwbId, ds).run();
 	}
 
 	@PostConstruct
@@ -368,6 +379,35 @@ public class SmtOptTimeAspect {
 
 		private String getStrTime() {
 			return this.strTime;
+		}
+
+		private OverdueExMoDAO getOverdueExMODAO() {
+			return SmtOptTimeAspect.this.getOverdueExMODAO();
+		}
+	}
+
+	private class HandleResetAuditTask implements Runnable {
+
+		private long cwbId = 0;
+
+		private DeliveryStateEnum ds = null;
+
+		public HandleResetAuditTask(long cwbId, DeliveryStateEnum ds) {
+			this.cwbId = cwbId;
+			this.ds = ds;
+		}
+
+		@Override
+		public void run() {
+			this.getOverdueExMODAO().handleResetAuditTask(this.getCwbId(), this.getDs());
+		}
+
+		private long getCwbId() {
+			return this.cwbId;
+		}
+
+		private DeliveryStateEnum getDs() {
+			return this.ds;
 		}
 
 		private OverdueExMoDAO getOverdueExMODAO() {

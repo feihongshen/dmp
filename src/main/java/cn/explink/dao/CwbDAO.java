@@ -5269,4 +5269,10 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.queryForInt(sql, cwb);
 	}
+
+	public String getCwbByCwbId(long cwbId) {
+		String sql = "select cwb from express_ops_cwb_detail where opscwbid = ?";
+		Object[] paras = new Object[] { cwbId };
+		return this.jdbcTemplate.queryForObject(sql, paras, String.class);
+	}
 }

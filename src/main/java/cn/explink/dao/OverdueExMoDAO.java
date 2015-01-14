@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.OverdueExMoVO;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.DateTimeUtil;
 
@@ -76,6 +77,20 @@ public class OverdueExMoDAO {
 	public void updateEMHTime(String cwb, String strTime) {
 		String sql = this.getUpdateEMHTimeSql();
 		this.getJdbcTemplate().update(sql, strTime, cwb);
+	}
+
+	public void handleResetAuditTask(long cwbId, DeliveryStateEnum ds) {
+		String sql = this.getResetAuditSql();
+		String cwb = this.getCwbDAO().getCwbByCwbId(cwbId);
+		if (cwb == null) {
+			return;
+		}
+		Object[] paras = new Object[] { ds.getValue(), cwb };
+		this.getJdbcTemplate().update(sql, paras);
+	}
+
+	private String getResetAuditSql() {
+		return "update express_ops_smt_cwb_opt_time set deliver_state = ? where cwb = ?";
 	}
 
 	private String getUpdateEMHTimeSql() {
