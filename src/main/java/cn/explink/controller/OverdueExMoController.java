@@ -906,12 +906,12 @@ public class OverdueExMoController {
 			return cell;
 		}
 
-		private String getSql(boolean match, boolean enableTEQuery) {
+		private String getSql(boolean getBack, boolean enableTEQuery) {
 			StringBuilder sql = new StringBuilder();
 			sql.append(this.getSelectPart());
 			sql.append("where deliver_station_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
-			if (match) {
+			if (getBack) {
 				sql.append(" and feedback_time != '0000-00-00 00:00:00'");
 			}
 			if (enableTEQuery) {
