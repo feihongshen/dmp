@@ -968,6 +968,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>YZDSB_SMT</label>
+				<addresscustomerid>1</addresscustomerid>
+				<addressid>1</addressid>
+				<addresspassword>gxpx</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
