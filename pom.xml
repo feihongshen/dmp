@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.explink</groupId>
-	<artifactId>dmp</artifactId>
+	<artifactId>dmp1</artifactId>
 	<packaging>war</packaging>
 	<version>0.1.0.BUILD-SNAPSHOT</version>
 	<name>dmp</name>
@@ -947,6 +947,30 @@
 				<label>YZDSB</label>
 			</properties>
 		</profile>
+
+
+<profile>
+			<id>YZDSB_SMT</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.70.36:3306/yzdsb_smt_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<liquibase.promptOnNonLocalDatabase>false</liquibase.promptOnNonLocalDatabase>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>YZDSB_SMT</label>
+			</properties>
+		</profile>
+
 
 		<profile>
 			<id>LZJFH</id>
