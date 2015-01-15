@@ -260,6 +260,10 @@ function nowprint(){
 				 <td width="86"></td>
 				 <td width="148">取货时间：________</td>
 			</tr>
+			<tr>
+				<td colspan="6" height="12px"></td>
+				<td align="left">退货人签字:</td>
+			</tr>
 		</table>
 <%-- 		<%
 			if (clist.indexOf(co) < clist.size() - 1) {
@@ -367,6 +371,10 @@ function nowprint(){
 				 <td>取货人签字：</td>
 				 <td width="86"></td>
 				 <td width="148">取货时间：________</td>
+			</tr>
+			<tr>
+				<td colspan="6" height="12px"></td>
+				<td align="left">退货人签字:</td>
 			</tr>
 		</table>
 			<table id="cwb" height="535px"
