@@ -5903,6 +5903,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_operation_time` ADD COLUMN `cwbordertypeid` INT(11) NULL AFTER `isupdate`;  
 		</sql>
 	</changeSet>
+	<changeSet id="zhangpengkai-2015-01-15-1" author="zhangpengkai">
+		<sql>
+			DELETE FROM express_set_menu_info_new WHERE menuname='小件员领货查询';
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  
