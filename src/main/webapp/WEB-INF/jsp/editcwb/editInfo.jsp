@@ -115,6 +115,7 @@ $(function(){
 											<td align="center" bgcolor="#e7f4e3">收件人（修改）</td>
 											<td bgcolor="#e7f4e3">手机（修改）</td>
 											<td bgcolor="#e7f4e3">地址（修改）</td>
+											<td bgcolor="#e7f4e3">配送站点（修改）</td>
 											<td bgcolor="#e7f4e3">配送时间（修改）</td>
 											<td bgcolor="#e7f4e3">电商要求</td>
 											<td bgcolor="#e7f4e3">备注</td>
@@ -125,13 +126,15 @@ $(function(){
 											<td width="25%"  align="center" valign="middle" height="19" ><%=c.getCwb() %>
 											<input type="hidden" name="cwb" id="cwb" value="<%=c.getCwb() %>">
 											</td>
-											<td width="5%"  valign="middle" align="center"  ><input type="text"  value="<%=c.getConsigneename() %>" id="editname" name="editname"/></td>
-											<td width="8%"  valign="middle"  align="center"  ><input type="text"  value="<%=c.getConsigneemobile()%>" id="editmobile" name="editmobile"/></td>
+											<td width="5%"  valign="middle" align="center"  ><input type="text"  value="<%=c.getConsigneenameOfkf() %>" id="editname" name="editname"/></td>
+											<td width="8%"  valign="middle"  align="center"  ><input type="text"  value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
 											<td width="15%" valign="middle"  align="center"  ><textarea  cols="30"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
+											<td width="15%" valign="middle"  align="center"  ><input type="text"  name="matchaddress" id="matchaddress" /></td>
 											<td width="10%" valign="middle"  align="center"  ><input type ="text" name ="begindate" id="strtime"  value="<%=c.getResendtime()%>"/></td>
 											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
 											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
 											<td>
+											<input name="button2" type="button" class="input_button2" id="button2" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
 											<input name="button2" type="button" class="input_button2" id="button2" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
 											<input type="hidden" value="1" name="editshow" id="editshow">
 											</td>
@@ -163,6 +166,28 @@ $(function(){
 						}
 						   
 					});
+}
+	function mathaddress(cwb){
+		var branch=$("#matchaddress").val();
+		if(branch.length>0){
+					$.ajax({
+						url:"<%=request.getContextPath()%>/editcwb/matchaddress",
+						type:"POST",//数据发送方式 
+						data:{"branchname":branch,"cwb":cwb},//参数
+						dataType:'json',//接受数据格式
+						success:function(data){
+							if(data.errorCode == 1){
+								 alert(data.error);
+							}else{
+								alert(data.error);
+							}
+						}
+						   
+					});
+		}
+		else {
+			alert("请输入要匹配的站点！");
+		}
 }
 	
 	function showinfo(a){
