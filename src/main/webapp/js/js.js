@@ -1314,18 +1314,7 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 		ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
 		needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
-	
-	if(podresultid==7&&deliverystate==0){
-		
-		$("#infactfare").val(0);
-		
-	}
 	$("#infactfare").removeAttr('disabled');
-	if(podresultid==7){
-		
-		$("#infactfare").attr('disabled','true');
-		
-	}
 	init_deliverystate();
 	if (podresultid == PeiSongChengGong) {// 配送成功
 		for (var i = 0; i < newpaywayid.split(",").length; i++) {
@@ -1445,8 +1434,8 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 
 	// $("#remandtype").val(0);
 	centerBox();
-	if(podresultid==7&&deliverystate==0){
-		
+	if(podresultid==7){
+		$("#infactfare").attr('disabled','true');
 		$("#infactfare").val(0);
 		
 	}
