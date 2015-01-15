@@ -5893,7 +5893,11 @@ CREATE TABLE
 	</changeSet>
 
 
-
+<changeSet id="zhangpengkai-2015-01-15-1" author="zhangpengkai">
+		<sql>
+			DELETE FROM express_set_menu_info_new WHERE menuname='小件员领货查询';
+		</sql>
+	</changeSet>
 
 	
 	
