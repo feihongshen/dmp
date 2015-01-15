@@ -95,7 +95,7 @@ function CreateOneFormPage(cwbs){
 			table="image"+i;
 			LODOP.NEWPAGE();
 			LODOP.ADD_PRINT_HTM(0,30,840,1100,document.getElementById(table).innerHTML);
-			LODOP.ADD_PRINT_BARCODE(40,555,160,50,"128Auto", cwb);
+			LODOP.ADD_PRINT_BARCODE(40,515,200,50,"128Auto", cwb);
 			LODOP.SET_PRINT_STYLEA(0, "FontSize", 12);
 		}
 	else
@@ -103,9 +103,9 @@ function CreateOneFormPage(cwbs){
 			 table="noimage"+i;
 			LODOP.NEWPAGE();
 			LODOP.ADD_PRINT_HTM(0,30,840,1100,document.getElementById(table).innerHTML);
-			LODOP.ADD_PRINT_BARCODE(40,555,160,50,"128Auto", cwb);
+			LODOP.ADD_PRINT_BARCODE(40,515,200,50,"128Auto", cwb);
 			LODOP.SET_PRINT_STYLEA(0, "FontSize", 12);
-			LODOP.ADD_PRINT_BARCODE(40+535,555,160,50,"128Auto", cwb);
+			LODOP.ADD_PRINT_BARCODE(40+535,515,200,50,"128Auto", cwb);
 			LODOP.SET_PRINT_STYLEA(0, "FontSize", 12);
 	 }
 
