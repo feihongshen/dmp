@@ -179,8 +179,8 @@ public class GztlService {
 			xmlMap.put("cwb", order.getOrderid());// 订单号或运单号
 			String transcwb = "";
 			// String regEx = "[\\u4e00-\\u9fa5]";
-			if (order.getRemark().getBytes().length == order.getRemark().length()) {
-				transcwb = order.getSclientcode();
+			if (order.getRemark().getBytes().length != order.getRemark().length()) {
+				transcwb = order.getSclientcode();// 包含汉字
 
 			} else {
 				transcwb = order.getRemark();
