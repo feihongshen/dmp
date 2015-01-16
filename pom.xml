@@ -2569,9 +2569,9 @@
 				<word></word>
 				<logoimgurl>images/logo_cqhy2.png</logoimgurl>
 				<label>CQHY</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>123</addresspassword>
+				<addresscustomerid>5</addresscustomerid>
+				<addressid>5</addressid>
+				<addresspassword>cqhy</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
