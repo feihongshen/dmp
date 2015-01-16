@@ -239,7 +239,7 @@ public class VipShopGetCwbDataService {
 
 	/**
 	 * 构建请求，解析返回
-	 * 
+	 *
 	 * @param vipshop
 	 * @return
 	 */
@@ -301,7 +301,7 @@ public class VipShopGetCwbDataService {
 
 	/**
 	 * 验证返回的sign
-	 * 
+	 *
 	 * @param paseSign
 	 * @return
 	 */
@@ -314,7 +314,7 @@ public class VipShopGetCwbDataService {
 
 	/**
 	 * 返回的xml信息解析拼接。 20120514
-	 * 
+	 *
 	 * @param orderlist
 	 * @return
 	 */
@@ -448,12 +448,6 @@ public class VipShopGetCwbDataService {
 			dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
 			dataMap.put("cwbordertypeid", cwbordertype);
 
-			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
-				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
-				seq_arrs += seq + ",";
-				return seq_arrs;
-			}
-
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
 				if ("edit".equalsIgnoreCase(cmd_type)) {
@@ -474,6 +468,11 @@ public class VipShopGetCwbDataService {
 					this.insertOrderGoods(datamap, order_sn);
 				}
 
+			}
+			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
+				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
+				seq_arrs += seq + ",";
+				return seq_arrs;
 			}
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);
