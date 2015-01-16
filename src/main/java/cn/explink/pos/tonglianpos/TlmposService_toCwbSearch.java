@@ -118,7 +118,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		String normal_code = idx1 + idx2 + idx3 + end4str;
 
 		if (tlmposRespNote.getCwbOrder().getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-			normal_code = "0";
+			normal_code = "0000000";
 		}
 
 		tlmposRespNote.setMerchant_code(normal_code); // 支付方判断.
