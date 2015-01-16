@@ -85,6 +85,7 @@ public class TlmposService_toSmt extends TlmposService {
 	private TlmposRespNote excuteCwbFeedBackLantuiHandler(TlmposRespNote tlmposRespNote, Transaction transaction, long return_type) {
 		long deliverystate = 0;
 		String remark = "";
+		BigDecimal infactfee = BigDecimal.valueOf(transaction.getTransaction_Body().getInfactfee());
 		if (return_type == ReturnTypeEnum.QuanTui.getCode()) {
 			deliverystate = DeliveryStateEnum.ShangMenTuiChengGong.getValue();
 			remark = "POS反馈-上门退成功";
@@ -94,12 +95,11 @@ public class TlmposService_toSmt extends TlmposService {
 		} else if (return_type == ReturnTypeEnum.JuTui.getCode()) {
 			deliverystate = DeliveryStateEnum.ShangMenJuTui.getValue();
 			remark = "POS反馈-上门拒退";
+			infactfee = BigDecimal.ZERO;
 		}
 
 		long backreasonid = 0;
 		long leavedreasonid = 0;
-
-		BigDecimal infactfee = BigDecimal.valueOf(transaction.getTransaction_Body().getInfactfee());
 
 		try {
 			tlmposRespNote.setBranchid(this.userDAO.getUserByUsername(tlmposRespNote.getDelivery_man()).getBranchid());

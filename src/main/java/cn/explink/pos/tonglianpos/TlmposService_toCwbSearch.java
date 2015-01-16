@@ -20,7 +20,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 	/**
 	 * 运单查询
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("finally")
@@ -75,7 +75,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 	/**
 	 * 查询其他信息
-	 * 
+	 *
 	 * @param tlmposRespNote
 	 * @return
 	 */
@@ -155,7 +155,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		retMap.put("amt", tlmposRespNote.getCwbOrder() == null ? "0" : tlmposRespNote.getCwbOrder().getReceivablefee() + "");
 		retMap.put("account_keyword", tlmposRespNote.getMerchant_code());// 分账标识符,
 																			// 配送商户编号
-		retMap.put("shouldfee", String.valueOf(tlmposRespNote.getCwbOrder().getShouldfare()));
+		retMap.put("shouldfee", String.valueOf(tlmposRespNote.getCwbOrder().getShouldfare() == null ? "0" : tlmposRespNote.getCwbOrder().getShouldfare()));
 
 		// 生成待加密的字符串
 		String str = TlmposXMLHandler.createMACXML_SearchCwb(retMap);
