@@ -204,7 +204,7 @@ public class AccountCwbFareDetailVerifyController {
 			final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
 			final List<Branch> bList = this.branchDAO.getAllBranches();
 			String customerids = this.dataStatisticsService.getStrings(customerid);
-			final List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
+			final List<User> userList = this.userDAO.getAllUser();
 
 			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getExportAccountCwbFareDetailByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid,
 					deliverystate, shoulefarefeesign, userid);
