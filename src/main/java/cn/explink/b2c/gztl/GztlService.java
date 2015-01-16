@@ -177,13 +177,29 @@ public class GztlService {
 			}
 			xmlMap.put("cwbordertypeid", order.getTypeid());// 配送类型
 			xmlMap.put("cwb", order.getOrderid());// 订单号或运单号
-			xmlMap.put("transcwb", order.getSclientcode());// 客户单号
+			String transcwb = "";
+			// String regEx = "[\\u4e00-\\u9fa5]";
+			if (order.getRemark().getBytes().length == order.getRemark().length()) {
+				transcwb = order.getSclientcode();
 
-			xmlMap.put("customerid", this.getCustomerIdByCode(customerlist, order) + "");// 客户单号
+			} else {
+				transcwb = order.getRemark();
+			}
+			xmlMap.put("transcwb", transcwb);// 子单号或客户单号
+
+			xmlMap.put("customerid", this.getCustomerIdByCode(customerlist, order) + "");// 供应商ID
 
 			xmlMap.put("consigneename", order.getCustomername());// 收货人
 			xmlMap.put("consigneeaddress", order.getCustomeraddress());// 收货人地址
-			xmlMap.put("consigneephone", order.getCustomermobile());// 收货人手机或电话？？？提供两个，本系统只有一个
+			String consigneephone = "";
+			if (!order.getCustomermobile().isEmpty() && !order.getCustomerphone().isEmpty()) {
+				consigneephone = order.getCustomermobile() + "," + order.getCustomerphone();
+			} else if (!order.getCustomerphone().isEmpty()) {
+				consigneephone = order.getCustomerphone();
+			} else {
+				consigneephone = order.getCustomermobile();
+			}
+			xmlMap.put("consigneephone", consigneephone);// 收货人手机或电话？？？提供两个，本系统只有一个
 			xmlMap.put("sendcarname", order.getDeliverygoods());// 配送货物
 			xmlMap.put("backcargoname", order.getReturngoods());// 退货货物
 			String caramount = "";
@@ -194,18 +210,28 @@ public class GztlService {
 			}
 			xmlMap.put("caramount", caramount);// 退货货物价格或配送货物价格
 			xmlMap.put("cargorealweight", order.getWeight());// 重量
-			xmlMap.put("receivablefee", order.getShouldreceive());// 应收金额
+			String receivablefee = "";
+			if (order.getTypeid().equals("1") || order.getTypeid().equals("3")) {
+				receivablefee = order.getShouldreceive();
+				xmlMap.put("receivablefee", receivablefee);// 应收金额
+				xmlMap.put("paybackfee", "0");// 应退款
+			} else {
+				receivablefee = order.getShouldreceive().substring(1);
+				xmlMap.put("receivablefee", "0");// 应收金额
+				xmlMap.put("paybackfee", order.getShouldreceive());// 应退款
+			}
+
 			// xmlMap.put("remark5", order.getAccuallyreceive());// 实收金额
 			xmlMap.put("customercommand", order.getRemark());// 备注
 			xmlMap.put("sendcarnum", order.getGoodsnum());// 发货件数与件数
-			xmlMap.put("remark1", "到货时间：" + order.getArrivedate());// （本系统）签收时间与到货时间（过来的数据）
+			xmlMap.put("remark1", order.getSclientcode());// （本系统）签收时间与到货时间（过来的数据）
 			xmlMap.put("remark2", "入库时间：" + order.getPushtime() + ",订单生成时间：" + order.getOrderDate());// 发货时间与入库时间
 			xmlMap.put("remark3", "配送区域:" + order.getDeliverarea());// 配送区域？？？？？deliverarea
 			// xmlMap.put("remark4", "交接单号:" + order.getOrderBatchNo());//
 			// 交接单号????????
 			xmlMap.put("remark4", order.getShipperid());// 需要与通路系统基础表对应(由飞远提供)
-			xmlMap.put("remark5",
-					"发货人名称:" + order.getConsignorname() + "," + "发货地址:" + order.getConsignoraddress() + "," + "手机:" + order.getConsignormobile() + "," + "电话:" + order.getConsignorphone());// 发货人信息
+			xmlMap.put("remark5", "到货时间：" + order.getArrivedate() + "发货人名称:" + order.getConsignorname() + "," + "发货地址:" + order.getConsignoraddress() + "," + "手机:" + order.getConsignormobile() + ","
+					+ "电话:" + order.getConsignorphone());// 发货人信息
 
 			String paywayid = "";
 			if (order.getExtPayType().equals("0")) {
