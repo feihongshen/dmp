@@ -25,7 +25,7 @@ public class TlmposService_toSmt extends TlmposService {
 
 	/**
 	 * 上门退业务处理
-	 * 
+	 *
 	 * @param request
 	 * @param service_code
 	 * @param jobject
@@ -36,9 +36,9 @@ public class TlmposService_toSmt extends TlmposService {
 		TlmposRespNote respNote = new TlmposRespNote();
 		try {
 			respNote = super.buildtlmposRespClass(rootnote, respNote);
-			int return_type = this.getDeliveryByReasonType(rootnote.getTransaction_Body().getReturn_type());
+			String return_type = rootnote.getTransaction_Body().getReturn_type();
 
-			int returnCode = this.validatorReturnTypes(return_type);
+			long returnCode = this.validatorReturnTypes(Long.valueOf(return_type));
 
 			if (respNote.getCwbOrder() == null) {
 				respNote.setResp_code(TlmposExptMsgEnum.ChaXunYiChang.getResp_code());
@@ -51,11 +51,11 @@ public class TlmposService_toSmt extends TlmposService {
 			} else if (returnCode == 0) {
 				respNote.setResp_code(TlmposExptMsgEnum.QiTaShiBai.getResp_code());
 				respNote.setResp_msg(TlmposExptMsgEnum.QiTaShiBai.getResp_msg() + "无法识别此异常码");
-				this.logger.error("tlmpos上门揽退反馈失败,无法识别此编码:[" + rootnote.getTransaction_Body().getEx_code() + "]，单号：" + respNote.getOrder_no() + ",小件员：" + respNote.getDelivery_man());
+				this.logger.error("tlmpos上门揽退反馈失败,无法识别此编码:[" + returnCode + "]，单号：" + respNote.getOrder_no() + ",小件员：" + respNote.getDelivery_man());
 			} else {
 				respNote.setEx_code(rootnote.getTransaction_Body().getEx_code());
 				respNote.setEx_desc(rootnote.getTransaction_Body().getEx_desc());
-				respNote = this.excuteCwbFeedBackLantuiHandler(respNote, rootnote, return_type);
+				respNote = this.excuteCwbFeedBackLantuiHandler(respNote, rootnote, returnCode);
 			}
 
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class TlmposService_toSmt extends TlmposService {
 		return responseXml;
 	}
 
-	private int validatorReturnTypes(int return_type) {
+	private int validatorReturnTypes(long return_type) {
 		for (ReturnTypeEnum enums : ReturnTypeEnum.values()) {
 			if (enums.getCode() == return_type) {
 				return enums.getCode();
