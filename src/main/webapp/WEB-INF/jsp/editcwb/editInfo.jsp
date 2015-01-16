@@ -1,12 +1,12 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.domain.Branch"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
     <%
     List<CwbOrder> List = request.getAttribute("cwbList")==null?new ArrayList<CwbOrder>():(List<CwbOrder>)request.getAttribute("cwbList");
-    
-    
+    List<Branch> branchs = request.getAttribute("branchs")==null?new ArrayList<Branch>():(List<Branch>)request.getAttribute("branchs");
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -43,6 +43,9 @@
 		});
 		
 	});
+	function setMatchAddress(obj){
+		$("#matchaddress").val($(obj).val());
+	}
 	function querycwb(form) {
 		var cwb = trim(form.cwb.value);
 		form.action = "common?action=opscwbtoview&checkinbranchflag=1&cwb="
@@ -111,7 +114,7 @@ $(function(){
 								<form action="<%=request.getContextPath()%>/editcwb/updateCwbInfo/" method="post" id="searchForm2">
 								<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" >
 										<tr class="font_1">
-											<td align="center" bgcolor="#e7f4e3">订单号</td>
+											<td  width="120px"  align="center" bgcolor="#e7f4e3">订单号</td>
 											<td align="center" bgcolor="#e7f4e3">收件人（修改）</td>
 											<td bgcolor="#e7f4e3">手机（修改）</td>
 											<td bgcolor="#e7f4e3">地址（修改）</td>
@@ -123,13 +126,21 @@ $(function(){
 									</tr>
 									<%for(CwbOrder c:List){ %>
 										<tr>
-											<td width="25%"  align="center" valign="middle" height="19" ><%=c.getCwb() %>
+											<td width="120px"  align="center" valign="middle" height="19" ><%=c.getCwb() %>
 											<input type="hidden" name="cwb" id="cwb" value="<%=c.getCwb() %>">
 											</td>
-											<td width="5%"  valign="middle" align="center"  ><input type="text"  value="<%=c.getConsigneenameOfkf() %>" id="editname" name="editname"/></td>
-											<td width="8%"  valign="middle"  align="center"  ><input type="text"  value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
-											<td width="15%" valign="middle"  align="center"  ><textarea  cols="30"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
-											<td width="15%" valign="middle"  align="center"  ><input type="text"  name="matchaddress" id="matchaddress" /></td>
+											<td width="5%"  valign="middle" align="center"  ><input type="text" size="12px"  value="<%=c.getConsigneenameOfkf() %>" id="editname" name="editname"/></td>
+											<td width="8%"  valign="middle"  align="center"  ><input type="text" size="12px"   value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
+											<td width="15%" valign="middle"  align="center"  ><textarea  cols="20"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
+											<td width="15%" valign="middle"  align="center"  >
+											<input type="text" onkeyup="findbranch()"  name="matchaddress" id="matchaddress" />
+											<select id="branchlist" onchange="setMatchAddress(this)">
+											<option>请选择</option>
+											<%for(Branch b:branchs) {%>
+											<option value="<%=b.getBranchname()%>"><%=b.getBranchname()%></option>
+											<%} %>
+											</select>
+											</td>
 											<td width="10%" valign="middle"  align="center"  ><input type ="text" name ="begindate" id="strtime"  value="<%=c.getResendtime()%>"/></td>
 											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
 											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
@@ -146,7 +157,14 @@ $(function(){
 					</tbody>
 				</table>
 					<!--底部翻页 -->
-	
+					<div style="display: none;" >
+	<select id="branchAll" onchange="setMatchAddress(this)">
+											<option>请选择</option>
+											<%for(Branch b:branchs) {%>
+											<option value="<%=b.getBranchname()%>"><%=b.getBranchname()%></option>
+											<%} %>
+											</select>
+											</div>
 		</div>
 	</div>
 </div>
@@ -168,26 +186,59 @@ $(function(){
 					});
 }
 	function mathaddress(cwb){
-		var branch=$("#matchaddress").val();
-		if(branch.length>0){
+		var editaddress=$("#editaddress").val();
+		if(editaddress.length>0){
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/matchaddress",
 						type:"POST",//数据发送方式 
-						data:{"branchname":branch,"cwb":cwb},//参数
+						data:{"address":editaddress,"cwb":cwb},//参数
 						dataType:'json',//接受数据格式
 						success:function(data){
-							if(data.errorCode == 1){
-								 alert(data.error);
-							}else{
-								alert(data.error);
-							}
+							$("#matchaddress").val((data.netpoint));
+							findbranch();
 						}
 						   
 					});
 		}
 		else {
-			alert("请输入要匹配的站点！");
+			alert("请检查收件人地址！");
 		}
+}
+	function findbranch(){
+		var branchname=$("#matchaddress").val();
+		if(branchname.length>0){
+					$.ajax({
+						url:"<%=request.getContextPath()%>/editcwb/findbranch",
+						type:"POST",//数据发送方式 
+						data:{"branchname":branchname},//参数
+						dataType:'json',//接受数据格式
+						success:function(data){
+							if(data.length>1)
+								{
+								var options="";
+								for(var i=0;i<data.length;i++)
+									{
+									options+="<option value='"+data[i].branchname+"'>"+data[i].branchname+"</option>";
+									}
+								$("#branchlist").empty();
+								$("#branchlist").append(options);
+								}else {
+									$("#branchlist").empty();
+									$('#branchAll option').each(function(){
+										  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist");
+										  }); 
+								}
+						}
+						   
+					});
+		}
+		else{
+			$("#branchlist").empty();
+			$('#branchAll option').each(function(){
+				  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist");
+				  });
+		}
+		
 }
 	
 	function showinfo(a){

@@ -50,6 +50,7 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.User;
 import cn.explink.domain.WindowShow;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EditCwbTypeEnum;
@@ -461,7 +462,9 @@ public class EditCwbController {
 					cwborderlist.add(co);
 				}
 			}
+			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "");
 			model.addAttribute("cwbList", cwborderlist);
+			model.addAttribute("branchs", branchs);
 		}
 		return "editcwb/editInfo";
 
@@ -490,6 +493,7 @@ public class EditCwbController {
 			@RequestParam(value = "editcommand", defaultValue = "", required = false) String editcommand, // 需求
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
+			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -520,6 +524,26 @@ public class EditCwbController {
 					this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), co.getCwb());
 				}
 			}
+			// 修改匹配站
+			Branch branch = this.branchDAO.getBranchByBranchname(branchname);
+			if ((co != null) && (branch.getBranchid() > 0)) {
+
+				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+				if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+				} else if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
+																																																			// //
+																																																			// 都将匹配状态变更为人工修改
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+				}
+				try {
+					this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), old, branch, addressCodeEditType);
+					this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
+				} catch (Exception e) {
+					return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
+				}
+			}
+
 			// 4.成功后插入消息表express_ops_window
 
 			List<User> userlist = this.userDAO.getAllUserbybranchid(old.getDeliverybranchid() == 0 ? old.getNextbranchid() : old.getDeliverybranchid());
@@ -636,32 +660,41 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/matchaddress")
-	public @ResponseBody String matchaddress(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "branchname", defaultValue = "", required = false) String branchname // 是否显示,
+	public @ResponseBody JSONObject matchaddress(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
+			@RequestParam(value = "address", defaultValue = "", required = false) String address // 是否显示,
 	) {
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-		Branch branch = this.branchDAO.getBranchByBranchname(branchname);
-
-		if (branch.getBranchid() == 0) {
-			return "{\"errorCode\":1,\"error\":\"站点不存在\"}";
-		}
-		if (co != null) {
-			CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
-			if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
-				addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
-			} else if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
-																																																		// 都将匹配状态变更为人工修改
-				addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
-			}
-			try {
-				this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), co, branch, addressCodeEditType);
-				this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
-			} catch (Exception e) {
-				return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
-			}
-		}
-		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
-
+		JSONObject json = this.addressMatchService.matchAddressByInterface(cwb, address);
+		this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, json.getString("netpoint"));
+		return json;
 	}
 
+	@RequestMapping("/findbranch")
+	public @ResponseBody List<Branch> findbranch(Model model, @RequestParam(value = "branchname", defaultValue = "", required = false) String branchname // 是否显示,
+	) {
+		List<Branch> branches = this.branchDAO.getBranchByBranchnameMoHu(branchname);
+		/*
+		 * CwbOrder co = this.cwbDAO.getCwbByCwb(cwb); if (co != null) {
+		 * CwbOrderAddressCodeEditTypeEnum addressCodeEditType =
+		 * CwbOrderAddressCodeEditTypeEnum.WeiPiPei; if
+		 * ((co.getAddresscodeedittype() ==
+		 * CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) ||
+		 * (co.getAddresscodeedittype() ==
+		 * CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {//
+		 * 如果修改的数据原来是地址库匹配的或者是后来修改的 addressCodeEditType =
+		 * CwbOrderAddressCodeEditTypeEnum.XiuGai; } else if
+		 * ((co.getAddresscodeedittype() ==
+		 * CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()) ||
+		 * (co.getAddresscodeedittype() ==
+		 * CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {//
+		 * 如果修改的数据原来是为匹配的 // 都将匹配状态变更为人工修改 addressCodeEditType =
+		 * CwbOrderAddressCodeEditTypeEnum.RenGong; } try {
+		 * this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), co,
+		 * branch, addressCodeEditType);
+		 * this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
+		 * } catch (Exception e) { return "{\"errorCode\":1,\"error\":\"" +
+		 * e.getMessage() + "\"}"; } } return
+		 * "{\"errorCode\":0,\"error\":\"修改成功\"}";
+		 */
+		return branches;
+	}
 }
