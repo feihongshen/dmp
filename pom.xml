@@ -636,7 +636,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pxwl_mo?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -673,9 +673,9 @@
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>local</label>
-				<addresscustomerid>5</addresscustomerid>
-				<addressid>5</addressid>
-				<addresspassword>cqhy</addresspassword>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
 				<addressWebserviceIp>192.168.0.222:9548/address</addressWebserviceIp>
 			</properties>
 		</profile>
