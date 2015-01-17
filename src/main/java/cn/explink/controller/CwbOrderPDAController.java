@@ -1541,7 +1541,7 @@ public class CwbOrderPDAController {
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setShouldShock(true);
 			}
-
+			logger.info("入库完成，订单号：{},当前站：{},下一站："+co.getNextbranchid()+"",co.getCwb(),co.getCurrentbranchid());
 			return pDAResponse;
 		} catch (CwbException e) {
 			co = cwbDAO.getCwbByCwb(cwb);
@@ -1553,6 +1553,7 @@ public class CwbOrderPDAController {
 						+ StringUtil.nullConvertToEmptyString(branch.getBranchname()));
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
+				logger.info("重复入库，订单号：{}",co.getCwb());
 				return pDAResponse;
 			} else {
 				throw e;
