@@ -4263,7 +4263,7 @@ public class CwbOrderService {
 			}
 
 			if (((co.getShouldfare().compareTo(BigDecimal.ZERO) >= 0) && (co.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))
-					&& ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && (co.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()))) {
+					|| ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && (co.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()))) {
 				// 产生运费结算表记录
 				AccountCwbFareDetail accountCwbFareDetail = new AccountCwbFareDetail();
 				accountCwbFareDetail.setCwb(co.getCwb());
