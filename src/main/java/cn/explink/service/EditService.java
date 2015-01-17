@@ -60,7 +60,7 @@ public class EditService {
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
+//					this.from("jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
 					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete?concurrentConsumers=5").to("bean:editService?method=deleteEdit").routeId("editDelete");
 					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb?concurrentConsumers=5").to("bean:editService?method=deleteEditTwo").routeId("editDeleteTwo");
 
@@ -97,7 +97,7 @@ public class EditService {
 		}
 	}
 
-	public void saveEdit(@Header("orderFlow") String parm) {
+	/*public void saveEdit(@Header("orderFlow") String parm) {
 		try {
 			OrderFlow orderFlow = this.om.readValue(parm, OrderFlow.class);
 			this.saveEdit(orderFlow);
@@ -105,7 +105,7 @@ public class EditService {
 			// TODO handle exception
 			this.logger.error("saveEdit failed. parm = " + parm);
 		}
-	}
+	}*/
 
 	@Transactional
 	public void saveEdit(OrderFlow orderFlow) {
