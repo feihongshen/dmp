@@ -445,7 +445,7 @@ public class ExportwarhousesummaryDAO {
 	}
 
 	public Exportwarhousesummary getIntowarhouse(String cwb) {
-		String sql = " select * " + " from express_ops_order_intowarhouse  " + " WHERE " + " cwb = " + cwb + " " + " and   state='1' ";
+		String sql = " select *  from express_ops_order_intowarhouse   WHERE  cwb = '" + cwb + "' and   state=1 ";
 		try {
 			return jdbcTemplate.queryForObject(sql, new Warhouse());
 		} catch (Exception ee) {
