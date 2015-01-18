@@ -290,6 +290,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("remark", "未匹配到站点");
 					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
+			}else{
+				json.put("itemno", itemno);
+				json.put("netid", "");
+				json.put("netpoint", "");
+				json.put("remark", "未匹配到站点");
+				this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 			}
 
 		} catch (Exception e) {
