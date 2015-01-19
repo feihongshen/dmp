@@ -463,16 +463,22 @@ public class VipShopGetCwbDataService {
 					seq_arrs += seq + ",";
 					return seq_arrs;
 				}
+
+			}
+
+			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
+				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
+				seq_arrs += seq + ",";
+				return seq_arrs;
+			}
+
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+
 				if ("new".equalsIgnoreCase(cmd_type)) {
 					// 插入商品列表,try防止异常
 					this.insertOrderGoods(datamap, order_sn);
 				}
 
-			}
-			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
-				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
-				seq_arrs += seq + ",";
-				return seq_arrs;
 			}
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);
