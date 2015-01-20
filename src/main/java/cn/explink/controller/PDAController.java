@@ -465,7 +465,7 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -556,7 +556,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -594,7 +594,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -707,7 +707,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -5580,7 +5580,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -8015,7 +8015,7 @@ public class PDAController {
 					this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 				}
 
-				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "";
+				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 				if (showintowarehousedata.equals("yes")) {
 					flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 				}
