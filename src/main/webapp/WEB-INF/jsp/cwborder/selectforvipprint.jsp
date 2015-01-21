@@ -375,14 +375,19 @@ function nowprint(){
 						<tr align="center" style="font-size: 14px">
 			<% orderGoods=mapOrderGoods.get(co.getCwb());
 			if(orderGoods.size()>12){%><td>商品数量太多！图片无法显示</td></tr><%}else{
-				if(orderGoods.size()==1){%>
-					<td valign="top"><img height="350px" width="350px" src="<%=orderGoods.get(0).getGoods_pic_url()%>"><br>
+				if(orderGoods.size()==1){
+				String url_pic=orderGoods.get(0).getGoods_pic_url();
+				url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
+				%>
+					<td valign="top"><img height="350px" width="350px" src="<%=url_pic%>"><br>
 					商品编码：<%=orderGoods.get(0).getGoods_code() %></td>
 					<% }else if(orderGoods.size()==2){
 						for(int j=0;j<orderGoods.size();j++)
 						{
+							String url_pic=orderGoods.get(j).getGoods_pic_url();
+							url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
 							%>
-							<td valign="top"><img height="300px" width="300px" src="<%=orderGoods.get(j).getGoods_pic_url()%>"><br>
+							<td valign="top"><img height="300px" width="300px" src="<%=url_pic%>"><br>
 							商品编码：<%=orderGoods.get(j).getGoods_code() %></td>
 							<% 
 						}
@@ -391,8 +396,10 @@ function nowprint(){
 					else if(orderGoods.size()==3){
 						for(int j=0;j<orderGoods.size();j++)
 						{
+							String url_pic=orderGoods.get(j).getGoods_pic_url();
+							url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
 							%>
-							<td ><img height="220px" width="220px" src="<%=orderGoods.get(j).getGoods_pic_url()%>"><br>
+							<td ><img height="220px" width="220px" src="<%=url_pic%>"><br>
 							商品编码：<%=orderGoods.get(j).getGoods_code() %></td>
 							<% 
 						
@@ -401,8 +408,10 @@ function nowprint(){
 					else if(orderGoods.size()==4){
 						for(int j=0;j<orderGoods.size();j++)
 						{
+							String url_pic=orderGoods.get(j).getGoods_pic_url();
+							url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
 							%>
-							<td ><img height="200px" width="200px" src="<%=orderGoods.get(j).getGoods_pic_url()%>"><br>
+							<td ><img height="200px" width="200px" src="<%=url_pic%>"><br>
 							商品编码：<%=orderGoods.get(j).getGoods_code() %></td>
 							<% 
 							if((j+1)%2==0){%>
@@ -414,8 +423,10 @@ function nowprint(){
 					else if(orderGoods.size()==9||(orderGoods.size()>4&&orderGoods.size()<=6)){
 						for(int j=0;j<orderGoods.size();j++)
 						{
+							String url_pic=orderGoods.get(j).getGoods_pic_url();
+							url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
 							%>
-							<td ><img height="160px" width="160px" src="<%=orderGoods.get(j).getGoods_pic_url()%>"><br>
+							<td ><img height="160px" width="160px" src="<%=url_pic%>"><br>
 							商品编码：<%=orderGoods.get(j).getGoods_code() %></td>
 							<% 
 							if((j+1)%3==0){%>
@@ -427,8 +438,10 @@ function nowprint(){
 					else if(orderGoods.size()>6&&orderGoods.size()<=12){
 						for(int j=0;j<orderGoods.size();j++)
 						{
+							String url_pic=orderGoods.get(j).getGoods_pic_url();
+							url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
 							%>
-							<td ><img height="150px" width="150px" src="<%=orderGoods.get(j).getGoods_pic_url()%>"><br>
+							<td ><img height="150px" width="150px" src="<%=url_pic%>"><br>
 							商品编码：<%=orderGoods.get(j).getGoods_code() %></td>
 							<% 
 							if((j+1)%4==0){%>
