@@ -177,15 +177,7 @@ public class GztlService {
 			}
 			xmlMap.put("cwbordertypeid", order.getTypeid());// 配送类型
 			xmlMap.put("cwb", order.getOrderid());// 订单号或运单号
-			String transcwb = "";
-			// String regEx = "[\\u4e00-\\u9fa5]";
-			if ((order.getRemark().getBytes().length != order.getRemark().length()) || order.getRemark().isEmpty()) {
-				transcwb = order.getSclientcode();// 包含汉字
-
-			} else {
-				transcwb = order.getRemark();
-			}
-			xmlMap.put("transcwb", transcwb);// 子单号或客户单号
+			xmlMap.put("transcwb", order.getSubnumber());// 子单号或客户单号
 
 			xmlMap.put("customerid", this.getCustomerIdByCode(customerlist, order) + "");// 供应商ID
 

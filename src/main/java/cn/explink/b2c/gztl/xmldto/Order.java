@@ -62,7 +62,8 @@ public class Order {
 	private String otherservicefee;// 用于德邦物流货到付款记录
 	@XmlElement(name = "orderDate")
 	private String orderDate;// 订单生成日期
-
+	@XmlElement(name="subnumber")
+	private String subnumber;//子单号
 	public String getTypeid() {
 		return this.typeid;
 	}
@@ -285,6 +286,14 @@ public class Order {
 
 	public void setOrderDate(String orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getSubnumber() {
+		return subnumber;
+	}
+
+	public void setSubnumber(String subnumber) {
+		this.subnumber = subnumber;
 	}
 
 }
