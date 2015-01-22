@@ -38,7 +38,15 @@
 			alert("开始时间不能大于结束时间");
 			return false;
 		}
-
+		var orgs =  getMultiSelectValues("orgs");
+		if (orgs.length == 0) {
+			alert("请选择机构");
+			return false;
+		}
+		if ($("#venderId").val() == 0) {
+			alert("请选供应商");
+			return false;
+		}
 		return true;
 	}
 	function Days() {
@@ -171,7 +179,8 @@
 
 	function makeCell(cell, rowIndex) {
 		var showColIndex = cell.showColIndex;
-		var html = '<td><a href="javascript:showDetail(' + rowIndex + ','+ showColIndex + ')">' + cell.count + '</a></td>';
+		var html = '<td><a href="javascript:showDetail(' + rowIndex + ','
+				+ showColIndex + ')">' + cell.count + '</a></td>';
 		if (cell.percent) {
 			html += '<td>' + cell.percent + '</td>'
 		}
