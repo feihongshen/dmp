@@ -71,6 +71,8 @@ function isgetallcheck(){
 			<ul>
 				<li><a href="./barcodeprint" >手工输入生成</a></li>
 				<li><a href="#" class="light">随机生成</a></li>
+				<li><a href="./branchcodeprint/1">机构条形码打印</a></li>
+				
 			</ul>
 		</div>
 		<div class="tabbox">

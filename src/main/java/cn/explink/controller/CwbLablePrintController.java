@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,6 +84,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -569,7 +571,7 @@ public class CwbLablePrintController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -582,16 +584,16 @@ public class CwbLablePrintController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 * 
+					 *
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 * 
+					 *
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 * 
+					 *
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -604,7 +606,7 @@ public class CwbLablePrintController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 * 
+					 *
 					 * }});
 					 */
 
@@ -725,4 +727,27 @@ public class CwbLablePrintController {
 		return "cwblableprint/printTiaoxingma";
 	}
 
+	@RequestMapping("/printBranchcode")
+	public String printBranchcode(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "branchids", required = false, defaultValue = "") final String branchids) {
+		List<String> c = new ArrayList<String>();
+		String[] a = branchids.split(",");
+		for (String b : a) {
+			c.add(b);
+		}
+		model.addAttribute("branchids", c);
+		return "cwblableprint/printBranchcode";
+	}
+
+	@RequestMapping("/branchcodeprint/{page}")
+	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "branchname", required = false, defaultValue = "") String branchname,
+			@RequestParam(value = "branchaddress", required = false, defaultValue = "") String branchaddress, @RequestParam(value = "sitetype", required = false, defaultValue = "0") int sitetype,
+			@RequestParam(value = "pagesize", required = false, defaultValue = "10") int pagesize) {
+
+		model.addAttribute("branches", this.branchDAO.getBranchByPage(page, branchname, branchaddress, sitetype, pagesize));
+		model.addAttribute("page_obj", new Page(this.branchDAO.getBranchCount(branchname, branchaddress, sitetype, pagesize), page, pagesize));
+		model.addAttribute("page", page);
+		model.addAttribute("sitetype", sitetype);
+		model.addAttribute("pagesize", pagesize);
+		return "cwblableprint/branchcodeprint";
+	}
 }

@@ -1755,6 +1755,7 @@ src/main/webapp/WEB-INF/jsp/cwbkuaidi/buludetail.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/editbulu.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/kuaidilist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/quickbuludetail.jsp -text
+src/main/webapp/WEB-INF/jsp/cwblableprint/branchcodeprint.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprint.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprint_xhm.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprintlist.jsp -text
@@ -1772,6 +1773,7 @@ src/main/webapp/WEB-INF/jsp/cwblableprint/cwblableprintlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwblittlelableprint_xhm.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwblittlelableprintlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbrandomCode.jsp -text
+src/main/webapp/WEB-INF/jsp/cwblableprint/printBranchcode.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/printTiaoxingma.jsp -text
 src/main/webapp/WEB-INF/jsp/cwborder/backinbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/cwborder/backinwarehouse.jsp -text

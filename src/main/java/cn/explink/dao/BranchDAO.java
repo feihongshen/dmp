@@ -825,4 +825,36 @@ public class BranchDAO {
 		}
 
 	}
+
+	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress, int sitetype, int pagesize) {
+		String sql = "select * from express_set_branch";
+		sql += " where 1=1 ";
+		if (branchname.length() > 0) {
+			sql += " and branchname like '%" + branchname + "%' ";
+		}
+		if (branchaddress.length() > 0) {
+			sql += " and branchaddress like '%" + branchaddress + "%' ";
+		}
+		if (sitetype > 0) {
+			sql += " and sitetype=" + sitetype;
+		}
+		sql += " order by branchid desc limit " + ((page - 1) * pagesize) + " ," + pagesize;
+		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		return branchlist;
+	}
+
+	public long getBranchCount(String branchname, String branchaddress, int sitetype, int pagesize) {
+		String sql = "select count(1) from express_set_branch";
+		sql += " where 1=1 ";
+		if (branchname.length() > 0) {
+			sql += " and branchname like '%" + branchname + "%' ";
+		}
+		if (branchaddress.length() > 0) {
+			sql += " and branchaddress like '%" + branchaddress + "%' ";
+		}
+		if (sitetype > 0) {
+			sql += " and sitetype=" + sitetype;
+		}
+		return this.jdbcTemplate.queryForInt(sql);
+	}
 }
