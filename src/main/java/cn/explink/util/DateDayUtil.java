@@ -38,9 +38,9 @@ public class DateDayUtil {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DATE, -dayCount); // 得到前一天
 		int dayFor = calendar.get(Calendar.DATE);// 前7天
-		int monthFor = calendar.get(Calendar.MONTH);
+		int monthFor = calendar.get(Calendar.MONTH)+1;
 		int yesr = calendar.get(Calendar.YEAR);// 当前年
-		return "" + yesr + "-" + monthFor + "-" + dayFor;
+		return "" + yesr + "-" + (monthFor<10?("0"+monthFor):monthFor) + "-" + dayFor;
 	}
 
 	public static String getDayCum(String nowday, int dayCount) {
