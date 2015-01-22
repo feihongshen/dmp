@@ -38,7 +38,7 @@
 			alert("开始时间不能大于结束时间");
 			return false;
 		}
-		var orgs =  getMultiSelectValues("orgs");
+		var orgs = getMultiSelectValues("orgs");
 		if (orgs.length == 0) {
 			alert("请选择机构");
 			return false;
@@ -258,6 +258,10 @@
 .hide_td {
 	display: none;
 }
+
+.red {
+	color:red
+}
 </style>
 
 </head>
@@ -275,13 +279,13 @@
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称： <select id="orgs"
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称<label class="red">*</label>： <select id="orgs"
 					name="orgs" multiple="multiple" style="width: 100px;">
 					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venderId"
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商<label class="red">*</label>：<select id="venderId"
 					name="venderId" style="width: 100px;">
 					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
 					<c:forEach items="${constant.venderMap}" var="entry">
