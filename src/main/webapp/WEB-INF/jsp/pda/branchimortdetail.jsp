@@ -135,9 +135,12 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 						$("#address").html(data.body.cwbOrder.consigneeaddress);
 						$("#multicwbnum").val(data.body.cwbOrder.sendcarnum);
 						$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
-						
+						var deliveryname=data.body.deliveryname;
+						if(deliveryname.length>0){
+							deliveryname="   <font color='red'>配送员："+deliveryname+"</font>";
+						}
 						$("#scansuccesscwb").val(scancwb);
-						$("#showcwb").html("订 单 号："+scancwb);
+						$("#showcwb").html("订 单 号："+scancwb+deliveryname);
 						//getcwbsdataForDaoHuo(scancwb);
 						//将成功扫描的订单放到已入库明细中
 						//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true);

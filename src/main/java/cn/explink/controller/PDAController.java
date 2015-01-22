@@ -465,7 +465,7 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -556,7 +556,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -594,7 +594,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -707,7 +707,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -1987,6 +1987,7 @@ public class PDAController {
 		model.addAttribute("userList", uList);
 		return "pda/backimport";
 	}
+
 	/**
 	 * 进入退货站、中转站入库的功能页面
 	 *
@@ -1997,31 +1998,30 @@ public class PDAController {
 	public String backandchangeimport(Model model) {
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		
 
-		List<Branch> tbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
 		Map allcwbstr = new HashMap();
-		
-		Map tAllcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), 0);
-		Map zAllcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), 0);
 
-		Map tPScwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
-		Map tSMTcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
-		Map tSMHcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
-		Map zPScwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
-		Map zSMTcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
-		Map zSMHcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
-		
-		Map twAllcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), 0);
-		Map zwAllcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), 0);
-		
-		Map twPScwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
-		Map twSMTcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
-		Map twSMHcwbstr = getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
-		Map zwPScwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
-		Map zwSMTcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
-		Map zwSMHcwbstr = getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		Map tAllcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), 0);
+		Map zAllcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), 0);
+
+		Map tPScwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		Map tSMTcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+		Map tSMHcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		Map zPScwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		Map zSMTcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+		Map zSMHcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+
+		Map twAllcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), 0);
+		Map zwAllcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), 0);
+
+		Map twPScwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		Map twSMTcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+		Map twSMHcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+		Map zwPScwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		Map zwSMTcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+		Map zwSMHcwbstr = this.getCwbsbyBranch(zbranchlist, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
 
 		allcwbstr.putAll(tAllcwbstr);
 		allcwbstr.putAll(zAllcwbstr);
@@ -2031,7 +2031,7 @@ public class PDAController {
 		allcwbstr.putAll(zPScwbstr);
 		allcwbstr.putAll(zSMTcwbstr);
 		allcwbstr.putAll(zSMHcwbstr);
-		
+
 		allcwbstr.putAll(twAllcwbstr);
 		allcwbstr.putAll(zwAllcwbstr);
 		allcwbstr.putAll(twPScwbstr);
@@ -2041,14 +2041,14 @@ public class PDAController {
 		allcwbstr.putAll(zwSMTcwbstr);
 		allcwbstr.putAll(zwSMHcwbstr);
 
-		String allcwbs = getStringByMap(allcwbstr);
-		
+		String allcwbs = this.getStringByMap(allcwbstr);
+
 		List<CwbOrder> allList = new ArrayList<CwbOrder>();
-		if(allcwbs.length() >0 ){
-			
+		if (allcwbs.length() > 0) {
+
 			allList = this.cwbDAO.getListbyCwbs(allcwbs);
 		}
-		
+
 		List<CwbOrder> tyirukulist = new ArrayList<CwbOrder>();
 		List<CwbOrder> tweirukulist = new ArrayList<CwbOrder>();
 		List<CwbOrder> typeisong = new ArrayList<CwbOrder>();
@@ -2057,7 +2057,7 @@ public class PDAController {
 		List<CwbOrder> twpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> twshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> twshangmentui = new ArrayList<CwbOrder>();
-		
+
 		List<CwbOrder> zyirukulist = new ArrayList<CwbOrder>();
 		List<CwbOrder> zweirukulist = new ArrayList<CwbOrder>();
 		List<CwbOrder> zypeisong = new ArrayList<CwbOrder>();
@@ -2066,60 +2066,60 @@ public class PDAController {
 		List<CwbOrder> zwpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> zwshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> zwshangmentui = new ArrayList<CwbOrder>();
-	
-		if(allList != null && allList.size()>0){
+
+		if ((allList != null) && (allList.size() > 0)) {
 			for (CwbOrder co : allList) {
-				if(tAllcwbstr.get(co.getCwb()) != null){
+				if (tAllcwbstr.get(co.getCwb()) != null) {
 					tyirukulist.add(co);
 				}
-				if(twAllcwbstr.get(co.getCwb()) != null){
+				if (twAllcwbstr.get(co.getCwb()) != null) {
 					tweirukulist.add(co);
 				}
-				if(tPScwbstr.get(co.getCwb()) != null){
+				if (tPScwbstr.get(co.getCwb()) != null) {
 					typeisong.add(co);
 				}
-				if(tSMHcwbstr.get(co.getCwb()) != null){
+				if (tSMHcwbstr.get(co.getCwb()) != null) {
 					tyshangmenhuan.add(co);
 				}
-				if(tSMTcwbstr.get(co.getCwb()) != null){
+				if (tSMTcwbstr.get(co.getCwb()) != null) {
 					tyshangmentui.add(co);
 				}
-				if(twPScwbstr.get(co.getCwb()) != null){
+				if (twPScwbstr.get(co.getCwb()) != null) {
 					twpeisong.add(co);
 				}
-				if(twSMHcwbstr.get(co.getCwb()) != null){
+				if (twSMHcwbstr.get(co.getCwb()) != null) {
 					twshangmenhuan.add(co);
 				}
-				if(twSMTcwbstr.get(co.getCwb()) != null){
+				if (twSMTcwbstr.get(co.getCwb()) != null) {
 					twshangmentui.add(co);
 				}
-				if(zAllcwbstr.get(co.getCwb()) != null){
+				if (zAllcwbstr.get(co.getCwb()) != null) {
 					zyirukulist.add(co);
 				}
-				if(zwAllcwbstr.get(co.getCwb()) != null){
+				if (zwAllcwbstr.get(co.getCwb()) != null) {
 					zweirukulist.add(co);
 				}
-				if(zPScwbstr.get(co.getCwb()) != null){
+				if (zPScwbstr.get(co.getCwb()) != null) {
 					zypeisong.add(co);
 				}
-				if(zSMHcwbstr.get(co.getCwb()) != null){
+				if (zSMHcwbstr.get(co.getCwb()) != null) {
 					zyshangmenhuan.add(co);
 				}
-				if(zSMTcwbstr.get(co.getCwb()) != null){
+				if (zSMTcwbstr.get(co.getCwb()) != null) {
 					zyshangmentui.add(co);
 				}
-				if(zwPScwbstr.get(co.getCwb()) != null){
+				if (zwPScwbstr.get(co.getCwb()) != null) {
 					zwpeisong.add(co);
 				}
-				if(zwSMHcwbstr.get(co.getCwb()) != null){
+				if (zwSMHcwbstr.get(co.getCwb()) != null) {
 					zwshangmenhuan.add(co);
 				}
-				if(zwSMTcwbstr.get(co.getCwb()) != null){
+				if (zwSMTcwbstr.get(co.getCwb()) != null) {
 					zwshangmentui.add(co);
 				}
 			}
 		}
-		
+
 		model.addAttribute("weituihuorukuList", tweirukulist);
 		model.addAttribute("yituihuorukuList", tyirukulist);
 		model.addAttribute("ypeisong", typeisong);
@@ -2128,7 +2128,7 @@ public class PDAController {
 		model.addAttribute("wpeisong", twpeisong);
 		model.addAttribute("wshangmenhuan", twshangmenhuan);
 		model.addAttribute("wshangmentui", twshangmentui);
-		
+
 		model.addAttribute("zweituihuorukuList", zweirukulist);
 		model.addAttribute("zyituihuorukuList", zyirukulist);
 		model.addAttribute("zypeisong", zypeisong);
@@ -2137,56 +2137,57 @@ public class PDAController {
 		model.addAttribute("zwpeisong", zwpeisong);
 		model.addAttribute("zwshangmenhuan", zwshangmenhuan);
 		model.addAttribute("zwshangmentui", zwshangmentui);
-		
-		
+
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
 		return "pda/backandchangeimport";
 	}
+
 	/**
 	 * 按站点list，flowtype、订单类型 查询超期异常监控表，返回订单list
+	 *
 	 * @param branchlist
 	 * @param flowordertype
 	 * @param cwbordertypeid
 	 * @return
 	 */
-    private Map<String,String> getCwbsbyBranch(List<Branch> branchlist,int flowordertype,int cwbordertypeid){
-    	Map<String,String> map = new HashMap<String,String>();
-    	String branchids = "-1";
-    	if(branchlist != null && branchlist.size()>0){
+	private Map<String, String> getCwbsbyBranch(List<Branch> branchlist, int flowordertype, int cwbordertypeid) {
+		Map<String, String> map = new HashMap<String, String>();
+		String branchids = "-1";
+		if ((branchlist != null) && (branchlist.size() > 0)) {
 			for (Branch branch : branchlist) {
-				branchids += ","+branch.getBranchid();
+				branchids += "," + branch.getBranchid();
 			}
 		}
-    	List<String> tcwbs = new ArrayList<String>();
-    	if(flowordertype == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() || 
-    			flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
-    		 tcwbs = operationTimeDAO.getBackandChangeYiRukuListbyBranchid(branchids, flowordertype, cwbordertypeid, 1);
-    	}
-    	else {
-    		tcwbs = operationTimeDAO.getBackandChangeWeiRukuListbyBranchid(branchids, flowordertype, cwbordertypeid, 1);
-    	}
+		List<String> tcwbs = new ArrayList<String>();
+		if ((flowordertype == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) || (flowordertype == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())) {
+			tcwbs = this.operationTimeDAO.getBackandChangeYiRukuListbyBranchid(branchids, flowordertype, cwbordertypeid, 1);
+		} else {
+			tcwbs = this.operationTimeDAO.getBackandChangeWeiRukuListbyBranchid(branchids, flowordertype, cwbordertypeid, 1);
+		}
 		for (String tcwb : tcwbs) {
 			map.put(tcwb, tcwb);
 		}
 		return map;
-    }
-    /**
-     * 
-     * @param map
-     * @return
-     */
-    private String getStringByMap(Map<String,String> map){
-    	
-    	String cwbs = "";
-    	Set<String> key = map.keySet();
-        for (Iterator it = key.iterator(); it.hasNext();) {
-            String s = (String) it.next();
-            cwbs += "'"+s+"',";
-        }
-    	return cwbs.length()>0?cwbs.substring(0, cwbs.length()-1):"--";
-    	
-    }
+	}
+
+	/**
+	 *
+	 * @param map
+	 * @return
+	 */
+	private String getStringByMap(Map<String, String> map) {
+
+		String cwbs = "";
+		Set<String> key = map.keySet();
+		for (Iterator it = key.iterator(); it.hasNext();) {
+			String s = (String) it.next();
+			cwbs += "'" + s + "',";
+		}
+		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "--";
+
+	}
+
 	/**
 	 * 退货站入库 得到未入库 list
 	 *
@@ -2841,14 +2842,13 @@ public class PDAController {
 	@RequestMapping("/cwbChangeintowarhouse/{cwb}")
 	public @ResponseBody ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, 
-			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
-			
-			cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, requestbatchno, comment, "", false,0,0);
+
+			cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, requestbatchno, comment, "", false, 0, 0);
 
 			JSONObject obj = new JSONObject();
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -2973,7 +2973,7 @@ public class PDAController {
 			obj.put("cwb", cwb);
 
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, "", "", false,0,0);
+				CwbOrder cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, "", "", false, 0, 0);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
@@ -3112,6 +3112,13 @@ public class PDAController {
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comment, "", false);
 		JSONObject obj = new JSONObject();
+		String deliveryname = "";
+		if (cwbOrder != null) {
+			if (cwbOrder.getDeliverid() != 0) {
+				deliveryname = this.userDAO.getAllUserByid(cwbOrder.getDeliverid()).getRealname() == null ? "" : this.userDAO.getAllUserByid(cwbOrder.getDeliverid()).getRealname();
+			}
+		}
+		obj.put("deliveryname", deliveryname);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
 		if (cwbOrder.getNextbranchid() != 0) {
@@ -4407,55 +4414,51 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbackintowarhouse/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbackintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
-			@RequestParam(value = "comment", required = true, defaultValue = "") String comment,
-			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
 
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = null;
-		if(checktype==1){
+		if (checktype == 1) {
 			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-			if(co == null){
+			if (co == null) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
-			if(co.getCustomerid() != customerid){
+			if (co.getCustomerid() != customerid) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.GongHuoShang_Bufu);
 			}
-			OperationTime op = operationTimeDAO.getObjectBycwb(cwb);
-			if(op == null){
+			OperationTime op = this.operationTimeDAO.getObjectBycwb(cwb);
+			if (op == null) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
-			if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() 
-					|| op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
-				long branchid=0;
-				if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() ){
+			if ((op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
+				long branchid = 0;
+				if (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
 					branchid = op.getBranchid();
-				}else{
+				} else {
 					branchid = op.getNextbranchid();
 				}
-				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,1,branchid);
-			}else if(op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() 
-					|| op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
-				if(op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
+				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
+			} else if ((op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
+				if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
 					Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
-					if(branch == null || branch.getSitetype() != BranchEnum.ZhongZhuan.getValue()){
+					if ((branch == null) || (branch.getSitetype() != BranchEnum.ZhongZhuan.getValue())) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
 					}
 				}
-				long branchid=0;
-				if(op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() ){
+				long branchid = 0;
+				if (op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
 					branchid = op.getBranchid();
-				}else{
+				} else {
 					branchid = op.getNextbranchid();
 				}
-				cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false,1,branchid);
-			}else{
+				cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 1, branchid);
+			} else {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
 			}
-		}else {
-			cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
+		} else {
+			cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 0, 0);
 		}
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -4524,7 +4527,7 @@ public class PDAController {
 			cwb = this.cwborderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
+				CwbOrder cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 0, 0);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
@@ -5580,7 +5583,7 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -5653,6 +5656,7 @@ public class PDAController {
 		obj.put("wsmt", wsmtcount.getSmtcount());
 		return obj;
 	}
+
 	/**
 	 * 得到退货站入库的订单总数
 	 *
@@ -5665,27 +5669,27 @@ public class PDAController {
 	public @ResponseBody JSONObject getBackAndChangeInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
-		String  tbranchids = "-1";
-		String  zbranchids = "-1";
-		List<Branch> tbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
-		if(tbranchlist != null && tbranchlist.size()>0){
+		String tbranchids = "-1";
+		String zbranchids = "-1";
+		List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+		if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 			for (Branch branch : tbranchlist) {
-				tbranchids += ","+branch.getBranchid();
+				tbranchids += "," + branch.getBranchid();
 			}
 		}
-		if(zbranchlist != null && zbranchlist.size()>0){
+		if ((zbranchlist != null) && (zbranchlist.size() > 0)) {
 			for (Branch branch : zbranchlist) {
-				zbranchids += ","+branch.getBranchid();
+				zbranchids += "," + branch.getBranchid();
 			}
 		}
-		
-		Smtcount wsmtcount = cwbDAO.getBackAndChangeRukubyBranchids(tbranchids,FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
-		Smtcount ysmtcount = cwbDAO.getBackAndChangeYiRukubyBranchids(tbranchids,FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
-		
-		Smtcount zwsmtcount = cwbDAO.getBackAndChangeRukubyBranchids(zbranchids,FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-		Smtcount zysmtcount = cwbDAO.getBackAndChangeYiRukubyBranchids(zbranchids,FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
-		
+
+		Smtcount wsmtcount = this.cwbDAO.getBackAndChangeRukubyBranchids(tbranchids, FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
+		Smtcount ysmtcount = this.cwbDAO.getBackAndChangeYiRukubyBranchids(tbranchids, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
+
+		Smtcount zwsmtcount = this.cwbDAO.getBackAndChangeRukubyBranchids(zbranchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+		Smtcount zysmtcount = this.cwbDAO.getBackAndChangeYiRukubyBranchids(zbranchids, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
+
 		obj.put("yps", ysmtcount.getPscount());
 		obj.put("ysmh", ysmtcount.getSmhcount());
 		obj.put("ysmt", ysmtcount.getSmtcount());
@@ -7285,13 +7289,13 @@ public class PDAController {
 			e.printStackTrace();
 		}
 	}
+
 	@RequestMapping("/backandchangeimportexport")
-	public void backandchangeimportexport(HttpServletResponse response, HttpServletRequest request,
-			@RequestParam(value = "extype", defaultValue = "") String type) {
+	public void backandchangeimportexport(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "extype", defaultValue = "") String type) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
-		
+
 		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
 		cloumnName1 = new String[listSetExportField.size()];
 		cloumnName2 = new String[listSetExportField.size()];
@@ -7307,84 +7311,84 @@ public class PDAController {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
-		
+
 		try {
 			// 查询出数据
 			String sqlstr = "";
-			String  tbranchids = "-1";
-			String  zbranchids = "-1";
-			List<Branch> tbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-			List<Branch> zbranchlist = branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
-			if(tbranchlist != null && tbranchlist.size()>0){
+			String tbranchids = "-1";
+			String zbranchids = "-1";
+			List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
+			List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+			if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 				for (Branch branch : tbranchlist) {
-					tbranchids += ","+branch.getBranchid();
+					tbranchids += "," + branch.getBranchid();
 				}
 			}
-			if(zbranchlist != null && zbranchlist.size()>0){
+			if ((zbranchlist != null) && (zbranchlist.size() > 0)) {
 				for (Branch branch : zbranchlist) {
-					zbranchids += ","+branch.getBranchid();
+					zbranchids += "," + branch.getBranchid();
 				}
 			}
 			if (type.length() > 0) {
-					if (type.equals("wall")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(0, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
-					}
-					if (type.equals("yall")) {
-						sqlstr = cwbDAO.getYirukuToSQL(0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
-					}
-					if (type.equals("wallz")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(0, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
-					}
-					if (type.equals("yallz")) {
-						sqlstr = cwbDAO.getYirukuToSQL(0, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
-					}
-					if (type.equals("ypeisong")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
-					}
-					if (type.equals("yshangmengtui")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
-					}
-					if (type.equals("yshangmenghuan")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
-					}
-					if (type.equals("wpeisong")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
-					}
-					if (type.equals("wshangmengtui")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
-					}
-					if (type.equals("wshangmenghuan")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
-					}
-					if (type.equals("wpeisongz")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
-					}
-					if (type.equals("wshangmengtuiz")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
-					}
-					if (type.equals("wshangmenghuanz")) {
-						sqlstr = cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
-					}
-					
-					if (type.equals("ypeisongz")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
-					}
-					if (type.equals("yshangmengtuiz")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
-					}
-					if (type.equals("yshangmenghuanz")) {
-						sqlstr = cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
-					}
-					// cwbList =
-					// this.operationTimeDAO.getOperationTimeTuiHuoZhanRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
-					// this.getSessionUser().getBranchid());
-				
+				if (type.equals("wall")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(0, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
+				}
+				if (type.equals("yall")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
+				}
+				if (type.equals("wallz")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(0, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
+				}
+				if (type.equals("yallz")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(0, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
+				}
+				if (type.equals("ypeisong")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
+				}
+				if (type.equals("yshangmengtui")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
+				}
+				if (type.equals("yshangmenghuan")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), tbranchids);
+				}
+				if (type.equals("wpeisong")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
+				}
+				if (type.equals("wshangmengtui")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
+				}
+				if (type.equals("wshangmenghuan")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), tbranchids);
+				}
+				if (type.equals("wpeisongz")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
+				}
+				if (type.equals("wshangmengtuiz")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
+				}
+				if (type.equals("wshangmenghuanz")) {
+					sqlstr = this.cwbDAO.getWeirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), zbranchids);
+				}
+
+				if (type.equals("ypeisongz")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Peisong.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
+				}
+				if (type.equals("yshangmengtuiz")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmentui.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
+				}
+				if (type.equals("yshangmenghuanz")) {
+					sqlstr = this.cwbDAO.getYirukuToSQL(CwbOrderTypeIdEnum.Shangmenhuan.getValue(), FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), zbranchids);
+				}
+				// cwbList =
+				// this.operationTimeDAO.getOperationTimeTuiHuoZhanRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),
+				// this.getSessionUser().getBranchid());
+
 			}
 			if (sqlstr.length() == 0) {
 				return;
 			}
 			final String sql = sqlstr;
-			
+
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
@@ -7400,7 +7404,7 @@ public class PDAController {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
-						
+
 						public void processRow(ResultSet rs) throws SQLException {
 							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
 							this.recordbatch.add(mapRow);
@@ -7409,7 +7413,7 @@ public class PDAController {
 								this.writeBatch();
 							}
 						}
-						
+
 						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
 								Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
@@ -7428,7 +7432,7 @@ public class PDAController {
 								}
 							}
 						}
-						
+
 						@Override
 						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 							while (rs.next()) {
@@ -7437,7 +7441,7 @@ public class PDAController {
 							this.writeBatch();
 							return null;
 						}
-						
+
 						public void writeBatch() throws SQLException {
 							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
@@ -7458,7 +7462,7 @@ public class PDAController {
 								this.recordbatch.clear();
 							}
 						}
-						
+
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
 							for (TuihuoRecord tuihuoRecord : PDAController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
@@ -7466,7 +7470,7 @@ public class PDAController {
 							}
 							return map;
 						}
-						
+
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
 							for (DeliveryState deliveryState : PDAController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
@@ -7474,7 +7478,7 @@ public class PDAController {
 							}
 							return map;
 						}
-						
+
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
 							for (Complaint complaint : PDAController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
@@ -7482,7 +7486,7 @@ public class PDAController {
 							}
 							return complaintMap;
 						}
-						
+
 						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
 							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
 							/*
@@ -7504,7 +7508,7 @@ public class PDAController {
 				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -8015,7 +8019,7 @@ public class PDAController {
 					this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 				}
 
-				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + ","+ FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 				if (showintowarehousedata.equals("yes")) {
 					flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 				}
@@ -8393,36 +8397,33 @@ public class PDAController {
 	@RequestMapping("/updategoodthzrkcount")
 	public @ResponseBody ExplinkResponse updategoodthzrkcount(Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
-			@RequestParam(value = "cwb", required = true, defaultValue = "") String cwb,
-			@RequestParam(value = "jasonval", required = true, defaultValue = "0") String jasonval,
-			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
+			@RequestParam(value = "cwb", required = true, defaultValue = "") String cwb, @RequestParam(value = "jasonval", required = true, defaultValue = "0") String jasonval,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
 		JSONArray ids = (JSONArray) JSONObject.fromObject(jasonval).get("id");
 		JSONArray thzrkcounts = (JSONArray) JSONObject.fromObject(jasonval).get("thzrkcount");
 
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = null;
-		if(checktype==1){
-			OperationTime op = operationTimeDAO.getObjectBycwb(cwb);
-			if(op == null){
+		if (checktype == 1) {
+			OperationTime op = this.operationTimeDAO.getObjectBycwb(cwb);
+			if (op == null) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
-			if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() 
-					|| op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
-				long branchid=0;
-				if(op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() ){
+			if ((op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
+				long branchid = 0;
+				if (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
 					branchid = op.getBranchid();
-				}else{
+				} else {
 					branchid = op.getNextbranchid();
 				}
-				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,1,branchid);
-			}else{
-				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
-				
+				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
+			} else {
+				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 0, 0);
+
 			}
-		}else {
-			cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false,0,0);
+		} else {
+			cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 0, 0);
 		}
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));

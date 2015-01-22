@@ -124,7 +124,11 @@ function submitIntoWarehouse(pname,scancwb,customerid,driverid,requestbatchno,rk
 						}*/
 							
 						$("#scansuccesscwb").val(scancwb);
-						$("#showcwb").html("订 单 号："+scancwb);
+						var deliveryname=data.body.deliveryname;
+						if(deliveryname.length>0){
+							deliveryname="   <font color='red'>配送员："+deliveryname+"</font>";
+						}
+						$("#showcwb").html("订 单 号："+scancwb+deliveryname);
 					}else{
 						$("#cwbDetailshow").html("");
 						$("#excelbranch").hide();
