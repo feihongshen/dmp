@@ -261,8 +261,17 @@ public class WeisudaService {
 			backedreasonid = Long.valueOf(orderFlowDto.getExptcode() == null || orderFlowDto.getExptcode().isEmpty() ? "0" : orderFlowDto.getExptcode());
 		}
 
+		
+		long deliverid=deliverystate.getDeliveryid();
+		try {
+			deliverid=userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
+		} catch (Exception e1) {
+			deliverid=deliverystate.getDeliveryid();
+		}
+		
+		
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("deliverid", deliverystate.getDeliveryid());
+		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
 		parameters.put("leavedreasonid", leavedreasonid);
@@ -300,6 +309,7 @@ public class WeisudaService {
 		User user = userDAO.getAllUserByid(deliverystate.getDeliveryid());
 
 		cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
+		deliveryStateDAO.updateOperatorIdByCwb(deliverid, orderFlowDto.getCwb());
 	}
 
 	private long getPodresultid(long podresultid, CwbOrder cwbOrder) {
