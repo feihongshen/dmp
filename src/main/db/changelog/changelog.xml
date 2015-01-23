@@ -5920,8 +5920,14 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	</changeSet>
 	<changeSet id="wukong-2015-01-16-2" author="wukong">
 		<sql>
-			INSERT INTO `peisongdata_dmp_test`.`express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ('扣款类型设置', 'punishType/list/1', '3', 'G2114', '215', 'images/wtjlxsz.png', NULL);
+			INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ('扣款类型设置', 'punishType/list/1', '3', 'G2114', '215', 'images/wtjlxsz.png', NULL);
 		</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-01-23-1" author="wangyonghe">
+		<sql>
+		INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '入库标签打印', 'printcwb/list', '3', '10316', '34', 'images/txmdy.png', NULL);
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
  
