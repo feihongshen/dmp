@@ -1587,6 +1587,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJKR_SMT</label>
+				<addresscustomerid>9</addresscustomerid>
+				<addressid>9</addressid>
+				<addresspassword>xjkr</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		
@@ -2442,6 +2446,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>YNPX_SMT</label>
+				<addresscustomerid>9</addresscustomerid>
+				<addressid>9</addressid>
+				<addresspassword>ynpx</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		
