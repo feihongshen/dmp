@@ -815,6 +815,7 @@ src/main/java/cn/explink/dao/AccountDeductRecordDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeDetailDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeTypeDAO.java -text
 src/main/java/cn/explink/dao/AddressStartDAO.java -text
+src/main/java/cn/explink/dao/AdjustmentRecordDAO.java -text
 src/main/java/cn/explink/dao/AppearWindowDao.java -text
 src/main/java/cn/explink/dao/ApplyEditDeliverystateDAO.java -text
 src/main/java/cn/explink/dao/AutomaticSetDAO.java -text
@@ -861,6 +862,7 @@ src/main/java/cn/explink/dao/ExpressSysMonitorDAO.java -text
 src/main/java/cn/explink/dao/FinanceAuditDAO.java -text
 src/main/java/cn/explink/dao/FinanceDeliverPayUpDetailDAO.java -text
 src/main/java/cn/explink/dao/FinancePayUpAuditDAO.java -text
+src/main/java/cn/explink/dao/FnOrgBillDetailDAO.java -text
 src/main/java/cn/explink/dao/GotoClassAuditingDAO.java -text
 src/main/java/cn/explink/dao/GotoClassOldDAO.java -text
 src/main/java/cn/explink/dao/GroupDetailDao.java -text
@@ -945,6 +947,7 @@ src/main/java/cn/explink/domain/AccountDeductRecord.java -text
 src/main/java/cn/explink/domain/AccountDeductRecordView.java -text
 src/main/java/cn/explink/domain/AccountFeeDetail.java -text
 src/main/java/cn/explink/domain/AccountFeeType.java -text
+src/main/java/cn/explink/domain/AdjustmentRecord.java -text
 src/main/java/cn/explink/domain/AorderFlowView.java -text
 src/main/java/cn/explink/domain/ApplyEditDeliverystate.java -text
 src/main/java/cn/explink/domain/AutomaticSet.java -text
@@ -1000,6 +1003,7 @@ src/main/java/cn/explink/domain/ExpressSysMonitor.java -text
 src/main/java/cn/explink/domain/FinanceAudit.java -text
 src/main/java/cn/explink/domain/FinanceDeliverPayupDetail.java -text
 src/main/java/cn/explink/domain/FinancePayUpAudit.java -text
+src/main/java/cn/explink/domain/FnOrgBillDetail.java -text
 src/main/java/cn/explink/domain/Function.java -text
 src/main/java/cn/explink/domain/GotoClassAuditing.java -text
 src/main/java/cn/explink/domain/GotoClassOld.java -text
@@ -1156,6 +1160,7 @@ src/main/java/cn/explink/enumutil/StockDetailEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailStocktypeEnum.java -text
 src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
+src/main/java/cn/explink/enumutil/VerificationEnum.java -text
 src/main/java/cn/explink/enumutil/switchs/SwitchEnum.java -text
 src/main/java/cn/explink/exception/BadExcelException.java -text
 src/main/java/cn/explink/exception/CwbException.java -text
@@ -1368,6 +1373,7 @@ src/main/java/cn/explink/service/AccountDeducDetailService.java -text
 src/main/java/cn/explink/service/AccountDeductRecordService.java -text
 src/main/java/cn/explink/service/AccountFeeDetailService.java -text
 src/main/java/cn/explink/service/AccountFeeTypeService.java -text
+src/main/java/cn/explink/service/AdjustmentRecordService.java -text
 src/main/java/cn/explink/service/AdvancedQueryService.java -text
 src/main/java/cn/explink/service/AppearWindowService.java -text
 src/main/java/cn/explink/service/ApplyDeliverstateService.java -text

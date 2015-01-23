@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AppearWindowDao;
+import cn.explink.dao.AdjustmentRecordDAO;
+import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
@@ -42,6 +44,7 @@ import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.searchEditCwbInfoDao;
 import cn.explink.domain.AccountCwbFareDetail;
+import cn.explink.domain.AdjustmentRecord;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
@@ -57,6 +60,7 @@ import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.DataImportService;
@@ -111,6 +115,8 @@ public class EditCwbController {
 	searchEditCwbInfoDao cwbInfoDao;
 	@Autowired
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
+	@Autowired
+	AdjustmentRecordService adjustmentRecordService;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -317,6 +323,8 @@ public class EditCwbController {
 			this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 			List<String> errorList = new ArrayList<String>();
+			//定义一个调整单List
+			List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
 				BigDecimal Receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
@@ -325,6 +333,24 @@ public class EditCwbController {
 				BigDecimal checkfee = request.getParameter("Receivablefee_checkfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_checkfee_" + cwb));
 				BigDecimal otherfee = request.getParameter("Receivablefee_otherfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_otherfee_" + cwb));
 				BigDecimal Paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
+				CwbOrder cwbOrder=new CwbOrder();
+				cwbOrder=cwbDAO.getCwbByCwb(cwb);
+				User user=new User();
+				if(userList.size()>0){
+					user=userList.get(0);
+				}
+				
+				//先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
+				
+				
+				if(Receivablefee!=null&&!Receivablefee.equals(cwbOrder.getReceivablefee())){
+					adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), Paybackfee, Receivablefee, "", user.getUsername(), cwbOrder.getCwbordertypeid());
+					
+				}
+				
+				
+				
+				
 				try {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, Receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser,
 							this.getSessionUser().getUserid());
@@ -335,6 +361,8 @@ public class EditCwbController {
 					errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
 					e.printStackTrace();
 				}
+				
+				
 			}
 			model.addAttribute("ecList", ecList);
 			model.addAttribute("errorList", errorList);
