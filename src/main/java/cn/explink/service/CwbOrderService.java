@@ -4275,6 +4275,7 @@ public class CwbOrderService {
 				accountCwbFareDetail.setShouldfare(co.getShouldfare());
 				accountCwbFareDetail.setInfactfare(deliverystate.getInfactfare());
 				accountCwbFareDetail.setUserid(deliverystate.getDeliveryid());
+				logger.info("列入上门退运费表记录中,cwb={},userid={},shouldfee={},infactfare={}",new Object[]{co.getCwb(),deliverystate.getDeliveryid(),co.getShouldfare(),deliverystate.getInfactfare()});
 				List<AccountCwbFareDetail> accountCwbFareDetailList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailByCwb(co.getCwb());
 				if (accountCwbFareDetailList.size() == 0) {
 					this.accountCwbFareDetailDAO.createAccountCwbFareDetail(accountCwbFareDetail);
