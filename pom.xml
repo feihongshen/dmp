@@ -1568,6 +1568,29 @@
 				<label>XJKR</label>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>XJKR_SMT</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/xjkr_smt_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>XJKR_SMT</label>
+			</properties>
+		</profile>
+		
+		
 		<profile>
 			<id>SYZRX</id>
 			<properties>
@@ -2399,6 +2422,30 @@
 				<label>YNPX</label>
 			</properties>
 		</profile>
+		
+		
+		<profile>
+			<id>YNPX_SMT</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.70.39:3306/ynpx_smt_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>YNPX_SMT</label>
+			</properties>
+		</profile>
+		
+		
 		<profile>
 			<id>BJXJB</id>
 			<properties>
@@ -2678,6 +2725,32 @@
 				<addresspassword>gxpx</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 
+			</properties>
+		</profile>
+		
+		
+		<profile>
+			<id>JXFY</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.70.39:3306/jxfy_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>JXFY</label>
+				<addresscustomerid>9</addresscustomerid>
+				<addressid>9</addressid>
+				<addresspassword>jxfy</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
