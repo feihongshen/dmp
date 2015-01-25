@@ -98,10 +98,6 @@ $(function() {
 	checkstate();
 	
 });
-function yichuli()
-{
-	alert("ssssssssss");
-	}
 
 function getThisBox(id){
 	$.ajax({
@@ -119,7 +115,9 @@ function getThisBox(id){
 }
 
 function check(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>){
+	if($.trim($("#cwb").val()).length==0)
+	{
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
@@ -156,6 +154,7 @@ function check(){
 		}
 		
 	}
+	}
 	$("#searchForm").submit();
 	
 }
@@ -184,7 +183,7 @@ function editSuccess(data){
 	$("#searchForm").submit();
 }		
 function checkstate(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>){
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>){
 		$("#chuangjianstrtime").show();
 		$("#chuangjianendtime").show();
 		$("#strtime").hide();
