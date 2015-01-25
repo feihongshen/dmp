@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.User;
 import cn.explink.service.ExplinkUserDetail;
@@ -32,6 +34,8 @@ public class PunishTypeController {
 	UserDAO userDAO;
 	@Autowired
 	PunishTypeDAO punishTypeDAO;
+	@Autowired
+	PunishDAO punishDAO;
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	@Autowired
@@ -79,6 +83,10 @@ public class PunishTypeController {
 	public @ResponseBody String save(@PathVariable("id") int id, Model model, @RequestParam("name") String name) throws Exception {
 
 		List<PunishType> at = this.punishTypeDAO.getPunishTypeByName(name);
+		List<Punish> punishList = this.punishDAO.getPunishByPunishid(id);
+		if (punishList.size() > 0) {
+			return "{\"errorCode\":1,\"error\":\"该扣罚类型正在使用中，不能修改！\"}";
+		}
 		if (at.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该扣罚类型已存在\"}";
 		} else {
@@ -96,9 +104,13 @@ public class PunishTypeController {
 	}
 
 	@RequestMapping("/delData/{id}")
-	public @ResponseBody String del(@PathVariable("id") long id) throws Exception {
+	public @ResponseBody String del(@PathVariable("id") int id) throws Exception {
 		this.punishTypeDAO.delPunishTypeData(id);
 		this.logger.info("operatorUser={},系统 设置->del", this.getSessionUser().getUsername());
+		List<Punish> punishList = this.punishDAO.getPunishByPunishid(id);
+		if (punishList.size() > 0) {
+			return "{\"errorCode\":1,\"error\":\"该扣罚类型正在使用中，不能删除！\"}";
+		}
 		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
 	}
 

@@ -5928,6 +5928,34 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '入库标签打印', 'printcwb/list', '3', '10316', '34', 'images/txmdy.png', NULL);
 		</sql>
 	</changeSet>
-	
+		<changeSet id="wangyonghe-2015-01-23-2" author="wangyonghe">
+		<sql>
+						CREATE TABLE `express_ops_punish_detail` (
+			`id`  int NOT NULL AUTO_INCREMENT ,
+			`cwb`  varchar(100) NULL DEFAULT '' ,
+			`punishid`  int(10) NULL DEFAULT 0 ,
+			`branchid`  int(10) NULL DEFAULT 0 ,
+			`userid`  int(10) NULL DEFAULT 0 ,
+			`punishtime`  varchar(50) NULL DEFAULT '' ,
+			`punishlevel`  varchar(255) NULL DEFAULT '' ,
+			`punishfee`  decimal(19,2) NULL DEFAULT 0.00 ,
+			`realfee`  decimal(19,2) NULL DEFAULT 0.00 ,
+			`punishcontent`  varchar(255) NULL DEFAULT '' ,
+			`createuser`  varchar(255) NULL DEFAULT '' ,
+			`createtime`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+			`state`  int(1) NULL DEFAULT 0 ,
+			PRIMARY KEY (`id`),
+			INDEX `cwb_idx` (`cwb`) ,
+			INDEX `branchid_idx` (`branchid`) ,
+			INDEX `userid_idx` (`userid`) ,
+			INDEX `punishid_idx` (`punishid`) 
+			);
+		</sql>
+	</changeSet>
+		<changeSet id="wangyonghe-2015-01-23-3" author="wangyonghe">
+		<sql>
+	INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '扣罚登记', 'punish/list/1', '3', 'A10206', '1068', 'images/tscl.png', NULL);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  

@@ -15,7 +15,10 @@ Branch deliverybranch=(Branch)request.getAttribute("deliverybranch");
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 List<Remark> remarkList = (ArrayList<Remark>)request.getAttribute("remarkList");
 List<AbnormalWriteBackView> backViewList = (List<AbnormalWriteBackView>)request.getAttribute("abnormalWriteBackViewList");
-
+List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
+List<User> userList = (List<User>)request.getAttribute("userList");
+List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
+Punish punish = (Punish)request.getAttribute("punish");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -111,6 +114,7 @@ function remarkPost(){
 							<li><a href="#" class="light">基本信息</a></li>
 							<li><a href="#">款项信息</a></li>
 							<li><a href="#">备注信息</a></li>
+							<li><a href="#">扣罚信息</a></li>
 						</ul>
 					</div>
 					<div class="tabbox">
@@ -298,6 +302,52 @@ function remarkPost(){
 					</tbody>
 </table>
 						</li>
+						<li>
+<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+	  <tr class="font_1">
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚类型</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚站点</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚人员</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
+			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
+		</tr>
+		<tr>
+			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
+			<td width="8%" align="center" valign="middle">
+			<%for(PunishType pt:punishTypeList){ if(pt.getId()==punish.getPunishid()){out.print(pt.getName());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(Branch b:branchlist){ if(b.getBranchid()==punish.getBranchid()){out.print(b.getBranchname());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(User u:userList){ if(u.getUserid()==punish.getUserid()){out.print(u.getRealname());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%=punish.getPunishtime() %>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%=punish.getPunishlevel() %>
+			</td>
+			<td width="7%" align="center" valign="middle">
+			<%=punish.getPunishfee() %>
+			</td>
+			<td width="15%" align="center" valign="middle">
+			<%=punish.getPunishcontent() %>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(User u:userList){ if(u.getUserid()==punish.getCreateuser()){out.print(u.getRealname());}}%>
+			</td>
+			<td width="13%" align="center" valign="middle">
+			<%=punish.getCreatetime() %>
+			</td>
+		</tr>
+	</table>
+</li>
 						
 					</div>
 				
@@ -386,6 +436,7 @@ function remarkPost(){
 							<li><a href="#" class="light">基本信息</a></li>
 							<li><a href="#">款项信息</a></li>
 							<li><a href="#">备注信息</a></li>
+							<li><a href="#">扣罚信息</a></li>
 						</ul>
 					</div>
 					<div class="tabbox">
@@ -540,7 +591,7 @@ function remarkPost(){
 					</tbody>
 </table>
 						</li>
-						
+						<li>sssss</li>
 					</div>
 				
 				</td>
