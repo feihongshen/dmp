@@ -76,7 +76,9 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 			</table>
 			<input type="hidden" name="cwb" value="<%=cwborder.getCwb() %>">
 			<div align="center">
-				<%if(showabnomal.equals("1")&&role.getRolename().equals("客服")) {%>
+				<%
+				 if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
+				 else if(showabnomal.equals("1")&&role.getRolename().equals("客服")) {%>
 				<input type="submit" value="处理中" class="button">
 				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
 				<%} 
@@ -84,7 +86,7 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 				<input type="submit" value="完成处理" class="button">
 				<!-- <input type="button" value="完成处理" class="button" onclick="yichuli1();"> -->
 				<%} 
-				else { %>
+				else  { %>
 				<input type="submit" value="处理" class="button">
 				<%} %>
 			</div>
