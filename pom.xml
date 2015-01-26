@@ -700,9 +700,9 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://localhost:3306/peisongdata_dmp_test?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_pxwl_50101?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
-				<expressurl.password>root</expressurl.password>
+				<expressurl.password>0</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
@@ -2436,7 +2436,7 @@
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://192.168.70.47:61616</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
