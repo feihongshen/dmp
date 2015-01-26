@@ -97,6 +97,14 @@ $.ajax({
 		}
 	}});
 }
+function importData()
+{
+	$("#update")[0].contentWindow.submitBranchLoad();
+}
+function submitUpLoad() {
+	
+	$('#swfupload-control').swfupload('startUpload');
+}
 function check(){
 	var re =/^(-)?(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/;
 	if($("#punishfee").val()==''){$("#punishfee").val('0.00');}

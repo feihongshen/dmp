@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum PunishlevelEnum {
-	Defalut(0, "默认"), Yiban(1, "一般");
+	Defalut(0, "默认");
 	private long value;
 	private String text;
 
@@ -21,6 +21,15 @@ public enum PunishlevelEnum {
 	public static PunishlevelEnum getText(long value) {
 		for (PunishlevelEnum pEnum : PunishlevelEnum.values()) {
 			if (pEnum.getValue() == value) {
+				return pEnum;
+			}
+		}
+		return null;
+	}
+
+	public static PunishlevelEnum getText(String name) {
+		for (PunishlevelEnum pEnum : PunishlevelEnum.values()) {
+			if (pEnum.getText().equals(name.trim())) {
 				return pEnum;
 			}
 		}

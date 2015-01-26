@@ -10,13 +10,16 @@
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
-List<Punish> punishList = (List<Punish>)request.getAttribute("punishList");
-Page page_obj = (Page)request.getAttribute("page_obj");
-String cwb = request.getAttribute("cwb").toString();
-long userid=Long.parseLong(request.getAttribute("userid").toString());
-long branchid=Long.parseLong(request.getAttribute("branchid").toString());
-long punishid=Long.parseLong(request.getAttribute("punishid").toString());
-long punishlevel=Long.parseLong(request.getAttribute("punishlevel").toString());
+List<Punish> punishList = request.getAttribute("punishList")==null?new ArrayList<Punish>():(List<Punish>)request.getAttribute("punishList");
+Page page_obj = request.getAttribute("page_obj")==null?new Page():(Page)request.getAttribute("page_obj");
+String cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb").toString();
+long userid=Long.parseLong(request.getAttribute("userid")==null?"0":request.getAttribute("userid").toString());
+long branchid=Long.parseLong(request.getAttribute("branchid")==null?"0":request.getAttribute("branchid").toString());
+long punishid=Long.parseLong(request.getAttribute("punishid")==null?"0":request.getAttribute("punishid").toString());
+long punishlevel=Long.parseLong(request.getAttribute("punishlevel")==null?"0":request.getAttribute("punishlevel").toString());
+long showData=Long.parseLong(request.getAttribute("showData")==null?"0":request.getAttribute("showData").toString());
+int state=Integer.parseInt(request.getAttribute("state")==null?"0":request.getAttribute("state").toString());
+int count=Integer.parseInt(request.getAttribute("count")==null?"0":request.getAttribute("count").toString());
 %>
 
 
@@ -33,6 +36,11 @@ long punishlevel=Long.parseLong(request.getAttribute("punishlevel").toString());
 <script type="text/javascript">
 function addInit(){
 	//无处理
+}
+function fun(){
+	if(<%=showData%>==1)
+		{ alert("成功导入"+<%=count%>+"条数据");
+		$("#searchForm").submit();}
 }
 function editInit(){
 	//$("#searchForm").submit();
@@ -90,63 +98,135 @@ function importPage(){
 		}
 	});
 }
+function showUp()
+{
+	$("#fileup").removeAttr('style');
+	$("#top").removeAttr('style');
+	$("#br").attr('style','display: none;');
+	$("#imp").attr('disabled','disabled');
+//	$("#box_form").removeAttr('style');
+	}
+function isgetallcheck(){
+	if($('input[name="isprint"]:checked').size()>0){
+		$('input[name="isprint"]').each(function(){
+			$(this).attr("checked",false);
+		});
+	}else{
+		$('input[name="isprint"]').attr("checked",true);
+	}
+}
+function stateBatch(state)
+{
+	var ids="";
+	var isprint = "";
+	$('input[name="isprint"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+		isprint = $(this).val();
+		if($.trim(isprint).length!=0){
+		ids+=""+isprint+",";
+		}
+		});
+	if(ids.length==0){
+		alert("请选择！");
+		return false;
+	}
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/punish/stateBactch",
+		data:{"ids":ids.substring(0, ids.length-1),"state":state},
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				$("#searchForm").submit();
+			}
+		}
+	});
+	}
+	function showButton()
+	{ if($("#filename").val().length>0)
+		{
+		$("#subfile").removeAttr('disabled');
+		}
+	}
 </script>
 </head>
 
-<body style="background:#eef9ff">
+<body style="background:#eef9ff" onload="fun()">
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="扣罚登记" class="input_button1"  id="add_button"  />
+	<span><input name="" type="button" value="扣罚登记"  id="add_button"  />
 		</span>
-	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		扣罚类型:<select id="punishid" name="punishid">
+	<form action="<%=request.getContextPath()%>/punish/list/<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
+		扣罚类型:<select id="punishid" name="punishid"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(PunishType p:punishTypeList){ %>
 		<option value="<%=p.getId() %>" <%if(p.getId()==punishid){ %>selected="selected"<%} %>><%=p.getName() %></option>
 		<%} %>
 		</select>
-		扣罚站点:<select id="branchid" name="branchid" onchange="selectBranch($(this).val())">
+		扣罚站点:<select id="branchid" name="branchid" onchange="selectBranch($(this).val())"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(Branch b:branchlist){ %>
 		<option value="<%=b.getBranchid()%>" <%if(b.getBranchid()==branchid) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 		<%} %>
 		</select>
-		扣罚人员:<select id="userid" name="userid" onchange="selectUser($(this).val())">
+		扣罚人员:<select id="userid" name="userid" onchange="selectUser($(this).val())" style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(User u:userList){ %>
 		<option value="<%=u.getUserid()%>" <%if(u.getUserid()==userid) {%>selected="selected"<%} %>><%=u.getRealname() %></option>
 		<%} %>
 		</select>
 		订单号:<input type="text" name="cwb" id="cwb" value="<%=cwb%>"/>
-		优先级别:<select id="punishlevel" name="punishlevel">
+		优先级别:<select id="punishlevel" name="punishlevel"  style="width: 80px">
 		<option value="0">请选择</option>
+		</select>
+		审核状态:<select id="state" name="state">
+		<option value="-1">请选择</option>
+		<option value="0" <%if(state==0) {%>selected="selected"<%} %>>未审核</option>
+		<option value="1" <%if(state==1) {%>selected="selected"<%} %>>已审核</option>
 		</select>
 		<input type="hidden" id="isnow" name="isnow" value="1"/>
 		<input type="submit" value="查询"/>
+		<input type="button" value="审核" onclick="stateBatch(1)"/>
+		<input type="button" value="取消审核" onclick="stateBatch(0)"/>
+		<input type="button" value="导入" id="imp" onclick="showUp()"/>
 		<input type="button" value="导出" onclick="javascript:$('#exportExcle').submit()" <%if(punishList.size()==0){ %>disabled="disabled" <%} %>/>
-		<input type="button" value="导入" onclick="importPage()"/>
 	</form>
+	<div id="fileup" style="display: none;"><form id="punish_cre_Form" name="punish_import_Form"  action="<%=request.getContextPath()%>/punish/importData" method="post" enctype="multipart/form-data" >
+		<input type="file" name="Filedata" id="filename" onchange="showButton()"/>
+		 <input type="submit" value="确认" disabled="disabled" id="subfile"/>
+	</form></div>
 	</div>
-	<div class="right_title">
-	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-<br></br>
+<div id="top"style="display: none;" >
+		<div id="box_form" >
+		</div>
+		<div id="box_form" >
+		</div>
+		<div id="box_form" >
+		</div>
+		</div>
+		<div id="br"><br></br></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	  <tr class="font_1">
+			<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚类型</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚站点</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚人员</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
 			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
-			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
+			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">状态</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 			<td width="13%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(Punish p : punishList){ %>
 		<tr>
+		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><input id="isprint" type="checkbox" value="<%=p.getId()%>" name="isprint"/></td>
 			<td width="8%" align="center" valign="middle"><%=p.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
 			<%for(PunishType pt:punishTypeList){ if(pt.getId()==p.getPunishid()){out.print(pt.getName());}}%>
@@ -157,7 +237,7 @@ function importPage(){
 			<td width="8%" align="center" valign="middle">
 			<%for(User u:userList){ if(u.getUserid()==p.getUserid()){out.print(u.getRealname());}}%>
 			</td>
-			<td width="8%" align="center" valign="middle">
+			<td width="5%" align="center" valign="middle">
 			<%=PunishtimeEnum.getText(p.getPunishtime()).getText() %>
 			</td>
 			<td width="8%" align="center" valign="middle">
@@ -166,8 +246,11 @@ function importPage(){
 			<td width="7%" align="center" valign="middle">
 			<%=p.getPunishfee() %>
 			</td>
-			<td width="15%" align="center" valign="middle">
+			<td width="10%" align="center" valign="middle">
 			<%=p.getPunishcontent() %>
+			</td>
+			<td width="5%" align="center" valign="middle">
+			<%=p.getState()==1?"已审核":"未审核"%>
 			</td>
 			<td width="8%" align="center" valign="middle">
 			<%for(User u:userList){ if(u.getUserid()==p.getCreateuser()){out.print(u.getRealname());}}%>
@@ -179,8 +262,8 @@ function importPage(){
 			<td width="8%" align="center" valign="middle">
 			[<a href="javascript:edit_button(<%=p.getId() %>);">修改</a>]
 			[<a href="javascript:if(confirm('确定要删除?')){delData(<%=p.getId() %>);}">删除</a>]
-			[<a href="javascript:state(<%=p.getId() %>);"><%=(p.getState()==1?"取消审核":"审核") %></a>] 
-			</td>
+<%-- 			[<a href="javascript:state(<%=p.getId() %>);"><%=(p.getState()==1?"取消审核":"审核") %></a>] 
+ --%>			</td>
 		</tr>
 		<%} %>
 	</table>
@@ -214,9 +297,10 @@ function importPage(){
 <input type="hidden" name="userid" value="<%=userid%>"/>
 <input type="hidden" name="punishid" value="<%=punishid%>"/>
 <input type="hidden" name="punishlevel" value="<%=punishlevel%>"/>
+<input type="hidden" name="state" value="<%=state%>"/>
 </form>
 		<script type="text/javascript">
-$("#selectPg").val(<%=request.getAttribute("page") %>);
+$("#selectPg").val(<%=request.getAttribute("page")==null?0:request.getAttribute("page") %>);
 </script>	
 	<div class="jg_10"></div>
 

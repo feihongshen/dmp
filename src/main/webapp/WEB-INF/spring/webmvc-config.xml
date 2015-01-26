@@ -64,6 +64,8 @@
 	<mvc:view-controller path="/cwborder/backinwarehouse" />
 	<mvc:view-controller path="/cwborder/backinbranch" />
 	<mvc:view-controller path="/cwborder/warehousebackpage" />
+	
+	<mvc:view-controller path="/punish/importData" />
 
 	<!-- Resolves localized messages*.properties and application.properties files in the application to 
 		allow for internationalization. The messages*.properties files translate Roo generated messages which 

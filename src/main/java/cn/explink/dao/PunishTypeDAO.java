@@ -40,9 +40,9 @@ public class PunishTypeDAO {
 		return this.jdbcTemplate.query(sql, new PunishTypeRowMapper());
 	}
 
-	public List<PunishType> getPunishTypeByName(String name) {
+	public PunishType getPunishTypeByName(String name) {
 		String sql = "select * from express_set_punish_type where name=? ";
-		return this.jdbcTemplate.query(sql, new PunishTypeRowMapper(), name);
+		return this.jdbcTemplate.queryForObject(sql, new PunishTypeRowMapper(), name);
 	}
 
 	public void crePunishType(String name) {

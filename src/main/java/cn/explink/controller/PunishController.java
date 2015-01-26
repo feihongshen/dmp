@@ -1,11 +1,13 @@
 package cn.explink.controller;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -37,7 +41,11 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
+import cn.explink.service.Excel2003Extractor;
+import cn.explink.service.Excel2007Extractor;
+import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.ResultCollectorManager;
 import cn.explink.service.UserService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -45,6 +53,13 @@ import cn.explink.util.Page;
 @Controller
 @RequestMapping("/punish")
 public class PunishController {
+	@Autowired
+	Excel2007Extractor excel2007Extractor;
+
+	@Autowired
+	Excel2003Extractor excel2003Extractor;
+	@Autowired
+	ResultCollectorManager resultCollectorManager;
 
 	@Autowired
 	UserService userService;
@@ -81,6 +96,65 @@ public class PunishController {
 		return "/punish/add";
 	}
 
+	@RequestMapping("/importPage")
+	public String importPage(Model model) throws Exception {
+		return "/punish/importPage";
+	}
+
+	@RequestMapping("/importData")
+	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file)
+			throws Exception {
+		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
+		final InputStream inputStream = file.getInputStream();
+		final SecurityContext scontext = this.securityContextHolderStrategy.getContext();
+		int count = 0;
+		if (excelExtractor != null) {
+			/*
+			 * ExecutorService newSingleThreadExecutor =
+			 * Executors.newSingleThreadExecutor();
+			 * newSingleThreadExecutor.execute(new Runnable() {
+			 * 
+			 * @Override public void run() {
+			 */
+			try {
+				PunishController.this.securityContextHolderStrategy.setContext(scontext);
+				count = PunishController.this.processFile(excelExtractor, inputStream);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+
+			}
+			/*
+			 * } });
+			 */
+		} else {
+		}
+		model.addAttribute("showData", 1);
+		model.addAttribute("count", count);
+		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<User> userList = this.userDAO.getAllUser();
+		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
+		model.addAttribute("branchlist", branchlist);
+		model.addAttribute("userList", userList);
+		model.addAttribute("punishTypeList", punishTypeList);
+		return "/punish/list";
+	}
+
+	protected int processFile(ExcelExtractor excelExtractor, InputStream inputStream) {
+		return excelExtractor.extract(inputStream);
+
+	}
+
+	private ExcelExtractor getExcelExtractor(MultipartFile file) {
+		String originalFilename = file.getOriginalFilename();
+		if (originalFilename.endsWith("xlsx")) {
+			return this.excel2007Extractor;
+		} else if (originalFilename.endsWith(".xls")) {
+			return this.excel2003Extractor;
+		}
+		return null;
+	}
+
 	@RequestMapping("/edit/{id}")
 	public String edit(Model model, @PathVariable("id") int id) throws Exception {
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
@@ -105,6 +179,13 @@ public class PunishController {
 		model.addAttribute("punishTypeList", punishTypeList);
 		model.addAttribute("punish", punish == null ? new Punish() : punish);
 		return "/punish/state";
+	}
+
+	@RequestMapping("/stateBactch")
+	public @ResponseBody String stateBactch(Model model, @RequestParam(value = "ids", defaultValue = "", required = false) String ids,
+			@RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
+		this.punishDAO.updateStateBatchPunish(ids, state);
+		return "{\"errorCode\":0,\"error\":\" 操作成功\"}";
 	}
 
 	@RequestMapping("/create")
@@ -199,7 +280,7 @@ public class PunishController {
 	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
 			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
-			@RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow) {
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow, @RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
@@ -209,8 +290,8 @@ public class PunishController {
 		List<Punish> punishList = new ArrayList<Punish>();
 		int count = 0;
 		if (isnow > 0) {
-			punishList = this.punishDAO.getPunishList(cwb, punishid, userid, branchid, punishlevel, page);
-			count = this.punishDAO.getPunishCount(cwb, punishid, userid, branchid, punishlevel, page);
+			punishList = this.punishDAO.getPunishList(cwb, punishid, userid, branchid, punishlevel, state, page);
+			count = this.punishDAO.getPunishCount(cwb, punishid, userid, branchid, punishlevel, state, page);
 		}
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
@@ -220,6 +301,7 @@ public class PunishController {
 		model.addAttribute("branchid", branchid);
 		model.addAttribute("punishid", punishid);
 		model.addAttribute("cwb", cwb);
+		model.addAttribute("state", state);
 		model.addAttribute("punishlevel", punishlevel);
 		return "/punish/list";
 	}
@@ -257,9 +339,10 @@ public class PunishController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(HttpServletResponse response, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
-			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel) {
-		String[] cloumnName1 = new String[11]; // 导出的列名
-		String[] cloumnName2 = new String[11]; // 导出的英文列名
+			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
+			@RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
+		String[] cloumnName1 = new String[12]; // 导出的列名
+		String[] cloumnName2 = new String[12]; // 导出的英文列名
 
 		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
@@ -269,7 +352,7 @@ public class PunishController {
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			// 查询出数据
-			final List<Punish> punishList = this.punishDAO.getPunishforExcel(cwb, punishid, userid, branchid, punishlevel);
+			final List<Punish> punishList = this.punishDAO.getPunishforExcel(cwb, punishid, userid, branchid, punishlevel, state);
 			final List<Branch> branchs = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 			final List<User> users = this.userDAO.getAllUser();
 			final List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
@@ -322,6 +405,9 @@ public class PunishController {
 									a = u.getRealname();
 								}
 							}
+						} else if (cloumnName[i].equals("State")) {
+
+							a = pu.getState() == 1 ? "已审核" : "未审核";
 						} else if (cloumnName[i].equals("Punishid")) {
 							for (PunishType pty : punishTypeList) {
 								if (pty.getId() == pu.getPunishid()) {
@@ -380,6 +466,8 @@ public class PunishController {
 		cloumnName2[9] = "Createuser";
 		cloumnName1[10] = "创建时间";
 		cloumnName2[10] = "Createtime";
+		cloumnName1[11] = "审核状态";
+		cloumnName2[11] = "State";
 
 	}
 

@@ -44,22 +44,22 @@ public class PunishDAO {
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
-	public List<Punish> getPunishList(String cwb, long punishid, long userid, long branchid, long punishlevel, long page) {
+	public List<Punish> getPunishList(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long page) {
 
 		String sql = "select * from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
 		sql += " order by createtime desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
-	public int getPunishCount(String cwb, long punishid, long userid, long branchid, long punishlevel, long page) {
+	public int getPunishCount(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long page) {
 
 		String sql = "select count(*) from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	private String creConditions(String cwb, long punishid, long userid, long branchid, long punishlevel) {
+	private String creConditions(String cwb, long punishid, long userid, long branchid, long punishlevel, int state) {
 
 		String sql = "";
 		if ((cwb != null) && (cwb.length() > 0)) {
@@ -77,6 +77,9 @@ public class PunishDAO {
 		if (punishlevel > 0) {
 			sql += " and punishlevel=" + punishlevel;
 		}
+		if (state > -1) {
+			sql += " and state=" + state;
+		}
 		return sql;
 	}
 
@@ -89,6 +92,12 @@ public class PunishDAO {
 		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,NOW())";
 		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser());
+	}
+
+	public int importPunish(Punish pu) throws Exception {
+		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,?)";
+		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
+				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser(), pu.getCreatetime());
 	}
 
 	public int updatePunish(Punish pu) throws Exception {
@@ -108,22 +117,27 @@ public class PunishDAO {
 
 	public Punish getPunishByCwb(String cwb) {
 		try {
-			String sql = "select * from express_ops_punish_detail where cwb= '" + cwb + "'";
+			String sql = "select * from express_ops_punish_detail where cwb= '" + cwb + "' limit 1";
 			return this.jdbcTemplate.queryForObject(sql, new PunishRowMapper());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public List<Punish> getPunishforExcel(String cwb, long punishid, long userid, long branchid, long punishlevel) {
+	public List<Punish> getPunishforExcel(String cwb, long punishid, long userid, long branchid, long punishlevel, int state) {
 		String sql = "select * from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
 	public int updateStatePunish(int id, int state) {
 		String sql = " update  express_ops_punish_detail set state=? where id=?";
 		return this.jdbcTemplate.update(sql, state, id);
+	}
+
+	public int updateStateBatchPunish(String id, int state) {
+		String sql = " update  express_ops_punish_detail set state=? where id in (" + id + ")";
+		return this.jdbcTemplate.update(sql, state);
 	}
 
 	public List<Punish> getPunishByPunishid(int punishid) {

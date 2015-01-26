@@ -55,8 +55,8 @@ public class PunishTypeController {
 
 	@RequestMapping("/create")
 	public @ResponseBody String create(@RequestParam(value = "name", defaultValue = "", required = false) String name) throws Exception {
-		List<PunishType> at = this.punishTypeDAO.getPunishTypeByName(name);
-		if (at.size() > 0) {
+		PunishType at = this.punishTypeDAO.getPunishTypeByName(name);
+		if (at != null) {
 			return "{\"errorCode\":1,\"error\":\"该扣罚类型已存在\"}";
 		} else {
 			this.punishTypeDAO.crePunishType(name);
@@ -82,12 +82,12 @@ public class PunishTypeController {
 	@RequestMapping("/save/{id}")
 	public @ResponseBody String save(@PathVariable("id") int id, Model model, @RequestParam("name") String name) throws Exception {
 
-		List<PunishType> at = this.punishTypeDAO.getPunishTypeByName(name);
+		PunishType at = this.punishTypeDAO.getPunishTypeByName(name);
 		List<Punish> punishList = this.punishDAO.getPunishByPunishid(id);
 		if (punishList.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该扣罚类型正在使用中，不能修改！\"}";
 		}
-		if (at.size() > 0) {
+		if (at != null) {
 			return "{\"errorCode\":1,\"error\":\"该扣罚类型已存在\"}";
 		} else {
 			this.punishTypeDAO.savePunishType(name, id);
