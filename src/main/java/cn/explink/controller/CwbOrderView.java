@@ -25,6 +25,7 @@ public class CwbOrderView {
 	String carsize = "";// 商品尺寸
 	BigDecimal backcaramount; // 取回货物金额
 	long sendcarnum;// 发货数量
+	long scannum;// 发货数量
 	long backcarnum;// 取货数量
 	BigDecimal caramount = BigDecimal.ZERO;;// 货物金额
 	String backcarname = ""; // 取回商品名称
@@ -242,7 +243,7 @@ public class CwbOrderView {
 	private String applyzhongzhuanhandletime;// 中转申请审核时间
 
 	public String getMulti_shipcwb() {
-		return multi_shipcwb == null ? "" : multi_shipcwb;
+		return this.multi_shipcwb == null ? "" : this.multi_shipcwb;
 	}
 
 	public void setMulti_shipcwb(String multi_shipcwb) {
@@ -250,7 +251,7 @@ public class CwbOrderView {
 	}
 
 	public long getTargetcarwarehouse() {
-		return targetcarwarehouse;
+		return this.targetcarwarehouse;
 	}
 
 	public void setTargetcarwarehouse(long targetcarwarehouse) {
@@ -258,7 +259,7 @@ public class CwbOrderView {
 	}
 
 	public String getTargetcarwarehouseName() {
-		return targetcarwarehouseName == null ? "" : targetcarwarehouseName;
+		return this.targetcarwarehouseName == null ? "" : this.targetcarwarehouseName;
 	}
 
 	public void setTargetcarwarehouseName(String targetcarwarehouseName) {
@@ -266,7 +267,7 @@ public class CwbOrderView {
 	}
 
 	public long getOrderResultType() {
-		return orderResultType;
+		return this.orderResultType;
 	}
 
 	public void setOrderResultType(long orderResultType) {
@@ -275,14 +276,15 @@ public class CwbOrderView {
 
 	public String getOrderResultTypeText() {
 		for (DeliveryStateEnum fote : DeliveryStateEnum.values()) {
-			if (fote.getValue() == orderResultType)
+			if (fote.getValue() == this.orderResultType) {
 				return fote.getText();
+			}
 		}
 		return "";
 	}
 
 	public String getExpt_code() {
-		return expt_code == null ? "" : expt_code;
+		return this.expt_code == null ? "" : this.expt_code;
 	}
 
 	public void setExpt_code(String expt_code) {
@@ -290,7 +292,7 @@ public class CwbOrderView {
 	}
 
 	public String getExpt_msg() {
-		return expt_msg == null ? "" : expt_msg;
+		return this.expt_msg == null ? "" : this.expt_msg;
 	}
 
 	public void setExpt_msg(String expt_msg) {
@@ -298,7 +300,7 @@ public class CwbOrderView {
 	}
 
 	public String getPaytype_old() {
-		return paytype_old == null ? "" : paytype_old;
+		return this.paytype_old == null ? "" : this.paytype_old;
 	}
 
 	public void setPaytype_old(String paytype_old) {
@@ -306,7 +308,7 @@ public class CwbOrderView {
 	}
 
 	public long getBackreasonid() {
-		return backreasonid;
+		return this.backreasonid;
 	}
 
 	public void setBackreasonid(long backreasonid) {
@@ -314,7 +316,7 @@ public class CwbOrderView {
 	}
 
 	public String getBackreason() {
-		return backreason == null ? "" : backreason;
+		return this.backreason == null ? "" : this.backreason;
 	}
 
 	public void setBackreason(String backreason) {
@@ -322,7 +324,7 @@ public class CwbOrderView {
 	}
 
 	public long getRuku_dangdang_flag() {
-		return ruku_dangdang_flag;
+		return this.ruku_dangdang_flag;
 	}
 
 	public void setRuku_dangdang_flag(long ruku_dangdang_flag) {
@@ -330,7 +332,7 @@ public class CwbOrderView {
 	}
 
 	public long getChuku_dangdang_flag() {
-		return chuku_dangdang_flag;
+		return this.chuku_dangdang_flag;
 	}
 
 	public void setChuku_dangdang_flag(long chuku_dangdang_flag) {
@@ -338,7 +340,7 @@ public class CwbOrderView {
 	}
 
 	public long getDeliverystate_dangdang_flag() {
-		return deliverystate_dangdang_flag;
+		return this.deliverystate_dangdang_flag;
 	}
 
 	public void setDeliverystate_dangdang_flag(long deliverystate_dangdang_flag) {
@@ -346,7 +348,7 @@ public class CwbOrderView {
 	}
 
 	public String getOperatorName() {
-		return operatorName == null ? "" : operatorName;
+		return this.operatorName == null ? "" : this.operatorName;
 	}
 
 	public void setOperatorName(String operatorName) {
@@ -354,7 +356,7 @@ public class CwbOrderView {
 	}
 
 	public long getAuditEganstate() {
-		return auditEganstate;
+		return this.auditEganstate;
 	}
 
 	public void setAuditEganstate(long auditEganstate) {
@@ -362,7 +364,7 @@ public class CwbOrderView {
 	}
 
 	public long getIspayUp() {
-		return ispayUp;
+		return this.ispayUp;
 	}
 
 	public void setIspayUp(long ispayUp) {
@@ -370,7 +372,7 @@ public class CwbOrderView {
 	}
 
 	public long getIsQiankuan() {
-		return isQiankuan;
+		return this.isQiankuan;
 	}
 
 	public void setIsQiankuan(long isQiankuan) {
@@ -378,7 +380,7 @@ public class CwbOrderView {
 	}
 
 	public String getDelivername() {
-		return delivername == null ? "" : delivername;
+		return this.delivername == null ? "" : this.delivername;
 	}
 
 	public void setDelivername(String delivername) {
@@ -386,7 +388,7 @@ public class CwbOrderView {
 	}
 
 	public String getCustomername() {
-		return customername == null ? "" : customername;
+		return this.customername == null ? "" : this.customername;
 	}
 
 	public void setCustomername(String customername) {
@@ -394,7 +396,7 @@ public class CwbOrderView {
 	}
 
 	public String getBranchname() {
-		return branchname == null ? "" : branchname;
+		return this.branchname == null ? "" : this.branchname;
 	}
 
 	public void setBranchname(String branchname) {
@@ -402,7 +404,7 @@ public class CwbOrderView {
 	}
 
 	public long getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(long state) {
@@ -410,11 +412,11 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getCarrealweight() {
-		return carrealweight;
+		return this.carrealweight;
 	}
 
 	public long getExcelimportuserid() {
-		return excelimportuserid;
+		return this.excelimportuserid;
 	}
 
 	public void setExcelimportuserid(long excelimportuserid) {
@@ -434,7 +436,7 @@ public class CwbOrderView {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -446,7 +448,7 @@ public class CwbOrderView {
 	SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	public String getCwb() {
-		return cwb == null ? "" : cwb;
+		return this.cwb == null ? "" : this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -454,7 +456,7 @@ public class CwbOrderView {
 	}
 
 	public String getConsigneename() {
-		return consigneename == null ? "" : consigneename;
+		return this.consigneename == null ? "" : this.consigneename;
 	}
 
 	public void setConsigneename(String consigneename) {
@@ -462,7 +464,7 @@ public class CwbOrderView {
 	}
 
 	public String getConsigneeaddress() {
-		return consigneeaddress == null ? "" : consigneeaddress;
+		return this.consigneeaddress == null ? "" : this.consigneeaddress;
 	}
 
 	public void setConsigneeaddress(String consigneeaddress) {
@@ -477,7 +479,7 @@ public class CwbOrderView {
 	}
 
 	public String getConsigneepostcode() {
-		return consigneepostcode == null ? "" : consigneepostcode;
+		return this.consigneepostcode == null ? "" : this.consigneepostcode;
 	}
 
 	public void setConsigneepostcode(String consigneepostcode) {
@@ -485,18 +487,18 @@ public class CwbOrderView {
 	}
 
 	public String getConsigneephone() {
-		return consigneephone == null ? "" : consigneephone;
+		return this.consigneephone == null ? "" : this.consigneephone;
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
 		this.consigneephone = consigneephone;
 		if (guessMobile) {
-			setConsigneemobile(consigneephone);
+			this.setConsigneemobile(consigneephone);
 		}
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile == null ? "" : consigneemobile;
+		return this.consigneemobile == null ? "" : this.consigneemobile;
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
@@ -504,7 +506,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getReceivablefee() {
-		return receivablefee;
+		return this.receivablefee;
 	}
 
 	public void setReceivablefee(String receivablefee) {
@@ -516,7 +518,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getPaybackfee() {
-		return paybackfee;
+		return this.paybackfee;
 	}
 
 	public void setPaybackfee(String paybackfee) {
@@ -528,7 +530,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbremark() {
-		return cwbremark == null ? "" : cwbremark;
+		return this.cwbremark == null ? "" : this.cwbremark;
 	}
 
 	public void setCwbremark(String cwbremark) {
@@ -540,7 +542,7 @@ public class CwbOrderView {
 	}
 
 	public String getShipcwb() {
-		return shipcwb == null ? "" : shipcwb;
+		return this.shipcwb == null ? "" : this.shipcwb;
 	}
 
 	public void setShipcwb(String shipcwb) {
@@ -548,7 +550,7 @@ public class CwbOrderView {
 	}
 
 	public String getExceldeliver() {
-		return exceldeliver == null ? "" : exceldeliver;
+		return this.exceldeliver == null ? "" : this.exceldeliver;
 	}
 
 	public void setExceldeliver(String exceldeliver) {
@@ -556,7 +558,7 @@ public class CwbOrderView {
 	}
 
 	public String getConsigneeno() {
-		return consigneeno == null ? "" : consigneeno;
+		return this.consigneeno == null ? "" : this.consigneeno;
 	}
 
 	public void setConsigneeno(String consigneeno) {
@@ -564,7 +566,7 @@ public class CwbOrderView {
 	}
 
 	public String getExcelbranch() {
-		return excelbranch == null ? "" : excelbranch;
+		return this.excelbranch == null ? "" : this.excelbranch;
 	}
 
 	public void setExcelbranch(String excelbranch) {
@@ -572,7 +574,7 @@ public class CwbOrderView {
 	}
 
 	public String getCustomercommand() {
-		return customercommand == null ? "" : customercommand;
+		return this.customercommand == null ? "" : this.customercommand;
 	}
 
 	public void setCustomercommand(String customercommand) {
@@ -580,7 +582,7 @@ public class CwbOrderView {
 	}
 
 	public String getDestination() {
-		return destination == null ? "" : destination;
+		return this.destination == null ? "" : this.destination;
 	}
 
 	public void setDestination(String destination) {
@@ -588,7 +590,7 @@ public class CwbOrderView {
 	}
 
 	public String getTransway() {
-		return transway == null ? "" : transway;
+		return this.transway == null ? "" : this.transway;
 	}
 
 	public void setTransway(String transway) {
@@ -596,7 +598,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbprovince() {
-		return cwbprovince == null ? "" : cwbprovince;
+		return this.cwbprovince == null ? "" : this.cwbprovince;
 	}
 
 	public void setCwbprovince(String cwbprovince) {
@@ -604,7 +606,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbcity() {
-		return cwbcity == null ? "" : cwbcity;
+		return this.cwbcity == null ? "" : this.cwbcity;
 	}
 
 	public void setCwbcity(String cwbcity) {
@@ -612,7 +614,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbcounty() {
-		return cwbcounty == null ? "" : cwbcounty;
+		return this.cwbcounty == null ? "" : this.cwbcounty;
 	}
 
 	public void setCwbcounty(String cwbcounty) {
@@ -620,7 +622,7 @@ public class CwbOrderView {
 	}
 
 	public String getTranscwb() {
-		return transcwb == null ? "" : transcwb;
+		return this.transcwb == null ? "" : this.transcwb;
 	}
 
 	public void setTranscwb(String transcwb) {
@@ -628,7 +630,7 @@ public class CwbOrderView {
 	}
 
 	public long getServiceareaid() {
-		return serviceareaid;
+		return this.serviceareaid;
 	}
 
 	public void setServiceareaid(long serviceareaid) {
@@ -636,7 +638,7 @@ public class CwbOrderView {
 	}
 
 	public long getShipperid() {
-		return shipperid;
+		return this.shipperid;
 	}
 
 	public void setShipperid(long shipperid) {
@@ -644,7 +646,7 @@ public class CwbOrderView {
 	}
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -652,7 +654,7 @@ public class CwbOrderView {
 	}
 
 	public long getStartbranchid() {
-		return startbranchid;
+		return this.startbranchid;
 	}
 
 	public void setStartbranchid(long startbranchid) {
@@ -660,7 +662,7 @@ public class CwbOrderView {
 	}
 
 	public long getNextbranchid() {
-		return nextbranchid;
+		return this.nextbranchid;
 	}
 
 	public void setNextbranchid(long nextbranchid) {
@@ -668,7 +670,7 @@ public class CwbOrderView {
 	}
 
 	public String getBacktocustomer_awb() {
-		return backtocustomer_awb == null ? "" : backtocustomer_awb;
+		return this.backtocustomer_awb == null ? "" : this.backtocustomer_awb;
 	}
 
 	public void setBacktocustomer_awb(String backtocustomer_awb) {
@@ -676,7 +678,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbflowflag() {
-		return cwbflowflag == null ? "" : cwbflowflag;
+		return this.cwbflowflag == null ? "" : this.cwbflowflag;
 	}
 
 	public void setCwbflowflag(String cwbflowflag) {
@@ -696,7 +698,7 @@ public class CwbOrderView {
 	}
 
 	public String getCartype() {
-		return cartype == null ? "" : cartype;
+		return this.cartype == null ? "" : this.cartype;
 	}
 
 	public void setCartype(String cartype) {
@@ -704,7 +706,7 @@ public class CwbOrderView {
 	}
 
 	public String getCarwarehouse() {
-		return carwarehouse == null ? "" : carwarehouse;
+		return this.carwarehouse == null ? "" : this.carwarehouse;
 	}
 
 	public void setCarwarehouse(String carwarehouse) {
@@ -712,7 +714,7 @@ public class CwbOrderView {
 	}
 
 	public String getCarsize() {
-		return carsize == null ? "" : carsize;
+		return this.carsize == null ? "" : this.carsize;
 	}
 
 	public void setCarsize(String carsize) {
@@ -720,7 +722,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getBackcaramount() {
-		return backcaramount;
+		return this.backcaramount;
 	}
 
 	public void setBackcaramount(String backcaramount) {
@@ -736,15 +738,23 @@ public class CwbOrderView {
 	}
 
 	public long getSendcarnum() {
-		return sendcarnum;
+		return this.sendcarnum;
 	}
 
 	public void setSendcarnum(long sendcarnum) {
 		this.sendcarnum = sendcarnum;
 	}
 
+	public long getScannum() {
+		return this.scannum;
+	}
+
+	public void setScannum(long scannum) {
+		this.scannum = scannum;
+	}
+
 	public long getBackcarnum() {
-		return backcarnum;
+		return this.backcarnum;
 	}
 
 	public void setBackcarnum(long backcarnum) {
@@ -752,7 +762,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getCaramount() {
-		return caramount;
+		return this.caramount;
 	}
 
 	public void setCaramount(BigDecimal caramount) {
@@ -760,7 +770,7 @@ public class CwbOrderView {
 	}
 
 	public String getBackcarname() {
-		return backcarname == null ? "" : backcarname;
+		return this.backcarname == null ? "" : this.backcarname;
 	}
 
 	public void setBackcarname(String backcarname) {
@@ -768,7 +778,7 @@ public class CwbOrderView {
 	}
 
 	public String getSendcarname() {
-		return sendcarname == null ? "" : sendcarname;
+		return this.sendcarname == null ? "" : this.sendcarname;
 	}
 
 	public void setSendcarname(String sendcarname) {
@@ -776,7 +786,7 @@ public class CwbOrderView {
 	}
 
 	public long getDeliverid() {
-		return deliverid;
+		return this.deliverid;
 	}
 
 	public void setDeliverid(long deliverid) {
@@ -784,7 +794,7 @@ public class CwbOrderView {
 	}
 
 	public int getEmailfinishflag() {
-		return emailfinishflag;
+		return this.emailfinishflag;
 	}
 
 	public void setEmailfinishflag(int emailfinishflag) {
@@ -792,7 +802,7 @@ public class CwbOrderView {
 	}
 
 	public int getReacherrorflag() {
-		return reacherrorflag;
+		return this.reacherrorflag;
 	}
 
 	public void setReacherrorflag(int reacherrorflag) {
@@ -800,7 +810,7 @@ public class CwbOrderView {
 	}
 
 	public long getOrderflowid() {
-		return orderflowid;
+		return this.orderflowid;
 	}
 
 	public void setOrderflowid(long orderflowid) {
@@ -808,7 +818,7 @@ public class CwbOrderView {
 	}
 
 	public long getFlowordertype() {
-		return flowordertype;
+		return this.flowordertype;
 	}
 
 	public void setFlowordertype(long flowordertype) {
@@ -816,7 +826,7 @@ public class CwbOrderView {
 	}
 
 	public long getCwbreachbranchid() {
-		return cwbreachbranchid;
+		return this.cwbreachbranchid;
 	}
 
 	public void setCwbreachbranchid(long cwbreachbranchid) {
@@ -824,7 +834,7 @@ public class CwbOrderView {
 	}
 
 	public long getCwbreachdeliverbranchid() {
-		return cwbreachdeliverbranchid;
+		return this.cwbreachdeliverbranchid;
 	}
 
 	public void setCwbreachdeliverbranchid(long cwbreachdeliverbranchid) {
@@ -832,7 +842,7 @@ public class CwbOrderView {
 	}
 
 	public String getPodfeetoheadflag() {
-		return podfeetoheadflag == null ? "" : podfeetoheadflag;
+		return this.podfeetoheadflag == null ? "" : this.podfeetoheadflag;
 	}
 
 	public void setPodfeetoheadflag(String podfeetoheadflag) {
@@ -840,7 +850,7 @@ public class CwbOrderView {
 	}
 
 	public String getPodfeetoheadtime() {
-		return podfeetoheadtime == null ? "" : podfeetoheadtime;
+		return this.podfeetoheadtime == null ? "" : this.podfeetoheadtime;
 	}
 
 	public void setPodfeetoheadtime(String podfeetoheadtime) {
@@ -848,7 +858,7 @@ public class CwbOrderView {
 	}
 
 	public String getPodfeetoheadchecktime() {
-		return podfeetoheadchecktime == null ? "" : podfeetoheadchecktime;
+		return this.podfeetoheadchecktime == null ? "" : this.podfeetoheadchecktime;
 	}
 
 	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
@@ -856,7 +866,7 @@ public class CwbOrderView {
 	}
 
 	public String getPodfeetoheadcheckflag() {
-		return podfeetoheadcheckflag == null ? "" : podfeetoheadcheckflag;
+		return this.podfeetoheadcheckflag == null ? "" : this.podfeetoheadcheckflag;
 	}
 
 	public void setPodfeetoheadcheckflag(String podfeetoheadcheckflag) {
@@ -864,7 +874,7 @@ public class CwbOrderView {
 	}
 
 	public long getLeavedreasonid() {
-		return leavedreasonid;
+		return this.leavedreasonid;
 	}
 
 	public void setLeavedreasonid(long leavedreasonid) {
@@ -872,7 +882,7 @@ public class CwbOrderView {
 	}
 
 	public String getDeliversubscribeday() {
-		return deliversubscribeday == null ? "" : deliversubscribeday;
+		return this.deliversubscribeday == null ? "" : this.deliversubscribeday;
 	}
 
 	public void setDeliversubscribeday(String deliversubscribeday) {
@@ -880,7 +890,7 @@ public class CwbOrderView {
 	}
 
 	public String getCustomerwarehouseid() {
-		return customerwarehouseid == null ? "" : customerwarehouseid;
+		return this.customerwarehouseid == null ? "" : this.customerwarehouseid;
 	}
 
 	public void setCustomerwarehouseid(String customerwarehouseid) {
@@ -888,7 +898,7 @@ public class CwbOrderView {
 	}
 
 	public String getEmaildate() {
-		return emaildate == null ? "" : emaildate;
+		return this.emaildate == null ? "" : this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -896,7 +906,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbordertypeid() {
-		return cwbordertypeid == null ? "" : cwbordertypeid;
+		return this.cwbordertypeid == null ? "" : this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(String cwbordertypeid) {
@@ -904,7 +914,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbdelivertypeid() {
-		return cwbdelivertypeid == null ? "" : cwbdelivertypeid;
+		return this.cwbdelivertypeid == null ? "" : this.cwbdelivertypeid;
 	}
 
 	public void setCwbdelivertypeid(String cwbdelivertypeid) {
@@ -912,11 +922,11 @@ public class CwbOrderView {
 	}
 
 	public String getShiptime() {
-		return shiptime == null ? "" : shiptime;
+		return this.shiptime == null ? "" : this.shiptime;
 	}
 
 	public String getCommonname() {
-		return commonname == null ? "" : commonname;
+		return this.commonname == null ? "" : this.commonname;
 	}
 
 	public void setCommonname(String commonname) {
@@ -924,7 +934,7 @@ public class CwbOrderView {
 	}
 
 	public String getNewfollownotes() {
-		return newfollownotes == null ? "" : newfollownotes;
+		return this.newfollownotes == null ? "" : this.newfollownotes;
 	}
 
 	public void setNewfollownotes(String newfollownotes) {
@@ -932,11 +942,11 @@ public class CwbOrderView {
 	}
 
 	public long getMarksflag() {
-		return marksflag;
+		return this.marksflag;
 	}
 
 	public String getMarksflagStr() {
-		return marksflag == 0 ? "否" : "是";
+		return this.marksflag == 0 ? "否" : "是";
 	}
 
 	public void setMarksflag(long marksflag) {
@@ -944,7 +954,7 @@ public class CwbOrderView {
 	}
 
 	public String getMarksflagmen() {
-		return marksflagmen == null ? "" : marksflagmen;
+		return this.marksflagmen == null ? "" : this.marksflagmen;
 	}
 
 	public void setMarksflagmen(String marksflagmen) {
@@ -952,7 +962,7 @@ public class CwbOrderView {
 	}
 
 	public long getCommonid() {
-		return commonid;
+		return this.commonid;
 	}
 
 	public void setCommonid(long commonid) {
@@ -960,7 +970,7 @@ public class CwbOrderView {
 	}
 
 	public String getAllfollownotes() {
-		return allfollownotes;
+		return this.allfollownotes;
 	}
 
 	public void setAllfollownotes(String allfollownotes) {
@@ -968,7 +978,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getPrimitivemoney() {
-		return primitivemoney != null && primitivemoney.doubleValue() > 0 ? primitivemoney : caramount;
+		return (this.primitivemoney != null) && (this.primitivemoney.doubleValue() > 0) ? this.primitivemoney : this.caramount;
 	}
 
 	public void setPrimitivemoney(BigDecimal primitivemoney) {
@@ -976,7 +986,7 @@ public class CwbOrderView {
 	}
 
 	public String getMarksflagtime() {
-		return marksflagtime == null ? "" : marksflagtime;
+		return this.marksflagtime == null ? "" : this.marksflagtime;
 	}
 
 	public void setMarksflagtime(String marksflagtime) {
@@ -984,7 +994,7 @@ public class CwbOrderView {
 	}
 
 	public String getEdittime() {
-		return edittime == null ? "" : edittime;
+		return this.edittime == null ? "" : this.edittime;
 	}
 
 	public void setEdittime(String edittime) {
@@ -992,7 +1002,7 @@ public class CwbOrderView {
 	}
 
 	public String getEditman() {
-		return editman == null ? "" : editman;
+		return this.editman == null ? "" : this.editman;
 	}
 
 	public void setEditman(String editman) {
@@ -1000,7 +1010,7 @@ public class CwbOrderView {
 	}
 
 	public String getSigninman() {
-		return signinman == null ? "" : signinman;
+		return this.signinman == null ? "" : this.signinman;
 	}
 
 	public void setSigninman(String signinman) {
@@ -1008,7 +1018,7 @@ public class CwbOrderView {
 	}
 
 	public String getSignintime() {
-		return signintime == null ? "" : signintime;
+		return this.signintime == null ? "" : this.signintime;
 	}
 
 	public void setSignintime(String signintime) {
@@ -1016,7 +1026,7 @@ public class CwbOrderView {
 	}
 
 	public String getReturngoodsremark() {
-		return returngoodsremark == null ? "" : returngoodsremark;
+		return this.returngoodsremark == null ? "" : this.returngoodsremark;
 	}
 
 	public void setReturngoodsremark(String returngoodsremark) {
@@ -1024,7 +1034,7 @@ public class CwbOrderView {
 	}
 
 	public String getCommonnumber() {
-		return commonnumber == null ? "" : commonnumber;
+		return this.commonnumber == null ? "" : this.commonnumber;
 	}
 
 	public void setCommonnumber(String commonnumber) {
@@ -1032,11 +1042,11 @@ public class CwbOrderView {
 	}
 
 	public long getAuditstate() {
-		return auditstate;
+		return this.auditstate;
 	}
 
 	public String getDeliverybranch() {
-		return deliverybranch == null ? "" : deliverybranch;
+		return this.deliverybranch == null ? "" : this.deliverybranch;
 	}
 
 	public void setDeliverybranch(String deliverybranch) {
@@ -1044,7 +1054,7 @@ public class CwbOrderView {
 	}
 
 	public String getAuditstateStr() {
-		return auditstate == 0 ? "否" : "是";
+		return this.auditstate == 0 ? "否" : "是";
 	}
 
 	public void setAuditstate(long auditstate) {
@@ -1052,7 +1062,7 @@ public class CwbOrderView {
 	}
 
 	public String getAuditor() {
-		return auditor == null ? "" : auditor;
+		return this.auditor == null ? "" : this.auditor;
 	}
 
 	public void setAuditor(String auditor) {
@@ -1060,7 +1070,7 @@ public class CwbOrderView {
 	}
 
 	public String getAudittime() {
-		return audittime == null ? "" : audittime;
+		return this.audittime == null ? "" : this.audittime;
 	}
 
 	public void setAudittime(String audittime) {
@@ -1068,7 +1078,7 @@ public class CwbOrderView {
 	}
 
 	public String getEditsignintime() {
-		return editsignintime == null ? "" : editsignintime;
+		return this.editsignintime == null ? "" : this.editsignintime;
 	}
 
 	public void setEditsignintime(String editsignintime) {
@@ -1079,9 +1089,9 @@ public class CwbOrderView {
 
 	public long getBeforDay() {
 		long quot = 0;
-		if (emaildate != null && emaildate != "") {
+		if ((this.emaildate != null) && (this.emaildate != "")) {
 			try {
-				Date date2 = ft.parse(emaildate);
+				Date date2 = this.ft.parse(this.emaildate);
 				quot = new Date().getTime() - date2.getTime();
 				quot = quot / 1000 / 60 / 60 / 24;
 			} catch (ParseException e) {
@@ -1093,14 +1103,15 @@ public class CwbOrderView {
 
 	public String getFlowordertypeMethod() {
 		for (FlowOrderTypeEnum fote : FlowOrderTypeEnum.values()) {
-			if (fote.getValue() == flowordertype)
+			if (fote.getValue() == this.flowordertype) {
 				return fote.getText();
+			}
 		}
 		return "";
 	}
 
 	public int getFloworderid() {
-		return floworderid;
+		return this.floworderid;
 	}
 
 	public void setFloworderid(int floworderid) {
@@ -1108,7 +1119,7 @@ public class CwbOrderView {
 	}
 
 	public int getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(int branchid) {
@@ -1116,7 +1127,7 @@ public class CwbOrderView {
 	}
 
 	public int getEmaildateid() {
-		return emaildateid;
+		return this.emaildateid;
 	}
 
 	public void setEmaildateid(int emaildateid) {
@@ -1124,7 +1135,7 @@ public class CwbOrderView {
 	}
 
 	public String getInstoreroomtime() {
-		return instoreroomtime == null ? "" : instoreroomtime;
+		return this.instoreroomtime == null ? "" : this.instoreroomtime;
 	}
 
 	public void setInstoreroomtime(String instoreroomtime) {
@@ -1132,7 +1143,7 @@ public class CwbOrderView {
 	}
 
 	public String getRemark1() {
-		return remark1 == null ? "" : remark1;
+		return this.remark1 == null ? "" : this.remark1;
 	}
 
 	public void setRemark1(String remark1) {
@@ -1140,7 +1151,7 @@ public class CwbOrderView {
 	}
 
 	public String getRemark2() {
-		return remark2 == null ? "" : remark2;
+		return this.remark2 == null ? "" : this.remark2;
 	}
 
 	public void setRemark2(String remark2) {
@@ -1148,7 +1159,7 @@ public class CwbOrderView {
 	}
 
 	public String getRemark3() {
-		return remark3 == null ? "" : remark3;
+		return this.remark3 == null ? "" : this.remark3;
 	}
 
 	public void setRemark3(String remark3) {
@@ -1156,7 +1167,7 @@ public class CwbOrderView {
 	}
 
 	public String getRemark4() {
-		return remark4 == null ? "" : remark4;
+		return this.remark4 == null ? "" : this.remark4;
 	}
 
 	public void setRemark4(String remark4) {
@@ -1164,7 +1175,7 @@ public class CwbOrderView {
 	}
 
 	public String getRemark5() {
-		return remark5 == null ? "" : remark5;
+		return this.remark5 == null ? "" : this.remark5;
 	}
 
 	public void setRemark5(String remark5) {
@@ -1172,7 +1183,7 @@ public class CwbOrderView {
 	}
 
 	public String getStartbranchname() {
-		return startbranchname == null ? "" : startbranchname;
+		return this.startbranchname == null ? "" : this.startbranchname;
 	}
 
 	public void setStartbranchname(String startbranchname) {
@@ -1180,7 +1191,7 @@ public class CwbOrderView {
 	}
 
 	public String getNextbranchname() {
-		return nextbranchname == null ? "" : nextbranchname;
+		return this.nextbranchname == null ? "" : this.nextbranchname;
 	}
 
 	public void setNextbranchname(String nextbranchname) {
@@ -1188,7 +1199,7 @@ public class CwbOrderView {
 	}
 
 	public String getOutstoreroomtime() {
-		return outstoreroomtime == null ? "" : outstoreroomtime;
+		return this.outstoreroomtime == null ? "" : this.outstoreroomtime;
 	}
 
 	public void setOutstoreroomtime(String outstoreroomtime) {
@@ -1196,7 +1207,7 @@ public class CwbOrderView {
 	}
 
 	public String getInSitetime() {
-		return inSitetime == null ? "" : inSitetime;
+		return this.inSitetime == null ? "" : this.inSitetime;
 	}
 
 	public void setInSitetime(String inSitetime) {
@@ -1204,7 +1215,7 @@ public class CwbOrderView {
 	}
 
 	public String getPickGoodstime() {
-		return pickGoodstime == null ? "" : pickGoodstime;
+		return this.pickGoodstime == null ? "" : this.pickGoodstime;
 	}
 
 	public void setPickGoodstime(String pickGoodstime) {
@@ -1212,7 +1223,7 @@ public class CwbOrderView {
 	}
 
 	public String getSendSuccesstime() {
-		return sendSuccesstime == null ? "" : sendSuccesstime;
+		return this.sendSuccesstime == null ? "" : this.sendSuccesstime;
 	}
 
 	public void setSendSuccesstime(String sendSuccesstime) {
@@ -1220,7 +1231,7 @@ public class CwbOrderView {
 	}
 
 	public String getGobacktime() {
-		return gobacktime == null ? "" : gobacktime;
+		return this.gobacktime == null ? "" : this.gobacktime;
 	}
 
 	public void setGobacktime(String gobacktime) {
@@ -1228,7 +1239,7 @@ public class CwbOrderView {
 	}
 
 	public String getGoclasstime() {
-		return goclasstime == null ? "" : goclasstime;
+		return this.goclasstime == null ? "" : this.goclasstime;
 	}
 
 	public void setGoclasstime(String goclasstime) {
@@ -1236,7 +1247,7 @@ public class CwbOrderView {
 	}
 
 	public String getNowtime() {
-		return nowtime == null ? "" : nowtime;
+		return this.nowtime == null ? "" : this.nowtime;
 	}
 
 	public void setNowtime(String nowtime) {
@@ -1244,7 +1255,7 @@ public class CwbOrderView {
 	}
 
 	public String getLeavedreasonStr() {
-		return leavedreasonStr == null ? "" : leavedreasonStr;
+		return this.leavedreasonStr == null ? "" : this.leavedreasonStr;
 	}
 
 	public void setLeavedreasonStr(String leavedreasonStr) {
@@ -1252,7 +1263,7 @@ public class CwbOrderView {
 	}
 
 	public String getInhouse() {
-		return inhouse == null ? "" : inhouse;
+		return this.inhouse == null ? "" : this.inhouse;
 	}
 
 	public void setInhouse(String inhouse) {
@@ -1260,7 +1271,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getRealweight() {
-		return realweight;
+		return this.realweight;
 	}
 
 	public void setRealweight(BigDecimal realweight) {
@@ -1268,7 +1279,7 @@ public class CwbOrderView {
 	}
 
 	public String getGoodsremark() {
-		return goodsremark == null ? "" : goodsremark;
+		return this.goodsremark == null ? "" : this.goodsremark;
 	}
 
 	public void setGoodsremark(String goodsremark) {
@@ -1276,7 +1287,7 @@ public class CwbOrderView {
 	}
 
 	public String getPaytype() {
-		return paytype == null ? "" : paytype;
+		return this.paytype == null ? "" : this.paytype;
 	}
 
 	public void setPaytype(String paytype) {
@@ -1284,7 +1295,7 @@ public class CwbOrderView {
 	}
 
 	public String getCarwarehousename() {
-		return carwarehousename == null ? "" : carwarehousename;
+		return this.carwarehousename == null ? "" : this.carwarehousename;
 	}
 
 	public void setCarwarehousename(String carwarehousename) {
@@ -1292,7 +1303,7 @@ public class CwbOrderView {
 	}
 
 	public String getCustomerwarehousename() {
-		return customerwarehousename == null ? "" : customerwarehousename;
+		return this.customerwarehousename == null ? "" : this.customerwarehousename;
 	}
 
 	public void setCustomerwarehousename(String customerwarehousename) {
@@ -1300,7 +1311,7 @@ public class CwbOrderView {
 	}
 
 	public long getFdeliverid() {
-		return fdeliverid;
+		return this.fdeliverid;
 	}
 
 	public void setFdeliverid(long fdeliverid) {
@@ -1308,7 +1319,7 @@ public class CwbOrderView {
 	}
 
 	public String getFdelivername() {
-		return fdelivername == null ? "" : fdelivername;
+		return this.fdelivername == null ? "" : this.fdelivername;
 	}
 
 	public void setFdelivername(String fdelivername) {
@@ -1316,7 +1327,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getReceivedfee() {
-		return receivedfee;
+		return this.receivedfee;
 	}
 
 	public void setReceivedfee(BigDecimal receivedfee) {
@@ -1324,7 +1335,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getReturnedfee() {
-		return returnedfee;
+		return this.returnedfee;
 	}
 
 	public void setReturnedfee(BigDecimal returnedfee) {
@@ -1332,7 +1343,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getBusinessfee() {
-		return businessfee;
+		return this.businessfee;
 	}
 
 	public void setBusinessfee(BigDecimal businessfee) {
@@ -1340,7 +1351,7 @@ public class CwbOrderView {
 	}
 
 	public long getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(long deliverystate) {
@@ -1348,7 +1359,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getCash() {
-		return cash;
+		return this.cash;
 	}
 
 	public void setCash(BigDecimal cash) {
@@ -1356,7 +1367,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getPos() {
-		return pos;
+		return this.pos;
 	}
 
 	public void setPos(BigDecimal pos) {
@@ -1364,7 +1375,7 @@ public class CwbOrderView {
 	}
 
 	public String getPosremark() {
-		return posremark == null ? "" : posremark;
+		return this.posremark == null ? "" : this.posremark;
 	}
 
 	public void setPosremark(String posremark) {
@@ -1372,7 +1383,7 @@ public class CwbOrderView {
 	}
 
 	public Timestamp getMobilepodtime() {
-		return mobilepodtime;
+		return this.mobilepodtime;
 	}
 
 	public void setMobilepodtime(Timestamp mobilepodtime) {
@@ -1380,7 +1391,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getCheckfee() {
-		return checkfee;
+		return this.checkfee;
 	}
 
 	public void setCheckfee(BigDecimal checkfee) {
@@ -1388,7 +1399,7 @@ public class CwbOrderView {
 	}
 
 	public String getCheckremark() {
-		return checkremark == null ? "" : checkremark;
+		return this.checkremark == null ? "" : this.checkremark;
 	}
 
 	public void setCheckremark(String checkremark) {
@@ -1396,7 +1407,7 @@ public class CwbOrderView {
 	}
 
 	public long getReceivedfeeuser() {
-		return receivedfeeuser;
+		return this.receivedfeeuser;
 	}
 
 	public void setReceivedfeeuser(long receivedfeeuser) {
@@ -1404,7 +1415,7 @@ public class CwbOrderView {
 	}
 
 	public long getStatisticstate() {
-		return statisticstate;
+		return this.statisticstate;
 	}
 
 	public void setStatisticstate(long statisticstate) {
@@ -1412,7 +1423,7 @@ public class CwbOrderView {
 	}
 
 	public String getCreatetime() {
-		return createtime == null ? "" : createtime;
+		return this.createtime == null ? "" : this.createtime;
 	}
 
 	public void setCreatetime(String createtime) {
@@ -1420,7 +1431,7 @@ public class CwbOrderView {
 	}
 
 	public BigDecimal getOtherfee() {
-		return otherfee;
+		return this.otherfee;
 	}
 
 	public void setOtherfee(BigDecimal otherfee) {
@@ -1428,7 +1439,7 @@ public class CwbOrderView {
 	}
 
 	public long getPodremarkid() {
-		return podremarkid;
+		return this.podremarkid;
 	}
 
 	public void setPodremarkid(long podremarkid) {
@@ -1436,7 +1447,7 @@ public class CwbOrderView {
 	}
 
 	public String getDeliverstateremark() {
-		return deliverstateremark == null ? "" : deliverstateremark;
+		return this.deliverstateremark == null ? "" : this.deliverstateremark;
 	}
 
 	public void setDeliverstateremark(String deliverstateremark) {
@@ -1444,7 +1455,7 @@ public class CwbOrderView {
 	}
 
 	public int getGcaid() {
-		return gcaid;
+		return this.gcaid;
 	}
 
 	public void setGcaid(int gcaid) {
@@ -1452,7 +1463,7 @@ public class CwbOrderView {
 	}
 
 	public long getGobackid() {
-		return gobackid;
+		return this.gobackid;
 	}
 
 	public void setGobackid(long gobackid) {
@@ -1460,7 +1471,7 @@ public class CwbOrderView {
 	}
 
 	public long getPayupbranchid() {
-		return payupbranchid;
+		return this.payupbranchid;
 	}
 
 	public void setPayupbranchid(long payupbranchid) {
@@ -1468,7 +1479,7 @@ public class CwbOrderView {
 	}
 
 	public String getPayupbranchname() {
-		return payupbranchname == null ? "" : payupbranchname;
+		return this.payupbranchname == null ? "" : this.payupbranchname;
 	}
 
 	public void setPayupbranchname(String payupbranchname) {
@@ -1476,7 +1487,7 @@ public class CwbOrderView {
 	}
 
 	public String getPodremarkStr() {
-		return podremarkStr == null ? "" : podremarkStr;
+		return this.podremarkStr == null ? "" : this.podremarkStr;
 	}
 
 	public void setPodremarkStr(String podremarkStr) {
@@ -1484,7 +1495,7 @@ public class CwbOrderView {
 	}
 
 	public String getReceivedfeeuserName() {
-		return receivedfeeuserName == null ? "" : receivedfeeuserName;
+		return this.receivedfeeuserName == null ? "" : this.receivedfeeuserName;
 	}
 
 	public void setReceivedfeeuserName(String receivedfeeuserName) {
@@ -1492,7 +1503,7 @@ public class CwbOrderView {
 	}
 
 	public String getPayuprealname() {
-		return payuprealname == null ? "" : payuprealname;
+		return this.payuprealname == null ? "" : this.payuprealname;
 	}
 
 	public void setPayuprealname(String payuprealname) {
@@ -1500,7 +1511,7 @@ public class CwbOrderView {
 	}
 
 	public long getYoudanwuhuoBranchid() {
-		return youdanwuhuoBranchid;
+		return this.youdanwuhuoBranchid;
 	}
 
 	public void setYoudanwuhuoBranchid(long youdanwuhuoBranchid) {
@@ -1508,7 +1519,7 @@ public class CwbOrderView {
 	}
 
 	public long getYouhuowudanBranchid() {
-		return youhuowudanBranchid;
+		return this.youhuowudanBranchid;
 	}
 
 	public void setYouhuowudanBranchid(long youhuowudanBranchid) {
@@ -1516,7 +1527,7 @@ public class CwbOrderView {
 	}
 
 	public long getTuotouTime() {
-		return tuotouTime;
+		return this.tuotouTime;
 	}
 
 	public void setTuotouTime(long tuotouTime) {
@@ -1524,7 +1535,7 @@ public class CwbOrderView {
 	}
 
 	public long getYoujieguoTime() {
-		return youjieguoTime;
+		return this.youjieguoTime;
 	}
 
 	public void setYoujieguoTime(long youjieguoTime) {
@@ -1532,7 +1543,7 @@ public class CwbOrderView {
 	}
 
 	public long getRukutuotouTime() {
-		return rukutuotouTime;
+		return this.rukutuotouTime;
 	}
 
 	public void setRukutuotouTime(long rukutuotouTime) {
@@ -1540,7 +1551,7 @@ public class CwbOrderView {
 	}
 
 	public long getRukuyoujieguoTime() {
-		return rukuyoujieguoTime;
+		return this.rukuyoujieguoTime;
 	}
 
 	public void setRukuyoujieguoTime(long rukuyoujieguoTime) {
@@ -1548,7 +1559,7 @@ public class CwbOrderView {
 	}
 
 	public long getDaozhantuotouTime() {
-		return daozhantuotouTime;
+		return this.daozhantuotouTime;
 	}
 
 	public void setDaozhantuotouTime(long daozhantuotouTime) {
@@ -1556,7 +1567,7 @@ public class CwbOrderView {
 	}
 
 	public long getDaozhanyoujieguoTime() {
-		return daozhanyoujieguoTime;
+		return this.daozhanyoujieguoTime;
 	}
 
 	public void setDaozhanyoujieguoTime(long daozhanyoujieguoTime) {
@@ -1564,7 +1575,7 @@ public class CwbOrderView {
 	}
 
 	public long getTuihuoid() {
-		return tuihuoid;
+		return this.tuihuoid;
 	}
 
 	public void setTuihuoid(long tuihuoid) {
@@ -1572,7 +1583,7 @@ public class CwbOrderView {
 	}
 
 	public long getZhongzhuanid() {
-		return zhongzhuanid;
+		return this.zhongzhuanid;
 	}
 
 	public void setZhongzhuanid(long zhongzhuanid) {
@@ -1593,11 +1604,11 @@ public class CwbOrderView {
 	public String getOrderType() {
 		String flowtypename = "";
 		for (CwbOrderTypeIdEnum f : CwbOrderTypeIdEnum.values()) {
-			if ("".equals(cwbordertypeid)) {
+			if ("".equals(this.cwbordertypeid)) {
 				flowtypename = "配送";
-			} else if (cwbordertypeid.equals("-1")) {
+			} else if (this.cwbordertypeid.equals("-1")) {
 				flowtypename = "配送";
-			} else if (f.getValue() == Integer.parseInt(cwbordertypeid)) {
+			} else if (f.getValue() == Integer.parseInt(this.cwbordertypeid)) {
 				flowtypename = f.getText();
 				break;
 			}
@@ -1607,12 +1618,12 @@ public class CwbOrderView {
 
 	public String getPaytypeName() {
 		String paytypeName = "";
-		if (paytype != null && !"".equals(paytype)) {
-			if ("2".equals(paytype)) {
+		if ((this.paytype != null) && !"".equals(this.paytype)) {
+			if ("2".equals(this.paytype)) {
 				paytypeName = "POS";
 			} else {
-				paytypeName = paytype.replace("1", "现金").replace("2", "POS").replace("3", "支票").replace("4", "其他");
-				paytypeName = !"".equals(paytype) && paytype.trim().length() > 1 ? paytypeName.substring(0, paytypeName.length()) : paytypeName;
+				paytypeName = this.paytype.replace("1", "现金").replace("2", "POS").replace("3", "支票").replace("4", "其他");
+				paytypeName = !"".equals(this.paytype) && (this.paytype.trim().length() > 1) ? paytypeName.substring(0, paytypeName.length()) : paytypeName;
 			}
 		}
 		return paytypeName;
@@ -1621,12 +1632,12 @@ public class CwbOrderView {
 	// 原支付方式
 	public String getPaytypeNameOld() {
 		String paytypeName = "";
-		if (paytype_old != null && !"".equals(paytype_old)) {
-			if ("2".equals(paytype_old)) {
+		if ((this.paytype_old != null) && !"".equals(this.paytype_old)) {
+			if ("2".equals(this.paytype_old)) {
 				paytypeName = "POS";
 			} else {
-				paytypeName = paytype_old.replace("1", "现金").replace("2", "POS").replace("3", "支票").replace("4", "其他");
-				paytypeName = !"".equals(paytype_old) && paytype_old.trim().length() > 1 ? paytypeName.substring(0, paytypeName.length() - 1) : paytypeName;
+				paytypeName = this.paytype_old.replace("1", "现金").replace("2", "POS").replace("3", "支票").replace("4", "其他");
+				paytypeName = !"".equals(this.paytype_old) && (this.paytype_old.trim().length() > 1) ? paytypeName.substring(0, paytypeName.length() - 1) : paytypeName;
 			}
 		}
 		return paytypeName;
@@ -1634,14 +1645,14 @@ public class CwbOrderView {
 
 	public String getStatisticstateStr() {
 		String returnStr = "";
-		if (statisticstate == 1) {
+		if (this.statisticstate == 1) {
 			returnStr = "未归班";
-		} else if (statisticstate == 2) {
+		} else if (this.statisticstate == 2) {
 			returnStr = "未归班";
-		} else if (statisticstate == 3) {
+		} else if (this.statisticstate == 3) {
 			returnStr = "暂不处理";
 		}
-		return !"".equals(returnStr) ? returnStr : statisticstateStr;
+		return !"".equals(returnStr) ? returnStr : this.statisticstateStr;
 	}
 
 	public void setStatisticstateStr(String statisticstateStr) {
@@ -1649,23 +1660,23 @@ public class CwbOrderView {
 	}
 
 	public String getIspayUpStr() {
-		return ispayUp == 1 ? "已上缴" : "未上交";
+		return this.ispayUp == 1 ? "已上缴" : "未上交";
 	}
 
 	public String getIsQiankuanStr() {
-		return isQiankuan == 1 ? "有欠款" : "未欠款";
+		return this.isQiankuan == 1 ? "有欠款" : "未欠款";
 	}
 
 	public String getAuditEganstateStr() {
-		return auditEganstate == 0 ? "未审核" : "已审核";
+		return this.auditEganstate == 0 ? "未审核" : "已审核";
 	}
 
 	public String getCwbdelivertypeStr() {
-		return cwbdelivertypeid.equals("2") ? "加急" : "普通";
+		return this.cwbdelivertypeid.equals("2") ? "加急" : "普通";
 	}
 
 	public String getCurrentbranchname() {
-		return currentbranchname == null ? "" : currentbranchname;
+		return this.currentbranchname == null ? "" : this.currentbranchname;
 	}
 
 	public void setCurrentbranchname(String currentbranchname) {
@@ -1673,7 +1684,7 @@ public class CwbOrderView {
 	}
 
 	public String getInwarhouseremark() {
-		return inwarhouseremark == null ? "" : inwarhouseremark;
+		return this.inwarhouseremark == null ? "" : this.inwarhouseremark;
 	}
 
 	public void setInwarhouseremark(String inwarhouseremark) {
@@ -1681,7 +1692,7 @@ public class CwbOrderView {
 	}
 
 	public String getCustomerbrackhouseremark() {
-		return customerbrackhouseremark;
+		return this.customerbrackhouseremark;
 	}
 
 	public void setCustomerbrackhouseremark(String customerbrackhouseremark) {
@@ -1690,14 +1701,15 @@ public class CwbOrderView {
 
 	public String getDeliverStateText() {
 		for (DeliveryStateEnum fote : DeliveryStateEnum.values()) {
-			if (fote.getValue() == deliverystate)
+			if (fote.getValue() == this.deliverystate) {
 				return fote.getText();
+			}
 		}
 		return "";
 	}
 
 	public long getCwbstate() {
-		return cwbstate;
+		return this.cwbstate;
 	}
 
 	public void setCwbstate(long cwbstate) {
@@ -1705,7 +1717,7 @@ public class CwbOrderView {
 	}
 
 	public long getCurrentbranchid() {
-		return currentbranchid;
+		return this.currentbranchid;
 	}
 
 	public void setCurrentbranchid(long currentbranchid) {
@@ -1713,7 +1725,7 @@ public class CwbOrderView {
 	}
 
 	public String getJushoutime() {
-		return jushoutime;
+		return this.jushoutime;
 	}
 
 	public void setJushoutime(String jushoutime) {
@@ -1721,7 +1733,7 @@ public class CwbOrderView {
 	}
 
 	public String getTuigonghuoshangchukutime() {
-		return tuigonghuoshangchukutime;
+		return this.tuigonghuoshangchukutime;
 	}
 
 	public void setTuigonghuoshangchukutime(String tuigonghuoshangchukutime) {
@@ -1729,7 +1741,7 @@ public class CwbOrderView {
 	}
 
 	public String getInSiteBranchname() {
-		return inSiteBranchname;
+		return this.inSiteBranchname;
 	}
 
 	public void setInSiteBranchname(String inSiteBranchname) {
@@ -1737,7 +1749,7 @@ public class CwbOrderView {
 	}
 
 	public String getResendtime() {
-		return resendtime;
+		return this.resendtime;
 	}
 
 	public void setResendtime(String resendtime) {
@@ -1745,7 +1757,7 @@ public class CwbOrderView {
 	}
 
 	public String getTuihuozhaninstoreroomtime() {
-		return tuihuozhaninstoreroomtime;
+		return this.tuihuozhaninstoreroomtime;
 	}
 
 	public void setTuihuozhaninstoreroomtime(String tuihuozhaninstoreroomtime) {
@@ -1753,7 +1765,7 @@ public class CwbOrderView {
 	}
 
 	public String getPackagecode() {
-		return packagecode;
+		return this.packagecode;
 	}
 
 	public void setPackagecode(String packagecode) {
@@ -1761,7 +1773,7 @@ public class CwbOrderView {
 	}
 
 	public String getScancwb() {
-		return scancwb;
+		return this.scancwb;
 	}
 
 	public void setScancwb(String scancwb) {
@@ -1769,7 +1781,7 @@ public class CwbOrderView {
 	}
 
 	public long getHandleresult() {
-		return handleresult;
+		return this.handleresult;
 	}
 
 	public void setHandleresult(long handleresult) {
@@ -1777,7 +1789,7 @@ public class CwbOrderView {
 	}
 
 	public long getHandleperson() {
-		return handleperson;
+		return this.handleperson;
 	}
 
 	public void setHandleperson(long handleperson) {
@@ -1785,7 +1797,7 @@ public class CwbOrderView {
 	}
 
 	public String getHandlereason() {
-		return handlereason;
+		return this.handlereason;
 	}
 
 	public void setHandlereason(String handlereason) {
@@ -1793,7 +1805,7 @@ public class CwbOrderView {
 	}
 
 	public long getCurrentsitetype() {
-		return currentsitetype;
+		return this.currentsitetype;
 	}
 
 	public void setCurrentsitetype(long currentsitetype) {
@@ -1801,7 +1813,7 @@ public class CwbOrderView {
 	}
 
 	public long getApplytuihuobranchid() {
-		return applytuihuobranchid;
+		return this.applytuihuobranchid;
 	}
 
 	public void setApplytuihuobranchid(long applytuihuobranchid) {
@@ -1809,7 +1821,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplytuihuoremark() {
-		return applytuihuoremark;
+		return this.applytuihuoremark;
 	}
 
 	public void setApplytuihuoremark(String applytuihuoremark) {
@@ -1817,7 +1829,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplytuihuobranchname() {
-		return applytuihuobranchname;
+		return this.applytuihuobranchname;
 	}
 
 	public void setApplytuihuobranchname(String applytuihuobranchname) {
@@ -1825,7 +1837,7 @@ public class CwbOrderView {
 	}
 
 	public long getApplyishandle() {
-		return applyishandle;
+		return this.applyishandle;
 	}
 
 	public void setApplyishandle(long applyishandle) {
@@ -1833,7 +1845,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyhandleremark() {
-		return applyhandleremark;
+		return this.applyhandleremark;
 	}
 
 	public void setApplyhandleremark(String applyhandleremark) {
@@ -1841,7 +1853,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyhandleusername() {
-		return applyhandleusername;
+		return this.applyhandleusername;
 	}
 
 	public void setApplyhandleusername(String applyhandleusername) {
@@ -1849,7 +1861,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyhandletime() {
-		return applyhandletime;
+		return this.applyhandletime;
 	}
 
 	public void setApplyhandletime(String applyhandletime) {
@@ -1857,7 +1869,7 @@ public class CwbOrderView {
 	}
 
 	public long getApplyzhongzhuanbranchid() {
-		return applyzhongzhuanbranchid;
+		return this.applyzhongzhuanbranchid;
 	}
 
 	public void setApplyzhongzhuanbranchid(long applyzhongzhuanbranchid) {
@@ -1865,7 +1877,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyzhongzhuanbranchname() {
-		return applyzhongzhuanbranchname;
+		return this.applyzhongzhuanbranchname;
 	}
 
 	public void setApplyzhongzhuanbranchname(String applyzhongzhuanbranchname) {
@@ -1873,7 +1885,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyzhongzhuanremark() {
-		return applyzhongzhuanremark;
+		return this.applyzhongzhuanremark;
 	}
 
 	public void setApplyzhongzhuanremark(String applyzhongzhuanremark) {
@@ -1881,7 +1893,7 @@ public class CwbOrderView {
 	}
 
 	public long getApplyzhongzhuanishandle() {
-		return applyzhongzhuanishandle;
+		return this.applyzhongzhuanishandle;
 	}
 
 	public void setApplyzhongzhuanishandle(long applyzhongzhuanishandle) {
@@ -1889,7 +1901,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyzhongzhuanhandleremark() {
-		return applyzhongzhuanhandleremark;
+		return this.applyzhongzhuanhandleremark;
 	}
 
 	public void setApplyzhongzhuanhandleremark(String applyzhongzhuanhandleremark) {
@@ -1897,7 +1909,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyzhongzhuanhandleusername() {
-		return applyzhongzhuanhandleusername;
+		return this.applyzhongzhuanhandleusername;
 	}
 
 	public void setApplyzhongzhuanhandleusername(String applyzhongzhuanhandleusername) {
@@ -1905,7 +1917,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplyzhongzhuanhandletime() {
-		return applyzhongzhuanhandletime;
+		return this.applyzhongzhuanhandletime;
 	}
 
 	public void setApplyzhongzhuanhandletime(String applyzhongzhuanhandletime) {
@@ -1913,7 +1925,7 @@ public class CwbOrderView {
 	}
 
 	public String getTimelimited() {
-		return timelimited;
+		return this.timelimited;
 	}
 
 	public void setTimelimited(String timelimited) {

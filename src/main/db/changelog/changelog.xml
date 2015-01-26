@@ -5957,6 +5957,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 	INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '扣罚登记', 'punish/list/1', '3', 'A10206', '1068', 'images/tscl.png', NULL);
 		</sql>
 	</changeSet>
+		<changeSet id="wangyonghe-2015-01-26-1" author="wangyonghe">
+		<sql>
+	INSERT INTO `express_ops_setexportfield` ( `fieldname`, `exportstate`, `fieldenglishname`, `orderlevel`, `exportdatatype`) VALUES ( '扫描件数', '1', 'Scannum', '143', 'string');
+		</sql>
+	</changeSet>
 	<changeSet id="lansheng-2015-01-25-1" author="lansheng">
 		<sql>
 		CREATE TABLE `express_ops_order_flow_log` (
