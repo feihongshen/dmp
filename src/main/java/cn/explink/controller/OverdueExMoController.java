@@ -459,8 +459,8 @@ public class OverdueExMoController {
 			showColNameList.add("揽退成功率");
 			break;
 		case NotMatched:
-			showColNameList.add("未匹配量");
-			showColNameList.add("未匹配率");
+			showColNameList.add("已匹配量");
+			showColNameList.add("已匹配率");
 			break;
 		case OutAreaTransfer:
 			showColNameList.add("超区转单量");
@@ -562,7 +562,7 @@ public class OverdueExMoController {
 	}
 
 	private enum ShowColEnum {
-		SystemAccept("系统接收"), OutAreaTransfer("超区转单"), NotMatched("未匹配"), StationAccept("站点接收"), Print("打印"), Dispatch("分派"), RptOutArea("上报超区"), GetBack("揽退");
+		SystemAccept("系统接收"), OutAreaTransfer("超区转单"), NotMatched("已匹配"), StationAccept("站点接收"), Print("打印"), Dispatch("分派"), RptOutArea("上报超区"), GetBack("揽退");
 
 		String colName;
 
@@ -850,19 +850,19 @@ public class OverdueExMoController {
 			return cell;
 		}
 
-		private String getSql(boolean notMatch, boolean enableTEQuery) {
+		private String getSql(boolean matched, boolean enableTEQuery) {
 			StringBuilder sql = new StringBuilder();
 			sql.append(this.getSelectPart());
 			sql.append("where warehouse_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
-			if (notMatch) {
-				sql.append(" and station_accept_time = '0000-00-00 00:00:00'");
+			if (matched) {
+				sql.append(" and station_accept_time != '0000-00-00 00:00:00'");
 			}
 			if (enableTEQuery) {
 				TimeEffectiveVO teVO = this.getTimeEffectiveVO(ShowColEnum.NotMatched);
 				if (teVO != null) {
 					String subField = teVO.getTimeType().getField();
-					sql.append(" and (unix_timestamp(system_accept_time) - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
+					sql.append(" and (unix_timestamp(" + subField + ") - unix_timestamp(system_accept_time)) <=" + teVO.getScope());
 				}
 			}
 			return sql.toString();
