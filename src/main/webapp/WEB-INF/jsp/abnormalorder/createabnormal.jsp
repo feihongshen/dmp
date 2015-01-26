@@ -91,7 +91,7 @@ function sub(){
 		<div class="kfsh_tabbtn">
 			<ul>
 				<li><a href="#" class="light">创建问题件</a></li>
-				<li><a href="./toReplyabnormal/1">问题件回复</a></li>
+				<!-- <li><a href="./toReplyabnormal/1">问题件回复</a></li> -->
 			</ul>
 		</div>
 		<div class="tabbox">
