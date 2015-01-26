@@ -1,7 +1,8 @@
 package cn.explink.enumutil;
 
 public enum PunishtimeEnum {
-	Yiyue(1, "1"), Eryue(2, "2"), Sanyue(3, "3"), Siyue(4, "4"), Wuyue(5, "5"), Liuyue(6, "6"), Qiyue(7, "7"), Bayue(8, "8"), Jiuyue(9, "9"), Shiyue(10, "10"), Shiyiyue(11, "11"), Shieryue(12, "12");
+	Yiyue(1, "1"), Eryue(2, "2"), Sanyue(3, "3"), Siyue(4, "4"), Wuyue(5, "5"), Liuyue(6, "6"), Qiyue(7, "7"), Bayue(8, "8"), Jiuyue(9, "9"), Shiyue(10, "10"), Shiyiyue(11, "11"), Shieryue(12, "12"), Weizhi(
+			0, "未知"), ;
 	private long value;
 	private String text;
 

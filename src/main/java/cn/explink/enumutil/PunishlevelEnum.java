@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum PunishlevelEnum {
-	Defalut(0, "默认");
+	Defalut(0, "未知");
 	private long value;
 	private String text;
 

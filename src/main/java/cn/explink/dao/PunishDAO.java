@@ -95,9 +95,9 @@ public class PunishDAO {
 	}
 
 	public int importPunish(Punish pu) throws Exception {
-		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime,state) values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
-				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser(), pu.getCreatetime());
+				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser(), pu.getCreatetime(), pu.getState());
 	}
 
 	public int updatePunish(Punish pu) throws Exception {

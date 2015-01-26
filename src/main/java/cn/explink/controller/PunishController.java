@@ -113,7 +113,7 @@ public class PunishController {
 			 * ExecutorService newSingleThreadExecutor =
 			 * Executors.newSingleThreadExecutor();
 			 * newSingleThreadExecutor.execute(new Runnable() {
-			 * 
+			 *
 			 * @Override public void run() {
 			 */
 			try {
@@ -130,6 +130,7 @@ public class PunishController {
 		} else {
 		}
 		model.addAttribute("showData", 1);
+		model.addAttribute("state", -1);
 		model.addAttribute("count", count);
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList = this.userDAO.getAllUser();

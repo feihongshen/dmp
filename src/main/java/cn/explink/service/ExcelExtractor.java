@@ -377,7 +377,7 @@ public abstract class ExcelExtractor {
 		 * if (excelColumnSet.getOrdercwbindex() != 0) {
 		 * cwbOrder.setOrdercwb(getXRowCellData(row,
 		 * excelColumnSet.getOrdercwbindex())); }
-		 *
+		 * 
 		 * if (excelColumnSet.getServiceareaindex() != 0) {
 		 * cwbOrder.setPaisongArea( getXRowCellData(row,
 		 * excelColumnSet.getServiceareaindex())); }
@@ -531,7 +531,7 @@ public abstract class ExcelExtractor {
 		}
 		for (Punish p : punisList) {
 			try {
-				count += this.punishDAO.createPunish(p);
+				count += this.punishDAO.importPunish(p);
 			} catch (Exception e) {
 				ExcelExtractor.logger.error("扣罚信息导入异常:" + e);
 			}
@@ -569,7 +569,7 @@ public abstract class ExcelExtractor {
 		Punish punish = new Punish();
 		String cwb = this.getXRowCellData(row, 1);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-		if (co != null) {
+		if (co == null) {
 			return null;
 		}
 		Punish p = this.punishDAO.getPunishByCwb(cwb);
