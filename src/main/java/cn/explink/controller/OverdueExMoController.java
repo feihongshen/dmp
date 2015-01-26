@@ -250,11 +250,7 @@ public class OverdueExMoController {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select cwb , create_time , deliver_state , warehouse_id , deliver_station_id from express_ops_smt_cwb_opt_time ");
 		sql.append("where ");
-		if (branch.getSitetype() == 1) {
-			sql.append("warehouse_id = ? ");
-		} else {
-			sql.append("deliver_station_id = ? ");
-		}
+		sql.append(this.getOrgWhereCond(condVO));
 		sql.append("and vender_id = ? and ");
 		sql.append(this.getTimeTypeWhereCond(condVO));
 		sql.append(" and ");
@@ -267,15 +263,30 @@ public class OverdueExMoController {
 		return sql.toString();
 	}
 
+	private String getOrgWhereCond(OverdueExMoDetailCondVO condVO) {
+		ShowColEnum showColEnum = ShowColEnum.values()[condVO.getShowColIndex()];
+		switch (showColEnum) {
+		case Dispatch:
+		case GetBack:
+		case Print:
+		case RptOutArea:
+		case StationAccept:
+			return "deliver_station_id = ? ";
+		case SystemAccept:
+		case NotMatched:
+		case OutAreaTransfer:
+			return "warehouse_id = ? ";
+		default: {
+			return null;
+		}
+		}
+	}
+
 	private String getQueryDetailCountSql(Branch branch, OverdueExMoDetailCondVO condVO, Map<ShowColEnum, TimeEffectiveVO> teMap) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select count(cwb) from express_ops_smt_cwb_opt_time ");
 		sql.append("where ");
-		if (branch.getSitetype() == 1) {
-			sql.append("warehouse_id = ? ");
-		} else {
-			sql.append("deliver_station_id = ? ");
-		}
+		sql.append(this.getOrgWhereCond(condVO));
 		sql.append("and vender_id = ? and ");
 		sql.append(this.getTimeTypeWhereCond(condVO));
 		sql.append(" and ");
@@ -968,7 +979,16 @@ public class OverdueExMoController {
 			Row row = sheet.createRow(rowNum);
 			int colNum = 0;
 			for (Object cellData : rowData) {
-				this.createCell(colNum++, row, cellData);
+				if (cellData instanceof TDCell) {
+					TDCell tdCell = (TDCell) cellData;
+					this.createCell(colNum++, row, tdCell.getCount());
+					if ((tdCell.getPercent() != null) && !tdCell.getPercent().isEmpty()) {
+						this.createCell(colNum++, row, tdCell.getPercent());
+					}
+				} else {
+					this.createCell(colNum++, row, cellData);
+				}
+
 			}
 		}
 
