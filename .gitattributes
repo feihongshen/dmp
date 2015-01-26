@@ -871,6 +871,7 @@ src/main/java/cn/explink/dao/ImportFieldDAO.java -text
 src/main/java/cn/explink/dao/LogTodayByTuihuoDAO.java -text
 src/main/java/cn/explink/dao/LogTodayByWarehouseDAO.java -text
 src/main/java/cn/explink/dao/LogTodayDAO.java -text
+src/main/java/cn/explink/dao/LogTodayLogDAO.java -text
 src/main/java/cn/explink/dao/MenuDAO.java -text
 src/main/java/cn/explink/dao/MiddleAppearDao.java -text
 src/main/java/cn/explink/dao/NoPiPeiCwbDetailDAO.java -text
@@ -883,6 +884,7 @@ src/main/java/cn/explink/dao/OrderArriveTimeDAO.java -text
 src/main/java/cn/explink/dao/OrderBackCheckDAO.java -text
 src/main/java/cn/explink/dao/OrderDeliveryClientDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowDAO.java -text
+src/main/java/cn/explink/dao/OrderFlowLogDAO.java -text
 src/main/java/cn/explink/dao/OrderGoodsDAO.java -text
 src/main/java/cn/explink/dao/OrderPartGoodsRtDAO.java -text
 src/main/java/cn/explink/dao/OutWarehouseGroupDAO.java -text
@@ -1099,6 +1101,7 @@ src/main/java/cn/explink/domain/logdto/TodayFundsDTO.java -text
 src/main/java/cn/explink/domain/logdto/TodayHuiZongDTO.java -text
 src/main/java/cn/explink/domain/logdto/TodayStockDTO.java -text
 src/main/java/cn/explink/domain/orderflow/OrderFlow.java -text
+src/main/java/cn/explink/domain/orderflow/OrderFlowLog.java -text
 src/main/java/cn/explink/domain/orderflow/TranscwbOrderFlow.java -text
 src/main/java/cn/explink/domain/weixin/DeliverystasticsDto.java -text
 src/main/java/cn/explink/enumutil/AbnormalOrderHandleEnum.java -text
