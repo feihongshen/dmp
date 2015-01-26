@@ -295,8 +295,10 @@ public class OverdueExMoController {
 
 		if (condVO.isEnableTEQuery()) {
 			TimeEffectiveVO teVO = teMap.get(ShowColEnum.values()[condVO.getShowColIndex()]);
-			String subField = teVO.getTimeType().getField();
-			sql.append(" and (unix_timestamp(" + field + ") - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
+			if (teVO != null) {
+				String subField = teVO.getTimeType().getField();
+				sql.append(" and (unix_timestamp(" + field + ") - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
+			}
 		}
 		return sql.toString();
 	}
@@ -718,10 +720,10 @@ public class OverdueExMoController {
 
 		@Override
 		protected TDCell loadData() {
-			int sysAcceptCount = this.getDAO().queryForInt(this.getSql(), this.getBranchId(), this.getVenderId());
+			int satAcceptCount = this.getDAO().queryForInt(this.getSql(), this.getBranchId(), this.getVenderId());
 			TDCell cell = new TDCell();
-			cell.setCount(sysAcceptCount);
-			cell.setShowColIndex(ShowColEnum.SystemAccept.ordinal());
+			cell.setCount(satAcceptCount);
+			cell.setShowColIndex(ShowColEnum.StationAccept.ordinal());
 
 			return cell;
 		}
@@ -862,7 +864,7 @@ public class OverdueExMoController {
 				TimeEffectiveVO teVO = this.getTimeEffectiveVO(ShowColEnum.NotMatched);
 				if (teVO != null) {
 					String subField = teVO.getTimeType().getField();
-					sql.append(" and (unix_timestamp(" + subField + ") - unix_timestamp(system_accept_time)) <=" + teVO.getScope());
+					sql.append(" and (unix_timestamp(station_accept_time) - unix_timestamp(" + subField + ")) <=" + teVO.getScope());
 				}
 			}
 			return sql.toString();
