@@ -79,7 +79,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					 <input type="checkbox"  value="1" id="consigneephone" name="consigneephone" <%if(u.getShowphoneflag()==1){ %> checked="checked"<%} %>>收件人电话</input>
 					 <input type="checkbox"  value="1" id="consigneemobile" name="consigneemobile" <%if(u.getShowmobileflag()==1){ %> checked="checked"<%} %>>收件人手机</input>
 					</li>
-					 <li><span>　</span>选择不可见 订单电话/手机在页面显示/导出excel全部隐藏</li>
+					 <li><span>　</span>不勾选 ，则订单的收件人/电话/手机在页面显示/导出Excel时全部隐藏</li>
 			        <li><span>工作状态：</span>
 						<select id="employeestatus" name="employeestatus">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>
