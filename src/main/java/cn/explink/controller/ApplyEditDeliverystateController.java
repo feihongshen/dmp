@@ -312,43 +312,48 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark) {
 
 		this.logger.info("web--进入单票反馈");
+
 		ApplyEditDeliverystate applyEditDeliverystate = this.applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
-		CwbOrder co = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
-		Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(applyEditDeliverystate.getCwb());
+		try {
+			CwbOrder co = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
+			Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(applyEditDeliverystate.getCwb());
 
-		// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
-		if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
-			// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
-			DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
-			if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
-				// 暂借对象中的备注1字段输出一些提示语
-				co.setRemark1("当前订单运费已交款，不可重置审核状态");
-				return "{\"errorCode\":1,\"error\":\" 当前订单运费已交款，不可重置审核状态  \"}";
-			} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
+			// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
+			if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+				// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
+				DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
+				if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
+					// 暂借对象中的备注1字段输出一些提示语
+					co.setRemark1("当前订单运费已交款，不可重置审核状态");
+					return "{\"errorCode\":1,\"error\":\" 当前订单运费已交款，不可重置审核状态  \"}";
+				} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
 
-			} else {
-				// 暂借对象中的备注1字段输出一些提示语
-				co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
-				return "{\"errorCode\":1,\"error\":\" POS刷卡签收的订单审核后不允许重置审核状态  \"}";
-			}
-			List<User> userList = this.userDAO.getUserByid(deliveryid);
-			if (userList != null) {
-				this.logger.info("重置订单审核状态功能 [{}] cwb: {}", this.getSessionUser().getRealname());
-				List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
-				List<String> errorList = new ArrayList<String>();
-
-				try {
-					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(applyEditDeliverystate.getCwb(), deliveryid, this.getSessionUser().getUserid());
-					ecList.add(ec_dsd);
-				} catch (ExplinkException ee) {
-					errorList.add(applyEditDeliverystate.getCwb() + "_" + ee.getMessage());
-					return "{\"errorCode\":1,\"error\":\"" + ee.getMessage() + "\"}";
-				} catch (Exception e) {
-					errorList.add(applyEditDeliverystate.getCwb() + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
-					return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
+				} else {
+					// 暂借对象中的备注1字段输出一些提示语
+					co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
+					return "{\"errorCode\":1,\"error\":\" POS刷卡签收的订单审核后不允许重置审核状态  \"}";
 				}
-			}
+				List<User> userList = this.userDAO.getUserByid(deliveryid);
+				if (userList != null) {
+					this.logger.info("重置订单审核状态功能 [{}] cwb: {}", this.getSessionUser().getRealname());
+					List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
+					List<String> errorList = new ArrayList<String>();
 
+					try {
+						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(applyEditDeliverystate.getCwb(), deliveryid, this.getSessionUser().getUserid());
+						ecList.add(ec_dsd);
+					} catch (ExplinkException ee) {
+						errorList.add(applyEditDeliverystate.getCwb() + "_" + ee.getMessage());
+						return "{\"errorCode\":1,\"error\":\"" + ee.getMessage() + "\"}";
+					} catch (Exception e) {
+						errorList.add(applyEditDeliverystate.getCwb() + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
+						return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}
 		// 暂借对象中的备注1字段输出一些提示语
 
