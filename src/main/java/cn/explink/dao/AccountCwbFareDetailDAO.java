@@ -292,6 +292,9 @@ public class AccountCwbFareDetailDAO {
 	}
 
 	public Map<String, AccountCwbFareDetail> getAccountCwbFareDetailMapByCwbs(String cwbs) {
+		if (cwbs.indexOf(",") < 0) {
+			cwbs = "'" + cwbs + "'";
+		}
 		String sql = "SELECT * from account_cwb_fare_detail where cwb in(" + cwbs + ") ";
 		final Map<String, AccountCwbFareDetail> cwbList = new HashMap<String, AccountCwbFareDetail>();
 		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
