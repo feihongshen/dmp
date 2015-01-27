@@ -321,7 +321,7 @@ public class ApplyEditDeliverystateController {
 			// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
 			if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
 				// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
-				DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
+				DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb("'" + co.getCwb() + "'").get(0);
 				if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
 					// 暂借对象中的备注1字段输出一些提示语
 					co.setRemark1("当前订单运费已交款，不可重置审核状态");
