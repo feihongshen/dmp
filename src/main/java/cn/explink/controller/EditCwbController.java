@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AppearWindowDao;
-import cn.explink.dao.AdjustmentRecordDAO;
-import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
@@ -323,8 +321,8 @@ public class EditCwbController {
 			this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 			List<String> errorList = new ArrayList<String>();
-			//定义一个调整单List
-			List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
+			// 定义一个调整单List
+			List<AdjustmentRecord> adjustmentRecords = new ArrayList<AdjustmentRecord>();
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
 				BigDecimal Receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
@@ -333,24 +331,21 @@ public class EditCwbController {
 				BigDecimal checkfee = request.getParameter("Receivablefee_checkfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_checkfee_" + cwb));
 				BigDecimal otherfee = request.getParameter("Receivablefee_otherfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_otherfee_" + cwb));
 				BigDecimal Paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
-				CwbOrder cwbOrder=new CwbOrder();
-				cwbOrder=cwbDAO.getCwbByCwb(cwb);
-				User user=new User();
-				if(userList.size()>0){
-					user=userList.get(0);
+				CwbOrder cwbOrder = new CwbOrder();
+				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				User user = new User();
+				if (userList.size() > 0) {
+					user = userList.get(0);
 				}
-				
-				//先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
-				
-				
-				if(Receivablefee!=null&&!Receivablefee.equals(cwbOrder.getReceivablefee())){
-					adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), Paybackfee, Receivablefee, "", user.getUsername(), cwbOrder.getCwbordertypeid());
-					
+
+				// 先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
+
+				if ((Receivablefee != null) && !Receivablefee.equals(cwbOrder.getReceivablefee())) {
+					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), Paybackfee, Receivablefee, "", user.getUsername(),
+							cwbOrder.getCwbordertypeid());
+
 				}
-				
-				
-				
-				
+
 				try {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, Receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser,
 							this.getSessionUser().getUserid());
@@ -361,8 +356,7 @@ public class EditCwbController {
 					errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
 					e.printStackTrace();
 				}
-				
-				
+
 			}
 			model.addAttribute("ecList", ecList);
 			model.addAttribute("errorList", errorList);
@@ -530,7 +524,6 @@ public class EditCwbController {
 		CwbOrder old = this.cwbDAO.getCwbByCwb(cwb);
 		// 删除后新增，插入新增查询表中
 		this.cwbInfoDao.deleteEditInfo(cwb);
-		this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
 		// 构建新的订单信息
 		CwbOrderDTO co = this.dataImportDAO_B2c.getCwbFromCwborder(cwb);// 运单号
 		co.setConsigneename(editname);
@@ -538,11 +531,7 @@ public class EditCwbController {
 		co.setConsigneemobile(editmobile);
 		co.setConsigneeaddress(editaddress);
 		co.setCwbremark(remark);
-		// 2.更新到主表
-		EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
-		userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
-		this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
-		this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), ed.getWarehouseid(), userDetail.getUser(), ed, true);
+
 		// 3.匹配地址库
 		try {
 			co.setExcelbranch(null);
@@ -587,6 +576,13 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
+			this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+
+			// 2.更新到主表
+			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
+			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
+			this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
+			this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), ed.getWarehouseid(), userDetail.getUser(), ed, true);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
 			this.logger.error("调用地址库异常", e);

@@ -133,7 +133,7 @@ $(function(){
 											<td width="8%"  valign="middle"  align="center"  ><input type="text" size="12px"   value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
 											<td width="15%" valign="middle"  align="center"  ><textarea  cols="20"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
 											<td width="15%" valign="middle"  align="center"  >
-											<input type="text" onkeyup="findbranch()"  name="matchaddress" id="matchaddress" />
+											<input type="text" onkeyup="findbranch()" value=" "  name="matchaddress" id="matchaddress" />
 											<select id="branchlist" onchange="setMatchAddress(this)">
 											<option>请选择</option>
 											<%for(Branch b:branchs) {%>
@@ -145,7 +145,7 @@ $(function(){
 											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
 											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
 											<td>
-											<input name="button2" type="button" class="input_button2" id="button2" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
+											<input name="button2" type="button" class="input_button2" id="buttonMatch" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
 											<input name="button2" type="button" class="input_button2" id="button2" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
 											<input type="hidden" value="1" name="editshow" id="editshow">
 											</td>
@@ -186,6 +186,8 @@ $(function(){
 					});
 }
 	function mathaddress(cwb){
+		$("#buttonMatch").attr('disabled','disabled');
+		$("#buttonMatch").val('匹配中');
 		var editaddress=$("#editaddress").val();
 		if(editaddress.length>0){
 					$.ajax({
@@ -194,8 +196,17 @@ $(function(){
 						data:{"address":editaddress,"cwb":cwb},//参数
 						dataType:'json',//接受数据格式
 						success:function(data){
+							if(data.netpoint.length==0){
+								$("#buttonMatch").removeAttr('disabled');
+								$("#buttonMatch").val('修改匹配站');
+								alert("未匹配到站点");}
 							$("#matchaddress").val((data.netpoint));
-							findbranch();
+							if($("#matchaddress").val().length>0){
+								$("#buttonMatch").removeAttr('disabled');
+								$("#buttonMatch").val('修改匹配站');
+								findbranch();
+							}
+							
 						}
 						   
 					});
@@ -253,7 +264,6 @@ $(function(){
 			}
 		});
 	}
-
 </script>
 </body>
 </html>

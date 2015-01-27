@@ -41,8 +41,12 @@ public class PunishTypeDAO {
 	}
 
 	public PunishType getPunishTypeByName(String name) {
-		String sql = "select * from express_set_punish_type where name=? ";
-		return this.jdbcTemplate.queryForObject(sql, new PunishTypeRowMapper(), name);
+		try {
+			String sql = "select * from express_set_punish_type where name='" + name + "' limit 1 ";
+			return this.jdbcTemplate.queryForObject(sql, new PunishTypeRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public void crePunishType(String name) {
