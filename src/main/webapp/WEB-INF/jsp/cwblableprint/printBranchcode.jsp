@@ -80,14 +80,13 @@ function nowprint(){
 		<form id="form1">
 			<table>
 			<tr>
-			<td>站点编码</td>
 			<td>站点名称</td>
 			</tr>
 				<%for(String smtcd : list){
-					String branch=smtcd.split("#")[1];%>
+					String branch=smtcd.split("#")[1];
+					%>
 				<tr >
 				<td><%=branch.split("&")[0] %></td>
-				<td><%=branch.split("&")[1] %></td>
 				</tr>
 				<% }%>
 			</table>

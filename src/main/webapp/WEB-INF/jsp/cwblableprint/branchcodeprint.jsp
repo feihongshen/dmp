@@ -183,7 +183,7 @@ function load(val){
 					  <% for(Branch b : branches){ %>
 					<tr>
 						<td align="center">
-						<input id="isprint" type="checkbox" value="<%="@zd_"+b.getBranchid()+"#"+b.getBranchcode()+"&"+b.getBranchname() %>" name="isprint"/>
+						<input id="isprint" type="checkbox" value="<%="@zd_"+b.getBranchid()+"#"+(b.getBranchname().length()>=10?b.getBranchname().substring(0,10):b.getBranchname())+"&"+(b.getBranchcode()==null?" ":b.getBranchcode()) %>" name="isprint"/>
 						</td>
 					 	<td width="20%" align="center" valign="middle"><%=b.getBranchname() %></td>
 					 	<td width="10%" align="center" valign="middle"><%=b.getBranchcode() %></td>

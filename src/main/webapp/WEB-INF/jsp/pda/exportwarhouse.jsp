@@ -178,6 +178,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 			}else{
 				$("#msg").html("");
 			}
+			$("#scancwb").val("");
 			return false;
 		}
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
