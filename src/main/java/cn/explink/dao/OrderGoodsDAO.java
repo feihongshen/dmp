@@ -103,4 +103,9 @@ public class OrderGoodsDAO {
 	public int updateThzrkcount(long id, long thzrkcount) {
 		return this.jdbcTemplate.update("update  orders_goods set thzrkcount=" + thzrkcount + " where id=" + id);
 	}
+	
+	public int loseOrderGoods(String cwb) {
+		return this.jdbcTemplate.update("delete from orders_goods  where cwb='"+cwb+"'");
+	}
+	
 }

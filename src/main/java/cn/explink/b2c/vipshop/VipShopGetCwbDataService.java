@@ -460,6 +460,7 @@ public class VipShopGetCwbDataService {
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
 					this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
 					this.cwbDAO.dataLoseByCwb(order_sn);
+					orderGoodsDAO.loseOrderGoods(order_sn);
 					seq_arrs += seq + ",";
 					return seq_arrs;
 				}
