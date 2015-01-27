@@ -302,7 +302,7 @@ function remarkPost(){
 					</tbody>
 </table>
 						</li>
-						<li>
+						<li style="display:none">
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	  <tr class="font_1">
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
@@ -316,6 +316,7 @@ function remarkPost(){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 		</tr>
+		<%if(punish!=null){ %>
 		<tr>
 			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
@@ -346,6 +347,7 @@ function remarkPost(){
 			<%=punish.getCreatetime() %>
 			</td>
 		</tr>
+		<%} %>
 	</table>
 </li>
 						
@@ -573,8 +575,8 @@ function remarkPost(){
 			<td>&nbsp;</td>
 		</tr>
 	</tbody>
-</table>
-						</li>
+</table></li>
+
 						<li style="display:none">
 						<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5" id="gd_table" >
 					<tbody><tr>
@@ -591,7 +593,55 @@ function remarkPost(){
 					</tbody>
 </table>
 						</li>
-						<li>sssss</li>
+						<li style="display:none">
+<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+	  <tr class="font_1">
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚类型</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚站点</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚人员</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
+			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
+		</tr>
+		<%if(punish!=null){ %>
+		<tr>
+			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
+			<td width="8%" align="center" valign="middle">
+			<%for(PunishType pt:punishTypeList){ if(pt.getId()==punish.getPunishid()){out.print(pt.getName());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(Branch b:branchlist){ if(b.getBranchid()==punish.getBranchid()){out.print(b.getBranchname());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(User u:userList){ if(u.getUserid()==punish.getUserid()){out.print(u.getRealname());}}%>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%=punish.getPunishtime() %>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%=punish.getPunishlevel() %>
+			</td>
+			<td width="7%" align="center" valign="middle">
+			<%=punish.getPunishfee() %>
+			</td>
+			<td width="15%" align="center" valign="middle">
+			<%=punish.getPunishcontent() %>
+			</td>
+			<td width="8%" align="center" valign="middle">
+			<%for(User u:userList){ if(u.getUserid()==punish.getCreateuser()){out.print(u.getRealname());}}%>
+			</td>
+			<td width="13%" align="center" valign="middle">
+			<%=punish.getCreatetime() %>
+			</td>
+		</tr>
+		<%} %>
+	</table>
+</li>
+					
 					</div>
 				
 				</td>
