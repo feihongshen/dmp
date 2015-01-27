@@ -52,7 +52,7 @@ import cn.explink.util.StringUtil;
 
 @Service
 public class WeisudaService {
-	// private Logger logger = LoggerFactory.getLogger(WeisudaService.class);
+//	private Logger logger = LoggerFactory.getLogger(WeisudaService.class);
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -61,7 +61,7 @@ public class WeisudaService {
 	PosPayDAO posPayDAO;
 	@Autowired
 	PosPayService posPayService;
-	@Autowired
+	@Autowired 
 	CwbOrderService cwbOrderService;
 	@Autowired
 	CustomerDAO customerDAO;
@@ -86,11 +86,13 @@ public class WeisudaService {
 	ReasonDao reasonDAO;
 	@Autowired
 	CwbOrderService cwborderService;
-
-	private Logger logger = LoggerFactory.getLogger(CommonCoreService.class);
-
-	protected ObjectMapper jacksonmapper = JacksonMapper.getInstance();
-
+	
+	
+	
+	private Logger logger =LoggerFactory.getLogger(CommonCoreService.class);
+	
+	protected ObjectMapper jacksonmapper = JacksonMapper.getInstance(); 
+ 	
 	private String getObjectMethod(int key) {
 		JointEntity obj = null;
 		String posValue = "";
@@ -102,6 +104,7 @@ public class WeisudaService {
 		return posValue;
 	}
 
+	
 	public Weisuda getWeisudaSettingMethod(int key) {
 		Weisuda weisuda = new Weisuda();
 		if (!"".equals(getObjectMethod(key))) {
@@ -111,22 +114,21 @@ public class WeisudaService {
 			weisuda = new Weisuda();
 		}
 
-		return weisuda == null ? new Weisuda() : weisuda;
+		return weisuda==null?new Weisuda():weisuda;
 	}
 
-	protected long getUserIdByUserName(String deliver_man) {
-		long deliverid = 0;
+	protected long getUserIdByUserName(String deliver_man){
+		long deliverid=0;
 		try {
-			List<User> userlist = userDAO.getUsersByUsername(deliver_man);
-			if (userlist != null && userlist.size() > 0) {
-				deliverid = userlist.get(0).getUserid();
+			List <User> userlist=userDAO.getUsersByUsername(deliver_man);
+			if(userlist!=null&&userlist.size()>0){
+				deliverid=userlist.get(0).getUserid();
 			}
 		} catch (Exception e) {
 
 		}
 		return deliverid;
 	}
-
 	public void edit(HttpServletRequest request, int joint_num) {
 		Weisuda weisuda = new Weisuda();
 		String code = StringUtil.nullConvertToEmptyString(request.getParameter("code"));
@@ -136,12 +138,13 @@ public class WeisudaService {
 		String unVerifyOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("UnVerifyOrders_URL"));
 		String updateUnVerifyOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("updateUnVerifyOrders_URL"));
 		String nums = StringUtil.nullConvertToEmptyString(request.getParameter("nums"));
-		String updateOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("updateOrders_URL"));
-		String siteUpdate_URL = StringUtil.nullConvertToEmptyString(request.getParameter("siteUpdate_URL"));
-		String siteDel_URL = StringUtil.nullConvertToEmptyString(request.getParameter("siteDel_URL"));
-		String courierUpdate_URL = StringUtil.nullConvertToEmptyString(request.getParameter("courierUpdate_URL"));
-		String carrierDel_URL = StringUtil.nullConvertToEmptyString(request.getParameter("carrierDel_URL"));
-
+		String updateOrders_URL=StringUtil.nullConvertToEmptyString(request.getParameter("updateOrders_URL"));
+		String siteUpdate_URL=StringUtil.nullConvertToEmptyString(request.getParameter("siteUpdate_URL"));
+		String siteDel_URL=StringUtil.nullConvertToEmptyString(request.getParameter("siteDel_URL"));
+		String courierUpdate_URL=StringUtil.nullConvertToEmptyString(request.getParameter("courierUpdate_URL"));
+		String carrierDel_URL=StringUtil.nullConvertToEmptyString(request.getParameter("carrierDel_URL"));
+		
+		
 		weisuda.setCode(code);
 		weisuda.setV(v);
 		weisuda.setSecret(secret);
@@ -155,6 +158,7 @@ public class WeisudaService {
 		weisuda.setCarrierDel_URL(carrierDel_URL);
 		weisuda.setNums(nums);
 
+		
 		JSONObject jsonObj = JSONObject.fromObject(weisuda);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
@@ -167,20 +171,24 @@ public class WeisudaService {
 			jointEntity.setJoint_property(jsonObj.toString());
 			jiontDAO.Update(jointEntity);
 		}
-
+		
 	}
 
-	protected User getUser(long userid) {
+	protected User getUser(long userid){
 		return userDAO.getUserByUserid(userid);
 	}
-
+	
 	public void update(int joint_num, int state) {
 		jiontDAO.UpdateState(joint_num, state);
 	}
-
+	
+	
+	
+	
+	
+	
 	/**
 	 * 对接反馈接口
-	 * 
 	 * @param commd
 	 * @param cwb
 	 * @param podresultid
@@ -189,145 +197,174 @@ public class WeisudaService {
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 */
-	public void dealwith_fankui(String datajson) throws IOException, JsonParseException, JsonMappingException {
-
+	public void dealwith_fankui(String datajson) throws IOException,
+			JsonParseException, JsonMappingException {
+		
 		OrderFlowDto orderFlowDto = JacksonMapper.getInstance().readValue(datajson, OrderFlowDto.class);
-
-		CwbOrder cwbOrder = cwbDAO.getCwbByCwb(orderFlowDto.getCwb());
-
+		
+		
+		
+		
+		CwbOrder cwbOrder=cwbDAO.getCwbByCwb(orderFlowDto.getCwb());
+		
 		BigDecimal pos = BigDecimal.ZERO;
 		BigDecimal check = BigDecimal.ZERO;
 		BigDecimal cash = BigDecimal.ZERO;
-		BigDecimal paybackedfee = BigDecimal.ZERO;
-
+		BigDecimal	paybackedfee = BigDecimal.ZERO;
+		
+		
 		long podresultid = Long.valueOf(orderFlowDto.getDeliverystate());
 		podresultid = getPodresultid(podresultid, cwbOrder);
-
-		DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(orderFlowDto.getCwb());
-
-		if (deliverystate == null) {
-			logger.info("订单{}不满足支付条件，deliverystate表为空", deliverystate);
+		
+		DeliveryState deliverystate=deliveryStateDAO.getActiveDeliveryStateByCwb(orderFlowDto.getCwb());
+		
+		if(deliverystate == null){
+			logger.info("订单{}不满足支付条件，deliverystate表为空",deliverystate);
+			return ;
+		}
+		
+		//撤销
+		if(orderFlowDto.getIsCancel()==1){
+			////////////////////////////执行撤销方法
+			cwbOrderService.deliverStatePodCancel(orderFlowDto.getCwb(),deliverystate.getDeliverybranchid(),deliverystate.getDeliveryid(),"运单撤销",0);
 			return;
 		}
-
-		// 撤销
-		if (orderFlowDto.getIsCancel() == 1) {
-			// //////////////////////////执行撤销方法
-			cwbOrderService.deliverStatePodCancel(orderFlowDto.getCwb(), deliverystate.getDeliverybranchid(), deliverystate.getDeliveryid(), "运单撤销", 0);
-			return;
-		}
-
-		if (deliverystate.getIsout() == 1) { // 应退款
-			pos = BigDecimal.ZERO;
-			cash = BigDecimal.ZERO;
-			check = BigDecimal.ZERO;
-			if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue() || podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()
-					|| podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
-				paybackedfee = deliverystate.getBusinessfee();
+		
+		if(deliverystate.getIsout()==1){  //应退款
+			pos=BigDecimal.ZERO;
+			cash=BigDecimal.ZERO;
+			check=BigDecimal.ZERO;
+			if(podresultid==DeliveryStateEnum.PeiSongChengGong.getValue()||podresultid==DeliveryStateEnum.ShangMenHuanChengGong.getValue()||podresultid==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+				paybackedfee=deliverystate.getBusinessfee();
 			}
-
-		} else if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue() || podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) { // 应收款
+			
+			
+		}else if(podresultid==DeliveryStateEnum.PeiSongChengGong.getValue()||podresultid==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ //应收款
 			SystemInstall isToCash = systemInstallDAO.getSystemInstallByName("isToCash");
-			if (isToCash != null && isToCash.getValue().equals("yes")) {
-				cash = deliverystate.getBusinessfee();
-			} else {
-
-				if (orderFlowDto.getPaytype() == PaytypeEnum.Pos.getValue()) {
-					pos = deliverystate.getBusinessfee();
-				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Xianjin.getValue()) {
-					cash = deliverystate.getBusinessfee();
-				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Zhipiao.getValue()) {
-					check = deliverystate.getBusinessfee();
-				} else {
-
-					if (cwbOrder.getPaywayid() == PaytypeEnum.Xianjin.getValue()) {
-						cash = deliverystate.getBusinessfee();
-					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Pos.getValue()) {
-						pos = deliverystate.getBusinessfee();
-					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Zhipiao.getValue()) {
-						check = deliverystate.getBusinessfee();
+			if(isToCash != null && isToCash.getValue().equals("yes")){
+				cash=deliverystate.getBusinessfee();
+			}else{
+				
+				if(orderFlowDto.getPaytype()==PaytypeEnum.Pos.getValue()){
+					pos=deliverystate.getBusinessfee();
+				}else if(orderFlowDto.getPaytype()==PaytypeEnum.Xianjin.getValue()){
+					cash=deliverystate.getBusinessfee();
+				}else if(orderFlowDto.getPaytype()==PaytypeEnum.Zhipiao.getValue()){
+					check=deliverystate.getBusinessfee();
+				}else{
+					
+					if(cwbOrder.getPaywayid()==PaytypeEnum.Xianjin.getValue()){
+						cash=deliverystate.getBusinessfee();
+					}else if(cwbOrder.getPaywayid()==PaytypeEnum.Pos.getValue()){
+						pos=deliverystate.getBusinessfee();
+					}else if(cwbOrder.getPaywayid()==PaytypeEnum.Zhipiao.getValue()){
+						check=deliverystate.getBusinessfee();
 					}
 				}
 			}
 		}
-
-		long backedreasonid = 0;
-		long leavedreasonid = 0;
-
-		String deliverstateremark = "系统对接";
-
-		if (podresultid == DeliveryStateEnum.JuShou.getValue() || podresultid == DeliveryStateEnum.ShangMenJuTui.getValue() || podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) {
-
-			backedreasonid = Long.valueOf(orderFlowDto.getExptcode() == null || orderFlowDto.getExptcode().isEmpty() ? "0" : orderFlowDto.getExptcode());
+			
+		
+		
+		long backedreasonid=0;
+		long leavedreasonid=0;
+		
+		String deliverstateremark="系统对接";
+		
+		
+		if(podresultid==DeliveryStateEnum.JuShou.getValue()||podresultid==DeliveryStateEnum.ShangMenJuTui.getValue()||podresultid==DeliveryStateEnum.BuFenTuiHuo.getValue()){     
+			
+			backedreasonid=Long.valueOf(orderFlowDto.getExptcode()==null||orderFlowDto.getExptcode().isEmpty()?"0":orderFlowDto.getExptcode());
 		}
-
 		
 		long deliverid=deliverystate.getDeliveryid();
+		long reDeliverid=deliverystate.getDeliveryid(); //原始的deliverid
+		long infactDeliverid=0;
 		try {
-			deliverid=userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
+			infactDeliverid=userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
+			deliverid=infactDeliverid;
 		} catch (Exception e1) {
 			deliverid=deliverystate.getDeliveryid();
 		}
 		
 		
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("deliverid", deliverid);
+		
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put("deliverid",deliverid);
 		parameters.put("podresultid", podresultid);
-		parameters.put("backreasonid", backedreasonid);
-		parameters.put("leavedreasonid", leavedreasonid);
-		parameters.put("receivedfeecash", cash);
-		parameters.put("receivedfeepos", pos);
-		parameters.put("receivedfeecheque", check);
-		parameters.put("receivedfeeother", BigDecimal.ZERO);
-		parameters.put("paybackedfee", paybackedfee);
-		parameters.put("podremarkid", (long) 0);
-		parameters.put("posremark", pos.compareTo(BigDecimal.ZERO) > 0 ? "POS刷卡" : "");
-		parameters.put("checkremark", check.compareTo(BigDecimal.ZERO) > 0 ? "支票支付" : "");
-		parameters.put("deliverstateremark", deliverstateremark);
-		parameters.put("owgid", 0);
-		parameters.put("sessionbranchid", deliverystate.getDeliverybranchid());
-		parameters.put("sessionuserid", deliverystate.getDeliveryid());
-		parameters.put("sign_typeid", 1);
-		parameters.put("sign_man", orderFlowDto.getConsignee());
-		parameters.put("sign_time", orderFlowDto.getRequestTime());
-
-		String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ? cwbOrder.getCwbremark() + "\n" : "";
-		String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
-		try {
+		parameters.put("backreasonid",backedreasonid);
+		parameters.put("leavedreasonid",leavedreasonid);
+		parameters.put("receivedfeecash",cash);
+		parameters.put("receivedfeepos",pos);
+		parameters.put("receivedfeecheque",check);
+		parameters.put("receivedfeeother",BigDecimal.ZERO);
+		parameters.put("paybackedfee",paybackedfee);
+		parameters.put("podremarkid",(long)0);
+		parameters.put("posremark",pos.compareTo(BigDecimal.ZERO)>0?"POS刷卡":"");
+		parameters.put("checkremark",check.compareTo(BigDecimal.ZERO)>0?"支票支付":"");
+		parameters.put("deliverstateremark",deliverstateremark);
+		parameters.put("owgid",0);
+		parameters.put("sessionbranchid",deliverystate.getDeliverybranchid());
+		parameters.put("sessionuserid",deliverystate.getDeliveryid());
+		parameters.put("sign_typeid",1);
+		parameters.put("sign_man",orderFlowDto.getConsignee());
+		parameters.put("sign_time",orderFlowDto.getRequestTime());
+		
+		String oldcwbremark = cwbOrder.getCwbremark().length()>0?cwbOrder.getCwbremark()+ "\n":"";
+		String newcwbremark = oldcwbremark+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+orderFlowDto.getCwbremark();
+		try{
 			cwbDAO.updateCwbRemark(orderFlowDto.getCwb(), newcwbremark);
 			cwbOrder.setCwbremark(newcwbremark);
+			
+			
 		} catch (Exception e) {
-			logger.error("error while saveing cwbremark,cwb:" + cwbOrder.getCwb() + "cwbremark:" + newcwbremark, e);
-			throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
+			logger.error("error while saveing cwbremark,cwb:"+cwbOrder.getCwb()+"cwbremark:"+newcwbremark, e);
+			throw new CwbException(cwbOrder.getCwb(),FlowOrderTypeEnum.YiFanKui.getValue(),ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
-		parameters.put("nosysyemflag", "1");//
-
-		if (orderFlowDto.getExptmsg() != null && !orderFlowDto.getExptmsg().isEmpty()) {
+		parameters.put("nosysyemflag","1");//
+		
+		if(orderFlowDto.getExptmsg()!=null&&!orderFlowDto.getExptmsg().isEmpty()){
 			cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
 		}
-
-		User user = userDAO.getAllUserByid(deliverystate.getDeliveryid());
-
-		cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
-		deliveryStateDAO.updateOperatorIdByCwb(deliverid, orderFlowDto.getCwb());
+		
+		User user=userDAO.getAllUserByid(deliverystate.getDeliveryid());
+		
+		if(infactDeliverid!=reDeliverid){
+			deliveryStateDAO.updateDeliveryByCwb(infactDeliverid, orderFlowDto.getCwb());
+			cwbDAO.updateDeliveridByCwb(orderFlowDto.getCwb(), infactDeliverid);
+		}
+		
+		
+		cwborderService.deliverStatePod(user,orderFlowDto.getCwb(),orderFlowDto.getCwb(), parameters);
+		
+		
 	}
 
+
 	private long getPodresultid(long podresultid, CwbOrder cwbOrder) {
-		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
-			if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+		if(podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()){
+			if(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){
 				podresultid = DeliveryStateEnum.ShangMenHuanChengGong.getValue();
-			} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+			}else if(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
 				podresultid = DeliveryStateEnum.ShangMenTuiChengGong.getValue();
 			}
-
-		} else if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
-			if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
+			
+		}else if(podresultid == DeliveryStateEnum.JuShou.getValue()){
+			if(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){
 				podresultid = DeliveryStateEnum.JuShou.getValue();
-			} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				podresultid = DeliveryStateEnum.ShangMenJuTui.getValue();
+			}else if(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
+				podresultid=DeliveryStateEnum.ShangMenJuTui.getValue();
 			}
 		}
 		return podresultid;
 	}
+
+	
+	
+	
+	
+	
+	
+	
 
 }

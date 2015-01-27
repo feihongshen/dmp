@@ -5275,4 +5275,8 @@ public class CwbDAO {
 		Object[] paras = new Object[] { cwbId };
 		return this.jdbcTemplate.queryForObject(sql, paras, String.class);
 	}
+	public void updateDeliveridByCwb(String cwb, long deliverid) {
+		String sql = "update express_ops_cwb_detail set deliverid=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql,deliverid , cwb);
+	}
 }

@@ -1416,5 +1416,16 @@ public class DeliveryStateDAO {
 			return reJson;
 		}
 	}
+	 /**
+     * 根据订单号修改操作人
+     * @param userid
+     * @param cwb
+     * 
+     */
+    public void updateDeliveryByCwb(long userid,String cwb) {
+    	String sql = "update express_ops_delivery_state set deliveryid=?,userid=? where cwb=? and state=1 ";
+		jdbcTemplate.update(sql,userid,userid,cwb);
+		
+	}
 
 }
