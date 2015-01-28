@@ -64,7 +64,7 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomersWithDisable() {
-		return this.jdbcTemplate.query("select * from express_set_customer_info", new CustomerRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_customer_info where ifeffectflag = 1", new CustomerRowMapper());
 	}
 
 	public List<Customer> getAllIsAutoProductcwbCustomers() {

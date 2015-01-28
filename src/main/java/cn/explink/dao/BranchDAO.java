@@ -807,7 +807,7 @@ public class BranchDAO {
 	}
 
 	public Map<Long, String> getBranchNameMap(int siteType) {
-		String sql = "select branchid,branchname from  express_set_branch where siteType = " + siteType;
+		String sql = "select branchid,branchname from  express_set_branch where siteType = " + siteType + " and brancheffectflag = 1";
 		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
@@ -825,7 +825,7 @@ public class BranchDAO {
 	}
 
 	public Map<Long, String> getBranchAndWarehouseNameMap() {
-		String sql = "select branchid , branchname from express_set_branch where sitetype in(1,2)";
+		String sql = "select branchid , branchname from express_set_branch where sitetype in(1,2) and brancheffectflag = 1";
 		Map<Long, String> nameMap = new HashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
