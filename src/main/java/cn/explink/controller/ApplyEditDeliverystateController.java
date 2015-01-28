@@ -316,7 +316,7 @@ public class ApplyEditDeliverystateController {
 		ApplyEditDeliverystate applyEditDeliverystate = this.applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
 		try {
 			CwbOrder co = this.cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
-			Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(applyEditDeliverystate.getCwb());
+			Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs("'" + applyEditDeliverystate.getCwb() + "'");
 
 			// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
 			if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
