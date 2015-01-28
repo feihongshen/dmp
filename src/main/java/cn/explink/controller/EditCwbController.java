@@ -695,30 +695,8 @@ public class EditCwbController {
 	@RequestMapping("/findbranch")
 	public @ResponseBody List<Branch> findbranch(Model model, @RequestParam(value = "branchname", defaultValue = "", required = false) String branchname // 是否显示,
 	) {
-		List<Branch> branches = this.branchDAO.getBranchByBranchnameMoHu(branchname);
-		/*
-		 * CwbOrder co = this.cwbDAO.getCwbByCwb(cwb); if (co != null) {
-		 * CwbOrderAddressCodeEditTypeEnum addressCodeEditType =
-		 * CwbOrderAddressCodeEditTypeEnum.WeiPiPei; if
-		 * ((co.getAddresscodeedittype() ==
-		 * CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) ||
-		 * (co.getAddresscodeedittype() ==
-		 * CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {//
-		 * 如果修改的数据原来是地址库匹配的或者是后来修改的 addressCodeEditType =
-		 * CwbOrderAddressCodeEditTypeEnum.XiuGai; } else if
-		 * ((co.getAddresscodeedittype() ==
-		 * CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()) ||
-		 * (co.getAddresscodeedittype() ==
-		 * CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {//
-		 * 如果修改的数据原来是为匹配的 // 都将匹配状态变更为人工修改 addressCodeEditType =
-		 * CwbOrderAddressCodeEditTypeEnum.RenGong; } try {
-		 * this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), co,
-		 * branch, addressCodeEditType);
-		 * this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
-		 * } catch (Exception e) { return "{\"errorCode\":1,\"error\":\"" +
-		 * e.getMessage() + "\"}"; } } return
-		 * "{\"errorCode\":0,\"error\":\"修改成功\"}";
-		 */
+		List<Branch> branches = this.branchDAO.getBranchByBranchnameMoHu(branchname.trim());
+
 		return branches;
 	}
 }
