@@ -115,13 +115,9 @@ public class PunishDAO {
 		}
 	}
 
-	public Punish getPunishByCwb(String cwb) {
-		try {
-			String sql = "select * from express_ops_punish_detail where cwb= '" + cwb + "' limit 1";
-			return this.jdbcTemplate.queryForObject(sql, new PunishRowMapper());
-		} catch (Exception e) {
-			return null;
-		}
+	public List<Punish> getPunishByCwb(String cwb) {
+		String sql = "select * from express_ops_punish_detail where cwb= ?";
+		return this.jdbcTemplate.query(sql, new PunishRowMapper(), cwb);
 	}
 
 	public List<Punish> getPunishforExcel(String cwb, long punishid, long userid, long branchid, long punishlevel, int state) {

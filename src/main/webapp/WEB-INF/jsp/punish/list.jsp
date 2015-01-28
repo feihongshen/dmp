@@ -150,6 +150,13 @@ function stateBatch(state)
 		$("#subfile").removeAttr('disabled');
 		}
 	}
+	function checkData(state){
+		if(state==1){
+			alert("已审核的订单不允许修改！");
+			return false;
+		}
+		return true;
+	}
 </script>
 </head>
 
@@ -260,7 +267,7 @@ function stateBatch(state)
 			</td>
 		
 			<td width="8%" align="center" valign="middle">
-			[<a href="javascript:edit_button(<%=p.getId() %>);">修改</a>]
+			[<a href="javascript:if(checkData(<%=p.getState() %>)){edit_button(<%=p.getId() %>);}">修改</a>]
 			[<a href="javascript:if(confirm('确定要删除?')){delData(<%=p.getId() %>);}">删除</a>]
 <%-- 			[<a href="javascript:state(<%=p.getId() %>);"><%=(p.getState()==1?"取消审核":"审核") %></a>] 
  --%>			</td>

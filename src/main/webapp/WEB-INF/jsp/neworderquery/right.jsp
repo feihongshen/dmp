@@ -18,7 +18,7 @@ List<AbnormalWriteBackView> backViewList = (List<AbnormalWriteBackView>)request.
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
-Punish punish = (Punish)request.getAttribute("punish");
+ArrayList<Punish> punishList = (ArrayList<Punish>)request.getAttribute("punishList");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -316,7 +316,10 @@ function remarkPost(){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 		</tr>
-		<%if(punish!=null){ %>
+		<%if(punishList!=null){
+			for(Punish punish:punishList)
+			{
+			%>
 		<tr>
 			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
@@ -347,7 +350,7 @@ function remarkPost(){
 			<%=punish.getCreatetime() %>
 			</td>
 		</tr>
-		<%} %>
+		<%}} %>
 	</table>
 </li>
 						
@@ -607,7 +610,9 @@ function remarkPost(){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 		</tr>
-		<%if(punish!=null){ %>
+		<%if(punishList!=null){
+			for(Punish punish:punishList)
+			{%>
 		<tr>
 			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
@@ -638,7 +643,7 @@ function remarkPost(){
 			<%=punish.getCreatetime() %>
 			</td>
 		</tr>
-		<%} %>
+		<%} }%>
 	</table>
 </li>
 					

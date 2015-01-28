@@ -113,7 +113,7 @@ public class PunishController {
 			 * ExecutorService newSingleThreadExecutor =
 			 * Executors.newSingleThreadExecutor();
 			 * newSingleThreadExecutor.execute(new Runnable() {
-			 *
+			 * 
 			 * @Override public void run() {
 			 */
 			try {
@@ -197,10 +197,10 @@ public class PunishController {
 			@RequestParam(value = "punishcontent", defaultValue = "0", required = false) String punishcontent, @RequestParam(value = "realfee", defaultValue = "0", required = false) BigDecimal realfee)
 			throws Exception {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb.trim());
-		Punish pu = this.punishDAO.getPunishByCwb(cwb);
-		if (pu != null) {
-			return "{\"errorCode\":1,\"error\":\" 扣罚信息登记失败！扣罚信息已经存在\"}";
-		}
+		/*
+		 * Punish pu = this.punishDAO.getPunishByCwb(cwb); if (pu != null) {
+		 * return "{\"errorCode\":1,\"error\":\" 扣罚信息登记失败！扣罚信息已经存在\"}"; }
+		 */
 		if (co == null) {
 			return "{\"errorCode\":1,\"error\":\" 扣罚信息登记失败！订单号不存在\"}";
 		}

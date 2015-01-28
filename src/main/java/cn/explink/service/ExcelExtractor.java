@@ -572,10 +572,10 @@ public abstract class ExcelExtractor {
 		if (co == null) {
 			return null;
 		}
-		Punish p = this.punishDAO.getPunishByCwb(cwb);
-		if (p != null) {
-			return null;
-		}
+		/*
+		 * Punish p = this.punishDAO.getPunishByCwb(cwb); if (p != null) {
+		 * return null; }
+		 */
 		punish.setCwb(cwb);
 		PunishType pType = punishTypeMap.get(this.getXRowCellData(row, 2));
 		pType = pType == null ? new PunishType() : pType;

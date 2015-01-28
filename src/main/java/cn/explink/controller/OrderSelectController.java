@@ -216,7 +216,7 @@ public class OrderSelectController {
 	 * DeliveryState
 	 * deliveryState=deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 	 * if(deliveryState!=null){ BeanUtils.copyProperties(deliveryState, view); }
-	 *
+	 * 
 	 * List<OrderFlow> datalist = orderFlowDAO.getOrderFlowByCwb(cwb);
 	 * List<OrderFlowView> views=new ArrayList<OrderFlowView>(); for (OrderFlow
 	 * orderFlowAll:datalist) { OrderFlowView orderFlowView=new OrderFlowView();
@@ -229,7 +229,7 @@ public class OrderSelectController {
 	 * view.setNewpaywayid(view.getNewpaywayid());
 	 * view.setBackreason(order.getBackreason());
 	 * view.setLeavedreason(order.getLeavedreason());
-	 *
+	 * 
 	 * List<OrderFlow> rukuList =
 	 * orderFlowDAO.getOrderFlowByCwbAndFlowordertype(
 	 * cwb,FlowOrderTypeEnum.RuKu.getValue(),"",""); List<OrderFlow> linghuoList
@@ -245,7 +245,7 @@ public class OrderSelectController {
 	 * GotoClassAuditing gotoClassAuditingGuiBan =
 	 * gotoClassAuditingDAO.getGotoClassAuditingByGcaid(view.getGcaid()); User
 	 * deliveryname = userDAO.getUserByUserid(view.getDeliverid());
-	 *
+	 * 
 	 * model.addAttribute("deliveryname",deliveryname);
 	 * model.addAttribute("customer",customer);
 	 * model.addAttribute("invarhousebranch",invarhousebranch==null?new
@@ -273,7 +273,7 @@ public class OrderSelectController {
 	 * model.addAttribute("userInBranchType",
 	 * branchDAO.getBranchByBranchid(getSessionUser
 	 * ().getBranchid()).getSitetype());
-	 *
+	 * 
 	 * //加问题件处理的过程 List<AbnormalWriteBack> backList =
 	 * abnormalWriteBackDAO.getAbnormalOrderByOpscwbid(order.getOpscwbid());
 	 * List<AbnormalWriteBackView> backViewList = new
@@ -290,14 +290,14 @@ public class OrderSelectController {
 	 * backview.setDescribe(back.getDescribe()); if(typename.equals("--")){
 	 * typename = getTypeName(back.getOpscwbid(), alist); }
 	 * backview.setTypename(typename); backViewList.add(backview); } }
-	 *
+	 * 
 	 * //投诉的订单记录 List<Complaint> comList = complaintDAO.getComplaintByCwb(cwb);
 	 * List<ComplaintsView> comViewList = new ArrayList<ComplaintsView>();
 	 * if(comList != null && comList.size()>0){ for (Complaint complaint :
 	 * comList) { ComplaintsView complaintview = new ComplaintsView(); User
 	 * user1 = userDAO.getUserByUserid(complaint.getCreateUser()); User user2 =
 	 * userDAO.getUserByUserid(complaint.getAuditUser());
-	 *
+	 * 
 	 * complaintview.setCwb(cwb);
 	 * complaintview.setCreateTime(complaint.getCreateTime());
 	 * complaintview.setAuditTime(complaint.getAuditTime());
@@ -311,7 +311,7 @@ public class OrderSelectController {
 	 * .setAuditTypeName(getComplaintAuditTypeName(complaint.getAuditType()));
 	 * complaintview.setAuditRemark(complaint.getAuditRemark());
 	 * comViewList.add(complaintview); } }
-	 *
+	 * 
 	 * model.addAttribute("comViewList", comViewList);
 	 * model.addAttribute("abnormalWriteBackViewList", backViewList); return
 	 * "/orderflow/orderWorkRightQueck"; }
@@ -2278,9 +2278,9 @@ public class OrderSelectController {
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
-		Punish punish = this.punishDAO.getPunishByCwb(cwb);
+		List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
 		model.addAttribute("branchlist", branchlist);
-		model.addAttribute("punish", punish);
+		model.addAttribute("punishList", punishList);
 		model.addAttribute("userList", userList);
 		model.addAttribute("punishTypeList", punishTypeList);
 		return "/neworderquery/right";
@@ -2570,7 +2570,7 @@ public class OrderSelectController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
