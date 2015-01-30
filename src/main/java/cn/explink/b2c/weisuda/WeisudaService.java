@@ -263,14 +263,13 @@ public class WeisudaService {
 			backedreasonid = Long.valueOf((orderFlowDto.getExptcode() == null) || orderFlowDto.getExptcode().isEmpty() ? "0" : orderFlowDto.getExptcode());
 		}
 
-		long deliverid = deliverystate.getDeliveryid();
-		long reDeliverid = deliverystate.getDeliveryid(); // 原始的deliverid
-		long infactDeliverid = 0;
+		long deliverid=deliverystate.getDeliveryid();
+		long infactDeliverid=0;
 		try {
-			infactDeliverid = this.userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
-			deliverid = infactDeliverid;
+			infactDeliverid=userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
 		} catch (Exception e1) {
-			deliverid = deliverystate.getDeliveryid();
+			logger.error("唯速达_02回传username="+orderFlowDto.getDeliveryname()+"不存在，cwb="+cwbOrder.getCwb());
+			infactDeliverid=0;
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -312,9 +311,9 @@ public class WeisudaService {
 
 		User user = this.userDAO.getAllUserByid(deliverystate.getDeliveryid());
 
-		if (infactDeliverid != reDeliverid) {
-			this.deliveryStateDAO.updateDeliveryByCwb(infactDeliverid, orderFlowDto.getCwb());
-			this.cwbDAO.updateDeliveridByCwb(orderFlowDto.getCwb(), infactDeliverid);
+		if(infactDeliverid!=deliverid&&infactDeliverid!=0){
+			deliveryStateDAO.updateDeliveryByCwb(infactDeliverid, orderFlowDto.getCwb());
+			cwbDAO.updateDeliveridByCwb(orderFlowDto.getCwb(), infactDeliverid);
 		}
 
 		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
