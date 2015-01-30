@@ -5982,5 +5982,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	<changeSet id="liyuanyuan-2015-01-30-1" author="liyuanyuan">
+		<sql>
+			ADD COLUMN `fncustomerbillid` BIGINT(11) DEFAULT 0 NULL AFTER `outareaflag`;
+		</sql>
+	</changeSet>
+	 
 </databaseChangeLog>
  
