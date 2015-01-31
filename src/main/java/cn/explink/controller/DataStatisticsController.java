@@ -144,7 +144,7 @@ public class DataStatisticsController {
 	private ObjectMapper om = new ObjectMapper();
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -162,16 +162,16 @@ public class DataStatisticsController {
 			@RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchidStr,
 			@RequestParam(value = "startbranchid", required = false, defaultValue = "") String[] startbranchidStr) {
 
-		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-		List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));// bug546licx
-		List<Branch> kufangList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));// bug546licx
+		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
 				+ BranchEnum.ZhongZhuan.getValue());
 
-		if (branch.getSitetype() == BranchEnum.KuFang.getValue() || branch.getSitetype() == BranchEnum.TuiHuo.getValue() || branch.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
+		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
 				kufangList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
 					kufangList.add(branch);
 				}
 			}
@@ -179,31 +179,31 @@ public class DataStatisticsController {
 			if (branchnameList.size() == 0) {
 				branchnameList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 					branchnameList.add(branch);
 				}
 			}
 		}
 
-		List<String> customeridList = dataStatisticsService.getList(customeridStr);
+		List<String> customeridList = this.dataStatisticsService.getList(customeridStr);
 
-		String customerids = dataStatisticsService.getStrings(customeridStr);
+		String customerids = this.dataStatisticsService.getStrings(customeridStr);
 
-		List<CustomWareHouse> list = customWareHouseDAO.getCustomWareHouseByCustomerids(customerids);
-		List<String> flowordertypelist = dataStatisticsService.getList(orderResultTypes);
+		List<CustomWareHouse> list = this.customWareHouseDAO.getCustomWareHouseByCustomerids(customerids);
+		List<String> flowordertypelist = this.dataStatisticsService.getList(orderResultTypes);
 
-		List<String> operationOrderResultTypeslist = dataStatisticsService.getList(operationOrderResultTypes);
-		List<String> dispatchbranchidlist = dataStatisticsService.getList(dispatchbranchidStr);
-		List<String> cwbordertypeidlist = dataStatisticsService.getList(cwbordertypeidStr);
-		List<String> kufangidlist = dataStatisticsService.getList(kufangidStr);
-		List<String> nextbranchidlist = dataStatisticsService.getList(nextbranchidStr);
-		List<String> startbranchidlist = dataStatisticsService.getList(startbranchidStr);
-		List<String> currentBranchidlist = dataStatisticsService.getList(currentBranchid);
+		List<String> operationOrderResultTypeslist = this.dataStatisticsService.getList(operationOrderResultTypes);
+		List<String> dispatchbranchidlist = this.dataStatisticsService.getList(dispatchbranchidStr);
+		List<String> cwbordertypeidlist = this.dataStatisticsService.getList(cwbordertypeidStr);
+		List<String> kufangidlist = this.dataStatisticsService.getList(kufangidStr);
+		List<String> nextbranchidlist = this.dataStatisticsService.getList(nextbranchidStr);
+		List<String> startbranchidlist = this.dataStatisticsService.getList(startbranchidStr);
+		List<String> currentBranchidlist = this.dataStatisticsService.getList(currentBranchid);
 
 		model.addAttribute("branchList", branchnameList);
-		model.addAttribute("customerlist", customerDAO.getAllCustomers());
-		model.addAttribute("commonlist", commonDAO.getAllCommons());
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+		model.addAttribute("commonlist", this.commonDAO.getAllCommons());
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		model.addAttribute("customWareHouseList", list);
 		model.addAttribute("kufangList", kufangList);
 		model.addAttribute("orderResultTypeStr", flowordertypelist);
@@ -216,8 +216,9 @@ public class DataStatisticsController {
 		model.addAttribute("startbranchidStr", startbranchidlist);
 		model.addAttribute("currentBranchidStr", currentBranchidlist);
 
-		model.addAttribute("notuihuobranchList", branchDAO.getBanchByBranchidForStock(BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue()));
-		model.addAttribute("loginUserType", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()).getSitetype());// 存储当前登录用户所在机构类型
+		model.addAttribute("notuihuobranchList",
+				this.branchDAO.getBanchByBranchidForStock(BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue()));
+		model.addAttribute("loginUserType", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getSitetype());// 存储当前登录用户所在机构类型
 		if (!model.containsAttribute("page_obj")) {
 			model.addAttribute("page_obj", new Page());
 		}
@@ -246,7 +247,7 @@ public class DataStatisticsController {
 
 	/**
 	 * 滞留订单汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -282,23 +283,23 @@ public class DataStatisticsController {
 		// 滞留
 		String[] operationOrderResultTypes = { DeliveryStateEnum.FenZhanZhiLiu.getValue() + "" };
 		if (isshow != 0) {
-			logger.info(
+			this.logger.info(
 					"滞留订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",cwbordertypeid:"
-							+ dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page + "",
-					getSessionUser().getRealname());
+							+ this.dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid
+							+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:"
+							+ page + "", this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-					+ BranchEnum.ZhongZhuan.getValue());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
+					+ "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
 					branchnameList.add(branch);
 				} else {
-					if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+					if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 						branchnameList.add(branch);
 					}
 				}
@@ -307,7 +308,7 @@ public class DataStatisticsController {
 			String orderName = " " + orderbyName + " " + orderbyId;
 			String orderflowcwbs = "";
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
-			if (dispatchbranchid.length == 0 & branchnameList.size() > 0) {
+			if ((dispatchbranchid.length == 0) & (branchnameList.size() > 0)) {
 				dispatchbranchid = new String[branchnameList.size()];
 				for (Branch bc : branchnameList) {
 					dispatchbranchid[branchnameList.indexOf(bc)] = bc.getBranchid() + "";
@@ -315,8 +316,8 @@ public class DataStatisticsController {
 				}
 			}
 
-			deliverlist = userDAO.getAllUserByBranchIds(dataStatisticsService.getStrings(dispatchbranchid));
-			SystemInstall systemInstall = systemInstallDAO.getSystemInstallByName("ZhiLiuTongji");
+			deliverlist = this.userDAO.getAllUserByBranchIds(this.dataStatisticsService.getStrings(dispatchbranchid));
+			SystemInstall systemInstall = this.systemInstallDAO.getSystemInstallByName("ZhiLiuTongji");
 			int zhiliucheck = 0;
 			if (systemInstall != null) {
 				try {
@@ -325,41 +326,41 @@ public class DataStatisticsController {
 					zhiliucheck = 0;
 				}
 			}
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
-					zhiliucheck, customerids);
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
+					deliverid, zhiliucheck, customerids);
 
 			if (orderFlowList.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
+			count = this.cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
 
-			sum = cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
+			sum = this.cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
 
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 1, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		model.addAttribute("deliverlist", deliverlist);
 		List<User> nowUserList = new ArrayList<User>();
-		nowUserList.addAll(userDAO.getUserByRole(2));
-		nowUserList.addAll(userDAO.getUserByRole(4));
+		nowUserList.addAll(this.userDAO.getUserByRole(2));
+		nowUserList.addAll(this.userDAO.getUserByRole(4));
 		model.addAttribute("userList", nowUserList);
 		model.addAttribute("count", count);
 		model.addAttribute("sum", sum.getReceivablefee());
@@ -369,13 +370,13 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 		model.addAttribute("check", 1);
 		model.addAttribute("deliverid", deliverid);
-		logger.info("滞留订单汇总，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 1, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
+		this.logger.info("滞留订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 1, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 拒收订单汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -415,23 +416,23 @@ public class DataStatisticsController {
 		List<User> deliverlist = new ArrayList<User>();
 
 		if (isshow != 0) {
-			logger.info(
+			this.logger.info(
 					"拒收订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",cwbordertypeid:"
-							+ dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",operationOrderResultType："
-							+ dataStatisticsService.getStrings(operationOrderResultTypes) + ",page:" + page, getSessionUser().getRealname());
+							+ this.dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid
+							+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
+							+ ",operationOrderResultType：" + this.dataStatisticsService.getStrings(operationOrderResultTypes) + ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-					+ BranchEnum.ZhongZhuan.getValue());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
+					+ "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
 					branchnameList.add(branch);
 				} else {
-					if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+					if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 						branchnameList.add(branch);
 					}
 				}
@@ -441,7 +442,7 @@ public class DataStatisticsController {
 			String orderflowcwbs = "";
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 
-			if (dispatchbranchid.length == 0 & branchnameList.size() > 0) {
+			if ((dispatchbranchid.length == 0) & (branchnameList.size() > 0)) {
 				dispatchbranchid = new String[branchnameList.size()];
 				for (Branch bc : branchnameList) {
 					dispatchbranchid[branchnameList.indexOf(bc)] = bc.getBranchid() + "";
@@ -449,9 +450,9 @@ public class DataStatisticsController {
 				}
 			}
 
-			deliverlist = userDAO.getAllUserByBranchIds(dataStatisticsService.getStrings(dispatchbranchid));
+			deliverlist = this.userDAO.getAllUserByBranchIds(this.dataStatisticsService.getStrings(dispatchbranchid));
 
-			SystemInstall systemInstall = systemInstallDAO.getSystemInstallByName("JuShouTongji");
+			SystemInstall systemInstall = this.systemInstallDAO.getSystemInstallByName("JuShouTongji");
 			int jushouCheck = 0;
 			if (systemInstall != null) {
 				try {
@@ -468,41 +469,41 @@ public class DataStatisticsController {
 				operationOrderResultTypes[3] = DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "";
 			}
 
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
-					jushouCheck, customerids);
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
+					deliverid, jushouCheck, customerids);
 
 			if (orderFlowList.size() > 0) {
 
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
+			count = this.cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
 
-			sum = cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
+			sum = this.cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
 
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", 0, 0, 2, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		model.addAttribute("deliverlist", deliverlist);
 		List<User> nowUserList = new ArrayList<User>();
-		nowUserList.addAll(userDAO.getUserByRole(2));
-		nowUserList.addAll(userDAO.getUserByRole(4));
+		nowUserList.addAll(this.userDAO.getUserByRole(2));
+		nowUserList.addAll(this.userDAO.getUserByRole(4));
 		model.addAttribute("userList", nowUserList);
 		model.addAttribute("count", count);
 		model.addAttribute("sum", sum.getReceivablefee());
@@ -512,13 +513,13 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 		model.addAttribute("check", 1);
 		model.addAttribute("deliverid", deliverid);
-		logger.info("拒收订单汇总，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 2, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
+		this.logger.info("拒收订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 2, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 退供货商订单汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -548,9 +549,9 @@ public class DataStatisticsController {
 
 		String[] operationOrderResultTypes = {};
 		if (isshow != 0) {
-			logger.info("退供货商订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",customerid:" + dataStatisticsService.getStrings(customerid) + ",flowordertype:" + flowordertype
-					+ ",cwbordertypeid:" + dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page,
-					getSessionUser().getRealname());
+			this.logger.info("退供货商订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",flowordertype:"
+					+ flowordertype + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
+					+ ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
@@ -561,41 +562,41 @@ public class DataStatisticsController {
 			List<String> orderFlowList = new ArrayList<String>();
 
 			if (flowordertype == -1) {
-				orderFlowList.addAll(orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), operationOrderResultTypes,
+				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), operationOrderResultTypes,
 						new String[] {}, 0, 0));
-				orderFlowList.addAll(orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue(), operationOrderResultTypes,
+				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue(), operationOrderResultTypes,
 						new String[] {}, 0, 0));
-				orderFlowList.addAll(orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), operationOrderResultTypes,
+				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), operationOrderResultTypes,
 						new String[] {}, 0, 0));
 			} else {
-				orderFlowList = orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, flowordertype, operationOrderResultTypes, new String[] {}, 0, 0);
+				orderFlowList = this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, flowordertype, operationOrderResultTypes, new String[] {}, 0, 0);
 			}
 
 			if (orderFlowList.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
+			count = this.cwbDAO.getcwborderCountHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
 
-			sum = cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
+			sum = this.cwbDAO.getcwborderSumHuiZong("", "", customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
 
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, customerids, "", "", cwbordertypeids, orderflowcwbs, "", "", "", flowordertype, 0, 3, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		model.addAttribute("count", count);
@@ -604,13 +605,13 @@ public class DataStatisticsController {
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("退供货商汇总，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 3, new String[] {}, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
+		this.logger.info("退供货商汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 3, new String[] {}, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 库房在途订单汇总
-	 * 
+	 *
 	 * @param model
 	 * @param datetype
 	 * @param begindate
@@ -638,72 +639,72 @@ public class DataStatisticsController {
 		Page pageparm = new Page();
 		CwbOrder feeco = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		List<Branch> branchList = branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getAllBranches();
 		// 滞留
 		String[] operationOrderResultTypes = {};
-		if (isshow != 0 && kufangid.length > 0 && nextbranchid.length > 0) {
-			logger.info("库房在途订单汇总，操作人{}，选择条件datetype:" + datetype + "begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + dataStatisticsService.getStrings(kufangid) + ",nextbranchid:"
-					+ dataStatisticsService.getStrings(nextbranchid) + ",cwbordertypeid:" + dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:"
-					+ orderbyId + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+		if ((isshow != 0) && (kufangid.length > 0) && (nextbranchid.length > 0)) {
+			this.logger.info("库房在途订单汇总，操作人{}，选择条件datetype:" + datetype + "begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid)
+					+ ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:"
+					+ orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			// 定义参数
 			String orderName = " " + orderbyName + " " + orderbyId;
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			String nextbranchids = dataStatisticsService.getStrings(nextbranchid);
-			String kufangids = dataStatisticsService.getStrings(kufangid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			String nextbranchids = this.dataStatisticsService.getStrings(nextbranchid);
+			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 
 			// 获取值
 
 			if (datetype == 1) {
-				clist = cwbDAO.getzaitucwbOrderByPage(page, orderName, begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-				feeco = cwbDAO.getzaitucwborderSum(datetype, begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-				count = cwbDAO.getzaitucwborderCount(begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+				clist = this.cwbDAO.getzaitucwbOrderByPage(page, orderName, begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+				feeco = this.cwbDAO.getzaitucwborderSum(datetype, begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+				count = this.cwbDAO.getzaitucwborderCount(begindate, enddate, kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			} else if (datetype == 2) {
 
-				List<String> orderflowlist = orderFlowDAO.getZaituCwbsByDateAndFlowtype(begindate, enddate, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), kufangids);
-				String orderflowcwbs = dataStatisticsService.getStrings(orderflowlist);
+				List<String> orderflowlist = this.orderFlowDAO.getZaituCwbsByDateAndFlowtype(begindate, enddate, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), kufangids);
+				String orderflowcwbs = this.dataStatisticsService.getStrings(orderflowlist);
 				if (orderflowcwbs.length() == 0) {
 					orderflowcwbs = "'--'";
 				}
-				List<String> cwbStr = cwbDAO.getzaitucwborderCwb(kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue(), orderflowcwbs);
+				List<String> cwbStr = this.cwbDAO.getzaitucwborderCwb(kufangids, nextbranchids, cwbordertypeids, CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue(), orderflowcwbs);
 				if (!cwbStr.isEmpty()) {
-					String cwbs = dataStatisticsService.getStrings(cwbStr);
-					clist = cwbDAO.getCwbByCwbsPage(page, cwbs);
-					count = cwbDAO.getCwbOrderCwbsCount(cwbs);
-					feeco = cwbDAO.getcwborderSumBycwbs(cwbs);
+					String cwbs = this.dataStatisticsService.getStrings(cwbStr);
+					clist = this.cwbDAO.getCwbByCwbsPage(page, cwbs);
+					count = this.cwbDAO.getCwbOrderCwbsCount(cwbs);
+					feeco = this.cwbDAO.getcwborderSumBycwbs(cwbs);
 				}
 			}
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
 
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 
-		model.addAttribute("branchAllList", branchDAO.getBranchToUser(getSessionUser().getUserid()));
+		model.addAttribute("branchAllList", this.branchDAO.getBranchToUser(this.getSessionUser().getUserid()));
 		model.addAttribute("count", count);
 		model.addAttribute("sum", feeco.getReceivablefee());
 		model.addAttribute("paybackfeesum", feeco.getPaybackfee());
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("库房在途订单汇总，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, new String[] {}, new String[] {}, null, operationOrderResultTypes, 4, new String[] {}, cwbordertypeid, kufangid, nextbranchid, new String[] {});
+		this.logger.info("库房在途订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, new String[] {}, new String[] {}, null, operationOrderResultTypes, 4, new String[] {}, cwbordertypeid, kufangid, nextbranchid, new String[] {});
 	}
 
 	/**
 	 * 妥投订单汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -743,24 +744,24 @@ public class DataStatisticsController {
 		List<User> deliverlist = new ArrayList<User>();
 		// 滞留
 		if (isshow != 0) {
-			logger.info(
+			this.logger.info(
 					"妥投订单汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ dataStatisticsService.getStrings(customerid) + ",paywayid:" + paywayid + ",cwbordertypeid:" + dataStatisticsService.getStrings(cwbordertypeid) + ",dispatchbranchid:"
-							+ dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",operationOrderResultTypes:"
-							+ dataStatisticsService.getStrings(operationOrderResultTypes) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page,
-					getSessionUser().getRealname());
+							+ this.dataStatisticsService.getStrings(customerid) + ",paywayid:" + paywayid + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid)
+							+ ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",operationOrderResultTypes:"
+							+ this.dataStatisticsService.getStrings(operationOrderResultTypes) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page,
+					this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-					+ BranchEnum.ZhongZhuan.getValue());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
+					+ "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
 					branchnameList.add(branch);
 				} else {
-					if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+					if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 						branchnameList.add(branch);
 					}
 				}
@@ -773,7 +774,7 @@ public class DataStatisticsController {
 				operationOrderResultTypes = new String[] { DeliveryStateEnum.PeiSongChengGong.getValue() + "", DeliveryStateEnum.ShangMenHuanChengGong.getValue() + "",
 						DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "" };
 			}
-			if (dispatchbranchid.length == 0 & branchnameList.size() > 0) {
+			if ((dispatchbranchid.length == 0) & (branchnameList.size() > 0)) {
 				dispatchbranchid = new String[branchnameList.size()];
 				for (Branch bc : branchnameList) {
 					dispatchbranchid[branchnameList.indexOf(bc)] = bc.getBranchid() + "";
@@ -781,37 +782,37 @@ public class DataStatisticsController {
 				}
 			}
 
-			deliverlist = userDAO.getAllUserByBranchIds(dataStatisticsService.getStrings(dispatchbranchid));
+			deliverlist = this.userDAO.getAllUserByBranchIds(this.dataStatisticsService.getStrings(dispatchbranchid));
 
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowLastList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			List<String> orderFlowLastList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
 					deliverid, 1, customerids);
 			if (orderFlowLastList.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowLastList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowLastList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong(customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
-			sum = cwbDAO.getcwborderSumHuiZong(customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, orderName, customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
+			count = this.cwbDAO.getcwborderCountHuiZong(customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
+			sum = this.cwbDAO.getcwborderSumHuiZong(customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, orderName, customerids, cwbordertypeids, orderflowcwbs, 0, paywayid, new String[] {}, paybackfeeIsZero);
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUserByuserDeleteFlag();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUserByuserDeleteFlag();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 
 		List<User> nowUserList = new ArrayList<User>();
-		nowUserList.addAll(userDAO.getUserByRole(2));
-		nowUserList.addAll(userDAO.getUserByRole(4));
+		nowUserList.addAll(this.userDAO.getUserByRole(2));
+		nowUserList.addAll(this.userDAO.getUserByRole(4));
 		model.addAttribute("deliverlist", deliverlist);
 		model.addAttribute("userList", nowUserList);
 		model.addAttribute("count", count);
@@ -822,13 +823,13 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 		model.addAttribute("deliverid", deliverid);
 		model.addAttribute("check", 1);
-		logger.info("妥投订单汇总，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 5, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
+		this.logger.info("妥投订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 5, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 库房出库统计
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -857,36 +858,36 @@ public class DataStatisticsController {
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		List<Branch> branchList = branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getAllBranches();
 
 		if (isshow != 0) {
-			logger.info("库房出库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",customerid:" + dataStatisticsService.getStrings(customerid)
-					+ ",cwbordertypeid:" + dataStatisticsService.getStrings(cwbordertypeid) + ",nextbranchid:" + dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:" + orderbyName
-					+ ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+			this.logger.info("库房出库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",customerid:" + this.dataStatisticsService.getStrings(customerid)
+					+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:"
+					+ orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			// 定义参数
 			String orderName = " " + orderbyName + " " + orderbyId;
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			String nextbranchids = dataStatisticsService.getStrings(nextbranchid);
-			String kufangids = dataStatisticsService.getStrings(kufangid);
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			String nextbranchids = this.dataStatisticsService.getStrings(nextbranchid);
+			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
-			count = cwbDAO.getcwbOrderByOutWarehouseCountNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
-			sum = cwbDAO.getcwbOrderByOutWarehouseSumNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
-			clist = cwbDAO.getcwbOrderByOutWarehouseNew(page, begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
+			count = this.cwbDAO.getcwbOrderByOutWarehouseCountNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
+			sum = this.cwbDAO.getcwbOrderByOutWarehouseSumNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
+			clist = this.cwbDAO.getcwbOrderByOutWarehouseNew(page, begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
-		model.addAttribute("branchAllList", branchDAO.getBranchToUser(getSessionUser().getUserid()));
+		model.addAttribute("branchAllList", this.branchDAO.getBranchToUser(this.getSessionUser().getUserid()));
 		model.addAttribute("count", count);
 		model.addAttribute("sum", sum.getReceivablefee());
 		model.addAttribute("paybackfeesum", sum.getPaybackfee());
@@ -894,16 +895,16 @@ public class DataStatisticsController {
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
 
-		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-		List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
 				+ BranchEnum.ZhongZhuan.getValue());
-		List<Branch> kufangList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
+		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
 				+ BranchEnum.ZhongZhuan.getValue());
-		if (branch.getSitetype() == BranchEnum.KuFang.getValue() || branch.getSitetype() == BranchEnum.TuiHuo.getValue() || branch.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
+		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
 				kufangList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
 					kufangList.add(branch);
 				}
 			}
@@ -911,25 +912,25 @@ public class DataStatisticsController {
 			if (branchnameList.size() == 0) {
 				branchnameList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 					branchnameList.add(branch);
 				}
 			}
 		}
-		List<String> customeridList = dataStatisticsService.getList(customerid);
-		List<String> cwbordertypeidlist = dataStatisticsService.getList(cwbordertypeid);
-		List<String> nextbranchidlist = dataStatisticsService.getList(nextbranchid);
-		List<String> kufangidList = dataStatisticsService.getList(kufangid);
+		List<String> customeridList = this.dataStatisticsService.getList(customerid);
+		List<String> cwbordertypeidlist = this.dataStatisticsService.getList(cwbordertypeid);
+		List<String> nextbranchidlist = this.dataStatisticsService.getList(nextbranchid);
+		List<String> kufangidList = this.dataStatisticsService.getList(kufangid);
 
 		model.addAttribute("branchList", branchnameList);
-		model.addAttribute("customerlist", customerDAO.getAllCustomers());
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		model.addAttribute("kufangList", kufangList);
 		model.addAttribute("cwbordertypeidStr", cwbordertypeidlist);
 		model.addAttribute("customeridStr", customeridList);
 		model.addAttribute("kufangidStr", kufangidList);
 		model.addAttribute("nextbranchidStr", nextbranchidlist);
-		logger.info("库房出库统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+		this.logger.info("库房出库统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return "datastatistics/outwarehousedatalist";
 		// return querypage(model,customerid,new
 		// String[]{},null,operationOrderResultTypes,6,new
@@ -938,7 +939,7 @@ public class DataStatisticsController {
 
 	/**
 	 * 库房入库统计
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param emaildateids
@@ -974,50 +975,50 @@ public class DataStatisticsController {
 			emaildateend = emaildateend.length() == 0 ? DateTimeUtil.getNowTime() : emaildateend;
 		}
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		List<Branch> branchList = branchDAO.getAllBranches();
-		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
+		List<Branch> branchList = this.branchDAO.getAllBranches();
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		// 蓝生2014/9/26 16:04:23 @李媛媛 去掉库房中统计的中转库
-		List<Branch> kufangList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue());
-		if (branch.getSitetype() == BranchEnum.KuFang.getValue() || branch.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue());
+		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
 				kufangList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(kufangList, branch)) {
 					kufangList.add(branch);
 				}
 			}
 		}
-		List<Customer> customerList = customerDAO.getAllCustomers();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		model.addAttribute("customerlist", customerList);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		model.addAttribute("kufangList", kufangList);
-		List<String> customeridList = dataStatisticsService.getList(customerids);
+		List<String> customeridList = this.dataStatisticsService.getList(customerids);
 		model.addAttribute("customeridStr", customeridList);
 
 		if (isshow != 0) {
-			logger.info("库房入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",cwbordertypeid:" + cwbordertypeid + ",isruku:" + isruku + ",customerids:"
-					+ dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+			this.logger.info("库房入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",cwbordertypeid:" + cwbordertypeid + ",isruku:" + isruku + ",customerids:"
+					+ this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			String customers = "";
 			if (customerids.length > 0) {
-				customers = dataStatisticsService.getStrings(customerids);
+				customers = this.dataStatisticsService.getStrings(customerids);
 			}
 
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 
 			if (isruku.equals("false")) {
-				clist = cwbDAO.getCwbDetailByParamAndCwbsPage(page, customers, emaildatebegin, emaildateend, cwbordertypeid, kufangid);
-				count = cwbDAO.getCwbDetailByParamAndCwbsCount(customers, emaildatebegin, emaildateend, cwbordertypeid, kufangid);
+				clist = this.cwbDAO.getCwbDetailByParamAndCwbsPage(page, customers, emaildatebegin, emaildateend, cwbordertypeid, kufangid);
+				count = this.cwbDAO.getCwbDetailByParamAndCwbsCount(customers, emaildatebegin, emaildateend, cwbordertypeid, kufangid);
 			} else {
-				List<String> orderflowList = orderFlowDAO.getIntoCwbDetailAndOrderFlow(begindate, enddate, FlowOrderTypeEnum.RuKu.getValue(), kufangid);
+				List<String> orderflowList = this.orderFlowDAO.getIntoCwbDetailAndOrderFlow(begindate, enddate, FlowOrderTypeEnum.RuKu.getValue(), kufangid);
 				String orderflowcwbs = "";
 				if (orderflowList.size() > 0) {
-					orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderflowList);
+					orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderflowList);
 				} else {
 					orderflowcwbs = "'--'";
 				}
-				clist = cwbDAO.getIntoCwbByCwbsPage(page, orderflowcwbs, customers, cwbordertypeid, emaildatebegin, emaildateend);
-				count = cwbDAO.getIntoCwbByCwbsCount(orderflowcwbs, customers, cwbordertypeid, emaildatebegin, emaildateend);
+				clist = this.cwbDAO.getIntoCwbByCwbsPage(page, orderflowcwbs, customers, cwbordertypeid, emaildatebegin, emaildateend);
+				count = this.cwbDAO.getIntoCwbByCwbsCount(orderflowcwbs, customers, cwbordertypeid, emaildatebegin, emaildateend);
 			}
 
 			/*
@@ -1029,13 +1030,13 @@ public class DataStatisticsController {
 			 * for(int i = (page-1)*Page.ONE_PAGE_NUMBER ; i <
 			 * Page.ONE_PAGE_NUMBER*page&&i<orderflowList.size() ;i++){
 			 * orderflowpageList.add(orderflowList.get(i)); }
-			 * 
-			 * 
+			 *
+			 *
 			 * for(OrderFlow of : orderflowpageList){
 			 * clist.add(om.readValue(of.getFloworderdetail(),
 			 * CwbOrderWithDeliveryState.class).getCwbOrder()); } count =
 			 * orderflowList.size();
-			 * 
+			 *
 			 * if(isruku.equals("false")){ StringBuffer str = new
 			 * StringBuffer(); String cwbs=""; if(orderflowList.size()>0){
 			 * for(OrderFlow of : orderflowList){
@@ -1048,30 +1049,31 @@ public class DataStatisticsController {
 			 * ,emaildateend, cwbordertypeid, cwbs,kufangid); } }
 			 */
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate,
+					remarkList);
 
 		}
 		List<Customer> customerMarkList = new ArrayList<Customer>();
 		if (customerids.length > 0) {
-			customerMarkList = customerDAO.getCustomerByIds(dataStatisticsService.getStrings(customerids));
+			customerMarkList = this.customerDAO.getCustomerByIds(this.dataStatisticsService.getStrings(customerids));
 		}
 		model.addAttribute("customerMarkList", customerMarkList);
 		model.addAttribute("count", count);
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("库房入库统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+		this.logger.info("库房入库统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return "datastatistics/intowarehousedatalist";
 	}
 
 	/**
 	 * 客户发货统计
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -1103,9 +1105,9 @@ public class DataStatisticsController {
 
 		String[] operationOrderResultTypes = {};
 		if (isshow != 0) {
-			logger.info("客户发货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
-					+ ",customerid:" + dataStatisticsService.getStrings(customerid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page,
-					getSessionUser().getRealname());
+			this.logger.info("客户发货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
+					+ ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this
+					.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1113,26 +1115,26 @@ public class DataStatisticsController {
 			String orderName = " " + orderbyName + " " + orderbyId;
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 
-			String customerids = dataStatisticsService.getStrings(customerid);
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			String kufangids = dataStatisticsService.getStrings(kufangid);
+			String customerids = this.dataStatisticsService.getStrings(customerid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
+			count = this.cwbDAO.getcwborderCountHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
 
-			sum = cwbDAO.getcwborderSumHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
+			sum = this.cwbDAO.getcwborderSumHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
 
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, begindate, enddate, orderName, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, begindate, enddate, orderName, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		model.addAttribute("servicetype", servicetype);
@@ -1142,13 +1144,13 @@ public class DataStatisticsController {
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("客户发货统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 7, new String[] {}, cwbordertypeid, kufangid, new String[] {}, new String[] {});
+		this.logger.info("客户发货统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 7, new String[] {}, cwbordertypeid, kufangid, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 分站到货统计功能
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -1174,10 +1176,11 @@ public class DataStatisticsController {
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		List<Customer> customerList = customerDAO.getAllCustomers();// 获取全部供货商
+		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取全部供货商
 		if (isshow != 0) {
-			logger.info("分站到货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
-					+ ",customerid:" + customerid + ",currentBranchid:" + dataStatisticsService.getStrings(currentBranchid) + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+			this.logger.info("分站到货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
+					+ ",customerid:" + customerid + ",currentBranchid:" + this.dataStatisticsService.getStrings(currentBranchid) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser()
+					.getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1186,22 +1189,22 @@ public class DataStatisticsController {
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 			String orderflowcwbs = "";
 
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-					+ BranchEnum.ZhongZhuan.getValue());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
+					+ "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
 					branchnameList.add(branch);
 				} else {
-					if (!dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
+					if (!this.dataStatisticsService.checkBranchRepeat(branchnameList, branch)) {
 						branchnameList.add(branch);
 					}
 				}
 			}
 
 			if (currentBranchid.length == 0) {
-				if (branchnameList != null && branchnameList.size() > 0) {
+				if ((branchnameList != null) && (branchnameList.size() > 0)) {
 					currentBranchid = new String[branchnameList.size()];
 					for (Branch b : branchnameList) {
 						currentBranchid[branchnameList.indexOf(b)] = b.getBranchid() + "";
@@ -1211,32 +1214,33 @@ public class DataStatisticsController {
 
 			}
 
-			List<String> orderFlowList = orderFlowDAO.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-					+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), dataStatisticsService.getStrings(currentBranchid), isnowdata);
+			List<String> orderFlowList = this.orderFlowDAO.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+					+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), this.dataStatisticsService.getStrings(currentBranchid), isnowdata);
 			if (orderFlowList.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 
-			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
-			String kufangids = dataStatisticsService.getStrings(kufangid);
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
-			count = cwbDAO.getcwborderDaoHuoCount(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
+			count = this.cwbDAO.getcwborderDaoHuoCount(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
-			sum = cwbDAO.getcwborderDaoHuoSum(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
+			sum = this.cwbDAO.getcwborderDaoHuoSum(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
-			clist = cwbDAO.getDaoHuocwbOrderByPage(page, customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
+			clist = this.cwbDAO.getDaoHuocwbOrderByPage(page, customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate,
+					remarkList);
 
 		}
 		model.addAttribute("count", count);
@@ -1246,13 +1250,13 @@ public class DataStatisticsController {
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("分站到货统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
-		return querypage(model, new String[] {}, currentBranchid, null, new String[] {}, 8, new String[] {}, cwbordertypeid, kufangid, new String[] {}, new String[] {});
+		this.logger.info("分站到货统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
+		return this.querypage(model, new String[] {}, currentBranchid, null, new String[] {}, 8, new String[] {}, cwbordertypeid, kufangid, new String[] {}, new String[] {});
 	}
 
 	/**
 	 * 按到站时间，统计到站后，没有反馈的订单
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -1275,37 +1279,36 @@ public class DataStatisticsController {
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		List<Branch> kufangList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue());
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue());
 		model.addAttribute("branchAllList", branchList);
 		model.addAttribute("kufangList", kufangList);
 		model.addAttribute("begindate", begindate);
 		model.addAttribute("enddate", enddate);
 		List<String> kufangidList = new ArrayList<String>();
-		if (kufangids != null && kufangids.length > 0) {
+		if ((kufangids != null) && (kufangids.length > 0)) {
 			for (String kufangid : kufangids) {
 				kufangidList.add(kufangid);
 			}
 		}
 		List<String> branchidList = new ArrayList<String>();
-		if (branchids != null && branchids.length > 0) {
+		if ((branchids != null) && (branchids.length > 0)) {
 			for (String branchid : branchids) {
 				branchidList.add(branchid);
 			}
 		}
 		if (isshow == 0) {
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branchidList.add(branch.getBranchid() + "");
 			}
 		}
 		model.addAttribute("kufangidstr", kufangidList);
 		model.addAttribute("branchidstr", branchidList);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		if (isshow != 0) {
-			logger.info(
-					"无结果订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangids:" + dataStatisticsService.getStrings(kufangids) + ",branchids:"
-							+ dataStatisticsService.getStrings(branchids) + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+			this.logger.info("无结果订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangids:" + this.dataStatisticsService.getStrings(kufangids) + ",branchids:"
+					+ this.dataStatisticsService.getStrings(branchids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1318,34 +1321,34 @@ public class DataStatisticsController {
 			 * f.credate>='2013-05-08 15:10:29' AND f.credate<='2013-05-09
 			 * 15:10:29' AND d.startbranchid IN(192) AND d.`carwarehouse`
 			 * IN(186);
-			 * 
+			 *
 			 * 2.获取查到的订单中比这个时间晚的还做到站的订单 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND credate>'2013-05-09 15:10:29' AND flowordertype=7;
-			 * 
+			 *
 			 * 3.获取 把第一步查到订单加上排除掉第二步查到的订单 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND cwb NOT IN('--') AND flowordertype=7;
-			 * 
+			 *
 			 * 4.把第三步查到订单在反馈中查出哪些订单已经反馈 SELECT DISTINCT cwb FROM
 			 * `express_ops_delivery_state` WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND state=1 AND `deliverystate`>0;
-			 * 
+			 *
 			 * 5.获取第三步查到订单排除掉第四步查到的订单并且分页取10个 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND cwb NOT IN('213050437951') AND flowordertype=7 LIMIT 0,10;
-			 * 
+			 *
 			 * 6.把第五步查到的订单去查订单表的订单详情 SELECT * FROM express_ops_cwb_detail WHERE
 			 * cwb IN(
 			 * '11305040007643','113050535325','13050661483039','13050662866339','13050663012338','13050664551938','13050664576638','13050664901335','213050380083','213050592611');
 			 */
 			// 第一步
-			String oneCwbs = dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate,
-					kufangids, branchids);
+			String oneCwbs = this.dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate,
+					enddate, kufangids, branchids);
 			String twoCbs = "";
 			String threeCwbs = "";
 			String fourCwbs = "";
@@ -1359,19 +1362,19 @@ public class DataStatisticsController {
 				return "datastatistics/noresultlist";
 			}
 			if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
-				List<String> twoCwbsList = orderFlowDAO.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs,
-						enddate);
-				twoCbs = dataStatisticsService.getCwbs(twoCwbsList);
+				List<String> twoCwbsList = this.orderFlowDAO.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+						oneCwbs, enddate);
+				twoCbs = this.dataStatisticsService.getCwbs(twoCwbsList);
 				twoCbs = twoCbs.equals("") ? "'--'" : twoCbs;
 			}
 			if (!"".equals(twoCbs)) {// 如果第二步查不到订单第三步就不用调用了
-				List<String> threeCwbsList = orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs,
-						twoCbs);
-				threeCwbs = dataStatisticsService.getCwbs(threeCwbsList);
+				List<String> threeCwbsList = this.orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+						oneCwbs, twoCbs);
+				threeCwbs = this.dataStatisticsService.getCwbs(threeCwbsList);
 			}
 			if (!"".equals(threeCwbs)) {// 如果第三步才到订单号
-				List<String> fourCwbsList = orderFlowDAO.getFourCwbs(threeCwbs);
-				fourCwbs = dataStatisticsService.getCwbs(fourCwbsList);
+				List<String> fourCwbsList = this.orderFlowDAO.getFourCwbs(threeCwbs);
+				fourCwbs = this.dataStatisticsService.getCwbs(fourCwbsList);
 				fourCwbs = fourCwbs.equals("") ? "'--'" : fourCwbs;
 			} else if (!"".equals(twoCbs)) {
 				model.addAttribute("count", count);
@@ -1382,17 +1385,17 @@ public class DataStatisticsController {
 
 			}
 			if (!"".equals(fourCwbs)) {
-				List<String> fiveCwbsList = orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs,
-						fourCwbs, page);
-				List<String> fiveCwbsAllList = orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+				List<String> fiveCwbsList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+						threeCwbs, fourCwbs, page);
+				List<String> fiveCwbsAllList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
 						threeCwbs, fourCwbs, -1);
-				fiveCwbs = dataStatisticsService.getCwbs(fiveCwbsList);
-				fiveCwbsAll = dataStatisticsService.getCwbs(fiveCwbsAllList);
-				count = orderFlowDAO.getFiveCwbsCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs);
+				fiveCwbs = this.dataStatisticsService.getCwbs(fiveCwbsList);
+				fiveCwbsAll = this.dataStatisticsService.getCwbs(fiveCwbsAllList);
+				count = this.orderFlowDAO.getFiveCwbsCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs);
 			}
 			if (!"".equals(fiveCwbs)) {
-				clist = cwbDAO.getCwbOrderByCwbs(fiveCwbs);
-				sum = cwbDAO.getSumByCwbs(fiveCwbsAll);
+				clist = this.cwbDAO.getCwbOrderByCwbs(fiveCwbs);
+				sum = this.cwbDAO.getSumByCwbs(fiveCwbsAll);
 			} else {
 				model.addAttribute("count", count);
 				model.addAttribute("orderlist", cwbOrderView);
@@ -1401,14 +1404,14 @@ public class DataStatisticsController {
 				return "datastatistics/noresultlist";
 			}
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
-			List<Customer> customerList = customerDAO.getAllCustomers();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchAllList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchAllList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchAllList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchAllList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 
@@ -1417,7 +1420,7 @@ public class DataStatisticsController {
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		logger.info("无结果订单统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+		this.logger.info("无结果订单统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return "datastatistics/noresultlist";
 	}
 
@@ -1429,43 +1432,43 @@ public class DataStatisticsController {
 		String sql = "";
 		begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 		enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
-		String oneCwbs = dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate,
+		String oneCwbs = this.dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate,
 				kufangids, branchids);
 		String twoCbs = "";
 		String threeCwbs = "";
 		String fourCwbs = "";
 		String fiveCwbsAll = "";
 		if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
-			List<String> twoCwbsList = orderFlowDAO
-					.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, enddate);
-			twoCbs = dataStatisticsService.getCwbs(twoCwbsList);
+			List<String> twoCwbsList = this.orderFlowDAO.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs,
+					enddate);
+			twoCbs = this.dataStatisticsService.getCwbs(twoCwbsList);
 			twoCbs = twoCbs.equals("") ? "'--'" : twoCbs;
 		}
 		if (!"".equals(twoCbs)) {// 如果第二步查不到订单第三步就不用调用了
-			List<String> threeCwbsList = orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs,
-					twoCbs);
-			threeCwbs = dataStatisticsService.getCwbs(threeCwbsList);
+			List<String> threeCwbsList = this.orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+					oneCwbs, twoCbs);
+			threeCwbs = this.dataStatisticsService.getCwbs(threeCwbsList);
 		}
 		if (!"".equals(threeCwbs)) {// 如果第三步才到订单号
-			List<String> fourCwbsList = orderFlowDAO.getFourCwbs(threeCwbs);
-			fourCwbs = dataStatisticsService.getCwbs(fourCwbsList);
+			List<String> fourCwbsList = this.orderFlowDAO.getFourCwbs(threeCwbs);
+			fourCwbs = this.dataStatisticsService.getCwbs(fourCwbsList);
 			fourCwbs = fourCwbs.equals("") ? "'--'" : fourCwbs;
 		}
 		if (!"".equals(fourCwbs)) {
-			List<String> fiveCwbsAllList = orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs,
-					fourCwbs, -1);
-			fiveCwbsAll = dataStatisticsService.getCwbs(fiveCwbsAllList);
-			sql = cwbDAO.getSqlByCwb(fiveCwbsAll);
+			List<String> fiveCwbsAllList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
+					threeCwbs, fourCwbs, -1);
+			fiveCwbsAll = this.dataStatisticsService.getCwbs(fiveCwbsAllList);
+			sql = this.cwbDAO.getSqlByCwb(fiveCwbsAll);
 		}
 		if (!"".equals(sql)) {
-			dataStatisticsService.exportExcelByNoresultMethod(response, sql, mouldfieldids);
+			this.dataStatisticsService.exportExcelByNoresultMethod(response, sql, mouldfieldids);
 		}
 
 	}
 
 	/**
 	 * 中转订单统计功能
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -1490,12 +1493,13 @@ public class DataStatisticsController {
 		long count = 0;
 		Page pageparm = new Page();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-		Branch nowBranch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
+		Branch nowBranch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		String[] nextbranchids = null;
 		String[] startbranchids = null;
 		if (isshow != 0) {
-			logger.info("中转订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchid:" + branchid + ",type:" + type + ",branchid2:" + dataStatisticsService.getStrings(branchid2)
-					+ ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+			this.logger.info(
+					"中转订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchid:" + branchid + ",type:" + type + ",branchid2:" + this.dataStatisticsService.getStrings(branchid2)
+							+ ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1513,29 +1517,29 @@ public class DataStatisticsController {
 				nextbranchids = new String[] { branchid + "" };
 				startbranchids = branchid2;
 			}
-			orderFlowList = orderFlowDAO.getOrderFlowForZhongZhuan(begindate, enddate, flowordertype, nextbranchids, startbranchids);
+			orderFlowList = this.orderFlowDAO.getOrderFlowForZhongZhuan(begindate, enddate, flowordertype, nextbranchids, startbranchids);
 			if (orderFlowList.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 			// 获取值
-			count = cwbDAO.getcwborderCountHuiZong("", "", "", "", "", "", orderflowcwbs, "", "", "", 0, 0, 9, "");
+			count = this.cwbDAO.getcwborderCountHuiZong("", "", "", "", "", "", orderflowcwbs, "", "", "", 0, 0, 9, "");
 
-			clist = cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, "", "", "", "", orderflowcwbs, "", "", "", 0, 0, 9, "");
+			clist = this.cwbDAO.getcwbOrderByPageHuiZong(page, "", "", orderName, "", "", "", "", orderflowcwbs, "", "", "", 0, 0, 9, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			setSesstion("", "", 0, orderbyName, 0, 0, 0, orderflowcwbs, 0, 0, 0, 0, 0, count, request);
+			this.setSesstion("", "", 0, orderbyName, 0, 0, 0, orderflowcwbs, 0, 0, 0, 0, 0, count, request);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUser();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
+			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		if (nowBranch.getSitetype() == BranchEnum.KuFang.getValue()) {
@@ -1544,23 +1548,24 @@ public class DataStatisticsController {
 			model.addAttribute("iskufang", "0");
 		}
 
-		List<String> branchid2list = dataStatisticsService.getList(branchid2);
+		List<String> branchid2list = this.dataStatisticsService.getList(branchid2);
 		model.addAttribute("branchid2Str", branchid2list);
 
-		model.addAttribute("notuihuobranchList", branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue()));
-		model.addAttribute("zhongzhuanbranchList", branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + ""));
+		model.addAttribute("notuihuobranchList",
+				this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue()));
+		model.addAttribute("zhongzhuanbranchList", this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + ""));
 		model.addAttribute("count", count);
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
-		logger.info("中转订单统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
+		this.logger.info("中转订单统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return "datastatistics/zhongzhuandata";
 	}
 
 	/**
 	 * 站点出站统计
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param begindate
@@ -1587,13 +1592,13 @@ public class DataStatisticsController {
 			long count = 0;
 			Page pageparm = new Page();
 			List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-			List<Branch> bList = branchDAO.getAllBranches();
-			List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+			List<Branch> bList = this.branchDAO.getAllBranches();
+			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 
-			if (isshow != 0 && startbranchid.length > 0 && nextbranchid.length > 0) {
-				logger.info("站点出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",startbranchid:" + dataStatisticsService.getStrings(startbranchid) + ",flowordertype:"
-						+ flowordertype + ",nextbranchid:" + dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
-						+ ",page:" + page, getSessionUser().getRealname());
+			if ((isshow != 0) && (startbranchid.length > 0) && (nextbranchid.length > 0)) {
+				this.logger.info("站点出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",startbranchid:" + this.dataStatisticsService.getStrings(startbranchid) + ",flowordertype:"
+						+ flowordertype + ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
+						+ ",page:" + page, this.getSessionUser().getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1602,7 +1607,7 @@ public class DataStatisticsController {
 
 				List<OrderFlow> orderLastList = new ArrayList<OrderFlow>();
 				String sig = "'";
-				List<OrderFlow> orderFlowList = orderFlowDAO.getOrderFlowForZhanDianChuZhan(begindate, enddate, startbranchid, nextbranchid, flowordertype);
+				List<OrderFlow> orderFlowList = this.orderFlowDAO.getOrderFlowForZhanDianChuZhan(begindate, enddate, startbranchid, nextbranchid, flowordertype);
 				if (orderFlowList.size() > 0) {
 					StringBuffer cwbTemp = new StringBuffer();
 					for (OrderFlow of : orderFlowList) {// 第一次循环，过滤获取入库时间符合条件的数据
@@ -1613,8 +1618,8 @@ public class DataStatisticsController {
 					}
 				}
 
-				for (int i = (int) ((page - 1) * Page.ONE_PAGE_NUMBER); i < (page * Page.ONE_PAGE_NUMBER) && i < orderLastList.size(); i++) {
-					clist.add(om.readValue(JSONObject.fromObject(orderLastList.get(i).getFloworderdetail()).getString("cwbOrder"), CwbOrder.class));
+				for (int i = (int) ((page - 1) * Page.ONE_PAGE_NUMBER); (i < (page * Page.ONE_PAGE_NUMBER)) && (i < orderLastList.size()); i++) {
+					clist.add(this.om.readValue(JSONObject.fromObject(orderLastList.get(i).getFloworderdetail()).getString("cwbOrder"), CwbOrder.class));
 				}
 
 				// 获取值
@@ -1622,20 +1627,20 @@ public class DataStatisticsController {
 
 				pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-				List<Customer> customerList = customerDAO.getAllCustomersNew();
-				List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
+				List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+				List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
 
-				List<User> userList = userDAO.getAllUser();
-				List<Reason> reasonList = reasonDao.getAllReason();
-				List<Remark> remarkList = remarkDAO.getAllRemark();
+				List<User> userList = this.userDAO.getAllUser();
+				List<Reason> reasonList = this.reasonDao.getAllReason();
+				List<Remark> remarkList = this.remarkDAO.getAllRemark();
 				// 赋值显示对象
-				cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, bList, userList, reasonList, "", "", remarkList);
+				cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, bList, userList, reasonList, "", "", remarkList);
 
 			}
 
-			List<String> nextbranchidlist = dataStatisticsService.getList(nextbranchid);
-			List<String> startbranchidlist = dataStatisticsService.getList(startbranchid);
-			model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+			List<String> nextbranchidlist = this.dataStatisticsService.getList(nextbranchid);
+			List<String> startbranchidlist = this.dataStatisticsService.getList(startbranchid);
+			model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 			model.addAttribute("nextbranchidStr", nextbranchidlist);
 			model.addAttribute("startbranchidStr", startbranchidlist);
 			model.addAttribute("branchList", branchList);
@@ -1643,16 +1648,16 @@ public class DataStatisticsController {
 			model.addAttribute("orderlist", cwbOrderView);
 			model.addAttribute("page_obj", pageparm);
 			model.addAttribute("page", page);
-			logger.info("站点出站统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+			this.logger.info("站点出站统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		} catch (Exception e) {
-			logger.error("站点出站统计出错", e);
+			this.logger.error("站点出站统计出错", e);
 		}
 		return "datastatistics/zhandianchuzhanlist";
 	}
 
 	@RequestMapping("/checkKufang/{id}")
 	public @ResponseBody String editlevel(Model model, @PathVariable("id") long id) {
-		Branch nowBranch = branchDAO.getBranchByBranchid(id);
+		Branch nowBranch = this.branchDAO.getBranchByBranchid(id);
 		if (nowBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
 			return "{\"errorCode\":0}";
 		} else {
@@ -1663,12 +1668,12 @@ public class DataStatisticsController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page,
 			@RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
-		dataStatisticsService.DataStatisticsExportExcelMethod(response, request, page, sign);
+		this.dataStatisticsService.DataStatisticsExportExcelMethod(response, request, page, sign);
 	}
 
 	/**
 	 * 库房在途订单统计导出功能
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param request
@@ -1676,18 +1681,18 @@ public class DataStatisticsController {
 	 */
 	@RequestMapping("/zaituexportExcle")
 	public void zaituexportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page) {
-		dataStatisticsService.DataStatisticsZaituExportExcelMethod(response, request, page);
+		this.dataStatisticsService.DataStatisticsZaituExportExcelMethod(response, request, page);
 	}
 
 	@RequestMapping("/exportOutWareExcle")
 	public void exportOutWareExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page,
 			@RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
-		dataStatisticsService.DataStatisticsExportOutWareExcelMethod(response, request, page, sign);
+		this.dataStatisticsService.DataStatisticsExportOutWareExcelMethod(response, request, page, sign);
 	}
 
 	@RequestMapping("/exportIntoWareExcle")
 	public void exportIntoWareExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page) {
-		dataStatisticsService.DataStatisticsExportIntoWareExcelMethod(response, request, page);
+		this.dataStatisticsService.DataStatisticsExportIntoWareExcelMethod(response, request, page);
 	}
 
 	private void setSesstion(String begindate, String enddate, long customerid, String orderbyName, long startbranchid, long nextbranchid, long cwbordertypeid, String orderflowcwbs,
@@ -1712,7 +1717,7 @@ public class DataStatisticsController {
 	@RequestMapping("/updateDeliver")
 	public @ResponseBody String updateDeliver(Model model, @RequestParam("branchid") long branchid) {
 		if (branchid > 0) {
-			List<User> list = userDAO.getAllUserByRolesAndBranchid("2,4", branchid);
+			List<User> list = this.userDAO.getAllUserByRolesAndBranchid("2,4", branchid);
 
 			return JSONArray.fromObject(list).toString();
 		} else {
@@ -1725,7 +1730,7 @@ public class DataStatisticsController {
 	public @ResponseBody String updateDeliverByBranchids(Model model, @RequestParam("branchid") String branchids) {
 		if (branchids.length() > 0) {
 			branchids = branchids.substring(0, branchids.length() - 1);
-			List<User> list = userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
+			List<User> list = this.userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
 			return JSONArray.fromObject(list).toString();
 		} else {
 			return "[]";
@@ -1734,12 +1739,12 @@ public class DataStatisticsController {
 
 	@RequestMapping("/updateEmaildateid")
 	public @ResponseBody List<EmailDate> updateEmaildateid(Model model, @RequestParam(value = "customerid", defaultValue = "0") long customerid) {
-		return emaildateDAO.getEmailDateByCustomerid(customerid);
+		return this.emaildateDAO.getEmailDateByCustomerid(customerid);
 	}
 
 	/**
 	 * 退货出站统计
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param begindate
@@ -1762,63 +1767,63 @@ public class DataStatisticsController {
 			long count = 0;
 			Page pageparm = new Page();
 			List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "");
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "");
 			model.addAttribute("branchnameList", branchnameList);
-			List<Customer> customerList = customerDAO.getAllCustomers();
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
 
 			if (isshow != 0) {
-				logger.info("退货出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + dataStatisticsService.getStrings(branchids) + ",istuihuozhanruku:" + istuihuozhanruku
-						+ ",customerids:" + dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, getSessionUser().getRealname());
+				this.logger.info("退货出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",istuihuozhanruku:"
+						+ istuihuozhanruku + ",customerids:" + this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 				// 定义参数
 				List<CwbOrder> clist = new ArrayList<CwbOrder>();
-				List<TuihuoRecord> tuihuoRecordList = tuihuoRecordDAO.getTuihuoRecordByTuihuochuzhan(begindate, enddate, dataStatisticsService.getStrings(branchids),
-						dataStatisticsService.getStrings(customerids), istuihuozhanruku, page);
+				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO.getTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
+						this.dataStatisticsService.getStrings(customerids), istuihuozhanruku, page);
 				StringBuffer cwbTemp = new StringBuffer();
 				if (tuihuoRecordList.size() > 0) {
 					for (TuihuoRecord tr : tuihuoRecordList) {// 第一次循环，过滤获取入库时间符合条件的数据
 						cwbTemp.append("'" + tr.getCwb() + "',");
 					}
 				}
-				if (!"".equals(cwbTemp) && cwbTemp.length() > 0) {
+				if (!"".equals(cwbTemp) && (cwbTemp.length() > 0)) {
 					String cwbs = cwbTemp.substring(0, cwbTemp.length() - 1);
-					clist = cwbDAO.getCwbByCwbs(cwbs);
+					clist = this.cwbDAO.getCwbByCwbs(cwbs);
 					// 获取值
-					count = tuihuoRecordDAO.getCountTuihuoRecordByTuihuochuzhan(begindate, enddate, dataStatisticsService.getStrings(branchids), dataStatisticsService.getStrings(customerids),
-							istuihuozhanruku);
+					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
+							this.dataStatisticsService.getStrings(customerids), istuihuozhanruku);
 
 					pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-					List<Branch> branchList = branchDAO.getAllBranches();
+					List<Branch> branchList = this.branchDAO.getAllBranches();
 
 					// 赋值显示对象
 
-					cwbOrderView = dataStatisticsService.getCwbOrderTuiHuoView(clist, tuihuoRecordList, customerDAO.getAllCustomersNew(), branchList);
+					cwbOrderView = this.dataStatisticsService.getCwbOrderTuiHuoView(clist, tuihuoRecordList, this.customerDAO.getAllCustomersNew(), branchList);
 				}
 			}
-			List<String> branchidlist = dataStatisticsService.getList(branchids);
-			List<String> customeridList = dataStatisticsService.getList(customerids);
+			List<String> branchidlist = this.dataStatisticsService.getList(branchids);
+			List<String> customeridList = this.dataStatisticsService.getList(customerids);
 
 			model.addAttribute("customerList", customerList);
-			model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+			model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 			model.addAttribute("branchidStr", branchidlist);
 			model.addAttribute("customeridStr", customeridList);
 			model.addAttribute("count", count);
 			model.addAttribute("orderlist", cwbOrderView);
 			model.addAttribute("page_obj", pageparm);
 			model.addAttribute("page", page);
-			logger.info("退货出站统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+			this.logger.info("退货出站统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		} catch (Exception e) {
-			logger.error("退货出站统计出错", e);
+			this.logger.error("退货出站统计出错", e);
 		}
 		return "datastatistics/tuihuochuzhanlist";
 	}
 
 	/**
 	 * 退货站入库统计
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param begindate
@@ -1841,48 +1846,48 @@ public class DataStatisticsController {
 			long count = 0;
 			Page pageparm = new Page();
 			List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
-			List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "");
+			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "");
 			model.addAttribute("branchnameList", branchnameList);
-			List<Customer> customerList = customerDAO.getAllCustomers();
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
 
 			if (isshow != 0) {
-				logger.info("退货站入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + dataStatisticsService.getStrings(branchids) + ",cwbordertypeids:"
-						+ dataStatisticsService.getStrings(cwbordertypeids) + ",customerids:" + dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, getSessionUser()
-						.getRealname());
+				this.logger.info("退货站入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",cwbordertypeids:"
+						+ this.dataStatisticsService.getStrings(cwbordertypeids) + ",customerids:" + this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this
+						.getSessionUser().getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 				// 定义参数
 				List<CwbOrder> clist = new ArrayList<CwbOrder>();
-				List<TuihuoRecord> tuihuoRecordList = tuihuoRecordDAO.getTuihuoRecordByTuihuozhanrukuOnPage(begindate, enddate, dataStatisticsService.getStrings(branchids),
-						dataStatisticsService.getStrings(customerids), dataStatisticsService.getStrings(cwbordertypeids), page);
+				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO.getTuihuoRecordByTuihuozhanrukuOnPage(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
+						this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService.getStrings(cwbordertypeids), page);
 				StringBuffer cwbTemp = new StringBuffer();
 				if (tuihuoRecordList.size() > 0) {
 					for (TuihuoRecord tr : tuihuoRecordList) {// 第一次循环，过滤获取入库时间符合条件的数据
 						cwbTemp.append("'" + tr.getCwb() + "',");
 					}
 				}
-				if (!"".equals(cwbTemp) && cwbTemp.length() > 0) {
+				if (!"".equals(cwbTemp) && (cwbTemp.length() > 0)) {
 					String cwbs = cwbTemp.substring(0, cwbTemp.length() - 1);
-					clist = cwbDAO.getCwbByCwbs(cwbs);
+					clist = this.cwbDAO.getCwbByCwbs(cwbs);
 					// 获取值
-					count = tuihuoRecordDAO.getCountTuihuoRecordByTuihuozhanruku(begindate, enddate, dataStatisticsService.getStrings(branchids), dataStatisticsService.getStrings(customerids),
-							dataStatisticsService.getStrings(cwbordertypeids));
+					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuozhanruku(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
+							this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService.getStrings(cwbordertypeids));
 
 					pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-					List<Branch> branchList = branchDAO.getAllBranches();
+					List<Branch> branchList = this.branchDAO.getAllBranches();
 
 					// 赋值显示对象
-					cwbOrderView = dataStatisticsService.getCwbOrderTuiHuoView(clist, tuihuoRecordList, customerDAO.getAllCustomersNew(), branchList);
+					cwbOrderView = this.dataStatisticsService.getCwbOrderTuiHuoView(clist, tuihuoRecordList, this.customerDAO.getAllCustomersNew(), branchList);
 				}
 			}
-			List<String> branchidlist = dataStatisticsService.getList(branchids);
-			List<String> customeridList = dataStatisticsService.getList(customerids);
-			List<String> cwbordertypeidList = dataStatisticsService.getList(cwbordertypeids);
+			List<String> branchidlist = this.dataStatisticsService.getList(branchids);
+			List<String> customeridList = this.dataStatisticsService.getList(customerids);
+			List<String> cwbordertypeidList = this.dataStatisticsService.getList(cwbordertypeids);
 
 			model.addAttribute("customerList", customerList);
-			model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+			model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 			model.addAttribute("branchidStr", branchidlist);
 			model.addAttribute("customeridStr", customeridList);
 			model.addAttribute("cwbordertypeidStr", cwbordertypeidList);
@@ -1890,9 +1895,9 @@ public class DataStatisticsController {
 			model.addAttribute("orderlist", cwbOrderView);
 			model.addAttribute("page_obj", pageparm);
 			model.addAttribute("page", page);
-			logger.info("退货站入库统计，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+			this.logger.info("退货站入库统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		} catch (Exception e) {
-			logger.error("退货站入库统计出错", e);
+			this.logger.error("退货站入库统计出错", e);
 		}
 		return "datastatistics/tuihuozhanrukulist";
 	}
@@ -1905,28 +1910,28 @@ public class DataStatisticsController {
 			@RequestParam(value = "tuihuotype", required = false, defaultValue = "1") long tuihuotype,
 			@RequestParam(value = "cwbordertypeid1", required = false, defaultValue = "") String[] cwbordertypeids, @RequestParam(value = "sign", required = false, defaultValue = "") String sign) {
 
-		dataStatisticsService.cwbExportExcelMethod(response, request, begindate, enddate, dataStatisticsService.getStrings(branchids), dataStatisticsService.getStrings(customerids),
-				dataStatisticsService.getStrings(cwbordertypeids), istuihuozhanruku, tuihuotype);
+		this.dataStatisticsService.cwbExportExcelMethod(response, request, begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService.getStrings(customerids),
+				this.dataStatisticsService.getStrings(cwbordertypeids), istuihuozhanruku, tuihuotype);
 	}
 
 	@RequestMapping("/selectallnexusbranch")
 	public @ResponseBody String selectallnexusbranch(@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname) {
 		if (branchname.length() > 0) {
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
 					+ BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branchList.size() == 0) {
 				branchList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(branchList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(branchList, branch)) {
 					branchList.add(branch);
 				}
 			}
 
-			List<Branch> dispatchbranchidStr = branchDAO.getBranchByBranchnameMoHu(branchname);
+			List<Branch> dispatchbranchidStr = this.branchDAO.getBranchByBranchnameMoHu(branchname);
 			List<Branch> dispatchbranchidnewStr = new ArrayList<Branch>();
-			if (dispatchbranchidStr.size() > 0 && branchList.size() > 0) {
+			if ((dispatchbranchidStr.size() > 0) && (branchList.size() > 0)) {
 				for (Branch b : branchList) {
 					for (Branch branchStr : dispatchbranchidStr) {
 						if (branchStr.getBranchid() == b.getBranchid()) {
@@ -1943,26 +1948,26 @@ public class DataStatisticsController {
 
 	/**
 	 * 根据站点名称精确查询到匹配的站点名称
-	 * 
+	 *
 	 * @param branchname
 	 * @return
 	 */
 	@RequestMapping("/selectnexusbranchbybranchname")
 	public @ResponseBody String selectnexusbranchbybranchname(@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname) {
 		if (branchname.length() > 0) {
-			Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
-			List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
 					+ BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
 
 			if (branchList.size() == 0) {
 				branchList.add(branch);
 			} else {
-				if (!dataStatisticsService.checkBranchRepeat(branchList, branch)) {
+				if (!this.dataStatisticsService.checkBranchRepeat(branchList, branch)) {
 					branchList.add(branch);
 				}
 			}
 
-			Branch deliverybranch = branchDAO.getBranchByBranchname(branchname);
+			Branch deliverybranch = this.branchDAO.getBranchByBranchname(branchname);
 			Branch newdispatchbranch = new Branch();
 			for (Branch b : branchList) {
 				if (deliverybranch.getBranchid() == b.getBranchid()) {
@@ -1977,14 +1982,14 @@ public class DataStatisticsController {
 
 	/**
 	 * 根据输入名称 查询机构
-	 * 
+	 *
 	 * @param branchname
 	 * @return
 	 */
 	@RequestMapping("/selectbranchbybranchname")
 	public @ResponseBody String selectbranchbybranchname(@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname) {
 		if (branchname.length() > 0) {
-			Branch deliverybranch = branchDAO.getBranchByBranchname(branchname);
+			Branch deliverybranch = this.branchDAO.getBranchByBranchname(branchname);
 			return JSONObject.fromObject(deliverybranch).toString();
 		} else {
 			return "{}";
@@ -1993,7 +1998,7 @@ public class DataStatisticsController {
 
 	/**
 	 * 供货商发货汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -2005,23 +2010,23 @@ public class DataStatisticsController {
 	public String customerfahuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid,
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<Branch> kufanglist = branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<Branch> kufanglist = this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
 		Map<Long, Long> customMap = new HashMap<Long, Long>();
 		if (isshow != 0) {
-			logger.info("供货商发货汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",isshow:" + isshow, getSessionUser().getRealname());
-			customMap = dataStatisticsService.getCustomerMap(customerList, kufangid, begindate, enddate);
+			this.logger.info("供货商发货汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",isshow:" + isshow, this.getSessionUser().getRealname());
+			customMap = this.dataStatisticsService.getCustomerMap(customerList, kufangid, begindate, enddate);
 		}
 		model.addAttribute("customMap", customMap);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("kufanglist", kufanglist);
-		logger.info("供货商发货汇总，当前操作人{},参数{}", getSessionUser().getRealname(), kufangid + "--" + begindate + "--" + enddate);
+		this.logger.info("供货商发货汇总，当前操作人{},参数{}", this.getSessionUser().getRealname(), kufangid + "--" + begindate + "--" + enddate);
 		return "datastatistics/customerfahuodatalist";
 	}
 
 	/**
 	 * 供货商发货汇总详情功能
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param customerid
@@ -2034,22 +2039,22 @@ public class DataStatisticsController {
 	public String customerfahuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid) {
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<Branch> kufanglist = branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
-		List<CwbOrder> clist = cwbDAO.getCustomerfahuodataList(page, customerid, kufangid, begindate, enddate);
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<Branch> kufanglist = this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
+		List<CwbOrder> clist = this.cwbDAO.getCustomerfahuodataList(page, customerid, kufangid, begindate, enddate);
 
 		model.addAttribute("clist", clist);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("kufanglist", kufanglist);
-		model.addAttribute("page_obj", new Page(cwbDAO.getCustomerfahuodataCount(customerid, kufangid, begindate, enddate), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.cwbDAO.getCustomerfahuodataCount(customerid, kufangid, begindate, enddate), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		return "datastatistics/customerfahuodatashow";
 	}
 
 	/**
 	 * 供货商发货汇总导出
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param customerid
@@ -2065,7 +2070,7 @@ public class DataStatisticsController {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(exportEume);
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(exportEume);
 		cloumnName1 = new String[listSetExportField.size()];
 		cloumnName2 = new String[listSetExportField.size()];
 		cloumnName3 = new String[listSetExportField.size()];
@@ -2083,44 +2088,44 @@ public class DataStatisticsController {
 		try {
 			// 查询出数据
 
-			final String sql = cwbDAO.getCustomerfahuodataSql(customerid, kufangid, begindate, enddate);
+			final String sql = this.cwbDAO.getCustomerfahuodataSql(customerid, kufangid, begindate, enddate);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = userDAO.getAllUser();
-					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = branchDAO.getAllBranches();
-					final List<Common> commonList = commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
-					List<Remark> remarkList = remarkDAO.getAllRemark();
-					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = reasonDao.getAllReason();
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+					final List<User> uList = DataStatisticsController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = DataStatisticsController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = DataStatisticsController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = DataStatisticsController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = DataStatisticsController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = DataStatisticsController.this.remarkDAO.getAllRemark();
+					final Map<String, Map<String, String>> remarkMap = DataStatisticsController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = DataStatisticsController.this.reasonDao.getAllReason();
+					DataStatisticsController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
-							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
-							recordbatch.add(mapRow);
-							count++;
-							if (count % 100 == 0) {
-								writeBatch();
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
 							}
 						}
 
 						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
 								Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints((float) 15);
+							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
-										complaintMap);
+								Object a = DataStatisticsController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+										reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -2134,33 +2139,34 @@ public class DataStatisticsController {
 							while (rs.next()) {
 								this.processRow(rs);
 							}
-							writeBatch();
+							this.writeBatch();
 							return null;
 						}
 
 						public void writeBatch() throws SQLException {
-							if (recordbatch.size() > 0) {
+							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : recordbatch) {
+								for (Map<String, Object> mapRow : this.recordbatch) {
 									cwbs.add(mapRow.get("cwb").toString());
 								}
-								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = getComplaintMap(cwbs);
-								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = recordbatch.size();
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = DataStatisticsController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
-									String cwb = recordbatch.get(i).get("cwb").toString();
-									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+											complaintMap);
 								}
-								recordbatch.clear();
+								this.recordbatch.clear();
 							}
 						}
 
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+							for (TuihuoRecord tuihuoRecord : DataStatisticsController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
 								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
 							}
 							return map;
@@ -2168,7 +2174,7 @@ public class DataStatisticsController {
 
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+							for (DeliveryState deliveryState : DataStatisticsController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
 								map.put(deliveryState.getCwb(), deliveryState);
 							}
 							return map;
@@ -2176,7 +2182,7 @@ public class DataStatisticsController {
 
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+							for (Complaint complaint : DataStatisticsController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
 								complaintMap.put(complaint.getCwb(), complaint.getContent());
 							}
 							return complaintMap;
@@ -2191,7 +2197,7 @@ public class DataStatisticsController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -2212,7 +2218,7 @@ public class DataStatisticsController {
 
 	/**
 	 * 站点到货汇总
-	 * 
+	 *
 	 * @param model
 	 * @param begindate
 	 * @param enddate
@@ -2222,13 +2228,13 @@ public class DataStatisticsController {
 	@RequestMapping("/zhandiandaohuodata")
 	public String zhandiandaohuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
-		List<Branch> zhandianlist = branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> zhandianlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		Map<Long, Long> branchMap = new HashMap<Long, Long>();
 		if (isshow != 0) {
-			logger.info("站点到货汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isshow:" + isshow, getSessionUser().getRealname());
+			this.logger.info("站点到货汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isshow:" + isshow, this.getSessionUser().getRealname());
 			if (zhandianlist.size() > 0) {
 				for (Branch b : zhandianlist) {
-					List<String> ordercwblist = orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+					List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 							+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), b.getBranchid());
 					branchMap.put(b.getBranchid(), (long) ordercwblist.size());
 				}
@@ -2236,13 +2242,13 @@ public class DataStatisticsController {
 		}
 		model.addAttribute("branchMap", branchMap);
 		model.addAttribute("zhandianlist", zhandianlist);
-		logger.info("站点到货汇总，当前操作人{},参数{}", getSessionUser().getRealname(), begindate + "--" + enddate);
+		this.logger.info("站点到货汇总，当前操作人{},参数{}", this.getSessionUser().getRealname(), begindate + "--" + enddate);
 		return "datastatistics/zhandiandaohuodatalist";
 	}
 
 	/**
 	 * 站点到货汇总详情
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param customerid
@@ -2255,39 +2261,39 @@ public class DataStatisticsController {
 	public String zhandiandaohuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate) {
 		String orderflowcwbs = "";
-		List<String> ordercwblist = orderFlowDAO.getDaohuoOrderFlow(begindate, enddate,
-				FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+		List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
 
 		if (ordercwblist.size() > 0) {
-			orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(ordercwblist);
+			orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(ordercwblist);
 		} else {
 			orderflowcwbs = "'--'";
 		}
 
-		List<CwbOrder> clist = cwbDAO.getCwbByCwbsPage(page, orderflowcwbs);
+		List<CwbOrder> clist = this.cwbDAO.getCwbByCwbsPage(page, orderflowcwbs);
 
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-		List<Branch> branchList = branchDAO.getAllBranches();
-		List<User> userList = userDAO.getAllUser();
-		List<Reason> reasonList = reasonDao.getAllReason();
-		List<Remark> remarkList = remarkDAO.getAllRemark();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<User> userList = this.userDAO.getAllUser();
+		List<Reason> reasonList = this.reasonDao.getAllReason();
+		List<Remark> remarkList = this.remarkDAO.getAllRemark();
 
 		// 赋值显示对象
-		List<CwbOrderView> cwbOrderView = dataStatisticsService.getCwbOrderView(clist, customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate,
-				remarkList);
+		List<CwbOrderView> cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate,
+				enddate, remarkList);
 
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("customerList", customerList);
-		model.addAttribute("page_obj", new Page(cwbDAO.getCwbOrderCwbsCount(orderflowcwbs), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.cwbDAO.getCwbOrderCwbsCount(orderflowcwbs), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		return "datastatistics/zhandiandaohuodatashow";
 	}
 
 	/**
 	 * 站点到货汇总导出
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param customerid
@@ -2303,7 +2309,7 @@ public class DataStatisticsController {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(exportEume);
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(exportEume);
 		cloumnName1 = new String[listSetExportField.size()];
 		cloumnName2 = new String[listSetExportField.size()];
 		cloumnName3 = new String[listSetExportField.size()];
@@ -2321,53 +2327,53 @@ public class DataStatisticsController {
 		try {
 			// 查询出数据
 			String orderflowcwbs = "";
-			List<String> ordercwblist = orderFlowDAO.getDaohuoOrderFlow(begindate, enddate,
-					FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+			List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+					+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
 
 			if (ordercwblist.size() > 0) {
-				orderflowcwbs = dataStatisticsService.getOrderFlowCwbs(ordercwblist);
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(ordercwblist);
 			} else {
 				orderflowcwbs = "'--'";
 			}
 
-			final String sql = cwbDAO.getSqlByCwb(orderflowcwbs);
+			final String sql = this.cwbDAO.getSqlByCwb(orderflowcwbs);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = userDAO.getAllUser();
-					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = branchDAO.getAllBranches();
-					final List<Common> commonList = commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
-					List<Remark> remarkList = remarkDAO.getAllRemark();
-					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = reasonDao.getAllReason();
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+					final List<User> uList = DataStatisticsController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = DataStatisticsController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = DataStatisticsController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = DataStatisticsController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = DataStatisticsController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = DataStatisticsController.this.remarkDAO.getAllRemark();
+					final Map<String, Map<String, String>> remarkMap = DataStatisticsController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = DataStatisticsController.this.reasonDao.getAllReason();
+					DataStatisticsController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
-							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
-							recordbatch.add(mapRow);
-							count++;
-							if (count % 100 == 0) {
-								writeBatch();
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
 							}
 						}
 
 						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
 								Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints((float) 15);
+							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
-										complaintMap);
+								Object a = DataStatisticsController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+										reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -2381,33 +2387,34 @@ public class DataStatisticsController {
 							while (rs.next()) {
 								this.processRow(rs);
 							}
-							writeBatch();
+							this.writeBatch();
 							return null;
 						}
 
 						public void writeBatch() throws SQLException {
-							if (recordbatch.size() > 0) {
+							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : recordbatch) {
+								for (Map<String, Object> mapRow : this.recordbatch) {
 									cwbs.add(mapRow.get("cwb").toString());
 								}
-								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = getComplaintMap(cwbs);
-								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = recordbatch.size();
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = DataStatisticsController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
-									String cwb = recordbatch.get(i).get("cwb").toString();
-									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+											complaintMap);
 								}
-								recordbatch.clear();
+								this.recordbatch.clear();
 							}
 						}
 
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+							for (TuihuoRecord tuihuoRecord : DataStatisticsController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
 								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
 							}
 							return map;
@@ -2415,7 +2422,7 @@ public class DataStatisticsController {
 
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+							for (DeliveryState deliveryState : DataStatisticsController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
 								map.put(deliveryState.getCwb(), deliveryState);
 							}
 							return map;
@@ -2423,7 +2430,7 @@ public class DataStatisticsController {
 
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+							for (Complaint complaint : DataStatisticsController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
 								complaintMap.put(complaint.getCwb(), complaint.getContent());
 							}
 							return complaintMap;
@@ -2438,7 +2445,7 @@ public class DataStatisticsController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
