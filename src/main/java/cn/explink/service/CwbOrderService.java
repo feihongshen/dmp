@@ -88,6 +88,7 @@ import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.ShangMenTuiCwbDetailDAO;
+import cn.explink.dao.ShiXiaoDAO;
 import cn.explink.dao.StockDetailDAO;
 import cn.explink.dao.StockResultDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -237,6 +238,8 @@ public class CwbOrderService {
 	CwbAutoHandleService cwbAutoHandleService;
 	@Autowired
 	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
+	@Autowired
+	ShiXiaoDAO shiXiaoDAO;
 
 	@Produce(uri = "jms:topic:orderFlow")
 	ProducerTemplate orderFlowProducerTemplate;
@@ -5930,6 +5933,34 @@ public class CwbOrderService {
 			this.transferReasonStasticsDao.updateTransferReasonStastics(transRes);
 		}
 
+	}
+	
+	public void datalose_vipshop(String cwb) {
+		
+		try {
+			CwbOrder co = cwbDAO.getCwbByCwbLock(cwb);
+			
+			cwbDAO.dataLoseByCwb(cwb);
+			deliveryStateDAO.inactiveDeliveryStateByCwb(cwb);
+			exportwarhousesummaryDAO.dataLoseByCwb(cwb);
+			exportwarhousesummaryDAO.LoseintowarhouseByCwb(cwb);
+			transCwbDao.deleteTranscwb(cwb);
+			// 失效订单删除
+			deletecwb(cwb);
+			// 删除倒车时间表的订单
+			orderArriveTimeDAO.deleteOrderArriveTimeByCwb(cwb);
+			// 删除审核为退货再投的订单
+			orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
+
+			if (emailDateDAO.getEmailDateById(co.getEmaildateid()) != null) {
+				long cwbcount = emailDateDAO.getEmailDateById(co.getEmaildateid()).getCwbcount() - 1;
+				emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
+			}
+			shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
+					co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+		} catch (Exception e) {
+			logger.error("唯品会失效异常",e);
+		}
 	}
 
 }

@@ -27,6 +27,7 @@ import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -53,6 +54,9 @@ public class VipShopGetCwbDataService {
 	CustomWareHouseDAO customWarehouseDAO;
 	@Autowired
 	OrderGoodsDAO orderGoodsDAO;
+	
+	@Autowired
+	CwbOrderService cwbOrderService;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -402,6 +406,9 @@ public class VipShopGetCwbDataService {
 			String warehouse_addr = VipShopGetCwbDataService.convertEmptyString("warehouse_addr", datamap); // 仓库地址
 
 			String cmd_type = VipShopGetCwbDataService.convertEmptyString("cmd_type", datamap); // 操作指令new
+			
+			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号
+			
 			// : 新建
 			// edit:修改
 			// cancel
@@ -422,6 +429,7 @@ public class VipShopGetCwbDataService {
 			}
 
 			dataMap.put("cwb", order_sn);
+			dataMap.put("transcwb", pack_nos);
 			dataMap.put("consigneename", buyer_name);
 			dataMap.put("sendcarnum", (total_pack.isEmpty() ? "1" : total_pack));
 			dataMap.put("consigneemobile", mobile);
@@ -461,6 +469,7 @@ public class VipShopGetCwbDataService {
 					this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
 					this.cwbDAO.dataLoseByCwb(order_sn);
 					orderGoodsDAO.loseOrderGoods(order_sn);
+					cwbOrderService.datalose_vipshop(order_sn);
 					seq_arrs += seq + ",";
 					return seq_arrs;
 				}
