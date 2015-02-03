@@ -4623,9 +4623,9 @@ public class CwbDAO {
 
 	public Smtcount getTGYSYCKsmt(long branchid) {
 		String sql = "SELECT COUNT(1) count,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ "(CASE when sum(CASE WHEN a.cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN a.cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN a.cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN a.cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN a.cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN a.cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
 				+ " FROM express_ops_cwb_detail a  , express_ops_operation_time b  FORCE INDEX(OTime_Branchid_Idx) ";
 		sql += " WHERE a.cwb=b.cwb and a.state=1 and b.branchid=" + branchid + " AND b.flowordertype=" + FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue();
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper());

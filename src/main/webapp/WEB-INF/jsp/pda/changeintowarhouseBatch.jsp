@@ -113,6 +113,11 @@ var promt=${promt};
 			alert(msg);
 		}
 		$("#finish").click(function(){
+			if($("#customerid").val()==-1)
+				{
+				alert("请选择供货商！");
+				return false;
+				}
 			$("#cwbintoform").submit();
 		});
 		emaildate=GetQueryString("emaildate");

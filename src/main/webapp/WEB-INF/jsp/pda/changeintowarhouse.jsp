@@ -235,7 +235,11 @@ var emaildate=0;
 				return;
 			} */
 		}
-		
+		if($("#customerid").val()==-1)
+		{
+		alert("请选择供货商！");
+		return false;
+		}
 		var flag=false;
 		
 		if (scancwb.length > 0) {

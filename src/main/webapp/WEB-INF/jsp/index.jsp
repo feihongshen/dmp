@@ -164,6 +164,8 @@ function refreshState(){
 				var flag = 0;
 				var n=0;
 				var m=0;
+				var x=0;
+				var y=0;
 				$.each(data, function(key, value) {					
 					if(value.type==3){
 						i=i+1;				 		
@@ -176,6 +178,12 @@ function refreshState(){
 				 	}
 					if(value.type==6){
 						m=m+1;	
+				 	}
+					if(value.type==7){
+						x=x+1;	
+				 	}
+					if(value.type==8){
+						y=y+1;	
 				 	}
 			 	});
 				
@@ -212,6 +220,20 @@ function refreshState(){
 					if(value.type==6){
 						if(flag == 0){
 				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+m+"单订单申请修改-已处理-</a></strong></li>");
+						}
+				 		$("#xiaoxitype").attr("value",value.type);
+				 		flag = flag+1;
+				 	}
+					if(value.type==7){
+						if(flag == 0){
+				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+x+"单扣罚登记-</a></strong></li>");
+						}
+				 		$("#xiaoxitype").attr("value",value.type);
+				 		flag = flag+1;
+				 	}
+					if(value.type==8){
+						if(flag == 0){
+				 		    $("#xiaoxiulinfo").append("<li><strong><a  href='#' onclick=\"changeback("+value.type+")\">您有"+y+"单扣罚登记被取消-</a></strong></li>");
 						}
 				 		$("#xiaoxitype").attr("value",value.type);
 				 		flag = flag+1;

@@ -119,10 +119,14 @@ function stateBatch(state)
 {
 	var ids="";
 	var isprint = "";
+	var userid = "";
+	var userids = "";
 	$('input[name="isprint"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		isprint = $(this).val();
+		userid = $(this).attr('userid');
 		if($.trim(isprint).length!=0){
 		ids+=""+isprint+",";
+		userids+=""+userid+",";
 		}
 		});
 	if(ids.length==0){
@@ -132,7 +136,7 @@ function stateBatch(state)
 	$.ajax({
 		type : "POST",
 		url:"<%=request.getContextPath()%>/punish/stateBactch",
-		data:{"ids":ids.substring(0, ids.length-1),"state":state},
+		data:{"ids":ids.substring(0, ids.length-1),"state":state,"userids":userids.substring(0, userids.length-1)},
 		dataType : "json",
 		success : function(data) {
 			$(".tishi_box").html(data.error);
@@ -233,7 +237,7 @@ function stateBatch(state)
 		</tr>
 		 <% for(Punish p : punishList){ %>
 		<tr>
-		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><input id="isprint" type="checkbox" value="<%=p.getId()%>" name="isprint"/></td>
+		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><input id="isprint" type="checkbox" value="<%=p.getId()%>"   userid="<%=p.getUserid()%>" name="isprint"/></td>
 			<td width="8%" align="center" valign="middle"><%=p.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
 			<%for(PunishType pt:punishTypeList){ if(pt.getId()==p.getPunishid()){out.print(pt.getName());}}%>

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PunishDAO;
@@ -72,6 +73,8 @@ public class PunishController {
 	@Autowired
 	CwbDAO cwbDAO;
 	@Autowired
+	AppearWindowDao appearWindowDao;
+	@Autowired
 	PunishTypeDAO punishTypeDAO;
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -113,7 +116,7 @@ public class PunishController {
 			 * ExecutorService newSingleThreadExecutor =
 			 * Executors.newSingleThreadExecutor();
 			 * newSingleThreadExecutor.execute(new Runnable() {
-			 * 
+			 *
 			 * @Override public void run() {
 			 */
 			try {
@@ -184,8 +187,17 @@ public class PunishController {
 
 	@RequestMapping("/stateBactch")
 	public @ResponseBody String stateBactch(Model model, @RequestParam(value = "ids", defaultValue = "", required = false) String ids,
-			@RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
+			@RequestParam(value = "userids", defaultValue = "", required = false) String userids, @RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
+
 		this.punishDAO.updateStateBatchPunish(ids, state);
+		/*
+		 * String[] userid = userids.split(","); for (int i = 0; i <
+		 * userid.length; i++) { int uid = Integer.parseInt(userid[i]); if
+		 * (state == 1) { this.appearWindowDao.creWindowTime("扣罚登记", 7, uid, 1);
+		 * } else { this.appearWindowDao.creWindowTime("扣罚登记取消", 8, uid, 1); }
+		 * 
+		 * }
+		 */
 		return "{\"errorCode\":0,\"error\":\" 操作成功\"}";
 	}
 

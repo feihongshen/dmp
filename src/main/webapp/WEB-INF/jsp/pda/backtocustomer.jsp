@@ -128,7 +128,7 @@ function cwbbacktocustomer(scancwb,baleno){
 							
 							$("#customername").html(data.customername);
 						}
-						//getcwbsdataForCustomer();
+						getcwbsdataForCustomer();
 						//将成功扫描的订单放到已入库明细中
 						//addAndRemoval(data.body.cwb,"successTable",true);
 					}else{
@@ -632,7 +632,7 @@ function chuku(){
 							</tr>
 						</tbody>
 					</table></li>
-				<li style="display: none"><input type="button" id="btnval0" value="导出Exc"
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick="exportField(2);" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
@@ -719,7 +719,7 @@ function chuku(){
 						</tbody>
 					</table></li>
 
-				<li style="display: none"><input type="button" id="btnval0" value="导出Exce"
+				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick="exportField(3);" />
 
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
