@@ -22,6 +22,7 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
+  String ishandle = request.getAttribute("ishandle").toString();
 %>
 
 
@@ -97,7 +98,6 @@ $(function() {
 	
 });
 
-
 function getThisBox(id){
 	$.ajax({
 		type: "POST",
@@ -114,7 +114,9 @@ function getThisBox(id){
 }
 
 function check(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.YiChuLi.getValue()%>){
+	if($.trim($("#cwb").val()).length==0)
+	{
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
@@ -124,7 +126,7 @@ function check(){
 		return false;
 	}
 	if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
-		alert("时间跨度不能大于3天！");
+		alert("时间跨度不能大于31天！");
 		return false;
 	}
 	if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
@@ -151,6 +153,7 @@ function check(){
 		}
 		
 	}
+	}
 	$("#searchForm").submit();
 	
 }
@@ -168,7 +171,7 @@ function Days(day1,day2){
 	var date2 = new Date(y2, m2, d2);   
 	var minsec = Date.parse(date2) - Date.parse(date1);          
 	var days = minsec / 1000 / 60 / 60 / 24;  
-	if(days>3){
+	if(days>31){
 		return false;
 	}        
 	return true;
@@ -193,8 +196,43 @@ function checkstate(){
 		$("#chuli").html("处理时间");
 	}
 }
-
-
+function isgetallcheck(){
+	if($('input[name="id"]:checked').size()>0){
+		$('input[name="id"]').each(function(){
+			$(this).attr("checked",false);
+		});
+	}else{
+		$('input[name="id"]').attr("checked",true);
+	}
+}
+function stateBatch(state)
+{
+	var ids="";
+	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+		id=$(this).val();
+		if($.trim(id).length!=0){
+		ids+=id+",";
+		}
+		});
+	if(ids.length==0){
+		alert("请选择！");
+		return false;
+	}
+	if(ids.indexOf(",")>0){
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
+		data:{"ids":ids.substring(0, ids.length-1)},
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+			
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+	}
+	}
 </script>
 </head>
 <body style="background:#eef9ff;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -226,7 +264,7 @@ function checkstate(){
 									<select name="ishandle" id="ishandle" onchange="checkstate()">
 										<!-- <option value="-1">全部</option> -->
 										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.YiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.YiChuLi.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 									</select>
 									<strong id="chuli" >处理时间：</strong>
 									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
@@ -236,19 +274,19 @@ function checkstate(){
 									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>"/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="button"  onclick="check()" value="查询" class="input_button2">
-									<%if(views != null && views.size()>0){ %>
-										<input type ="button" id="btnval" value="导出" class="input_button1" onclick="exportField();"/>
-									<%} %>
+									<input type ="button" value="批量处理" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="stateBatch();"/>
+									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
 								</p>
 							</form>
 				</div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 					<tbody>
 						<tr class="font_1" height="30" >
+							<td width="30"  align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
 							<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当时状态</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
@@ -258,12 +296,13 @@ function checkstate(){
 					</tbody>
 				</table>
 				</div>
-			<div style="height: 500px; overflow-y: scroll">
+			<div style="height: 500px;overflow:auto; ">
 		<div style="height: 120px;"></div>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 				<tbody>
 					<%if(views!=null||views.size()>0)for(AbnormalView view : views){ %>
 					<tr height="30" >
+					<td width="30" align="center" valign="middle" bgcolor="#eef6ff"><input id="id" type="checkbox" value="<%=view.getId()%>"  name="id"/></td>
 						<td width="120" align="center" valign="middle"><%=view.getCwb() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getCustomerName() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getEmaildate() %></td>
@@ -272,12 +311,14 @@ function checkstate(){
 						<td width="100" align="center" valign="middle"><%=view.getCreuserName() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
-						<td width="80" align="center" valign="middle"><input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<td width="80" align="center" valign="middle">
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />
 					</tr>
 					<%} %>
 				</tbody>
 			</table>
+			<div style="height: 120px;"></div>
 			</div>
 			</div>
 			<%if(page_obj.getMaxpage()>1){ %>

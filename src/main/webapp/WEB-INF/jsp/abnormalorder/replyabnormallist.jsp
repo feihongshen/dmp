@@ -206,20 +206,19 @@ function sumitForm(){
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
 							<%if(abnormalOrderList!=null||abnormalOrderList.size()>0)for(AbnormalOrder abnormalOrder : abnormalOrderList){
-								CwbOrder co = cwbDAO.getCwbOrderByOpscwbid(abnormalOrder.getOpscwbid());
 								List<AbnormalWriteBack> abnormalWriteBackList = abnormalWriteBackDAO.getAbnormalOrderByOrderidAndType(abnormalOrder.getId(),AbnormalWriteBackEnum.HuiFu.getValue());
 								AbnormalWriteBack abnormalWriteBack = abnormalWriteBackList.size()==0?null:abnormalWriteBackList.get(0);
 								%>
 							<tr height="30">
-								<td width="150" align="center" valign="middle"><%=co.getCwb() %></td>
-								<td width="100" align="center" valign="middle"><%if(customerlist!=null)for(Customer c : customerlist){if(co.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
-								<td width="110" align="center" valign="middle"><%=co.getEmaildate().substring(0, 19) %></td>
+								<td width="150" align="center" valign="middle"><%=abnormalOrder.getCwb() %></td>
+								<td width="100" align="center" valign="middle"><%if(customerlist!=null)for(Customer c : customerlist){if(abnormalOrder.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
+								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildata()%></td>
 								<td width="100" align="center" valign="middle"><%if(abnormalTypeList!=null)for(AbnormalType at : abnormalTypeList){if(abnormalOrder.getAbnormaltypeid()==at.getId()){ %><%=at.getName() %><%}} %></td>
 								<td width="110" align="center" valign="middle"><%=abnormalOrder.getCredatetime().substring(0, 19) %></td>
 								<td width="100" align="center" valign="middle"><%=abnormalOrder.getDescribe() %></td>
 								<td width="80" align="center" valign="middle"><%if(userList!=null)for(User u : userList){if(abnormalWriteBack!=null){if(abnormalWriteBack.getCreuserid()==u.getUserid()){ %><%=u.getRealname() %><%}}} %></td>
 								<td width="110" align="center" valign="middle"><label for="select"></label>
-									<label for="textfield"></label><%if(abnormalWriteBack!=null){ %><%=abnormalWriteBack.getCredatetime().substring(0, 19) %><%} %>
+									<label for="textfield"></label><%if(abnormalWriteBack!=null){ %><%=abnormalWriteBack.getCredatetime() %><%} %>
 								</td>
 								<td width="100" align="center" valign="middle">
 								<input type="submit" name="button2" id="button2" value="查看" class="input_button2"  onclick="getThisBox('<%=abnormalOrder.getId()%>');"/>

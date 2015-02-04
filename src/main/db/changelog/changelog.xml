@@ -5896,9 +5896,26 @@ CREATE TABLE
 			DELETE FROM express_set_menu_info_new WHERE menuname='小件员领货查询';
 		</sql>
 	</changeSet>
-
-	
-	
+	<changeSet id="wangyonghe-2015-2-4-1" author="wangyonghe">
+		<sql>
+		ALTER TABLE `express_ops_abnormal_order`
+		ADD COLUMN `cwb`  varchar(100) NULL DEFAULT '' AFTER `id`,
+		ADD COLUMN `deliverybranchid`  int(11) NULL DEFAULT 0  AFTER `branchid`,
+		ADD COLUMN `emaildate`  varchar(50) NULL DEFAULT '' AFTER `customerid`,
+		ADD COLUMN `flowordertype`  int(11) NULL DEFAULT 0 AFTER `emaildate`,
+		ADD COLUMN `handletime`  varchar(20) NULL DEFAULT '' AFTER `ishandle`,
+		ADD INDEX `order_cwb_idx` (`cwb`) ,
+		ADD INDEX `order_handletime_idx` (`handletime`) 
+		;
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2015-2-4-2" author="wangyonghe">
+		<sql>
+		ALTER TABLE `express_ops_abnormal_write_back`
+		ADD COLUMN `cwb`  varchar(100) NULL DEFAULT '' AFTER `id`,
+		ADD INDEX `Abnormal_Back_cwb_idx` (`cwb`) ;
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>
  

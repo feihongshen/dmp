@@ -9,9 +9,10 @@ public class AbnormalWriteBack {
 	private long type;
 	private long abnormalorderid;
 	private long abnormalordertype;
+	private String cwb;
 
 	public long getAbnormalorderid() {
-		return abnormalorderid;
+		return this.abnormalorderid;
 	}
 
 	public void setAbnormalorderid(long abnormalorderid) {
@@ -19,7 +20,7 @@ public class AbnormalWriteBack {
 	}
 
 	public long getAbnormalordertype() {
-		return abnormalordertype;
+		return this.abnormalordertype;
 	}
 
 	public void setAbnormalordertype(long abnormalordertype) {
@@ -27,7 +28,7 @@ public class AbnormalWriteBack {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -35,7 +36,7 @@ public class AbnormalWriteBack {
 	}
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -43,7 +44,7 @@ public class AbnormalWriteBack {
 	}
 
 	public String getDescribe() {
-		return describe;
+		return this.describe;
 	}
 
 	public void setDescribe(String describe) {
@@ -51,7 +52,7 @@ public class AbnormalWriteBack {
 	}
 
 	public long getCreuserid() {
-		return creuserid;
+		return this.creuserid;
 	}
 
 	public void setCreuserid(long creuserid) {
@@ -59,7 +60,7 @@ public class AbnormalWriteBack {
 	}
 
 	public String getCredatetime() {
-		return credatetime;
+		return this.credatetime;
 	}
 
 	public void setCredatetime(String credatetime) {
@@ -67,11 +68,19 @@ public class AbnormalWriteBack {
 	}
 
 	public long getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(long type) {
 		this.type = type;
+	}
+
+	public String getCwb() {
+		return this.cwb;
+	}
+
+	public void setCwb(String cwb) {
+		this.cwb = cwb;
 	}
 
 }

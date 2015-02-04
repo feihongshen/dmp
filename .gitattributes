@@ -1555,9 +1555,11 @@ src/main/resources/dbsqlserver.properties -text
 src/main/resources/filepath.properties -text
 src/main/resources/logback.xml -text
 src/main/webapp/META-INF/MANIFEST.MF -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/abnormaldataMove.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/createabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/handleabnormallist.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormal.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormalBatch.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowreplyabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/replyabnormallist.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/add.jsp -text

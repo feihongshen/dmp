@@ -45,13 +45,24 @@ $(function(){
 function sub(){
 	var datavalue = "[";
 	var noMsg = 0;
-	<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ %>
+	<%
+	
+	if(cwbList!=null&&cwbList.size()>0)
+		{
+		for(CwbOrder cwb : cwbList){
+%>	
 		if($("#abnormaltypeid<%=cwb.getOpscwbid()%>").val()==0){
+		
 			noMsg +=1;
 		}else{
-			datavalue=  datavalue +  "\"<%=cwb.getOpscwbid()%>_s_"+$("#describe<%=cwb.getOpscwbid()%>").val()+"_s_"+$("#abnormaltypeid<%=cwb.getOpscwbid()%>").val()+"\",";
+			var opscwbid="<%=cwb.getOpscwbid()%>";
+			var describe=$("#describe<%=cwb.getOpscwbid()%>").val();
+			var abnormaltypeid=$("#abnormaltypeid<%=cwb.getOpscwbid()%>").val();
+			var cwb="<%=cwb.getCwb()%>";
+			datavalue=  datavalue +  "\""+opscwbid+"_s_"+describe+"_s_"+abnormaltypeid+"_s_"+cwb+" \",";
 		}
-	<%}%>
+		
+	<%}}%>
 	if(noMsg>0){
 		alert("您还有"+noMsg+"单没选择问题件类型，请先选择！");
 		return false;

@@ -11,9 +11,13 @@ public class AbnormalOrder {
 	private String credatetime;
 	private long branchid;
 	private long isnow;
+	private long flowordertype;
+	private long deliverybranchid;
+	private String emaildata;
+	private String cwb;
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -21,7 +25,7 @@ public class AbnormalOrder {
 	}
 
 	public String getDescribe() {
-		return describe;
+		return this.describe;
 	}
 
 	public void setDescribe(String describe) {
@@ -29,7 +33,7 @@ public class AbnormalOrder {
 	}
 
 	public long getAbnormaltypeid() {
-		return abnormaltypeid;
+		return this.abnormaltypeid;
 	}
 
 	public void setAbnormaltypeid(long abnormaltypeid) {
@@ -37,7 +41,7 @@ public class AbnormalOrder {
 	}
 
 	public long getCreuserid() {
-		return creuserid;
+		return this.creuserid;
 	}
 
 	public void setCreuserid(long creuserid) {
@@ -45,7 +49,7 @@ public class AbnormalOrder {
 	}
 
 	public String getCredatetime() {
-		return credatetime;
+		return this.credatetime;
 	}
 
 	public void setCredatetime(String credatetime) {
@@ -53,7 +57,7 @@ public class AbnormalOrder {
 	}
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -61,7 +65,7 @@ public class AbnormalOrder {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -69,7 +73,7 @@ public class AbnormalOrder {
 	}
 
 	public long getIshandle() {
-		return ishandle;
+		return this.ishandle;
 	}
 
 	public void setIshandle(long ishandle) {
@@ -77,7 +81,7 @@ public class AbnormalOrder {
 	}
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -85,11 +89,43 @@ public class AbnormalOrder {
 	}
 
 	public long getIsnow() {
-		return isnow;
+		return this.isnow;
 	}
 
 	public void setIsnow(long isnow) {
 		this.isnow = isnow;
+	}
+
+	public long getFlowordertype() {
+		return this.flowordertype;
+	}
+
+	public void setFlowordertype(long flowordertype) {
+		this.flowordertype = flowordertype;
+	}
+
+	public long getDeliverybranchid() {
+		return this.deliverybranchid;
+	}
+
+	public void setDeliverybranchid(long deliverybranchid) {
+		this.deliverybranchid = deliverybranchid;
+	}
+
+	public String getEmaildata() {
+		return this.emaildata;
+	}
+
+	public void setEmaildata(String emaildata) {
+		this.emaildata = emaildata;
+	}
+
+	public String getCwb() {
+		return this.cwb;
+	}
+
+	public void setCwb(String cwb) {
+		this.cwb = cwb;
 	}
 
 }

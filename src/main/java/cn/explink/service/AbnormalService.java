@@ -39,18 +39,17 @@ public class AbnormalService {
 	public List<AbnormalView> setViews(List<JSONObject> alist, List<Branch> branchs, List<User> users, List<Customer> customers, List<AbnormalType> atlist) {
 
 		List<AbnormalView> views = new ArrayList<AbnormalView>();
-
 		if (alist.size() > 0) {
 
 			for (JSONObject a : alist) {
 				AbnormalView view = new AbnormalView();
 				view.setId(a.getInt("id"));
-				view.setFlowordertype(getFloworderType(a.getLong("flowordertype")));
-				view.setAbnormalType(getAbnormalType(atlist, a.getLong("abnormaltypeid")));
-				view.setBranchName(getBranchName(branchs, a.getLong("branchid")));
-				view.setCreuserName(getCreName(users, a.getLong("creuserid")));
+				view.setFlowordertype(this.getFloworderType(a.getLong("flowordertype")));
+				view.setAbnormalType(this.getAbnormalType(atlist, a.getLong("abnormaltypeid")));
+				view.setBranchName(this.getBranchName(branchs, a.getLong("branchid")));
+				view.setCreuserName(this.getCreName(users, a.getLong("creuserid")));
 				view.setCwb(a.getString("cwb"));
-				view.setCustomerName(getCustomer(customers, a.getLong("customerid")));
+				view.setCustomerName(this.getCustomer(customers, a.getLong("customerid")));
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
 				views.add(view);
@@ -110,7 +109,7 @@ public class AbnormalService {
 
 	/**
 	 * 创建
-	 * 
+	 *
 	 * @param co
 	 * @param user
 	 * @param abnormaltypeid
@@ -119,8 +118,12 @@ public class AbnormalService {
 	 */
 	@Transactional
 	public void creAbnormalOrder(CwbOrder co, User user, long abnormaltypeid, String nowtime, Map<Long, JSONObject> mapForAbnormalorder, long action) {
-		long abnormalorderid = abnormalOrderDAO.creAbnormalOrderLong(co.getOpscwbid(), co.getCustomerid(), "", user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime);
-		abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), "", user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid);
+		// long abnormalorderid =
+		// abnormalOrderDAO.creAbnormalOrderLong(co.getOpscwbid(),
+		// co.getCustomerid(), "", user.getUserid(), user.getBranchid(),
+		// abnormaltypeid, nowtime);
+		long abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLong(co, "", user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime);
+		this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), "", user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid, co.getCwb());
 		JSONObject json = new JSONObject();
 		json.put("abnormalorderid", abnormalorderid);
 		json.put("abnormalordertype", abnormaltypeid);
