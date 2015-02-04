@@ -1038,7 +1038,7 @@ public class OrderFlowDAO {
 
 	private void batchInsertOutAreaFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId, Map<String, Long> branchMap) {
 		this.batchRestNowFlow(cwbs);
-		this.batchInsertOrderFlow(cwbs, reportOutAreaBranchId, reportOutAreaUserId);
+//		this.batchInsertOrderFlow(cwbs, reportOutAreaBranchId, reportOutAreaUserId);
 		this.batchUpdateOperationTime(cwbs, reportOutAreaBranchId, branchMap);
 	}
 

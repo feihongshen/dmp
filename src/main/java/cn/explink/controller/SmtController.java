@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,6 +17,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -24,22 +28,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
+import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.ExplinkException;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
 @Controller
 @RequestMapping("/smt")
 public class SmtController {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private static final String TODAY_OUT_AREA_FN = "今日超区.xlsx";
 
@@ -66,6 +77,11 @@ public class SmtController {
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
+	
+	private ObjectMapper om = new ObjectMapper();
+	
 	private enum OrderTypeEnum {
 		Normal("normal"), Transfer("transfer"), All("all");
 
@@ -147,7 +163,7 @@ public class SmtController {
 
 		return "smt/smtorderdispatch";
 	}
-
+	
 	@RequestMapping("/smtorderoutarea")
 	public @ResponseBody JSONObject smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
@@ -161,7 +177,23 @@ public class SmtController {
 		// 更新订单流程表加入超区流程.
 		// 存在多次超区可能需要修改超区流程的isnow = 1.
 		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
-
+		
+		for(String cwb:cwbs){
+			try {
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
+				cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
+				cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
+				OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(),
+						this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), FlowOrderTypeEnum.ChaoQu.getValue(),
+						"超区");
+				this.orderFlowDAO.creAndUpdateOrderFlow(of);
+			} catch (Exception e) {
+				this.logger.error("error while saveing orderflow", e);
+				throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
+			}
+		}
 		return errorObj;
 	}
 

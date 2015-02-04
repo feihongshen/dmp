@@ -977,7 +977,7 @@ public class DataStatisticsController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		// 蓝生2014/9/26 16:04:23 @李媛媛 去掉库房中统计的中转库
-		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue());
+		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
 		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
 				kufangList.add(branch);

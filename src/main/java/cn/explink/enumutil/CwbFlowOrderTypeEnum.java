@@ -7,7 +7,7 @@ public enum CwbFlowOrderTypeEnum {
 	// ChongZhengJiaoYi(30,"冲正交易"),
 	ErJiFenBo(31, "二级分拨扫描"), KuDuiKuTuiHuoChuKu(32, "库对库退货出库"), EeJiZhanTuiHuoChuZhan(33, "二级站退货出站"), GongHuoShangTuiHuoChenggong(34, "供货商退货成功"), YiFanKui(35, "已反馈"), YiShenHe(36, "已审核"), DaoCuoHuoChuLi(
 			38, "到错货处理"), TuiHuoChuZhan(40, "退货出站"), YiZhiFu(42, "POS支付"), YiChangDingDanChuLi(43, "异常订单处理"), DingDanLanJie(44, "订单拦截"), ShenHeWeiZaiTou(45, "审核为退货再投"), KuDuiKuChuKuSaoMiao(46,
-			"库对库出库"), LanShouDaoHuo(53, "揽收到货");
+			"库对库出库"), LanShouDaoHuo(53, "揽收到货"),ChaoQu(60, "超区"), YiChangPiPeiYiChuLi(61, "异常匹配已处理");
 	private int value;
 	private String text;
 

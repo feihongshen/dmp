@@ -1,5 +1,6 @@
 package cn.explink.service;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,9 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
@@ -19,18 +23,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.ExplinkException;
 import cn.explink.util.SqlBuilder;
 
 @Service
 public class MatchExceptionHandleService {
-
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private CwbDAO cwbDAO;
 
@@ -48,7 +57,13 @@ public class MatchExceptionHandleService {
 
 	@Autowired
 	private BranchDAO branchDAO;
-
+	
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
+	@Autowired
+	private OrderFlowDAO orderFlowDAO ;
+	
+	private ObjectMapper om = new ObjectMapper();
 	@Transactional
 	public JSONObject redistributionBranch(String cwb, long newBranchId) {
 		CwbOrder cwbOrder = this.queryOrder(cwb);
@@ -65,7 +80,19 @@ public class MatchExceptionHandleService {
 		// 更新订单状态.
 		this.updateOrderDeliverBranch(cwbOrder, newBranchId);
 		// 插入异常匹配已处理流程.
-		this.insertExceptionMatchHandledFlow(cwb);
+		try {
+			DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
+			cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
+			cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
+			OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(),
+					this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue(),
+					"异常匹配已处理");
+			this.orderFlowDAO.creAndUpdateOrderFlow(of);
+		} catch (Exception e) {
+			this.logger.error("error while saveing orderflow", e);
+			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
+		}
 		// 执行分站到货逻辑.
 		this.exeArriveBranch(cwb, newBranchId);
 		// 添加订单最后流程时间和是否为超区订单.
@@ -73,7 +100,9 @@ public class MatchExceptionHandleService {
 
 		return obj;
 	}
-
+	private long getCurrentUserId() {
+		return this.getSessionUser().getUserid();
+	}
 	private void fillExtraData(JSONObject obj, CwbOrder cwbOrder, OrderFlow orderFlow) {
 		Date todayZeroTime = this.getTodayZeroTime();
 		obj.put("today", todayZeroTime.compareTo(orderFlow.getCredate()) <= 0);

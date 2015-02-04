@@ -1143,7 +1143,14 @@ public class OrderSelectController {
 				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>审为退货再投；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
 						comment);
 			}
-
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChaoQu.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>标记为超区；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>异常匹配已处理；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
