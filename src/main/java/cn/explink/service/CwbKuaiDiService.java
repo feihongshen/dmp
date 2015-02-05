@@ -34,10 +34,13 @@ public class CwbKuaiDiService {
 		ckv.setAllfee(kd.getAllfee());
 		ckv.setConsigneeaddress(order.getConsigneeaddress());
 		ckv.setConsigneeareacode(kd.getConsigneeareacode());
+		ckv.setConsigneemobilekf(order.getConsigneemobileOfkf());
 		ckv.setConsigneemobile(order.getConsigneemobile());
+		ckv.setConsigneenamekf(order.getConsigneenameOfkf());
 		ckv.setConsigneename(order.getConsigneename());
 		ckv.setConsigneeno(order.getConsigneeno());
 		ckv.setConsigneephone(order.getConsigneephone());
+		ckv.setConsigneephonekf(order.getConsigneephoneOfkf());
 		// ckv.setConsigneephone(consigneephone, guessMobile);
 		ckv.setConsigneepostcode(order.getConsigneepostcode());
 		ckv.setCwb(order.getCwb());
