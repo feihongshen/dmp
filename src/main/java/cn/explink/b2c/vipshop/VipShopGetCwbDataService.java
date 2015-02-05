@@ -427,9 +427,10 @@ public class VipShopGetCwbDataService {
 			if ((created_dtm_loc == null) || created_dtm_loc.isEmpty()) {
 				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
 			}
-
+			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
+			
 			dataMap.put("cwb", order_sn);
-			dataMap.put("transcwb", pack_nos);
+			dataMap.put("transcwb", transcwb);
 			dataMap.put("consigneename", buyer_name);
 			dataMap.put("sendcarnum", (total_pack.isEmpty() ? "1" : total_pack));
 			dataMap.put("consigneemobile", mobile);
