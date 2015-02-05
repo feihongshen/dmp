@@ -428,6 +428,16 @@ public class VipShopGetCwbDataService {
 				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
 			}
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
+			int sendcarnum=1;
+			try {
+				if(pack_nos!=null&&!pack_nos.isEmpty()){
+					if(pack_nos.split(",").length>1){
+						sendcarnum=pack_nos.split(",").length;
+					}else{
+						sendcarnum=1;
+					}
+				}
+			} catch (Exception e) {}
 			
 			dataMap.put("cwb", order_sn);
 			dataMap.put("transcwb", transcwb);
@@ -439,7 +449,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("consigneeaddress", buyer_address);
 			dataMap.put("receivablefee", money);
 			dataMap.put("customercommand", transport_day + "," + order_delivery_batch + "," + remarkFreight);
-
+			dataMap.put("sendcarnum", sendcarnum+"");
 			dataMap.put("sendcargoname", "[发出商品]");
 			dataMap.put("customerid", vipshop.getCustomerids());
 			dataMap.put("remark1", order_batch_no); // 交接单号
