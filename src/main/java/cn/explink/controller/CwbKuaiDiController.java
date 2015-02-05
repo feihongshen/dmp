@@ -236,7 +236,7 @@ public class CwbKuaiDiController {
 					CwbKuaiDi kd = cwbKuaiDiDAO.getCwbKuaiDiByCwb(cwb[i].trim());
 					if (kd != null) {
 						CwbKuaiDiView ckv = cwbKuaiDiService.getKuaiDiView(order, kd, users, branchs);
-						if (ckv.getConsigneename().length() == 0) {// 判断一下该订单有没有做过补录信息
+						if (ckv.getConsigneenamekf().length() == 0) {// 判断一下该订单有没有做过补录信息
 																	// 说明没有补录
 							model.addAttribute("error", "订单" + ckv.getCwb() + "没有做过补录信息");
 						}
