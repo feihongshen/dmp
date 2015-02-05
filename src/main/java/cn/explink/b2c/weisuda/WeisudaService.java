@@ -252,6 +252,10 @@ public class WeisudaService {
 				}
 			}
 		}
+		else if(podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue())
+		{
+			
+		}
 
 		long backedreasonid = 0;
 		long leavedreasonid = 0;
@@ -274,10 +278,9 @@ public class WeisudaService {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		if(infactDeliverid!=deliverid&&infactDeliverid!=0){
-			parameters.put("deliverid",infactDeliverid);
-		}else{
-			parameters.put("deliverid",deliverid);
+			deliverid=infactDeliverid;
 		}
+		parameters.put("deliverid",deliverid);
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
 		parameters.put("leavedreasonid", leavedreasonid);
@@ -297,8 +300,8 @@ public class WeisudaService {
 		parameters.put("sign_man", orderFlowDto.getConsignee());
 		parameters.put("sign_time", orderFlowDto.getRequestTime());
 
-		String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ? cwbOrder.getCwbremark() + "\n" : "";
-		String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
+		//String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ? cwbOrder.getCwbremark() + "\n" : "";
+		String newcwbremark = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
 		try {
 			this.cwbDAO.updateCwbRemark(orderFlowDto.getCwb(), newcwbremark);
 			cwbOrder.setCwbremark(newcwbremark);
@@ -312,13 +315,12 @@ public class WeisudaService {
 		if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
 			this.cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
 		}
-
-		User user = this.userDAO.getAllUserByid(deliverystate.getDeliveryid());
-
-		if(infactDeliverid!=deliverid&&infactDeliverid!=0){
-			deliveryStateDAO.updateDeliveryByCwb(infactDeliverid, orderFlowDto.getCwb());
-			cwbDAO.updateDeliveridByCwb(orderFlowDto.getCwb(), infactDeliverid);
+		if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
+			this.cwbDAO.saveCwbForLeavereason(orderFlowDto.getCwb(), orderFlowDto.getStrandedrReason(), 0);
 		}
+
+		User user = this.userDAO.getAllUserByid(deliverid);
+
 
 		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
 

@@ -28,6 +28,8 @@ public class OrderFlowDto {
 	private String cwbremark;//
 	private String consignee;//
 	private String deliveryname;
+	private String strandedrReason;
+	
 	
 
 	public String getDeliveryname() {
@@ -164,6 +166,14 @@ public class OrderFlowDto {
 
 	public void setExptmsg(String exptmsg) {
 		this.exptmsg = exptmsg;
+	}
+
+	public String getStrandedrReason() {
+		return strandedrReason;
+	}
+
+	public void setStrandedrReason(String strandedrReason) {
+		this.strandedrReason = strandedrReason;
 	}
 
 	private String exptmsg; // 异常状态描述
