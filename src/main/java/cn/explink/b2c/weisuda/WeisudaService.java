@@ -273,7 +273,11 @@ public class WeisudaService {
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("deliverid", deliverid);
+		if(infactDeliverid!=deliverid&&infactDeliverid!=0){
+			parameters.put("deliverid",infactDeliverid);
+		}else{
+			parameters.put("deliverid",deliverid);
+		}
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
 		parameters.put("leavedreasonid", leavedreasonid);
