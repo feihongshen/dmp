@@ -923,6 +923,7 @@ public class OrderSelectController {
 						phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+				phone=showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -1060,6 +1061,7 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由<font color =\"red\">[{0}]</font>撤销反馈；联系电话：<font color =\"red\">[{1}]</font>", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+				phone=showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -1186,6 +1188,7 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由<font color =\"red\">[{0}]</font>撤销反馈；联系电话：<font color =\"red\">[{1}]</font>", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+				phone=showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -1300,6 +1303,7 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由[{0}]撤销反馈；联系电话：[{1}]", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+				phone=showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从[{0}]到货；联系电话：[{1}]；备注：[{2}]", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -2801,6 +2805,18 @@ public class OrderSelectController {
 		model.addAttribute("selectOrdersList", selectOrdersList);
 
 		return "/orderflow/queckSelectOrders";
+	}
+	public String showBranchPhone(String currentbranchname,String phone)
+	{
+		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("showbranchPhone");
+		systemInstall=systemInstall==null?new SystemInstall():systemInstall;
+		if(systemInstall.getValue()!=null&&systemInstall.getValue().equalsIgnoreCase("yes"))
+		{
+			Branch branch=branchDAO.getBranchByBranchname(currentbranchname);
+			branch=branch==null?new Branch():branch;
+			phone=branch.getBranchphone();
+		}
+		return phone;
 	}
 
 }
