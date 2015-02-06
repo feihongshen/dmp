@@ -344,6 +344,8 @@ public class WeisudaService {
 			} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 				podresultid = DeliveryStateEnum.ShangMenJuTui.getValue();
 			}
+		} else if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
 		}
 		return podresultid;
 	}
