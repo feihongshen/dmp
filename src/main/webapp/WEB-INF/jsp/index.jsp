@@ -85,7 +85,7 @@ $(document).ready(function () {
 	<%if("1".equals(isOpenFlag)){ %>
 	showZitiCount();
 	<%}%>
-	setInterval("refreshState()",1000*60*1);
+	setInterval("refreshState()",1000*60*10);
     setInterval("startRequest()",60000);
 //setInterval这个函数会根据后面定义的1000既每隔1秒执行一次前面那个函数
    //如果你用局部刷新，要用AJAX技术
