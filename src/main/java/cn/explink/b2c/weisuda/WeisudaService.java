@@ -182,7 +182,7 @@ public class WeisudaService {
 
 	/**
 	 * 对接反馈接口
-	 *
+	 * 
 	 * @param commd
 	 * @param cwb
 	 * @param podresultid
@@ -251,10 +251,8 @@ public class WeisudaService {
 					}
 				}
 			}
-		}
-		else if(podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue())
-		{
-			
+		} else if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+
 		}
 
 		long backedreasonid = 0;
@@ -267,20 +265,20 @@ public class WeisudaService {
 			backedreasonid = Long.valueOf((orderFlowDto.getExptcode() == null) || orderFlowDto.getExptcode().isEmpty() ? "0" : orderFlowDto.getExptcode());
 		}
 
-		long deliverid=deliverystate.getDeliveryid();
-		long infactDeliverid=0;
+		long deliverid = deliverystate.getDeliveryid();
+		long infactDeliverid = 0;
 		try {
-			infactDeliverid=userDAO.getUserByUsername(orderFlowDto.getDeliveryname()).getUserid();
+			infactDeliverid = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname()).getUserid();
 		} catch (Exception e1) {
-			logger.error("唯速达_02回传username="+orderFlowDto.getDeliveryname()+"不存在，cwb="+cwbOrder.getCwb());
-			infactDeliverid=0;
+			this.logger.error("唯速达_02回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
+			infactDeliverid = 0;
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		if(infactDeliverid!=deliverid&&infactDeliverid!=0){
-			deliverid=infactDeliverid;
+		if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
+			deliverid = infactDeliverid;
 		}
-		parameters.put("deliverid",deliverid);
+		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
 		parameters.put("leavedreasonid", leavedreasonid);
@@ -300,7 +298,8 @@ public class WeisudaService {
 		parameters.put("sign_man", orderFlowDto.getConsignee());
 		parameters.put("sign_time", orderFlowDto.getRequestTime());
 
-		//String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ? cwbOrder.getCwbremark() + "\n" : "";
+		// String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ?
+		// cwbOrder.getCwbremark() + "\n" : "";
 		String newcwbremark = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
 		try {
 			this.cwbDAO.updateCwbRemark(orderFlowDto.getCwb(), newcwbremark);
@@ -320,7 +319,6 @@ public class WeisudaService {
 		}
 
 		User user = this.userDAO.getAllUserByid(deliverid);
-
 
 		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
 

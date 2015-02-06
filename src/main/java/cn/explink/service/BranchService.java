@@ -21,8 +21,8 @@ import cn.explink.util.StringUtil;
 public class BranchService {
 
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
-		Branch bh = loadFormForBranch(request);
-		if (file != null && !file.isEmpty()) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -40,8 +40,8 @@ public class BranchService {
 	}
 
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, String wavh, List<String> functionids) {
-		Branch bh = loadFormForBranch(request);
-		if (file != null && !file.isEmpty()) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -63,8 +63,8 @@ public class BranchService {
 	}
 
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file) {
-		Branch bh = loadFormForBranch(request);
-		if (file != null && !file.isEmpty()) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -122,7 +122,7 @@ public class BranchService {
 		// 结算业务设置
 		branch.setAccounttype(Integer.parseInt(request.getParameter("accounttype") == null ? "0" : request.getParameter("accounttype")));
 		branch.setAccountexcesstype(Integer.parseInt(request.getParameter("accountexcesstype") == null ? "0" : request.getParameter("accountexcesstype")));
-		if (request.getParameter("accountexcessfee") == null || request.getParameter("accountexcessfee").toString().equals("")) {
+		if ((request.getParameter("accountexcessfee") == null) || request.getParameter("accountexcessfee").toString().equals("")) {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat("0")));
 		} else {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat(request.getParameter("accountexcessfee"))));
@@ -130,19 +130,19 @@ public class BranchService {
 
 		branch.setAccountbranch(Long.parseLong(request.getParameter("accountbranch") == null ? "0" : request.getParameter("accountbranch")));
 
-		if (request.getParameter("credit") == null || request.getParameter("credit").toString().equals("")) {
+		if ((request.getParameter("credit") == null) || request.getParameter("credit").toString().equals("")) {
 			branch.setCredit(BigDecimal.valueOf(Float.parseFloat("0")));
 		} else {
 			branch.setCredit(BigDecimal.valueOf(Float.parseFloat(request.getParameter("credit"))));
 		}
 
-		if (request.getParameter("prescription24") == null || request.getParameter("prescription24").toString().equals("")) {
+		if ((request.getParameter("prescription24") == null) || request.getParameter("prescription24").toString().equals("")) {
 			branch.setPrescription24(Long.parseLong("0"));
 		} else {
 			branch.setPrescription24(Long.parseLong(request.getParameter("prescription24")));
 		}
 
-		if (request.getParameter("prescription48") == null || request.getParameter("prescription48").toString().equals("")) {
+		if ((request.getParameter("prescription48") == null) || request.getParameter("prescription48").toString().equals("")) {
 			branch.setPrescription48(Long.parseLong("0"));
 		} else {
 			branch.setPrescription48(Long.parseLong(request.getParameter("prescription48")));
@@ -160,7 +160,7 @@ public class BranchService {
 
 	public void addzhandianToAddress(long branchid, Branch branch) {
 		try {
-			addzhandian.sendBodyAndHeader(null, "branchid", branchid);
+			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
 			JSONObject branchToJson = new JSONObject();
 			branchToJson.put("branchid", branchid);
 			branchToJson.put("branchname", branch.getBranchname());
@@ -174,16 +174,19 @@ public class BranchService {
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
 
-			savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
+			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
 		}
 	}
 
-	/*
-	 * @Produce(uri="jms:topic:delzhandian") ProducerTemplate delzhandian;
-	 * public void delBranch(long branchid){ try {
-	 * delzhandian.sendBodyAndHeader(null, "branchid", branchid); } catch
-	 * (Exception e) {} }
-	 */
+	@Produce(uri = "jms:topic:delzhandian")
+	ProducerTemplate delzhandian;
+
+	public void delBranch(long branchid) {
+		try {
+			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
+		} catch (Exception e) {
+		}
+	}
 
 }

@@ -1,13 +1,8 @@
 package cn.explink.b2c.weisuda;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import org.apache.camel.Body;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Header;
-import org.apache.camel.Headers;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -32,20 +27,20 @@ public class CourierService {
 	public void courierUpdate(User user) {
 		try {
 			String jsonUser = JsonUtil.translateToJson(user);
-			courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
+			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	// @Produce(uri="jms:topic:carrierDel")
-	// ProducerTemplate carrierDel;
+	@Produce(uri = "jms:topic:carrierDel")
+	ProducerTemplate carrierDel;
 
 	public void carrierDel(User user) {
 		try {
 			String jsonUser = JsonUtil.translateToJson(user);
-			courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
+			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,13 +48,13 @@ public class CourierService {
 	}
 
 	/**
-	 * ¸üÐÂ¹©»õÉÌ
+	 * ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public void customerUpdate() {
 		try {
-			courierUpdate.sendBodyAndHeader(null, "customer", "update");
+			this.courierUpdate.sendBodyAndHeader(null, "customer", "update");
 		} catch (Exception e) {
-			logger.error("¸üÐÂ¹©»õÉÌ·¢ËÍJMSÒì³£", e);
+			this.logger.error("ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½ï¿½Ì·ï¿½ï¿½ï¿½JMSï¿½ì³£", e);
 		}
 
 	}
@@ -67,10 +62,10 @@ public class CourierService {
 	@PostConstruct
 	public void init() {
 		try {
-			camelContext.addRoutes(new RouteBuilder() {
+			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_¸üÐÂ¿ìµÝÔ±");
+					this.from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_ï¿½ï¿½ï¿½Â¿ï¿½ï¿½Ô±");
 				}
 			});
 		} catch (Exception e) {
