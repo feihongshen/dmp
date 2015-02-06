@@ -277,6 +277,7 @@ public class WeisudaService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
 			deliverid = infactDeliverid;
+			this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, deliverystate.getCwb());
 		}
 		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
