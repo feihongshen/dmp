@@ -26,6 +26,7 @@ public class CourierService {
 
 	public void courierUpdate(User user) {
 		try {
+			logger.info("=========修改派送员伟速达"+user.getRealname()+"=================");
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
@@ -39,6 +40,7 @@ public class CourierService {
 
 	public void carrierDel(User user) {
 		try {
+			logger.info("=========删除派送员伟速达"+user.getRealname()+"=================");
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
 		} catch (Exception e) {
@@ -47,31 +49,29 @@ public class CourierService {
 
 	}
 
-	/**
-	 * ���¹�����
-	 */
+
 	public void customerUpdate() {
 		try {
 			this.courierUpdate.sendBodyAndHeader(null, "customer", "update");
 		} catch (Exception e) {
-			this.logger.error("���¹����̷���JMS�쳣", e);
+			this.logger.error("供货商通知异常JMS", e);
 		}
 
 	}
 
-	@PostConstruct
-	public void init() {
-		try {
-			this.camelContext.addRoutes(new RouteBuilder() {
-				@Override
-				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_���¿��Ա");
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	@PostConstruct
+//	public void init() {
+//		try {
+//			this.camelContext.addRoutes(new RouteBuilder() {
+//				@Override
+//				public void configure() throws Exception {
+//					this.from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_���¿��Ա");
+//				}
+//			});
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	// public void courierUpdate(@Headers()Map<String, String>
 	// parameters,@Body() String body){
