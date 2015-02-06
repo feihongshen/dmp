@@ -29,6 +29,7 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryCashDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
@@ -77,6 +78,8 @@ public class WeisudaService {
 	CwbDAO cwbDAO;
 	@Autowired
 	ExceptionCwbDAO exceptionCwbDAO;
+	@Autowired
+	DeliveryCashDAO deliveryCashDAO;
 
 	@Autowired
 	PoscodeMappDAO poscodeMappDAO;
@@ -268,17 +271,19 @@ public class WeisudaService {
 		long deliverid = deliverystate.getDeliveryid();
 		long infactDeliverid = 0;
 		try {
-			infactDeliverid = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname()).getUserid();
+			User user = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname());
+			infactDeliverid = user.getUserid();
+			if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
+				deliverid = infactDeliverid;
+				this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, deliverystate.getCwb());
+				this.deliveryCashDAO.saveDeliveryCashByDeliverystateid(deliverid, user.getBranchid(), orderFlowDto.getRequestTime(), deliverystate.getId());
+			}
 		} catch (Exception e1) {
 			this.logger.error("唯速达_02回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
 			infactDeliverid = 0;
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
-			deliverid = infactDeliverid;
-			this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, deliverystate.getCwb());
-		}
 		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
