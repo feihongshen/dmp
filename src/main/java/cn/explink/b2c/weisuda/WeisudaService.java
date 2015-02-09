@@ -277,6 +277,8 @@ public class WeisudaService {
 				deliverid = infactDeliverid;
 				this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, user.getBranchid(), deliverystate.getCwb());
 				this.deliveryCashDAO.saveDeliveryCashByDeliverystateid(deliverid, user.getBranchid(), orderFlowDto.getRequestTime(), deliverystate.getId());
+				deliverystate.setDeliverybranchid(user.getBranchid());
+				deliverystate.setDeliveryid(deliverid);
 			}
 		} catch (Exception e1) {
 			this.logger.error("唯速达_02回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
