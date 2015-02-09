@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,12 +45,15 @@ import cn.explink.domain.OverdueExMoDetailVO;
 import cn.explink.domain.OverdueResultVO;
 import cn.explink.domain.TimeEffectiveVO;
 import cn.explink.domain.TimeTypeEnum;
+import cn.explink.domain.User;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
 /**
  * 超期异常监控控制器.
- *
+ * 
  * @author zhaoshb
  * @since DMP3.0
  */
@@ -71,6 +75,13 @@ public class OverdueExMoController {
 
 	@Autowired
 	private TimeEffectiveDAO timeEffectiveVO = null;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
 
 	@RequestMapping("/{page}")
 	public ModelAndView list(@PathVariable("page") int page, OverdueExMoCondVO condVO) {
@@ -511,7 +522,8 @@ public class OverdueExMoController {
 	}
 
 	private Map<Long, String> getOrgMap() {
-		return this.getBranchDAO().getBranchAndWarehouseNameMap();
+		// return this.getBranchDAO().getBranchAndWarehouseNameMap();
+		return this.getBranchDAO().getBranchNameMap(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 	}
 
 	private Map<Integer, String> getTimeTypeMap() {

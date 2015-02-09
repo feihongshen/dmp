@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +45,11 @@ import cn.explink.domain.SmtFareSettleDetailVO;
 import cn.explink.domain.SmtFareSettleResultVO;
 import cn.explink.domain.SmtFareSettleVO;
 import cn.explink.domain.TimeTypeEnum;
+import cn.explink.domain.User;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
 @Controller
@@ -63,6 +67,13 @@ public class SmtFareSettleController {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate = null;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
 
 	@RequestMapping("/station/{page}")
 	public ModelAndView showStation(@PathVariable("page") int page, SmtFareSettleCondVO cond, ModelAndView mav) {
@@ -526,7 +537,9 @@ public class SmtFareSettleController {
 	}
 
 	private Map<Long, String> getOrgMap() {
-		return this.getBranchDAO().getBranchNameMap(2);
+
+		// return this.getBranchDAO().getBranchNameMap(2);
+		return this.getBranchDAO().getBranchNameMap(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 	}
 
 	private Map<Long, String> getDeliverNameMap(SmtFareSettleCondVO cond) {

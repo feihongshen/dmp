@@ -2808,6 +2808,8 @@ public class OrderSelectController {
 	}
 	public String showBranchPhone(String currentbranchname,String phone)
 	{
+		try {
+		
 		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("showbranchPhone");
 		systemInstall=systemInstall==null?new SystemInstall():systemInstall;
 		if(systemInstall.getValue()!=null&&systemInstall.getValue().equalsIgnoreCase("yes"))
@@ -2815,6 +2817,10 @@ public class OrderSelectController {
 			Branch branch=branchDAO.getBranchByBranchname(currentbranchname);
 			branch=branch==null?new Branch():branch;
 			phone=branch.getBranchphone();
+		}
+		
+		} catch (Exception e) {
+			return phone;
 		}
 		return phone;
 	}

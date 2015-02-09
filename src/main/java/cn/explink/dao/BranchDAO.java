@@ -108,7 +108,7 @@ public class BranchDAO {
 
 	/**
 	 * 保存机构之间的流程关系
-	 *
+	 * 
 	 * @param branchId
 	 *            保存的对象机构id
 	 * @param toBranchId
@@ -353,7 +353,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠货款
-	 *
+	 * 
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -363,7 +363,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠赔款
-	 *
+	 * 
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -373,7 +373,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠罚款
-	 *
+	 * 
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -550,7 +550,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的财务机构或者中转站或者退货站，根据当前的用户所属机构的相对应这些类型的机构
-	 *
+	 * 
 	 * @param sitetype
 	 * @return
 	 */
@@ -565,7 +565,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的财中转站，根据当前的用户所属机构的相对应这些类型的机构
-	 *
+	 * 
 	 * @param sitetype
 	 * @return
 	 */
@@ -580,7 +580,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的退货站，根据当前的用户所属机构的相对应这些类型的机构
-	 *
+	 * 
 	 * @param sitetype
 	 * @return
 	 */
@@ -595,7 +595,7 @@ public class BranchDAO {
 
 	/**
 	 * 根据财务所在的站点id查询 所有的属于财务的站点。
-	 *
+	 * 
 	 * @param caiwubranchid
 	 * @return
 	 */
@@ -671,7 +671,7 @@ public class BranchDAO {
 	// ==================================
 	/**
 	 * 重置审核状态 修改站点帐户欠款金额表字段
-	 *
+	 * 
 	 * @param branchid
 	 *            站点id
 	 * @param arrearagepayupaudit
@@ -810,6 +810,17 @@ public class BranchDAO {
 		String sql = "select branchid,branchname from  express_set_branch where siteType = " + siteType + " and brancheffectflag = 1";
 		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
+
+		return nameMap;
+	}
+
+	public Map<Long, String> getBranchNameMap(long userid, int siteType) {
+
+		String sql = "SELECT b.branchid as branchid,b.branchname as branchname  from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.sitetype in("
+				+ siteType + ") and ub.userid=? and b.brancheffectflag='1' order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
+		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
+
+		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap), userid);
 
 		return nameMap;
 	}
