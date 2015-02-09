@@ -65,7 +65,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"   <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   <%if(vipshop.getIsShangmentuiFlag()==2){%>checked<%}%>  >全部
 						</li>
-					
+						<li><span>取消或拦截：</span>
+							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >取消开启
+							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >拦截开启
+						</li>
 						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">

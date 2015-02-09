@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.service.CwbOrderService;
 
 @Controller
 @RequestMapping("/vipshop")
@@ -31,6 +34,10 @@ public class VipShopController {
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	@Autowired
 	VipShopService vipShopService;
+	@Autowired
+	CwbOrderService  cwbOrderService;
+	@Autowired
+	UserDAO  userDAO;
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
@@ -76,6 +83,15 @@ public class VipShopController {
 		this.vipShopService.excuteVipshopDownLoadTask();
 
 		return "手动请求下载成功";
+
+	}
+	
+	@RequestMapping("/lanjie/{id}")
+	public @ResponseBody String lanjie(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
+
+		cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), cwb, cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+
+		return "执行订单"+cwb+"拦截成功";
 
 	}
 

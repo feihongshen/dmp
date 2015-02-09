@@ -20,6 +20,15 @@ public class VipShop {
 	private int isopendownload; // 是否开启订单下载接口
 	private int forward_hours; // 提前N个小时发送，可动态配置的。
 	private int isTuoYunDanFlag; // 是否开启托运单 模式，生成多个批次
+	private int cancelOrIntercept; // 0 开启取消， 1拦截
+
+	public int getCancelOrIntercept() {
+		return cancelOrIntercept;
+	}
+
+	public void setCancelOrIntercept(int cancelOrIntercept) {
+		this.cancelOrIntercept = cancelOrIntercept;
+	}
 
 	private int isShangmentuiFlag; // 是否开启上门退业务 0 关闭，1开启
 

@@ -24,8 +24,10 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
@@ -54,6 +56,8 @@ public class VipShopGetCwbDataService {
 	CustomWareHouseDAO customWarehouseDAO;
 	@Autowired
 	OrderGoodsDAO orderGoodsDAO;
+	@Autowired
+	UserDAO userDAO;
 	
 	@Autowired
 	CwbOrderService cwbOrderService;
@@ -90,7 +94,10 @@ public class VipShopGetCwbDataService {
 		vipshop.setForward_hours(Integer.parseInt(request.getParameter("forward_hours")));
 		vipshop.setIsTuoYunDanFlag(Integer.parseInt(request.getParameter("isTuoYunDanFlag")));
 		vipshop.setIsShangmentuiFlag(Integer.parseInt(request.getParameter("isShangmentuiFlag").equals("") ? "0" : request.getParameter("isShangmentuiFlag")));
-
+		
+		String cancelOrIntercept=request.getParameter("cancelOrIntercept").equals("")?"0":request.getParameter("cancelOrIntercept");
+		vipshop.setCancelOrIntercept(Integer.parseInt(cancelOrIntercept));
+		
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
@@ -428,16 +435,7 @@ public class VipShopGetCwbDataService {
 				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
 			}
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
-			int sendcarnum=1;
-			try {
-				if(pack_nos!=null&&!pack_nos.isEmpty()){
-					if(pack_nos.split(",").length>1){
-						sendcarnum=pack_nos.split(",").length;
-					}else{
-						sendcarnum=1;
-					}
-				}
-			} catch (Exception e) {}
+			
 			
 			dataMap.put("cwb", order_sn);
 			dataMap.put("transcwb", transcwb);
@@ -449,7 +447,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("consigneeaddress", buyer_address);
 			dataMap.put("receivablefee", money);
 			dataMap.put("customercommand", transport_day + "," + order_delivery_batch + "," + remarkFreight);
-			dataMap.put("sendcarnum", sendcarnum+"");
+			
 			dataMap.put("sendcargoname", "[发出商品]");
 			dataMap.put("customerid", vipshop.getCustomerids());
 			dataMap.put("remark1", order_batch_no); // 交接单号
@@ -477,10 +475,17 @@ public class VipShopGetCwbDataService {
 				}
 				// 订单取消
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
-					this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
-					this.cwbDAO.dataLoseByCwb(order_sn);
-					orderGoodsDAO.loseOrderGoods(order_sn);
-					cwbOrderService.datalose_vipshop(order_sn);
+					
+					if(vipshop.getCancelOrIntercept()==0){ //取消
+						this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
+						this.cwbDAO.dataLoseByCwb(order_sn);
+						orderGoodsDAO.loseOrderGoods(order_sn);
+						cwbOrderService.datalose_vipshop(order_sn);
+					}else{ //拦截
+						cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+					}
+					
+					
 					seq_arrs += seq + ",";
 					return seq_arrs;
 				}
