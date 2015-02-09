@@ -760,7 +760,8 @@ public class CwbDAO {
 			return null;
 		}
 	}
-
+		
+	
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
 			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update", new CwbMapper(), cwb);

@@ -6,6 +6,7 @@ public class AdjustmentRecord {
 	private long id;//调整单id
 	private String order_no;//订单号
 	private String bill_no;//账单编号
+	private long bill_id;
 	private String adjust_bill_no;//调整账单编号
 	private long customer_id;//客户ID
 	private BigDecimal receive_fee;//原始应收金额
@@ -115,35 +116,11 @@ public class AdjustmentRecord {
 	public void setAdjust_bill_no(String adjust_bill_no) {
 		this.adjust_bill_no = adjust_bill_no;
 	}
-	public AdjustmentRecord() {
-		super();
-		// TODO Auto-generated constructor stub
+	public long getBill_id() {
+		return bill_id;
 	}
-	public AdjustmentRecord(String order_no, String bill_no,
-			String adjust_bill_no, long customer_id, BigDecimal receive_fee,
-			BigDecimal refund_fee, BigDecimal modify_fee,
-			BigDecimal adjust_amount, String remark, String creator,
-			String create_time, int status, String check_user,
-			String check_time, int order_type) {
-		super();
-		this.order_no = order_no;
-		this.bill_no = bill_no;
-		this.adjust_bill_no = adjust_bill_no;
-		this.customer_id = customer_id;
-		this.receive_fee = receive_fee;
-		this.refund_fee = refund_fee;
-		this.modify_fee = modify_fee;
-		this.adjust_amount = adjust_amount;
-		this.remark = remark;
-		this.creator = creator;
-		this.create_time = create_time;
-		this.status = status;
-		this.check_user = check_user;
-		this.check_time = check_time;
-		this.order_type = order_type;
+	public void setBill_id(long bill_id) {
+		this.bill_id = bill_id;
 	}
-	
-	
-	
-	
+		
 }
