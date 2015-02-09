@@ -261,16 +261,24 @@ public class AccountCwbFareDetailDAO {
 		if (customerids.length() > 0) {
 			sql += " and customerid in(" + customerids + ")";
 		}
-
-		sql += " and verifyflag=" + verifyflag;
+		if (verifyflag==2) {
+			sql += " and verifyflag=" + 0;
+		}else {
+			sql += " and verifyflag=" + verifyflag;
+		}
+		
 
 		if (verifyflag == 0) { // 未审核 是交款时间
 			sql += " and payuptime >= '" + begindate + "' ";
 			sql += " and payuptime <= '" + enddate + "' ";
-		} else { // 已审核是审核时间
+		} else if(verifyflag == 1){ // 已审核是审核时间
 
 			sql += " and verifytime >= '" + begindate + "' ";
 			sql += " and verifytime <= '" + enddate + "' ";
+		}else {
+			sql+="   and audittime >= '" + begindate + "' ";
+			sql += " and audittime <= '" + enddate + "' ";
+			sql += " and fareid =0 ";
 		}
 		if (deliverybranchid > 0) {
 			sql += " and deliverybranchid=" + deliverybranchid;

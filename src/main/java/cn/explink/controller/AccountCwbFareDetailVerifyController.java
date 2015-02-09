@@ -87,7 +87,7 @@ public class AccountCwbFareDetailVerifyController {
 	 */
 	@RequestMapping("/accountfarelist/{page}")
 	public String accountfarelist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "verifyflag", required = false, defaultValue = "0") int verifyflag, @RequestParam(value = "verifytime", required = false, defaultValue = "1") long verifytime,
+			@RequestParam(value = "verifyflag", required = false, defaultValue = "2") int verifyflag, @RequestParam(value = "verifytime", required = false, defaultValue = "0") long verifytime,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
 			@RequestParam(value = "deliverystate", required = false, defaultValue = "0") long deliverystate, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
@@ -115,8 +115,8 @@ public class AccountCwbFareDetailVerifyController {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailByQKVerify(page, customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
 					shoulefarefeesign, pageNumber, userid);
-			pageparm = new Page(this.accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
-					shoulefarefeesign, userid), page, pageNumber);
+				pageparm = new Page(this.accountCwbFareDetailDAO.getAccountCwbFareDetailCountByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
+						shoulefarefeesign, userid), page, pageNumber);
 			accountCwbFareDetailSum = this.accountCwbFareDetailDAO.getAccountCwbFareDetailSumByQKVerify(customerids, verifyflag, verifytime, begindate, enddate, deliverybranchid, deliverystate,
 					shoulefarefeesign, userid);
 		}

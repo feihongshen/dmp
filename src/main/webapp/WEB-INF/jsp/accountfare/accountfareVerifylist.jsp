@@ -26,7 +26,7 @@ Date now = new Date();
   List<AccountCwbFareDetail> acfdList=request.getAttribute("acfdList")==null?new ArrayList<AccountCwbFareDetail>():(List<AccountCwbFareDetail>)request.getAttribute("acfdList");
   AccountCwbFareDetail accountCwbFareDetailSum=request.getAttribute("accountCwbFareDetailSum")==null?new AccountCwbFareDetail():(AccountCwbFareDetail)request.getAttribute("accountCwbFareDetailSum");
 
-  Map<Long, AccountCwbFare> accountFareMap=(Map<Long, AccountCwbFare>)request.getAttribute("accountFareMap");
+  Map<Long, AccountCwbFare> accountFareMap=(Map<Long, AccountCwbFare>)request.getAttribute("accountFareMap")==null?new HashMap<Long,AccountCwbFare>():(Map<Long, AccountCwbFare>)request.getAttribute("accountFareMap");
   
   
 %>
@@ -198,8 +198,11 @@ function isgetallcheck(){
 function changeTime(){
 	if($("#verifyflag").val()==0){
 		$("#verifytime").val(1);
-	}else{
+	}else if($("#verifyflag").val()==1){
 		$("#verifytime").val(2);
+		$("#updateF").hide();
+	}else{
+		$("#verifytime").val(0);
 		$("#updateF").hide();
 	}
 }
@@ -232,13 +235,16 @@ function changeTime(){
 				        </select>
 				        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 						[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-						审核状态:
+						运费状态:
 						<select id="verifyflag" name="verifyflag" onchange="changeTime();">
-							<option value="0" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("0")?"selected":"" %>>未审核</option>
-							<option value="1" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("1")?"selected":"" %>>已审核</option>
+							<option value="2" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("2")?"selected":"" %>>已归班未交款</option>
+							<option value="0" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("0")?"selected":"" %>>已交款未审核</option>
+							<option value="1" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("1")?"selected":"" %>>已交款已审核</option>
+							
 						</select>
 						
 						<select id="verifytime" name="verifytime" disabled="disabled">
+							<option value="0" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("0")?"selected":"" %>>归班时间</option>
 							<option value="1" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("1")?"selected":"" %>>交款时间</option>
 							<option value="2" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("2")?"selected":"" %>>审核时间</option>
 						</select>
@@ -339,8 +345,8 @@ function changeTime(){
 								<td align="center" valign="middle" >审核时间</td>
 							</tr>
 					 		<%if(acfdList.size()>0){for(AccountCwbFareDetail acfd: acfdList){
-								String girouser=accountFareMap.get(acfd.getFareid()).getGirouser();
-								String cashuser=accountFareMap.get(acfd.getFareid()).getCashuser();
+								String girouser=accountFareMap.get(acfd.getFareid())==null?"":accountFareMap.get(acfd.getFareid()).getGirouser();
+								String cashuser=accountFareMap.get(acfd.getFareid())==null?"":accountFareMap.get(acfd.getFareid()).getCashuser();
 								
 								String jiaokuanren= "";
 								if(girouser.length()>0)
@@ -355,8 +361,8 @@ function changeTime(){
 								{  
 									jiaokuanren=cashuser+"--"+girouser;
 								}
-								BigDecimal girofee=accountFareMap.get(acfd.getFareid()).getGirofee();
-								BigDecimal cashfee=accountFareMap.get(acfd.getFareid()).getCashfee();
+								BigDecimal girofee=accountFareMap.get(acfd.getFareid())==null?null:accountFareMap.get(acfd.getFareid()).getGirofee();
+								BigDecimal cashfee=accountFareMap.get(acfd.getFareid())==null?null:accountFareMap.get(acfd.getFareid()).getCashfee();
 								double girofee1=girofee==null?0:girofee.doubleValue();
 								double cashfee1=cashfee==null?0:cashfee.doubleValue();
 								String jiaokuantype= "";
@@ -384,10 +390,10 @@ function changeTime(){
 									<td align="center" valign="middle" ><%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){if(acfd.getDeliverystate()==ds.getValue()){out.print(ds.getText());}} %></td>
 									<td align="center" valign="middle" ><%=acfd.getShouldfare()%></td>
 									<td align="center" valign="middle" ><%=acfd.getInfactfare()%></td>
-									<td align="center" valign="middle" ><%=acfd.getPayuptime()%></td>
+									<td align="center" valign="middle" ><%=acfd.getPayuptime()==null?"":acfd.getPayuptime()%></td>
 									<td align="center" valign="middle" ><%=jiaokuantype%></td>
 									<td align="center" valign="middle" ><%=jiaokuanren%></td>
-									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid()).getGirocardno()%></td>
+									<td align="center" valign="middle" ><%=accountFareMap.get(acfd.getFareid())==null?"":accountFareMap.get(acfd.getFareid()).getGirocardno()%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifyflag()>0?"已审核":"未审核"%></td>
 									<td align="center" valign="middle" ><%=acfd.getVerifytime()==null?"":acfd.getVerifytime()%></td>
 								 </tr>

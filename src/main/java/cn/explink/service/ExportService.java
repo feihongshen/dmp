@@ -2594,13 +2594,21 @@ public class ExportService {
 
 	public Object setAccountCwbFareDetailVerifyObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
 			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList, Map<Long, AccountCwbFare> accountFareMap) {
+		double cashfee =0;
+		double girofee=0;
 		try {
 			if (cloumnName3[i].equals("Fee")) {
-
-				double cashfee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee() == null ? 0 : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
-						.getCashfee().doubleValue();
-				double girofee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee() == null ? 0 : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
-						.getGirofee().doubleValue();
+				if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())!=null) {
+					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee()!=null) {
+						cashfee=accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
+								.getCashfee().doubleValue();
+					}
+					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee()!=null) {
+						girofee=accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
+								.getGirofee().doubleValue();
+					}
+				}
+			
 				if (girofee > 0) {
 					a = "转账";
 				}
@@ -2612,8 +2620,8 @@ public class ExportService {
 				}
 
 			} else if (cloumnName3[i].equals("User")) {
-				String cashuser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
-				String girouser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
+				String cashuser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
+				String girouser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
 				if (girouser.length() > 0) {
 					a = girouser;
 				}
@@ -2625,7 +2633,7 @@ public class ExportService {
 				}
 
 			} else if (cloumnName3[i].equals("Griocardno")) {
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
 			} else if (cloumnName3[i].equals("Customerid")) {
 				long customerid = Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString());
 				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();

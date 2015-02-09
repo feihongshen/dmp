@@ -167,7 +167,8 @@ function sub(){
 		 	<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
 			到
 			<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-		 <input type="hidden" id="isshow" name="isshow" value="1" />
+		 <input type="hidden" id="isshow" name="isshow" value="1" /><br />
+		  <textarea name="orders"  id="orders"  rows="6" style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过100个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过100个';this.style.color='#CCCCCC';}">每次输入的订单不超过100个</textarea>
 	      　　<input type="button" id="find" value="查询" class="input_button2" onclick="sub();"/>
 	      <select id="modal" name="modal">
 			<option value="0">默认模版</option>
@@ -183,6 +184,9 @@ function sub(){
 	</div>
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
+	<br></br>
+	<br></br>
+	<br></br>
 	<br></br>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr class="font_1">

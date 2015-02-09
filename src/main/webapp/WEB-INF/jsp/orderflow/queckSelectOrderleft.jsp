@@ -147,6 +147,10 @@ function goForm(cwb){
 										<td bgcolor="#EBFFD7"><b>应退金额：</b><%=view.getPaybackfee()%></td>
 										<td bgcolor="#EBFFD7"><b>小件员：</b><%=StringUtil.nullConvertToEmptyString(deliveryname.getRealname()==null?view.getExceldeliver():deliveryname.getRealname())%></td>
 									</tr>
+										<tr>
+										<td bgcolor="#EBFFD7"><b>应收运费：</b><%=cwborder.getShouldfare()%></td>
+										<td bgcolor="#EBFFD7"><b>实收运费：</b><%=cwborder.getInfactfare()%></td>
+									</tr>
 									 <tr>
 										<td bgcolor="#EBFFD7"><b>供&nbsp;货&nbsp;商：</b><%=StringUtil.nullConvertToEmptyString(customer.getCustomername()) %><b>&nbsp;&nbsp;供货商订单号：</b><%=cwborder.getCommoncwb()%></td>
 										<td bgcolor="#EBFFD7"><b>入库库房：</b><%=invarhousebranch.getBranchname()==null?"":invarhousebranch.getBranchname()%></td>

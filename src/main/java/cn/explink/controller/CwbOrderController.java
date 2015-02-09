@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -273,6 +274,7 @@ public class CwbOrderController {
 	public String selectforkfsmt(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "printType", required = false, defaultValue = "0") long printType, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
+			@RequestParam(value = "orders", required = false, defaultValue = "0") String orders,
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		List<Branch> bList = branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		Branch nowbranch = branchDAO.getBranchById(getSessionUser().getBranchid());
@@ -295,8 +297,18 @@ public class CwbOrderController {
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			String customerids = dataStatisticsService.getStrings(customerid);
-
-			List<String> smtcwbsList = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCustomerid(customerids, printType, begindate, enddate, branchid);
+			StringBuffer buffer=new StringBuffer();
+			if (!orders.isEmpty()&&!orders.equals("每次输入的订单不超过100个")) {
+				String[] orderStrings=orders.split("\\r\\n");
+				for (int i = 0; i < orderStrings.length; i++) {
+					buffer.append("'").append(orderStrings[i]+"',");
+				}
+				orders=buffer.substring(0,buffer.length()-1).toString();
+			}else {
+				orders="";
+			}
+			
+			List<String> smtcwbsList = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCustomerid(customerids, printType, begindate, enddate, branchid,orders);
 			String cwbs = "";
 			if (smtcwbsList.size() > 0) {
 				cwbs = dataStatisticsService.getOrderFlowCwbs(smtcwbsList);
@@ -363,8 +375,16 @@ public class CwbOrderController {
 	}
 
 	@RequestMapping("/selectforsmtbdprint")
+	
 	public String selectforsmtbdprint(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
 			@RequestParam(value = "modal", defaultValue = "0", required = false) long modal) {
+		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("是否默认模板为VIP模板","isdefaultmodel");
+		if(systemInstall.getValue().equals("yes")&&systemInstall.getValue()!=""){
+			if (modal==0) {
+				modal=3;
+			}
+			
+		}
 		if (modal == 1) {
 			return selectforgomeprint(model, isprint);
 		}

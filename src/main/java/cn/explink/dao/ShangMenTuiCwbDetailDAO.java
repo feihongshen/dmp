@@ -94,21 +94,24 @@ public class ShangMenTuiCwbDetailDAO {
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
-	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid) {
+	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders) {
 		String sql = "select cwb from shangmentuicwb_detail where ";
 		if (printType == 0) {
 			sql += " printtime='' ";
 		} else {
 			sql += " printtime >= '" + begindate + "'  and printtime <= '" + enddate + "'";
 		}
-
+		
 		if (customerids.length() > 0) {
 			sql += " and customerid in(" + customerids + ")";
 		}
 		if (deliverybranchid > 0) {
 			sql += " and deliverybranchid=" + deliverybranchid;
 		}
-
+		if (orders!="") {
+			sql+=" and cwb IN("+orders+")";
+		}
+		System.out.println(sql);
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
 

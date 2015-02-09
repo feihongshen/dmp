@@ -4027,6 +4027,7 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbByCwbsPage(long page, String cwbs) {
 		String sql = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		System.out.println(sql);
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
