@@ -16,13 +16,16 @@ List<User> userList = (List<User> )request.getAttribute("userList");
 User user = (User)request.getAttribute("user");
 String cwbordertypeid = request.getAttribute("cwbordertypeid")==null?"0":request.getAttribute("cwbordertypeid").toString();
 String faretypeid = request.getAttribute("faretypeid")==null?"0":request.getAttribute("faretypeid").toString();
-String userid = request.getAttribute("userid")==null?"0":request.getAttribute("userid").toString();
+//String userid = request.getAttribute("userids")==null?"0":request.getAttribute("userid").toString();
+List useridList =request.getAttribute("useridList")==null?null:(List) request.getAttribute("useridList");
+String userids=request.getAttribute("userids")==null?null:request.getAttribute("userids").toString();
 String shouldfare = request.getAttribute("shouldfare")==null?"0":request.getAttribute("shouldfare").toString();
 String infactfare = request.getAttribute("infactfare")==null?"0":request.getAttribute("infactfare").toString();
 Branch branch   = (Branch)request.getAttribute("branch");
 List<Branch> branchList   = (List<Branch>)request.getAttribute("branchList");
 Date now = new Date();
   String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
+
   String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
   List<AccountCwbFareDetail> acfdList=request.getAttribute("acfdList")==null?new ArrayList<AccountCwbFareDetail>():(List<AccountCwbFareDetail>)request.getAttribute("acfdList");
   AccountCwbFareDetail accountCwbFareDetailSum=request.getAttribute("accountCwbFareDetailSum")==null?new AccountCwbFareDetail():(AccountCwbFareDetail)request.getAttribute("accountCwbFareDetailSum");
@@ -162,6 +165,7 @@ $(function() {
 	    dateFormat: 'yy-mm-dd'
 	});
 	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
+	$("#userid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择小件员' });
 });
 function isgetallcheck(){
 	if($('input[name="cwb"]:checked').size()>0){
@@ -341,11 +345,20 @@ function changeYj(){
 						<option value="3" <%if(faretypeid.equals("3")){%>selected="selected"<%}%>>已审核</option>
 						</select>
 						小件员：
-						<select id="userid" name="userid">
-						<%for(User u:userList){ %>
-						<option value="<%=u.getUserid() %>" <%if(userid.equals(u.getUserid()+"")){%> selected="selected" <%} %>><%=u.getRealname() %></option>
+						<select id="userid" name="userid" multiple="multiple" >
+						<%if(userList!=null&&userList.size()>0)for(User u:userList){ %>
+						<option value="<%=u.getUserid() %>"  <%if(useridList!=null&&!useridList.isEmpty()) 
+			            {for(int i=0;i<useridList.size();i++){
+			            	if(u.getUserid()== new Long(useridList.get(i).toString())){
+			            		%>selected="selected"<%
+			            	 break;
+			            	}
+			            }
+				     }%> ><%=u.getRealname() %></option>
 						<%} %>
 						</select>
+						[<a href="javascript:multiSelectAll('userid',1,'请选择');">全选</a>]
+						[<a href="javascript:multiSelectAll('userid',0,'请选择');">取消全选</a>]
 					<input type ="button" value ="查询" class="input_button2" onclick="sumitForm();"/>
 					<input type="button" value="导出" class="input_button2"  onclick="exportfile()">
 					</td>
@@ -357,7 +370,7 @@ function changeYj(){
 		<input type="hidden" name="enddate" value="<%=endtime%>"/>
 		<input type="hidden" name="cwbordertypeid" value="<%=cwbordertypeid%>"/>
 		<input type="hidden" name="faretypeid" value="<%=faretypeid%>"/>
-		<input type="hidden" name="userid" value="<%=userid%>"/>
+		<input type="hidden" id="userids" name="userids" value="<%=userids%>"/>
 	</form>
  
 	<div>	

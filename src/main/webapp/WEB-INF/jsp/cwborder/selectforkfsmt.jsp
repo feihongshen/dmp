@@ -12,6 +12,7 @@ List<CwbOrder> cwbList = request.getAttribute("cwbList")==null?null:(List<CwbOrd
 Page page_obj = request.getAttribute("page_obj")==null?null:(Page)request.getAttribute("page_obj");
 List<Branch> bList = (List<Branch>)request.getAttribute("branchlist");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
+String  printType=request.getParameter("printType")==null?"":request.getParameter("printType");
 List customeridList =request.getAttribute("customeridStr")==null?null:(List) request.getAttribute("customeridStr");
 String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
 String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
@@ -98,7 +99,10 @@ function check(){
 			alert("开始时间不能大于结束时间");
 			return false;
 		}
-		return true;
+	}
+	if($("#orders").val().split('\n').length>500){
+		alert("订单查询数量不允许超过500！！");
+		return false;
 	}
 	return true;
 }
@@ -168,13 +172,13 @@ function sub(){
 			到
 			<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
 		 <input type="hidden" id="isshow" name="isshow" value="1" /><br />
-		  <textarea name="orders"  id="orders"  rows="6" style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过100个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过100个';this.style.color='#CCCCCC';}">每次输入的订单不超过100个</textarea>
+		  <textarea name="orders"  id="orders"  rows="6" style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过500个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过500个';this.style.color='#CCCCCC';}">每次输入的订单不超过500个</textarea>
 	      　　<input type="button" id="find" value="查询" class="input_button2" onclick="sub();"/>
 	      <select id="modal" name="modal">
-			<option value="0">默认模版</option>
+	     	<option value="0">默认模版</option>
 			<option value="1">国美模版</option>
-			<option value="2">家有购物模版</option>
-			<option value="3">唯品会模版</option>
+			<option value="2" >家有购物模版</option>
+			<option value="3"  selected="selected">唯品会模版</option>
 		 </select>
 	      <%if(cwbList!=null&&cwbList.size()>0){ %>
 	      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />

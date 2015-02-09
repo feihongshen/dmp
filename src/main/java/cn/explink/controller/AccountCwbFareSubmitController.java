@@ -80,7 +80,7 @@ public class AccountCwbFareSubmitController {
 	@RequestMapping("/accountfaresubmitlist/{page}")
 	public String accountfarelist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "0") long cwbordertypeid,
-			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid) {
+			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userid", required = false, defaultValue = "") String[] userid) {
 
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		model.addAttribute("branch", branch);
@@ -90,10 +90,12 @@ public class AccountCwbFareSubmitController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		model.addAttribute("branchList", branchList);
 		List<AccountCwbFareDetail> acfdList = new ArrayList<AccountCwbFareDetail>();
+		String userids = dataStatisticsService.getStrings(userid);
 		if (page > 1) {
-			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailBySubmit(branch.getBranchid(), begindate, enddate, cwbordertypeid, faretypeid, userid);
+			acfdList = this.accountCwbFareDetailDAO.getAccountCwbFareDetailBySubmit(branch.getBranchid(), begindate, enddate, cwbordertypeid, faretypeid, userids);
 		}
-		model.addAttribute("userid", userid);
+		List<String> useridList = dataStatisticsService.getList(userid);
+		model.addAttribute("useridList", useridList);
 		model.addAttribute("acfdList", acfdList);
 		model.addAttribute("faretypeid", faretypeid);
 		model.addAttribute("cwbordertypeid", cwbordertypeid);
@@ -107,6 +109,7 @@ public class AccountCwbFareSubmitController {
 		}
 		model.addAttribute("shouldfare", shouldfare);
 		model.addAttribute("infactfare", infactfare);
+		model.addAttribute("userids", userids);
 		return "/accountfare/accountfaresubmitlist";
 	}
 
@@ -118,7 +121,7 @@ public class AccountCwbFareSubmitController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "0") long cwbordertypeid,
-			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userid", required = false, defaultValue = "0") long userid) {
+			@RequestParam(value = "faretypeid", required = false, defaultValue = "0") long faretypeid, @RequestParam(value = "userids", required = false, defaultValue = "") String userids) {
 		String[] cloumnName1 = new String[12]; // 导出的列名
 		String[] cloumnName2 = new String[12]; // 导出的英文列名
 		this.exportService.SetAccountCwbFareDetailFields(cloumnName1, cloumnName2);
@@ -133,7 +136,7 @@ public class AccountCwbFareSubmitController {
 			final List<Branch> bList = this.branchDAO.getAllBranches();
 			final List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
 			final List<AccountCwbFareDetail> list = this.accountCwbFareDetailDAO.getAccountCwbFareDetailBySubmit(this.getSessionUser().getBranchid(), begindate, enddate, cwbordertypeid, faretypeid,
-					userid);
+					userids);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override

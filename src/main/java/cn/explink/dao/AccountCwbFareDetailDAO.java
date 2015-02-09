@@ -334,10 +334,13 @@ public class AccountCwbFareDetailDAO {
 		this.jdbcTemplate.update(sql, verifytime);
 	}
 
-	public List<AccountCwbFareDetail> getAccountCwbFareDetailBySubmit(long branchid, String begindate, String enddate, long cwbordertypeid, long faretypeid, long userid) {
+	public List<AccountCwbFareDetail> getAccountCwbFareDetailBySubmit(long branchid, String begindate, String enddate, long cwbordertypeid, long faretypeid, String userid) {
 
 		String sql = "select * from account_cwb_fare_detail " + "where " + " cwbordertypeid=" + cwbordertypeid + " and deliverybranchid=" + branchid + " and audittime>='" + begindate
-				+ "' and audittime<='" + enddate + "' and userid=" + userid;
+				+ "' and audittime<='" + enddate + "'";
+		if (!userid.isEmpty()&&userid.length()>0) {
+			sql+=" and userid IN(" + userid+")";
+		}
 		if (faretypeid == 1) {
 			sql += " and fareid=0";
 		}
