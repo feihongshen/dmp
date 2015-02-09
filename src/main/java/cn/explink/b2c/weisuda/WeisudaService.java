@@ -275,7 +275,7 @@ public class WeisudaService {
 			infactDeliverid = user.getUserid();
 			if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
 				deliverid = infactDeliverid;
-				this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, deliverystate.getCwb());
+				this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, user.getBranchid(), deliverystate.getCwb());
 				this.deliveryCashDAO.saveDeliveryCashByDeliverystateid(deliverid, user.getBranchid(), orderFlowDto.getRequestTime(), deliverystate.getId());
 			}
 		} catch (Exception e1) {

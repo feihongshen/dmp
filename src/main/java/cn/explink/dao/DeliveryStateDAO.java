@@ -1437,9 +1437,9 @@ public class DeliveryStateDAO {
 	 * @param cwb
 	 * 
 	 */
-	public void updateDeliveryidByCwb(long deliveryid, String cwb) {
-		String sql = "update express_ops_delivery_state set deliveryid=? where cwb=? and state=1 ";
-		this.jdbcTemplate.update(sql, deliveryid, cwb);
+	public void updateDeliveryidByCwb(long deliveryid, long branchid, String cwb) {
+		String sql = "update express_ops_delivery_state set deliveryid=?,userid=?,deliverybranchid=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, deliveryid, deliveryid, branchid, cwb);
 
 	}
 
