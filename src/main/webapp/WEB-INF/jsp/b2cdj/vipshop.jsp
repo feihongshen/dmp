@@ -67,7 +67,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>取消或拦截：</span>
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >取消开启
-							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >拦截开启
+							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==1){%>checked<%}%>  >拦截开启
 						</li>
 						
 						<li><span>订单导入库房：</span>
