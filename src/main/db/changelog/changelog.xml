@@ -5987,6 +5987,10 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fncustomerbillid` BIGINT(11) DEFAULT 0 NULL AFTER `outareaflag`;
 		</sql>
 	</changeSet>
-	 
+	 <changeSet id="liyuanyuan-2015-02-10-1" author="liyuanyuan">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fncustomerpayablebillid` BIGINT(11) DEFAULT 0 NULL AFTER `fncustomerbillid`; 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
