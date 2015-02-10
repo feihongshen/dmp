@@ -164,8 +164,8 @@ $(function() {
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
 	$("#userid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择小件员' });
+	
 });
 function isgetallcheck(){
 	if($('input[name="cwb"]:checked').size()>0){
@@ -317,6 +317,7 @@ function changeYj(){
 	</div>
 	<!-- 弹出框结束 -->
 </form>	
+
    <div class="menucontant">
 		<form id="searchForm" action ="<%=request.getContextPath()%>/accountcwbfaresubmit/accountfaresubmitlist/2" method = "post">
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" border="1">
@@ -344,8 +345,9 @@ function changeYj(){
 						<option value="2" <%if(faretypeid.equals("2")){%>selected="selected"<%}%>>已交款未审核</option>
 						<option value="3" <%if(faretypeid.equals("3")){%>selected="selected"<%}%>>已审核</option>
 						</select>
+						
 						小件员：
-						<select id="userid" name="userid" multiple="multiple" >
+						<select id="userid" name="userid" multiple="multiple" style="width: 200px;" >
 						<%if(userList!=null&&userList.size()>0)for(User u:userList){ %>
 						<option value="<%=u.getUserid() %>"  <%if(useridList!=null&&!useridList.isEmpty()) 
 			            {for(int i=0;i<useridList.size();i++){
@@ -357,10 +359,12 @@ function changeYj(){
 				     }%> ><%=u.getRealname() %></option>
 						<%} %>
 						</select>
+				
 						[<a href="javascript:multiSelectAll('userid',1,'请选择');">全选</a>]
 						[<a href="javascript:multiSelectAll('userid',0,'请选择');">取消全选</a>]
 					<input type ="button" value ="查询" class="input_button2" onclick="sumitForm();"/>
 					<input type="button" value="导出" class="input_button2"  onclick="exportfile()">
+					
 					</td>
 				</tr>
 				</table>
@@ -372,7 +376,9 @@ function changeYj(){
 		<input type="hidden" name="faretypeid" value="<%=faretypeid%>"/>
 		<input type="hidden" id="userids" name="userids" value="<%=userids%>"/>
 	</form>
- 
+ 	<br/>
+ 	<br/>
+ 	<br/>
 	<div>	
 		<h1 style="line-height:30px; font-size:18px; font-family:'微软雅黑', '黑体'; font-weight:bold; color:#369"><%="1".equals(request.getParameter("ispay"))?"已交款":"未交款" %>记录：</h1>	
 		<div>	
