@@ -4684,6 +4684,26 @@ public class CwbOrderService {
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
+	
+	@Transactional
+	public CwbOrder tuihuoHandleVipshop(User user, String cwb, String scancwb, long reasonid) {
+
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
+		}
+		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
+			return this.handleTuihuoYipiaoduojian(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, reasonid);
+		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
+			this.handleTuihuoVipshop(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, false, reasonid);
+		} else {
+			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+
+		return this.cwbDAO.getCwbByCwb(cwb);
+	}
+	
 
 	private CwbOrder handleTuihuoYipiaoduojian(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long reasonid) {
 		if (isypdjusetranscwb == 1) {
@@ -4713,6 +4733,41 @@ public class CwbOrderService {
 				|| (co.getFlowordertype() == FlowOrderTypeEnum.PosZhiFu.getValue()) || (co.getCwbstate() == CwbStateEnum.TuiHuo.getValue()))
 				&& !(((co.getSendcarnum() > 0) || (co.getBackcarnum() > 0)) && (co.getTranscwb().length() > 0) && !co.getCwb().equals(co.getTranscwb()) && (co.getFlowordertype() != FlowOrderTypeEnum.DingDanLanJie
 						.getValue()))) {
+
+		} else {
+			Reason r = this.reasonDAO.getReasonByReasonid(reasonid);
+
+			String sql = "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1";
+			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
+			this.cwbDAO.updateScannum(co.getCwb(), 1);
+			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+			this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
+			if ((isypdjusetranscwb == 1) && isypdj) {
+				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
+			}
+		}
+	}
+	
+	
+	/**
+	 * 唯品会上门揽退订单拦截
+	 * @param user
+	 * @param cwb
+	 * @param scancwb
+	 * @param co
+	 * @param flowOrderTypeEnum
+	 * @param isypdjusetranscwb
+	 * @param isypdj
+	 * @param reasonid
+	 */
+	private void handleTuihuoVipshop(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, long reasonid) {
+		if (( (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()
+				|| (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())
+				|| (co.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue())
+				))
+				&& !(((co.getSendcarnum() > 0) || (co.getBackcarnum() > 0)) && (co.getTranscwb().length() > 0) && !co.getCwb().equals(co.getTranscwb()) && (co.getFlowordertype() != FlowOrderTypeEnum.DingDanLanJie
+						.getValue()))) {
+
 		} else {
 			Reason r = this.reasonDAO.getReasonByReasonid(reasonid);
 

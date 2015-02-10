@@ -89,7 +89,7 @@ public class VipShopController {
 	@RequestMapping("/lanjie/{cwb}")
 	public @ResponseBody String lanjie(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
 
-		cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), cwb, cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+		cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cwb, cwb,0);
 
 		return "执行订单"+cwb+"拦截成功";
 
