@@ -86,7 +86,7 @@ public class VipShopController {
 
 	}
 	
-	@RequestMapping("/lanjie/{id}")
+	@RequestMapping("/lanjie/{cwb}")
 	public @ResponseBody String lanjie(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
 
 		cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), cwb, cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
