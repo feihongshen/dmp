@@ -5992,5 +5992,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fncustomerpayablebillid` BIGINT(11) DEFAULT 0 NULL AFTER `fncustomerbillid`; 
 		</sql>
 	</changeSet>
+	<changeSet id="wukong-2015-02-10-1" author="wukong">
+ 		<sql>
+ 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN  `zhongzhuanreasonid` int(11) DEFAULT '0';
+ 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN  `zhongzhuanreason` VARCHAR(225) DEFAULT '';
+ 		</sql>
+ 		</changeSet>
 </databaseChangeLog>
  

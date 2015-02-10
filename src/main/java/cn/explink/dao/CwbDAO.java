@@ -214,8 +214,10 @@ public class CwbDAO {
 			cwbOrder.setHistorybranchname(rs.getString("historybranchname"));
 			cwbOrder.setGoodsType(rs.getInt("goods_type"));
 			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
+			cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
+			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
-
+			
 			return cwbOrder;
 		}
 
@@ -5507,5 +5509,12 @@ public class CwbDAO {
 		}
 		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+	/**
+	 * 添加中转的原因在主表中
+	 */
+	public void updateZhongzhuanReason(String cwb,long reasonid,String reasonContent){
+		String sql="update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
+		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 }

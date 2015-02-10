@@ -125,6 +125,25 @@ public class CwbOrder {
 	private String consigneenameOfkf;
 	private String consigneemobileOfkf;
 	private String consigneephoneOfkf;
+	private long zhongzhuanreasonid;//中转id
+	private String zhongzhuanreason;//中转原因
+	
+
+	public long getZhongzhuanreasonid() {
+		return zhongzhuanreasonid;
+	}
+
+	public void setZhongzhuanreasonid(long zhongzhuanreasonid) {
+		this.zhongzhuanreasonid = zhongzhuanreasonid;
+	}
+
+	public String getZhongzhuanreason() {
+		return zhongzhuanreason;
+	}
+
+	public void setZhongzhuanreason(String zhongzhuanreason) {
+		this.zhongzhuanreason = zhongzhuanreason;
+	}
 
 	public CwbOrder() {
 		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {

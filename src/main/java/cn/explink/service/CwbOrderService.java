@@ -2637,6 +2637,14 @@ public class CwbOrderService {
 			if ((sesionBranch.getSitetype() == BranchEnum.ZhanDian.getValue()) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) { // 如果当前站是中转站，并且cwbstate=中转
 				this.cwbDAO.updateCwbState(scancwb, CwbStateEnum.ZhongZhuan);
 			}
+			
+			if(reasonid!=0){
+				Reason reason=reasonDAO.getReasonByReasonid(reasonid);
+				if (reason!=null) {
+					cwbDAO.updateZhongzhuanReason(cwb,reason.getReasonid(),reason.getReasoncontent());
+
+				}
+			}
 
 		}
 
