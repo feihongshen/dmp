@@ -275,7 +275,7 @@ public class CwbOrderController {
 			@RequestParam(value = "printType", required = false, defaultValue = "3") long printType, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "orders", required = false, defaultValue = "") String orders,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,@RequestParam(value = "selectype", required = false, defaultValue = "") String selectype) {
 		List<Branch> bList = branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		Branch nowbranch = branchDAO.getBranchById(getSessionUser().getBranchid());
 		if (branchid == -1 || branchid == 0) {
@@ -310,7 +310,7 @@ public class CwbOrderController {
 				orders="";
 			}
 			
-			List<String> smtcwbsList = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCustomerid(customerids, printType, begindate, enddate, branchid,orders);
+			List<String> smtcwbsList = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCustomerid(customerids, printType, begindate, enddate, branchid,orders,selectype);
 			String cwbs = "";
 			if (smtcwbsList.size() > 0) {
 				cwbs = dataStatisticsService.getOrderFlowCwbs(smtcwbsList);

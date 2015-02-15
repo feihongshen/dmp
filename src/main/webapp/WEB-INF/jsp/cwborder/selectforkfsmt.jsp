@@ -16,6 +16,7 @@ String  printType=request.getParameter("printType")==null?"":request.getParamete
 List customeridList =request.getAttribute("customeridStr")==null?null:(List) request.getAttribute("customeridStr");
 String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
 String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
+String selectCondation=request.getParameter("selectype")==null?"0":request.getParameter("selectype");
 %>
 
 
@@ -48,6 +49,22 @@ $(function(){
 	$("#beginemaildate").datepicker();
 	$("#endemaildate").datepicker();
 	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
+	$("#orders").hide();
+	if($("#selectype").val()=="0"){
+		
+		$("#printByCondation").attr("checked",true);
+		$("#printByOrder").attr("checked",false);
+		$("#manyCondations").show();
+		$("#orders").hide();
+		$("#selectype").val("0");
+	}else{
+		$("#printByOrder").attr("checked",true);
+		$("#printByCondation").attr("checked",false);
+		$("#manyCondations").hide();
+		$("#orders").show();
+		$("#selectype").val("1");
+
+	}
 });
 
 function bdprint(){
@@ -86,6 +103,16 @@ function newprint(){
     $("#noPrintForm").submit();
 }
 function check(){
+	if($("#selectype").val()=="1"){
+		if($("#orders").val().split('\n').length>500){
+			alert("订单查询数量不允许超过500！！");
+			return false;
+		}
+		if($("#orders").val()=="每次输入的订单不超过500个"||$.trim($("#orders").val()).length==0){
+			alert("请输入订单号！！");
+			return false;
+		}
+	}
 	if($("#printType").val()==1){
 		if($("#strtime").val()==""){
 			alert("请选择开始时间");
@@ -99,10 +126,6 @@ function check(){
 			alert("开始时间不能大于结束时间");
 			return false;
 		}
-	}
-	if($("#orders").val().split('\n').length>500){
-		alert("订单查询数量不允许超过500！！");
-		return false;
 	}
 	return true;
 }
@@ -129,16 +152,29 @@ function sub(){
 		$("#searchForm").submit();
 	}
 }
+function accordToCondation(){
+	$("#printByOrder").attr("checked",false);
+	$("#manyCondations").show();
+	$("#orders").hide();
+	$("#selectype").val("0");
+}
+function printByOrder(){
+	$("#printByCondation").attr("checked",false);
+	$("#manyCondations").hide();
+	$("#orders").show();
+	$("#selectype").val("1");
+	
+}
 </script>
 </head>
 <body style="background:#eef9ff">
 <div class="right_box">
 	<div class="inputselect_box">
-	<span>
-	</span>
+	<input type="radio" checked="checked" id="printByCondation" name="printByCondation" value="0" onclick="accordToCondation();"/><strong >按条件打印</strong>     <input type="radio" id="printByOrder"  name="printByOrder"  value="1"  onclick="printByOrder();"/><strong >按订单号打印</strong>
 	<form action="1" method="post" id="searchForm" >
+		<div id="manyCondations">
 		配送站点：
-		<select id="branchid" name="branchid">
+		<select id="branchid" name="branchid" >
 			<%if(bList != null && bList.size()>0){ %>
 				<%if(bList.size()>1){ %>
 				<option value="-1">全部</option>
@@ -172,7 +208,8 @@ function sub(){
 			到
 			<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
 		 <input type="hidden" id="isshow" name="isshow" value="1" /><br />
-		  <textarea name="orders"  id="orders"  rows="6"  cols="25"  style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过500个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过500个';this.style.color='#CCCCCC';}">每次输入的订单不超过500个</textarea>
+		 </div>
+		  <textarea name="orders"  id="orders"  rows="3"  cols="25"  style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过500个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过500个';this.style.color='#CCCCCC';}">每次输入的订单不超过500个</textarea>
 	      　　<input type="button" id="find" value="查询" class="input_button2" onclick="sub();"/>
 	      <select id="modal" name="modal">
 	     	<option value="0">默认模版</option>
@@ -184,14 +221,14 @@ function sub(){
 	      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
 	     <!--  <a href ="javascript:newprint();">未打印订单打印</a> -->
 	      <%} %>
+	      <input  id="selectype" name="selectype" type="hidden" value="<%=selectCondation %>"/>
 	</form>
 	</div>
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<br></br>
 	<br></br>
-	<br></br>
-	<br></br>
+	
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr class="font_1">
 			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>

@@ -94,7 +94,13 @@ public class ShangMenTuiCwbDetailDAO {
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
-	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders) {
+	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders,String selectype) {
+		if (selectype.equals("1")) {
+			if (!orders.isEmpty()&&orders.length()>0){
+				String sql = "select cwb from shangmentuicwb_detail where cwb IN("+orders+")";
+				return jdbcTemplate.queryForList(sql, String.class);
+			}
+		}
 		String sql = "select cwb from shangmentuicwb_detail where ";
 		if (printType == 0) {
 			sql += " printtime='' ";
@@ -107,9 +113,6 @@ public class ShangMenTuiCwbDetailDAO {
 		}
 		if (deliverybranchid > 0) {
 			sql += " and deliverybranchid=" + deliverybranchid;
-		}
-		if (orders!="") {
-			sql+=" and cwb IN("+orders+")";
 		}
 		System.out.println(sql);
 		return jdbcTemplate.queryForList(sql, String.class);
