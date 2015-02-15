@@ -38,6 +38,7 @@ public class AdjustmentRecordDAO{
 			adjustmentRecord.setId(rs.getLong("id"));
 			adjustmentRecord.setOrder_no(rs.getString("order_no"));
 			adjustmentRecord.setBill_no(rs.getString("bill_no"));
+			adjustmentRecord.setBill_id(rs.getLong("billid"));
 			adjustmentRecord.setAdjust_bill_no(rs.getString("adjust_bill_no"));
 			adjustmentRecord.setCustomer_id(rs.getLong("customer_id"));
 			adjustmentRecord.setReceive_fee(rs.getBigDecimal("receive_fee"));
@@ -52,31 +53,6 @@ public class AdjustmentRecordDAO{
 			adjustmentRecord.setCheck_time(rs.getString("check_time"));
 			adjustmentRecord.setOrder_type(rs.getInt("order_type"));
 			return adjustmentRecord;
-		}
-	}
-
-	private final class AdjustmentRecordJsonRowMapper implements RowMapper<JSONObject> {
-		@Override
-		public JSONObject mapRow(ResultSet rs, int rowNum) throws SQLException {
-			JSONObject obj = new JSONObject();
-
-			obj.put("id", rs.getLong("id"));
-			obj.put("order_no", rs.getString("order_no"));
-			obj.put("bill_no", rs.getLong("bill_no"));
-			obj.put("adjust_bill_no", rs.getString("adjust_bill_no"));
-			obj.put("customer_id", rs.getLong("customer_id"));
-			obj.put("receive_fee", rs.getBigDecimal("receive_fee"));
-			obj.put("refund_fee", rs.getBigDecimal("refund_fee"));
-			obj.put("modify_fee", rs.getBigDecimal("modify_fee"));
-			obj.put("adjust_amount", rs.getBigDecimal("adjust_amount"));
-			obj.put("remark", rs.getString("remark"));
-			obj.put("creator", rs.getString("creator"));
-			obj.put("create_time", rs.getString("create_time"));
-			obj.put("status", rs.getInt("status"));
-			obj.put("check_user", rs.getString("check_user"));
-			obj.put("check_time", rs.getString("check_time"));
-			obj.put("order_type", rs.getInt("order_type"));
-			return obj;
 		}
 	}
 

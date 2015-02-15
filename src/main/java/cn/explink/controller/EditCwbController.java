@@ -376,8 +376,11 @@ public class EditCwbController {
 			for (String cwb : cwbs) {
 				int paywayid = request.getParameter("paywayid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("paywayid_" + cwb));
 				int newpaywayid = request.getParameter("Newpaywayid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("Newpaywayid_" + cwb));
+				
 				try {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, this.getSessionUser().getUserid());
+					adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
+					//修改支付方式,判断是否生成调整单
 					ecList.add(ec_dsd);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());

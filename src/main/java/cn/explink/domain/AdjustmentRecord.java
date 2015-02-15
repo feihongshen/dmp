@@ -6,7 +6,7 @@ public class AdjustmentRecord {
 	private long id;//调整单id
 	private String order_no;//订单号
 	private String bill_no;//账单编号
-	private long bill_id;
+	private long bill_id;//账单ID
 	private String adjust_bill_no;//调整账单编号
 	private long customer_id;//客户ID
 	private BigDecimal receive_fee;//原始应收金额
