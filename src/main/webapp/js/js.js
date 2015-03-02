@@ -278,8 +278,8 @@ function submitSaveFormAndCloseBox(form) {
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
 				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
-				$("#WORK_AREA")[0].contentWindow.refreshState();
 				closeBox();
+				$("#WORK_AREA")[0].contentWindow.refreshState();
 			}
 		}
 	});
