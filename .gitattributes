@@ -724,6 +724,7 @@ src/main/java/cn/explink/controller/LogToDayByWareHouseController.java -text
 src/main/java/cn/explink/controller/LogToDayController.java -text
 src/main/java/cn/explink/controller/MatchExceptionController.java -text
 src/main/java/cn/explink/controller/MenuController.java -text
+src/main/java/cn/explink/controller/MonitorLogController.java -text
 src/main/java/cn/explink/controller/NotifyController.java -text
 src/main/java/cn/explink/controller/OMSInterfaceController.java -text
 src/main/java/cn/explink/controller/OperateSelectController.java -text
@@ -2003,6 +2004,10 @@ src/main/webapp/WEB-INF/jsp/logtoday/warehouse/show.jsp -text
 src/main/webapp/WEB-INF/jsp/logtoday/warehouse/todaylog.jsp -text
 src/main/webapp/WEB-INF/jsp/manage.jsp -text
 src/main/webapp/WEB-INF/jsp/meh/matchexceptionhandle.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorcunhuo.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorcunhuoshow.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorlog.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorlogshow.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/left.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/order.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/right.jsp -text
