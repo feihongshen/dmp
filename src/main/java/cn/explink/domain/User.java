@@ -7,6 +7,7 @@ import cn.explink.enumutil.UserEmployeestatusEnum;
 
 public class User implements Serializable {
 	long userid;
+	String oldusername;
 	String username;
 	String realname;
 	// String lastusername;
@@ -40,7 +41,7 @@ public class User implements Serializable {
 	private String lastLoginTime;
 
 	public String getLastLoginIp() {
-		return lastLoginIp;
+		return this.lastLoginIp;
 	}
 
 	public void setLastLoginIp(String lastLoginIp) {
@@ -48,7 +49,7 @@ public class User implements Serializable {
 	}
 
 	public String getLastLoginTime() {
-		return lastLoginTime;
+		return this.lastLoginTime;
 	}
 
 	public void setLastLoginTime(String lastLoginTime) {
@@ -58,7 +59,7 @@ public class User implements Serializable {
 	int isImposedOutWarehouse;// 是否拥有 请指出库权限 1是 0 否 默认1
 
 	public int getIsImposedOutWarehouse() {
-		return isImposedOutWarehouse;
+		return this.isImposedOutWarehouse;
 	}
 
 	public void setIsImposedOutWarehouse(int isImposedOutWarehouse) {
@@ -66,7 +67,7 @@ public class User implements Serializable {
 	}
 
 	public BigDecimal getDeliverAccount() {
-		return deliverAccount;
+		return this.deliverAccount;
 	}
 
 	public void setDeliverAccount(BigDecimal deliverAccount) {
@@ -74,7 +75,7 @@ public class User implements Serializable {
 	}
 
 	public BigDecimal getDeliverPosAccount() {
-		return deliverPosAccount;
+		return this.deliverPosAccount;
 	}
 
 	public void setDeliverPosAccount(BigDecimal deliverPosAccount) {
@@ -82,7 +83,7 @@ public class User implements Serializable {
 	}
 
 	public String getDeliverManCode() {
-		return deliverManCode;
+		return this.deliverManCode;
 	}
 
 	public void setDeliverManCode(String deliverManCode) {
@@ -90,7 +91,7 @@ public class User implements Serializable {
 	}
 
 	public long getUserid() {
-		return userid;
+		return this.userid;
 	}
 
 	public void setUserid(long userid) {
@@ -98,15 +99,23 @@ public class User implements Serializable {
 	}
 
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	public String getOldusername() {
+		return this.oldusername;
+	}
+
+	public void setOldusername(String oldusername) {
+		this.oldusername = oldusername;
+	}
+
 	public String getRealname() {
-		return realname;
+		return this.realname;
 	}
 
 	public void setRealname(String realname) {
@@ -114,7 +123,7 @@ public class User implements Serializable {
 	}
 
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 
 	public void setPassword(String password) {
@@ -122,7 +131,7 @@ public class User implements Serializable {
 	}
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -136,7 +145,7 @@ public class User implements Serializable {
 	// this.lastusername = lastusername;
 	// }
 	public long getUsercustomerid() {
-		return usercustomerid;
+		return this.usercustomerid;
 	}
 
 	public void setUsercustomerid(long usercustomerid) {
@@ -156,7 +165,7 @@ public class User implements Serializable {
 	// this.departid = departid;
 	// }
 	public String getIdcardno() {
-		return idcardno;
+		return this.idcardno;
 	}
 
 	public void setIdcardno(String idcardno) {
@@ -164,13 +173,14 @@ public class User implements Serializable {
 	}
 
 	public int getEmployeestatus() {
-		return employeestatus;
+		return this.employeestatus;
 	}
 
 	public String getEmployeestatusName() {
 		for (UserEmployeestatusEnum ue : UserEmployeestatusEnum.values()) {
-			if (ue.getValue() == this.employeestatus)
+			if (ue.getValue() == this.employeestatus) {
 				return ue.getText();
+			}
 		}
 		return "";
 	}
@@ -180,7 +190,7 @@ public class User implements Serializable {
 	}
 
 	public String getUserphone() {
-		return userphone;
+		return this.userphone;
 	}
 
 	public void setUserphone(String userphone) {
@@ -188,7 +198,7 @@ public class User implements Serializable {
 	}
 
 	public String getUsermobile() {
-		return usermobile;
+		return this.usermobile;
 	}
 
 	public void setUsermobile(String usermobile) {
@@ -196,7 +206,7 @@ public class User implements Serializable {
 	}
 
 	public String getUseraddress() {
-		return useraddress;
+		return this.useraddress;
 	}
 
 	public void setUseraddress(String useraddress) {
@@ -204,7 +214,7 @@ public class User implements Serializable {
 	}
 
 	public String getUserremark() {
-		return userremark;
+		return this.userremark;
 	}
 
 	public void setUserremark(String userremark) {
@@ -212,7 +222,7 @@ public class User implements Serializable {
 	}
 
 	public BigDecimal getUsersalary() {
-		return usersalary;
+		return this.usersalary;
 	}
 
 	public void setUsersalary(BigDecimal usersalary) {
@@ -220,7 +230,7 @@ public class User implements Serializable {
 	}
 
 	public String getShowphoneflag() {
-		return showphoneflag;
+		return this.showphoneflag;
 	}
 
 	public void setShowphoneflag(String showphoneflag) {
@@ -228,7 +238,7 @@ public class User implements Serializable {
 	}
 
 	public String getUseremail() {
-		return useremail;
+		return this.useremail;
 	}
 
 	public void setUseremail(String useremail) {
@@ -236,7 +246,7 @@ public class User implements Serializable {
 	}
 
 	public String getUserwavfile() {
-		return userwavfile;
+		return this.userwavfile;
 	}
 
 	public void setUserwavfile(String userwavfile) {
@@ -244,7 +254,7 @@ public class User implements Serializable {
 	}
 
 	public long getRoleid() {
-		return roleid;
+		return this.roleid;
 	}
 
 	public void setRoleid(long roleid) {
@@ -259,7 +269,7 @@ public class User implements Serializable {
 	 * branchmanagerflag) { this.branchmanagerflag = branchmanagerflag; }
 	 */
 	public long getUserDeleteFlag() {
-		return userDeleteFlag;
+		return this.userDeleteFlag;
 	}
 
 	public void setUserDeleteFlag(long userDeleteFlag) {
@@ -270,21 +280,25 @@ public class User implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (userid ^ (userid >>> 32));
+		result = (prime * result) + (int) (this.userid ^ (this.userid >>> 32));
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (this.getClass() != obj.getClass()) {
 			return false;
+		}
 		User other = (User) obj;
-		if (userid != other.userid)
+		if (this.userid != other.userid) {
 			return false;
+		}
 		return true;
 	}
 

@@ -8,9 +8,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,17 +43,17 @@ public class UserService {
 	GotoClassAuditingDAO gotoClassAuditingDAO;
 
 	public void addUser(User user) {
-		userDAO.creUser(user);
-		logger.info("创建一个用户,username:{},roleid:{}", new Object[] { user.getUsername(), user.getRoleid() });
+		this.userDAO.creUser(user);
+		this.logger.info("创建一个用户,username:{},roleid:{}", new Object[] { user.getUsername(), user.getRoleid() });
 	}
 
 	public void editUser(User user) {
-		userDAO.saveUser(user);
+		this.userDAO.saveUser(user);
 	}
 
 	public User loadFormForUser(HttpServletRequest request, long roleid, long branchid, MultipartFile file) {
-		User user = loadFormForUser(request, roleid, branchid);
-		if (file != null && !file.isEmpty()) {
+		User user = this.loadFormForUser(request, roleid, branchid);
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -65,9 +62,13 @@ public class UserService {
 		return user;
 	}
 
-	public User loadFormForUserToEdit(HttpServletRequest request, long roleid, long branchid, MultipartFile file) {
-		User user = loadFormForUser(request, roleid, branchid);
-		if (file != null && !file.isEmpty()) {
+	public User loadFormForUserToEdit(HttpServletRequest request, long roleid, long branchid, MultipartFile file, long userid) {
+		User user = this.loadFormForUser(request, roleid, branchid);
+		String oldusername = this.userDAO.getUserByUserid(userid).getUsername();
+		if (oldusername != null) {
+			user.setOldusername(oldusername);
+		}
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -82,7 +83,7 @@ public class UserService {
 
 		User user = new User();
 
-		user.setUserid(request.getParameter("userid") == null || request.getParameter("userid").equals("") ? 0L : (Long.parseLong(request.getParameter("userid"))));
+		user.setUserid((request.getParameter("userid") == null) || request.getParameter("userid").equals("") ? 0L : (Long.parseLong(request.getParameter("userid"))));
 		user.setUsername(StringUtil.nullConvertToEmptyString(request.getParameter("username")));
 		user.setRealname(StringUtil.nullConvertToEmptyString(request.getParameter("realname")));
 		user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));
@@ -95,7 +96,7 @@ public class UserService {
 		user.setUseremail(StringUtil.nullConvertToEmptyString(request.getParameter("useremail")));
 		user.setUserwavfile(StringUtil.nullConvertToEmptyString(request.getParameter("userwavfile")));
 		user.setRoleid(roleid);
-		if (request.getParameter("isImposedOutWarehouse") != null && request.getParameter("isImposedOutWarehouse").length() > 0) {
+		if ((request.getParameter("isImposedOutWarehouse") != null) && (request.getParameter("isImposedOutWarehouse").length() > 0)) {
 			user.setIsImposedOutWarehouse(Integer.parseInt(StringUtil.nullConvertToEmptyString(request.getParameter("isImposedOutWarehouse"))));
 		}
 		return user;
@@ -117,7 +118,7 @@ public class UserService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void editDeliverAccount(Long deliverid, BigDecimal deliverpayupamount, BigDecimal deliverpayupamount_pos, String remark, User user) {
-		User u = userDAO.getUserByUseridLock(deliverid);
+		User u = this.userDAO.getUserByUseridLock(deliverid);
 		FinanceDeliverPayupDetail fdpud = new FinanceDeliverPayupDetail();
 		fdpud.setDeliverealuser(deliverid);
 		fdpud.setPayupamount(BigDecimal.ZERO);
@@ -133,11 +134,11 @@ public class UserService {
 		fdpud.setCredate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		fdpud.setType(FinanceDeliverPayUpDetailTypeEnum.TiaoZhang.getValue());
 		fdpud.setRemark(remark);
-		logger.info("财务为小件员调账产生交易：{}", fdpud.toString());
+		this.logger.info("财务为小件员调账产生交易：{}", fdpud.toString());
 		// 创建交易明细
-		financeDeliverPayUpDetailDAO.insert(fdpud);
+		this.financeDeliverPayUpDetailDAO.insert(fdpud);
 		// 更改用户余额
-		userDAO.updateUserAmount(deliverid, u.getDeliverAccount().add(deliverpayupamount), u.getDeliverPosAccount().add(deliverpayupamount_pos));
+		this.userDAO.updateUserAmount(deliverid, u.getDeliverAccount().add(deliverpayupamount), u.getDeliverPosAccount().add(deliverpayupamount_pos));
 	}
 
 	/**
@@ -156,22 +157,22 @@ public class UserService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void updateStateAndMoney(long id, String deliverpayupamount) {
-		GotoClassAuditing gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(id);
+		GotoClassAuditing gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(id);
 		BigDecimal amount = new BigDecimal(deliverpayupamount);
-		User u = userDAO.getUserByUseridLock(gca.getDeliverealuser());
-		logger.info("小件员" + u.getRealname() + "自己修改审核未通过的金额：{}={} 归班记录id：" + gca.getId(), gca.getDeliverpayupamount().doubleValue(), amount.doubleValue());
+		User u = this.userDAO.getUserByUseridLock(gca.getDeliverealuser());
+		this.logger.info("小件员" + u.getRealname() + "自己修改审核未通过的金额：{}={} 归班记录id：" + gca.getId(), gca.getDeliverpayupamount().doubleValue(), amount.doubleValue());
 		BigDecimal deliverpayuparrearage = u.getDeliverAccount().add(amount.subtract(gca.getDeliverpayupamount()));
 		// 修改归班交款金额
-		gotoClassAuditingDAO.updateStateAndMoney(id, deliverpayupamount, deliverpayuparrearage);
+		this.gotoClassAuditingDAO.updateStateAndMoney(id, deliverpayupamount, deliverpayuparrearage);
 		// 修改交款记录
-		financeDeliverPayUpDetailDAO.updateDeliverpayupamount(amount, deliverpayuparrearage, gca.getId());
+		this.financeDeliverPayUpDetailDAO.updateDeliverpayupamount(amount, deliverpayuparrearage, gca.getId());
 		// 更改用户余额
-		userDAO.updateUserAmount(u.getUserid(), deliverpayuparrearage, BigDecimal.ZERO);
+		this.userDAO.updateUserAmount(u.getUserid(), deliverpayuparrearage, BigDecimal.ZERO);
 	}
 
 	public List<UserView> getUserView(List<User> userList, List<Role> roleList, List<Branch> branchList) {
 		List<UserView> userViews = new ArrayList<UserView>();
-		if (userList != null && userList.size() > 0) {
+		if ((userList != null) && (userList.size() > 0)) {
 			for (User u : userList) {
 				UserView view = new UserView();
 				view.setUserid(u.getUserid());
@@ -191,7 +192,7 @@ public class UserService {
 
 	private String getRoleName(List<Role> roleList, long roleid) {
 		String rolename = "";
-		if (roleList != null && roleList.size() > 0) {
+		if ((roleList != null) && (roleList.size() > 0)) {
 
 			for (Role role : roleList) {
 				if (role.getRoleid() == roleid) {
@@ -206,7 +207,7 @@ public class UserService {
 
 	private String getBranchName(List<Branch> branchList, long branchid) {
 		String branchname = "";
-		if (branchList != null && branchList.size() > 0) {
+		if ((branchList != null) && (branchList.size() > 0)) {
 			for (Branch branch : branchList) {
 				if (branch.getBranchid() == branchid) {
 					branchname = branch.getBranchname();
@@ -223,12 +224,12 @@ public class UserService {
 	public void exportUser(List<User> userList, List<Branch> branchList, List<Role> roleList) {
 
 		List<UserView> views = new ArrayList<UserView>();
-		if (userList != null && userList.size() > 0) {
+		if ((userList != null) && (userList.size() > 0)) {
 			for (User user : userList) {
 				UserView userView = new UserView();
 				userView.setUserid(user.getUserid());
-				userView.setBranchname(getBranchName(branchList, user.getBranchid()));
-				userView.setRolename(getRoleName(roleList, user.getRoleid()));
+				userView.setBranchname(this.getBranchName(branchList, user.getBranchid()));
+				userView.setRolename(this.getRoleName(roleList, user.getRoleid()));
 				userView.setRealname(user.getRealname());
 				userView.setUsername(user.getUsername());
 				userView.setUsermobile(user.getUsermobile());
