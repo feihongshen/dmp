@@ -65,6 +65,7 @@ $(function(){
 		$("#selectype").val("1");
 
 	}
+	
 });
 
 function bdprint(){
@@ -157,13 +158,14 @@ function accordToCondation(){
 	$("#manyCondations").show();
 	$("#orders").hide();
 	$("#selectype").val("0");
+	$("#gd_table").html("");
 }
 function printByOrder(){
 	$("#printByCondation").attr("checked",false);
 	$("#manyCondations").hide();
 	$("#orders").show();
 	$("#selectype").val("1");
-	
+	 $("#gd_table").html("");
 }
 </script>
 </head>
