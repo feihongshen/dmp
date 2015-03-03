@@ -836,4 +836,8 @@ public class UserDAO {
 		return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where UPPER(username)=? and userDeleteFlag=1 limit 1", new UserRowMapper(), username);
 	}
 
+	public List<User> getUsersByUsernameToUpper(String username) {
+		List<User> userList = this.jdbcTemplate.query("SELECT * from express_set_user where  UPPER(username)=? and userDeleteFlag=1", new UserRowMapper(), username.toUpperCase());
+		return userList;
+	}
 }
