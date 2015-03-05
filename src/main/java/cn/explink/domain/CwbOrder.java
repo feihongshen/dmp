@@ -128,6 +128,16 @@ public class CwbOrder {
 	private long zhongzhuanreasonid;//中转id
 	private String zhongzhuanreason;//中转原因
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
+	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+
+	public int getFnorgoffsetflag() {
+		return fnorgoffsetflag;
+	}
+
+
+	public void setFnorgoffsetflag(int fnorgoffsetflag) {
+		this.fnorgoffsetflag = fnorgoffsetflag;
+	}
 
 
 	public BigDecimal getFnorgoffset() {
