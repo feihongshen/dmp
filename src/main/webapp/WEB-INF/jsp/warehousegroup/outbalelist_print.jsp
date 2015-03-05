@@ -64,6 +64,7 @@ function nowprint(){
 		});
 	}
 }
+
 </script>
 </head>
 <body style="tab-interval: 21pt;">
@@ -74,6 +75,7 @@ function nowprint(){
 	if(list!=null&&!list.isEmpty()){
 		for(int i=0;i<list.size();i++){
 			String baleno=list.get(i).get("baleno").toString();
+			String id=list.get(i).get("id").toString();
 %>	
 
 <form id="form<%=baleno%>">
@@ -82,13 +84,13 @@ function nowprint(){
 	<tr >
 		<td colspan=10 align="center">
 				<span style="font-weight:bold" >
-					 <%=templateName%>出仓交接单
+					 <%=templateName%><input type="text"id='headName' value="出库交接单" style="border:none;font-weight:bold;font-size: 15px"/>
 				</span>
 		</td>
 	</tr>
 	<tr>
-		<td align="center" width="10%">批次号</td>
-		<td align="left" width="10%"><%=baleno%></td>
+		<td align="center" width="10%">交接单号</td>
+		<td align="left" width="10%"><%=id%></td>
 		<td align="center" width="10%">发货地</td>
 		<td align="left" width="10%"><%=list.get(i).get("branchname").toString()%></td>
 		<td align="center" width="10%">目的地</td>
@@ -109,13 +111,12 @@ function nowprint(){
 		<td align="left" colspan="3">&nbsp;</td>
 	</tr>
 	<tr>
-		<td align="center">供应商</td>
-		<td align="center" colspan="2">承运商</td>
+		<td align="center" colspan="2">供应商</td>
+		<td align="center">包号</td>
 		<td align="center">出仓数量</td>
 		<td align="center">实收数量</td>
 		<td align="center" colspan="2">代收总金额</td>
-		<td align="center">封签号</td>
-		<td align="center" colspan="2">驾驶员</td>
+		<td align="center" colspan="3">驾驶员</td>
 	</tr>
 	<%
 		List<Map<String, Object>> cwbListView=(List<Map<String, Object>>)list.get(i).get("cwbListView");
@@ -123,13 +124,12 @@ function nowprint(){
 			for(int j=0;j<cwbListView.size();j++){
 	%>
 	<tr>
-		<td align="center"><%=cwbListView.get(j).get("customername")==null?"&nbsp;":cwbListView.get(j).get("customername")%></td>
-		<td align="center" colspan="2">&nbsp;</td>
+		<td align="center" colspan="2"><%=cwbListView.get(j).get("customername")==null?"&nbsp;":cwbListView.get(j).get("customername")%></td>
+		<td align="center"><%if(j!=cwbListView.size()-1){out.print(baleno);}%></td>
 		<td align="center"><%=cwbListView.get(j).get("count")==null?"&nbsp;":cwbListView.get(j).get("count")%></td>
 		<td align="center">&nbsp;</td>
 		<td align="right"colspan="2"><%=cwbListView.get(j).get("receivablefee")==null?"&nbsp;":cwbListView.get(j).get("receivablefee")%></td>
-		<td align="center">&nbsp;</td>
-		<td align="center"colspan="2">&nbsp;</td>
+		<td align="center"colspan="3">&nbsp;</td>
 	</tr>
 	<%}}%>
 	<tr>
@@ -138,7 +138,7 @@ function nowprint(){
 	</tr>
 	<tr>
 		<td align="left" colspan="3">发货人签字确认：</td>
-		<td align="left" colspan="3">承运商签字确认：</td>
+		<td align="left" colspan="3">驾驶员签字确认：</td>
 		<td align="left" colspan="4">收货人签字确认：</td>
 	</tr>
 </table>
