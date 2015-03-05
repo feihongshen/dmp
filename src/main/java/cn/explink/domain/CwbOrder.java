@@ -127,7 +127,17 @@ public class CwbOrder {
 	private String consigneephoneOfkf;
 	private long zhongzhuanreasonid;//中转id
 	private String zhongzhuanreason;//中转原因
-	
+	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
+
+
+	public BigDecimal getFnorgoffset() {
+		return fnorgoffset;
+	}
+
+
+	public void setFnorgoffset(BigDecimal fnorgoffset) {
+		this.fnorgoffset = fnorgoffset;
+	}
 
 	public long getZhongzhuanreasonid() {
 		return zhongzhuanreasonid;

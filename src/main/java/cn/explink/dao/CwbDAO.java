@@ -216,6 +216,7 @@ public class CwbDAO {
 			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
 			cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
 			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));
+			cwbOrder.setFnorgoffset(rs.getString("fnorgoffset"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			
 			return cwbOrder;
