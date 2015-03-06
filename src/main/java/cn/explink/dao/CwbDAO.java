@@ -216,10 +216,10 @@ public class CwbDAO {
 			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
 			cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
 			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));
-			cwbOrder.setFnorgoffset(rs.getString("fnorgoffset"));
-			cwbOrder.setFnorgoffsetflag(rs.getString("fnorgoffsetflag"));
+			cwbOrder.setFnorgoffset(rs.getBigDecimal("fnorgoffset"));
+			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
-			
+
 			return cwbOrder;
 		}
 
@@ -764,8 +764,7 @@ public class CwbDAO {
 			return null;
 		}
 	}
-		
-	
+
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
 			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update", new CwbMapper(), cwb);
@@ -784,7 +783,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的发货数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -808,7 +807,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的发货数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -828,7 +827,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的妥投数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -850,7 +849,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的拒收数据：包括拒收、上门退拒退、部分拒收
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -872,7 +871,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的滞留数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -893,7 +892,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的货物丢失数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -914,7 +913,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的无结果数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -1119,7 +1118,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询当前以匹配的数
-	 *
+	 * 
 	 * @param customerid
 	 * @param branchid
 	 * @param beginemaildate
@@ -1198,7 +1197,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询存在的订单号.
-	 *
+	 * 
 	 * @param cwbs
 	 *            1,2,3.
 	 * @return 去重订单号.
@@ -1373,7 +1372,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 *
+	 * 
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1397,7 +1396,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 *
+	 * 
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1435,7 +1434,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息
-	 *
+	 * 
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -1533,7 +1532,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1551,7 +1550,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1570,7 +1569,7 @@ public class CwbDAO {
 
 	/**
 	 * 不分页 得到出库已出库数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param flowordertype
@@ -1586,7 +1585,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1601,7 +1600,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1657,7 +1656,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供应商 未出库（所有）
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -1749,7 +1748,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1768,7 +1767,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1784,7 +1783,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1804,7 +1803,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1821,7 +1820,7 @@ public class CwbDAO {
 
 	/**
 	 * 已到货订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -1833,7 +1832,7 @@ public class CwbDAO {
 
 	/**
 	 * 已到货订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -1881,7 +1880,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取未入库的订单列表
-	 *
+	 * 
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -1911,7 +1910,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取中转站未入库的订单列表
-	 *
+	 * 
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -2053,7 +2052,7 @@ public class CwbDAO {
 
 	/**
 	 * 退货站已入库订单列表,按订单号查询
-	 *
+	 * 
 	 * @param cwbs
 	 * @return
 	 */
@@ -2132,7 +2131,7 @@ public class CwbDAO {
 
 	/**
 	 * 已领货 没有订单号
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverid
 	 * @return
@@ -2293,7 +2292,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库（有分页）
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -2361,7 +2360,7 @@ public class CwbDAO {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param emaildateid
 	 * @return String[] 0是单数 1是应收金额 2是应退金额
 	 */
@@ -2373,7 +2372,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得大于toDay时间的对应emailFinishFlag状态的branchid机构的customerid供货商的订单与金额的汇总
-	 *
+	 * 
 	 * @param emailFinishFlag
 	 *            对应EmailFinishFlagEnum
 	 * @param branchid
@@ -2843,7 +2842,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取相应条件对应的sql组合字符串
-	 *
+	 * 
 	 * @param sql
 	 * @param begindate
 	 * @param enddate
@@ -2981,7 +2980,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据小件员Id和Cwb查询订单详情
-	 *
+	 * 
 	 * @param deliverid
 	 * @param cwb
 	 * @return
@@ -3004,7 +3003,7 @@ public class CwbDAO {
 
 	/**
 	 * 撤销
-	 *
+	 * 
 	 * @param deliverid
 	 * @param cwb
 	 */
@@ -3105,7 +3104,7 @@ public class CwbDAO {
 	// ==============货款结算===============
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 *
+	 * 
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -3124,7 +3123,7 @@ public class CwbDAO {
 	// =====================库房日志统计 获取list=========begin===================
 	/**
 	 * 未入库 flowordertype = 1
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3139,7 +3138,7 @@ public class CwbDAO {
 
 	/**
 	 * 未入库 flowordertype = 1 不限制供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3153,7 +3152,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3167,7 +3166,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的 全部供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3179,7 +3178,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3194,7 +3193,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8 不限制供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3208,7 +3207,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3221,7 +3220,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商的到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3240,7 +3239,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出昨日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3256,7 +3255,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商 昨日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param customerid
 	 * @param startTime
@@ -3270,7 +3269,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3286,7 +3285,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3308,7 +3307,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3323,7 +3322,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3337,7 +3336,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3350,7 +3349,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存 不限制供货商
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3363,7 +3362,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3375,7 +3374,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3387,7 +3386,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3403,7 +3402,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3440,7 +3439,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3455,7 +3454,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3469,7 +3468,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3484,7 +3483,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3499,7 +3498,7 @@ public class CwbDAO {
 	//
 	/**
 	 * 库房 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3518,7 +3517,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 出库已到站的list 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3537,7 +3536,7 @@ public class CwbDAO {
 
 	/**
 	 * 站点 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3556,7 +3555,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出 站点 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3576,7 +3575,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3596,7 +3595,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出所有供货商出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -4040,7 +4039,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询订单
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 *            库房出库，站点到站，领货
@@ -4052,7 +4051,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询滞留的订单
-	 *
+	 * 
 	 * @param branchid
 	 * @param deliverystate
 	 *            滞留的状态 6
@@ -4272,7 +4271,7 @@ public class CwbDAO {
 
 	/**
 	 * 重置审核状态 修改订单表字段
-	 *
+	 * 
 	 * @param nextbranchid
 	 *            下一站 目前逻辑如此 改为对应货物所在站点的中转站id
 	 * @param flowordertype
@@ -4293,7 +4292,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改金额 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param receivablefee
@@ -4307,7 +4306,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单支付方式 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param newpaywayid
@@ -4319,7 +4318,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单类型 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 * @param newcwbordertypeid
 	 *            新的订单类型
@@ -4336,7 +4335,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到待返单出站的订单信息
-	 *
+	 * 
 	 * @param type
 	 * @param branchid
 	 * @param isnow
@@ -4363,7 +4362,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到待返单入库的订单信息
-	 *
+	 * 
 	 * @param type
 	 * @param tobranchid
 	 * @param isnow
@@ -4395,7 +4394,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 待出库数量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4407,7 +4406,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 已出库数量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4418,7 +4417,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 待出库订单
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4429,7 +4428,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取 供货商拒收返库 已扫描
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4495,7 +4494,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于 入库 导出
-	 *
+	 * 
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4518,7 +4517,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库 导出 sql
-	 *
+	 * 
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4537,7 +4536,7 @@ public class CwbDAO {
 
 	/**
 	 * 未出库 导出 sql
-	 *
+	 * 
 	 * @param branchid
 	 * @param b
 	 * @param cwbstate
@@ -4559,7 +4558,7 @@ public class CwbDAO {
 
 	/**
 	 * 已出库 导出 sql
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param value
@@ -4584,7 +4583,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -4605,7 +4604,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库 导出
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4617,7 +4616,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到退供货商 已出库 件数
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4638,7 +4637,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库 导出
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4650,7 +4649,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转出站打印 添加时间选项
-	 *
+	 * 
 	 * @param page
 	 * @param startbranchid
 	 * @param nextbranchid
@@ -4673,6 +4672,7 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set transcwb=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, transcwb, cwb);
 	}
+
 	public void updateCwbRemark5(String cwb, String remark5) {
 		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, remark5, cwb);
@@ -4750,7 +4750,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库统计 发货库房 支持多选
-	 *
+	 * 
 	 * @param begindate
 	 * @param enddate
 	 * @param orderName
@@ -4814,7 +4814,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库 发货库房支持多选 导出
-	 *
+	 * 
 	 * @param page
 	 * @param begindate
 	 * @param enddate
@@ -4836,7 +4836,7 @@ public class CwbDAO {
 	// ==========================小件员领货查询====================================
 	/**
 	 * * 小件员领货查询List
-	 *
+	 * 
 	 * @param page
 	 * @param deliveryid
 	 * @param start
@@ -4885,7 +4885,7 @@ public class CwbDAO {
 
 	/**
 	 * 出库打印 按照站点分开
-	 *
+	 * 
 	 * @param cwbs
 	 * @param nextbranchid
 	 * @return
@@ -4901,7 +4901,7 @@ public class CwbDAO {
 
 	/**
 	 * 分站到货 已到货
-	 *
+	 * 
 	 * @param yidaohuo
 	 * @param page
 	 * @return
@@ -4914,7 +4914,7 @@ public class CwbDAO {
 
 	/**
 	 * 揽收 更新数据
-	 *
+	 * 
 	 * @param cwb
 	 * @param consigneename
 	 * @param consigneeaddress
@@ -5023,7 +5023,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据订单号 和 当前环节
-	 *
+	 * 
 	 * @param string
 	 * @param strings
 	 * @return
@@ -5041,7 +5041,7 @@ public class CwbDAO {
 
 	/**
 	 * 合单修改multi_shipcwb
-	 *
+	 * 
 	 */
 	public void appendTranscwb(String cwb, String transcwb) {
 		try {
@@ -5068,7 +5068,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息 remark1 remark2
-	 *
+	 * 
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -5079,7 +5079,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询客户单量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -5092,7 +5092,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询 客户发货统计
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -5512,11 +5512,12 @@ public class CwbDAO {
 		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+
 	/**
 	 * 添加中转的原因在主表中
 	 */
-	public void updateZhongzhuanReason(String cwb,long reasonid,String reasonContent){
-		String sql="update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
+	public void updateZhongzhuanReason(String cwb, long reasonid, String reasonContent) {
+		String sql = "update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 }

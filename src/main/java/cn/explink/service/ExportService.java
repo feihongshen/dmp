@@ -559,7 +559,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 *
+	 * 
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -572,7 +572,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 *
+	 * 
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -633,7 +633,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 *
+	 * 
 	 * }
 	 */
 
@@ -937,8 +937,14 @@ public class ExportService {
 				}
 				a = this.getRealflowordertype(bList, realbranchid, Long.parseLong(mapRow.get("flowordertype").toString()), nextbranchid);
 			} else if ("ispayup".equals(cloumname)) {
-				if ((cwbspayupidMap != null) && (cwbspayupidMap.size() > 0) && (cwbspayupidMap.get(mapRow.get("cwb").toString()) != null)) {
-					a = cwbspayupidMap.get(mapRow.get("cwb").toString());
+				/*
+				 * if ((cwbspayupidMap != null) && (cwbspayupidMap.size() > 0)
+				 * && (cwbspayupidMap.get(mapRow.get("cwb").toString()) !=
+				 * null)) { a =
+				 * cwbspayupidMap.get(mapRow.get("cwb").toString()); }
+				 */
+				if (Long.parseLong(mapRow.get("fnorgoffsetflag").toString()) == 1) {
+					a = "是";
 				} else {
 					a = "否";
 				}
@@ -950,7 +956,7 @@ public class ExportService {
 				}
 			} else {
 				a = mapRow.get(cloumname);
-				a = setAbyUser(a, cloumname);
+				a = this.setAbyUser(a, cloumname);
 			}
 		} catch (Exception e) {
 			// System.out.println(cloumname);
@@ -2037,7 +2043,7 @@ public class ExportService {
 
 	/**
 	 * 结算后付类型
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2065,7 +2071,7 @@ public class ExportService {
 
 	/**
 	 * 结算先付类型
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2172,7 +2178,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算订单明细
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2204,7 +2210,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2242,7 +2248,7 @@ public class ExportService {
 
 	/**
 	 * 退货审核
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2368,7 +2374,7 @@ public class ExportService {
 
 	/**
 	 * 配送结果结算记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2441,7 +2447,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2460,7 +2466,7 @@ public class ExportService {
 
 	/**
 	 * 账户管理
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
