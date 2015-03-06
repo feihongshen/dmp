@@ -55,7 +55,7 @@ function cwbscan(scancwb){
 				if(data.statuscode=="000000"){
 					/* $("#cwbno").html(data.body.cwbOrder.opscwbid); */
 					$("#branchname").html(data.body.cwbOrder.excelbranch);//站点中文名
-					$("#transcwb").html(data.body.cwbOrder.transcwb);//运单号
+					$("#transcwb").html(scancwb);//运单号
 					$("#branchcode").html(data.body.branchcode);//站点分拣编码
 				var len=data.body.branchcode.length;
 				var length=100-Math.floor(len/2)+3+"mm";
