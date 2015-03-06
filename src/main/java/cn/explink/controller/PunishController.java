@@ -30,16 +30,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.User;
-import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
 import cn.explink.service.Excel2003Extractor;
@@ -80,6 +81,8 @@ public class PunishController {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	CustomerDAO customerDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -90,9 +93,11 @@ public class PunishController {
 
 	@RequestMapping("/add")
 	public String add(Model model) throws Exception {
-		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
+		List<Customer> customers = this.customerDAO.getAllCustomers();
+		model.addAttribute("customers", customers);
 		model.addAttribute("branchlist", branchlist);
 		model.addAttribute("userList", userList);
 		model.addAttribute("punishTypeList", punishTypeList);
@@ -116,7 +121,7 @@ public class PunishController {
 			 * ExecutorService newSingleThreadExecutor =
 			 * Executors.newSingleThreadExecutor();
 			 * newSingleThreadExecutor.execute(new Runnable() {
-			 *
+			 * 
 			 * @Override public void run() {
 			 */
 			try {
@@ -135,7 +140,7 @@ public class PunishController {
 		model.addAttribute("showData", 1);
 		model.addAttribute("state", -1);
 		model.addAttribute("count", count);
-		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		model.addAttribute("branchlist", branchlist);
@@ -161,10 +166,12 @@ public class PunishController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(Model model, @PathVariable("id") int id) throws Exception {
-		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		Punish punish = this.punishDAO.getPunishById(id);
+		List<Customer> customers = this.customerDAO.getAllCustomers();
+		model.addAttribute("customers", customers);
 		model.addAttribute("branchlist", branchlist);
 		model.addAttribute("userList", userList);
 		model.addAttribute("punishTypeList", punishTypeList);
@@ -174,7 +181,7 @@ public class PunishController {
 
 	@RequestMapping("/state")
 	public String state(Model model, @RequestParam(value = "id", defaultValue = "0", required = false) int id) throws Exception {
-		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		Punish punish = this.punishDAO.getPunishById(id);
@@ -186,8 +193,9 @@ public class PunishController {
 	}
 
 	@RequestMapping("/stateBactch")
-	public @ResponseBody String stateBactch(Model model, @RequestParam(value = "ids", defaultValue = "", required = false) String ids,
-			@RequestParam(value = "userids", defaultValue = "", required = false) String userids, @RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
+	public @ResponseBody
+	String stateBactch(Model model, @RequestParam(value = "ids", defaultValue = "", required = false) String ids, @RequestParam(value = "userids", defaultValue = "", required = false) String userids,
+			@RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
 
 		this.punishDAO.updateStateBatchPunish(ids, state);
 		/*
@@ -202,10 +210,11 @@ public class PunishController {
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody String create(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
-			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
-			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishtime", defaultValue = "0", required = false) long punishtime,
-			@RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel, @RequestParam(value = "punishfee", defaultValue = "0", required = false) BigDecimal punishfee,
+	public @ResponseBody
+	String create(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid,
+			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "userid", defaultValue = "0", required = false) long userid,
+			@RequestParam(value = "punishtime", defaultValue = "0", required = false) long punishtime, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
+			@RequestParam(value = "punishfee", defaultValue = "0", required = false) BigDecimal punishfee, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
 			@RequestParam(value = "punishcontent", defaultValue = "0", required = false) String punishcontent, @RequestParam(value = "realfee", defaultValue = "0", required = false) BigDecimal realfee)
 			throws Exception {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb.trim());
@@ -219,6 +228,7 @@ public class PunishController {
 		Punish punish = new Punish();
 		punish.setCwb(cwb.trim());
 		punish.setPunishid(punishid);
+		punish.setCustomerid(customerid);
 		punish.setBranchid(branchid);
 		punish.setUserid(userid);
 		punish.setPunishtime(punishtime);
@@ -238,10 +248,12 @@ public class PunishController {
 	}
 
 	@RequestMapping("/update")
-	public @ResponseBody String update(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "id", defaultValue = "0", required = false) long id,
+	public @ResponseBody
+	String update(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "id", defaultValue = "0", required = false) long id,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
-			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishtime", defaultValue = "0", required = false) long punishtime,
-			@RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel, @RequestParam(value = "punishfee", defaultValue = "0", required = false) BigDecimal punishfee,
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, @RequestParam(value = "userid", defaultValue = "0", required = false) long userid,
+			@RequestParam(value = "punishtime", defaultValue = "0", required = false) long punishtime, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
+			@RequestParam(value = "punishfee", defaultValue = "0", required = false) BigDecimal punishfee,
 			@RequestParam(value = "punishcontent", defaultValue = "0", required = false) String punishcontent, @RequestParam(value = "realfee", defaultValue = "0", required = false) BigDecimal realfee)
 			throws Exception {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb.trim());
@@ -252,6 +264,7 @@ public class PunishController {
 		punish.setId(id);
 		punish.setCwb(cwb.trim());
 		punish.setPunishid(punishid);
+		punish.setCustomerid(customerid);
 		punish.setBranchid(branchid);
 		punish.setUserid(userid);
 		punish.setPunishtime(punishtime);
@@ -271,7 +284,8 @@ public class PunishController {
 	}
 
 	@RequestMapping("/updateState")
-	public @ResponseBody String updateState(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "id", defaultValue = "0", required = false) int id,
+	public @ResponseBody
+	String updateState(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "id", defaultValue = "0", required = false) int id,
 			@RequestParam(value = "state", defaultValue = "0", required = false) int state) throws Exception {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb.trim());
 		if (co == null) {
@@ -294,12 +308,14 @@ public class PunishController {
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
 			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
 			@RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow, @RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
-		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		model.addAttribute("branchlist", branchlist);
 		model.addAttribute("userList", userList);
 		model.addAttribute("punishTypeList", punishTypeList);
+		model.addAttribute("customerList", customerList);
 		List<Punish> punishList = new ArrayList<Punish>();
 		int count = 0;
 		if (isnow > 0) {
@@ -320,7 +336,8 @@ public class PunishController {
 	}
 
 	@RequestMapping("/deletePunish")
-	public @ResponseBody String deletePunish(@RequestParam(value = "id", defaultValue = "0", required = false) long id) throws Exception {
+	public @ResponseBody
+	String deletePunish(@RequestParam(value = "id", defaultValue = "0", required = false) long id) throws Exception {
 
 		int count = this.punishDAO.deletePunish(id);
 		if (count > 0) {
@@ -331,14 +348,16 @@ public class PunishController {
 	}
 
 	@RequestMapping("/selectUser")
-	public @ResponseBody User selectUser(@RequestParam(value = "userid", defaultValue = "0", required = false) long userid) throws Exception {
+	public @ResponseBody
+	User selectUser(@RequestParam(value = "userid", defaultValue = "0", required = false) long userid) throws Exception {
 
 		User user = this.userDAO.getUserByUserid(userid);
 		return user;
 	}
 
 	@RequestMapping("/selectBranch")
-	public @ResponseBody List<User> selectBranch(@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) throws Exception {
+	public @ResponseBody
+	List<User> selectBranch(@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) throws Exception {
 
 		List<User> users = new ArrayList<User>();
 		if (branchid == 0) {
@@ -366,7 +385,8 @@ public class PunishController {
 		try {
 			// 查询出数据
 			final List<Punish> punishList = this.punishDAO.getPunishforExcel(cwb, punishid, userid, branchid, punishlevel, state);
-			final List<Branch> branchs = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+			final List<Branch> branchs = this.branchDAO.getAllBranches();
+			final List<Customer> customers = this.customerDAO.getAllCustomers();
 			final List<User> users = this.userDAO.getAllUser();
 			final List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 
@@ -409,6 +429,13 @@ public class PunishController {
 							for (User u : users) {
 								if (u.getUserid() == pu.getUserid()) {
 									a = u.getRealname();
+								}
+							}
+						} else if (cloumnName[i].equals("Customerid")) {
+
+							for (Customer cu : customers) {
+								if (cu.getCustomerid() == pu.getCustomerid()) {
+									a = cu.getCustomername();
 								}
 							}
 						} else if (cloumnName[i].equals("Createuser")) {
@@ -459,28 +486,30 @@ public class PunishController {
 	public void setExcelstyle(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "扣罚类型";
-		cloumnName2[1] = "Punishid";
-		cloumnName1[2] = "扣罚站点";
-		cloumnName2[2] = "Branchid";
-		cloumnName1[3] = "扣罚人员";
-		cloumnName2[3] = "Userid";
-		cloumnName1[4] = "扣罚时效";
-		cloumnName2[4] = "Punishtime";
-		cloumnName1[5] = "优先级别";
-		cloumnName2[5] = "Punishlevel";
-		cloumnName1[6] = "扣罚金额";
-		cloumnName2[6] = "Punishfee";
-		cloumnName1[7] = "实扣金额";
-		cloumnName2[7] = "Realfee";
-		cloumnName1[8] = "扣罚内容";
-		cloumnName2[8] = "Punishcontent";
-		cloumnName1[9] = "创建人";
-		cloumnName2[9] = "Createuser";
-		cloumnName1[10] = "创建时间";
-		cloumnName2[10] = "Createtime";
-		cloumnName1[11] = "审核状态";
-		cloumnName2[11] = "State";
+		cloumnName1[1] = "供货商";
+		cloumnName2[1] = "Customerid";
+		cloumnName1[2] = "扣罚类型";
+		cloumnName2[2] = "Punishid";
+		cloumnName1[3] = "扣罚站点";
+		cloumnName2[3] = "Branchid";
+		cloumnName1[4] = "扣罚人员";
+		cloumnName2[4] = "Userid";
+		cloumnName1[5] = "扣罚时效";
+		cloumnName2[5] = "Punishtime";
+		cloumnName1[6] = "优先级别";
+		cloumnName2[6] = "Punishlevel";
+		cloumnName1[7] = "扣罚金额";
+		cloumnName2[7] = "Punishfee";
+		cloumnName1[8] = "实扣金额";
+		cloumnName2[8] = "Realfee";
+		cloumnName1[9] = "扣罚内容";
+		cloumnName2[9] = "Punishcontent";
+		cloumnName1[10] = "创建人";
+		cloumnName2[10] = "Createuser";
+		cloumnName1[11] = "创建时间";
+		cloumnName2[11] = "Createtime";
+		cloumnName1[12] = "审核状态";
+		cloumnName2[12] = "State";
 
 	}
 

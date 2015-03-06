@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.enumutil.PunishlevelEnum"%>
 <%@page import="cn.explink.enumutil.PunishtimeEnum"%>
 <%@page import="cn.explink.domain.User"%>
@@ -12,6 +13,7 @@ List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
 Punish punish = (Punish)request.getAttribute("punish");
+List<Customer> customers = (List<Customer>)request.getAttribute("customers");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -29,6 +31,17 @@ Punish punish = (Punish)request.getAttribute("punish");
 		<td>
 		<input type="text" name="cwb" readonly="readonly" id="cwb" value="<%=punish.getCwb() %>" style="width: 133px"/>
 		</td>
+		<td>
+		供货商:
+		</td>
+		<td>
+		<select  name="customerid" id="customerid" style="width: 140px">
+		<option value="0">请选择</option>
+		<%for(Customer cu:customers){ %>
+		<option value="<%=cu.getCustomerid() %>" <%if(punish.getCustomerid()==cu.getCustomerid()) {%>selected="selected" <%} %> ><%=cu.getCustomername() %></option>
+		<%} %>
+		</select>
+		</td>
 		</tr>
 		<tr>
 		<td>扣罚类型:
@@ -41,7 +54,7 @@ Punish punish = (Punish)request.getAttribute("punish");
 		<%} %>
 		</select>
 		</td>
-		<td>扣罚站点:
+		<td>责任部门:
 		</td>
 		<td>
 		<select id="branchid" name="branchid" style="width: 140px" onchange="selectBranch($(this).val())">
@@ -52,7 +65,7 @@ Punish punish = (Punish)request.getAttribute("punish");
 		</select>
 		</td>
 		<td>
-		扣罚人员:
+		责任人:
 		</td>
 		<td>
 		<select id="userid" name="userid" style="width: 140px" onchange="selectUser($(this).val())">

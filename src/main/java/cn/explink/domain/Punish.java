@@ -6,6 +6,7 @@ public class Punish {
 	private long id;
 	private String cwb;
 	private long punishid;
+	private long customerid;
 	private long branchid;
 	private long userid;
 	private long punishtime;
@@ -39,6 +40,14 @@ public class Punish {
 
 	public void setPunishid(long punishid) {
 		this.punishid = punishid;
+	}
+
+	public long getCustomerid() {
+		return this.customerid;
+	}
+
+	public void setCustomerid(long customerid) {
+		this.customerid = customerid;
 	}
 
 	public long getBranchid() {

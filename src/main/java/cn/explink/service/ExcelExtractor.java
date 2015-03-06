@@ -377,7 +377,7 @@ public abstract class ExcelExtractor {
 		 * if (excelColumnSet.getOrdercwbindex() != 0) {
 		 * cwbOrder.setOrdercwb(getXRowCellData(row,
 		 * excelColumnSet.getOrdercwbindex())); }
-		 *
+		 * 
 		 * if (excelColumnSet.getServiceareaindex() != 0) {
 		 * cwbOrder.setPaisongArea( getXRowCellData(row,
 		 * excelColumnSet.getServiceareaindex())); }
@@ -511,13 +511,17 @@ public abstract class ExcelExtractor {
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		List<Punish> punisList = new ArrayList<Punish>();
+		List<Customer> customers = this.customerDAO.getAllCustomers();
+
 		Map<String, PunishType> punishTypeMap = this.SetMapPunishType(punishTypeList);
 		Map<String, Branch> branchMap = this.SetMapBranch(branchList);
 		Map<String, User> userMap = this.SetMapUser(userList);
+		Map<String, Customer> customerMap = this.SetMapCustomer(customers);
+
 		int count = 0;
 		for (Object row : this.getRows(f)) {
 			try {
-				Punish punish = this.getPunishAccordingtoConf(row, userMap, branchMap, punishTypeMap);
+				Punish punish = this.getPunishAccordingtoConf(row, userMap, branchMap, punishTypeMap, customerMap);
 
 				punisList.add(punish);
 			} catch (Exception e) {
@@ -564,7 +568,15 @@ public abstract class ExcelExtractor {
 		return map;
 	}
 
-	private Punish getPunishAccordingtoConf(Object row, Map<String, User> userMap, Map<String, Branch> branchMap, Map<String, PunishType> punishTypeMap) {
+	private Map<String, Customer> SetMapCustomer(List<Customer> customers) {
+		Map<String, Customer> map = new HashMap<String, Customer>();
+		for (Customer cu : customers) {
+			map.put(cu.getCustomername(), cu);
+		}
+		return map;
+	}
+
+	private Punish getPunishAccordingtoConf(Object row, Map<String, User> userMap, Map<String, Branch> branchMap, Map<String, PunishType> punishTypeMap, Map<String, Customer> customerMap) {
 
 		Punish punish = new Punish();
 		String cwb = this.getXRowCellData(row, 1);
@@ -577,42 +589,49 @@ public abstract class ExcelExtractor {
 		 * return null; }
 		 */
 		punish.setCwb(cwb);
-		PunishType pType = punishTypeMap.get(this.getXRowCellData(row, 2));
+		Customer customer = customerMap.get(this.getXRowCellData(row, 2));
+		customer = customer == null ? new Customer() : customer;
+		punish.setCustomerid(customer.getCustomerid());
+
+		PunishType pType = punishTypeMap.get(this.getXRowCellData(row, 3));
 		pType = pType == null ? new PunishType() : pType;
 		punish.setPunishid(pType.getId());
-		Branch branch = branchMap.get(this.getXRowCellData(row, 3));
+
+		Branch branch = branchMap.get(this.getXRowCellData(row, 4));
 		branch = branch == null ? new Branch() : branch;
 		punish.setBranchid(branch.getBranchid());
-		User user = userMap.get(this.getXRowCellData(row, 4));
+
+		User user = userMap.get(this.getXRowCellData(row, 5));
 		user = user == null ? new User() : user;
 		punish.setUserid(user.getUserid());
+
 		try {
-			punish.setPunishtime(PunishtimeEnum.getText(this.getXRowCellData(row, 5)).getValue());
+			punish.setPunishtime(PunishtimeEnum.getText(this.getXRowCellData(row, 6)).getValue());
 		} catch (Exception e) {
 			punish.setPunishlevel(0);
 		}
 		try {
-			punish.setPunishlevel(PunishlevelEnum.getText(this.getXRowCellData(row, 6)).getValue());
+			punish.setPunishlevel(PunishlevelEnum.getText(this.getXRowCellData(row, 7)).getValue());
 		} catch (Exception e) {
 			punish.setPunishlevel(0);
 		}
 		try {
-			punish.setPunishfee(new BigDecimal(this.getXRowCellData(row, 7)));
+			punish.setPunishfee(new BigDecimal(this.getXRowCellData(row, 8)));
 		} catch (Exception e) {
 			punish.setPunishfee(new BigDecimal("0.00"));
 		}
 		try {
-			punish.setRealfee(new BigDecimal(this.getXRowCellData(row, 8)));
+			punish.setRealfee(new BigDecimal(this.getXRowCellData(row, 9)));
 		} catch (Exception e) {
 			punish.setRealfee(new BigDecimal("0.00"));
 		}
-		punish.setPunishcontent(this.getXRowCellData(row, 9));
-		User createuser = userMap.get(this.getXRowCellData(row, 10));
+		punish.setPunishcontent(this.getXRowCellData(row, 10));
+		User createuser = userMap.get(this.getXRowCellData(row, 11));
 		createuser = createuser == null ? new User() : createuser;
 		punish.setCreateuser(createuser.getUserid());
 
-		punish.setCreatetime(this.getXRowCellData(row, 11));
-		punish.setState(this.getXRowCellData(row, 12).equals("已审核") ? 1 : 0);
+		punish.setCreatetime(this.getXRowCellData(row, 12));
+		punish.setState(this.getXRowCellData(row, 13).equals("已审核") ? 1 : 0);
 		return punish;
 	}
 }

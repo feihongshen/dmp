@@ -6004,5 +6004,13 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fnorgoffsetflag` INT(11) DEFAULT 0 NULL AFTER `fnorgoffset`;
 		</sql>
 	</changeSet>
+ 	<changeSet id="wangyonghe-2015-03-06-1" author="wangyonghe">
+		<sql>
+			ALTER TABLE `express_ops_punish_detail`
+			ADD COLUMN `customerid`  int(10) NULL DEFAULT 0 AFTER `cwb`,
+			ADD INDEX `createtime_idx` (`createtime`) ,
+			ADD INDEX `customerid_idx` (`customerid`) ;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  

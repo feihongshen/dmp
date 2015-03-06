@@ -22,6 +22,7 @@ public class PunishDAO {
 			punish.setId(rs.getLong("id"));
 			punish.setCwb(rs.getString("cwb"));
 			punish.setPunishid(rs.getLong("punishid"));
+			punish.setCustomerid(rs.getLong("customerid"));
 			punish.setBranchid(rs.getLong("branchid"));
 			punish.setUserid(rs.getLong("userid"));
 			punish.setPunishtime(rs.getLong("punishtime"));
@@ -89,21 +90,21 @@ public class PunishDAO {
 	}
 
 	public int createPunish(Punish pu) throws Exception {
-		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,NOW())";
-		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
+		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,NOW())";
+		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getCustomerid(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser());
 	}
 
 	public int importPunish(Punish pu) throws Exception {
-		String sql = " insert into express_ops_punish_detail(cwb,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime,state) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
+		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime,state) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getCustomerid(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser(), pu.getCreatetime(), pu.getState());
 	}
 
 	public int updatePunish(Punish pu) throws Exception {
-		String sql = " update  express_ops_punish_detail set punishid=?,branchid=?,userid=?,punishtime=?,punishlevel=?,punishfee=?,punishcontent=?,realfee=? where id=?";
-		return this.jdbcTemplate.update(sql, pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(), pu.getPunishfee() == null ? 0 : pu.getPunishfee(),
-				pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getId());
+		String sql = " update  express_ops_punish_detail set customerid, punishid=?,branchid=?,userid=?,punishtime=?,punishlevel=?,punishfee=?,punishcontent=?,realfee=? where id=?";
+		return this.jdbcTemplate.update(sql, pu.getPunishid(), pu.getCustomerid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
+				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getId());
 	}
 
 	public Punish getPunishById(int id) {

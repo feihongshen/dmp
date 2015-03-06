@@ -39,7 +39,7 @@ Punish punish = (Punish)request.getAttribute("punish");
 		<input type="text" name="punishid" readonly="readonly" id="punishid" value="<%=p.getName() %>" style="width: 133px"/>
 		<%} }%>
 		</td>
-		<td>扣罚站点:
+		<td>责任部门:
 		</td>
 		<td>
 		<%for(Branch b:branchlist){ 
@@ -48,7 +48,7 @@ Punish punish = (Punish)request.getAttribute("punish");
 		<%}} %>
 		</td>
 		<td>
-		扣罚人员:
+		责任人:
 		</td>
 		<td>
 		<%for(User u:userList){
