@@ -203,6 +203,7 @@ public class WeisudaService {
 		BigDecimal pos = BigDecimal.ZERO;
 		BigDecimal check = BigDecimal.ZERO;
 		BigDecimal cash = BigDecimal.ZERO;
+		BigDecimal other = BigDecimal.ZERO;
 		BigDecimal paybackedfee = BigDecimal.ZERO;
 
 		long podresultid = Long.valueOf(orderFlowDto.getDeliverystate());
@@ -226,6 +227,7 @@ public class WeisudaService {
 			pos = BigDecimal.ZERO;
 			cash = BigDecimal.ZERO;
 			check = BigDecimal.ZERO;
+			other = BigDecimal.ZERO;
 			if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 					|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
@@ -243,6 +245,8 @@ public class WeisudaService {
 					cash = deliverystate.getBusinessfee();
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Zhipiao.getValue()) {
 					check = deliverystate.getBusinessfee();
+				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Qita.getValue()) {
+					other = deliverystate.getBusinessfee();
 				} else {
 
 					if (cwbOrder.getPaywayid() == PaytypeEnum.Xianjin.getValue()) {
@@ -251,6 +255,8 @@ public class WeisudaService {
 						pos = deliverystate.getBusinessfee();
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Zhipiao.getValue()) {
 						check = deliverystate.getBusinessfee();
+					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Qita.getValue()) {
+						other = deliverystate.getBusinessfee();
 					}
 				}
 			}
@@ -293,7 +299,7 @@ public class WeisudaService {
 		parameters.put("receivedfeecash", cash);
 		parameters.put("receivedfeepos", pos);
 		parameters.put("receivedfeecheque", check);
-		parameters.put("receivedfeeother", BigDecimal.ZERO);
+		parameters.put("receivedfeeother", other);
 		parameters.put("paybackedfee", paybackedfee);
 		parameters.put("podremarkid", (long) 0);
 		parameters.put("posremark", pos.compareTo(BigDecimal.ZERO) > 0 ? "POS刷卡" : "");
@@ -318,7 +324,7 @@ public class WeisudaService {
 			throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
 		parameters.put("nosysyemflag", "1");//
-
+		this.cwbDAO.updateCwbRemark1AndRemark2(orderFlowDto.getCwb(), orderFlowDto.getPayremark(), "");
 		if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
 			this.cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
 		}
