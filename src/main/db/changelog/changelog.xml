@@ -6013,7 +6013,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ADD INDEX `punishcontent_idx` (`punishcontent`) ;
 		</sql>
 	</changeSet>
- 	<changeSet id="wangyonghe-2015-03-06-1" author="wangyonghe">
+ 	<changeSet id="wangyonghe-2015-03-09-1" author="wangyonghe">
 		<sql>
 			ALTER TABLE `express_ops_punish_detail`
 			MODIFY COLUMN `cwb`  varchar(100) CHARACTER SET utf8 NULL DEFAULT '' AFTER `id`,
