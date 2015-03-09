@@ -29,6 +29,25 @@ function selectBranch(branchid)
 			}
 		}});
 	}
+function findBranch(branchname)
+{var dmpurl=$("#dmpurl").val();
+$.ajax({
+	type:"post",
+	url:dmpurl+"/punish/findBranch",
+	data:{"branchname":branchname},
+	dataType:"json",
+	success:function(data){
+		if(data.length>0){
+			var optstr="<option value='0'>请选择</option>";
+			for(var i=0;i<data.length;i++)
+			{
+				optstr+="<option value='"+data[i].branchid+"'>"+data[i].branchname+"</option>";
+			}
+			$("#branchid").empty();
+			$("#branchid").append(optstr);
+		}
+	}});
+}
 function create()
 { var dmpurl=$("#dmpurl").val();
 	check();

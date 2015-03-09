@@ -22,6 +22,12 @@ long punishlevel=Long.parseLong(request.getAttribute("punishlevel")==null?"0":re
 long showData=Long.parseLong(request.getAttribute("showData")==null?"0":request.getAttribute("showData").toString());
 int state=Integer.parseInt(request.getAttribute("state")==null?"0":request.getAttribute("state").toString());
 int count=Integer.parseInt(request.getAttribute("count")==null?"0":request.getAttribute("count").toString());
+long customerid=Long.parseLong(request.getAttribute("customerid")==null?"0":request.getAttribute("customerid").toString());
+String punishcontent = request.getAttribute("punishcontent")==null?"":request.getAttribute("punishcontent").toString();
+String starttime = request.getAttribute("starttime")==null?"":request.getAttribute("starttime").toString();
+String endtime = request.getAttribute("endtime")==null?"":request.getAttribute("endtime").toString();
+
+
 %>
 
 
@@ -29,13 +35,42 @@ int count=Integer.parseInt(request.getAttribute("count")==null?"0":request.getAt
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>扣罚类型等级</title>
+<title>扣罚类型登记</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/punish.js"></script>
+<script src="<%=request.getContextPath()%>/js/highcharts/highcharts.js"></script>
+<script src="<%=request.getContextPath()%>/js/highcharts/exporting.js"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript">
+$(function() {
+	$("#starttime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#endtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
+});
 function addInit(){
 	//无处理
 }
@@ -170,9 +205,10 @@ function stateBatch(state)
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="扣罚登记"  id="add_button"  />
+	<span>
 		</span>
 	<form action="<%=request.getContextPath()%>/punish/list/1" method="post" id="searchForm">
+		<table><tr><td>
 		扣罚类型:<select id="punishid" name="punishid"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(PunishType p:punishTypeList){ %>
@@ -185,6 +221,7 @@ function stateBatch(state)
 		<option value="<%=b.getBranchid()%>" <%if(b.getBranchid()==branchid) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 		<%} %>
 		</select>
+		<input type="text" onkeyup="findBranch($(this).val())"style="width: 80px"/>
 		责任人:<select id="userid" name="userid" onchange="selectUser($(this).val())" style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(User u:userList){ %>
@@ -200,12 +237,25 @@ function stateBatch(state)
 		<option value="0" <%if(state==0) {%>selected="selected"<%} %>>未审核</option>
 		<option value="1" <%if(state==1) {%>selected="selected"<%} %>>已审核</option>
 		</select>
+		供货商:<select id="customerid" name="customerid" style="width: 80px">
+		<option value="-1">请选择</option>
+		<%for(Customer cus:customerList){ %>
+		<option value="<%=cus.getCustomerid()%>" <%if(cus.getCustomerid()==customerid) {%>selected="selected"<%} %>><%=cus.getCustomername() %></option>
+		<%} %>
+		</select>
+		扣罚内容:<input type="text" name="punishcontent" id="punishcontent" value="<%=punishcontent%>"/>
+		</td></tr><tr><td>
+创建时间：<input type ="text" name ="starttime" id="starttime"  value="<%=starttime%>"/>
+			到
+		<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>"/>
 		<input type="hidden" id="isnow" name="isnow" value="1"/>
 		<input type="submit" value="查询"/>
 		<input type="button" value="审核" onclick="stateBatch(1)"/>
 		<input type="button" value="取消审核" onclick="stateBatch(0)"/>
 		<input type="button" value="导入" id="imp" onclick="showUp()"/>
 		<input type="button" value="导出" onclick="javascript:$('#exportExcle').submit()" <%if(punishList.size()==0){ %>disabled="disabled" <%} %>/>
+		<input name="" type="button" value="扣罚登记"  id="add_button"  />
+		</td></tr></table>
 	</form>
 	<div id="fileup" style="display: none;"><form id="punish_cre_Form" name="punish_import_Form"  action="<%=request.getContextPath()%>/punish/importData" method="post" enctype="multipart/form-data" >
 		<input type="file" name="Filedata" id="filename" onchange="showButton()"/>
@@ -220,6 +270,7 @@ function stateBatch(state)
 		<div id="box_form" >
 		</div>
 		</div>
+		<div id="br"><br></br><br></br></div>
 		<div id="br"><br></br></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	  <tr class="font_1">
@@ -240,7 +291,7 @@ function stateBatch(state)
 		</tr>
 		 <% for(Punish p : punishList){ %>
 		<tr>
-		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><input id="isprint" type="checkbox" value="<%=p.getId()%>"   userid="<%=p.getUserid()%>" name="isprint"/></td>
+		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><%if(p.getIsUpdate()) {%><input id="isprint" type="checkbox" value="<%=p.getId()%>"  readonly="readonly" userid="<%=p.getUserid()%>" name="isprint"/><%}%>  </td>
 			<td width="8%" align="center" valign="middle"><%=p.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
 			<%for(Customer cus:customerList){ if(cus.getCustomerid()==p.getCustomerid()){out.print(cus.getCustomername());}}%>
@@ -272,15 +323,18 @@ function stateBatch(state)
 			<td width="8%" align="center" valign="middle">
 			<%for(User u:userList){ if(u.getUserid()==p.getCreateuser()){out.print(u.getRealname());}}%>
 			</td>
-			<td width="8%" align="center" valign="middle">
+			<td width="8%" align="center" style="font-size: 11px" valign="middle">
 			<%=p.getCreatetime() %>
 			</td>
 		
 			<td width="13%" align="center" valign="middle">
+			<%if(p.getIsUpdate()) {%>
 			[<a href="javascript:if(checkData(<%=p.getState() %>)){edit_button(<%=p.getId() %>);}">修改</a>]
 			[<a href="javascript:if(confirm('确定要删除?')){delData(<%=p.getId() %>);}">删除</a>]
 <%-- 			[<a href="javascript:state(<%=p.getId() %>);"><%=(p.getState()==1?"取消审核":"审核") %></a>] 
- --%>			</td>
+ --%>			
+ <%}else { %>已超时<%} %>
+ </td>
 		</tr>
 		<%} %>
 	</table>
@@ -315,6 +369,9 @@ function stateBatch(state)
 <input type="hidden" name="punishid" value="<%=punishid%>"/>
 <input type="hidden" name="punishlevel" value="<%=punishlevel%>"/>
 <input type="hidden" name="state" value="<%=state%>"/>
+<input type="hidden" name="customerid" value="<%=customerid%>"/>
+<input type="hidden" name="starttime" value="<%=starttime%>"/>
+<input type="hidden" name="endtime" value="<%=endtime%>"/>
 </form>
 		<script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page")==null?0:request.getAttribute("page") %>);

@@ -57,12 +57,13 @@ List<Customer> customers = (List<Customer>)request.getAttribute("customers");
 		<td>责任部门:
 		</td>
 		<td>
-		<select id="branchid" name="branchid" style="width: 140px" onchange="selectBranch($(this).val())">
+		<select id="branchid" name="branchid" style="width: 90px" onchange="selectBranch($(this).val())">
 		<option value="0">请选择</option>
 		<%for(Branch b:branchlist){ %>
 		<option value="<%=b.getBranchid()%>" <%if(b.getBranchid()==punish.getBranchid()){ %> selected="selected"<%} %>><%=b.getBranchname() %></option>
 		<%} %>
 		</select>
+		<input type="text" onkeyup="findBranch($(this).val())"style="width: 40px"/>
 		</td>
 		<td>
 		责任人:
