@@ -2,6 +2,7 @@ package cn.explink.controller;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -307,7 +308,9 @@ public class PunishController {
 	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
 			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
-			@RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow, @RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, @RequestParam(value = "starttime", defaultValue = "", required = false) String starttime,
+			@RequestParam(value = "endtime", defaultValue = "", required = false) String endtime, @RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow,
+			@RequestParam(value = "punishcontent", defaultValue = "", required = false) String punishcontent, @RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
 		List<Branch> branchlist = this.branchDAO.getAllBranches();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<User> userList = this.userDAO.getAllUser();
@@ -319,8 +322,11 @@ public class PunishController {
 		List<Punish> punishList = new ArrayList<Punish>();
 		int count = 0;
 		if (isnow > 0) {
-			punishList = this.punishDAO.getPunishList(cwb, punishid, userid, branchid, punishlevel, state, page);
-			count = this.punishDAO.getPunishCount(cwb, punishid, userid, branchid, punishlevel, state, page);
+			punishList = this.punishDAO.getPunishList(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent, page);
+			count = this.punishDAO.getPunishCount(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent, page);
+		}
+		for (Punish p : punishList) {
+			p.setIsUpdate(this.isMorethanDate(p.getCreatetime()));
 		}
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
@@ -332,6 +338,11 @@ public class PunishController {
 		model.addAttribute("cwb", cwb);
 		model.addAttribute("state", state);
 		model.addAttribute("punishlevel", punishlevel);
+		model.addAttribute("customerid", customerid);
+		model.addAttribute("starttime", starttime);
+		model.addAttribute("endtime", endtime);
+		model.addAttribute("punishcontent", punishcontent);
+
 		return "/punish/list";
 	}
 
@@ -368,13 +379,28 @@ public class PunishController {
 		return users;
 	}
 
+	@RequestMapping("/findBranch")
+	public @ResponseBody
+	List<Branch> findBranch(@RequestParam(value = "branchname", defaultValue = "", required = false) String branchname) throws Exception {
+
+		List<Branch> branch = new ArrayList<Branch>();
+		if (branchname.length() == 0) {
+			branch = this.branchDAO.getAllBranches();
+		} else {
+			branch = this.branchDAO.getBranchByBranchnameMoHu(branchname);
+		}
+		return branch;
+	}
+
 	@RequestMapping("/exportExcle")
 	public void exportExcle(HttpServletResponse response, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
 			@RequestParam(value = "userid", defaultValue = "0", required = false) long userid, @RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel,
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, @RequestParam(value = "starttime", defaultValue = "", required = false) String starttime,
+			@RequestParam(value = "punishcontent", defaultValue = "", required = false) String punishcontent, @RequestParam(value = "endtime", defaultValue = "", required = false) String endtime,
 			@RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
-		String[] cloumnName1 = new String[12]; // 导出的列名
-		String[] cloumnName2 = new String[12]; // 导出的英文列名
+		String[] cloumnName1 = new String[13]; // 导出的列名
+		String[] cloumnName2 = new String[13]; // 导出的英文列名
 
 		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
@@ -384,7 +410,7 @@ public class PunishController {
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			// 查询出数据
-			final List<Punish> punishList = this.punishDAO.getPunishforExcel(cwb, punishid, userid, branchid, punishlevel, state);
+			final List<Punish> punishList = this.punishDAO.getPunishforExcel(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent);
 			final List<Branch> branchs = this.branchDAO.getAllBranches();
 			final List<Customer> customers = this.customerDAO.getAllCustomers();
 			final List<User> users = this.userDAO.getAllUser();
@@ -510,6 +536,18 @@ public class PunishController {
 		cloumnName2[11] = "Createtime";
 		cloumnName1[12] = "审核状态";
 		cloumnName2[12] = "State";
+
+	}
+
+	public boolean isMorethanDate(String time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		long num = 0l;
+		try {
+			num = System.currentTimeMillis() - sdf.parse(time).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return 30 >= (num / (24 * 60 * 60 * 1000));
 
 	}
 

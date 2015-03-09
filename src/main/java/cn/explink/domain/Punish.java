@@ -17,6 +17,7 @@ public class Punish {
 	private long createuser;
 	private String createtime;
 	private int state;
+	private Boolean isUpdate;
 
 	public long getId() {
 		return this.id;
@@ -129,4 +130,13 @@ public class Punish {
 	public void setState(int state) {
 		this.state = state;
 	}
+
+	public Boolean getIsUpdate() {
+		return this.isUpdate;
+	}
+
+	public void setIsUpdate(Boolean isUpdate) {
+		this.isUpdate = isUpdate;
+	}
+
 }

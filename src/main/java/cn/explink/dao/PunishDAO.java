@@ -45,22 +45,23 @@ public class PunishDAO {
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
-	public List<Punish> getPunishList(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long page) {
+	public List<Punish> getPunishList(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long customerid, String starttime, String endtime, String punishcontent,
+			long page) {
 
 		String sql = "select * from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent);
 		sql += " order by createtime desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
-	public int getPunishCount(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long page) {
+	public int getPunishCount(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long customerid, String starttime, String endtime, String punishcontent, long page) {
 
 		String sql = "select count(*) from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	private String creConditions(String cwb, long punishid, long userid, long branchid, long punishlevel, int state) {
+	private String creConditions(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long customerid, String starttime, String endtime, String punishcontent) {
 
 		String sql = "";
 		if ((cwb != null) && (cwb.length() > 0)) {
@@ -81,6 +82,15 @@ public class PunishDAO {
 		if (state > -1) {
 			sql += " and state=" + state;
 		}
+		if (customerid > 0) {
+			sql += " and customerid=" + customerid;
+		}
+		if (punishcontent.length() > 0) {
+			sql += " and punishcontent like '%" + punishcontent + "%'";
+		}
+		if ((starttime.length() > 0) && (endtime.length() > 0)) {
+			sql += " and createtime>='" + starttime + "' and createtime<='" + endtime + "'";
+		}
 		return sql;
 	}
 
@@ -96,13 +106,13 @@ public class PunishDAO {
 	}
 
 	public int importPunish(Punish pu) throws Exception {
-		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime,state) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime,state) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getCustomerid(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser(), pu.getCreatetime(), pu.getState());
 	}
 
 	public int updatePunish(Punish pu) throws Exception {
-		String sql = " update  express_ops_punish_detail set customerid, punishid=?,branchid=?,userid=?,punishtime=?,punishlevel=?,punishfee=?,punishcontent=?,realfee=? where id=?";
+		String sql = " update  express_ops_punish_detail set  punishid=?,customerid=?,branchid=?,userid=?,punishtime=?,punishlevel=?,punishfee=?,punishcontent=?,realfee=? where id=?";
 		return this.jdbcTemplate.update(sql, pu.getPunishid(), pu.getCustomerid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getId());
 	}
@@ -121,9 +131,9 @@ public class PunishDAO {
 		return this.jdbcTemplate.query(sql, new PunishRowMapper(), cwb);
 	}
 
-	public List<Punish> getPunishforExcel(String cwb, long punishid, long userid, long branchid, long punishlevel, int state) {
+	public List<Punish> getPunishforExcel(String cwb, long punishid, long userid, long branchid, long punishlevel, int state, long customerid, String starttime, String endtime, String punishcontent) {
 		String sql = "select * from express_ops_punish_detail where 1=1 ";
-		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state);
+		sql += this.creConditions(cwb, punishid, userid, branchid, punishlevel, state, customerid, starttime, endtime, punishcontent);
 		return this.jdbcTemplate.query(sql, new PunishRowMapper());
 	}
 
