@@ -100,7 +100,7 @@ public class PunishDAO {
 	}
 
 	public int createPunish(Punish pu) throws Exception {
-		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,NOW())";
+		String sql = " insert into express_ops_punish_detail(cwb,customerid,punishid,branchid,userid,punishtime,punishlevel,punishfee,punishcontent,realfee,createuser,createtime) values(?,?,?,?,?,?,?,?,?,?,?,NOW())";
 		return this.jdbcTemplate.update(sql, pu.getCwb(), pu.getCustomerid(), pu.getPunishid(), pu.getBranchid(), pu.getUserid(), pu.getPunishtime(), pu.getPunishlevel(),
 				pu.getPunishfee() == null ? 0 : pu.getPunishfee(), pu.getPunishcontent(), pu.getRealfee() == null ? 0 : pu.getRealfee(), pu.getCreateuser());
 	}
