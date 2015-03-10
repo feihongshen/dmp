@@ -1,5 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
+<%@page import="cn.explink.controller.MonitorLogDTO"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="cn.explink.util.Page"%>
 <html>
@@ -24,6 +25,7 @@
 </head>
 <%
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
+List<MonitorLogDTO>  monitorList = (List<MonitorLogDTO> )request.getAttribute("monitorList");
 List customeridList =(List) request.getAttribute("customeridStr");
 Map<String,Object> workermap = (Map<String,Object>)request.getAttribute("branckWorkNum");
 String startTime = request.getAttribute("startTime")==null?"":request.getAttribute("startTime").toString();
@@ -77,7 +79,6 @@ $("#right_hideboxbtn").click(function(){
 <div class="inputselect_box" style="top: 0px; ">
 		<form action="<%=request.getContextPath()%>/kpigather/list/1" method="post" id="searchForm">
 		  &nbsp;&nbsp;选择供货商：
-			供货商
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%for(Customer c : customerlist){ %>
 		           <option value ="<%=c.getCustomerid() %>" 
@@ -146,31 +147,32 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" >票数</td>
 			   		<td  align="center" valign="middle" >金额</td>
 				</tr>
-				
+				<%if(monitorList != null && monitorList.size()>0){ %>
+				<%for(MonitorLogDTO mo : monitorList){ %>
 			   	<tr height="30">
-			   		<td  align="center" valign="middle" >wwwwwwwwwww</td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
+			   		<td  align="center" valign="middle" ><%=mo.getCustomerid() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getWeidaohuoCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getWeidaohuoCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTihuoCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTihuoCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getRukuCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getRukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getChukuCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getChukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getDaozhanCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getDaozhanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getZaizhanzijiCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getZaizhanzijiCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getYichuzhanCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getYichuzhanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getZhongzhanrukuCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getZhongzhuanrukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuihuorukuCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuihuorukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuigonghuoshangCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuigonghuoshangCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuikehuweishoukuanCountsum() %></td>
+			   		<td  align="center" valign="middle" ><%=mo.getTuikehuweishoukuanCaramountsum() %></td>
 			   		<td  align="center" valign="middle" ></td>
 			   		<td  align="center" valign="middle" ></td>
 			   		<td  align="center" valign="middle" ></td>
@@ -178,6 +180,8 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" ></td>
 			   		<td  align="center" valign="middle" ></td>
 				</tr>
+				<%} %>
+				<%} %>
 			   	</tbody>
 			</table>
 		    </div>
