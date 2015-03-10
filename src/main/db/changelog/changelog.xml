@@ -6023,5 +6023,12 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			MODIFY COLUMN `createuser`  varchar(255) CHARACTER SET utf8 NULL DEFAULT '' AFTER `punishcontent`;
 		</sql>
 	</changeSet>
+	<changeSet id="lansheng-2015-03-10-1" author="lansheng">
+		<sql>
+		INSERT INTO `express_set_menu_info_new`(`menuid`,`menuname`,`menuurl`,`menulevel`,`menuno`,`parentno`,`menuimage`,`adminshowflag`) VALUES ( NULL,'订单生命周期监控','monitorlog/monitorloglist','3','Z40101','1076','images/zhandianrizhiguanli.png',NULL); 
+		INSERT INTO `express_set_menu_info_new`(`menuid`,`menuname`,`menuurl`,`menulevel`,`menuno`,`parentno`,`menuimage`,`adminshowflag`) VALUES ( NULL,'存货监控','monitorlog/monitorcunhuolist','3','Z40102','1076','images/zhandianrizhiguanli.png',NULL); 
+		ALTER TABLE `express_ops_operation_time` ADD COLUMN `receivablefee` DECIMAL(19,2) NULL AFTER `cwbordertypeid`, ADD COLUMN `paybackfee` DECIMAL(19,2) NULL AFTER `receivablefee`; 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
