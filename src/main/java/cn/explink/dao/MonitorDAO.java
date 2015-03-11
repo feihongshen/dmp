@@ -55,7 +55,7 @@ public class MonitorDAO {
 	 * @return 
 	 * @throws Exception
 	 */
-	public List<MonitorLogDTO> getMonitorLogByBranchid(String branchids) {
+	public List<MonitorLogDTO> getMonitorLogByBranchid(String branchids,String customerids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT customerid," +
 				"SUM(CASE WHEN (flowordertype = 1 ) THEN 1 ELSE 0 END) AS weidaohuoCountsum," +
@@ -80,7 +80,7 @@ public class MonitorDAO {
 				"SUM(CASE WHEN (flowordertype = 27 ) THEN receivablefee+paybackfee ELSE 0 END) AS tuigonghuoshangCaramountsum," +
 				"SUM(0) AS tuikehuweishoukuanCountsum," +
 				"SUM(0) AS tuikehuweishoukuanCaramountsum" +
-				" FROM `express_ops_operation_time` GROUP BY customerid");
+				" FROM `express_ops_operation_time` " + (customerids.length()>0? (" where customerid in("+customerids+") "):"")+"GROUP BY customerid");
 		
 		List<MonitorLogDTO> list = jdbcTemplate.query(sql.toString(), new MonitorLogDTOMapper());
 		

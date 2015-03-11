@@ -19,9 +19,9 @@ public class MonitorLogService {
 	@Autowired
 	private MonitorDAO monitorDAO;
 
-	public  List<MonitorLogDTO> getMonitorLogByBranchid(String branchids) {
+	public  List<MonitorLogDTO> getMonitorLogByBranchid(String branchids,String customerids) {
 		
-		return monitorDAO.getMonitorLogByBranchid(branchids);
+		return monitorDAO.getMonitorLogByBranchid(branchids,customerids);
 	}
 
 }

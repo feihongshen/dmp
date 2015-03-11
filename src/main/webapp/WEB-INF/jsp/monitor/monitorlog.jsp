@@ -1,6 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.controller.MonitorLogDTO"%>
+<%@page import="java.math.BigDecimal"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="cn.explink.util.Page"%>
 <html>
@@ -25,6 +26,7 @@
 </head>
 <%
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
+Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
 List<MonitorLogDTO>  monitorList = (List<MonitorLogDTO> )request.getAttribute("monitorList");
 List customeridList =(List) request.getAttribute("customeridStr");
 Map<String,Object> workermap = (Map<String,Object>)request.getAttribute("branckWorkNum");
@@ -37,6 +39,16 @@ function dgetViewBox(key,durl){
 }
 </script>
 <script type="text/javascript">
+
+$(document).ready(function() {
+	   //获取下拉框的值
+	   $("#chakan").click(function(){
+		    	$("#searchForm").submit();
+		    	$("#chakan").attr("disabled","disabled");
+				$("#chakan").val("请稍等..");
+	   });
+	});
+	
 $(function() {
 	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
 });
@@ -77,7 +89,7 @@ $("#right_hideboxbtn").click(function(){
  <body style="background:#eef9ff" marginwidth="0" marginheight="0">
 <div class="right_box">
 <div class="inputselect_box" style="top: 0px; ">
-		<form action="<%=request.getContextPath()%>/kpigather/list/1" method="post" id="searchForm">
+		<form action="<%=request.getContextPath()%>/monitorlog/monitorloglist" method="post" id="searchForm">
 		  &nbsp;&nbsp;选择供货商：
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%for(Customer c : customerlist){ %>
@@ -94,7 +106,8 @@ $("#right_hideboxbtn").click(function(){
 		    </select>
 		    [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 			[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-			<input type="submit" class="input_button2" id="chakan" value="查看">
+			<input type="hidden" name="isnow" value="1">
+			<input type="button" class="input_button2" id="chakan" value="查看">
 			<!-- <input type ="button" id="exportExcel" value="导出Excel" class="input_button2" /> -->
 	  </form>
 	</div>
@@ -148,39 +161,129 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" >金额</td>
 				</tr>
 				<%if(monitorList != null && monitorList.size()>0){ %>
+				<%
+				 long	weidaohuoCountsum =0;
+				 BigDecimal	weidaohuoCaramountsum = BigDecimal.ZERO;
+				 long	tihuoCountsum =0;
+				 BigDecimal	tihuoCaramountsum = BigDecimal.ZERO;
+				 long	rukuCountsum =0;
+				 BigDecimal	rukuCaramountsum = BigDecimal.ZERO;
+				 long	chukuCountsum =0;
+				 BigDecimal	chukuCaramountsum = BigDecimal.ZERO;
+				 long	daozhanCountsum =0;
+				 BigDecimal	daozhanCaramountsum = BigDecimal.ZERO;
+				 long	zaizhanzijiCountsum =0;
+				 BigDecimal	zaizhanzijiCaramountsum = BigDecimal.ZERO;
+				 long	yichuzhanCountsum =0;
+				 BigDecimal	yichuzhanCaramountsum = BigDecimal.ZERO;
+				 long	zhongzhanrukuCountsum =0;
+				 BigDecimal	zhongzhuanrukuCaramountsum = BigDecimal.ZERO;
+				 long	tuihuorukuCountsum =0;
+				 BigDecimal	tuihuorukuCaramountsum = BigDecimal.ZERO;
+				 long	tuigonghuoshangCountsum =0;
+				 BigDecimal	tuigonghuoshangCaramountsum = BigDecimal.ZERO;
+				 long	tuikehuweishoukuanCountsum =0;
+				 BigDecimal	tuikehuweishoukuanCaramountsum = BigDecimal.ZERO;
+				%> 
 				<%for(MonitorLogDTO mo : monitorList){ %>
 			   	<tr height="30">
-			   		<td  align="center" valign="middle" ><%=mo.getCustomerid() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getWeidaohuoCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getWeidaohuoCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTihuoCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTihuoCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getRukuCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getRukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getChukuCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getChukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getDaozhanCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getDaozhanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getZaizhanzijiCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getZaizhanzijiCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getYichuzhanCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getYichuzhanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getZhongzhanrukuCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getZhongzhuanrukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuihuorukuCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuihuorukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuigonghuoshangCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuigonghuoshangCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuikehuweishoukuanCountsum() %></td>
-			   		<td  align="center" valign="middle" ><%=mo.getTuikehuweishoukuanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
+			   		<td  align="center" valign="middle" ><%=customerMap.get( mo.getCustomerid()) %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/weidaohuo"> <%=mo.getWeidaohuoCountsum() %> </a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getWeidaohuoCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tihuo"> <%=mo.getTihuoCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getTihuoCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/ruku"> <%=mo.getRukuCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getRukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/chuku"> <%=mo.getChukuCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getChukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/daozhan"> <%=mo.getDaozhanCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getDaozhanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/zaizhanziji"> <%=mo.getZaizhanzijiCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getZaizhanzijiCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/yichuzhan"> <%=mo.getYichuzhanCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getYichuzhanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/Zhongzhanruku"> <%=mo.getZhongzhanrukuCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getZhongzhuanrukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuihuoruku"> <%=mo.getTuihuorukuCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getTuihuorukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuigonghuoshang"> <%=mo.getTuigonghuoshangCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getTuigonghuoshangCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuikehuweishoukuan"> <%=mo.getTuikehuweishoukuanCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getTuikehuweishoukuanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/all"> <%= mo.getWeidaohuoCountsum() +mo.getTihuoCountsum()+mo.getRukuCountsum()
+			   		+mo.getChukuCountsum()+mo.getDaozhanCountsum()+ mo.getZaizhanzijiCountsum()+
+			   		mo.getYichuzhanCountsum()+mo.getZhongzhanrukuCountsum()
+			   		+mo.getTuihuorukuCountsum()+mo.getTuigonghuoshangCountsum()+mo.getTuikehuweishoukuanCountsum()  %></a></td>
+			   		<td  align="right" valign="middle" >
+			   		<%=mo.getWeidaohuoCaramountsum().add(mo.getTihuoCaramountsum()).
+			   		add(mo.getTihuoCaramountsum()).add(mo.getRukuCaramountsum()).add(mo.getChukuCaramountsum()).
+			   		add(mo.getDaozhanCaramountsum()).add(mo.getZaizhanzijiCaramountsum()).add(mo.getYichuzhanCaramountsum())
+			   		.add(mo.getZhongzhuanrukuCaramountsum()).add(mo.getTuihuorukuCaramountsum()).
+			   		add(mo.getTuigonghuoshangCaramountsum()).add(mo.getTuikehuweishoukuanCaramountsum()) %>
+			   		</td>
 				</tr>
+				<%
+				 weidaohuoCountsum += mo.getWeidaohuoCountsum();
+				 weidaohuoCaramountsum = weidaohuoCaramountsum.add(mo.getWeidaohuoCaramountsum());
+				 tihuoCountsum += mo.getTihuoCountsum();
+				 tihuoCaramountsum = tihuoCaramountsum.add(mo.getTihuoCaramountsum());
+				 rukuCountsum += mo.getRukuCountsum();
+				 rukuCaramountsum = rukuCaramountsum.add(mo.getRukuCaramountsum());
+				 chukuCountsum += mo.getChukuCountsum();
+				 chukuCaramountsum = chukuCaramountsum.add(mo.getChukuCaramountsum());
+				 daozhanCountsum += mo.getDaozhanCountsum();
+				 daozhanCaramountsum = daozhanCaramountsum.add(mo.getDaozhanCaramountsum());
+				 zaizhanzijiCountsum += mo.getZaizhanzijiCountsum();
+				 zaizhanzijiCaramountsum = zaizhanzijiCaramountsum.add(mo.getZaizhanzijiCaramountsum());
+				 yichuzhanCountsum += mo.getYichuzhanCountsum();
+				 yichuzhanCaramountsum = yichuzhanCaramountsum.add(mo.getYichuzhanCaramountsum());
+				 zhongzhanrukuCountsum += mo.getZhongzhanrukuCountsum();
+				 zhongzhuanrukuCaramountsum = zhongzhuanrukuCaramountsum.add(mo.getZhongzhuanrukuCaramountsum());
+				 tuihuorukuCountsum += mo.getTuihuorukuCountsum();
+				 tuihuorukuCaramountsum = tuihuorukuCaramountsum.add(mo.getTuihuorukuCaramountsum());
+				 tuigonghuoshangCountsum += mo.getTuigonghuoshangCountsum();
+				 tuigonghuoshangCaramountsum = tuigonghuoshangCaramountsum.add(mo.getTuigonghuoshangCaramountsum());
+				 tuikehuweishoukuanCountsum += mo.getTuikehuweishoukuanCountsum();
+				 tuikehuweishoukuanCaramountsum = tuikehuweishoukuanCaramountsum.add(mo.getTuikehuweishoukuanCaramountsum());
+				
+				%>
 				<%} %>
+				<tr height="30">
+			   		<td  align="center" valign="middle" ><font color ="red">合计</font> </td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/weidaohuo"><%=weidaohuoCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=weidaohuoCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tihuo"><%=tihuoCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tihuoCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/ruku"><%=rukuCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=rukuCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/chuku"><%=chukuCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=chukuCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/daozhan"><%=daozhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=daozhanCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zaizhanziji"><%=zaizhanzijiCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=zaizhanzijiCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/yichuzhan"><%=yichuzhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=yichuzhanCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zhongzhanruku"><%=zhongzhanrukuCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhongzhuanrukuCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuihuoruku"><%=tuihuorukuCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuihuorukuCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuigonghuoshang"><%=tuigonghuoshangCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuikehuweishoukuan"><%=tuikehuweishoukuanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuikehuweishoukuanCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/all"> <%= weidaohuoCountsum +tihuoCountsum +rukuCountsum
+			   		+chukuCountsum +daozhanCountsum+ zaizhanzijiCountsum+
+			   		yichuzhanCountsum+zhongzhanrukuCountsum
+			   		+tuihuorukuCountsum+tuigonghuoshangCountsum+tuikehuweishoukuanCountsum  %></a></td>
+			   		<td  align="right" valign="middle" >
+			   		<%=weidaohuoCaramountsum.add(tihuoCaramountsum).
+			   		add(tihuoCaramountsum).add(rukuCaramountsum).add(chukuCaramountsum).
+			   		add(daozhanCaramountsum).add(zaizhanzijiCaramountsum).add(yichuzhanCaramountsum)
+			   		.add(zhongzhuanrukuCaramountsum).add(tuihuorukuCaramountsum).
+			   		add(tuigonghuoshangCaramountsum).add(tuikehuweishoukuanCaramountsum) %>
+			   		</td>
+				</tr>
 				<%} %>
 			   	</tbody>
 			</table>

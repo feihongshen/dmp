@@ -1,6 +1,11 @@
 package cn.explink.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +21,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.DataStatisticsService;
@@ -59,8 +65,16 @@ public class MonitorLogController {
 	 * @return
 	 */
 	@RequestMapping("/monitorloglist")
-	public String monitorloglist(Model model,@RequestParam(value = "customerid", required = false, defaultValue = "0") String[] customeridStr) {
-		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+	public String monitorloglist(Model model,@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customeridStr,
+			HttpServletRequest request) {
+		
+		List<Customer> clist =  this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist",clist);
+		Map<Long,String> cmap =new HashMap<Long , String>();
+		for (Customer cut : clist) {
+			cmap.put(cut.getCustomerid(), cut.getCustomername());
+		}
+		model.addAttribute("customerMap",cmap);
 		List<String> customeridList = this.dataStatisticsService.getList(customeridStr);
 		model.addAttribute("customeridStr", customeridList);
 		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+"");
@@ -70,10 +84,27 @@ public class MonitorLogController {
 				branchids += ","+branch.getBranchid();
 			}
 		}
-		List<MonitorLogDTO> monitorList =  monitorLogService.getMonitorLogByBranchid(branchids);
+		String customerids =getStrings(customeridStr);
+		List<MonitorLogDTO> monitorList =  new ArrayList<MonitorLogDTO>();
+		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
+			monitorList = monitorLogService.getMonitorLogByBranchid(branchids,customerids);
+		}		
 		
 		model.addAttribute("monitorList", monitorList);
 		return "/monitor/monitorlog";
+	}
+	private String getStrings(String[] strArr) {
+		String strs = "";
+		if (strArr.length > 0) {
+			for (String str : strArr) {
+				strs += str + ",";
+			}
+		}
+
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
 	}
 	@RequestMapping("/monitorcunhuolist")
 	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr) {
