@@ -67,8 +67,8 @@ public class MonitorDAO {
 						"SUM(CASE WHEN (flowordertype = 4 AND branchid IN("+branchids+") ) THEN receivablefee+paybackfee ELSE 0 END) AS rukuCaramountsum," +
 						"SUM(CASE WHEN (flowordertype = 6 AND branchid IN("+branchids+") ) THEN 1 ELSE 0 END) AS chukuCountsum," +
 						"SUM(CASE WHEN (flowordertype = 6 AND branchid IN("+branchids+") ) THEN receivablefee+paybackfee ELSE 0 END) AS chukuCaramountsum," +
-						"SUM(CASE WHEN (flowordertype IN(7,8) ) THEN 1 ELSE 0 END) AS daozhanCountsum," +
-						"SUM(CASE WHEN (flowordertype IN(7,8) ) THEN receivablefee+paybackfee ELSE 0 END) AS daozhanCaramountsum," +
+						"SUM(CASE WHEN (flowordertype IN(7,8,9,35,36) ) THEN 1 ELSE 0 END) AS daozhanCountsum," +
+						"SUM(CASE WHEN (flowordertype IN(7,8,9,35,36) ) THEN receivablefee+paybackfee ELSE 0 END) AS daozhanCaramountsum," +
 						"SUM(0) AS zaizhanzijiCountsum," +
 						"SUM(0) AS zaizhanzijiCaramountsum," +
 						"SUM(CASE WHEN (flowordertype IN(6,14,40) AND branchid NOT IN("+branchids+") ) THEN 1 ELSE 0 END) AS yichuzhanCountsum," +
@@ -90,7 +90,7 @@ public class MonitorDAO {
 
 	public List<String> getMonitorLogByType(String flowordertypes ,long customerid,long page) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
@@ -100,7 +100,7 @@ public class MonitorDAO {
 
 	public List<String> getMonitorLogByType(String flowordertypes ,String branchids,long customerid,long page) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+") and branchid in("+branchids+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where "+(customerid>0?("customerid ="+customerid+"  and"):"")+"  flowordertype in("+flowordertypes+") and branchid in("+branchids+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
@@ -109,38 +109,59 @@ public class MonitorDAO {
 	}
 	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,long customerid,long page) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+") and branchid not in("+branchids+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
 
 		return list;
 	}
+	
+	//==============条数===========
 	public long getMonitorLogByTypeCount(String flowordertypes ,long customerid) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+")");
-
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"    flowordertype in("+flowordertypes+")");
 				long count = jdbcTemplate.queryForLong(sql.toString());
-
 				return count;
 	}
 
 	public long getMonitorLogByTypeCount(String flowordertypes ,String branchids,long customerid) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+") and branchid in("+branchids+")");
-
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+") and branchid in("+branchids+")");
 		long count = jdbcTemplate.queryForLong(sql.toString());
 
 		return count;
 	}
 	public long getMonitorLogByTypeAndNotInCount(String flowordertypes ,String branchids,long customerid) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where customerid ="+customerid+"  and flowordertype in("+flowordertypes+") and branchid not in("+branchids+")") ;
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"    flowordertype in("+flowordertypes+") and branchid not in("+branchids+")") ;
 
 		long count = jdbcTemplate.queryForLong(sql.toString());
 
 		return count;
 	}
 
+	
+	///============导出=============
+	public String getMonitorLogByTypeSql(String flowordertypes ,long customerid) {
+		
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+"   ot.flowordertype in("+flowordertypes+")  and de.state=1  ";
+
+
+		return sql;
+	}
+
+	public String getMonitorLogByTypeSql(String flowordertypes ,String branchids,long customerid) {
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid in("+branchids+")  and de.state=1  " ;
+
+
+		return sql;
+	}
+	public String getMonitorLogByTypeAndNotInSql(String flowordertypes ,String branchids,long customerid) {
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid not in("+branchids+")  and de.state=1  ";
+
+
+		return sql;
+	}
 
 }

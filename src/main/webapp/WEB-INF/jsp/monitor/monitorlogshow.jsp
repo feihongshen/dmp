@@ -43,7 +43,7 @@ function check(){
 <body style="background:#eef9ff">
 <div class="right_box">
 	<div class="inputselect_box">
-	<form action="<%=request.getContextPath()%>/logtoday/exportExcel" method="post" id="searchForm2">
+	<form action="<%=request.getContextPath()%>/monitorlog/exportExcel" method="post" id="searchForm2">
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:10px">
 	<tr>
 		<td align="left">
@@ -61,10 +61,9 @@ function check(){
 	</tr>
 	</table>
 	<input type="hidden" name="type" value="<%=request.getAttribute("type")==null?"":request.getAttribute("type")%>" >
-	<input type="hidden" name="branchid" value="<%=request.getAttribute("branchid")==null?"0":request.getAttribute("branchid")%>" >
+	<input type="hidden" name="customerid" value="<%=request.getAttribute("customerid")==null?"0":request.getAttribute("customerid")%>" >
 	</form>
-	<form id="searchForm1" action ="<%=request.getContextPath()%>/logtoday/todayArrival" method = "post">
-	<input type="hidden" name="branchid" value="<%=request.getAttribute("branchid")%>">
+	<form id="searchForm1" action ="<%=request.getContextPath()%>/monitorlog/monitorloglist?isnow=1" method = "post">
 	</form>
 	</div>
 	<div class="right_title">
