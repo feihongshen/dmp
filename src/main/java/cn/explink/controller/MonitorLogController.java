@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,6 +29,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.MonitorLogService;
+import cn.explink.util.Page;
 
 @Controller
 @RequestMapping("/monitorlog")
@@ -93,6 +95,37 @@ public class MonitorLogController {
 		model.addAttribute("monitorList", monitorList);
 		return "/monitor/monitorlog";
 	}
+	
+	
+	@RequestMapping("/show/{customerid}/{type}/{page}")
+	public String showMonitor(Model model,@PathVariable("customerid") long customerid,
+			@PathVariable("type") String type,
+			@PathVariable("page") long page,
+			HttpServletRequest request) {
+		
+		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+"");
+		String branchids ="-1";
+		if(blist != null && blist.size()>0){
+			for (Branch branch : blist) {
+				branchids += ","+branch.getBranchid();
+			}
+		}
+		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorLogByType(branchids,customerid,type,page);
+		
+		model.addAttribute("cwborderList", cwborderList);
+		
+		long count = monitorLogService.getMonitorLogByTypeCount(branchids,customerid,type);
+		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page_obj", pageparm);
+		model.addAttribute("page", page);
+		model.addAttribute("customerid", customerid);
+		model.addAttribute("type", type);
+		
+		return "/monitor/monitorlogshow";
+	}
+	
+	
 	private String getStrings(String[] strArr) {
 		String strs = "";
 		if (strArr.length > 0) {
