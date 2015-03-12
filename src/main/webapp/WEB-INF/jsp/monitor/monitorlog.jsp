@@ -188,29 +188,29 @@ $("#right_hideboxbtn").click(function(){
 				<%for(MonitorLogDTO mo : monitorList){ %>
 			   	<tr height="30">
 			   		<td  align="center" valign="middle" ><%=customerMap.get( mo.getCustomerid()) %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/weidaohuo"> <%=mo.getWeidaohuoCountsum() %> </a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/weidaohuo/1"> <%=mo.getWeidaohuoCountsum() %> </a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getWeidaohuoCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tihuo"> <%=mo.getTihuoCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tihuo/1"> <%=mo.getTihuoCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getTihuoCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/ruku"> <%=mo.getRukuCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/ruku/1"> <%=mo.getRukuCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getRukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/chuku"> <%=mo.getChukuCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/chuku/1"> <%=mo.getChukuCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getChukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/daozhan"> <%=mo.getDaozhanCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/daozhan/1"> <%=mo.getDaozhanCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getDaozhanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/zaizhanziji"> <%=mo.getZaizhanzijiCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/zaizhanziji/1"> <%=mo.getZaizhanzijiCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getZaizhanzijiCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/yichuzhan"> <%=mo.getYichuzhanCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/yichuzhan/1"> <%=mo.getYichuzhanCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getYichuzhanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/Zhongzhanruku"> <%=mo.getZhongzhanrukuCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/Zhongzhanruku/1"> <%=mo.getZhongzhanrukuCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getZhongzhuanrukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuihuoruku"> <%=mo.getTuihuorukuCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuihuoruku/1"> <%=mo.getTuihuorukuCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getTuihuorukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuigonghuoshang"> <%=mo.getTuigonghuoshangCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuigonghuoshang/1"> <%=mo.getTuigonghuoshangCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getTuigonghuoshangCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuikehuweishoukuan"> <%=mo.getTuikehuweishoukuanCountsum() %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/tuikehuweishoukuan/1"> <%=mo.getTuikehuweishoukuanCountsum() %></a></td>
 			   		<td  align="right" valign="middle" ><%=mo.getTuikehuweishoukuanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/all"> <%= mo.getWeidaohuoCountsum() +mo.getTihuoCountsum()+mo.getRukuCountsum()
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getCustomerid()%>/all/1"> <%= mo.getWeidaohuoCountsum() +mo.getTihuoCountsum()+mo.getRukuCountsum()
 			   		+mo.getChukuCountsum()+mo.getDaozhanCountsum()+ mo.getZaizhanzijiCountsum()+
 			   		mo.getYichuzhanCountsum()+mo.getZhongzhanrukuCountsum()
 			   		+mo.getTuihuorukuCountsum()+mo.getTuigonghuoshangCountsum()+mo.getTuikehuweishoukuanCountsum()  %></a></td>
@@ -250,29 +250,29 @@ $("#right_hideboxbtn").click(function(){
 				<%} %>
 				<tr height="30">
 			   		<td  align="center" valign="middle" ><font color ="red">合计</font> </td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/weidaohuo"><%=weidaohuoCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/weidaohuo/1"><%=weidaohuoCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=weidaohuoCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tihuo"><%=tihuoCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tihuo/1"><%=tihuoCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tihuoCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/ruku"><%=rukuCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/ruku/1"><%=rukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=rukuCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/chuku"><%=chukuCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/chuku/1"><%=chukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=chukuCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/daozhan"><%=daozhanCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/daozhan/1"><%=daozhanCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=daozhanCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zaizhanziji"><%=zaizhanzijiCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zaizhanziji/1"><%=zaizhanzijiCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=zaizhanzijiCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/yichuzhan"><%=yichuzhanCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/yichuzhan/1"><%=yichuzhanCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=yichuzhanCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zhongzhanruku"><%=zhongzhanrukuCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/zhongzhanruku/1"><%=zhongzhanrukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=zhongzhuanrukuCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuihuoruku"><%=tuihuorukuCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuihuoruku/1"><%=tuihuorukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuihuorukuCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuigonghuoshang"><%=tuigonghuoshangCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuigonghuoshang/1"><%=tuigonghuoshangCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuikehuweishoukuan"><%=tuikehuweishoukuanCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/tuikehuweishoukuan/1"><%=tuikehuweishoukuanCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuikehuweishoukuanCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/all"> <%= weidaohuoCountsum +tihuoCountsum +rukuCountsum
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showAll/all/1"><%=weidaohuoCountsum +tihuoCountsum +rukuCountsum
 			   		+chukuCountsum +daozhanCountsum+ zaizhanzijiCountsum+
 			   		yichuzhanCountsum+zhongzhanrukuCountsum
 			   		+tuihuorukuCountsum+tuigonghuoshangCountsum+tuikehuweishoukuanCountsum  %></a></td>

@@ -14,8 +14,6 @@ List<CwbOrderView> cwborderList = request.getAttribute("cwborderList")==null?new
 Page page_obj = (Page)request.getAttribute("page_obj"); 
 
 Map<Long,Customer> customerMap = request.getAttribute("customerMap")==null?new HashMap<Long,Customer>():(Map<Long,Customer>)request.getAttribute("customerMap");
-Map<Long,CustomWareHouse> customerWarehouseMap = request.getAttribute("customerWarehouseMap")==null?new HashMap<Long,CustomWareHouse>():(Map<Long,CustomWareHouse>)request.getAttribute("customerWarehouseMap");
-Map<Long,Branch> branchMap = request.getAttribute("branchMap")==null?new HashMap<Long,Branch>():(Map<Long,Branch>)request.getAttribute("branchMap");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 
 %>
@@ -96,12 +94,13 @@ function check(){
 		<% for(CwbOrderView c : cwborderList){ %>
 				<tr bgcolor="#FF3300">
 					<td  align="center" valign="middle"><a  target="_blank" href="<%=request.getContextPath()%>/order/queckSelectOrder/<%=c.getCwb() %>"><%=c.getCwb() %></a></td>
-					<td  align="center" valign="middle"><%=customerMap.get(c.getCustomerid())==null?"":customerMap.get(c.getCustomerid()).getCustomername() %></td>
+					<td  align="center" valign="middle"><%=c.getCustomername() %></td>
 					<td  align="center" valign="middle"><%=CwbOrderTypeIdEnum.getByValue(Integer.parseInt(c.getCwbordertypeid())).getText() %></td>
+					<td  align="center" valign="middle"><%=c.getDeliverybranch() %></td>
 					<td  align="center" valign="middle"><%=c.getReceivablefee() %></td>
 					<td  align="center" valign="middle"><%=c.getPaybackfee() %></td>
 					<td  align="center" valign="middle"><%=c.getReceivablefee().subtract(c.getPaybackfee()) %></td>
-					<td  align="center" valign="middle"><%=c.getPaytypeNameOld() %></td>
+					<td  align="center" valign="middle"><%=c.getPaytype_old()%></td>
 					<td  align="center" valign="middle"><%=c.getPaytypeName() %></td>
 					<td  align="center" valign="middle"><%=FlowOrderTypeEnum.getText(c.getFlowordertype()).getText() %></td>
 					<td  align="center" valign="middle"><%=DeliveryStateEnum.getByValue((int)c.getDeliverystate()).getText() %></td>

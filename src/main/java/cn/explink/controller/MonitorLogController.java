@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -47,6 +48,8 @@ public class MonitorLogController {
 	CustomerDAO customerDAO;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	ExportmouldDAO exportmouldDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
@@ -102,7 +105,13 @@ public class MonitorLogController {
 			@PathVariable("type") String type,
 			@PathVariable("page") long page,
 			HttpServletRequest request) {
-		
+		List<Customer> clist =  this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist",clist);
+		Map<Long,String> cmap =new HashMap<Long , String>();
+		for (Customer cut : clist) {
+			cmap.put(cut.getCustomerid(), cut.getCustomername());
+		}
+		model.addAttribute("customerMap",cmap);
 		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+"");
 		String branchids ="-1";
 		if(blist != null && blist.size()>0){
@@ -121,7 +130,7 @@ public class MonitorLogController {
 		model.addAttribute("page", page);
 		model.addAttribute("customerid", customerid);
 		model.addAttribute("type", type);
-		
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		return "/monitor/monitorlogshow";
 	}
 	
