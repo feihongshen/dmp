@@ -3845,7 +3845,7 @@ public class CwbOrderService {
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO.creAndUpdateOperationTime(co.getCwb(), sessionbranchid, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), sessionbranchid, co.getCustomerid(), "",
-				co.getEmaildate(), co.getCwbordertypeid());
+				co.getEmaildate(), co.getCwbordertypeid(),co.getReceivablefee(),co.getPaybackfee());
 
 		this.logger.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);

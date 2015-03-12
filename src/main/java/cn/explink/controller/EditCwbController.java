@@ -38,6 +38,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EditCwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.searchEditCwbInfoDao;
@@ -108,6 +109,8 @@ public class EditCwbController {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	EmailDateDAO emaildateDAO;
+	@Autowired
+	OperationTimeDAO operationTimeDAO;
 
 	@Autowired
 	searchEditCwbInfoDao cwbInfoDao;
@@ -350,10 +353,18 @@ public class EditCwbController {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, Receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser,
 							this.getSessionUser().getUserid());
 					ecList.add(ec_dsd);
+					operationTimeDAO.updateOperationTimeMoney(cwb, Receivablefee, Paybackfee);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());
 				} catch (Exception e) {
 					errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
+					e.printStackTrace();
+				}
+				try {
+					operationTimeDAO.updateOperationTimeMoney(cwb, Receivablefee, Paybackfee);
+				} catch (ExplinkException ee) {
+					errorList.add(cwb + "_" + ee.getMessage());
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 

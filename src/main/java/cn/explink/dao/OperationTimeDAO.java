@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -15,7 +16,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OperationTime;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -62,7 +62,7 @@ public class OperationTimeDAO {
 	}
 
 	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, 
-			long customeid, String inwarehouseTime, String emaildate,int cwbordertypeid) {
+			long customeid, String inwarehouseTime, String emaildate,int cwbordertypeid,BigDecimal receivablefee, BigDecimal paybackfee) {
 		String sql = "select count(1) from express_ops_operation_time where cwb=?";
 		long count = this.jdbcTemplate.queryForLong(sql, cwb);
 
@@ -596,4 +596,10 @@ public class OperationTimeDAO {
 			return null;
 		}
 	}
+
+	public void updateOperationTimeMoney(String cwb, BigDecimal receivablefee,BigDecimal paybackfee) {
+		String sql = "update express_ops_operation_time set receivablefee="+receivablefee+",paybackfee="+paybackfee+" where cwb=?";
+		this.jdbcTemplate.update(sql,  cwb);
+	}
+	
 }
