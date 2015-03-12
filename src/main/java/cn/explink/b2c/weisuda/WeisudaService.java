@@ -236,8 +236,11 @@ public class WeisudaService {
 					if (remark5.trim().length() > 0) {
 						remark5 += ",";
 					}
+				} else {
+					remark5 = "";
 				}
 				remark5 += orderFlowDto.getPayremark();
+
 				this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
 			}
 
