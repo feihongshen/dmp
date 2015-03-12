@@ -6030,5 +6030,10 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		ALTER TABLE `express_ops_operation_time` ADD COLUMN `receivablefee` DECIMAL(19,2) NULL AFTER `cwbordertypeid`, ADD COLUMN `paybackfee` DECIMAL(19,2) NULL AFTER `receivablefee`; 
 		</sql>
 	</changeSet>
+	<changeSet id="mali-2015-03-12-1" author="mali">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fnorgbillid` bigint(11) DEFAULT 0 NULL AFTER `fncustomerpayablebillid`; 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
