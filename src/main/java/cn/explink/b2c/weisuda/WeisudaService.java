@@ -231,6 +231,14 @@ public class WeisudaService {
 			if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 					|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
+				String remark5 = cwbOrder.getRemark5();
+				if (remark5 != null) {
+					if (remark5.trim().length() > 0) {
+						remark5 += ",";
+					}
+				}
+				remark5 += orderFlowDto.getPayremark();
+				this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
 			}
 
 		} else if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())) { // 应收款
@@ -312,9 +320,9 @@ public class WeisudaService {
 		parameters.put("sign_man", orderFlowDto.getConsignee());
 		parameters.put("sign_time", orderFlowDto.getRequestTime());
 
-		// String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ?
-		// cwbOrder.getCwbremark() + "\n" : "";
+		String oldcwbremark = cwbOrder.getCwbremark().length() > 0 ? cwbOrder.getCwbremark() + "\n" : "";
 		String newcwbremark = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
+		newcwbremark = this.subCwbRemark(oldcwbremark + newcwbremark);
 		try {
 			this.cwbDAO.updateCwbRemark(orderFlowDto.getCwb(), newcwbremark);
 			cwbOrder.setCwbremark(newcwbremark);
@@ -324,7 +332,6 @@ public class WeisudaService {
 			throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
 		parameters.put("nosysyemflag", "1");//
-		this.cwbDAO.updateCwbRemark1AndRemark2(orderFlowDto.getCwb(), orderFlowDto.getPayremark(), "");
 		if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
 			this.cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
 		}
@@ -356,6 +363,19 @@ public class WeisudaService {
 			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
 		}
 		return podresultid;
+	}
+
+	public String subCwbRemark(String newcwbremark) {
+		boolean flag = false;
+		if (newcwbremark.length() > 500) {
+			flag = true;
+			newcwbremark = newcwbremark.substring(newcwbremark.length() - 500);
+			this.subCwbRemark(newcwbremark);
+		}
+		if (newcwbremark.contains("\n") && flag) {
+			newcwbremark = newcwbremark.substring(newcwbremark.indexOf("\n"));
+		}
+		return newcwbremark;
 	}
 
 }
