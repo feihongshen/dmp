@@ -5317,4 +5317,9 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set deliverid=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, deliverid, cwb);
 	}
+	
+	public void updateCwbRemarkPaytype(String cwb, String remark5) {
+		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, remark5, cwb);
+	}
 }
