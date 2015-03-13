@@ -1,6 +1,6 @@
 <%@page import="cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.CustomWareHouse"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -10,12 +10,10 @@
 <%@page import="cn.explink.enumutil.DeliveryStateEnum" %>
 <%@page import="cn.explink.domain.Exportmould"%>
 <%
-List<CwbOrder> cwborderList = request.getAttribute("cwborderList")==null?new ArrayList<CwbOrder>():(List<CwbOrder>)request.getAttribute("cwborderList");
+List<CwbOrderView> cwborderList = request.getAttribute("cwborderList")==null?new ArrayList<CwbOrderView>():(List<CwbOrderView>)request.getAttribute("cwborderList");
 Page page_obj = (Page)request.getAttribute("page_obj"); 
 
 Map<Long,Customer> customerMap = request.getAttribute("customerMap")==null?new HashMap<Long,Customer>():(Map<Long,Customer>)request.getAttribute("customerMap");
-Map<Long,CustomWareHouse> customerWarehouseMap = request.getAttribute("customerWarehouseMap")==null?new HashMap<Long,CustomWareHouse>():(Map<Long,CustomWareHouse>)request.getAttribute("customerWarehouseMap");
-Map<Long,Branch> branchMap = request.getAttribute("branchMap")==null?new HashMap<Long,Branch>():(Map<Long,Branch>)request.getAttribute("branchMap");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 
 %>
@@ -45,7 +43,7 @@ function check(){
 <body style="background:#eef9ff">
 <div class="right_box">
 	<div class="inputselect_box">
-	<form action="<%=request.getContextPath()%>/logtoday/exportExcel" method="post" id="searchForm2">
+	<form action="<%=request.getContextPath()%>/monitorlog/exportExcel" method="post" id="searchForm2">
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:10px">
 	<tr>
 		<td align="left">
@@ -63,10 +61,10 @@ function check(){
 	</tr>
 	</table>
 	<input type="hidden" name="type" value="<%=request.getAttribute("type")==null?"":request.getAttribute("type")%>" >
+	<input type="hidden" name="expType" value="<%=request.getAttribute("expType")==null?"":request.getAttribute("expType")%>" >
 	<input type="hidden" name="branchid" value="<%=request.getAttribute("branchid")==null?"0":request.getAttribute("branchid")%>" >
 	</form>
-	<form id="searchForm1" action ="<%=request.getContextPath()%>/logtoday/todayArrival" method = "post">
-	<input type="hidden" name="branchid" value="<%=request.getAttribute("branchid")%>">
+	<form id="searchForm1" action ="<%=request.getContextPath()%>/monitorlog/monitorcunhuolist?isnow=1" method = "post">
 	</form>
 	</div>
 	<div class="right_title">
@@ -75,35 +73,43 @@ function check(){
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >代收金额</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >代退金额</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >订单类型</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >当前状态</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >发货仓库</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >入库库房</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >上一站</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >当前站</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >下一站</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff">配送站点</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >客户</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff">派送站点</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >代收货款</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >实退款</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >差异金额</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >支付意愿</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >付款方式</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >订单状态</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >配送结果</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >签收人</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >签收日期</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >发货日期</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >入库日期</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >到站日期</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >领货日期</td>
+				
 		</tr>
-		<% for(CwbOrder c : cwborderList){ %>
+		<% for(CwbOrderView c : cwborderList){ %>
 				<tr bgcolor="#FF3300">
 					<td  align="center" valign="middle"><a  target="_blank" href="<%=request.getContextPath()%>/order/queckSelectOrder/<%=c.getCwb() %>"><%=c.getCwb() %></a></td>
-					<td  align="center" valign="middle"><%=customerMap.get(c.getCustomerid())==null?"":customerMap.get(c.getCustomerid()).getCustomername() %></td>
+					<td  align="center" valign="middle"><%=c.getCustomername() %></td>
+					<td  align="center" valign="middle"><%=CwbOrderTypeIdEnum.getByValue(Integer.parseInt(c.getCwbordertypeid())).getText() %></td>
+					<td  align="center" valign="middle"><%=c.getDeliverybranch() %></td>
 					<td  align="center" valign="middle"><%=c.getReceivablefee() %></td>
 					<td  align="center" valign="middle"><%=c.getPaybackfee() %></td>
-					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
-					<td  align="center" valign="middle"><%=CwbOrderTypeIdEnum.getByValue(c.getCwbordertypeid()).getText() %></td>
+					<td  align="center" valign="middle"><%=c.getReceivablefee().subtract(c.getPaybackfee()) %></td>
+					<td  align="center" valign="middle"><%=c.getPaytype_old()%></td>
+					<td  align="center" valign="middle"><%=c.getPaytypeName() %></td>
 					<td  align="center" valign="middle"><%=FlowOrderTypeEnum.getText(c.getFlowordertype()).getText() %></td>
-					<td  align="center" valign="middle"><%=customerWarehouseMap.get( c.getCustomerwarehouseid())==null?"":customerWarehouseMap.get( c.getCustomerwarehouseid()).getCustomerwarehouse() %></td>
-					<td  align="center" valign="middle"><%=branchMap.get(Long.valueOf((c.getCarwarehouse()==null||c.getCarwarehouse().equals(""))?"-1":c.getCarwarehouse()))==null?"":branchMap.get(Long.valueOf(c.getCarwarehouse())).getBranchname() %></td>
-					<td  align="center" valign="middle"><%=branchMap.get(c.getStartbranchid())==null?"":branchMap.get(c.getStartbranchid()).getBranchname() %></td>
-					<td  align="center" valign="middle"><%=branchMap.get(c.getCurrentbranchid())==null?"":branchMap.get(c.getCurrentbranchid()).getBranchname() %></td>
-					<td  align="center" valign="middle"><%=branchMap.get(c.getNextbranchid())==null?"":branchMap.get(c.getNextbranchid()).getBranchname() %></td>
-					<td  align="center" valign="middle"><%=branchMap.get(c.getDeliverybranchid())==null?"":branchMap.get(c.getDeliverybranchid()).getBranchname() %></td>
+					<td  align="center" valign="middle"><%=DeliveryStateEnum.getByValue((int)c.getDeliverystate()).getText() %></td>
+					<td  align="center" valign="middle"><%=c.getSigninman()%></td>
+					<td  align="center" valign="middle"><%=c.getSignintime() %></td>
+					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
+					<td  align="center" valign="middle"><%=c.getInstoreroomtime() %></td>
+					<td  align="center" valign="middle"><%=c.getInSitetime() %></td>
+					<td  align="center" valign="middle"><%=c.getPickGoodstime() %></td>
 				 </tr>
 		 <%} %>
 	</table>

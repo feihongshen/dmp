@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.CwbOrderView;
+import cn.explink.controller.MonitorKucunDTO;
 import cn.explink.controller.MonitorLogDTO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MonitorDAO;
+import cn.explink.dao.MonitorKucunDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.UserDAO;
@@ -46,6 +48,8 @@ public class MonitorLogService {
 	@Autowired
 	private RemarkDAO remarkDAO;
 	@Autowired
+	private MonitorKucunDAO monitorKucunDAO;
+	@Autowired
 	private CustomWareHouseDAO customWareHouseDAO;
 	@Autowired
 	DataStatisticsService dataStatisticsService;
@@ -53,6 +57,10 @@ public class MonitorLogService {
 	public  List<MonitorLogDTO> getMonitorLogByBranchid(String branchids,String customerids) {
 		
 		return monitorDAO.getMonitorLogByBranchid(branchids,customerids);
+	}
+	public  List<MonitorKucunDTO> getMonitorKucunByBranchid(String branchids) {
+		
+		return monitorKucunDAO.getMonitorLogByBranchid(branchids);
 	}
 	
 	public  List<CwbOrderView> getMonitorLogByType(String branchids,long customerid,String type,long page) {
@@ -157,6 +165,73 @@ public class MonitorLogService {
 		}
 		if("all".equals(type)){
 			count =   monitorDAO.getMonitorLogByTypeCount("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
+		}
+		
+		
+		return count;
+	}
+	public  List<CwbOrderView> getMonitorKucunByType(String branchids,long branchid,String type,long page) {
+		
+		
+		List<String>  cwbList = new ArrayList<String>();
+		
+		if("kucun".equals(type)){
+			cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page);
+		}
+		
+		if("yichukuzaitu".equals(type)){
+			cwbList =   monitorKucunDAO.getMonitorLogByType("6,14,40,27", branchid, page);
+		}
+		
+		if("weiruku".equals(type)){
+			cwbList =   monitorKucunDAO.getMonitorLogByType("1",branchid, page);
+		}
+		if("yituikehuweifankuan".equals(type)){
+			cwbList =   new ArrayList<String>();
+		}
+		
+		if("all".equals(type)){
+			cwbList =   monitorKucunDAO.getMonitorKucunByTypeAll("1",branchid, page);
+		}
+		
+		String cwbs ="";
+		if (cwbList.size() > 0) {
+			cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+		} else {
+			cwbs = "'--'";
+		}
+		List<CwbOrder> clist = cwbDAO.getCwbOrderByCwbs(cwbs);
+		
+		List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+		List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<User> userList = this.userDAO.getAllUser();
+		List<Reason> reasonList = this.reasonDao.getAllReason();
+		List<Remark> remarkList = this.remarkDAO.getAllRemark();
+		
+		// 赋值显示对象
+		List<CwbOrderView> cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, customerList, customerWareHouseList, branchList, userList, reasonList, "2015-01-01 00:00:00", "2015-01-01 00:00:00", remarkList);
+		
+		return cwbOrderView;
+	}
+	public  long getMonitorKucunByTypeCount(String branchids,long branchid,String type) {
+		
+		long count = 0;
+		if("kucun".equals(type)){
+			count =   monitorKucunDAO.getMonitorKucunByTypeCount("1", branchid);
+		}
+		if("yichukuzaitu".equals(type)){
+			count =   monitorKucunDAO.getMonitorLogByTypeCount("6,14,40,27", branchid);
+		}
+		if("weiruku".equals(type)){
+			count =   monitorKucunDAO.getMonitorLogByTypeCount("1", branchid);
+		}
+		if("yituikehuweifankuan".equals(type)){
+			count =  0;
+		}
+		
+		if("all".equals(type)){
+			count =   monitorKucunDAO.getMonitorKucunByTypeCountAll("1",branchid);
 		}
 		
 		

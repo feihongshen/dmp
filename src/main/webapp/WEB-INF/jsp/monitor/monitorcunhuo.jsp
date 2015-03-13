@@ -1,5 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
+<%@page import="cn.explink.controller.MonitorKucunDTO"%>
+<%@page import="java.math.BigDecimal"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="cn.explink.util.Page"%>
 <html>
@@ -25,10 +27,8 @@
 <%
 List<Branch> branchlist = request.getAttribute("branchList") == null ? new ArrayList<Branch>():(List<Branch>)request.getAttribute("branchList") ;
 List dispatchbranchidList =(List) request.getAttribute("dispatchbranchidStr");
-Map<Long,String> branchmap = (Map<Long,String>)request.getAttribute("branchnameMap");
-Map<String,Object> workermap = (Map<String,Object>)request.getAttribute("branckWorkNum");
-String startTime = request.getAttribute("startTime")==null?"":request.getAttribute("startTime").toString();
-Page page_obj = (Page)request.getAttribute("page_obj");
+Map<Long,String> branchmap = (Map<Long,String>)request.getAttribute("branchMap");
+List<MonitorKucunDTO>  monitorList = (List<MonitorKucunDTO> )request.getAttribute("monitorList");
 %>
 <script>
 function dgetViewBox(key,durl){
@@ -36,6 +36,16 @@ function dgetViewBox(key,durl){
 }
 </script>
 <script type="text/javascript">
+
+$(document).ready(function() {
+	   //获取下拉框的值
+	   $("#chakan").click(function(){
+		    	$("#searchForm").submit();
+		    	$("#chakan").attr("disabled","disabled");
+				$("#chakan").val("请稍等..");
+	   });
+	});
+	   
 $(function() {
 	$("#dispatchbranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
 });
@@ -77,7 +87,7 @@ $("#right_hideboxbtn").click(function(){
  <body style="background:#eef9ff" marginwidth="0" marginheight="0">
 <div class="right_box">
 <div class="inputselect_box" style="top: 0px; ">
-		<form action="<%=request.getContextPath()%>/kpigather/list/1" method="post" id="searchForm">
+		<form action="<%=request.getContextPath()%>/monitorlog/monitorcunhuolist" method="post" id="searchForm">
 		  &nbsp;&nbsp;选择机构：
 			<select name ="dispatchbranchid" id ="dispatchbranchid"  multiple="multiple" style="width: 320px;">
 		          <%for(Branch b : branchlist){ %>
@@ -92,7 +102,8 @@ $("#right_hideboxbtn").click(function(){
 				     }%>  ><%=b.getBranchname()%></option>
 		          <%}%>
 			 </select>[<a href="javascript:multiSelectAll('dispatchbranchid',1,'请选择');">全选</a>][<a href="javascript:multiSelectAll('dispatchbranchid',0,'请选择');">取消全选</a>]
-			 <input type="button" id="find" onclick="" value="查询" class="input_button2" />
+			 <input type="hidden" name="isnow" value="1">
+			 <input type="button" id="chakan" onclick="" value="查询" class="input_button2" />
 			<!-- <input type ="button" id="exportExcel" value="导出Excel" class="input_button2" /> -->
 	  </form>
 	</div>
@@ -123,46 +134,76 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" >票数</td>
 			   		<td  align="center" valign="middle" >金额</td>
 				</tr>
-				
+				<%if(monitorList != null && monitorList.size()>0){ %>
+				<%
+				 long	kucunCountsum =0;
+				 BigDecimal	kucunCaramountsum = BigDecimal.ZERO;
+				 long	yichukuzaituCountsum =0;
+				 BigDecimal	yichukuzaituCaramountsum = BigDecimal.ZERO;
+				 long	weirukuCountsum =0;
+				 BigDecimal	weirukuCaramountsum = BigDecimal.ZERO;
+				 long	yituikehuweifankuanCountsum =0;
+				 BigDecimal	yituikehuweifankuanCaramountsum = BigDecimal.ZERO;
+				 
+				%> 
+				<%for(MonitorKucunDTO mo : monitorList){ %>
 			   	<tr height="30">
-			   		<td  align="center" valign="middle" >wwwwwwwwwww</td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
-			   		<td  align="center" valign="middle" ></td>
+			   		<td  align="center" valign="middle" ><%=branchmap.get( mo.getBranchid()) %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/kucun/1"> <%=mo.getKucunCountsum() %> </a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getKucunCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/yichukuzaitu/1"> <%=mo.getYichukuzaituCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getYichukuzaituCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/weiruku/1"> <%=mo.getWeirukuCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getWeirukuCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/yituikehuweifankuan/1"> <%=mo.getYituikehuweifankuanCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getYituikehuweifankuanCaramountsum() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/all/1"> <%= mo.getKucunCountsum() +mo.getYichukuzaituCountsum()+mo.getWeirukuCountsum()
+			   		+mo.getYituikehuweifankuanCountsum()  %></a></td>
+			   		<td  align="right" valign="middle" >
+			   		<%=mo.getKucunCaramountsum().add(mo.getYichukuzaituCaramountsum()).
+			   		add(mo.getWeirukuCaramountsum()).add(mo.getYituikehuweifankuanCaramountsum())%>
+			   		</td>
 				</tr>
+				<%
+				kucunCountsum += mo.getKucunCountsum();
+				kucunCaramountsum = kucunCaramountsum.add(mo.getKucunCaramountsum());
+				yichukuzaituCountsum += mo.getYichukuzaituCountsum();
+				yichukuzaituCaramountsum = yichukuzaituCaramountsum.add(mo.getYichukuzaituCaramountsum());
+				weirukuCountsum += mo.getWeirukuCountsum();
+				weirukuCaramountsum = weirukuCaramountsum.add(mo.getWeirukuCaramountsum());
+				yituikehuweifankuanCountsum += mo.getYituikehuweifankuanCountsum();
+				yituikehuweifankuanCaramountsum = yituikehuweifankuanCaramountsum.add(mo.getYituikehuweifankuanCaramountsum());
+				
+				
+				%>
+				<%} %>
+				<tr height="30">
+			   		<td  align="center" valign="middle" ><font color ="red">合计</font> </td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/kucun/1"><%=kucunCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=kucunCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/yichukuzaitu/1"><%=yichukuzaituCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=yichukuzaituCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/weiruku/1"><%=weirukuCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=weirukuCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/yituikehuweifankuan/1"><%=yituikehuweifankuanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=yituikehuweifankuanCaramountsum %></td>
+			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/all/1"><%=kucunCountsum +yichukuzaituCountsum +weirukuCountsum
+			   		+yituikehuweifankuanCountsum %></a></td>
+			   		<td  align="right" valign="middle" >
+			   		<%=kucunCaramountsum.add(yichukuzaituCaramountsum).
+			   		add(weirukuCaramountsum).add(yituikehuweifankuanCaramountsum) %>
+			   		</td>
+				</tr>
+				<%} %>
+				
+			   
 				
 			   	</tbody>
 			</table>
 		    <div class="jg_10"></div><div class="jg_10"></div>
 	</div>
-	<%if(page_obj != null && page_obj.getMaxpage()>1){ %>
-	<div class="iframe_bottom">
-		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
-			<tr>
-				<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-					<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
-					　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
-							id="selectPg"
-							onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
-							<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
-							<option value="<%=i %>"><%=i %></option>
-							<% } %>
-						</select>页
-				</td>
-			</tr>
-		</table>
-	</div>
-    <%} %>
+	
 		</div>
 	</div>
 </div>

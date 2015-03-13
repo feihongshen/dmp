@@ -16,7 +16,7 @@ import cn.explink.util.Page;
 @Component
 public class MonitorDAO {
 
-	private final class MonitorLogDTOMapper implements RowMapper<MonitorLogDTO> {
+	private final class MonitorlogDTOMapper implements RowMapper<MonitorLogDTO> {
 		@Override
 		public MonitorLogDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MonitorLogDTO menu = new MonitorLogDTO();
@@ -83,7 +83,7 @@ public class MonitorDAO {
 						"SUM(0) AS tuikehuweishoukuanCaramountsum" +
 						" FROM `express_ops_operation_time` " + (customerids.length()>0? (" where customerid in("+customerids+") "):"")+"GROUP BY customerid");
 
-		List<MonitorLogDTO> list = jdbcTemplate.query(sql.toString(), new MonitorLogDTOMapper());
+		List<MonitorLogDTO> list = jdbcTemplate.query(sql.toString(), new MonitorlogDTOMapper());
 
 		return list;
 	}

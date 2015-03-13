@@ -724,6 +724,7 @@ src/main/java/cn/explink/controller/LogToDayByWareHouseController.java -text
 src/main/java/cn/explink/controller/LogToDayController.java -text
 src/main/java/cn/explink/controller/MatchExceptionController.java -text
 src/main/java/cn/explink/controller/MenuController.java -text
+src/main/java/cn/explink/controller/MonitorKucunDTO.java -text
 src/main/java/cn/explink/controller/MonitorLogController.java -text
 src/main/java/cn/explink/controller/MonitorLogDTO.java -text
 src/main/java/cn/explink/controller/NotifyController.java -text
@@ -878,6 +879,7 @@ src/main/java/cn/explink/dao/LogTodayLogDAO.java -text
 src/main/java/cn/explink/dao/MenuDAO.java -text
 src/main/java/cn/explink/dao/MiddleAppearDao.java -text
 src/main/java/cn/explink/dao/MonitorDAO.java -text
+src/main/java/cn/explink/dao/MonitorKucunDAO.java -text
 src/main/java/cn/explink/dao/NoPiPeiCwbDetailDAO.java -text
 src/main/java/cn/explink/dao/NotifyDao.java -text
 src/main/java/cn/explink/dao/OperationDetailDAO.java -text

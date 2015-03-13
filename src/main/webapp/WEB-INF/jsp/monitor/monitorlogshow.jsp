@@ -62,6 +62,7 @@ function check(){
 	</table>
 	<input type="hidden" name="type" value="<%=request.getAttribute("type")==null?"":request.getAttribute("type")%>" >
 	<input type="hidden" name="customerid" value="<%=request.getAttribute("customerid")==null?"0":request.getAttribute("customerid")%>" >
+	<input type="hidden" name="expType" value="<%=request.getAttribute("expType")==null?"":request.getAttribute("expType")%>" >
 	</form>
 	<form id="searchForm1" action ="<%=request.getContextPath()%>/monitorlog/monitorloglist?isnow=1" method = "post">
 	</form>

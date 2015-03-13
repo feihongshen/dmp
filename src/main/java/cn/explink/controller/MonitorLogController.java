@@ -40,6 +40,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.MonitorDAO;
+import cn.explink.dao.MonitorKucunDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.TuihuoRecordDAO;
@@ -98,6 +99,8 @@ public class MonitorLogController {
 	ComplaintDAO complaintDAO;
 	@Autowired
 	MonitorDAO monitorDAO;
+	@Autowired
+	MonitorKucunDAO monitorKucunDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
@@ -180,13 +183,16 @@ public class MonitorLogController {
 		model.addAttribute("page", page);
 		model.addAttribute("customerid", customerid);
 		model.addAttribute("type", type);
+		model.addAttribute("expType", 1);
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		return "/monitor/monitorlogshow";
 	}
 	
 	@RequestMapping("/exportExcel")
 	public void exportExcel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+			 @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type,
+			@RequestParam(value = "expType", required = false, defaultValue = "1") long expType,
 			@RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
@@ -217,44 +223,65 @@ public class MonitorLogController {
 			}
 			
 			String sql1 = "";
-			if("weidaohuo".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("1", customerid);
+			if(expType ==1 ){
+				if("weidaohuo".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("1", customerid);
+				}
+				
+				if("tihuo".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("2", customerid);
+				}
+				if("ruku".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("4", customerid);
+				}
+				if("chuku".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("6", branchids,customerid);
+				}
+				if("daozhan".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("7,8,9,35,36", branchids,customerid);
+				}
+				if("zaizhanziji".equals(type)){
+					sql1 =  "select * from express_ops_operation_time where id=-1";
+				}
+				if("yichuzhan".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("6,14,40", branchids,customerid);
+				}
+				if("Zhongzhanruku".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("12",customerid);
+				}
+				if("tuihuoruku".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("15", customerid);
+				}
+				if("tuigonghuoshang".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("27",customerid);
+				}
+				if("tuikehuweishoukuan".equals(type)){
+					sql1 =   "select * from express_ops_operation_time where id=-1";
+				}
+				if("all".equals(type)){
+					sql1 =   monitorDAO.getMonitorLogByTypeSql("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
+				}
+			}else{
+				
+				if("kucun".equals(type)){
+					sql1 =   monitorKucunDAO.getMonitorKucunByTypeSql("1", branchid);
+				}
+				
+				if("yichukuzaitu".equals(type)){
+					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("6,14,40,27", branchid);
+				}
+				
+				if("weiruku".equals(type)){
+					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("1",branchid);
+				}
+				if("yituikehuweifankuan".equals(type)){
+					sql1 =  "select * from express_ops_operation_time where id=-1";
+				}
+				
+				if("all".equals(type)){
+					sql1 =   monitorKucunDAO.getMonitorKucunAllByTypeSql("1",branchid);
+				}
 			}
-			
-			if("tihuo".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("2", customerid);
-			}
-			if("ruku".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("4", customerid);
-			}
-			if("chuku".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("6", branchids,customerid);
-			}
-			if("daozhan".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("7,8,9,35,36", branchids,customerid);
-			}
-			if("zaizhanziji".equals(type)){
-				sql1 =  "select * from express_ops_operation_time where id=-1";
-			}
-			if("yichuzhan".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("6,14,40", branchids,customerid);
-			}
-			if("Zhongzhanruku".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("12",customerid);
-			}
-			if("tuihuoruku".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("15", customerid);
-			}
-			if("tuigonghuoshang".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("27",customerid);
-			}
-			if("tuikehuweishoukuan".equals(type)){
-				sql1 =   "select * from express_ops_operation_time where id=-1";
-			}
-			if("all".equals(type)){
-				sql1 =   monitorDAO.getMonitorLogByTypeSql("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
-			}
-			
 			final String sql =sql1;
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
@@ -398,14 +425,74 @@ public class MonitorLogController {
 		return strs;
 	}
 	@RequestMapping("/monitorcunhuolist")
-	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr) {
+	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr,
+			HttpServletRequest request) {
 		
 		List<Branch> branchList = this.branchDAO.getBranchToUser(this.getSessionUser().getUserid());
 		List<String> dispatchbranchidlist = this.dataStatisticsService.getList(dispatchbranchidStr);
 		model.addAttribute("dispatchbranchidStr", dispatchbranchidlist);
 		model.addAttribute("branchList", branchList);
+		
+		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String branchidsPram =getStrings(dispatchbranchidStr);
+		String branchids ="-1";
+		if(branchidsPram.length() >0 ){
+			branchids = branchidsPram;
+		}else{
+			if(blist != null && blist.size()>0){
+				for (Branch branch : blist) {
+					branchids += ","+branch.getBranchid();
+				}
+			}
+		}
+		Map<Long ,String> branchMap = new HashMap<Long,String>();
+		if(blist != null && blist.size()>0){
+			for (Branch branch : blist) {
+				branchMap.put(branch.getBranchid(), branch.getBranchname());
+			}
+		}
+		List<MonitorKucunDTO> monitorList =  new ArrayList<MonitorKucunDTO>();
+		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
+			monitorList = monitorLogService.getMonitorKucunByBranchid(branchids);
+		}		
+		
+		model.addAttribute("branchMap", branchMap);
+		model.addAttribute("monitorList", monitorList);
 		return "/monitor/monitorcunhuo";
 	}
-	
+	@RequestMapping("/showkucun/{branchid}/{type}/{page}")
+	public String showkucun(Model model,@PathVariable("branchid") long branchid,
+			@PathVariable("type") String type,
+			@PathVariable("page") long page,
+			HttpServletRequest request) {
+		List<Customer> clist =  this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist",clist);
+		Map<Long,String> cmap =new HashMap<Long , String>();
+		for (Customer cut : clist) {
+			cmap.put(cut.getCustomerid(), cut.getCustomername());
+		}
+		model.addAttribute("customerMap",cmap);
+		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String branchids ="-1";
+		if(blist != null && blist.size()>0){
+			for (Branch branch : blist) {
+				branchids += ","+branch.getBranchid();
+			}
+		}
+		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorKucunByType(branchids,branchid,type,page);
+		
+		model.addAttribute("cwborderList", cwborderList);
+		
+		long count = monitorLogService.getMonitorKucunByTypeCount(branchids,branchid,type);
+		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page_obj", pageparm);
+		model.addAttribute("page", page);
+		model.addAttribute("branchid", branchid);
+		model.addAttribute("type", type);
+		model.addAttribute("expType", 2);
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
+		return "/monitor/monitorcunhuoshow";
+	}
 	
 }
