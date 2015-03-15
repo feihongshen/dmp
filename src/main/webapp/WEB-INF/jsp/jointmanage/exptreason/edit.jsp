@@ -25,6 +25,7 @@ ExptReason expt=(ExptReason)request.getAttribute("exptreason");
 					<li><span>异常码提供方：</span>
 						<select name ="support_key" id="support_key" onchange="changethisB2cFlag(this.value,<%=PosEnum.AliPay.getKey()%>)" disabled="disabled">
 			               <option value ="-1">请选择</option>
+			                  <option value ="1_0">通用</option>
 			               <%for(Customer en : customerlist){ %>
 		              		 <option value ="1_<%=en.getCustomerid()%>"  <%if(en.getCustomerid()==expt.getCustomerid()){%>selected<%} %>><%=en.getCustomername() %></option>
 		              		 <%} %>

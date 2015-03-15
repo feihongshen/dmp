@@ -22,6 +22,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.DataImportService;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 @Service
@@ -234,7 +235,9 @@ public class DataImportDAO_B2c {
 	 * @return
 	 */
 	public List<CwbOrderDTO> getCwbOrderByCustomerIdAndPageCount(long customerid, long MaxCount) {
-		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid=" + customerid + " and isB2cSuccessFlag=0 limit 0," + MaxCount;
+		String beforeTime=DateTimeUtil.getDateBefore(5);
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid="
+				+ customerid + " and isB2cSuccessFlag=0 and emaildate>='"+beforeTime+"' limit 0," + MaxCount;
 		return jdbcTemplate.query(sql, new CwbDTOMapper());
 	}
 

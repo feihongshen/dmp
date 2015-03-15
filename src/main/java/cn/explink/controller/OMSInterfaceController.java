@@ -853,6 +853,7 @@ public class OMSInterfaceController {
 				orderDto.setReceivablefee(cwbOrder.getReceivablefee());//应收款（广州通路）
 				orderDto.setConsigneemobile(cwbOrder.getConsigneemobile());
 				orderDto.setConsigneephone(cwbOrder.getConsigneephone());//广州通路接口中我把电话或手机都放在了这个字段中
+				orderDto.setCustomerid(cwbOrder.getCustomerid());
 				//发货时间？？
 				
 				orderDtoList.add(orderDto);

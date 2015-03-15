@@ -36,6 +36,20 @@ public class OrderDto implements Serializable {
 	private String cargotype;
 	private String cargosize;
 	private long sendcargonum;
+	private long customerid;
+	
+
+	public long getCustomerid() {
+		return customerid;
+	}
+
+	public void setCustomerid(long customerid) {
+		this.customerid = customerid;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 	public long getSendcargonum() {
 		return sendcargonum;

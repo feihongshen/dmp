@@ -43,9 +43,7 @@
 							<li><span>重发次数：</span>
 	 						<input type ="text" id="loopCount" name ="loopCount"  maxlength="300"  value="<%=gztl.getLoopCount()%>"  size="30"> 
 						</li>
-						<li><span>MD5加密字段：</span>
-	 						<input type ="text" id="sign" name ="sign"  maxlength="300"  value="<%=gztl.getSign()%>"  size="30"> 
-						</li>
+						
 							<li><span>客户编码：</span>
 	 						<input type ="text" id="code" name ="code"  maxlength="300"  value="<%=gztl.getCode()%>"  size="30"> 
 						</li>
@@ -84,9 +82,7 @@
 							<li><span>重发次数：</span>
 	 						<input type ="text" id="loopCount" name ="loopCount"  maxlength="300"  value=""  size="30"> 
 						</li>
-						<li><span>MD5加密字段：</span>
-	 						<input type ="text" id="sign" name ="sign"  maxlength="300"  value=""  size="30"> 
-						</li>
+						
 						<li><span>客户编码：</span>
 	 						<input type ="text" id="code" name ="code"  maxlength="300"  value=""  size="30"> 
 						</li>

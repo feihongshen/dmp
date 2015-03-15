@@ -38,9 +38,6 @@
 							<li><span>查询条数：</span>
 	 						<input type ="text" id="search_number" name ="search_number"  maxlength="300"  value="<%=gztl.getSearch_number()%>"  size="30"> 
 						</li>
-						<li><span>MD5加密字段：</span>
-	 						<input type ="text" id="sign" name ="sign"  maxlength="300"  value="<%=gztl.getSign()%>"  size="30"> 
-						</li>
 							<li><span>客户编码：</span>
 	 						<input type ="text" id="code" name ="code"  maxlength="300"  value="<%=gztl.getCode()%>"  size="30"> 
 						</li>
@@ -75,9 +72,6 @@
 						</li>
 							<li><span>查询条数：</span>
 	 						<input type ="text" id="search_number" name ="search_number"  maxlength="300"  value=""  size="30"> 
-						</li>
-						<li><span>MD5加密字段：</span>
-	 						<input type ="text" id="sign" name ="sign"  maxlength="300"  value=""  size="30"> 
 						</li>
 						<li><span>客户编码：</span>
 	 						<input type ="text" id="code" name ="code"  maxlength="300"  value=""  size="30"> 

@@ -72,6 +72,7 @@ function delSuccess(data){
 		 请选择异常原因类型：
 		 			<select name ="expt_type" id="expt_type">
 		               <option value ="-1">全部</option>
+		               
 		               <option value="<%=ReasonTypeEnum.BeHelpUp.getValue()%>" <%if(expt_type==ReasonTypeEnum.BeHelpUp.getValue()){%>selected<%} %>><%=ReasonTypeEnum.BeHelpUp.getText()%></option>
 		           	   <option value="<%=ReasonTypeEnum.ReturnGoods.getValue()%>"  <%if(expt_type==ReasonTypeEnum.ReturnGoods.getValue()){%>selected<%} %>><%=ReasonTypeEnum.ReturnGoods.getText()%></option>
 		           	   <option value="<%=ReasonTypeEnum.WeiShuaKa.getValue()%>"  <%if(expt_type==ReasonTypeEnum.WeiShuaKa.getValue()){%>selected<%} %>><%=ReasonTypeEnum.WeiShuaKa.getText()%></option>
@@ -79,6 +80,7 @@ function delSuccess(data){
 		           </select>
 		 请选择异常码提供方：<select name ="support_key" id="support_key">
 		               <option value ="-1">全部</option>
+		                <option value ="1_0" >通用</option>
 		              <%for(Customer en : customerlist){ %>
 		               <option value ="1_<%=en.getCustomerid()%>" <%if(en.getCustomerid()==supportkey){%>selected<%} %>><%=en.getCustomername() %></option>
 		               <%} %>

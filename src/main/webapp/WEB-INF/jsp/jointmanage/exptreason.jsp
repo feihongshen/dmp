@@ -70,7 +70,8 @@ function delSuccess(data){
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
 	
 		 请选择异常码提供方：<select name ="support_key" id="support_key">
-		               <option value ="-1">全部</option>
+		               <option value ="-1" >全部</option>
+		                <option value ="1_0" >通用</option>
 		               <%for(Customer en : customerlist){ %>
 		               <option value ="1_<%=en.getCustomerid()%>" <%if(en.getCustomerid()==support_key){%>selected<%} %>><%=en.getCustomername() %></option>
 		               <%} %>
@@ -103,7 +104,7 @@ function delSuccess(data){
 						}else if(expt_type==ReasonTypeEnum.ReturnGoods.getValue()){
 							typename=ReasonTypeEnum.ReturnGoods.getText();
 						}
-						String exptsupportname="";
+						String exptsupportname="通用";
 						
 						if(expt.getCustomerid()==0){
 							for(PosEnum b:PosEnum.values()){

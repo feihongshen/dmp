@@ -251,7 +251,8 @@ public class GztlService {
 
 	private long getCustomerIdByCode(List<Customer> customerlist, Order order) {
 		for (Customer cu : customerlist) {
-			if (cu.getCustomername().contains(order.getShipperid())) {
+			//13号修改的代码
+			if (cu.getCustomername().length()==order.getShipperid().length()&&cu.getCustomername().contains(order.getShipperid())) {
 				return cu.getCustomerid();
 			}
 		}
