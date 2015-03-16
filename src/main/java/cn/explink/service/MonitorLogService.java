@@ -63,7 +63,7 @@ public class MonitorLogService {
 		return monitorKucunDAO.getMonitorLogByBranchid(branchids);
 	}
 	
-	public  List<CwbOrderView> getMonitorLogByType(String branchids,long customerid,String type,long page) {
+	public  List<CwbOrderView> getMonitorLogByType(String branchids,String customerid,String type,long page) {
 		
 		
 		List<String>  cwbList = new ArrayList<String>();
@@ -107,7 +107,22 @@ public class MonitorLogService {
 		}
 		
 		if("all".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid, page);
+			
+			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, page);
+			String cwbs ="";
+			if (cwbList.size() > 0) {
+				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs = "'--'";
+			}
+			
+			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
+					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
+					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
+					" OR cwb IN("+cwbs+")" +
+					") ";
+			
+			clist =   cwbDAO.getMonitorLogByBranchid(branchids, customerid+"",wheresql, page);
 		}
 		
 		
@@ -124,7 +139,7 @@ public class MonitorLogService {
 
 		return cwbOrderView;
 	}
-	public  long getMonitorLogByTypeCount(String branchids,long customerid,String type) {
+	public  long getMonitorLogByTypeCount(String branchids,String customerid,String type) {
 		
 		long count = 0;
 		if("weidaohuo".equals(type)){
@@ -160,7 +175,13 @@ public class MonitorLogService {
 		}
 		
 		if("all".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("7,8,9,35,36",customerid);
+			count =   monitorDAO.getMonitorLogByTypeAndNotInCount("7,8,9,35,36", branchids,customerid);
+			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
+					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
+					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
+					") ";
+			
+			count +=   cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", wheresql);;
 		}
 		
 		

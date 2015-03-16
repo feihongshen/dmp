@@ -75,16 +75,16 @@ public class MonitorDAO {
 		return list;
 	}
 	public List<MonitorLogSim> getMonitorLogByExpBranchid(String branchids,String customerids,String wheresql) {
-		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" GROUP BY customerid");
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and branchid not in("+branchids+")  GROUP BY customerid");
 		
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
 
-	public List<String> getMonitorLogByType(String flowordertypes ,long customerid,long page) {
+	public List<String> getMonitorLogByType(String flowordertypes ,String customerid,long page) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
@@ -101,20 +101,28 @@ public class MonitorDAO {
 
 		return list;
 	}
-	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,long customerid,long page) {
+	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid,long page) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
 
 		return list;
 	}
+	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid) {
+		StringBuffer sql = new StringBuffer(
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")");
+		
+		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
+		
+		return list;
+	}
 	
 	//==============条数===========
-	public long getMonitorLogByTypeCount(String flowordertypes ,long customerid) {
+	public long getMonitorLogByTypeCount(String flowordertypes ,String customerid) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"    flowordertype in("+flowordertypes+")");
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"    flowordertype in("+flowordertypes+")");
 				long count = jdbcTemplate.queryForLong(sql.toString());
 				return count;
 	}
@@ -126,9 +134,9 @@ public class MonitorDAO {
 
 		return count;
 	}
-	public long getMonitorLogByTypeAndNotInCount(String flowordertypes ,String branchids,long customerid) {
+	public long getMonitorLogByTypeAndNotInCount(String flowordertypes ,String branchids,String customerid) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"    flowordertype in("+flowordertypes+") and branchid not in("+branchids+")") ;
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"    flowordertype in("+flowordertypes+") and branchid not in("+branchids+")") ;
 
 		long count = jdbcTemplate.queryForLong(sql.toString());
 
@@ -137,22 +145,27 @@ public class MonitorDAO {
 
 	
 	///============导出=============
-	public String getMonitorLogByTypeSql(String flowordertypes ,long customerid) {
+	
+	
+	
+	public String getMonitorLogByTypeSql(String wheresql ,String customerids) {
 		
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+"   ot.flowordertype in("+flowordertypes+")  and de.state=1  ";
+
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"");
+
+		System.out.println("-- 生命周期监控:\n"+sql);
+		
+		return sql.toString();
+	}
+
+	public String getMonitorLogByTypeSql(String flowordertypes ,String branchids,String customerid) {
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid.length()>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid in("+branchids+")  and de.state=1  " ;
 
 
 		return sql;
 	}
-
-	public String getMonitorLogByTypeSql(String flowordertypes ,String branchids,long customerid) {
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid in("+branchids+")  and de.state=1  " ;
-
-
-		return sql;
-	}
-	public String getMonitorLogByTypeAndNotInSql(String flowordertypes ,String branchids,long customerid) {
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid not in("+branchids+")  and de.state=1  ";
+	public String getMonitorLogByTypeAndNotInSql(String flowordertypes ,String branchids,String customerid) {
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(customerid.length()>0?("ot.customerid ="+customerid+"  and"):"")+" ot.flowordertype in("+flowordertypes+") and ot.branchid not in("+branchids+")  and de.state=1  ";
 
 
 		return sql;

@@ -226,6 +226,7 @@ public class MonitorLogController {
 			cmap =new HashMap<Long , String>();
 		}
 		
+		model.addAttribute("customerids",customerids);
 		model.addAttribute("customerMap",cmap);
 		model.addAttribute("weidaohuoMap", weidaohuoMap);
 		model.addAttribute("tihuoMap", tihuoMap);
@@ -241,7 +242,7 @@ public class MonitorLogController {
 	
 	
 	@RequestMapping("/show/{customerid}/{type}/{page}")
-	public String showMonitor(Model model,@PathVariable("customerid") long customerid,
+	public String showMonitor(Model model,@PathVariable("customerid") String customerid,
 			@PathVariable("type") String type,
 			@PathVariable("page") long page,
 			HttpServletRequest request) {
@@ -259,6 +260,9 @@ public class MonitorLogController {
 				branchids += ","+branch.getBranchid();
 			}
 		}
+		if(customerid.equals("-3")){
+			customerid ="";
+		}
 		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorLogByType(branchids,customerid,type,page);
 		
 		model.addAttribute("cwborderList", cwborderList);
@@ -268,7 +272,7 @@ public class MonitorLogController {
 		
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
-		model.addAttribute("customerid", customerid);
+		model.addAttribute("customerid", customerid.equals("")?"-3":customerid);
 		model.addAttribute("type", type);
 		model.addAttribute("expType", 1);
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
@@ -276,7 +280,7 @@ public class MonitorLogController {
 	}
 	
 	@RequestMapping("/exportExcel")
-	public void exportExcel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+	public void exportExcel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "") String customerid,
 			 @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type,
 			@RequestParam(value = "expType", required = false, defaultValue = "1") long expType,
@@ -308,45 +312,57 @@ public class MonitorLogController {
 					branchids += ","+branch.getBranchid();
 				}
 			}
-			
+			if(customerid.equals("-3")){
+				customerid = "";
+			}
 			String sql1 = "";
 			if(expType ==1 ){
 				if("weidaohuo".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("1", customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype=1 ", customerid);
 				}
 				
 				if("tihuo".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("2", customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype=2 ", customerid);
 				}
 				if("ruku".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("4", customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype = 4 AND currentbranchid IN("+branchids+") ", customerid);
 				}
 				if("chuku".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("6", branchids,customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype = 6 AND `startbranchid` IN("+branchids+") ",customerid);
 				}
 				if("daozhan".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("7,8,9,35,36", branchids,customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeAndNotInSql("7,8,9,35,36", branchids,customerid);
 				}
-				if("zaizhanziji".equals(type)){
-					sql1 =  "select * from express_ops_operation_time where id=-1";
-				}
+				
 				if("yichuzhan".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("6,14,40", branchids,customerid);
+					sql1 =  monitorDAO.getMonitorLogByTypeSql(" flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ",customerid);
 				}
 				if("Zhongzhanruku".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("12",customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype=12 ",customerid);
 				}
 				if("tuihuoruku".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("15", customerid);
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype=15 ", customerid);
 				}
 				if("tuigonghuoshang".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("27",customerid);
-				}
-				if("tuikehuweishoukuan".equals(type)){
-					sql1 =   "select * from express_ops_operation_time where id=-1";
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(" flowordertype=27 ",customerid);
 				}
 				if("all".equals(type)){
-					sql1 =   monitorDAO.getMonitorLogByTypeSql("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
+					List<String> cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid);
+					String cwbs ="";
+					if (cwbList.size() > 0) {
+						cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+					} else {
+						cwbs = "'--'";
+					}
+					
+					StringBuffer wheresql = new StringBuffer("(flowordertype IN(1,2,6,12,15,27) " +
+							" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
+							" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
+							" OR cwb IN("+cwbs+")" +
+							") ");
+					
+					
+					sql1 =   monitorDAO.getMonitorLogByTypeSql(wheresql.toString(),customerid);
 				}
 			}else{
 				List<Branch>  branchlist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
