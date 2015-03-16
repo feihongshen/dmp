@@ -227,6 +227,7 @@ public class OMSInterfaceController {
 		us.put("realname", u.getRealname());
 		us.put("roleid", u.getRoleid());
 		us.put("showphoneflag", u.getShowphoneflag());
+		us.put("shownameflag",u.getShownameflag());
 		us.put("userDeleteFlag", u.getUserDeleteFlag());
 		us.put("useraddress", u.getUseraddress());
 		us.put("usercustomerid", u.getUsercustomerid());
@@ -239,6 +240,7 @@ public class OMSInterfaceController {
 		us.put("usersalary", u.getUsersalary());
 		us.put("userwavfile", u.getUserwavfile());
 		us.put("deliverManCode", u.getDeliverManCode());
+		us.put("showmobileflag", u.getShowmobileflag());
 		jsonArray.add(us);
 
 		return jsonArray.toString();

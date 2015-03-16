@@ -38,7 +38,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 					</li>
 					<li ><span>选择异常码提供方：</span>
  						<select name ="support_key" id="support_key" onchange="updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',this.value,expt_type.value)">
-			                 <option value ="1_0">通用</option>
+			                 <option value ="1_-2">通用</option>
 							<%for(Customer en : customerlist){ %>
 			               <option value ="1_<%=en.getCustomerid()%>" ><%=en.getCustomername() %></option>
 			               <%} %>

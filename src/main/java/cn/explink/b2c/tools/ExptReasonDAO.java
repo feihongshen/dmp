@@ -63,6 +63,9 @@ public class ExptReasonDAO {
 			if (support_key > -1 && b2cflag == 1) {
 				sql += " and customerid=" + support_key;
 			}
+			if (support_key ==-2 && b2cflag == 1) {
+				sql += " and customerid=" + support_key;
+			}
 			if (support_key > -1 && b2cflag == 0) {
 				sql += " and support_key=" + support_key;
 			}
@@ -80,6 +83,9 @@ public class ExptReasonDAO {
 		try {
 			String sql = "select count(1) from express_set_b2c_exptreason where 1=1 ";
 			if (support_key > -1 && b2c_flag == 1) {
+				sql += " and customerid=" + support_key;
+			}
+			if (support_key ==-2 && b2c_flag == 1) {
 				sql += " and customerid=" + support_key;
 			}
 			if (support_key > -1 && b2c_flag == 0) {
@@ -185,7 +191,7 @@ public class ExptReasonDAO {
 			if (expt_type > -1) {
 				sql += " and expt_type=" + expt_type;
 			}
-			if (b2c_flag == 1) {
+			if (b2c_flag == 1||support_key==-2) {
 				sql += " and customerid='" + support_key + "' ";
 			}
 			if (b2c_flag == 0) {

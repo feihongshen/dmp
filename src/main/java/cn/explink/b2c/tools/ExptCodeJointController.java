@@ -64,7 +64,7 @@ public class ExptCodeJointController {
 		} else {
 			support_key = Integer.parseInt(support_keystr);
 		}
-		if (expt_type > 0 && support_key >= 0) {
+		if (expt_type > 0 && (support_key >= 0||support_key==-2)) {
 			List<ExptReason> reasonlist = exptReasonDAO.getExptReasonListByMoreKey(support_key, expt_type, b2c_flag);
 			return JSONArray.fromObject(reasonlist).toString();
 		} else {

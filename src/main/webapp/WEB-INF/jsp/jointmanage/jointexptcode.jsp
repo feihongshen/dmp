@@ -80,7 +80,7 @@ function delSuccess(data){
 		           </select>
 		 请选择异常码提供方：<select name ="support_key" id="support_key">
 		               <option value ="-1">全部</option>
-		                <option value ="1_0" >通用</option>
+		                <option value ="1_-2" <%if(supportkey==-2){%>selected<%} %>>通用</option>
 		              <%for(Customer en : customerlist){ %>
 		               <option value ="1_<%=en.getCustomerid()%>" <%if(en.getCustomerid()==supportkey){%>selected<%} %>><%=en.getCustomername() %></option>
 		               <%} %>
