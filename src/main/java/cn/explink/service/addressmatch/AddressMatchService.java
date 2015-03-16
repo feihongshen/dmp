@@ -208,6 +208,13 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 								Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
 								if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 									this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
+									// 触发上门退自动分站领货
+									try {
+										this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
+									} catch (Exception e) {
+										logger.error("上门退单匹配地址库自动分站到货报错",e);
+									}
+								
 								}
 							}
 						}
