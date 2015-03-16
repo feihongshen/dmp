@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.MonitorKucunDTO;
 import cn.explink.controller.MonitorLogDTO;
+import cn.explink.controller.MonitorLogSim;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -54,9 +55,8 @@ public class MonitorLogService {
 	@Autowired
 	DataStatisticsService dataStatisticsService;
 	
-	public  List<MonitorLogDTO> getMonitorLogByBranchid(String branchids,String customerids) {
-		
-		return monitorDAO.getMonitorLogByBranchid(branchids,customerids);
+	public  List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
+		return monitorDAO.getMonitorLogByBranchid(branchids,customerids,wheresql) ;
 	}
 	public  List<MonitorKucunDTO> getMonitorKucunByBranchid(String branchids) {
 		
@@ -67,53 +67,50 @@ public class MonitorLogService {
 		
 		
 		List<String>  cwbList = new ArrayList<String>();
-		
+		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		if("weidaohuo".equals(type)){
-			 cwbList =   monitorDAO.getMonitorLogByType("1", customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=1 ", page);
 		}
 		
 		if("tihuo".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("2", customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=2 ", page);
 		}
 		
 		if("ruku".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("4", branchids,customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype = 4 AND currentbranchid IN("+branchids+") ", page);
 		}
 		if("chuku".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("6", branchids,customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype = 6 AND `startbranchid` IN("+branchids+") ", page);
 		}
 		if("daozhan".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("7,8,9,35,36", branchids,customerid, page);
+			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, page);
+			String cwbs ="";
+			if (cwbList.size() > 0) {
+				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs = "'--'";
+			}
+			clist = cwbDAO.getCwbOrderByCwbs(cwbs);
 		}
-		if("zaizhanziji".equals(type)){
-			cwbList =   new ArrayList<String>();
-		}
+		
 		if("yichuzhan".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("6,14,40", branchids,customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ", page);
 		}
 		if("Zhongzhanruku".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("12",customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=12 ", page);
 		}
 		if("tuihuoruku".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("15", customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=15 ", page);
 		}
 		if("tuigonghuoshang".equals(type)){
-			cwbList =   monitorDAO.getMonitorLogByType("27",customerid, page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ", page);
 		}
-		if("tuikehuweishoukuan".equals(type)){
-			cwbList =   new ArrayList<String>();
-		}
+		
 		if("all".equals(type)){
 			cwbList =   monitorDAO.getMonitorLogByType("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid, page);
 		}
 		
-		String cwbs ="";
-		if (cwbList.size() > 0) {
-			cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
-		} else {
-			cwbs = "'--'";
-		}
-		List<CwbOrder> clist = cwbDAO.getCwbOrderByCwbs(cwbs);
+		
 		
 		List<Customer> customerList = this.customerDAO.getAllCustomersNew();
 		List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
@@ -131,40 +128,39 @@ public class MonitorLogService {
 		
 		long count = 0;
 		if("weidaohuo".equals(type)){
-			 count =   monitorDAO.getMonitorLogByTypeCount("1", customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=1 ");
 		}
+		
 		if("tihuo".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("2", customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=2 ");
 		}
+		
 		if("ruku".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("4",branchids, customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype = 4 AND currentbranchid IN("+branchids+") ");
 		}
 		if("chuku".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("6", branchids,customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype = 6 AND `startbranchid` IN("+branchids+") ");
 		}
 		if("daozhan".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("7,8,9,35,36", branchids,customerid);
+			count =   monitorDAO.getMonitorLogByTypeAndNotInCount("7,8,9,35,36", branchids,customerid);
+			
 		}
-		if("zaizhanziji".equals(type)){
-			count =   0;
-		}
+		
 		if("yichuzhan".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("6,14,40", branchids,customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ");
 		}
 		if("Zhongzhanruku".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("12",customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=12 ");
 		}
 		if("tuihuoruku".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("15", customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=15 ");
 		}
 		if("tuigonghuoshang".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("27",customerid);
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ");
 		}
-		if("tuikehuweishoukuan".equals(type)){
-			count =   0;
-		}
+		
 		if("all".equals(type)){
-			count =   monitorDAO.getMonitorLogByTypeCount("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
+			count =   monitorDAO.getMonitorLogByTypeCount("7,8,9,35,36",customerid);
 		}
 		
 		
@@ -176,22 +172,22 @@ public class MonitorLogService {
 		List<String>  cwbList = new ArrayList<String>();
 		
 		if("kucun".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page);
+			cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page,branchids);
 		}
 		
 		if("yichukuzaitu".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType("6,14,40,27", branchid, page);
+			cwbList =   monitorKucunDAO.getMonitorLogByType("6,14,40,27", branchid, page,branchids);
 		}
 		
 		if("weiruku".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType("1",branchid, page);
+			cwbList =   monitorKucunDAO.getMonitorLogByType("1",branchid, page,branchids);
 		}
 		if("yituikehuweifankuan".equals(type)){
 			cwbList =   new ArrayList<String>();
 		}
 		
 		if("all".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorKucunByTypeAll("1",branchid, page);
+			cwbList =   monitorKucunDAO.getMonitorKucunByTypeAll("1",branchid, page,branchids);
 		}
 		
 		String cwbs ="";
@@ -218,22 +214,21 @@ public class MonitorLogService {
 		
 		long count = 0;
 		if("kucun".equals(type)){
-			count =   monitorKucunDAO.getMonitorKucunByTypeCount("1", branchid);
+			count =   monitorKucunDAO.getMonitorKucunByTypeCount("1", branchid,branchids);
 		}
 		if("yichukuzaitu".equals(type)){
-			count =   monitorKucunDAO.getMonitorLogByTypeCount("6,14,40,27", branchid);
+			count =   monitorKucunDAO.getMonitorLogByTypeCount("6,14,40,27", branchid,branchids);
 		}
 		if("weiruku".equals(type)){
-			count =   monitorKucunDAO.getMonitorLogByTypeCount("1", branchid);
+			count =   monitorKucunDAO.getMonitorLogByTypeCount("1", branchid,branchids);
 		}
 		if("yituikehuweifankuan".equals(type)){
 			count =  0;
 		}
 		
 		if("all".equals(type)){
-			count =   monitorKucunDAO.getMonitorKucunByTypeCountAll("1",branchid);
+			count =   monitorKucunDAO.getMonitorKucunByTypeCountAll("1",branchid,branchids);
 		}
-		
 		
 		return count;
 	}

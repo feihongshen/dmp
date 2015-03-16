@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import cn.explink.controller.MonitorLogSim;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MatchExceptionOrder;
@@ -5520,4 +5521,21 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
+	
+	
+	public List<CwbOrder> getMonitorLogByBranchid(String branchids,String customerids,String wheresql,long page) {
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")
+				+"  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		System.out.println("-- 生命周期监控查看明细:\n"+sql);
+		List<CwbOrder> list = jdbcTemplate.query(sql.toString(), new CwbMapper());
+		return list;
+	}
+	public long getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" "));
+		
+		System.out.println("-- 生命周期监控查看明细:\n"+sql);
+		return jdbcTemplate.queryForLong(sql.toString());
+	}
+	
 }

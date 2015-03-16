@@ -37,7 +37,7 @@ public class MonitorKucunDAO {
 	JdbcTemplate jdbcTemplate;
 
 	/**
-	 * 订单生命周期监控 
+	 * 存货监控 
 	 * @param branchids 
 	 * @return 
 	 * @throws Exception
@@ -60,27 +60,27 @@ public class MonitorKucunDAO {
 		return list;
 	}
 
-	public List<String> getMonitorLogByType(String flowordertypes ,long branchid,long page) {
+	public List<String> getMonitorLogByType(String flowordertypes ,long branchid,long page,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")+"   flowordertype in("+flowordertypes+")" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+"   flowordertype in("+flowordertypes+")" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
 
 		return list;
 	}
-	public List<String> getMonitorKucunByType(String flowordertypes ,long branchid,long page) {
+	public List<String> getMonitorKucunByType(String flowordertypes ,long branchid,long page,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")+"  (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" +
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+"  (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
 		
 		return list;
 	}
-	public List<String> getMonitorKucunByTypeAll(String flowordertypes ,long branchid,long page) {
+	public List<String> getMonitorKucunByTypeAll(String flowordertypes ,long branchid,long page,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")
 				+" ( (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3))) or flowordertype in(1,6,14,40,27))" +
 						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
@@ -92,21 +92,21 @@ public class MonitorKucunDAO {
 	
 	
 	//==============条数===========
-	public long getMonitorLogByTypeCount(String flowordertypes ,long branchid) {
+	public long getMonitorLogByTypeCount(String flowordertypes ,long branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")+"    flowordertype in("+flowordertypes+")");
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+"    flowordertype in("+flowordertypes+")");
 				long count = jdbcTemplate.queryForLong(sql.toString());
 				return count;
 	}
-	public long getMonitorKucunByTypeCount(String flowordertypes ,long branchid) {
+	public long getMonitorKucunByTypeCount(String flowordertypes ,long branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")+ "(flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" );
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+ "(flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" );
 		long count = jdbcTemplate.queryForLong(sql.toString());
 		return count;
 	}
-	public long getMonitorKucunByTypeCountAll(String flowordertypes ,long branchid) {
+	public long getMonitorKucunByTypeCountAll(String flowordertypes ,long branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):"")+
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+
 				"( (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3))) or flowordertype in(1,6,14,40,27))" );
 		long count = jdbcTemplate.queryForLong(sql.toString());
 		return count;
@@ -116,24 +116,24 @@ public class MonitorKucunDAO {
 
 	
 	///============导出=============
-	public String getMonitorLogByTypeSql(String flowordertypes ,long branchid) {
+	public String getMonitorLogByTypeSql(String flowordertypes ,long branchid,String branchids) {
 		
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):"")+"   ot.flowordertype in("+flowordertypes+")  and de.state=1  ";
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):" ot.branchid IN("+branchids+") and ")+"   ot.flowordertype in("+flowordertypes+")  and de.state=1  ";
 
 
 		return sql;
 	}
-	public String getMonitorKucunByTypeSql(String flowordertypes ,long branchid) {
+	public String getMonitorKucunByTypeSql(String flowordertypes ,long branchid,String branchids) {
 		
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):"")
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):" ot.branchid IN("+branchids+") and ")
 				+"  (ot.flowordertype IN( 4,12,15,7,8,9,35) OR (ot.flowordertype =36 AND ot.deliverystate NOT IN(1,2,3)))  and de.state=1  ";
 		
 		
 		return sql;
 	}
-	public String getMonitorKucunAllByTypeSql(String flowordertypes ,long branchid) {
+	public String getMonitorKucunAllByTypeSql(String flowordertypes ,long branchid,String branchids) {
 		
-		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):"")
+		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid>0?("ot.branchid ="+branchid+"  and"):" ot.branchid IN("+branchids+") and ")
 				+" ( (ot.flowordertype IN( 4,12,15,7,8,9,35) OR (ot.flowordertype =36 AND ot.deliverystate NOT IN(1,2,3))) or ot.flowordertype in(1,6,14,40,27)) and de.state=1  ";
 		
 		

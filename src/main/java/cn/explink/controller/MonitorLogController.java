@@ -132,7 +132,6 @@ public class MonitorLogController {
 		for (Customer cut : clist) {
 			cmap.put(cut.getCustomerid(), cut.getCustomername());
 		}
-		model.addAttribute("customerMap",cmap);
 		List<String> customeridList = this.dataStatisticsService.getList(customeridStr);
 		model.addAttribute("customeridStr", customeridList);
 		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+"");
@@ -143,12 +142,100 @@ public class MonitorLogController {
 			}
 		}
 		String customerids =getStrings(customeridStr);
-		List<MonitorLogDTO> monitorList =  new ArrayList<MonitorLogDTO>();
+		if(customerids.length()>0){
+			List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids);
+			cmap =new HashMap<Long , String>();
+			for (Customer cut : cPlist) {
+				cmap.put(cut.getCustomerid(), cut.getCustomername());
+			}
+		}
+		Map<Long ,MonitorLogSim> weidaohuoMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tihuoMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> rukuMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> chukuMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> daozhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> yichuzhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> zhongzhanrukuMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tuihuorukuMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tuigonghuoshangMap = new HashMap<Long,MonitorLogSim>();
 		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
-			monitorList = monitorLogService.getMonitorLogByBranchid(branchids,customerids);
-		}		
+			//未到货
+			List<MonitorLogSim> weidaohuoList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=1 ");
+			if(weidaohuoList != null && weidaohuoList.size()>0){
+				for (MonitorLogSim mon: weidaohuoList) {
+					weidaohuoMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//提货
+			List<MonitorLogSim> tihuoList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=2 ");
+			if(tihuoList != null && tihuoList.size()>0){
+				for (MonitorLogSim mon: tihuoList) {
+					tihuoMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//入库
+			List<MonitorLogSim> rukuList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype = 4 AND currentbranchid IN("+branchids+") ");
+			if(rukuList != null && rukuList.size()>0){
+				for (MonitorLogSim mon: rukuList) {
+					rukuMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//出库
+			List<MonitorLogSim> chukuList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype = 6 AND `startbranchid` IN("+branchids+") ");
+			if(chukuList != null && chukuList.size()>0){
+				for (MonitorLogSim mon: chukuList) {
+					chukuMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//到站
+			List<MonitorLogSim> daozhanList =   monitorDAO.getMonitorLogByExpBranchid(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
+			if(daozhanList != null && daozhanList.size()>0){
+				for (MonitorLogSim mon: daozhanList) {
+					daozhanMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//已出站
+			List<MonitorLogSim> yichuzhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ");
+			if(yichuzhanList != null && yichuzhanList.size()>0){
+				for (MonitorLogSim mon: yichuzhanList) {
+					yichuzhanMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//中转入库
+			List<MonitorLogSim> zhongzhanrukuList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=12 ");
+			if(zhongzhanrukuList != null && zhongzhanrukuList.size()>0){
+				for (MonitorLogSim mon: zhongzhanrukuList) {
+					zhongzhanrukuMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//未到货
+			List<MonitorLogSim> tuihuorukuList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=15 ");
+			if(tuihuorukuList != null && tuihuorukuList.size()>0){
+				for (MonitorLogSim mon: tuihuorukuList) {
+					tuihuorukuMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//未到货
+			List<MonitorLogSim> tuigonghuoshangList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=27 ");
+			if(tuigonghuoshangList != null && tuigonghuoshangList.size()>0){
+				for (MonitorLogSim mon: tuigonghuoshangList) {
+					tuigonghuoshangMap.put(mon.getCustomerid(), mon);
+				}
+			}
+		}else{
+			cmap =new HashMap<Long , String>();
+		}
 		
-		model.addAttribute("monitorList", monitorList);
+		model.addAttribute("customerMap",cmap);
+		model.addAttribute("weidaohuoMap", weidaohuoMap);
+		model.addAttribute("tihuoMap", tihuoMap);
+		model.addAttribute("rukuMap", rukuMap);
+		model.addAttribute("chukuMap", chukuMap);
+		model.addAttribute("daozhanMap", daozhanMap);
+		model.addAttribute("yichuzhanMap", yichuzhanMap);
+		model.addAttribute("zhongzhanrukuMap", zhongzhanrukuMap);
+		model.addAttribute("tuihuorukuMap", tuihuorukuMap);
+		model.addAttribute("tuigonghuoshangMap", tuigonghuoshangMap);
 		return "/monitor/monitorlog";
 	}
 	
@@ -262,24 +349,31 @@ public class MonitorLogController {
 					sql1 =   monitorDAO.getMonitorLogByTypeSql("1,2,4,6,7,8,9,12,14,15,27,35,36,40",customerid);
 				}
 			}else{
+				List<Branch>  branchlist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+				String lbranchids ="-1";
+				if(branchlist != null && branchlist.size()>0){
+					for (Branch branch : branchlist) {
+						lbranchids += ","+branch.getBranchid();
+					}
+				}
 				
 				if("kucun".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorKucunByTypeSql("1", branchid);
+					sql1 =   monitorKucunDAO.getMonitorKucunByTypeSql("1", branchid,lbranchids);
 				}
 				
 				if("yichukuzaitu".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("6,14,40,27", branchid);
+					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("6,14,40,27", branchid,lbranchids);
 				}
 				
 				if("weiruku".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("1",branchid);
+					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("1",branchid,lbranchids);
 				}
 				if("yituikehuweifankuan".equals(type)){
 					sql1 =  "select * from express_ops_operation_time where id=-1";
 				}
 				
 				if("all".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorKucunAllByTypeSql("1",branchid);
+					sql1 =   monitorKucunDAO.getMonitorKucunAllByTypeSql("1",branchid,lbranchids);
 				}
 			}
 			final String sql =sql1;
@@ -428,31 +522,30 @@ public class MonitorLogController {
 	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr,
 			HttpServletRequest request) {
 		
-		List<Branch> branchList = this.branchDAO.getBranchToUser(this.getSessionUser().getUserid());
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
 		List<String> dispatchbranchidlist = this.dataStatisticsService.getList(dispatchbranchidStr);
 		model.addAttribute("dispatchbranchidStr", dispatchbranchidlist);
 		model.addAttribute("branchList", branchList);
 		
-		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
 		String branchidsPram =getStrings(dispatchbranchidStr);
 		String branchids ="-1";
 		if(branchidsPram.length() >0 ){
 			branchids = branchidsPram;
 		}else{
-			if(blist != null && blist.size()>0){
-				for (Branch branch : blist) {
+			if(branchList != null && branchList.size()>0){
+				for (Branch branch : branchList) {
 					branchids += ","+branch.getBranchid();
 				}
 			}
 		}
 		Map<Long ,String> branchMap = new HashMap<Long,String>();
-		if(blist != null && blist.size()>0){
-			for (Branch branch : blist) {
+		if(branchList != null && branchList.size()>0){
+			for (Branch branch : branchList) {
 				branchMap.put(branch.getBranchid(), branch.getBranchname());
 			}
 		}
 		List<MonitorKucunDTO> monitorList =  new ArrayList<MonitorKucunDTO>();
-		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
+		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") && branchList != null && branchList.size()>0 ){
 			monitorList = monitorLogService.getMonitorKucunByBranchid(branchids);
 		}		
 		
@@ -472,7 +565,7 @@ public class MonitorLogController {
 			cmap.put(cut.getCustomerid(), cut.getCustomername());
 		}
 		model.addAttribute("customerMap",cmap);
-		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		List<Branch>  blist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
 		String branchids ="-1";
 		if(blist != null && blist.size()>0){
 			for (Branch branch : blist) {

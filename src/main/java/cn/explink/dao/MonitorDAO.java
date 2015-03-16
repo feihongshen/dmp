@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.controller.MonitorLogDTO;
+import cn.explink.controller.MonitorLogSim;
 import cn.explink.util.Page;
 
 
@@ -46,6 +47,16 @@ public class MonitorDAO {
 			return menu;
 		}
 	}
+	private final class MonitorlogSimMapper implements RowMapper<MonitorLogSim> {
+		@Override
+		public MonitorLogSim mapRow(ResultSet rs, int rowNum) throws SQLException {
+			MonitorLogSim menu = new MonitorLogSim();
+			menu.setCustomerid(rs.getLong("customerid"));
+			menu.setDcount(rs.getLong("dcount"));
+			menu.setDsum(rs.getBigDecimal("dsum"));
+			return menu;
+		}
+	}
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -56,35 +67,18 @@ public class MonitorDAO {
 	 * @return 
 	 * @throws Exception
 	 */
-	public List<MonitorLogDTO> getMonitorLogByBranchid(String branchids,String customerids) {
-		StringBuffer sql = new StringBuffer(
-				"SELECT customerid," +
-						"SUM(CASE WHEN (flowordertype = 1 ) THEN 1 ELSE 0 END) AS weidaohuoCountsum," +
-						"SUM(CASE WHEN (flowordertype = 1 ) THEN receivablefee+paybackfee ELSE 0 END) AS weidaohuoCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 2 ) THEN 1 ELSE 0 END) AS tihuoCountsum," +
-						"SUM(CASE WHEN (flowordertype = 2 ) THEN receivablefee+paybackfee ELSE 0 END) AS tihuoCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 4 AND branchid IN("+branchids+") ) THEN 1 ELSE 0 END) AS rukuCountsum," +
-						"SUM(CASE WHEN (flowordertype = 4 AND branchid IN("+branchids+") ) THEN receivablefee+paybackfee ELSE 0 END) AS rukuCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 6 AND branchid IN("+branchids+") ) THEN 1 ELSE 0 END) AS chukuCountsum," +
-						"SUM(CASE WHEN (flowordertype = 6 AND branchid IN("+branchids+") ) THEN receivablefee+paybackfee ELSE 0 END) AS chukuCaramountsum," +
-						"SUM(CASE WHEN (flowordertype IN(7,8,9,35,36) ) THEN 1 ELSE 0 END) AS daozhanCountsum," +
-						"SUM(CASE WHEN (flowordertype IN(7,8,9,35,36) ) THEN receivablefee+paybackfee ELSE 0 END) AS daozhanCaramountsum," +
-						"SUM(0) AS zaizhanzijiCountsum," +
-						"SUM(0) AS zaizhanzijiCaramountsum," +
-						"SUM(CASE WHEN (flowordertype IN(6,14,40) AND branchid NOT IN("+branchids+") ) THEN 1 ELSE 0 END) AS yichuzhanCountsum," +
-						"SUM(CASE WHEN (flowordertype IN(6,14,40) AND branchid NOT IN("+branchids+") ) THEN receivablefee+paybackfee ELSE 0 END) AS yichuzhanCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 12 ) THEN 1 ELSE 0 END) AS zhongzhanrukuCountsum," +
-						"SUM(CASE WHEN (flowordertype = 12 ) THEN receivablefee+paybackfee ELSE 0 END) AS zhongzhuanrukuCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 15 ) THEN 1 ELSE 0 END) AS tuihuorukuCountsum," +
-						"SUM(CASE WHEN (flowordertype = 15 ) THEN receivablefee+paybackfee ELSE 0 END) AS tuihuorukuCaramountsum," +
-						"SUM(CASE WHEN (flowordertype = 27 ) THEN 1 ELSE 0 END) AS tuigonghuoshangCountsum," +
-						"SUM(CASE WHEN (flowordertype = 27 ) THEN receivablefee+paybackfee ELSE 0 END) AS tuigonghuoshangCaramountsum," +
-						"SUM(0) AS tuikehuweishoukuanCountsum," +
-						"SUM(0) AS tuikehuweishoukuanCaramountsum" +
-						" FROM `express_ops_operation_time` " + (customerids.length()>0? (" where customerid in("+customerids+") "):"")+"GROUP BY customerid");
+	public List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" GROUP BY customerid");
 
-		List<MonitorLogDTO> list = jdbcTemplate.query(sql.toString(), new MonitorlogDTOMapper());
-
+		System.out.println("-- 生命周期监控:\n"+sql);
+		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
+		return list;
+	}
+	public List<MonitorLogSim> getMonitorLogByExpBranchid(String branchids,String customerids,String wheresql) {
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" GROUP BY customerid");
+		
+		System.out.println("-- 生命周期监控:\n"+sql);
+		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
 
