@@ -55,10 +55,10 @@ public class OperationTimeDAO {
 	 * @param of
 	 * @return key
 	 */
-	public void creOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customerid, String inwarehouseTime, String emaildate,int cwbordertypeid) {
+	public void creOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customerid, String inwarehouseTime, String emaildate,int cwbordertypeid,BigDecimal receivablefee, BigDecimal paybackfee) {
 		this.jdbcTemplate.update(
-				"insert into express_ops_operation_time(cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate,cwbordertypeid) values(?,?,?,?,?,?,?,?,?,?)", cwb, branchid,
-				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate,cwbordertypeid);
+				"insert into express_ops_operation_time(cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate,cwbordertypeid) values(?,?,?,?,?,?,?,?,?,?,?,?)", cwb, branchid,
+				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate,cwbordertypeid,receivablefee,paybackfee);
 	}
 
 	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, 
@@ -73,7 +73,7 @@ public class OperationTimeDAO {
 				this.updateOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid);
 			}
 		} else {
-			this.creOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid, customeid, inwarehouseTime, emaildate,cwbordertypeid);
+			this.creOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid, customeid, inwarehouseTime, emaildate,cwbordertypeid,receivablefee,paybackfee);
 		}
 	}
 
