@@ -3706,7 +3706,7 @@ public class CwbOrderService {
 
 		if (((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenTuiChengGong
 				.getValue()))) {
-			sign_man = sign_man.length() == 0 ? co.getConsigneename() : sign_man;
+			sign_man = sign_man.length() == 0 ? co.getConsigneenameOfkf() : sign_man;
 			sign_time = DateTimeUtil.getNowTime();
 			sign_typeid = 1;
 
