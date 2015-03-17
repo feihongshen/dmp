@@ -656,6 +656,15 @@ public class BranchDAO {
 			return null;
 		}
 	}
+	public List<Branch> getBranchByBranchidsNoType(String branchids) {
+		if (branchids.length() > 0) {
+			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid in(" + branchids
+					+ ")  order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+			return branchList;
+		} else {
+			return null;
+		}
+	}
 
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {

@@ -278,10 +278,120 @@ public class MonitorLogController {
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		return "/monitor/monitorlogshow";
 	}
+	//存货监控
+	@RequestMapping("/monitorcunhuolist")
+	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr,
+			HttpServletRequest request) {
+		
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		List<String> dispatchbranchidlist = this.dataStatisticsService.getList(dispatchbranchidStr);
+		model.addAttribute("dispatchbranchidStr", dispatchbranchidlist);
+		model.addAttribute("branchList", branchList);
+		
+		Map<Long ,MonitorKucunSim> rukuMap = new HashMap<Long,MonitorKucunSim>();
+		Map<Long ,MonitorKucunSim> weidaohuoMap = new HashMap<Long,MonitorKucunSim>();
+		Map<Long ,MonitorKucunSim> chukuMap = new HashMap<Long,MonitorKucunSim>();
+		
+		String branchidsPram =getStrings(dispatchbranchidStr);
+		String branchids ="-1";
+		if(branchidsPram.length() >0 ){
+			branchids = branchidsPram;
+		}else{
+			if(branchList != null && branchList.size()>0){
+				for (Branch branch : branchList) {
+					branchids += ","+branch.getBranchid();
+				}
+			}
+		}
+		Map<Long ,String> branchMap = new HashMap<Long,String>();
+		if(branchidsPram.length() >0 ){
+			List<Branch> branchList2 = this.branchDAO.getBranchByBranchidsNoType(branchids);
+			for (Branch branch : branchList2) {
+				branchMap.put(branch.getBranchid(), branch.getBranchname());
+			}
+		}
+		else if(branchList != null && branchList.size()>0){
+			for (Branch branch : branchList) {
+				branchMap.put(branch.getBranchid(), branch.getBranchname());
+			}
+		}
+		List<MonitorKucunDTO> monitorList =  new ArrayList<MonitorKucunDTO>();
+		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") && branchList != null && branchList.size()>0 ){
+			//未到货
+			List<MonitorKucunSim> weidaohuoList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," flowordertype in(1,2) "," nextbranchid");
+			if(weidaohuoList != null && weidaohuoList.size()>0){
+				for (MonitorKucunSim mon: weidaohuoList) {
+					weidaohuoMap.put(mon.getBranchid(), mon);
+				}
+			}
+			//入库
+			List<MonitorKucunSim> rukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)) ) ");
+			if(rukuList != null && rukuList.size()>0){
+				for (MonitorKucunSim mon: rukuList) {
+					rukuMap.put(mon.getBranchid(), mon);
+				}
+			}
+			//出库
+			List<MonitorKucunSim> chukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," flowordertype IN( 6,14,40,27) ");
+			if(chukuList != null && chukuList.size()>0){
+				for (MonitorKucunSim mon: chukuList) {
+					chukuMap.put(mon.getBranchid(), mon);
+				}
+			}
+			
+			
+		}else{
+			branchMap = new HashMap<Long,String>();
+		}		
+		
+		model.addAttribute("branchids", branchids);
+		model.addAttribute("branchMap", branchMap);
+		
+		model.addAttribute("weidaohuoMap", weidaohuoMap);
+		model.addAttribute("rukuMap", rukuMap);
+		model.addAttribute("chukuMap", chukuMap);
+		model.addAttribute("monitorList", monitorList);
+		return "/monitor/monitorcunhuo";
+	}
+	//存货监控明细
+	@RequestMapping("/showkucun/{branchid}/{type}/{page}")
+	public String showkucun(Model model,@PathVariable("branchid") String branchid,
+			@PathVariable("type") String type,
+			@PathVariable("page") long page,
+			HttpServletRequest request) {
+		List<Customer> clist =  this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist",clist);
+		Map<Long,String> cmap =new HashMap<Long , String>();
+		for (Customer cut : clist) {
+			cmap.put(cut.getCustomerid(), cut.getCustomername());
+		}
+		model.addAttribute("customerMap",cmap);
+		List<Branch>  blist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String branchids ="-1";
+		if(blist != null && blist.size()>0){
+			for (Branch branch : blist) {
+				branchids += ","+branch.getBranchid();
+			}
+		}
+		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorKucunByType(branchids,branchid,type,page);
+		
+		model.addAttribute("cwborderList", cwborderList);
+		
+		long count = monitorLogService.getMonitorKucunByTypeCount(branchids,branchid,type);
+		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page_obj", pageparm);
+		model.addAttribute("page", page);
+		model.addAttribute("branchid", branchid);
+		model.addAttribute("type", type);
+		model.addAttribute("expType", 2);
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
+		return "/monitor/monitorcunhuoshow";
+	}
 	
 	@RequestMapping("/exportExcel")
 	public void exportExcel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "") String customerid,
-			 @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
+			 @RequestParam(value = "branchid", required = false, defaultValue = "-3") String branchid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type,
 			@RequestParam(value = "expType", required = false, defaultValue = "1") long expType,
 			@RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
@@ -372,7 +482,9 @@ public class MonitorLogController {
 						lbranchids += ","+branch.getBranchid();
 					}
 				}
-				
+				if("-3".equals(branchid)){
+					branchid ="";
+				}
 				if("kucun".equals(type)){
 					sql1 =   monitorKucunDAO.getMonitorKucunByTypeSql("1", branchid,lbranchids);
 				}
@@ -382,14 +494,29 @@ public class MonitorLogController {
 				}
 				
 				if("weiruku".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorLogByTypeSql("1",branchid,lbranchids);
-				}
-				if("yituikehuweifankuan".equals(type)){
-					sql1 =  "select * from express_ops_operation_time where id=-1";
+					sql1 =   cwbDAO.getMonitorLogByTypeSql(" flowordertype in(1,2) ", branchid, branchids);
 				}
 				
+				
 				if("all".equals(type)){
-					sql1 =   monitorKucunDAO.getMonitorKucunAllByTypeSql("1",branchid,lbranchids);
+					List<String>   cwbList =   monitorKucunDAO.getMonitorKucunByTypeNoPage("1", branchid,branchids);
+						String cwbs1 ="";
+						if (cwbList.size() > 0) {
+							cwbs1 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+						} else {
+							cwbs1 = "'--'";
+						}
+						cwbList =   monitorKucunDAO.getMonitorLogByTypeNoPage( " flowordertype in(6,14,40,27) ", branchid,branchids);
+						String cwbs2 ="";
+						if (cwbList.size() > 0) {
+							cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+						} else {
+							cwbs2 = "'--'";
+						}
+						String wheresql =" ( " +
+						 		" cwb in("+cwbs1+")" +
+						 		" or cwb in("+cwbs2+")) or  ";
+					sql1 =   cwbDAO.getMonitorLogByTypeSql(wheresql,branchid,lbranchids);
 				}
 			}
 			final String sql =sql1;
@@ -534,74 +661,6 @@ public class MonitorLogController {
 		}
 		return strs;
 	}
-	@RequestMapping("/monitorcunhuolist")
-	public String monitorcunhuolist(Model model,@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr,
-			HttpServletRequest request) {
-		
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
-		List<String> dispatchbranchidlist = this.dataStatisticsService.getList(dispatchbranchidStr);
-		model.addAttribute("dispatchbranchidStr", dispatchbranchidlist);
-		model.addAttribute("branchList", branchList);
-		
-		String branchidsPram =getStrings(dispatchbranchidStr);
-		String branchids ="-1";
-		if(branchidsPram.length() >0 ){
-			branchids = branchidsPram;
-		}else{
-			if(branchList != null && branchList.size()>0){
-				for (Branch branch : branchList) {
-					branchids += ","+branch.getBranchid();
-				}
-			}
-		}
-		Map<Long ,String> branchMap = new HashMap<Long,String>();
-		if(branchList != null && branchList.size()>0){
-			for (Branch branch : branchList) {
-				branchMap.put(branch.getBranchid(), branch.getBranchname());
-			}
-		}
-		List<MonitorKucunDTO> monitorList =  new ArrayList<MonitorKucunDTO>();
-		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") && branchList != null && branchList.size()>0 ){
-			monitorList = monitorLogService.getMonitorKucunByBranchid(branchids);
-		}		
-		
-		model.addAttribute("branchMap", branchMap);
-		model.addAttribute("monitorList", monitorList);
-		return "/monitor/monitorcunhuo";
-	}
-	@RequestMapping("/showkucun/{branchid}/{type}/{page}")
-	public String showkucun(Model model,@PathVariable("branchid") long branchid,
-			@PathVariable("type") String type,
-			@PathVariable("page") long page,
-			HttpServletRequest request) {
-		List<Customer> clist =  this.customerDAO.getAllCustomers();
-		model.addAttribute("customerlist",clist);
-		Map<Long,String> cmap =new HashMap<Long , String>();
-		for (Customer cut : clist) {
-			cmap.put(cut.getCustomerid(), cut.getCustomername());
-		}
-		model.addAttribute("customerMap",cmap);
-		List<Branch>  blist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),BranchEnum.KuFang.getValue()+","+BranchEnum.ZhanDian.getValue()+","+BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
-		String branchids ="-1";
-		if(blist != null && blist.size()>0){
-			for (Branch branch : blist) {
-				branchids += ","+branch.getBranchid();
-			}
-		}
-		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorKucunByType(branchids,branchid,type,page);
-		
-		model.addAttribute("cwborderList", cwborderList);
-		
-		long count = monitorLogService.getMonitorKucunByTypeCount(branchids,branchid,type);
-		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
-		
-		model.addAttribute("page_obj", pageparm);
-		model.addAttribute("page", page);
-		model.addAttribute("branchid", branchid);
-		model.addAttribute("type", type);
-		model.addAttribute("expType", 2);
-		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
-		return "/monitor/monitorcunhuoshow";
-	}
+	
 	
 }

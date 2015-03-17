@@ -6040,5 +6040,10 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			update `express_ops_operation_time` as op ,`express_ops_cwb_detail` as de set op.`receivablefee` =de.`receivablefee` , op.`paybackfee` =de.`paybackfee` where op.cwb=de.cwb and de.state=1 ; 
 		</sql>
 	</changeSet>
+	<changeSet id="lansheng-2015-03-17-1" author="lansheng">
+		<sql>
+			update `express_ops_operation_time` as op ,`express_ops_cwb_detail` as de set op.`receivablefee` =de.`receivablefee` , op.`paybackfee` =de.`paybackfee` where op.cwb=de.cwb and de.state=1 ; 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  

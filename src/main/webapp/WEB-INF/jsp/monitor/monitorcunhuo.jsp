@@ -1,6 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.controller.MonitorKucunDTO"%>
+<%@page import="cn.explink.controller.MonitorKucunSim"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="cn.explink.util.Page"%>
@@ -28,7 +29,10 @@
 List<Branch> branchlist = request.getAttribute("branchList") == null ? new ArrayList<Branch>():(List<Branch>)request.getAttribute("branchList") ;
 List dispatchbranchidList =(List) request.getAttribute("dispatchbranchidStr");
 Map<Long,String> branchmap = (Map<Long,String>)request.getAttribute("branchMap");
-List<MonitorKucunDTO>  monitorList = (List<MonitorKucunDTO> )request.getAttribute("monitorList");
+Map<Long ,MonitorKucunSim> weidaohuoMap = (Map<Long,MonitorKucunSim>)request.getAttribute("weidaohuoMap");
+Map<Long ,MonitorKucunSim> rukuMap = (Map<Long,MonitorKucunSim>)request.getAttribute("rukuMap");
+Map<Long ,MonitorKucunSim> chukuMap = (Map<Long,MonitorKucunSim>)request.getAttribute("chukuMap");
+String branchids = request.getAttribute("branchids").toString().length()==0?"-3":request.getAttribute("branchids").toString();
 %>
 <script>
 function dgetViewBox(key,durl){
@@ -119,7 +123,7 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle"  colspan="2" >库存（库房/站点）</td>
 			   		<td  align="center" valign="middle"  colspan="2" >已出在途(库房/站点)</td>
 			   		<td  align="center" valign="middle"  colspan="2" >未入库（库存）</td>
-			   		<td  align="center" valign="middle"  colspan="2" >已退甲方未返款</td>
+			   	<!-- 	<td  align="center" valign="middle"  colspan="2" >已退甲方未返款</td> -->
 			   		<td  align="center" valign="middle"  colspan="2" >汇总</td>
 				</tr>
 			   	<tr class="font_1" height="30" >
@@ -129,12 +133,12 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" >金额</td>
 			   		<td  align="center" valign="middle" >票数</td>
 			   		<td  align="center" valign="middle" >金额</td>
-			   		<td  align="center" valign="middle" >票数</td>
-			   		<td  align="center" valign="middle" >金额</td>
+			   		<!-- <td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td> -->
 			   		<td  align="center" valign="middle" >票数</td>
 			   		<td  align="center" valign="middle" >金额</td>
 				</tr>
-				<%if(monitorList != null && monitorList.size()>0){ %>
+				<%if(branchmap != null && branchmap.size()>0){ %>
 				<%
 				 long	kucunCountsum =0;
 				 BigDecimal	kucunCaramountsum = BigDecimal.ZERO;
@@ -146,49 +150,57 @@ $("#right_hideboxbtn").click(function(){
 				 BigDecimal	yituikehuweifankuanCaramountsum = BigDecimal.ZERO;
 				 
 				%> 
-				<%for(MonitorKucunDTO mo : monitorList){ %>
+				<%for(Map.Entry<Long ,String> mo : branchmap.entrySet()){ %>
+				<%
+				long	 weidaohuoCountsum1 = weidaohuoMap.get(mo.getKey()) == null?0:weidaohuoMap.get(mo.getKey()).getDcount();
+				BigDecimal weidaohuoCaramountsum1 = weidaohuoMap.get(mo.getKey()) == null? BigDecimal.ZERO:weidaohuoMap.get(mo.getKey()).getDsum();
+				long	 rukuCountsum1 = rukuMap.get(mo.getKey()) == null?0:rukuMap.get(mo.getKey()).getDcount();
+				BigDecimal rukuCaramountsum1 = rukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:rukuMap.get(mo.getKey()).getDsum();
+				long	 chukuCountsum1 = chukuMap.get(mo.getKey()) == null?0:chukuMap.get(mo.getKey()).getDcount();
+				BigDecimal chukuCaramountsum1 = chukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:chukuMap.get(mo.getKey()).getDsum();
+				
+				
+				%>
 			   	<tr height="30">
-			   		<td  align="center" valign="middle" ><%=branchmap.get( mo.getBranchid()) %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/kucun/1"> <%=mo.getKucunCountsum() %> </a></td>
-			   		<td  align="right" valign="middle" ><%=mo.getKucunCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/yichukuzaitu/1"> <%=mo.getYichukuzaituCountsum() %></a></td>
-			   		<td  align="right" valign="middle" ><%=mo.getYichukuzaituCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/weiruku/1"> <%=mo.getWeirukuCountsum() %></a></td>
-			   		<td  align="right" valign="middle" ><%=mo.getWeirukuCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/yituikehuweifankuan/1"> <%=mo.getYituikehuweifankuanCountsum() %></a></td>
-			   		<td  align="right" valign="middle" ><%=mo.getYituikehuweifankuanCaramountsum() %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getBranchid()%>/all/1"> <%= mo.getKucunCountsum() +mo.getYichukuzaituCountsum()+mo.getWeirukuCountsum()
-			   		+mo.getYituikehuweifankuanCountsum()  %></a></td>
+			   		<td  align="center" valign="middle" ><%=mo.getValue() %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/kucun/1"> <%=rukuCountsum1 %> </a></td>
+			   		<td  align="right" valign="middle" ><%=rukuCaramountsum1 %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/yichukuzaitu/1"> <%=chukuCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=chukuCaramountsum1 %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/weiruku/1"> <%=weidaohuoCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=weidaohuoCaramountsum1 %></td>
+			   		<%-- <td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/yituikehuweifankuan/1"> <%=mo.getYituikehuweifankuanCountsum() %></a></td>
+			   		<td  align="right" valign="middle" ><%=mo.getYituikehuweifankuanCaramountsum() %></td> --%>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/all/1"> <%= rukuCountsum1 +chukuCountsum1+weidaohuoCountsum1
+			   		  %></a></td>
 			   		<td  align="right" valign="middle" >
-			   		<%=mo.getKucunCaramountsum().add(mo.getYichukuzaituCaramountsum()).
-			   		add(mo.getWeirukuCaramountsum()).add(mo.getYituikehuweifankuanCaramountsum())%>
+			   		<%=rukuCaramountsum1.add(chukuCaramountsum1).
+			   		add(weidaohuoCaramountsum1)%>
 			   		</td>
 				</tr>
 				<%
-				kucunCountsum += mo.getKucunCountsum();
-				kucunCaramountsum = kucunCaramountsum.add(mo.getKucunCaramountsum());
-				yichukuzaituCountsum += mo.getYichukuzaituCountsum();
-				yichukuzaituCaramountsum = yichukuzaituCaramountsum.add(mo.getYichukuzaituCaramountsum());
-				weirukuCountsum += mo.getWeirukuCountsum();
-				weirukuCaramountsum = weirukuCaramountsum.add(mo.getWeirukuCaramountsum());
-				yituikehuweifankuanCountsum += mo.getYituikehuweifankuanCountsum();
-				yituikehuweifankuanCaramountsum = yituikehuweifankuanCaramountsum.add(mo.getYituikehuweifankuanCaramountsum());
+				kucunCountsum += rukuCountsum1;
+				kucunCaramountsum = kucunCaramountsum.add(rukuCaramountsum1);
+				yichukuzaituCountsum += chukuCountsum1;
+				yichukuzaituCaramountsum = yichukuzaituCaramountsum.add(chukuCaramountsum1);
+				weirukuCountsum += weidaohuoCountsum1;
+				weirukuCaramountsum = weirukuCaramountsum.add(weidaohuoCaramountsum1);
 				
 				
 				%>
 				<%} %>
 				<tr height="30">
 			   		<td  align="center" valign="middle" ><font color ="red">合计</font> </td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/kucun/1"><%=kucunCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=branchids%>/kucun/1"><%=kucunCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=kucunCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/yichukuzaitu/1"><%=yichukuzaituCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=branchids%>/yichukuzaitu/1"><%=yichukuzaituCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=yichukuzaituCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/weiruku/1"><%=weirukuCountsum %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=branchids%>/weiruku/1"><%=weirukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=weirukuCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/yituikehuweifankuan/1"><%=yituikehuweifankuanCountsum %></a></td>
-			   		<td  align="right" valign="middle" ><%=yituikehuweifankuanCaramountsum %></td>
+			   		<%-- <td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=branchids%>/yituikehuweifankuan/1"><%=yituikehuweifankuanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=yituikehuweifankuanCaramountsum %></td> --%>
 			   		
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/-1/all/1"><%=kucunCountsum +yichukuzaituCountsum +weirukuCountsum
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=branchids%>/all/1"><%=kucunCountsum +yichukuzaituCountsum +weirukuCountsum
 			   		+yituikehuweifankuanCountsum %></a></td>
 			   		<td  align="right" valign="middle" >
 			   		<%=kucunCaramountsum.add(yichukuzaituCaramountsum).

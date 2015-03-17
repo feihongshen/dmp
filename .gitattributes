@@ -725,6 +725,7 @@ src/main/java/cn/explink/controller/LogToDayController.java -text
 src/main/java/cn/explink/controller/MatchExceptionController.java -text
 src/main/java/cn/explink/controller/MenuController.java -text
 src/main/java/cn/explink/controller/MonitorKucunDTO.java -text
+src/main/java/cn/explink/controller/MonitorKucunSim.java -text
 src/main/java/cn/explink/controller/MonitorLogController.java -text
 src/main/java/cn/explink/controller/MonitorLogDTO.java -text
 src/main/java/cn/explink/controller/MonitorLogSim.java -text

@@ -5538,4 +5538,29 @@ public class CwbDAO {
 		return jdbcTemplate.queryForLong(sql.toString());
 	}
 	
+	public List<CwbOrder> getMonitorLogByType(String wheresql ,String branchid,long page,String branchids) {
+		
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 AND state=1  " +
+				" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		List<CwbOrder> list = jdbcTemplate.query(sql.toString(),  new CwbMapper());
+
+		return list;
+	}
+	public String getMonitorLogByTypeSql(String wheresql ,String branchid,String branchids) {
+		
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( "+wheresql+" (flowordertype in(1,2)  and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 ) )AND state=1  " +
+				"");
+		
+		System.out.println(sql);
+		
+		return sql.toString();
+	}
+	public long getMonitorLogByType(String wheresql ,String branchid,String branchids) {
+		
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 AND state=1  " +
+				" ");
+		
+		return  jdbcTemplate.queryForLong(sql.toString());
+	}
 }

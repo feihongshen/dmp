@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.MonitorKucunDTO;
+import cn.explink.controller.MonitorKucunSim;
 import cn.explink.controller.MonitorLogDTO;
 import cn.explink.controller.MonitorLogSim;
 import cn.explink.dao.BranchDAO;
@@ -58,9 +59,9 @@ public class MonitorLogService {
 	public  List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
 		return monitorDAO.getMonitorLogByBranchid(branchids,customerids,wheresql) ;
 	}
-	public  List<MonitorKucunDTO> getMonitorKucunByBranchid(String branchids) {
+	public  List<MonitorKucunSim> getMonitorKucunByBranchid(String branchids,String wheresql) {
 		
-		return monitorKucunDAO.getMonitorLogByBranchid(branchids);
+		return monitorKucunDAO.getMonitorLogByBranchid(branchids,wheresql);
 	}
 	
 	public  List<CwbOrderView> getMonitorLogByType(String branchids,String customerid,String type,long page) {
@@ -187,38 +188,61 @@ public class MonitorLogService {
 		
 		return count;
 	}
-	public  List<CwbOrderView> getMonitorKucunByType(String branchids,long branchid,String type,long page) {
+	public  List<CwbOrderView> getMonitorKucunByType(String branchids,String branchid,String type,long page) {
 		
 		
 		List<String>  cwbList = new ArrayList<String>();
+		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		
 		if("kucun".equals(type)){
 			cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page,branchids);
+			String cwbs ="";
+			if (cwbList.size() > 0) {
+				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs = "'--'";
+			}
+			 clist = cwbDAO.getCwbOrderByCwbs(cwbs);
 		}
 		
 		if("yichukuzaitu".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType("6,14,40,27", branchid, page,branchids);
+			cwbList =   monitorKucunDAO.getMonitorLogByType(" flowordertype in(6,14,40,27) ", branchid, page,branchids);
+			String cwbs ="";
+			if (cwbList.size() > 0) {
+				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs = "'--'";
+			}
+			 clist = cwbDAO.getCwbOrderByCwbs(cwbs);
 		}
 		
-		if("weiruku".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType("1",branchid, page,branchids);
-		}
-		if("yituikehuweifankuan".equals(type)){
-			cwbList =   new ArrayList<String>();
-		}
 		
-		if("all".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorKucunByTypeAll("1",branchid, page,branchids);
-		}
 		
-		String cwbs ="";
-		if (cwbList.size() > 0) {
-			cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
-		} else {
-			cwbs = "'--'";
+		 if("weiruku".equals(type)){
+			 clist = cwbDAO.getMonitorLogByType(" flowordertype in(1,2) ", branchid, page, branchids);
+		 }
+		 
+		 if("all".equals(type)){
+			 
+			   cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page,branchids);
+				String cwbs1 ="";
+				if (cwbList.size() > 0) {
+					cwbs1 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+				} else {
+					cwbs1 = "'--'";
+				}
+				cwbList =   monitorKucunDAO.getMonitorLogByType( " flowordertype in(6,14,40,27) ", branchid, page,branchids);
+				String cwbs2 ="";
+				if (cwbList.size() > 0) {
+					cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+				} else {
+					cwbs2 = "'--'";
+				}
+				 clist = cwbDAO.getMonitorLogByType(" (flowordertype in(1,2) " +
+				 		" or cwb in("+cwbs1+")" +
+				 		" or cwb in("+cwbs2+"))", branchid, page, branchids);
 		}
-		List<CwbOrder> clist = cwbDAO.getCwbOrderByCwbs(cwbs);
-		
+		 
 		List<Customer> customerList = this.customerDAO.getAllCustomersNew();
 		List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
 		List<Branch> branchList = this.branchDAO.getAllBranches();
@@ -231,7 +255,7 @@ public class MonitorLogService {
 		
 		return cwbOrderView;
 	}
-	public  long getMonitorKucunByTypeCount(String branchids,long branchid,String type) {
+	public  long getMonitorKucunByTypeCount(String branchids,String branchid,String type) {
 		
 		long count = 0;
 		if("kucun".equals(type)){
@@ -241,14 +265,14 @@ public class MonitorLogService {
 			count =   monitorKucunDAO.getMonitorLogByTypeCount("6,14,40,27", branchid,branchids);
 		}
 		if("weiruku".equals(type)){
-			count =   monitorKucunDAO.getMonitorLogByTypeCount("1", branchid,branchids);
-		}
-		if("yituikehuweifankuan".equals(type)){
-			count =  0;
+			count =   cwbDAO.getMonitorLogByType(" flowordertype in(1,2) ", branchid,  branchids);
 		}
 		
+		
 		if("all".equals(type)){
-			count =   monitorKucunDAO.getMonitorKucunByTypeCountAll("1",branchid,branchids);
+			count =   monitorKucunDAO.getMonitorKucunByTypeCount("1", branchid,branchids);
+			count +=   monitorKucunDAO.getMonitorLogByTypeCount("6,14,40,27", branchid,branchids);
+			count +=   cwbDAO.getMonitorLogByType(" flowordertype in(1,2) ", branchid,  branchids);
 		}
 		
 		return count;
