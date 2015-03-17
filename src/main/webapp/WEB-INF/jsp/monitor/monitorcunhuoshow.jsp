@@ -83,8 +83,8 @@ function check(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff"  >付款方式</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff"  >订单状态</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >配送结果</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >签收人</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff"  >签收日期</td>
+				<!-- <td  align="center" valign="middle" bgcolor="#eef6ff"  >签收人</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff"  >签收日期</td> -->
 				<td  align="center" valign="middle" bgcolor="#eef6ff"  >发货日期</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >入库日期</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >到站日期</td>
@@ -104,8 +104,8 @@ function check(){
 					<td  align="center" valign="middle"><%=c.getPaytypeName() %></td>
 					<td  align="center" valign="middle"><%=FlowOrderTypeEnum.getText(c.getFlowordertype()).getText() %></td>
 					<td  align="center" valign="middle"><%=DeliveryStateEnum.getByValue((int)c.getDeliverystate()).getText() %></td>
-					<td  align="center" valign="middle"><%=c.getSigninman()%></td>
-					<td  align="center" valign="middle"><%=c.getSignintime() %></td>
+					<%-- <td  align="center" valign="middle"><%=c.getSigninman()%></td>
+					<td  align="center" valign="middle"><%=c.getSignintime() %></td> --%>
 					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
 					<td  align="center" valign="middle"><%=c.getInstoreroomtime() %></td>
 					<td  align="center" valign="middle"><%=c.getInSitetime() %></td>
