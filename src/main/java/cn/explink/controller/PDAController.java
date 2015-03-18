@@ -4473,7 +4473,7 @@ public class PDAController {
 		}
 		CwbOrder cwbOrder = null;
 		if (checktype == 1) {
-			if (co.getCustomerid() != customerid) {
+			if (customerid >0 && co.getCustomerid() != customerid) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.GongHuoShang_Bufu);
 			}
 			OperationTime op = this.operationTimeDAO.getObjectBycwb(cwb);

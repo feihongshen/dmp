@@ -637,7 +637,7 @@ function yiruku(){
 	            <%for(Customer c : cList){ %>
 		          <option value ="<%=c.getCustomerid()%>"  ><%=c.getCustomername()%></option>
 		        <%}}%>
-			</select> <font color="red">*</font>
+			</select> 
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
