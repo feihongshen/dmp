@@ -2891,8 +2891,8 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>HNYT</label>
-				<addresscustomerid>10</addresscustomerid>
-				<addressid>10</addressid>
+				<addresscustomerid>11</addresscustomerid>
+				<addressid>11</addressid>
 				<addresspassword>hnyt</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
