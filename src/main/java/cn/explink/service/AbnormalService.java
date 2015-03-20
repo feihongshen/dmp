@@ -52,6 +52,7 @@ public class AbnormalService {
 				view.setCustomerName(this.getCustomer(customers, a.getLong("customerid")));
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
+				view.setIshandle(a.getLong("ishandle"));
 				views.add(view);
 			}
 		}
@@ -109,7 +110,7 @@ public class AbnormalService {
 
 	/**
 	 * 创建
-	 *
+	 * 
 	 * @param co
 	 * @param user
 	 * @param abnormaltypeid

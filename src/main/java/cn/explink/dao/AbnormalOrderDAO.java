@@ -39,6 +39,9 @@ public class AbnormalOrderDAO {
 			abnormalOrder.setIshandle(rs.getLong("ishandle"));
 			abnormalOrder.setBranchid(rs.getLong("branchid"));
 			abnormalOrder.setIsnow(rs.getLong("isnow"));
+			abnormalOrder.setCwb(rs.getString("cwb"));
+			abnormalOrder.setCustomerid(rs.getLong("customerid"));
+			abnormalOrder.setEmaildata(rs.getString("emaildate"));
 			return abnormalOrder;
 		}
 	}
@@ -292,7 +295,7 @@ public class AbnormalOrderDAO {
 
 	/**
 	 * 用于迁移
-	 *
+	 * 
 	 * @return
 	 */
 	public List<AbnormalOrder> getAllAbnormalIsnow() {
@@ -303,7 +306,7 @@ public class AbnormalOrderDAO {
 
 	/**
 	 * 根据id 得到
-	 *
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -424,5 +427,30 @@ public class AbnormalOrderDAO {
 			this.jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
 		}
+	}
+
+	public List<AbnormalOrder> getAbnormalOrderByWherefind(long page, String begindate, String enddate, String ishandle, long abnormaltypeid) {
+		String sql = "select * from express_ops_abnormal_order where  credatetime >= '" + begindate + "' and credatetime <= '" + enddate + "' ";
+		if (!ishandle.equals("-1")) {
+			sql += " and ishandle in ( " + ishandle + ")";
+		}
+		if (abnormaltypeid > 0) {
+			sql += " and abnormaltypeid =" + abnormaltypeid;
+		}
+
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+
+		return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper());
+	}
+
+	public long getAbnormalOrderCountfind(String begindate, String enddate, String ishandle, long abnormaltypeid) {
+		String sql = "select count(1) from express_ops_abnormal_order where credatetime >= ?  and credatetime <=? ";
+		if (!ishandle.equals("-1")) {
+			sql += " and ishandle in ( " + ishandle + ")";
+		}
+		if (abnormaltypeid > 0) {
+			sql += " and abnormaltypeid =" + abnormaltypeid;
+		}
+		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 }

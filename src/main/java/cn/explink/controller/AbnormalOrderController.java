@@ -101,7 +101,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 创建问题件
-	 *
+	 * 
 	 * @param model
 	 * @param cwb
 	 * @param abnormaltypeid
@@ -147,13 +147,14 @@ public class AbnormalOrderController {
 
 	/**
 	 * 创建问题件的form提交
-	 *
+	 * 
 	 * @param model
 	 * @param cwbdetails
 	 * @return
 	 */
 	@RequestMapping("/submitCreateabnormal")
-	public @ResponseBody long submitCreateabnormal(Model model, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
+	public @ResponseBody
+	long submitCreateabnormal(Model model, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
 
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		long successCount = 0;
@@ -212,7 +213,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 问题件处理查询功能
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -334,7 +335,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitHandleabnormal/{id}")
-	public @ResponseBody String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+	public @ResponseBody
+	String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -354,7 +356,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 问题件回复
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param begindate
@@ -384,7 +386,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitReplyabnormal/{id}")
-	public @ResponseBody String SubmitReplyabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+	public @ResponseBody
+	String SubmitReplyabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -542,7 +545,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitOverabnormal/{id}")
-	public @ResponseBody String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
+	public @ResponseBody
+	String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -588,4 +592,73 @@ public class AbnormalOrderController {
 		return str;
 
 	}
+
+	@RequestMapping("/tofindabnormal/{page}")
+	public String tofindabnormal(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
+			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", required = false, defaultValue = "-1") long ishandle,
+			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
+		if (begindate.length() == 0) {
+			begindate = DateTimeUtil.getDateBefore(1);
+		}
+		if (enddate.length() == 0) {
+			enddate = DateTimeUtil.getNowTime();
+		}
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		String nomalTip = ishandle + "";
+		if (!showabnomal.equals("1")) {
+			if (ishandle == 2) {
+				nomalTip = AbnormalOrderHandleEnum.chulizhong.getValue() + "," + AbnormalOrderHandleEnum.WeiChuLi.getValue();
+			}
+		}
+		List<AbnormalOrder> abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByWherefind(page, begindate, enddate, nomalTip, abnormaltypeid);
+		model.addAttribute("abnormalOrderList", abnormalOrderList);
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("page_obj", new Page(this.abnormalOrderDAO.getAbnormalOrderCountfind(begindate, enddate, nomalTip, abnormaltypeid), page, Page.ONE_PAGE_NUMBER));
+
+		return "/abnormalorder/tofindabnormal";
+	}
+
+	@RequestMapping("gotoBatch")
+	public String gotoBatch(Model model, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
+		model.addAttribute("ids", ids);
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		model.addAttribute("user", this.getSessionUser());
+		model.addAttribute("role", this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid()));
+		return "/abnormalorder/nowhandleabnormalBatch";
+	}
+
+	@RequestMapping("/SubmitHandleabnormalBatch")
+	public @ResponseBody
+	String SubmitHandleabnormalBatch(@RequestParam(value = "ids", defaultValue = "", required = false) String ids,
+			@RequestParam(value = "describe", defaultValue = "", required = false) String describe, @RequestParam(value = "ishandle", defaultValue = "3", required = false) long ishandle) {
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);
+			String[] arrayIds = ids.split(",");
+
+			for (int i = 0; i < arrayIds.length; i++) {
+				int id = Integer.parseInt(arrayIds[i]);
+				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
+				this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
+				this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
+						ab.getAbnormaltypeid(), ab.getCwb());
+				/*
+				 * String json = "订单：" + ab.getCwb() + "已处理";
+				 * this.appearWindowDao.creWindowTime(json, "4",
+				 * ab.getCreuserid(), "1");
+				 */
+			}
+			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+		}
+	}
+
 }
