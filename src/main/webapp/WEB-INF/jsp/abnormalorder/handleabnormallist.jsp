@@ -197,7 +197,43 @@ function checkstate(){
 		$("#chuli").html("处理时间");
 	}
 }
-
+function isgetallcheck(){
+	if($('input[name="id"]:checked').size()>0){
+		$('input[name="id"]').each(function(){
+			$(this).attr("checked",false);
+		});
+	}else{
+		$('input[name="id"]').attr("checked",true);
+	}
+}
+function stateBatch(state)
+{
+	var ids="";
+	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+		id=$(this).val();
+		if($.trim(id).length!=0){
+		ids+=id+",";
+		}
+		});
+	if(ids.length==0){
+		alert("请选择！");
+		return false;
+	}
+	if(ids.indexOf(",")>0){
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
+		data:{"ids":ids.substring(0, ids.length-1)},
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+			
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+	}
+	}
 
 </script>
 </head>
@@ -235,7 +271,7 @@ function checkstate(){
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 										<%} %>
 										<%if(!showabnomal.equals("1")){%>
-										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 										<%} %>
 									</select>
 									<strong id="chuli" >处理时间：</strong>
@@ -247,6 +283,7 @@ function checkstate(){
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="button"  onclick="check()" value="查询" class="input_button2">
 									<%if(views != null && views.size()>0){ %>
+										<input type ="button" value="批量处理" class="input_button2"  onclick="stateBatch();"/>
 										<input type ="button" id="btnval" value="导出" class="input_button1" onclick="exportField();"/>
 									<%} %>
 								</p>
@@ -255,6 +292,7 @@ function checkstate(){
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 					<tbody>
 						<tr class="font_1" height="30" >
+							<td width="30"  align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
 							<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
@@ -274,6 +312,11 @@ function checkstate(){
 				<tbody>
 					<%if(views!=null||views.size()>0)for(AbnormalView view : views){ %>
 					<tr height="30" >
+						<td width="30" align="center" valign="middle" bgcolor="#eef6ff">
+						<%if(view.getIshandle()!=3) {%>
+						<input id="id" type="checkbox" value="<%=view.getId()%>"  name="id"/>
+						<%} %>
+						</td>
 						<td width="120" align="center" valign="middle"><%=view.getCwb() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getCustomerName() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getEmaildate() %></td>
