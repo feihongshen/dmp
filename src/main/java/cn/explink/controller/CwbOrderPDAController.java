@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.json.JSONObject;
 
@@ -31,10 +29,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,9 +88,6 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Bale;
 import cn.explink.domain.BaleView;
 import cn.explink.domain.Branch;
-import cn.explink.domain.Common;
-import cn.explink.domain.Complaint;
-import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
@@ -104,17 +96,13 @@ import cn.explink.domain.Exportmould;
 import cn.explink.domain.Menu;
 import cn.explink.domain.OutWarehouseGroup;
 import cn.explink.domain.Reason;
-import cn.explink.domain.Remark;
-import cn.explink.domain.SetExportField;
 import cn.explink.domain.Truck;
-import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.BalePDAEnum;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -139,7 +127,6 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
-import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 
 @RequestMapping("/cwborderPDA")
@@ -225,37 +212,40 @@ public class CwbOrderPDAController {
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail)
 
-		securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/getSystime")
-	public @ResponseBody PDAResponse getSystime(HttpServletResponse response, String error) {
+	public @ResponseBody
+	PDAResponse getSystime(HttpServletResponse response, String error) {
 		PDAResponse PDAResponse = new StringBodyPdaResponse(CwbOrderPDAEnum.OK.getCode(), "", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		return PDAResponse;
 	}
 
 	@RequestMapping("/loginError")
-	public @ResponseBody PDAResponse loginError(HttpServletResponse response, String error) {
+	public @ResponseBody
+	PDAResponse loginError(HttpServletResponse response, String error) {
 		PDAResponse PDAResponse = new StringBodyPdaResponse(CwbOrderPDAEnum.WU_CAO_ZUO_QUAN_XIAN.getCode(), CwbOrderPDAEnum.WU_CAO_ZUO_QUAN_XIAN.getError(), "");
 		return PDAResponse;
 	}
 
 	@RequestMapping("/login")
-	public @ResponseBody LoginResponse login(HttpServletResponse response, HttpServletRequest request) {
+	public @ResponseBody
+	LoginResponse login(HttpServletResponse response, HttpServletRequest request) {
 		LoginResponse PDAResponse = new LoginResponse(CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError());
-		PDAResponse.setBody(getUser(request));
+		PDAResponse.setBody(this.getUser(request));
 		return PDAResponse;
 	}
 
 	private LoginResponseBody getUser(HttpServletRequest request) {
 		LoginResponseBody loginResponseBody = new LoginResponseBody();
-		loginResponseBody.setUsername(getSessionUser().getUsername());
+		loginResponseBody.setUsername(this.getSessionUser().getUsername());
 		loginResponseBody.setAuthtoken(request.getSession().getId());
-		loginResponseBody.setRealname(getSessionUser().getRealname());
-		loginResponseBody.setBranchname(branchDAO.getBranchByBranchid(getSessionUser().getBranchid()).getBranchname());
-		List<Menu> mList = menuDAO.getMenusByUserRoleidToPDA(getSessionUser().getRoleid());
-		String functionids = branchDAO.getBranchByBranchid(getSessionUser().getBranchid()).getFunctionids();
+		loginResponseBody.setRealname(this.getSessionUser().getRealname());
+		loginResponseBody.setBranchname(this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getBranchname());
+		List<Menu> mList = this.menuDAO.getMenusByUserRoleidToPDA(this.getSessionUser().getRoleid());
+		String functionids = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getFunctionids();
 		StringBuffer pdaMenu = new StringBuffer();
 		for (Menu m : mList) {
 			if (functionids.indexOf(m.getMenuno()) != -1) {
@@ -267,29 +257,30 @@ public class CwbOrderPDAController {
 	}
 
 	@RequestMapping("/")
-	public @ResponseBody PDAResponse PDA(HttpServletResponse response, HttpServletRequest request, @RequestParam("deviceid") String deviceid, @RequestParam("authtoken") String authtoken,
+	public @ResponseBody
+	PDAResponse PDA(HttpServletResponse response, HttpServletRequest request, @RequestParam("deviceid") String deviceid, @RequestParam("authtoken") String authtoken,
 			@RequestParam("clientversion") String clientversion, @RequestParam("requestparam") String requestparam, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "requestbatchno", required = false, defaultValue = "0") long requestbatchno) throws Exception {
-		logger.info("PDA--开始进行扫描");
+		this.logger.info("PDA--开始进行扫描");
 		try {
-			User u = getSessionUser();
+			User u = this.getSessionUser();
 		} catch (Exception e) {
-			return loginError(response, "");
+			return this.loginError(response, "");
 		}
 
 		try {
 			if (requestparam.equals("selectcustomerlist")) {// 查询供货商列表
-				List<Customer> cList = customerDAO.getAllCustomers();
-				return getCustomers(cList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Customer> cList = this.customerDAO.getAllCustomers();
+				return this.getCustomers(cList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectdriverlist")) {// 查询驾驶员列表,3为驾驶员角色的ID
-				List<User> uList = userDAO.getUserByRole(3);
-				return getUsers(uList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<User> uList = this.userDAO.getUserByRole(3);
+				return this.getUsers(uList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("warehouse_catchcargo_submit")) {// 提货扫描提交
 				long customerid = Long.parseLong(request.getParameter("customerid") == "" ? "0" : request.getParameter("customerid"));
 				long driverid = Long.parseLong(request.getParameter("driverid") == "" ? "0" : request.getParameter("driverid"));
-				return getGoods(cwb, customerid, driverid, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath()
+				return this.getGoods(cwb, customerid, driverid, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath()
 						+ ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("warehouseimport_submit")) {// 入库扫描提交
@@ -297,10 +288,10 @@ public class CwbOrderPDAController {
 				long driverid = request.getParameter("driverid").length() == 0 ? 0 : Long.parseLong(request.getParameter("driverid"));
 
 				String baleno = "";
-				if (request.getParameter("baleno") != null && request.getParameter("baleno").length() > 0) {
+				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-				return intoWarehous(cwb, customerid, driverid, requestbatchno, baleno, request, "");
+				return this.intoWarehous(cwb, customerid, driverid, requestbatchno, baleno, request, "");
 			} else if (requestparam.equals("warehouseimport_submit_forremark")) {// 备注
 				long csremarkid = Long.parseLong(request.getParameter("csremarkid"));
 				long multicwbnum = Long.parseLong(request.getParameter("multicwbnum"));
@@ -316,30 +307,31 @@ public class CwbOrderPDAController {
 					comment = "一票多物";
 				}
 
-				return forremark(comment, multicwbnum, cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
+				return this.forremark(comment, multicwbnum, cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(),
+						request);
 
 			} else if (requestparam.equals("selectbranchlist_forexport")) {// 查询站点列表（出库、中转出库）
-				List<Long> nextPossibleBackBranch = cwbRouteService.getNextPossibleBranch(getSessionUser().getBranchid());
+				List<Long> nextPossibleBackBranch = this.cwbRouteService.getNextPossibleBranch(this.getSessionUser().getBranchid());
 				List<Branch> bList = new ArrayList<Branch>();
 				for (long branchid : nextPossibleBackBranch) {
-					Branch branch = branchDAO.getBranchByBranchid(branchid);
+					Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 					if (branch.getBranchid() != 0) {
 						bList.add(branch);
 					}
 				}
-				return getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectbranchlist_forbackexport")) {// 查询站点列表（出库、中转出库）
-				List<Long> nextPossibleBackBranch = cwbRouteService.getNextPossibleBackBranch(getSessionUser().getBranchid());
+				List<Long> nextPossibleBackBranch = this.cwbRouteService.getNextPossibleBackBranch(this.getSessionUser().getBranchid());
 				List<Branch> bList = new ArrayList<Branch>();
 				for (long branchid : nextPossibleBackBranch) {
-					bList.add(branchDAO.getBranchByBranchid(branchid));
+					bList.add(this.branchDAO.getBranchByBranchid(branchid));
 				}
-				return getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selecttrucklist")) {// 查询车辆列表
-				List<Truck> tlist = truckDAO.getAllTruck();
-				return getTruck(tlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Truck> tlist = this.truckDAO.getAllTruck();
+				return this.getTruck(tlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("warehouseexport_submit")) {// 出库扫描提交
 				/*
@@ -353,80 +345,80 @@ public class CwbOrderPDAController {
 				long confirmflag = request.getParameter("confirmflag").length() == 0 ? 0 : Long.parseLong(request.getParameter("confirmflag"));
 				long reasonid = request.getParameter("reasonid") == null ? 0 : Long.parseLong(request.getParameter("reasonid"));
 				String baleno = "";
-				if (request.getParameter("baleno") != null && request.getParameter("baleno").length() > 0) {
+				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-				return outWarehous(cwb, driverid, truckid, branchid, confirmflag, reasonid, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), request.getContextPath()
+				return this.outWarehous(cwb, driverid, truckid, branchid, confirmflag, reasonid, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), request.getContextPath()
 						+ ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("warehouse_finishexport_submit")) {// 出库扫描批次封包确认
 				long driverid = request.getParameter("driverid") == "" ? -1 : Long.parseLong(request.getParameter("driverid"));
-				return finishExport(driverid, OutwarehousegroupOperateEnum.ChuKu.getValue(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
+				return this.finishExport(driverid, OutwarehousegroupOperateEnum.ChuKu.getValue(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
 						CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("branchimport_submit")) {// 分站到货扫描
 				long driverid = request.getParameter("driverid") == "" ? 0 : Long.parseLong(request.getParameter("driverid"));
 				String baleno = "";
-				if (request.getParameter("baleno") != null && request.getParameter("baleno").length() > 0) {
+				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-				return substationGoods(cwb, baleno, driverid, requestbatchno, request);
+				return this.substationGoods(cwb, baleno, driverid, requestbatchno, request);
 
 			} else if (requestparam.equals("selectdeliverlist_forbranchdeliver")) {// 查询本站点小件员列表
 				List<User> uList = new ArrayList<User>();
-				if (getSessionUser().getRoleid() == 2) {// 小件员只能看见小件员的名称
-					uList = userDAO.getUserByid(getSessionUser().getUserid());
+				if (this.getSessionUser().getRoleid() == 2) {// 小件员只能看见小件员的名称
+					uList = this.userDAO.getUserByid(this.getSessionUser().getUserid());
 				} else {
 					String roleids = "2,4";
-					uList = userDAO.getDeliveryUserByRolesAndBranchid(roleids, getSessionUser().getBranchid());
+					uList = this.userDAO.getDeliveryUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 				}
-				return getUser(uList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.getUser(uList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("branchdeliver_submit")) {// 领货扫描提交
 				long deliverid = Long.parseLong(request.getParameter("deliverid"));
-				return ReceiveGoods(cwb, deliverid, requestbatchno, new StringBuffer(), request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
+				return this.ReceiveGoods(cwb, deliverid, requestbatchno, new StringBuffer(), request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("selecttransreasonlist_fortransexport")) {// 查询中转原因列表
-				List<Reason> rlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
-				return getReason(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Reason> rlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
+				return this.getReason(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("branch_finishbackexport_submit")) {// 退货出站扫描批次封包确认
 				long driverid = request.getParameter("driverid") == "" ? 0 : Long.parseLong(request.getParameter("driverid"));
 				long truckid = request.getParameter("truckid").length() == 0 ? 0 : Long.parseLong(request.getParameter("truckid"));
-				return BranchFinishBackExport(driverid, truckid, OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(),
+				return this.BranchFinishBackExport(driverid, truckid, OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(),
 						CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("warehouse_printbar_submit")) {// 标签打印
-				return printBar(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
+				return this.printBar(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
 
-			}else if(requestparam.equals("warehouse_packageprintbar_submit")) {// 包号打印
-				return packagePrintBar(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
-			}else if (requestparam.equals("warehouse_scancwbbranch_submit")) {// 理货扫描
-				return scanCwbBranch(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
+			} else if (requestparam.equals("warehouse_packageprintbar_submit")) {// 包号打印
+				return this.packagePrintBar(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("warehouse_scancwbbranch_submit")) {// 理货扫描
+				return this.scanCwbBranch(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
 						+ CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("selectbranchlist_forscanstock")) {// 盘点站点列表
 				String sitetypes = BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue() + "," + BranchEnum.TuiHuo.getValue();
-				List<Branch> bList = branchDAO.getBanchByBranchidForStock(sitetypes);
-				return getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Branch> bList = this.branchDAO.getBanchByBranchidForStock(sitetypes);
+				return this.getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("deliverpod_forquery")) {// 订单扫描查询
-				return ScanCwb(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.ScanCwb(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectpodresultlist_forpod")) {// 配送结果列表查询
-				return SelectResult(DeliveryStateEnum.values(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.SelectResult(DeliveryStateEnum.values(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectbackreasonlist_forpod")) {// 退货原因列表查询
-				List<Reason> rlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-				return SelectReturnResult(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Reason> rlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+				return this.SelectReturnResult(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectleavedreasonlist_forpod")) {// 滞留原因列表查询
-				List<Reason> rlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
-				return getLeaveReason(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Reason> rlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+				return this.getLeaveReason(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selectpodremarklist_forpod")) {// 配送结果备注列表查询
-				List<Reason> rlist = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
-				return SelectRemarkResult(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Reason> rlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
+				return this.SelectRemarkResult(rlist, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("deliverpod_submit")) {// 单票结果反馈提交
 				// 派送员登录名
@@ -441,8 +433,8 @@ public class CwbOrderPDAController {
 				BigDecimal receivedfeeother = BigDecimal.valueOf(Double.parseDouble(request.getParameter("receivedfeeother") == "" ? "0" : request.getParameter("receivedfeeother"))); // 其他实收（优惠券折扣卷等）
 				BigDecimal paybackedfee = BigDecimal.valueOf(Double.parseDouble(request.getParameter("paybackedfee") == "" ? "0" : request.getParameter("paybackedfee"))); // 上门实退现金
 
-				long deliverid = userDAO.getSingelUsersByRealname(username).getUserid();
-				return deliverPod(cwb, deliverid, podresultid, backreasonid, leavedreasonid, receivedfeecash, receivedfeepos, receivedfeecheque, receivedfeeother, paybackedfee, podremarkid,
+				long deliverid = this.userDAO.getSingelUsersByRealname(username).getUserid();
+				return this.deliverPod(cwb, deliverid, podresultid, backreasonid, leavedreasonid, receivedfeecash, receivedfeepos, receivedfeecheque, receivedfeeother, paybackedfee, podremarkid,
 						requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
 						request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
@@ -467,105 +459,105 @@ public class CwbOrderPDAController {
 
 				// long deliverid =
 				// userDAO.getSingelUsersByRealname(username).getUserid();
-				long deliverid = getSessionUser().getUserid();
+				long deliverid = this.getSessionUser().getUserid();
 				String deliverstateremark = request.getParameter("deliverstateremark");
-				return deliverPodBatch(deliverid, podresultid, backreasonid, leavedreasonid, paywayid, deliverstateremark, cwbs, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getError(),
-						CwbOrderPDAEnum.OK.getVediourl());
+				return this.deliverPodBatch(deliverid, podresultid, backreasonid, leavedreasonid, paywayid, deliverstateremark, cwbs, requestbatchno, new StringBuffer(),
+						CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("deliverpod_statistics")) {// 派送员归班汇总
 				String username = new String(request.getParameter("username").getBytes("iso8859_1"), "UTF-8");
 				if (username.length() == 0) {
-					username = getSessionUser().getRealname();
+					username = this.getSessionUser().getRealname();
 				}
-				return deliverpodStatistics(userDAO.getSingelUsersByRealname(username).getUserid(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
-						CwbOrderPDAEnum.OK.getVediourl());
+				return this.deliverpodStatistics(this.userDAO.getSingelUsersByRealname(username).getUserid(), requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(),
+						CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("cwbtrack_submit")) {// 订单状态查询（查询单号提交）
-				return cwbtrack(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
+				return this.cwbtrack(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
 						+ CwbOrderPDAEnum.OK.getVediourl(), request);
 
-			} else if(requestparam.equals("packagetrack_submit")){//包号查询
-				return packagetrack(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
+			} else if (requestparam.equals("packagetrack_submit")) {// 包号查询
+				return this.packagetrack(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
 						+ BalePDAEnum.OK.getVediourl(), request);
-			}
-			else if (requestparam.equals("backtocustomerexport_submit")) {// 退供货商出库
-				return backtocustom(cwb, requestbatchno, request);
+			} else if (requestparam.equals("backtocustomerexport_submit")) {// 退供货商出库
+				return this.backtocustom(cwb, requestbatchno, request);
 
 			} else if (requestparam.equals("customerbackimport_submit")) {// 供货商拒收返库
-				return customrefuseback(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
+				return this.customrefuseback(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), request.getContextPath() + ServiceUtil.waverrorPath
 						+ CwbOrderPDAEnum.OK.getVediourl(), request);
 
 			} else if (requestparam.equals("selectwavfiles_submit")) {// 声音文件下载
-				return selectwavfiles(requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.selectwavfiles(requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("branchimportbatch_submit")) {// 分站到货批量
 				String cwbs = request.getParameter("cwbs");
 				long driverid = request.getParameter("driverid") == "" ? 0 : Long.parseLong(request.getParameter("driverid"));
-				return substationGoodsBatch(cwbs, driverid, requestbatchno, request);
+				return this.substationGoodsBatch(cwbs, driverid, requestbatchno, request);
 
 			} else if (requestparam.equals("branchdeliverbatch_submit")) {// 领货批量
 				String cwbs = request.getParameter("cwbs");
 
-				long deliverid = StringUtils.isBlank(request.getParameter("deliverid")) ? getSessionUser().getUserid() : Long.parseLong(request.getParameter("deliverid"));
+				long deliverid = StringUtils.isBlank(request.getParameter("deliverid")) ? this.getSessionUser().getUserid() : Long.parseLong(request.getParameter("deliverid"));
 
-				return ReceiveGoodsBatch(cwbs, deliverid, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
+				return this.ReceiveGoodsBatch(cwbs, deliverid, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(),
+						request);
 			} else if (requestparam.equals("branchdeliverbatch_submit")) {
 				long branchid = Long.parseLong(request.getParameter("branchid"));
 				long driverid = request.getParameter("driverid") == "" ? -1 : Long.parseLong(request.getParameter("driverid"));
 				long truckid = request.getParameter("truckid").length() == 0 ? 0 : Long.parseLong(request.getParameter("truckid"));
 				long confirmflag = request.getParameter("confirmflag").length() == 0 ? 0 : Long.parseLong(request.getParameter("confirmflag"));
 				String baleno = "";
-				if (request.getParameter("baleno") != null && request.getParameter("baleno").length() > 0) {
+				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-				return outWarehous(cwb, driverid, truckid, branchid, confirmflag, 0, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getVediourl(),
+				return this.outWarehous(cwb, driverid, truckid, branchid, confirmflag, 0, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getVediourl(),
 						request);
 			} else if (requestparam.equals("branchbackexport_submit")) {// 退货出站
-				long branchid = (request.getParameter("branchid") == null || request.getParameter("branchid").length() == 0) ? 0 : Long.parseLong(request.getParameter("branchid"));
+				long branchid = ((request.getParameter("branchid") == null) || (request.getParameter("branchid").length() == 0)) ? 0 : Long.parseLong(request.getParameter("branchid"));
 				long driverid = request.getParameter("driverid") == "" ? -1 : Long.parseLong(request.getParameter("driverid"));
 				long truckid = request.getParameter("truckid").length() == 0 ? 0 : Long.parseLong(request.getParameter("truckid"));
-				long confirmflag = (request.getParameter("confirmflag") == null || request.getParameter("confirmflag").length() == 0) ? 0 : Long.parseLong(request.getParameter("confirmflag"));
+				long confirmflag = ((request.getParameter("confirmflag") == null) || (request.getParameter("confirmflag").length() == 0)) ? 0 : Long.parseLong(request.getParameter("confirmflag"));
 				String baleno = "";
-				if (request.getParameter("baleno") != null && request.getParameter("baleno").length() > 0) {
+				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-				return outUntreadWarehous(cwb, driverid, truckid, branchid, confirmflag, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
+				return this.outUntreadWarehous(cwb, driverid, truckid, branchid, confirmflag, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(),
 						request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 			} else if (requestparam.equals("backbranchimport_submit")) {// 退货站入库扫描提交
 				long driverid = request.getParameter("driverid").length() == 0 ? 0 : Long.parseLong(request.getParameter("driverid"));
-				return backintoWarehous(cwb, driverid, requestbatchno, request, "");
+				return this.backintoWarehous(cwb, driverid, requestbatchno, request, "");
 			} else if (requestparam.equals("selectkufangbranchlist_forkdkexport")) {// 查询站点列表（库对库出库）
-				List<Branch> bList = cwborderService.getNextPossibleKuFangBranches(getSessionUser());
-				return getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				List<Branch> bList = this.cwborderService.getNextPossibleKuFangBranches(this.getSessionUser());
+				return this.getBranch(bList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
 			} else if (requestparam.equals("selecttuihuobranchlist_forthexport")) {// 查询站点列表（退货站退货出站）
-				List<Branch> bList = cwborderService.getNextPossibleBranches(getSessionUser());
+				List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
 				List<Branch> lastList = new ArrayList<Branch>();
 				for (Branch b : bList) {// 去掉中转站
 					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 						lastList.add(b);
 					}
 				}
-				return getBranch(lastList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
+				return this.getBranch(lastList, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl());
 
-			}else if(requestparam.equals("packageexport_checkpackageillegal")){//校验包号合法
-				return checkPackageIllegal(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("packageexport_checkpackageillegal")) {// 校验包号合法
+				return this.checkPackageIllegal(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
 
-			}else if(requestparam.equals("packageexport_generatepackageno")){//生成包号
-				return generatePackageNO(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
-			}else if(requestparam.equals("packageexport_checkorder")){//校验单号站点
-				return checkOrderForPackage(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
-			}else if(requestparam.equals("packageexport_package")){//合包
-				return packageProcess(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
-			}else if(requestparam.equals("packageexport_outstore")){//出库
-				return outStore(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("packageexport_generatepackageno")) {// 生成包号
+				return this.generatePackageNO(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("packageexport_checkorder")) {// 校验单号站点
+				return this.checkOrderForPackage(cwb, requestbatchno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError(), CwbOrderPDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("packageexport_package")) {// 合包
+				return this.packageProcess(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
+			} else if (requestparam.equals("packageexport_outstore")) {// 出库
+				return this.outStore(cwb, requestbatchno, new StringBuffer(), BalePDAEnum.OK.getCode(), BalePDAEnum.OK.getError(), BalePDAEnum.OK.getVediourl(), request);
 
 			}
 			throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.Invalid_Operation);
 		} catch (CwbException e) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-					0, 0, 0, "");
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 			PDAResponse PDAResponse = new PDAResponse(CwbOrderPDAEnum.SYS_ERROR.getCode(), e.getMessage());
 			PDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 			return PDAResponse;
@@ -575,6 +567,7 @@ public class CwbOrderPDAController {
 
 	/**
 	 * 出库
+	 * 
 	 * @param strPara
 	 * @param requestbatchno
 	 * @param body
@@ -589,44 +582,42 @@ public class CwbOrderPDAController {
 		String baleNO;
 		String nextbranch;
 		long nextBranchid;
-		try{
-			Document document = DocumentHelper.parseText(strPara);  
-			Element rootElt = document.getRootElement(); 
+		try {
+			Document document = DocumentHelper.parseText(strPara);
+			Element rootElt = document.getRootElement();
 			baleNO = rootElt.elementTextTrim("baleNO");
 			nextbranch = rootElt.elementTextTrim("nextBranch");
-			nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
-		}
-		catch(DocumentException e){
-			statuscode="100001";
+			// nextBranchid=branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			nextBranchid = Long.parseLong(nextbranch);
+		} catch (DocumentException e) {
+			statuscode = "100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
 		try {
-			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
-		} catch (CwbException e) {			
-			statuscode=CwbOrderPDAEnum.Feng_Bao.getCode();
+			this.baleService.fengbao(this.getSessionUser(), baleNO.trim(), nextBranchid);
+		} catch (CwbException e) {
+			statuscode = CwbOrderPDAEnum.Feng_Bao.getCode();
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
 
-
-		
 		// 根据包号查找订单信息
-		List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleNO.trim());
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleNO.trim());
 		List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 		List<BaleView> errorListView = new ArrayList<BaleView>();
-		if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+		if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 			long successCount = 0;
 			long errorCount = 0;
 			for (CwbOrder co : cwbOrderList) {
 				try {
 					// 订单出库
-					CwbOrder cwbOrder = cwborderService.outWarehous(getSessionUser(), co.getCwb(), co.getCwb(), 0, 0, nextBranchid, 0, false, "", baleNO, 0, false, true);
-					successCount++;		
+					CwbOrder cwbOrder = this.cwborderService.outWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), 0, 0, nextBranchid, 0, false, "", baleNO, 0, false, true);
+					successCount++;
 
 				} catch (CwbException e) {
 					errorCount++;
@@ -642,24 +633,24 @@ public class CwbOrderPDAController {
 					e.printStackTrace();
 				}
 			}
-			if (successCount > 0) {//成功
+			if (successCount > 0) {// 成功
 				// 更改包的状态
-				baleDao.updateBalesate(baleNO, BaleStateEnum.YiFengBaoChuKu.getValue());
-				statuscode="000000";
-				errorinfo = "成功"+String.valueOf(successCount)+"件,失败"+String.valueOf(errorCount)+"件";
+				this.baleDao.updateBalesate(baleNO, BaleStateEnum.YiFengBaoChuKu.getValue());
+				statuscode = "000000";
+				errorinfo = "成功" + String.valueOf(successCount) + "件,失败" + String.valueOf(errorCount) + "件";
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 				PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 				return PDAResponse;
-				
-			} else {//失败			
-				statuscode="100001";
-				errorinfo = "成功"+String.valueOf(successCount)+"件,失败"+String.valueOf(errorCount)+"件";				
+
+			} else {// 失败
+				statuscode = "100001";
+				errorinfo = "成功" + String.valueOf(successCount) + "件,失败" + String.valueOf(errorCount) + "件";
 				PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 				return PDAResponse;
 			}
 
 		}
-		statuscode="100001";
+		statuscode = "100001";
 		errorinfo = "出库失败";
 		errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -669,6 +660,7 @@ public class CwbOrderPDAController {
 
 	/**
 	 * 合包
+	 * 
 	 * @param strPara
 	 * @param requestbatchno
 	 * @param body
@@ -678,31 +670,31 @@ public class CwbOrderPDAController {
 	 * @param request
 	 * @return
 	 */
-	private PDAResponse packageProcess(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {		
-		
-		try{
-			Document document = DocumentHelper.parseText(strPara);  
-			Element rootElt = document.getRootElement(); 
+	private PDAResponse packageProcess(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
+
+		try {
+			Document document = DocumentHelper.parseText(strPara);
+			Element rootElt = document.getRootElement();
 			String baleNO = rootElt.elementTextTrim("baleNO");
 			String nextbranch = rootElt.elementTextTrim("nextBranch");
-			long nextBranchid=Long.parseLong(nextbranch);//branchDAO.getBranchByBranchname(nextbranch).getBranchid();
-			baleService.fengbao(getSessionUser(), baleNO.trim(), nextBranchid);
-			statuscode="000000";
+			long nextBranchid = Long.parseLong(nextbranch);// branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			this.baleService.fengbao(this.getSessionUser(), baleNO.trim(), nextBranchid);
+			statuscode = "000000";
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
-		}
-		catch(DocumentException e){
-			statuscode="1000001";
+		} catch (DocumentException e) {
+			statuscode = "1000001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
 		}
-		
+
 	}
 
 	/**
 	 * 扫描单号
+	 * 
 	 * @param strPara
 	 * @param requestbatchno
 	 * @param body
@@ -712,73 +704,68 @@ public class CwbOrderPDAController {
 	 * @param request
 	 * @return
 	 */
-	private PDAResponse checkOrderForPackage(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {		
-		
-		try{
+	private PDAResponse checkOrderForPackage(String strPara, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
+
+		try {
 			boolean isForceOutstore;
-			Document document = DocumentHelper.parseText(strPara);  
-			Element rootElt = document.getRootElement(); 
+			Document document = DocumentHelper.parseText(strPara);
+			Element rootElt = document.getRootElement();
 			String baleNO = rootElt.elementTextTrim("baleNO");
 			String orderNO = rootElt.elementTextTrim("orderNO");
 			String nextbranch = rootElt.elementTextTrim("nextBranch");
-			long nextBranchid=Long.parseLong(nextbranch);//branchDAO.getBranchByBranchname(nextbranch).getBranchid();
+			long nextBranchid = Long.parseLong(nextbranch);// branchDAO.getBranchByBranchname(nextbranch).getBranchid();
 			String flag = rootElt.elementTextTrim("isForceOutstore");
-			//强制出库标识
-			if("1".equals(flag)){
-				isForceOutstore=true;
+			// 强制出库标识
+			if ("1".equals(flag)) {
+				isForceOutstore = true;
+			} else {
+				isForceOutstore = false;
 			}
-			else{
-				isForceOutstore=false;
-			}
-			//校验包号
-			baleService.validateBaleCheck(getSessionUser(), baleNO, orderNO, nextBranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-			
-			CwbOrderPDAEnum cwbOrderPDAEnum = verficationCwb(orderNO);
-			statuscode=cwbOrderPDAEnum.getCode();
-			if(CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())){
-			
-				int iType=cwbDAO.getCwbByCwb(orderNO).getCwbordertypeid();
+			// 校验包号
+			this.baleService.validateBaleCheck(this.getSessionUser(), baleNO, orderNO, nextBranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+
+			CwbOrderPDAEnum cwbOrderPDAEnum = this.verficationCwb(orderNO);
+			statuscode = cwbOrderPDAEnum.getCode();
+			if (CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())) {
+
+				int iType = this.cwbDAO.getCwbByCwb(orderNO).getCwbordertypeid();
 				if (iType == 1) {// 库房出库
-					baleService.baleaddcwbChukuCheck(getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+					this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, this.getSessionUser().getBranchid(), nextBranchid);
 				} else if (iType == 2) {// 退货出站
-					baleService.baleaddcwbTuiHuoCheck(getSessionUser(), baleNO, orderNO, isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+					this.baleService.baleaddcwbTuiHuoCheck(this.getSessionUser(), baleNO, orderNO, isForceOutstore, this.getSessionUser().getBranchid(), nextBranchid);
 				} else if (iType == 3) {// 中转出站
-					baleService.baleaddcwbzhongzhuanchuzhanCheck(getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, getSessionUser().getBranchid(), nextBranchid);
+					this.baleService.baleaddcwbzhongzhuanchuzhanCheck(this.getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, this.getSessionUser().getBranchid(), nextBranchid);
 				} else if (iType == 4) {// 退供货商出库
-					baleService.baleaddcwbToCustomerCheck(getSessionUser(), baleNO, orderNO, getSessionUser().getBranchid(), nextBranchid);
-				}else{
-					statuscode="100001";
+					this.baleService.baleaddcwbToCustomerCheck(this.getSessionUser(), baleNO, orderNO, this.getSessionUser().getBranchid(), nextBranchid);
+				} else {
+					statuscode = "100001";
 					PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 					return PDAResponse;
 				}
-			
-				baleService.baleaddcwb(getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);				
-				statuscode="000000";
-			
-			}
-			else{
-				errorinfo = cwbOrderPDAEnum.getError();				
+
+				this.baleService.baleaddcwb(this.getSessionUser(), baleNO.trim(), orderNO.trim(), nextBranchid);
+				statuscode = "000000";
+
+			} else {
+				errorinfo = cwbOrderPDAEnum.getError();
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + cwbOrderPDAEnum.getVediourl();
 			}
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
-		}
-		catch(DocumentException e) {
-			statuscode="100001";
+		} catch (DocumentException e) {
+			statuscode = "100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
-		}
-		catch(CwbException cwbException){
-			statuscode="100001";
+		} catch (CwbException cwbException) {
+			statuscode = "100001";
 			errorinfo = cwbException.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 			return PDAResponse;
-		}
-		catch(Exception e){
-			statuscode="100001";
+		} catch (Exception e) {
+			statuscode = "100001";
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
 			PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -789,6 +776,7 @@ public class CwbOrderPDAController {
 
 	/**
 	 * 生成包号
+	 * 
 	 * @param bale
 	 * @param requestbatchno
 	 * @param body
@@ -806,6 +794,7 @@ public class CwbOrderPDAController {
 
 	/**
 	 * 校验包号合法性
+	 * 
 	 * @param cwb
 	 * @param requestbatchno
 	 * @param body
@@ -816,18 +805,17 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse checkPackageIllegal(String bale, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
-		
+
 		String reg = "^[a-zA-Z0-9-_*]+$";
 		Pattern pattern = Pattern.compile(reg);
 		Matcher matcher = pattern.matcher(bale);
 		BalePDAEnum balePDAEnum;
-		if (bale.length() != 0 && matcher.matches()) {
-			 balePDAEnum=BalePDAEnum.OK;
+		if ((bale.length() != 0) && matcher.matches()) {
+			balePDAEnum = BalePDAEnum.OK;
+		} else {
+			balePDAEnum = BalePDAEnum.YI_CHANG_BAO_HAO;
 		}
-		else {
-			balePDAEnum=BalePDAEnum.YI_CHANG_BAO_HAO;
-		} 
-		
+
 		statuscode = balePDAEnum.getCode();
 		if (!statuscode.equals(BalePDAEnum.OK.getCode())) {
 			errorinfo = balePDAEnum.getError();
@@ -851,58 +839,54 @@ public class CwbOrderPDAController {
 	 */
 	private PDAResponse packagetrack(String bale, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 
-		BalePDAEnum balePDAEnum = verficationBaleNO(bale);
+		BalePDAEnum balePDAEnum = this.verficationBaleNO(bale);
 		statuscode = balePDAEnum.getCode();
 		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
-			Bale co = baleDao.getBaleOneByBaleno(bale);
+			Bale co = this.baleDao.getBaleOneByBaleno(bale);
 			body.append("<bale>").append(co.getBaleno()).append("</bale>");
-			long nextBranchid=co.getNextbranchid();
-			Branch branch= branchDAO.getBranchByBranchid(nextBranchid);
-			if(null!=branch.getBranchname()){
+			long nextBranchid = co.getNextbranchid();
+			Branch branch = this.branchDAO.getBranchByBranchid(nextBranchid);
+			if (null != branch.getBranchname()) {
 				body.append("<branch>").append(branch.getBranchname()).append("</branch>");
-			}
-			else{
+			} else {
 				body.append("<branch>").append("</branch>");
 			}
-			Map<String,Object> map=cwbDAO.getCwbIDsByBale(bale);
-			if(null!=map){
-				body.append("<cwbnum>").append(map.get("cwbnum")).append("</cwbnum>");				
+			Map<String, Object> map = this.cwbDAO.getCwbIDsByBale(bale);
+			if (null != map) {
+				body.append("<cwbnum>").append(map.get("cwbnum")).append("</cwbnum>");
 				body.append("<transcwbnum>").append(map.get("transcwbnum")).append("</transcwbnum>");
-			}
-			else{
+			} else {
 				body.append("<cwbnum>").append("</cwbnum>");
 				body.append("<transcwbnum>").append("</transcwbnum>");
 			}
-			
-			
-		}
-		else {
+
+		} else {
 			errorinfo = balePDAEnum.getError();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + balePDAEnum.getVediourl();
 		}
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
 		return PDAResponse;
-		
 
 	}
 
 	/**
 	 * 包号打印
-	 * @param request 
-	 * @param string3 
-	 * @param string2 
-	 * @param string 
-	 * @param stringBuffer 
-	 * @param requestbatchno 
-	 * @param cwb 
+	 * 
+	 * @param request
+	 * @param string3
+	 * @param string2
+	 * @param string
+	 * @param stringBuffer
+	 * @param requestbatchno
+	 * @param cwb
 	 * @return
 	 */
 	private PDAResponse packagePrintBar(String baleNO, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		// TODO Auto-generated method stub
-		BalePDAEnum balePDAEnum = verficationBaleNO(baleNO);
+		BalePDAEnum balePDAEnum = this.verficationBaleNO(baleNO);
 		statuscode = balePDAEnum.getCode();
 		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
-			Bale co = baleDao.getBaleOneByBaleno(baleNO);
+			Bale co = this.baleDao.getBaleOneByBaleno(baleNO);
 			body.append("<bale>").append(co.getBaleno()).append("</bale>");
 		} else {
 			errorinfo = balePDAEnum.getError();
@@ -931,21 +915,21 @@ public class CwbOrderPDAController {
 					continue;
 				}
 				String scancwb = cwb;
-				cwb = cwborderService.translateCwb(cwb);
-				cwborderService.substationGoods(getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", "", false);
+				cwb = this.cwborderService.translateCwb(cwb);
+				this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", "", false);
 				statuscode = statuscode.append(cwb).append("_").append(CwbOrderPDAEnum.OK.getValue()).append(",");
 				errorMsg = errorMsg.append(cwb).append("_").append(CwbOrderPDAEnum.OK.getError()).append(",");
 			} catch (CwbException e) {
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-				exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-						cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "");
 				statuscode = statuscode.append(cwb).append("_").append(e.getError().getValue()).append(",");
 				errorMsg = errorMsg.append(cwb).append("_").append(e.getMessage()).append(",");
-				logger.error("分站到货批量异常" + cwb, e);
+				this.logger.error("分站到货批量异常" + cwb, e);
 			} catch (Exception e) {
 				statuscode = statuscode.append(cwb).append("_").append(ExceptionCwbErrorTypeEnum.SYS_ERROR.getValue()).append(",");
 				errorMsg = errorMsg.append(cwb).append("_").append(e.getMessage()).append(",");
-				logger.error("分站到货批量异常" + cwb, e);
+				this.logger.error("分站到货批量异常" + cwb, e);
 			}
 		}
 		BatchDeliverBody batchDeliverBody = new BatchDeliverBody();
@@ -979,20 +963,20 @@ public class CwbOrderPDAController {
 		// List<ExceptionCwb> eclistall = new ArrayList<ExceptionCwb>();
 		long count = 0;
 
-		if (beginemaildate.length() == 0 && endemaildate.length() == 0) {
+		if ((beginemaildate.length() == 0) && (endemaildate.length() == 0)) {
 
 		} else {
-			eclist = cwborderService.controlForBranchImport(getSessionUser(), page, cwb, flowOrderTypeEnumid, "", userid, beginemaildate, endemaildate, branchid, scope);
+			eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", userid, beginemaildate, endemaildate, branchid, scope);
 			// eclistall =
 			// cwborderService.controlForBranchImport(getSessionUser(),-1,cwb,flowOrderTypeEnumid,"",userid,
 			// beginemaildate, endemaildate,branchid);
-			count = exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
+			count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
 		}
 
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		List<Exportmould> exportmouldlist = this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid());
 		model.addAttribute("exportmouldlist", exportmouldlist);
 
-		model.addAttribute("branchlist", branchDAO.getAllEffectBranches());
+		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("eclist", eclist);
 		// model.addAttribute("eclistall", eclistall);
 		model.addAttribute("page", page);
@@ -1000,13 +984,13 @@ public class CwbOrderPDAController {
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("beginemaildate", beginemaildate);
 		model.addAttribute("endemaildate", endemaildate);
-		model.addAttribute("ulist", userDAO.getAllUser());
+		model.addAttribute("ulist", this.userDAO.getAllUser());
 		return "/control/list";
 	}
 
 	@RequestMapping("/controlCwbForHanlder/{id}")
 	public ModelAndView controlCwbForHanlder(Model model, @PathVariable("id") long id) {
-		exceptionCwbDAO.saveExceptionCwbByCwb(id, ExceptionCwbIsHanlderEnum.YiChuLi.getValue());
+		this.exceptionCwbDAO.saveExceptionCwbByCwb(id, ExceptionCwbIsHanlderEnum.YiChuLi.getValue());
 		model.addAttribute("page_obj", new Page());
 		return new ModelAndView("redirect:/cwborderPDA/controlForBranchImport/1");
 	}
@@ -1015,7 +999,7 @@ public class CwbOrderPDAController {
 
 	@RequestMapping("/cwbresetbranchpage")
 	public String cwbresetbranchpage(Model model) {
-		List<Branch> bList = branchDAO.getBanchByBranchidForCwbtobranchid(getSessionUser().getBranchid());
+		List<Branch> bList = this.branchDAO.getBanchByBranchidForCwbtobranchid(this.getSessionUser().getBranchid());
 
 		model.addAttribute("branchlist", bList);
 		return "cwborder/cwbresetbranchpage";
@@ -1047,8 +1031,8 @@ public class CwbOrderPDAController {
 			BigDecimal receivedfeecheque, BigDecimal receivedfeeother, BigDecimal paybackedfee, long podremarkid, long requestbatchno, StringBuffer body, String statuscode, String errorinfo,
 			String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
-		cwb = cwborderService.translateCwb(cwb);
-		logger.info("PDA--进入单票反馈cwb:" + cwb + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos
+		cwb = this.cwborderService.translateCwb(cwb);
+		this.logger.info("PDA--进入单票反馈cwb:" + cwb + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos
 				+ "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 
 		try {
@@ -1068,14 +1052,14 @@ public class CwbOrderPDAController {
 			parameters.put("checkremark", "");
 			parameters.put("deliverstateremark", "");
 			parameters.put("owgid", requestbatchno);
-			parameters.put("sessionbranchid", getSessionUser().getBranchid());
-			parameters.put("sessionuserid", getSessionUser().getUserid());
+			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+			parameters.put("sessionuserid", this.getSessionUser().getUserid());
 			parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 			parameters.put("sign_man", "");
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
-			cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
+			this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 		} catch (Exception e) {
-			logger.error("单票反馈出错。", e);
+			this.logger.error("单票反馈出错。", e);
 			statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 			errorinfo = e.getMessage();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
@@ -1101,8 +1085,8 @@ public class CwbOrderPDAController {
 		// String[]
 		// allParm=cwborderService.deliverpodStatistics(deliverid).split(",");
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
-		List<DeliveryState> dlist = deliveryStateDAO.getDeliveryStateByDeliver(deliverid);
-		dsDTO.analysisDeliveryStateList(getDeliveryStateView(dlist));
+		List<DeliveryState> dlist = this.deliveryStateDAO.getDeliveryStateByDeliver(deliverid);
+		dsDTO.analysisDeliveryStateList(this.getDeliveryStateView(dlist));
 
 		PDAXMLBody pxb = new PDAXMLBody();
 		pxb.setDelivercwbnum(dsDTO.getNowNumber());// 当日领货票数
@@ -1160,8 +1144,8 @@ public class CwbOrderPDAController {
 				sdv.setSign_time(ds.getSign_time());
 				sdv.setBackreason(ds.getBackreason());
 				sdv.setLeavedreason(ds.getLeavedreason());
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(ds.getCwb());
-				sdv.setCustomername(customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(ds.getCwb());
+				sdv.setCustomername(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
 				sdv.setEmaildate(cwbOrder.getEmaildate());
 				sdv.setConsigneename(cwbOrder.getConsigneename());
 				sdv.setConsigneemobile(cwbOrder.getConsigneemobile());
@@ -1169,7 +1153,7 @@ public class CwbOrderPDAController {
 				sdv.setConsigneeaddress(cwbOrder.getConsigneeaddress());
 				sdv.setBackcarname(cwbOrder.getBackcarname());
 				sdv.setSendcarname(cwbOrder.getSendcarname());
-				sdv.setDeliverealname(userDAO.getUserByUserid(ds.getDeliveryid()).getRealname());
+				sdv.setDeliverealname(this.userDAO.getUserByUserid(ds.getDeliveryid()).getRealname());
 				sdv.setFlowordertype(cwbOrder.getFlowordertype());
 				sdv.setCwbordertypeid(cwbOrder.getCwbordertypeid());
 
@@ -1195,16 +1179,16 @@ public class CwbOrderPDAController {
 	 */
 	private PDAResponse cwbtrack(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
-		cwb = cwborderService.translateCwb(cwb);
-		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
 		if (co == null) {
 			throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 
-		String isHWHQPDASelect = systemInstallDAO.getSystemInstallByName("isHWHQPDASelect") == null ? "no" : systemInstallDAO.getSystemInstallByName("isHWHQPDASelect").getValue();
+		String isHWHQPDASelect = this.systemInstallDAO.getSystemInstallByName("isHWHQPDASelect") == null ? "no" : this.systemInstallDAO.getSystemInstallByName("isHWHQPDASelect").getValue();
 
-		OrderFlow of = orderFlowDAO.getOrderFlowByCwbAndState(cwb, 1);
+		OrderFlow of = this.orderFlowDAO.getOrderFlowByCwbAndState(cwb, 1);
 		String trackevent = "";
 		String branchname = "";
 		String realname = "";
@@ -1213,8 +1197,8 @@ public class CwbOrderPDAController {
 				trackevent = fot.getText();
 			}
 		}
-		branchname = branchDAO.getBranchByBranchid(of.getBranchid()).getBranchname();
-		realname = userDAO.getUserByUserid(of.getUserid()).getRealname();
+		branchname = this.branchDAO.getBranchByBranchid(of.getBranchid()).getBranchname();
+		realname = this.userDAO.getUserByUserid(of.getUserid()).getRealname();
 		StringBuilder cwbTrackBody = new StringBuilder();
 		cwbTrackBody.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
 		cwbTrackBody.append("  ");
@@ -1224,7 +1208,7 @@ public class CwbOrderPDAController {
 		cwbTrackBody.append("  ");
 
 		errorinfo = errorinfo + " " + co.getCwb() + "（订单号）";
-		if (transCwbDao.getCwbByTransCwb(scancwb) != null) {
+		if (this.transCwbDao.getCwbByTransCwb(scancwb) != null) {
 			errorinfo = errorinfo + " /" + scancwb + "（运单号）";
 		}
 
@@ -1234,26 +1218,27 @@ public class CwbOrderPDAController {
 			strings.add(cwbTrackBody.toString());
 		} else {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			long isypdjusetranscwb = customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-			if ((co.getSendcarnum() > 1 || co.getBackcarnum() > 1) && (co.getTranscwb().split(",").length > 1 || co.getTranscwb().split(":").length > 1) && isypdjusetranscwb == 1) {
-				List<TranscwbOrderFlow> datalist = transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb, cwborderService.translateCwb(scancwb));
+			long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+			if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && ((co.getTranscwb().split(",").length > 1) || (co.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
+				List<TranscwbOrderFlow> datalist = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb, this.cwborderService.translateCwb(scancwb));
 
 				for (TranscwbOrderFlow transcwborderFlowAll : datalist) {
 					StringBuilder stringBuilder = new StringBuilder();
-					long sitetype = branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchid() == 0 ? 0 : branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid())
-							.getSitetype();
+					long sitetype = this.branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchid() == 0 ? 0 : this.branchDAO.getBranchByBranchid(
+							transcwborderFlowAll.getBranchid()).getSitetype();
 					if (isHWHQPDASelect.equals("yes")) {
-						if (sitetype == BranchEnum.KuFang.getValue()
-								&& (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() || transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao
-										.getValue())) {
+						if ((sitetype == BranchEnum.KuFang.getValue())
+								&& ((transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao
+										.getValue()))) {
 							long deliverornextbranchid = transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() ? JSONObject.fromObject(
 									JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid") : JSONObject.fromObject(
 									JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
-							String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+							String bname = this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : this.branchDAO.getBranchByBranchid(deliverornextbranchid)
+									.getBranchname();
 
 							stringBuilder.append(simpleDateFormat.format(transcwborderFlowAll.getCredate()));
 							stringBuilder.append("  ");
-							stringBuilder.append(userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
+							stringBuilder.append(this.userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
 							stringBuilder.append(" ");
 							stringBuilder.append(transcwborderFlowAll.getFlowordertypeText());
 							stringBuilder.append("\n");
@@ -1262,23 +1247,23 @@ public class CwbOrderPDAController {
 							strings.add(stringBuilder.toString());
 						}
 					} else {
-						long deliverornextbranchid = (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()
-								|| transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue() || transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai
-								.getValue()) ? JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid") : JSONObject
+						long deliverornextbranchid = ((transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue())
+								|| (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()) || (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai
+								.getValue())) ? JSONObject.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid") : JSONObject
 								.fromObject(JSONObject.fromObject(transcwborderFlowAll.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
-						String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+						String bname = this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
 						stringBuilder.append(simpleDateFormat.format(transcwborderFlowAll.getCredate()));
 						stringBuilder.append("  ");
-						stringBuilder.append(userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
+						stringBuilder.append(this.userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
 						stringBuilder.append("\n");
-						stringBuilder.append(branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchname());
+						stringBuilder.append(this.branchDAO.getBranchByBranchid(transcwborderFlowAll.getBranchid()).getBranchname());
 						stringBuilder.append(" ");
 						stringBuilder.append(transcwborderFlowAll.getFlowordertypeText());
-						if (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()
-								|| transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()
-								|| transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
-								|| transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()
-								|| transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue()) {
+						if ((transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue())
+								|| (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue())
+								|| (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())
+								|| (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+								|| (transcwborderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue())) {
 							stringBuilder.append("\n");
 							stringBuilder.append(bname);
 							stringBuilder.append(" ");
@@ -1287,23 +1272,24 @@ public class CwbOrderPDAController {
 					}
 				}
 			} else {
-				List<OrderFlow> orderFlows = orderFlowDAO.getOrderFlowByCwb(cwb);
+				List<OrderFlow> orderFlows = this.orderFlowDAO.getOrderFlowByCwb(cwb);
 
 				for (OrderFlow orderFlow : orderFlows) {
 					StringBuilder stringBuilder = new StringBuilder();
-					Branch branch = branchDAO.getBranchByBranchid(orderFlow.getBranchid());
+					Branch branch = this.branchDAO.getBranchByBranchid(orderFlow.getBranchid());
 					long sitetype = branch.getBranchid() == 0 ? 0 : branch.getSitetype();
 					if (isHWHQPDASelect.equals("yes")) {
-						if (sitetype == BranchEnum.KuFang.getValue()
-								&& (orderFlow.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() || orderFlow.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
+						if ((sitetype == BranchEnum.KuFang.getValue())
+								&& ((orderFlow.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || (orderFlow.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()))) {
 							long deliverornextbranchid = orderFlow.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() ? JSONObject.fromObject(
 									JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid") : JSONObject.fromObject(
 									JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
-							String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+							String bname = this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : this.branchDAO.getBranchByBranchid(deliverornextbranchid)
+									.getBranchname();
 
 							stringBuilder.append(simpleDateFormat.format(orderFlow.getCredate()));
 							stringBuilder.append("  ");
-							stringBuilder.append(userDAO.getUserByUserid(orderFlow.getUserid()).getRealname());
+							stringBuilder.append(this.userDAO.getUserByUserid(orderFlow.getUserid()).getRealname());
 							stringBuilder.append(" ");
 							stringBuilder.append(orderFlow.getFlowordertypeText());
 							stringBuilder.append("\n");
@@ -1312,21 +1298,21 @@ public class CwbOrderPDAController {
 							strings.add(stringBuilder.toString());
 						}
 					} else {
-						long deliverornextbranchid = (orderFlow.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()
-								|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue() || orderFlow.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue()) ? JSONObject
+						long deliverornextbranchid = ((orderFlow.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue())
+								|| (orderFlow.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()) || (orderFlow.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue())) ? JSONObject
 								.fromObject(JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("deliverybranchid") : JSONObject.fromObject(
 								JSONObject.fromObject(orderFlow.getFloworderdetail()).getString("cwbOrder")).getLong("nextbranchid");
-						String bname = branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
+						String bname = this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchid() == 0 ? "" : this.branchDAO.getBranchByBranchid(deliverornextbranchid).getBranchname();
 						stringBuilder.append(simpleDateFormat.format(orderFlow.getCredate()));
 						stringBuilder.append("  ");
-						stringBuilder.append(userDAO.getUserByUserid(orderFlow.getUserid()).getRealname());
+						stringBuilder.append(this.userDAO.getUserByUserid(orderFlow.getUserid()).getRealname());
 						stringBuilder.append("\n");
-						stringBuilder.append(branchDAO.getBranchByBranchid(orderFlow.getBranchid()).getBranchname());
+						stringBuilder.append(this.branchDAO.getBranchByBranchid(orderFlow.getBranchid()).getBranchname());
 						stringBuilder.append(" ");
 						stringBuilder.append(orderFlow.getFlowordertypeText());
-						if (orderFlow.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() || orderFlow.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()
-								|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() || orderFlow.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()
-								|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue()) {
+						if ((orderFlow.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (orderFlow.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue())
+								|| (orderFlow.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (orderFlow.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+								|| (orderFlow.getFlowordertype() == FlowOrderTypeEnum.ShouGongXiuGai.getValue())) {
 							stringBuilder.append("\n");
 							stringBuilder.append(bname);
 							stringBuilder.append(" ");
@@ -1354,11 +1340,11 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse selectwavfiles(long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl) {
-		List<Branch> blist = branchDAO.getAllBranches();
+		List<Branch> blist = this.branchDAO.getAllBranches();
 		String wavfilenames = "";
 		PDAXMLBody pxb = new PDAXMLBody();
 		for (Branch b : blist) {
-			if (b.getBranchwavfile() != null && b.getBranchwavfile().length() > 0) {
+			if ((b.getBranchwavfile() != null) && (b.getBranchwavfile().length() > 0)) {
 				wavfilenames += b.getBranchwavfile() + ",";
 			}
 		}
@@ -1383,20 +1369,20 @@ public class CwbOrderPDAController {
 	 */
 	private PDAResponse printBar(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 
-		CwbOrderPDAEnum PDAErrorEnum = verficationCwb(cwb);
+		CwbOrderPDAEnum PDAErrorEnum = this.verficationCwb(cwb);
 		statuscode = PDAErrorEnum.getCode();
 		if (statuscode.equals(CwbOrderPDAEnum.OK.getCode())) {
-			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 			body.append("<cwb>").append(co.getCwb()).append("</cwb>");
 			if (co != null) {
 				// 分拣到站的信息输出 如果当前站点和下一站id不一致 则认为是分拣到站，如果小件员字段没有值也将提示站信息
-				if (co.getStartbranchid() != co.getNextbranchid() || co.getExceldeliver() == null || co.getExceldeliver().length() == 0) {
-					List<Branch> bl = branchDAO.getBranchByBranchnameCheck(co.getExcelbranch());
-					if (co.getExcelbranch() != null && co.getExcelbranch().length() > 0 && bl.size() > 0) {
+				if ((co.getStartbranchid() != co.getNextbranchid()) || (co.getExceldeliver() == null) || (co.getExceldeliver().length() == 0)) {
+					List<Branch> bl = this.branchDAO.getBranchByBranchnameCheck(co.getExcelbranch());
+					if ((co.getExcelbranch() != null) && (co.getExcelbranch().length() > 0) && (bl.size() > 0)) {
 						Branch branch = bl.get(0);
 						body.append("<cwbbranchname>").append(co.getExcelbranch() + "(" + branch.getBranchcode() + ")").append("</cwbbranchname>");
 
-						if (branch.getBranchwavfile() == null || branch.getBranchwavfile().length() < 1) {
+						if ((branch.getBranchwavfile() == null) || (branch.getBranchwavfile().length() < 1)) {
 							body.append("<cwbbranchnamewav></cwbbranchnamewav>");
 						} else {
 							body.append("<cwbbranchnamewav>").append(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile()).append("</cwbbranchnamewav>");
@@ -1417,8 +1403,8 @@ public class CwbOrderPDAController {
 					body.append("<cwbbranchnamewav></cwbbranchnamewav>");
 					body.append("<cwbdelivername>").append(co.getExceldeliver()).append("</cwbdelivername>");
 					String roleids = "2,4";
-					User user = userDAO.getUsersByRealnameAndRole(co.getExceldeliver(), roleids);
-					if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+					User user = this.userDAO.getUsersByRealnameAndRole(co.getExceldeliver(), roleids);
+					if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 						body.append("<cwbdelivernamewav>").append(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile()).append("</cwbdelivernamewav>");
 					} else {
 						body.append("<cwbdelivernamewav></cwbdelivernamewav>");
@@ -1447,8 +1433,8 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse ScanCwb(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl) {
-		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-		PdaCwbOrderView view = toCwbOrderView(co);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		PdaCwbOrderView view = this.toCwbOrderView(co);
 		return new CwborderViewBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, view);
 	}
 
@@ -1525,7 +1511,7 @@ public class CwbOrderPDAController {
 	}
 
 	private PDAResponse getUsers(List<User> uList, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl) {
-		List<UserView> drivers = getUserViewList(uList);
+		List<UserView> drivers = this.getUserViewList(uList);
 		UserViewBodyPdaResponse PDAResponse = new UserViewBodyPdaResponse(statuscode, errorinfo);
 		PDAResponse.setBody(drivers);
 		return PDAResponse;
@@ -1555,7 +1541,7 @@ public class CwbOrderPDAController {
 	}
 
 	private PDAResponse getUser(List<User> uList, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl) {
-		List<UserView> drivers = getUserViewList(uList);
+		List<UserView> drivers = this.getUserViewList(uList);
 		UserViewBodyPdaResponse PDAResponse = new UserViewBodyPdaResponse(statuscode, errorinfo);
 		PDAResponse.setBody(drivers);
 		return PDAResponse;
@@ -1574,7 +1560,7 @@ public class CwbOrderPDAController {
 	// 提货
 	private PDAResponse getGoods(String cwb, long customerid, long driverid, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl,
 			HttpServletRequest request) {
-		CwbOrder co = cwborderService.intoWarehousForGetGoods(getSessionUser(), cwb, requestbatchno, customerid);
+		CwbOrder co = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, requestbatchno, customerid);
 
 		PDAXMLBody pxb = new PDAXMLBody();
 
@@ -1582,18 +1568,18 @@ public class CwbOrderPDAController {
 
 		if (co != null) {
 
-			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				errorinfo += " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError();
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
 			}
 			// 分拣到站的信息输出 如果当前站点和下一站id不一致 则认为是分拣到站，如果小件员字段没有值也将提示站信息
-			if (co.getStartbranchid() != co.getNextbranchid() || co.getExceldeliver() == null || co.getExceldeliver().length() == 0) {
-				List<Branch> bl = branchDAO.getBranchByBranchnameCheck(co.getExcelbranch());
-				if (co.getExcelbranch() != null && co.getExcelbranch().length() > 0 && bl.size() > 0) {
+			if ((co.getStartbranchid() != co.getNextbranchid()) || (co.getExceldeliver() == null) || (co.getExceldeliver().length() == 0)) {
+				List<Branch> bl = this.branchDAO.getBranchByBranchnameCheck(co.getExcelbranch());
+				if ((co.getExcelbranch() != null) && (co.getExcelbranch().length() > 0) && (bl.size() > 0)) {
 					Branch branch = bl.get(0);
 					pxb.setCwbbranchname(co.getExcelbranch() + "(" + branch.getBranchcode() + ")");
 
-					if (branch.getBranchwavfile() == null || branch.getBranchwavfile().length() < 1) {
+					if ((branch.getBranchwavfile() == null) || (branch.getBranchwavfile().length() < 1)) {
 						pxb.setCwbbranchnamewav("");
 					} else {
 						pxb.setCwbbranchnamewav(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
@@ -1612,14 +1598,14 @@ public class CwbOrderPDAController {
 				pxb.setCwbbranchnamewav("");
 				pxb.setCwbdelivername(co.getExceldeliver());
 				String roleids = "2,4";
-				User user = userDAO.getUsersByRealnameAndRole(co.getExceldeliver(), roleids);
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUsersByRealnameAndRole(co.getExceldeliver(), roleids);
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pxb.setCwbdelivernamewav(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
 			}
 			pxb.setCwbreceivablefee(co.getReceivablefee());
 
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				errorinfo += " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError();
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl();
 			}
@@ -1640,45 +1626,46 @@ public class CwbOrderPDAController {
 		CwbOrder co;
 		try {
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
-			co = cwbDAO.getCwbByCwb(cwb);
+			cwb = this.cwborderService.translateCwb(cwb);
+			co = this.cwbDAO.getCwbByCwb(cwb);
 
-			Branch userbranch = branchDAO.getBranchById(getSessionUser().getBranchid());
-			if (userbranch.getBranchid() != 0 && userbranch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				co = cwborderService.substationGoods(getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", baleno, false);
+			Branch userbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
+			if ((userbranch.getBranchid() != 0) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())) {
+				co = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", baleno, false);
 			} else {
-				co = cwborderService.intoWarehous(getSessionUser(), cwb, scancwb, Long.parseLong(customerid), driverid, requestbatchno, comments, baleno, false);
+				co = this.cwborderService.intoWarehous(this.getSessionUser(), cwb, scancwb, Long.parseLong(customerid), driverid, requestbatchno, comments, baleno, false);
 			}
 
-			String errorinfo = getErrorInfoForIntoWarehouse(co);
+			String errorinfo = this.getErrorInfoForIntoWarehouse(co);
 			PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
 			pDAResponse.setScannum(co.getScannum());
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 
-			String RUKUPCandPDAaboutYJDPWAV = systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue();
+			String RUKUPCandPDAaboutYJDPWAV = this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV")
+					.getValue();
 
-			if (RUKUPCandPDAaboutYJDPWAV.equals("yes") && (co.getSendcarnum() > 1 || co.getBackcarnum() > 1)) {
+			if (RUKUPCandPDAaboutYJDPWAV.equals("yes") && ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1))) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
 			if (co.getDeliverid() != 0) {
-				User user = userDAO.getUserByUserid(co.getDeliverid());
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUserByUserid(co.getDeliverid());
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + user.getRealname());
 			}
 			if (co.getNextbranchid() != 0) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
-				if (branch != null && branch.getBranchwavfile() != null && branch.getBranchwavfile().length() > 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
+				if ((branch != null) && (branch.getBranchwavfile() != null) && (branch.getBranchwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
 				} else {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				}
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + branch.getBranchname());
 			}
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setShouldShock(true);
@@ -1686,11 +1673,11 @@ public class CwbOrderPDAController {
 
 			return pDAResponse;
 		} catch (CwbException e) {
-			co = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO
-					.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			co = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
 						+ StringUtil.nullConvertToEmptyString(branch.getBranchname()));
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
@@ -1704,11 +1691,11 @@ public class CwbOrderPDAController {
 	}
 
 	private String getErrorInfoForIntoWarehouse(CwbOrder co) {
-		String successPattern = systemInstallService.getParameter("prompt.intoWarehouse.successPattern", "<co.cwb><fenge><yipiaoduojian><branch.branchname><gaojia>");
+		String successPattern = this.systemInstallService.getParameter("prompt.intoWarehouse.successPattern", "<co.cwb><fenge><yipiaoduojian><branch.branchname><gaojia>");
 		ST errorInfoST = new ST(successPattern);
 		errorInfoST.add("co", co);
 		errorInfoST.add("fenge", "#");
-		if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			errorInfoST.add("yipiaoduojian", CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 		}
 		/*
@@ -1717,10 +1704,10 @@ public class CwbOrderPDAController {
 		 * errorInfoST.add("deliver", user); }
 		 */
 		if (co.getNextbranchid() != 0) {
-			Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+			Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 			errorInfoST.add("branch", branch);
 		}
-		if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+		if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 			errorInfoST.add("gaojia", CwbOrderPDAEnum.GAO_JIA.getError());
 		}
 
@@ -1731,32 +1718,32 @@ public class CwbOrderPDAController {
 	private PDAResponse backintoWarehous(String cwb, long driverid, long requestbatchno, HttpServletRequest request, String comments) {
 		try {
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
-			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-			co = cwborderService.backIntoWarehous(getSessionUser(), cwb, scancwb, driverid, requestbatchno, comments, false,0,0);
+			cwb = this.cwborderService.translateCwb(cwb);
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			co = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comments, false, 0, 0);
 			PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), co.getCwb() + "成功扫描");
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
-			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
 			if (co.getDeliverid() != 0) {
-				User user = userDAO.getUserByUserid(co.getDeliverid());
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUserByUserid(co.getDeliverid());
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
 				pDAResponse.setErrorinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 				pDAResponse.setPrintinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 			}
 			if (co.getNextbranchid() != 0) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
 				pDAResponse.setErrorinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 				pDAResponse.setPrintinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 			}
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
@@ -1765,9 +1752,9 @@ public class CwbOrderPDAController {
 
 			return pDAResponse;
 		} catch (CwbException e) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-					0, 0, 0, "");
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
@@ -1783,11 +1770,11 @@ public class CwbOrderPDAController {
 	private PDAResponse forremark(String comment, long multicwbnum, String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl,
 			HttpServletRequest request) {
 		try {
-			cwborderService.forremark(getSessionUser(), comment, multicwbnum, cwb);
+			this.cwborderService.forremark(this.getSessionUser(), comment, multicwbnum, cwb);
 		} catch (CwbException e) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-					0, 0, 0, "");
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 			errorinfo = CwbOrderPDAEnum.SYS_ERROR.getError();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
@@ -1804,34 +1791,34 @@ public class CwbOrderPDAController {
 		try {
 
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
-			co = cwborderService.outWarehous(getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", baleno, reasonid, false, false);
+			cwb = this.cwborderService.translateCwb(cwb);
+			co = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", baleno, reasonid, false, false);
 
-			String errorinfo = getErrorInfoForIntoWarehouse(co);
+			String errorinfo = this.getErrorInfoForIntoWarehouse(co);
 			PDAResponse pDAResponse = new StringBodyPdaResponse(statuscode, errorinfo);
 			pDAResponse.setScannum(co.getScannum());
 			pDAResponse.setWavPath(errorinfovediurl);
-			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
 			if (co.getDeliverid() != 0) {
-				User user = userDAO.getUserByUserid(co.getDeliverid());
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUserByUserid(co.getDeliverid());
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + user.getRealname());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + user.getRealname());
 			}
 			if (co.getNextbranchid() != 0) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + branch.getBranchname());
 				pDAResponse.setPrintinfo(branch.getBranchid() + "");
 			}
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
@@ -1840,16 +1827,17 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 
 		} catch (CwbException e) {
-			co = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO
-					.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			co = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()) {
 				PopupConfig popupConfig = new PopupConfig();
 				popupConfig.setText("强制出站?");
 				Map map = new HashMap();
 				map.putAll(request.getParameterMap());
 				map.remove("confirmflag");
-				popupConfig.setOkUrl(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getRequestURI() + "?" + mapToURL(map, request) + "&confirmflag=1");
+				popupConfig.setOkUrl(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getRequestURI() + "?" + this.mapToURL(map, request)
+						+ "&confirmflag=1");
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getCode(), CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getError());
 				pDAResponse.setPopupConfig(popupConfig);
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getVediourl());
@@ -1857,11 +1845,11 @@ public class CwbOrderPDAController {
 
 			} else if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
 
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_CHU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError() + " " + branch.getBranchname());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getVediourl());
-				String popupOnException = systemInstallService.getParameter("prompt.outwarehouse.popupOnException", "false");
+				String popupOnException = this.systemInstallService.getParameter("prompt.outwarehouse.popupOnException", "false");
 				if (popupOnException.equals("true")) {
 					PopupConfig popupConfig = new PopupConfig();
 					popupConfig.setText(cwb + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
@@ -1882,18 +1870,18 @@ public class CwbOrderPDAController {
 		try {
 			PDAResponse pDAResponse = new StringBodyPdaResponse(statuscode, errorinfo);
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
-			co = cwborderService.outUntreadWarehous(getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", "", false);// 为包号修改
+			cwb = this.cwborderService.translateCwb(cwb);
+			co = this.cwborderService.outUntreadWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", "", false);// 为包号修改
 			pDAResponse.setWavPath(errorinfovediurl);
-			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
 			if (co.getDeliverid() != 0) {
-				User user = userDAO.getUserByUserid(co.getDeliverid());
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUserByUserid(co.getDeliverid());
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				} else {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -1903,8 +1891,8 @@ public class CwbOrderPDAController {
 				pDAResponse.setPrintinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 			}
 			if (co.getNextbranchid() != 0) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
-				if (branch.getBranchwavfile() != null && branch.getBranchwavfile().length() > 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
+				if ((branch.getBranchwavfile() != null) && (branch.getBranchwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
 				} else {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -1912,7 +1900,7 @@ public class CwbOrderPDAController {
 				pDAResponse.setErrorinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 				pDAResponse.setPrintinfo(cwb + " " + CwbOrderPDAEnum.OK.getError());
 			}
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
@@ -1921,27 +1909,28 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 
 		} catch (CwbException e) {
-			co = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO
-					.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			co = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()) {
 				PopupConfig popupConfig = new PopupConfig();
 				popupConfig.setText("强制出站?");
 				Map map = new HashMap();
 				map.putAll(request.getParameterMap());
 				map.remove("confirmflag");
-				popupConfig.setOkUrl(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getRequestURI() + "?" + mapToURL(map, request) + "&confirmflag=1");
+				popupConfig.setOkUrl(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getRequestURI() + "?" + this.mapToURL(map, request)
+						+ "&confirmflag=1");
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getCode(), CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getError());
 				pDAResponse.setPopupConfig(popupConfig);
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.BU_SHI_ZHE_GE_MU_DI_DI.getVediourl());
 				return pDAResponse;
 
 			} else if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_CHU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError() + " " + branch.getBranchname());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getVediourl());
-				String popupOnException = systemInstallService.getParameter("prompt.outwarehouse.popupOnException", "false");
+				String popupOnException = this.systemInstallService.getParameter("prompt.outwarehouse.popupOnException", "false");
 				if (popupOnException.equals("true")) {
 					PopupConfig popupConfig = new PopupConfig();
 					popupConfig.setText(cwb + CwbOrderPDAEnum.CHONG_FU_CHU_KU.getError());
@@ -1957,13 +1946,13 @@ public class CwbOrderPDAController {
 	// 出库扫描确认
 	private PDAResponse finishExport(long driverid, long operatetype, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl) {
 		if (requestbatchno == 0) {
-			OutWarehouseGroup og = outWarehouseGroupDAO.getAllOutWarehouseGroupByWhere(requestbatchno, 0, driverid, 0, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), operatetype, 0);
+			OutWarehouseGroup og = this.outWarehouseGroupDAO.getAllOutWarehouseGroupByWhere(requestbatchno, 0, driverid, 0, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), operatetype, 0);
 			if (og != null) {
 				requestbatchno = og.getId();
 			}
 		}
-		long successcwbnum = groupDetailDAO.getGroupDetailCount(getSessionUser().getUserid(), 0, 0);
-		groupDetailDAO.saveGroupDetailUserid(getSessionUser().getUserid());
+		long successcwbnum = this.groupDetailDAO.getGroupDetailCount(this.getSessionUser().getUserid(), 0, 0);
+		this.groupDetailDAO.saveGroupDetailUserid(this.getSessionUser().getUserid());
 		body.append("<successcwbnum>").append(successcwbnum).append("</successcwbnum>");
 
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -1986,37 +1975,37 @@ public class CwbOrderPDAController {
 	private PDAResponse substationGoods(String cwb, String baleno, long driverid, long requestbatchno, HttpServletRequest request) {
 		try {
 			String scancwb = cwb;
-			cwb = cwborderService.translateCwb(cwb);
-			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-			co = cwborderService.substationGoods(getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", baleno, false);
+			cwb = this.cwborderService.translateCwb(cwb);
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			co = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", baleno, false);
 
-			String errorinfo = getErrorInfoForIntoWarehouse(co);
+			String errorinfo = this.getErrorInfoForIntoWarehouse(co);
 			PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
 			pDAResponse.setScannum(co.getScannum());
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 
-			if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				pDAResponse.setShouldShock(true);
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
 			if (co.getDeliverid() != 0) {
-				User user = userDAO.getUserByUserid(co.getDeliverid());
-				if (user.getUserwavfile() != null && user.getUserwavfile().length() > 0) {
+				User user = this.userDAO.getUserByUserid(co.getDeliverid());
+				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + user.getRealname());
 			}
 			if (co.getNextbranchid() != 0) {
-				Branch branch = branchDAO.getBranchByBranchid(co.getNextbranchid());
-				if (branch != null && branch.getBranchwavfile() != null && branch.getBranchwavfile().length() > 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
+				if ((branch != null) && (branch.getBranchwavfile() != null) && (branch.getBranchwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
 				} else {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				}
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + branch.getBranchname());
 			}
-			if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setShouldShock(true);
@@ -2024,9 +2013,9 @@ public class CwbOrderPDAController {
 
 			return pDAResponse;
 		} catch (CwbException e) {
-			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-			exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-					0, 0, 0, "");
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
@@ -2041,20 +2030,20 @@ public class CwbOrderPDAController {
 	// 领货扫描提交
 	private PDAResponse ReceiveGoods(String cwb, long deliverid, long requestbatchno, StringBuffer body, String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
-		cwb = cwborderService.translateCwb(cwb);
+		cwb = this.cwborderService.translateCwb(cwb);
 
-		User deliveryUser = userDAO.getUserByUserid(deliverid);
-		CwbOrder co = cwborderService.receiveGoods(getSessionUser(), deliveryUser, cwb, scancwb);
+		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
+		CwbOrder co = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), co.getCwb() + "成功扫描");
 		pDAResponse.setWavPath(errorinfovediurl);
 
-		if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			pDAResponse.setShouldShock(true);
 			pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 			pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 		}
-		if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+		if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 			pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 			pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
@@ -2069,17 +2058,17 @@ public class CwbOrderPDAController {
 	private PDAResponse BranchFinishBackExport(long driverid, long truckid, long operatetype, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl,
 			HttpServletRequest request) {
 
-		long branchid = branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()).get(0).getBranchid();
+		long branchid = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()).get(0).getBranchid();
 		if (requestbatchno == 0) {
-			OutWarehouseGroup og = outWarehouseGroupDAO.getAllOutWarehouseGroupByWhere(requestbatchno, 0, driverid, 0, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), operatetype, 0);
+			OutWarehouseGroup og = this.outWarehouseGroupDAO.getAllOutWarehouseGroupByWhere(requestbatchno, 0, driverid, 0, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), operatetype, 0);
 			if (og != null) {
 				requestbatchno = og.getId();
 			}
 		}
-		outWarehouseGroupDAO.saveByBranchidAndOperateType(driverid, truckid, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), branchid, operatetype);
-		long successcwbnum = groupdetailDAO.getGroupDetailCount(getSessionUser().getBranchid(), 0, 0);
+		this.outWarehouseGroupDAO.saveByBranchidAndOperateType(driverid, truckid, OutWarehouseGroupEnum.SaoMiaoZhong.getValue(), branchid, operatetype);
+		long successcwbnum = this.groupdetailDAO.getGroupDetailCount(this.getSessionUser().getBranchid(), 0, 0);
 
-		groupDetailDAO.saveGroupDetailUserid(getSessionUser().getUserid());
+		this.groupDetailDAO.saveGroupDetailUserid(this.getSessionUser().getUserid());
 		body.append("<successcwbnum>").append(successcwbnum).append("</successcwbnum>");
 
 		PDAResponse PDAResponse = new StringBodyPdaResponse(statuscode, errorinfo, requestbatchno, errorinfovediurl, body);
@@ -2088,17 +2077,17 @@ public class CwbOrderPDAController {
 
 	// 理货扫描
 	private PDAResponse scanCwbBranch(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
-		CwbOrder co = cwborderService.intoWarehousForGetGoods(getSessionUser(), cwb, requestbatchno, 0);
+		CwbOrder co = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, requestbatchno, 0);
 		PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), co.getCwb() + "成功扫描");
 		pDAResponse.setWavPath(errorinfovediurl);
 
-		if (co.getSendcarnum() > 1 || co.getBackcarnum() > 1) {
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			pDAResponse.setShouldShock(true);
 			pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 			pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 		}
-		if (co.getReceivablefee() != null && co.getReceivablefee().compareTo(exceedFeeDAO.getExceedFee().getExceedfee()) > 0) {
+		if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 			pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 			pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
@@ -2111,7 +2100,7 @@ public class CwbOrderPDAController {
 	// 批量订单反馈扫描
 	private PDAResponse deliverPodBatch(long deliverid, long podresultid, long backreasonid, long leavedreasonid, long paywayid, String deliverstateremark, String cwbs, long requestbatchno,
 			StringBuffer body, String errorinfo, String errorinfovediurl) {
-		logger.info("进入批量反馈处理方法中cwbs:" + cwbs + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--paywayid:" + paywayid);
+		this.logger.info("进入批量反馈处理方法中cwbs:" + cwbs + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--paywayid:" + paywayid);
 
 		String[] cwbArray = cwbs.split(",");
 		StringBuilder errorMsg = new StringBuilder();
@@ -2123,16 +2112,16 @@ public class CwbOrderPDAController {
 					continue;
 				}
 				String scancwb = cwb;
-				cwb = cwborderService.translateCwb(cwb);
+				cwb = this.cwborderService.translateCwb(cwb);
 
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder == null) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
 				}
 				if (cwbOrder.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) {
 					throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 				}
-				DeliveryState deliveryState = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 				if (deliveryState != null) {
 					if (deliveryState.getDeliverystate() != DeliveryStateEnum.WeiFanKui.getValue()) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.YI_FAN_KUI_BU_NENG_PI_LIANG_ZAI_FAN_KUI);
@@ -2170,29 +2159,29 @@ public class CwbOrderPDAController {
 				parameters.put("checkremark", "");
 				parameters.put("deliverstateremark", deliverstateremark);
 				parameters.put("owgid", requestbatchno);
-				parameters.put("sessionbranchid", getSessionUser().getBranchid());
-				parameters.put("sessionuserid", getSessionUser().getUserid());
+				parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
+				parameters.put("sessionuserid", this.getSessionUser().getUserid());
 				parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 				parameters.put("sign_man", cwbOrder.getConsigneename());
 				parameters.put("sign_time", DateTimeUtil.getNowTime());
-				cwborderService.deliverStatePod(getSessionUser(), cwb, scancwb, parameters);
+				this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 				backMes++;
 			} catch (CwbException e) {
-				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-				exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-						cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "");
 
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 				errorMsg = errorMsg.append(cwb).append("@").append(e.getError().getText()).append(";");
-				logger.error("归班反馈异常" + cwb, e);
+				this.logger.error("归班反馈异常" + cwb, e);
 			} catch (Exception e) {
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 				errorMsg = errorMsg.append(cwb).append("@").append(e.getMessage());
-				logger.error("归班反馈异常" + cwb, e);
+				this.logger.error("归班反馈异常" + cwb, e);
 			}
 		}
 
-		logger.info("进入批量反馈,结束后得到跳出处理cwbs:" + cwbArray + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--paywayid:" + paywayid);
+		this.logger.info("进入批量反馈,结束后得到跳出处理cwbs:" + cwbArray + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--paywayid:" + paywayid);
 		backMes = cwbArray.length;
 		BatchDeliverBody batchDeliverBody = new BatchDeliverBody();
 		batchDeliverBody.setFailcwbinfo(errorinfo);
@@ -2206,9 +2195,9 @@ public class CwbOrderPDAController {
 	// 退供货商出库
 	private PDAResponse backtocustom(String cwb, long requestbatchno, HttpServletRequest request) {
 		String scancwb = cwb;
-		cwb = cwborderService.translateCwb(cwb);
-		CwbOrder co = cwborderService.backtocustom(getSessionUser(), cwb, scancwb, requestbatchno, "", false);// 为包号修改
-		String customername = customerDAO.getCustomerById(co.getCustomerid()).getCustomername();
+		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder co = this.cwborderService.backtocustom(this.getSessionUser(), cwb, scancwb, requestbatchno, "", false);// 为包号修改
+		String customername = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomername();
 		PDAResponse PDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), customername);
 		PDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		return PDAResponse;
@@ -2217,8 +2206,8 @@ public class CwbOrderPDAController {
 	// 供货商拒收返库
 	private PDAResponse customrefuseback(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
-		cwb = cwborderService.translateCwb(cwb);
-		cwborderService.customrefuseback(getSessionUser(), cwb, scancwb, requestbatchno, "");
+		cwb = this.cwborderService.translateCwb(cwb);
+		this.cwborderService.customrefuseback(this.getSessionUser(), cwb, scancwb, requestbatchno, "");
 		PDAResponse PDAResponse = new StringBodyPdaResponse(CwbOrderPDAEnum.OK.getCode(), CwbOrderPDAEnum.OK.getError());
 		PDAResponse.setWavPath(errorinfovediurl);
 		return PDAResponse;
@@ -2235,9 +2224,9 @@ public class CwbOrderPDAController {
 					continue;
 				}
 				String scancwb = cwb;
-				cwb = cwborderService.translateCwb(cwb);
+				cwb = this.cwborderService.translateCwb(cwb);
 
-				cwborderService.receiveGoods(getSessionUser(), userDAO.getUserByUserid(deliverid), cwb, scancwb);
+				this.cwborderService.receiveGoods(this.getSessionUser(), this.userDAO.getUserByUserid(deliverid), cwb, scancwb);
 				statuscodeSTR += cwb + "_" + statuscode + ",";
 				errorinfoSTR += cwb + "_成功,";
 			} catch (Exception e) {
@@ -2257,8 +2246,8 @@ public class CwbOrderPDAController {
 		Pattern pattern = Pattern.compile(reg);
 		Matcher matcher = pattern.matcher(cwb);
 		CwbOrder co = null;
-		if (cwb.length() != 0 && matcher.matches()) {
-			co = cwbDAO.getCwbByCwb(cwb);
+		if ((cwb.length() != 0) && matcher.matches()) {
+			co = this.cwbDAO.getCwbByCwb(cwb);
 		}
 
 		if (!matcher.matches()) {
@@ -2268,14 +2257,14 @@ public class CwbOrderPDAController {
 		}
 		return CwbOrderPDAEnum.OK;
 	}
-	
+
 	private BalePDAEnum verficationBaleNO(String baleNO) {
 		String reg = "^[a-zA-Z0-9-_*]+$";
 		Pattern pattern = Pattern.compile(reg);
 		Matcher matcher = pattern.matcher(baleNO);
 		Bale co = null;
-		if (baleNO.length() != 0 && matcher.matches()) {
-			co = baleDao.getBaleOneByBaleno(baleNO);
+		if ((baleNO.length() != 0) && matcher.matches()) {
+			co = this.baleDao.getBaleOneByBaleno(baleNO);
 		}
 
 		if (!matcher.matches()) {
@@ -2299,10 +2288,10 @@ public class CwbOrderPDAController {
 
 	@ExceptionHandler(CwbException.class)
 	public PDAResponse handleCwbException(CwbException ex, HttpServletRequest request) {
-		logger.error("系统异常", ex);
-		CwbOrder co = cwbDAO.getCwbByCwb(ex.getCwb());
-		exceptionCwbDAO.createExceptionCwb(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(), co == null ? 0 : co.getCustomerid(), 0, 0,
-				0, "");
+		this.logger.error("系统异常", ex);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(ex.getCwb());
+		this.exceptionCwbDAO.createExceptionCwb(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
 		PDAResponse explinkResponse = new StringBodyPdaResponse(ex.getError().getValue() + "", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -2314,7 +2303,7 @@ public class CwbOrderPDAController {
 
 	@ExceptionHandler(Exception.class)
 	public PDAResponse handleException(Exception ex, HttpServletRequest request) {
-		logger.error("系统异常", ex);
+		this.logger.error("系统异常", ex);
 
 		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
@@ -2327,7 +2316,7 @@ public class CwbOrderPDAController {
 
 	@ExceptionHandler(ExplinkException.class)
 	public PDAResponse explinkException(Exception ex, HttpServletRequest request) {
-		logger.error("系统异常", ex);
+		this.logger.error("系统异常", ex);
 
 		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
@@ -2348,7 +2337,7 @@ public class CwbOrderPDAController {
 		String[] cloumnName1 = new String[7]; // 导出的列名
 		String[] cloumnName2 = new String[7]; // 导出的英文列名
 
-		setExcelstyle(cloumnName1, cloumnName2);
+		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
 		final String[] cloumnName4 = cloumnName2;
 		String sheetName = "扫描监控"; // sheet的名称
@@ -2357,30 +2346,30 @@ public class CwbOrderPDAController {
 		try {
 			// 查询出数据
 
-			final List<Branch> branchs = branchDAO.getAllEffectBranches();
-			final List<User> users = userDAO.getAllUser();
-			final List<ExceptionCwb> eclist = exceptionCwbDAO.getAllECByExcel(1, cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
-			final Map<Long, String> branchMap = getBranchMap(branchs, eclist);
-			final Map<Long, String> flowOrderTypeEnumMap = getFlowOrderTypeEnumMap(eclist);
-			final Map<String, String> errortypeMap = getExceptionCwbErrorTypeEnum(eclist);
-			final Map<Long, String> userMap = getUserMap(users, eclist);
+			final List<Branch> branchs = this.branchDAO.getAllEffectBranches();
+			final List<User> users = this.userDAO.getAllUser();
+			final List<ExceptionCwb> eclist = this.exceptionCwbDAO.getAllECByExcel(1, cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
+			final Map<Long, String> branchMap = this.getBranchMap(branchs, eclist);
+			final Map<Long, String> flowOrderTypeEnumMap = this.getFlowOrderTypeEnumMap(eclist);
+			final Map<String, String> errortypeMap = this.getExceptionCwbErrorTypeEnum(eclist);
+			final Map<Long, String> userMap = this.getUserMap(users, eclist);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					style.setAlignment(style.ALIGN_CENTER);
+					style.setAlignment(CellStyle.ALIGN_CENTER);
 					for (int k = 0; k < eclist.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName4.length; i++) {
 							sheet.setColumnWidth(i, 15 * 256);
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = setExcelObject(cloumnName4, a, i, k);
+							a = this.setExcelObject(cloumnName4, a, i, k);
 
 							cell.setCellValue(a == null ? "" : a.toString());
-}
+						}
 					}
 				}
 
@@ -2419,10 +2408,11 @@ public class CwbOrderPDAController {
 	private Map<Long, String> getBranchMap(final List<Branch> branchs, final List<ExceptionCwb> eclist) {
 		Map<Long, String> map = new HashMap<Long, String>();
 		for (ExceptionCwb ex : eclist) {
-			for (Branch b : branchs)
+			for (Branch b : branchs) {
 				if (ex.getBranchid() == b.getBranchid()) {
 					map.put(b.getBranchid(), b.getBranchname());
 				}
+			}
 		}
 		return map;
 	}
@@ -2443,7 +2433,7 @@ public class CwbOrderPDAController {
 		Map<String, String> map = new HashMap<String, String>();
 		for (ExceptionCwb ex : eclist) {
 			String errortype = ex.getErrortype();
-			if (errortype.length() > 0 && errortype.matches("^[0-9]*$")) {
+			if ((errortype.length() > 0) && errortype.matches("^[0-9]*$")) {
 				for (ExceptionCwbErrorTypeEnum er : ExceptionCwbErrorTypeEnum.values()) {
 					if (Long.parseLong(ex.getErrortype()) == er.getValue()) {
 						map.put(ex.getErrortype(), er.getText());
@@ -2459,10 +2449,11 @@ public class CwbOrderPDAController {
 	private Map<Long, String> getUserMap(final List<User> users, final List<ExceptionCwb> eclist) {
 		Map<Long, String> map = new HashMap<Long, String>();
 		for (ExceptionCwb ex : eclist) {
-			for (User u : users)
+			for (User u : users) {
 				if (ex.getUserid() == u.getUserid()) {
 					map.put(ex.getUserid(), u.getRealname());
 				}
+			}
 		}
 		return map;
 	}
