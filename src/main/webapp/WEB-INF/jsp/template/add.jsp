@@ -387,7 +387,7 @@ $(function(){
 			
 			break;
 		case "14":
-			$("#columnSetting input[field=chengzhong]").parent().parent().show();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
 			$("#columnSetting input[field=chengzhong]").attr("checked",false);
 			$("#columnSetting input[field=jianshu]").parent().parent().show();//隐藏件数
 			$("#columnSetting input[field=jianshu]").attr("checked",false);
@@ -427,11 +427,11 @@ $(function(){
 			$("#columnSetting input[field=receivablefee]").attr("checked",false);
 			$("#columnSetting input[field=paybackfee]").parent().parent().hide();//显示应退金额
 			$("#columnSetting input[field=paybackfee]").attr("checked",false);
-			$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+			$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
 			$("#columnSetting input[field=cwbremark]").attr("checked",false);
 			$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
 			$("#columnSetting input[field=startbranch]").attr("checked",false);
-			$("#columnSetting input[field=baleno]").parent().parent().show();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
 			$("#columnSetting input[field=baleno]").attr("checked",false);
 			$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
 			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
