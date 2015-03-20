@@ -4632,3 +4632,7 @@ function check_transferResasonMatch() {
 
 	return true;
 }
+function SubmitHandleabnormalBatch(flag)
+{
+	$("#ishandle").val(flag);
+}
