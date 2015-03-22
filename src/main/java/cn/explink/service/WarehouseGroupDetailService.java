@@ -519,27 +519,15 @@ public class WarehouseGroupDetailService {
 		return printViewList;
 	}
 
-	public List<Map<String, Object>> getChuKuBaleCwbView(List<Map<String, Object>> cwblist, List<Customer> customerList) {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	public Map<String, Object> getChuKuBaleCwbView(List<Map<String, Object>> cwblist, String baleno) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		if (cwblist != null && !cwblist.isEmpty()) {
-			BigDecimal fee = BigDecimal.ZERO;
-			long nums = 0;
-			for (int i = 0; i < cwblist.size(); i++) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("customername", this.getQueryCustomerName(customerList, Long.parseLong(cwblist.get(i).get("customerid").toString())));// 供货商的名称
-				map.put("count", cwblist.get(i).get("count"));
-				map.put("receivablefee", cwblist.get(i).get("receivablefee"));
-
-				nums += (Long) cwblist.get(i).get("count");// 出仓总数量
-				fee = fee.add((BigDecimal) cwblist.get(i).get("receivablefee"));// 代收总金额
-				list.add(map);
-			}
-			Map<String, Object> mapTotal = new HashMap<String, Object>();
-			mapTotal.put("customername", "合计");
-			mapTotal.put("count", nums);
-			mapTotal.put("receivablefee", fee);
-			list.add(mapTotal);
+				map.put("baleno", baleno);// 供货商的名称
+				map.put("count", cwblist.get(0).get("count"));
+				map.put("receivablefee", cwblist.get(0).get("receivablefee"));
+				map.put("sendcarnum", cwblist.get(0).get("sendcarnum"));
+				map.put("carrealweight", cwblist.get(0).get("carrealweight"));
 		}
-		return list;
+		return map;
 	}
 }

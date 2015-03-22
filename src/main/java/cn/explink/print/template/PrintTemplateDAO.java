@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -115,5 +116,17 @@ public class PrintTemplateDAO {
 	public void delPrintTemplateById(int id) {
 		String sql = "DELETE FROM `express_set_print_template` where id=" + id;
 		this.jdbcTemplate.update(sql);
+	}
+	
+	
+	public PrintTemplate getPrintTemplateByType(long type) {
+		
+		try {
+			return this.jdbcTemplate.queryForObject("select * from express_set_print_template where  templatetype =? ORDER BY id DESC LIMIT 0,1", new PrintTemplateRowMapper(),type);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	
 	}
 }

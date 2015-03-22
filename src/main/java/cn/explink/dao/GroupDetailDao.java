@@ -309,6 +309,14 @@ public class GroupDetailDao {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleno=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleno);
 	}
+	public List<Long> getBranchIdsGroupBYbranchid(String balenos) {
+		String sql = "SELECT nextbranchid FROM express_ops_groupdetail WHERE baleno in("+balenos+") group by nextbranchid";
+		return jdbcTemplate.queryForList(sql, Long.class);
+	}
+	public List<String> getBalesBybranchid(String balenos,long branchid) {
+		String sql = "SELECT baleno FROM express_ops_groupdetail WHERE baleno in("+balenos+") and nextbranchid="+branchid+"";
+		return jdbcTemplate.queryForList(sql, String.class);
+	}
 
 	public void updateGroupDetailListByBale(String baleno) {
 		String sql = "update express_ops_groupdetail set issignprint=? where baleno=? and issignprint=0 ";

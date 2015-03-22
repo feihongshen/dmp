@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -1932,46 +1933,102 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/outbalelist_print")
 	public String outbalelist_print(Model model, HttpServletRequest request, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
-		List<Customer> cusomerList = this.customerDAO.getAllCustomers();
 
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		String balenos = "";
-		// 循环包号
+
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
 				continue;
 			}
-			balenos += "" + isprint[i] + ",";
-			Map<String, Object> map = new HashMap<String, Object>();
-			// 根据包号查找订单打印表数据
-			List<GroupDetail> groupDetailList = this.groupDetailDao.getGroupDetailListByBale(isprint[i]);
-			if ((groupDetailList != null) && !groupDetailList.isEmpty()) {
-				// 获得包号、发货地、目的地
-				map.put("baleid", groupDetailList.get(0).getBaleid());
-				map.put("baleno", groupDetailList.get(0).getBaleno());
-				map.put("id", System.currentTimeMillis());
-				map.put("branchname", this.warehouseGroupDetailService.getQueryBranchName(branchList, groupDetailList.get(0).getBranchid()));
-				map.put("nextbranchname", this.warehouseGroupDetailService.getQueryBranchName(branchList, groupDetailList.get(0).getNextbranchid()));
-				map.put("username", this.getSessionUser().getRealname());
-
-				String cwbs = "";
-				for (int j = 0; j < groupDetailList.size(); j++) {
-					cwbs += "'" + groupDetailList.get(j).getCwb() + "',";
-				}
-				// 获取订单数量、代收总金额
-				List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
-				List<Map<String, Object>> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, cusomerList);
-				map.put("cwbListView", cwbListView);
-			}
-			list.add(map);
+			balenos += "'" + isprint[i] + "',";
 		}
+		balenos = balenos.length()>0?balenos.substring(0, balenos.length()-1):"'---'";
 
+		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(balenos);
+		
+		Map<Long, List<Map<String,Object>>> branchmap = new HashMap<Long, List<Map<String,Object>>>();
+		
+		if(nextbranchids != null && nextbranchids.size()>0){
+			// 循环包号
+			for (int i = 0; i < nextbranchids.size(); i++) {
+
+				List<String> banchidsbalenos = groupDetailDao.getBalesBybranchid(balenos, nextbranchids.get(i) );
+				List<Map<String,Object>> bList = new ArrayList<Map<String,Object>>();
+				for(String bale : banchidsbalenos){
+					Map<String,Object> map = new HashMap<String,Object>();
+					// 根据包号查找订单打印表数据
+					List<GroupDetail> groupDetailList = this.groupDetailDao.getGroupDetailListByBale(bale);
+					if ((groupDetailList != null) && !groupDetailList.isEmpty()) {
+						// 获得包号、发货地、目的地
+						map.put("baleid", groupDetailList.get(0).getBaleid());
+						map.put("baleno", groupDetailList.get(0).getBaleno());
+						map.put("nextbranchname", this.warehouseGroupDetailService.getQueryBranchName(branchList, groupDetailList.get(0).getNextbranchid()));
+
+						String cwbs = "";
+						for (int j = 0; j < groupDetailList.size(); j++) {
+							cwbs += "'" + groupDetailList.get(j).getCwb() + "',";
+						}
+						// 获取订单数量、代收总金额
+						List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
+						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, bale);
+						map.put("cwbListView", cwbListView);
+						map.put("drivername", groupDetailList.get(0).getDriverid()>0? userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
+						bList.add(map);
+					}
+				}
+				branchmap.put(nextbranchids.get(i),bList);
+			}
+		}
+		Map<Long ,String> branchMap = new HashMap<Long,String>();
+	
+			List<Branch> branchList2 = this.branchDAO.getAllBranches();
+			for (Branch branch : branchList2) {
+				branchMap.put(branch.getBranchid(), branch.getBranchname());
+			}
+		
+		model.addAttribute("branchMap", branchMap);
 		// 获得名称：XXX出仓交接单
 		SystemInstall sy = this.systemInstallDAO.getSystemInstallByName("chukujiaojiedananbao");
+		
+		model.addAttribute("nextbranchids", nextbranchids);
+		model.addAttribute("branchname", this.warehouseGroupDetailService.getQueryBranchName(branchList, this.getSessionUser().getBranchid()));
+		model.addAttribute("username",  this.getSessionUser().getRealname());
 		model.addAttribute("templateName", sy.getValue() == null ? "" : sy.getValue());
 
-		model.addAttribute("list", list);
-		model.addAttribute("balenos", balenos.substring(0, balenos.lastIndexOf(",")));
+		model.addAttribute("balenos", balenos);
+		model.addAttribute("branchmap", branchmap);
+		PrintTemplate printTemplate = printTemplateDAO.getPrintTemplateByType(4);
+		Map<String,String> tmap = new HashMap<String,String>();
+		if(printTemplate == null){
+			tmap.put("danshu", "danshu");
+			tmap.put("jianshu", "jianshu");
+			tmap.put("zhongliang", "zhongliang");
+		}else{
+			JSONArray tjson =  null;
+			try {
+				tjson = JSONArray.fromObject(printTemplate.getDetail()) ;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(tjson != null){
+				for (Object object : tjson) {
+					JSONObject o = JSONObject.fromObject(object);
+					if("danshu".equals(o.getString("field")) ){
+						tmap.put("danshu", "danshu");
+					}
+					if("jianshu".equals(o.getString("field")) ){
+						tmap.put("jianhsu", "jianshu");
+					}
+					if("carrealweight".equals(o.getString("field")) ){
+						tmap.put("carrealweight", "carrealweight");
+					}
+				}
+			}
+			
+		}
+		model.addAttribute("tmap", tmap);
+		
 		return "warehousegroup/outbalelist_print";
 	}
 
@@ -1986,7 +2043,7 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/outbalelist_update")
 	public @ResponseBody
 	String outbalelist_update(Model model, HttpServletRequest request, @RequestParam(value = "balenos", defaultValue = "", required = true) String balenos) {
-		String[] balenosStr = balenos.split(",");
+		String[] balenosStr =balenos.replaceAll("'", "").split(",");
 		try {
 			for (int i = 0; i < balenosStr.length; i++) {
 				if (balenosStr[i].trim().length() == 0) {

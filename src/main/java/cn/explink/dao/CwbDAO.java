@@ -5170,7 +5170,7 @@ public class CwbDAO {
 	// }
 
 	public List<Map<String, Object>> getCwbByPrintCwbs(String cwbs) {
-		String sql = "SELECT customerid,COUNT(1) count,SUM(receivablefee) receivablefee " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN(" + cwbs + ") GROUP BY customerid";
+		String sql = "SELECT COUNT(1) count,SUM(receivablefee) receivablefee,sum(carrealweight) carrealweight,sum(sendcarnum) sendcarnum " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN(" + cwbs + ") ";
 		return this.jdbcTemplate.queryForList(sql);
 	}
 
