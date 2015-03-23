@@ -2018,7 +2018,7 @@ public class WarehouseGroup_detailController {
 						tmap.put("danshu", "danshu");
 					}
 					if("jianshu".equals(o.getString("field")) ){
-						tmap.put("jianhsu", "jianshu");
+						tmap.put("jianshu", "jianshu");
 					}
 					if("carrealweight".equals(o.getString("field")) ){
 						tmap.put("carrealweight", "carrealweight");
