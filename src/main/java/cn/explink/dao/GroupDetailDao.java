@@ -314,7 +314,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.queryForList(sql, Long.class);
 	}
 	public List<String> getBalesBybranchid(String balenos,long branchid) {
-		String sql = "SELECT baleno FROM express_ops_groupdetail WHERE baleno in("+balenos+") and nextbranchid="+branchid+"";
+		String sql = "SELECT DISTINCT baleno FROM express_ops_groupdetail WHERE baleno in("+balenos+") and nextbranchid="+branchid+"";
 		return jdbcTemplate.queryForList(sql, String.class);
 	}
 
