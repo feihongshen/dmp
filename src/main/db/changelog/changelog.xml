@@ -6050,5 +6050,10 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `fncustomerbillverifyflag` bigint(11) DEFAULT 0 NULL AFTER `fncustomerpayablebillid`; 
 		</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-03-25-1" author="wangyonghe">
+		<sql>
+		INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '站点扣罚查询', 'punish/punishOfbranch/1', '3', 'zg12', '290', 'images/gbsh.png', NULL);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
