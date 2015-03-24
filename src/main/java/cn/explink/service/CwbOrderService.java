@@ -4700,6 +4700,8 @@ public class CwbOrderService {
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
+		//删除打印表记录
+		shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}

@@ -67,6 +67,7 @@ public class TmallInsertCwbDetailTimmer {
 				DealWithTmallCwbOrderTypes(tmall.getCustomerids(), tmall.getWarehouseid()); // 正式的数据
 			}
 		}
+		
 	}
 
 	/**

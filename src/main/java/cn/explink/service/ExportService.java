@@ -808,7 +808,7 @@ public class ExportService {
 			} else if ("branchstreet".equals(cloumname)) {
 				a = currentb.getBranchstreet();
 			}
-
+			
 			else if ("fdelivername".equals(cloumname)) {
 				a = "";
 				if (ds != null) {
@@ -1297,6 +1297,7 @@ public class ExportService {
 				}
 			} else {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
+				
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block

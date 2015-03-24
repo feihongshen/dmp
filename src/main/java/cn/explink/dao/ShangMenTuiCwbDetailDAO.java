@@ -138,4 +138,11 @@ public class ShangMenTuiCwbDetailDAO {
 		String sql = " update shangmentuicwb_detail set remark3=? WHERE cwb=? ";
 		jdbcTemplate.update(sql, remark, cwb);
 	}
+	
+	
+	// 同时更改上门退订单表中的字段
+		public void deletePrintRecord(String cwb) {
+			String sql = " delete from  shangmentuicwb_detail where cwb= ? ";
+			jdbcTemplate.update(sql, cwb);
+		}
 }
