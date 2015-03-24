@@ -281,8 +281,10 @@ public class ExportService {
 		cloumnName2[5] = "Creusername";
 		cloumnName1[6] = "问题件类型";
 		cloumnName2[6] = "Abnormaltype";
-		cloumnName1[7] = "问题件说明";
-		cloumnName2[7] = "Describe";
+		cloumnName1[7] = "问题件反馈时间";
+		cloumnName2[7] = "Credatetime";
+		cloumnName1[8] = "问题件说明";
+		cloumnName2[8] = "Describe";
 	}
 
 	// 审核页面导出
@@ -473,6 +475,8 @@ public class ExportService {
 				a = views.get(k).getCreuserName();
 			} else if (cloumnName3[i].equals("Abnormaltype")) {
 				a = views.get(k).getAbnormalType();
+			} else if (cloumnName3[i].equals("Credatetime")) {
+				a = views.get(k).getCredatetime();
 			} else if (cloumnName3[i].equals("Describe")) {
 				a = views.get(k).getDescribe();
 			}

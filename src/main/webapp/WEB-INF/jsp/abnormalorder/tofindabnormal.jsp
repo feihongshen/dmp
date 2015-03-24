@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.dao.AbnormalWriteBackDAO"%>
 <%@page import="cn.explink.domain.AbnormalWriteBack"%>
 <%@page import="cn.explink.util.DateTimeUtil"%>
@@ -16,11 +17,16 @@
 <%
 List<AbnormalType> abnormalTypeList = (List<AbnormalType>)request.getAttribute("abnormalTypeList");
 List<AbnormalOrder> abnormalOrderList = (List<AbnormalOrder>)request.getAttribute("abnormalOrderList");
+String starttime1 = request.getAttribute("starttime1").toString();
+String endtime1 = request.getAttribute("endtime1").toString();
+String ishandle1 = request.getAttribute("ishandle1").toString();
+String abnormaltypeid1 = request.getAttribute("abnormaltypeid1").toString();
+
 
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerList");
 Page page_obj = (Page)request.getAttribute("page_obj");
-  
+List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
   AbnormalWriteBackDAO abnormalWriteBackDAO = ctx.getBean(AbnormalWriteBackDAO.class);
@@ -64,6 +70,7 @@ $(function(){
 
 
 $(function() {
+	
 	$("#strtime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
@@ -151,6 +158,16 @@ function sumitForm(){
 		$("#searchForm").submit();
 	}
 }
+function findexport(){
+	alert("ssssss");
+	alert($("#findexport").attr('action'))
+		$("#findexport").submit();
+	
+}
+function tip(){
+	alert("aaaaaaaaaaaaaaaaaaa");
+	
+}
 </script>
 </head>
 <body style="background:#eef9ff;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -191,7 +208,9 @@ function sumitForm(){
 										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>
 									<%} %>
 								</select>
+								<input type="hidden" name="tip" id="tip" value="1"/>
 								<input type="button" value="查询" class="input_button2" onclick="sumitForm();"/>
+								<input type="button" value="导出" class="input_button2" <%if(abnormalOrderList.size()==0){ %> disabled="disabled"<%} %> onclick="javascript:$('#findexport').submit();"/>
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
@@ -200,17 +219,20 @@ function sumitForm(){
 									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
 									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当时状态</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
 									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3">问题件反馈时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件说明</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">创建人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理状态</td>
+									
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 					<div style="height:76px"></div>
-					<div style="overflow-y:auto;height:400px;">
+					<div style="overflow-y:auto;height:300px;">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
 						<%for(AbnormalOrder abnormalOrder:abnormalOrderList){ %>
@@ -219,11 +241,13 @@ function sumitForm(){
 								<td width="150" align="center" valign="middle"><%=abnormalOrder.getCwb() %></td>
 								<td width="100" align="center" valign="middle"><%if(customerlist!=null)for(Customer c : customerlist){if(abnormalOrder.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
 								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildata() %></td>
+								<td width="110" align="center" valign="middle"><%for(FlowOrderTypeEnum f:FlowOrderTypeEnum.values()){if(f.getValue()==abnormalOrder.getFlowordertype()){out.print(f.getText());}}%></td>
+								<td width="110" align="center" valign="middle"><%for(Branch b:branchList){if(b.getBranchid()==abnormalOrder.getBranchid()){out.print(b.getBranchname());}}%></td>
+								<td width="100" align="center" valign="middle"><%for(User user:userList){if(user.getUserid()==abnormalOrder.getCreuserid()){out.print(user.getRealname());}}%></td>
 								<td width="100" align="center" valign="middle"><%if(abnormalTypeList!=null)for(AbnormalType at : abnormalTypeList){if(abnormalOrder.getAbnormaltypeid()==at.getId()){ %><%=at.getName() %><%}} %></td>
 								<td width="110" align="center" valign="middle"><%=abnormalOrder.getCredatetime().substring(0, 19) %></td>
 								<td width="100" align="center" valign="middle"><%=abnormalOrder.getDescribe() %></td>
-								<td width="100" align="center" valign="middle"><%for(User user:userList){if(user.getUserid()==abnormalOrder.getCreuserid()){out.print(user.getRealname());}}%></td>
-								<td width="100" align="center" valign="middle">
+							<%-- 	<td width="100" align="center" valign="middle">
 								<% 
 								  if(abnormalOrder.getIshandle()==1)
 								  {
@@ -247,6 +271,16 @@ function sumitForm(){
 									  
 								  }
 								%>
+								</td> --%>
+								<td width="100" align="center" valign="middle">
+								<%if(abnormalOrder.getIshandle()!=AbnormalOrderHandleEnum.yichuli.getValue()){ %>
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=abnormalOrder.getId() %>');"/></td>
+						<%}else{
+							%>
+						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBox('<%=abnormalOrder.getId() %>');"/></td>
+							
+						<%} %>
+						<input type="hidden" id="handle<%=abnormalOrder.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=abnormalOrder.getId() %>?type=1" />
 								</td>
 							</tr>
 							<%} %>
@@ -278,6 +312,12 @@ function sumitForm(){
 		</div>
 	</div>
 </div>
+<form action="<%=request.getContextPath()%>/abnormalOrder/exportExcleFind" name="findexport" method="post" id="findexport">
+<input type="hidden" name="starttime1" id="starttime1" value="<%=starttime1 %>" />
+<input type="hidden" name="endtime1" id="endtime1" value="<%=endtime1%>"/>
+<input type="hidden" name="ishandle1" id="ishandle1" value="<%=ishandle1 %>"/>
+<input type="hidden" name="abnormaltypeid1" id="abnormaltypeid1"  value="<%=abnormaltypeid1%>"/>
+</form>
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#abnormaltypeid").val(<%=request.getParameter("abnormaltypeid")==null?0:Long.parseLong(request.getParameter("abnormaltypeid"))%>);

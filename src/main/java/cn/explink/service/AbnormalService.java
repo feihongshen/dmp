@@ -53,6 +53,7 @@ public class AbnormalService {
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
 				view.setIshandle(a.getLong("ishandle"));
+				view.setCredatetime(a.getString("credatetime"));
 				views.add(view);
 			}
 		}

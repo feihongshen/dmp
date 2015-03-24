@@ -42,6 +42,7 @@ public class AbnormalOrderDAO {
 			abnormalOrder.setCwb(rs.getString("cwb"));
 			abnormalOrder.setCustomerid(rs.getLong("customerid"));
 			abnormalOrder.setEmaildata(rs.getString("emaildate"));
+			abnormalOrder.setFlowordertype(rs.getLong("flowordertype"));
 			return abnormalOrder;
 		}
 	}
@@ -429,9 +430,9 @@ public class AbnormalOrderDAO {
 		}
 	}
 
-	public List<AbnormalOrder> getAbnormalOrderByWherefind(long page, String begindate, String enddate, String ishandle, long abnormaltypeid) {
+	public List<AbnormalOrder> getAbnormalOrderByWherefind(long page, String begindate, String enddate, long ishandle, long abnormaltypeid) {
 		String sql = "select * from express_ops_abnormal_order where  credatetime >= '" + begindate + "' and credatetime <= '" + enddate + "' ";
-		if (!ishandle.equals("-1")) {
+		if (ishandle > 0) {
 			sql += " and ishandle in ( " + ishandle + ")";
 		}
 		if (abnormaltypeid > 0) {
@@ -443,14 +444,25 @@ public class AbnormalOrderDAO {
 		return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper());
 	}
 
-	public long getAbnormalOrderCountfind(String begindate, String enddate, String ishandle, long abnormaltypeid) {
+	public long getAbnormalOrderCountfind(String begindate, String enddate, long ishandle, long abnormaltypeid) {
 		String sql = "select count(1) from express_ops_abnormal_order where credatetime >= ?  and credatetime <=? ";
-		if (!ishandle.equals("-1")) {
+		if (ishandle > 0) {
 			sql += " and ishandle in ( " + ishandle + ")";
 		}
 		if (abnormaltypeid > 0) {
 			sql += " and abnormaltypeid =" + abnormaltypeid;
 		}
 		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
+	}
+
+	public List<JSONObject> getAbnormalOrderByWherefindExport(String begindate, String enddate, long ishandle, long abnormaltypeid) {
+		String sql = "select * from express_ops_abnormal_order where  credatetime >= '" + begindate + "' and credatetime <= '" + enddate + "' ";
+		if (ishandle > 0) {
+			sql += " and ishandle in ( " + ishandle + ")";
+		}
+		if (abnormaltypeid > 0) {
+			sql += " and abnormaltypeid =" + abnormaltypeid;
+		}
+		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
 }

@@ -300,6 +300,7 @@ function stateBatch(state)
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件反馈时间</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件说明</td>
 							<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
 						</tr>
@@ -324,6 +325,7 @@ function stateBatch(state)
 						<td width="100" align="center" valign="middle"><%=view.getBranchName()  %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCreuserName() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getCredatetime() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
 						<td width="80" align="center" valign="middle">
 						<%if(!ishandle.equals(AbnormalOrderHandleEnum.yichuli.getValue()+"")){ %>

@@ -20,6 +20,7 @@ public class AbnormalView {
 	private String abnormalType;
 	private String describe;
 	private long ishandle;
+	private String credatetime;
 
 	public String getCwb() {
 		return this.cwb;
@@ -91,6 +92,14 @@ public class AbnormalView {
 
 	public void setIshandle(long ishandle) {
 		this.ishandle = ishandle;
+	}
+
+	public String getCredatetime() {
+		return this.credatetime;
+	}
+
+	public void setCredatetime(String credatetime) {
+		this.credatetime = credatetime;
 	}
 
 }
