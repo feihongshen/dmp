@@ -3763,7 +3763,7 @@ public class CwbOrderService {
 
 		this.logger.info("进入单票反馈cwborderservice处理完后开始保存信息cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecodpos:" + receivedfeecodpos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother
-				+ "--paybackedfee=" + paybackedfee + "--isbatch=" + isbatch);
+				+ "--paybackedfee=" + paybackedfee + "--isbatch=" + isbatch+"--infactfare="+infactfare);
 		this.deliveryStateDAO.saveForReFanKui(co.getCwb(), deliverid, receivedfee, paybackedfee, businessfee, podresultid, receivedfeecash, receivedfeepos, posremark, receivedfeecheque, checkremark,
 				receivedfeeother, podremarkid, deliverstateremark, "", sign_typeid, sign_man, sign_time, receivedfeecodpos, infactfare);
 		// 修改订单表的实收运费
