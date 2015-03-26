@@ -12,6 +12,7 @@ function selectUser(userid)
 	}
 function selectBranch(branchid)
 {var dmpurl=$("#dmpurl").val();
+$("#userid").empty();
 	$.ajax({
 		type:"post",
 		url:dmpurl+"/punish/selectBranch",
@@ -19,18 +20,20 @@ function selectBranch(branchid)
 		dataType:"json",
 		success:function(data){
 			if(data.length>0){
-			var optstr="<option value='0'>请选择</option>";
+			var optstr="";
+/*			var optstr="<option value='0'>请选择</option>";*/
 			for(var i=0;i<data.length;i++)
 				{
 				optstr+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
 				}
-			$("#userid").empty();
+			
 			$("#userid").append(optstr);
 			}
 		}});
 	}
 function findBranch(branchname)
 {var dmpurl=$("#dmpurl").val();
+$("#branchid").empty();
 $.ajax({
 	type:"post",
 	url:dmpurl+"/punish/findBranch",
@@ -38,12 +41,13 @@ $.ajax({
 	dataType:"json",
 	success:function(data){
 		if(data.length>0){
-			var optstr="<option value='0'>请选择</option>";
+			var optstr="";
+/*			var optstr="<option value='0'>请选择</option>";*/
 			for(var i=0;i<data.length;i++)
 			{
 				optstr+="<option value='"+data[i].branchid+"'>"+data[i].branchname+"</option>";
 			}
-			$("#branchid").empty();
+			
 			$("#branchid").append(optstr);
 		}
 	}});
@@ -140,4 +144,25 @@ function check(){
     	
     	return false;
     } 
+}
+
+function getinfo(cwb)
+{
+	  var dmpurl=$("#dmpurl").val();
+	  $.ajax({
+	  	type:"post",
+	  	url:dmpurl+"/punish/findCustomer",
+	  	data:{"cwb":cwb},
+	  	dataType:"json",
+	  	success:function(data){
+	  		if(data.length>0){
+	  			var optstr="";
+	  			for(var i=0;i<data.length;i++)
+	  			{
+	  				optstr+="<option value='"+data[i].customerid+"'>"+data[i].customername+"</option>";
+	  			}
+	  			$("#customerid").empty();
+	  			$("#customerid").append(optstr);
+	  		}
+	  	}});
 }

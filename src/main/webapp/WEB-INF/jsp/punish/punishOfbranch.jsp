@@ -10,6 +10,7 @@
 <%
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userList = (List<User>)request.getAttribute("userList");
+List<User> userAll = (List<User>)request.getAttribute("userAll");
 List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
 List<Punish> punishList = request.getAttribute("punishList")==null?new ArrayList<Punish>():(List<Punish>)request.getAttribute("punishList");
 List<Customer> customerList = request.getAttribute("customerList")==null?new ArrayList<Customer>():(List<Customer>)request.getAttribute("customerList");
@@ -207,7 +208,7 @@ function stateBatch(state)
 	<div class="inputselect_box">
 	<span>
 		</span>
-	<form action="<%=request.getContextPath()%>/punish/list/1" method="post" id="searchForm">
+	<form action="<%=request.getContextPath()%>/punish/punishOfbranch/1" method="post" id="searchForm">
 		<table><tr><td>
 		扣罚类型:<select id="punishid" name="punishid"  style="width: 80px">
 		<option value="0">请选择</option>
@@ -215,14 +216,7 @@ function stateBatch(state)
 		<option value="<%=p.getId() %>" <%if(p.getId()==punishid){ %>selected="selected"<%} %>><%=p.getName() %></option>
 		<%} %>
 		</select>
-		责任部门:<select id="branchid" name="branchid" onclick="selectBranch($(this).val())"  style="width: 80px">
-		<option value="0">请选择</option>
-		<%for(Branch b:branchlist){ %>
-		<option value="<%=b.getBranchid()%>" <%if(b.getBranchid()==branchid) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
-		<%} %>
-		</select>
-		<input type="text" onkeyup="findBranch($(this).val())"style="width: 80px"/>
-		责任人:<select id="userid" name="userid" onchange="selectUser($(this).val())" style="width: 80px">
+		责任人:<select id="userid" name="userid"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(User u:userList){ %>
 		<option value="<%=u.getUserid()%>" <%if(u.getUserid()==userid) {%>selected="selected"<%} %>><%=u.getRealname() %></option>
@@ -250,17 +244,10 @@ function stateBatch(state)
 		<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>"/>
 		<input type="hidden" id="isnow" name="isnow" value="1"/>
 		<input type="submit" value="查询"/>
-		<input type="button" value="审核" onclick="stateBatch(1)"/>
-		<input type="button" value="取消审核" onclick="stateBatch(0)"/>
-		<input type="button" value="导入" id="imp" onclick="showUp()"/>
 		<input type="button" value="导出" onclick="javascript:$('#exportExcle').submit()" <%if(punishList.size()==0){ %>disabled="disabled" <%} %>/>
-		<input name="" type="button" value="扣罚登记"  id="add_button"  />
 		</td></tr></table>
 	</form>
-	<div id="fileup" style="display: none;"><form id="punish_cre_Form" name="punish_import_Form"  action="<%=request.getContextPath()%>/punish/importData" method="post" enctype="multipart/form-data" >
-		<input type="file" name="Filedata" id="filename" onchange="showButton()"/>
-		 <input type="submit" value="确认" disabled="disabled" id="subfile"/>
-	</form></div>
+
 	</div>
 <div id="top"style="display: none;" >
 		<div id="box_form" >
@@ -274,7 +261,6 @@ function stateBatch(state)
 		<div id="br"><br></br></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	  <tr class="font_1">
-			<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚类型</td>
@@ -287,11 +273,9 @@ function stateBatch(state)
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">状态</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
-			<td width="13%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(Punish p : punishList){ %>
 		<tr>
-		<td width="4%" align="center" valign="middle" bgcolor="#eef6ff"><%if(p.getIsUpdate()) {%><input id="isprint" type="checkbox" value="<%=p.getId()%>"  readonly="readonly" userid="<%=p.getUserid()%>" name="isprint"/><%}%>  </td>
 			<td width="8%" align="center" valign="middle"><%=p.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
 			<%for(Customer cus:customerList){ if(cus.getCustomerid()==p.getCustomerid()){out.print(cus.getCustomername());}}%>
@@ -303,7 +287,7 @@ function stateBatch(state)
 			<%for(Branch b:branchlist){ if(b.getBranchid()==p.getBranchid()){out.print(b.getBranchname());}}%>
 			</td>
 			<td width="6%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==p.getUserid()){out.print(u.getRealname());}}%>
+			<%for(User u:userAll){ if(u.getUserid()==p.getUserid()){out.print(u.getRealname());}}%>
 			</td>
 			<td width="5%" align="center" valign="middle">
 			<%=PunishtimeEnum.getText(p.getPunishtime()).getText() %>
@@ -321,20 +305,11 @@ function stateBatch(state)
 			<%=p.getState()==1?"已审核":"未审核"%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==p.getCreateuser()){out.print(u.getRealname());}}%>
+			<%for(User u:userAll){ if(u.getUserid()==p.getCreateuser()){out.print(u.getRealname());}}%>
 			</td>
 			<td width="8%" align="center" style="font-size: 11px" valign="middle">
 			<%=p.getCreatetime() %>
 			</td>
-		
-			<td width="13%" align="center" valign="middle">
-			<%if(p.getIsUpdate()) {%>
-			[<a href="javascript:if(checkData(<%=p.getState() %>)){edit_button(<%=p.getId() %>);}">修改</a>]
-			[<a href="javascript:if(confirm('确定要删除?')){delData(<%=p.getId() %>);}">删除</a>]
-<%-- 			[<a href="javascript:state(<%=p.getId() %>);"><%=(p.getState()==1?"取消审核":"审核") %></a>] 
- --%>			
- <%}else { %>已超时<%} %>
- </td>
 		</tr>
 		<%} %>
 	</table>

@@ -27,7 +27,7 @@ List<Customer> customers = (List<Customer>)request.getAttribute("customers");
 		订单号:
 		</td>
 		<td>
-		<input type="text" name="cwb" id="cwb" value="" style="width: 133px"/>
+		<input type="text" onblur="getinfo($(this).val())" name="cwb" id="cwb"  style="width: 133px" />	
 		</td>
 		<td>
 		供货商:
@@ -55,7 +55,7 @@ List<Customer> customers = (List<Customer>)request.getAttribute("customers");
 		<td>责任部门:
 		</td>
 		<td>
-		<select id="branchid" name="branchid" style="width: 90px" onchange="selectBranch($(this).val())">
+		<select id="branchid" name="branchid" style="width: 90px" onclick="selectBranch($(this).val())">
 		<option value="0">请选择</option>
 		<%for(Branch b:branchlist){ %>
 		<option value="<%=b.getBranchid()%>" ><%=b.getBranchname() %></option>

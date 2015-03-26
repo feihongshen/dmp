@@ -392,6 +392,22 @@ public class PunishController {
 		return branch;
 	}
 
+	@RequestMapping("/findCustomer")
+	public @ResponseBody
+	List<Customer> findCustomer(@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) throws Exception {
+
+		List<Customer> customers = new ArrayList<Customer>();
+		if (cwb.length() == 0) {
+			customers = this.customerDAO.getAllCustomers();
+		} else {
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			if (cwbOrder != null) {
+				customers.add(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()));
+			}
+		}
+		return customers;
+	}
+
 	@RequestMapping("/exportExcle")
 	public void exportExcle(HttpServletResponse response, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
@@ -551,4 +567,47 @@ public class PunishController {
 
 	}
 
+	@RequestMapping("/punishOfbranch/{page}")
+	public String punishOfbranch(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "punishid", defaultValue = "0", required = false) long punishid, @RequestParam(value = "userid", defaultValue = "0", required = false) long userid,
+			@RequestParam(value = "punishlevel", defaultValue = "0", required = false) long punishlevel, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "starttime", defaultValue = "", required = false) String starttime, @RequestParam(value = "endtime", defaultValue = "", required = false) String endtime,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow, @RequestParam(value = "punishcontent", defaultValue = "", required = false) String punishcontent,
+			@RequestParam(value = "state", defaultValue = "-1", required = false) int state) {
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
+		List<User> userAll = this.userDAO.getAllUser();
+		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
+		model.addAttribute("branchlist", branchlist);
+		model.addAttribute("userAll", userAll);
+		model.addAttribute("userList", userList);
+		model.addAttribute("punishTypeList", punishTypeList);
+		model.addAttribute("customerList", customerList);
+		List<Punish> punishList = new ArrayList<Punish>();
+		int count = 0;
+		if (isnow > 0) {
+			punishList = this.punishDAO.getPunishList(cwb, punishid, userid, this.getSessionUser().getBranchid(), punishlevel, state, customerid, starttime, endtime, punishcontent, page);
+			count = this.punishDAO.getPunishCount(cwb, punishid, userid, this.getSessionUser().getBranchid(), punishlevel, state, customerid, starttime, endtime, punishcontent, page);
+		}
+		for (Punish p : punishList) {
+			p.setIsUpdate(this.isMorethanDate(p.getCreatetime()));
+		}
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
+		model.addAttribute("punishList", punishList);
+		model.addAttribute("userid", userid);
+		model.addAttribute("branchid", this.getSessionUser().getBranchid());
+		model.addAttribute("punishid", punishid);
+		model.addAttribute("cwb", cwb);
+		model.addAttribute("state", state);
+		model.addAttribute("punishlevel", punishlevel);
+		model.addAttribute("customerid", customerid);
+		model.addAttribute("starttime", starttime);
+		model.addAttribute("endtime", endtime);
+		model.addAttribute("punishcontent", punishcontent);
+
+		return "/punish/punishOfbranch";
+	}
 }

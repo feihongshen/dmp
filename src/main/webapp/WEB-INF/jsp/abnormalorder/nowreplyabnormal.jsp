@@ -68,7 +68,7 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 									
 										<p><%if(userList!=null||userList.size()>0)
 											for(User u : userList){
-												if(abnormalOrder.getCreuserid()==u.getUserid())
+												if(aw.getCreuserid()==u.getUserid())
 												{ out.print(branchMap.get(u.getBranchid())+"-"+u.getRealname());%><%}
 											} %>&nbsp;&nbsp;
 												<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>

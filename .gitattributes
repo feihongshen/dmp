@@ -2122,6 +2122,7 @@ src/main/webapp/WEB-INF/jsp/punish/add.jsp -text
 src/main/webapp/WEB-INF/jsp/punish/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/punish/importPage.jsp -text
 src/main/webapp/WEB-INF/jsp/punish/list.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/punishOfbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/punish/state.jsp -text
 src/main/webapp/WEB-INF/jsp/punishType/add.jsp -text
 src/main/webapp/WEB-INF/jsp/punishType/edit.jsp -text
