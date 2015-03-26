@@ -578,7 +578,7 @@ public class DeliveryController {
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare) {
 
-		this.logger.info("web--进入单票反馈");
+		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
 		try {
 			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);

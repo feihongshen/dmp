@@ -4148,6 +4148,7 @@ public class PDAController {
 		String statuscode = CwbOrderPDAEnum.OK.getCode();
 		StringBuilder errorMsg = new StringBuilder();
 		for (String cwb : cwbs.split(",")) {
+			this.logger.info("web-cwbdeliverpod小件员批量反馈扫描-进入单票反馈,cwb={}",cwb);
 			try {
 				String scancwb = cwb;
 				cwb = this.cwborderService.translateCwb(cwb);

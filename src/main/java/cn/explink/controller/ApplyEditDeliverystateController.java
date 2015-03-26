@@ -298,8 +298,9 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "checkremark", required = false, defaultValue = "") String checkremark,
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark) {
 
-		logger.info("web--进入单票反馈");
+		
 		ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
+		logger.info("web-agreeEditDeliveryState-进入单票反馈cwb={}",applyEditDeliverystate.getCwb());
 		try {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
