@@ -3540,6 +3540,7 @@ public class CwbOrderService {
 	@OrderFlowOperation(FlowOrderTypeEnum.YiFanKui)
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
+		String fankuileixing=parameters.get("fankuileixing")==null?"":parameters.get("fankuileixing").toString();
 		long deliverid = parameters.get("deliverid") == null ? 0l : Long.parseLong(parameters.get("deliverid").toString());
 		long podresultid = parameters.get("podresultid") == null ? 0l : (Long) parameters.get("podresultid");
 		long backreasonid = parameters.get("backreasonid") == null ? 0l : (Long) parameters.get("backreasonid");
@@ -3605,16 +3606,16 @@ public class CwbOrderService {
 
 		if (isbatch) {
 			// 配送订单批量反馈,验证是否为配送订单
-			if (((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()))
+			if (fankuileixing.equals("PEISONG")
 					&& (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 			}
 			// 上门换订单批量反馈,验证是否为上门换订单
-			if ((podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmenhuan.getValue())) {
+			if (fankuileixing.equals("SHANGMENHUAN") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmenhuan.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_HUAN_DING_DAN);
 			}
 			// 上门退订单批量反馈,验证是否为上门退订单
-			if ((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
+			if (fankuileixing.equals("SHANGMENTUI") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_TUI_DING_DAN);
 			}
 			// 已反馈订单不允许批量反馈
