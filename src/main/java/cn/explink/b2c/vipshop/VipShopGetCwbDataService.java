@@ -482,7 +482,8 @@ public class VipShopGetCwbDataService {
 						orderGoodsDAO.loseOrderGoods(order_sn);
 						cwbOrderService.datalose_vipshop(order_sn);
 					}else{ //拦截
-						cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+						//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+						cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
 					}
 					
 					

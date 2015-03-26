@@ -4688,6 +4688,7 @@ public class CwbOrderService {
 	@Transactional
 	public CwbOrder tuihuoHandleVipshop(User user, String cwb, String scancwb, long reasonid) {
 
+		logger.info("vipshop拦截订单{}",cwb);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
