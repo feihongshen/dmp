@@ -39,6 +39,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EditCwbDAO;
 import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.OperationTimeDAO;
+import cn.explink.dao.OrderAddressReviseDao;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.searchEditCwbInfoDao;
@@ -49,6 +50,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.OrderAddressRevise;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.User;
 import cn.explink.domain.WindowShow;
@@ -68,6 +70,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -121,6 +124,8 @@ public class EditCwbController {
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	OrderAddressReviseDao orderAddressReviseDao;
 	private Logger logger = LoggerFactory.getLogger(EditCwbController.class);
 
 	private User getSessionUser() {
@@ -530,7 +535,10 @@ public class EditCwbController {
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress) {// 地址
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, 
+			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress,
+			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress
+			) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -590,8 +598,15 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
+			
 			this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
-
+			long count=orderAddressReviseDao.countReviseAddress(cwb);
+			if (count==0) {
+				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入");
+			}
+			if (!checkeditaddress.equals(editaddress)) {
+				this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname());
+			}
 			// 2.更新到主表
 			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
 			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
@@ -712,5 +727,11 @@ public class EditCwbController {
 		List<Branch> branches = this.branchDAO.getBranchByBranchnameMoHu(branchname.trim());
 
 		return branches;
+	}
+	@RequestMapping("/findCwbDetail/{cwb}")
+	public String FindCwbDetail(Model model,@PathVariable String cwb){
+		List<OrderAddressRevise> orderAddressRevise=this.orderAddressReviseDao.getAddressReviseDetails(cwb);
+		model.addAttribute("orderAddressRevises",orderAddressRevise);
+		return "editcwb/addressReviseDetail";
 	}
 }

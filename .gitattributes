@@ -888,6 +888,7 @@ src/main/java/cn/explink/dao/OperationDetailDAO.java -text
 src/main/java/cn/explink/dao/OperationRuleDao.java -text
 src/main/java/cn/explink/dao/OperationSetTimeDAO.java -text
 src/main/java/cn/explink/dao/OperationTimeDAO.java -text
+src/main/java/cn/explink/dao/OrderAddressReviseDao.java -text
 src/main/java/cn/explink/dao/OrderArriveTimeDAO.java -text
 src/main/java/cn/explink/dao/OrderBackCheckDAO.java -text
 src/main/java/cn/explink/dao/OrderDeliveryClientDAO.java -text
@@ -1035,6 +1036,7 @@ src/main/java/cn/explink/domain/OperationDetail.java -text
 src/main/java/cn/explink/domain/OperationRule.java -text
 src/main/java/cn/explink/domain/OperationSetTime.java -text
 src/main/java/cn/explink/domain/OperationTime.java -text
+src/main/java/cn/explink/domain/OrderAddressRevise.java -text
 src/main/java/cn/explink/domain/OrderArriveTime.java -text
 src/main/java/cn/explink/domain/OrderBackCheck.java -text
 src/main/java/cn/explink/domain/OrderBackCheckView.java -text
@@ -1897,6 +1899,7 @@ src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiJinE.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiJinEResult.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiZhiFuFangShi.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiZhiFuFangShiResult.jsp -text
+src/main/webapp/WEB-INF/jsp/editcwb/addressReviseDetail.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/chongzhiResult.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/editInfo.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/list.jsp -text

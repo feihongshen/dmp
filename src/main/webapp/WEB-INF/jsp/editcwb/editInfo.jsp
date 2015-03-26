@@ -28,6 +28,7 @@
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 </head>
 <body>
+
 <script type="text/javascript">
 	$(function(){
 		$("cwb").mouseover(function(){});
@@ -81,6 +82,10 @@ $(function(){
 	
 });
 
+
+function editInit(){
+	
+}
 </script>
 </head>
 <body  style="background:#eef9ff">
@@ -145,9 +150,13 @@ $(function(){
 											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
 											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
 											<td>
+											
 											<input name="button2" type="button" class="input_button2" id="buttonMatch" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
 											<input name="button2" type="button" class="input_button2" id="button2" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
+											</br>
+											<a href="javascript:edit_button('<%=c.getCwb() %>');" id="cwbdetail" name="cwbdetail"  > 地址修改详情 </a> 
 											<input type="hidden" value="1" name="editshow" id="editshow">
+											<textarea type= cols="20"  name="checkeditaddress" id="checkeditaddress" style="display:none" ><%=c.getConsigneeaddress() %></textarea>
 											</td>
 											
 										</tr><%} %>
@@ -170,6 +179,9 @@ $(function(){
 </div>
 <script type="text/javascript">
 	function selectForm(a){
+		$("#button2").attr('disabled','disabled');
+		$("#button2").val('修改中');
+			$("#checkeditaddress")
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/updateCwbInfo/"+a,
 						type:"POST",//数据发送方式 
@@ -179,6 +191,9 @@ $(function(){
 							if(data.errorCode == 1){
 								 alert(data.error);
 							}else{
+								$("#checkeditaddress").val($("#editaddress").val());
+								$("#button2").removeAttr('disabled');
+								$("#button2").val('修改');
 								alert(data.error);
 							}
 						}
@@ -266,5 +281,6 @@ $(function(){
 		});
 	}
 </script>
+<input type="hidden" id="edit" value="<%=request.getContextPath()%>/editcwb/findCwbDetail/" />
 </body>
 </html>
