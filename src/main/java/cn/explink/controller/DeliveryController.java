@@ -1309,6 +1309,13 @@ public class DeliveryController {
 					if ((cwbOrder != null) && ((DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate))) {
 						parameters.put("infactfare", cwbOrder.getShouldfare());
 					}
+					
+					if (deliverystate==DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
+						parameters.put("infactfare", cwbOrder.getShouldfare());
+					}
+					
+					logger.info("上门退订单再次批量反馈cwb={},infactfare={},shouldfare="+cwbOrder.getShouldfare(),scancwb,parameters.get("infactfare"));
+					
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
