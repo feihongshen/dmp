@@ -606,7 +606,12 @@ public abstract class ExcelExtractor {
 		punish.setUserid(user.getUserid());
 
 		try {
-			punish.setPunishtime(PunishtimeEnum.getText(this.getXRowCellData(row, 6)).getValue());
+			String punishtime = this.getXRowCellData(row, 6);
+			if (punishtime.contains(".")) {
+				punish.setPunishtime((int) (Double.parseDouble(punishtime)));
+			} else {
+				punish.setPunishtime(PunishtimeEnum.getText(punishtime).getValue());
+			}
 		} catch (Exception e) {
 			punish.setPunishlevel(0);
 		}
@@ -630,7 +635,7 @@ public abstract class ExcelExtractor {
 		createuser = createuser == null ? new User() : createuser;
 		punish.setCreateuser(createuser.getUserid());
 
-		punish.setCreatetime(this.getXRowCellData(row, 12));
+		punish.setCreatetime(this.getXRowCellDateData(row, 12));
 		punish.setState(this.getXRowCellData(row, 13).equals("已审核") ? 1 : 0);
 		return punish;
 	}
