@@ -215,7 +215,7 @@ function stateBatch(state)
 		<option value="<%=p.getId() %>" <%if(p.getId()==punishid){ %>selected="selected"<%} %>><%=p.getName() %></option>
 		<%} %>
 		</select>
-		责任部门:<select id="branchid" name="branchid" onclick="selectBranch($(this).val())"  style="width: 80px">
+		责任部门:<select id="branchid" name="branchid" onchange="selectBranch($(this).val())"  style="width: 80px">
 		<option value="0">请选择</option>
 		<%for(Branch b:branchlist){ %>
 		<option value="<%=b.getBranchid()%>" <%if(b.getBranchid()==branchid) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>

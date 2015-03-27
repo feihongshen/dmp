@@ -34,6 +34,7 @@ $("#userid").empty();
 function findBranch(branchname)
 {var dmpurl=$("#dmpurl").val();
 $("#branchid").empty();
+$("#userid").empty();
 $.ajax({
 	type:"post",
 	url:dmpurl+"/punish/findBranch",
