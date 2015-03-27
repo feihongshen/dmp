@@ -18,6 +18,8 @@ List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliver
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
 Page page_obj = (Page)request.getAttribute("page_obj");
+Boolean isFinancial = Boolean.parseBoolean(request.getAttribute("isFinancial").toString());
+Boolean isService =  Boolean.parseBoolean(request.getAttribute("isService").toString());
   
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
@@ -102,6 +104,23 @@ function getThisBox(id){
 			viewBox();
 		}
 	});
+}
+function Audit(id){
+	if(confirm("确认要审核吗   ?")){
+	$.ajax({
+		type: "POST",
+		url:$("#auditurl").val(),
+		data:{"id":id},
+		dataType:"json",
+		success : function(data) {
+			if(data>0)
+				{
+				$("#auditButton_"+id).val("已审核");
+				$("#auditButton_"+id).attr("disabled","disabled");
+				}
+		}
+	});
+	}
 }
 
 
@@ -221,11 +240,16 @@ function editInit(){
 			</td>
 			<td align="center" valign="middle"><%=adse.getEditreason() %></td>
 			<td align="center" valign="middle"><!-- <input type="button" name="button2" id="button2" value="修改"> -->
-			<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>
+			<%
+			if(isService){%>
+				<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>" <%if(adse.getAudit()==1){ %> disabled="disabled" <%} %> value='<%=adse.getAudit()==1?"已审核":"审核"%>' onclick="Audit(<%=adse.getId()%>)" />
+			<%}
+			else{
+			if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>
 			<input type="button" name="button2" id="button2" value="修改" onclick="edit_button(<%=adse.getId()%>);" class="input_button2">
 			<%}else{ %>
 			<input type="button" name="button2" id="button2" value="已修改" >
-			<%} %>
+			<%}}%>
 		</tr>
 		<%} %>
 		</tbody>
@@ -262,6 +286,7 @@ $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#ishandle").val(<%=request.getParameter("ishandle")==null?-1:Long.parseLong(request.getParameter("ishandle"))%>);
 $("#applybranchid").val(<%=request.getParameter("applybranchid")==null?0:Long.parseLong(request.getParameter("applybranchid"))%>);
 </script>
+<input type="hidden" id="auditurl" value="<%=request.getContextPath()%>/applyeditdeliverystate/audit" />
 </body>
 </html>
 

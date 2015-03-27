@@ -6070,6 +6070,22 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			)ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-03-27-1" author="wangyonghe">
+		<sql>
+		INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES ('FinancialID', '0', '设置财务角色ID');
+		INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES ('ServiceID', '0', '设置客服角色ID');
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2015-03-27-2" author="wangyonghe">
+		<sql>
+			ALTER TABLE `express_ops_applyeditdeliverystate`
+			ADD COLUMN `audit`  int(2) NULL DEFAULT 0 COMMENT '审核标识' AFTER `state`,
+			ADD COLUMN `receivablefee`  decimal(9,2) NULL DEFAULT 0.00 AFTER `audit`,
+			ADD INDEX `Applyeditdeliverystate_audit_Idx` (`audit`) ,
+			ADD INDEX `Applyeditdeliverystate_applytime_Idx` (`applytime`) ,
+			ADD INDEX `Applyeditdeliverystate_applybranchid_Idx` (`applybranchid`) ;
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  

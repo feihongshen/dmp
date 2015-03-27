@@ -29,6 +29,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.ApplyEditDeliverystate;
@@ -37,6 +38,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.Reason;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -80,6 +82,8 @@ public class ApplyEditDeliverystateController {
 	@Autowired
 	AppearWindowDao appearWindowDao;
 	@Autowired
+	SystemInstallDAO systemInstallDAO;
+	@Autowired
 	EditCwbService editCwbService;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -90,7 +94,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 进入申请修改订单配送结果页面
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -163,7 +167,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 提交申请的每个订单的修改后的配送结果和原因
-	 *
+	 * 
 	 * @param id
 	 * @param model
 	 * @param editnowdeliverystate
@@ -171,8 +175,8 @@ public class ApplyEditDeliverystateController {
 	 * @return
 	 */
 	@RequestMapping("/submitCreateApplyEditDeliverystate/{id}")
-	public @ResponseBody String submitCreateApplyEditDeliverystate(@PathVariable("id") long id, Model model,
-			@RequestParam(value = "editnowdeliverystate", defaultValue = "0", required = true) long editnowdeliverystate,
+	public @ResponseBody
+	String submitCreateApplyEditDeliverystate(@PathVariable("id") long id, Model model, @RequestParam(value = "editnowdeliverystate", defaultValue = "0", required = true) long editnowdeliverystate,
 			@RequestParam(value = "editreason", defaultValue = "", required = true) String editreason) {
 		try {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
@@ -198,7 +202,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 修改订单配送结果的查询功能
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param begindate
@@ -210,20 +214,24 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/getApplyEditDeliverystateList/{page}")
 	public String getApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
+		boolean isFinancial = false;
+
+		isFinancial = this.IsRole("FinancialID");// 判断是不是财务角色
 
 		model.addAttribute("applyEditDeliverystateList",
-				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, this.getSessionUser().getBranchid(), ishandle, ""));
+				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial));
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("userList", this.userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, this.getSessionUser().getBranchid(), ishandle, ""), page,
-				Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj",
+				new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial), page,
+						Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
 	}
 
 	/**
 	 * 客服看到的修改订单配送结果的功能
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -237,18 +245,26 @@ public class ApplyEditDeliverystateController {
 	public String tohandleApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "applybranchid", defaultValue = "0", required = false) long applybranchid, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
+		boolean isFinancial = false;
+		boolean isService = false;
 
-		model.addAttribute("applyEditDeliverystateList", this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb));
+		isFinancial = this.IsRole("FinancialID");// 判断是不是财务角色
+		isService = this.IsRole("ServiceID");// 判断是不是客服角色
+		model.addAttribute("isFinancial", isFinancial);
+		model.addAttribute("isService", isService);
+
+		model.addAttribute("applyEditDeliverystateList", this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb, isFinancial));
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("userList", this.userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb, isFinancial), page,
+				Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/handleApplyEditDeliverystatelist";
 	}
 
 	/**
 	 * 客服进入到某个订单的修改功能
-	 *
+	 * 
 	 * @param id
 	 * @param model
 	 * @return
@@ -287,7 +303,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 客服对选择的订单进行修改的功能
-	 *
+	 * 
 	 * @param model
 	 * @param id
 	 * @param deliveryid
@@ -306,7 +322,8 @@ public class ApplyEditDeliverystateController {
 	 * @return
 	 */
 	@RequestMapping("/agreeEditDeliveryState/{id}/{deliveryid}")
-	public @ResponseBody String agreeEditDeliveryState(Model model, @PathVariable("id") long id, @PathVariable("deliveryid") long deliveryid,
+	public @ResponseBody
+	String agreeEditDeliveryState(Model model, @PathVariable("id") long id, @PathVariable("deliveryid") long deliveryid,
 			@RequestParam(value = "podresultid", required = false, defaultValue = "0") long podresultid, @RequestParam(value = "backreasonid", required = false, defaultValue = "0") long backreasonid,
 			@RequestParam(value = "leavedreasonid", required = false, defaultValue = "0") long leavedreasonid,
 			@RequestParam(value = "podremarkid", required = false, defaultValue = "0") long podremarkid, @RequestParam("returnedfee") BigDecimal returnedfee,
@@ -421,7 +438,7 @@ public class ApplyEditDeliverystateController {
 
 	/**
 	 * 得到订单的一些信息功能
-	 *
+	 * 
 	 * @param ds
 	 * @param customerList
 	 * @param userList
@@ -497,6 +514,32 @@ public class ApplyEditDeliverystateController {
 		sdv.setBackreason(cwbOrder.getBackreason());
 		sdv.setLeavedreason(cwbOrder.getLeavedreason());
 		return sdv;
+	}
+
+	private boolean IsRole(String tip) {
+		try {
+			long roleid = this.getSessionUser().getRoleid();
+			SystemInstall sys = this.systemInstallDAO.getSystemInstall(tip);
+			sys = sys == null ? new SystemInstall() : sys;
+			if (sys.getValue().contains(",")) {
+				String[] ids = sys.getValue().split(",");
+				for (String id : ids) {
+					if (roleid == Integer.parseInt(id.trim())) {
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	@RequestMapping("/audit")
+	public @ResponseBody
+	int audit(Model model, @RequestParam(value = "id", required = false, defaultValue = "0") long id) {
+		int count = this.applyEditDeliverystateDAO.updateAudit(id);
+		return count;
 	}
 
 }

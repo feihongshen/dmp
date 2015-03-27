@@ -50,6 +50,7 @@ public class ApplyEditDeliverystateDAO {
 			applyEditDeliverystate.setPayupid(rs.getLong("payupid"));
 			applyEditDeliverystate.setPos(rs.getBigDecimal("pos"));
 			applyEditDeliverystate.setState(rs.getLong("state"));
+			applyEditDeliverystate.setAudit(rs.getLong("audit"));
 
 			return applyEditDeliverystate;
 		}
@@ -60,7 +61,8 @@ public class ApplyEditDeliverystateDAO {
 
 	public long creApplyEditDeliverystate(final ApplyEditDeliverystate aeds) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_applyeditdeliverystate (deliverystateid,opscwbid,cwb,"
@@ -85,32 +87,32 @@ public class ApplyEditDeliverystateDAO {
 
 	public void saveApplyEditDeliverystateById(long id, long editnowdeliverystate, String editreason) {
 		String sql = "update express_ops_applyeditdeliverystate set state=1, editnowdeliverystate=?,editreason=? where id=?";
-		jdbcTemplate.update(sql, editnowdeliverystate, editreason, id);
+		this.jdbcTemplate.update(sql, editnowdeliverystate, editreason, id);
 	}
 
 	public ApplyEditDeliverystate getApplyEditDeliverystateById(long id) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where id=?";
-		return jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper(), id);
+		return this.jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper(), id);
 	}
 
 	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByCwbsPage(long page, String cwbs, long ishandle) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb in(" + cwbs + ") and ishandle=? ";
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), ishandle);
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), ishandle);
 	}
 
 	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByCwb(String cwb, long ishandle) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb =? and ishandle=? ";
-		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb, ishandle);
+		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb, ishandle);
 	}
 
-	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByWherePage(long page, String begindate, String enddate, long applybranchid, long ishandle, String cwb) {
+	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByWherePage(long page, String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where state=1 ";
 		if (cwb.length() > 0) {
 			StringBuffer w = new StringBuffer();
 			w.append(" and cwb = '" + cwb + "'");
 			sql += w.toString();
-		} else if (begindate.length() > 0 || enddate.length() > 0 || applybranchid > 0 || ishandle > -1) {
+		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1)) {
 
 			StringBuffer w = new StringBuffer();
 
@@ -126,20 +128,23 @@ public class ApplyEditDeliverystateDAO {
 			if (ishandle > -1) {
 				w.append(" and ishandle = " + ishandle);
 			}
+			if (isFinancial) {
+				w.append(" and audit =1 ");
+			}
 			sql += w.toString();
 		}
 
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
 
-	public long getApplyEditDeliverystateByWhereCount(String begindate, String enddate, long applybranchid, long ishandle, String cwb) {
+	public long getApplyEditDeliverystateByWhereCount(String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial) {
 		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where state=1 ";
 		if (cwb.length() > 0) {
 			StringBuffer w = new StringBuffer();
 			w.append(" and cwb = '" + cwb + "'");
 			sql += w.toString();
-		} else if (begindate.length() > 0 || enddate.length() > 0 || applybranchid > 0 || ishandle > -1) {
+		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1)) {
 			StringBuffer w = new StringBuffer();
 
 			if (begindate.length() > 0) {
@@ -154,19 +159,27 @@ public class ApplyEditDeliverystateDAO {
 			if (ishandle > -1) {
 				w.append(" and ishandle = " + ishandle);
 			}
+			if (isFinancial) {
+				w.append(" and audit =1 ");
+			}
 			sql += w.toString();
 
 		}
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	public void agreeSaveApplyEditDeliverystateById(long id, BigDecimal editnopos, BigDecimal editpos, long edituserid, String edittime, String editdetail) {
 		String sql = "update express_ops_applyeditdeliverystate set editnopos=?,editpos=?,edituserid=?,edittime=?,editdetail=?,ishandle=1 where id=?";
-		jdbcTemplate.update(sql, editnopos, editpos, edituserid, edittime, editdetail, id);
+		this.jdbcTemplate.update(sql, editnopos, editpos, edituserid, edittime, editdetail, id);
 	}
 
 	public void updateState(long issendcustomer, String ids) {
 		String sql = "update express_ops_applyeditdeliverystate set issendcustomer=? where deliverystateid in(" + ids + ")";
-		jdbcTemplate.update(sql, issendcustomer);
+		this.jdbcTemplate.update(sql, issendcustomer);
+	}
+
+	public int updateAudit(long id) {
+		String sql = "update express_ops_applyeditdeliverystate set audit=1 where id =" + id;
+		return this.jdbcTemplate.update(sql);
 	}
 }
