@@ -896,6 +896,7 @@ src/main/java/cn/explink/dao/OrderFlowDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowLogDAO.java -text
 src/main/java/cn/explink/dao/OrderGoodsDAO.java -text
 src/main/java/cn/explink/dao/OrderPartGoodsRtDAO.java -text
+src/main/java/cn/explink/dao/OrgBillAdjustmentRecordDao.java -text
 src/main/java/cn/explink/dao/OutWarehouseGroupDAO.java -text
 src/main/java/cn/explink/dao/ParameterDetailDAO.java -text
 src/main/java/cn/explink/dao/PayUpDAO.java -text
@@ -1044,6 +1045,7 @@ src/main/java/cn/explink/domain/OrderDeliveryClient.java -text
 src/main/java/cn/explink/domain/OrderGoods.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRtList.java -text
+src/main/java/cn/explink/domain/OrgBillAdjustmentRecord.java -text
 src/main/java/cn/explink/domain/OutWarehouseGroup.java -text
 src/main/java/cn/explink/domain/ParameterDetail.java -text
 src/main/java/cn/explink/domain/PayUp.java -text
@@ -1446,6 +1448,7 @@ src/main/java/cn/explink/service/OrderArriveTimeService.java -text
 src/main/java/cn/explink/service/OrderBackCheckService.java -text
 src/main/java/cn/explink/service/OrderDeliveryClientService.java -text
 src/main/java/cn/explink/service/OrderPartGoodsReturnService.java -text
+src/main/java/cn/explink/service/OrgBillAdjustmentRecordService.java -text
 src/main/java/cn/explink/service/ParameterDetailService.java -text
 src/main/java/cn/explink/service/PayUpService.java -text
 src/main/java/cn/explink/service/PosPayMoneyService.java -text
