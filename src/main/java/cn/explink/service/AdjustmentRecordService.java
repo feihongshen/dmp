@@ -36,8 +36,10 @@ public class AdjustmentRecordService {
 	CwbDAO cwbDao;
 	@Autowired
 	FnCustomerBillDetailDAO FnCustomerBillDetaildao;
+	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();

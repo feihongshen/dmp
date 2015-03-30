@@ -51,6 +51,7 @@ import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.OrderAddressRevise;
+import cn.explink.domain.OrgBillAdjustmentRecord;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.User;
 import cn.explink.domain.WindowShow;
@@ -68,6 +69,7 @@ import cn.explink.service.DataImportService;
 import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
@@ -121,6 +123,8 @@ public class EditCwbController {
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
+	@Autowired
+	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -322,23 +326,27 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/editXiuGaiJinE")
-	public String editXiuGaiJinE(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser,
+	public String editXiuGaiJinE(Model model, HttpServletRequest request, 
+			@RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser,
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) {
 		List<User> userList = this.userDAO.getUserByid(requestUser);
 		if (userList.size() > 0) {
 			this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 			List<String> errorList = new ArrayList<String>();
-			// 定义一个调整单List
+			// 定义一个客户账单调整单List
 			List<AdjustmentRecord> adjustmentRecords = new ArrayList<AdjustmentRecord>();
+			// 定义一个站点账单调整当List
+			List<OrgBillAdjustmentRecord> orgBillAdjustmentRecords = new ArrayList<OrgBillAdjustmentRecord>();
+			
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
-				BigDecimal Receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
+				BigDecimal receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
 				BigDecimal cash = request.getParameter("Receivablefee_cash_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_cash_" + cwb));
 				BigDecimal pos = request.getParameter("Receivablefee_pos_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_pos_" + cwb));
 				BigDecimal checkfee = request.getParameter("Receivablefee_checkfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_checkfee_" + cwb));
 				BigDecimal otherfee = request.getParameter("Receivablefee_otherfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_otherfee_" + cwb));
-				BigDecimal Paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
+				BigDecimal paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
 				CwbOrder cwbOrder = new CwbOrder();
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				User user = new User();
@@ -348,17 +356,16 @@ public class EditCwbController {
 
 				// 先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
 
-				if ((Receivablefee != null) && !Receivablefee.equals(cwbOrder.getReceivablefee())) {
-					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), Paybackfee, Receivablefee, "", user.getUsername(),
-							cwbOrder.getCwbordertypeid());
-
+				if ((receivablefee != null) && !receivablefee.equals(cwbOrder.getReceivablefee())) {
+					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
+//					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
 				}
 
 				try {
-					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, Receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser,
+					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, paybackfee, requestUser,
 							this.getSessionUser().getUserid());
 					ecList.add(ec_dsd);
-					operationTimeDAO.updateOperationTimeMoney(cwb, Receivablefee, Paybackfee);
+					operationTimeDAO.updateOperationTimeMoney(cwb, receivablefee, paybackfee);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());
 				} catch (Exception e) {
@@ -366,7 +373,7 @@ public class EditCwbController {
 					e.printStackTrace();
 				}
 				try {
-					operationTimeDAO.updateOperationTimeMoney(cwb, Receivablefee, Paybackfee);
+					operationTimeDAO.updateOperationTimeMoney(cwb, receivablefee, paybackfee);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());
 				} catch (Exception e) {
@@ -396,6 +403,7 @@ public class EditCwbController {
 				try {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, this.getSessionUser().getUserid());
 					adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
+//					orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
 					//修改支付方式,判断是否生成调整单
 					ecList.add(ec_dsd);
 				} catch (ExplinkException ee) {
