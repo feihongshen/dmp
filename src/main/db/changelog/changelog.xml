@@ -6080,7 +6080,6 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		<sql>
 			ALTER TABLE `express_ops_applyeditdeliverystate`
 			ADD COLUMN `audit`  int(2) NULL DEFAULT 0 COMMENT '审核标识' AFTER `state`,
-			ADD COLUMN `receivablefee`  decimal(9,2) NULL DEFAULT 0.00 AFTER `audit`,
 			ADD INDEX `Applyeditdeliverystate_audit_Idx` (`audit`) ,
 			ADD INDEX `Applyeditdeliverystate_applytime_Idx` (`applytime`) ,
 			ADD INDEX `Applyeditdeliverystate_applybranchid_Idx` (`applybranchid`) ;
