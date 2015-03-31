@@ -634,8 +634,16 @@ public abstract class ExcelExtractor {
 		User createuser = userMap.get(this.getXRowCellData(row, 11));
 		createuser = createuser == null ? new User() : createuser;
 		punish.setCreateuser(createuser.getUserid());
+		try {
+			punish.setCreatetime(this.getXRowCellDateData(row, 12));
+		} catch (Exception e) {
+			punish.setCreatetime(this.getXRowCellData(row, 12));
+		}
+		if (punish.getCreatetime().equals("")) {
+			punish.setCreatetime(this.getXRowCellData(row, 12));
+		}
+		ExcelExtractor.logger.info("扣罚登记_导入数据cwb={}--创建日期={}", cwb, punish.getCreatetime());
 
-		punish.setCreatetime(this.getXRowCellDateData(row, 12));
 		punish.setState(this.getXRowCellData(row, 13).equals("已审核") ? 1 : 0);
 		return punish;
 	}
