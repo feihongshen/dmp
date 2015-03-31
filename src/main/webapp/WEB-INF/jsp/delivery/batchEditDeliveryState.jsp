@@ -17,7 +17,7 @@ List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist
 
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 
-
+List<Reason> firstlist = (List<Reason>)request.getAttribute("firstlist");
 List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
 List<Reason> weishuakareasonlist = (List<Reason>)request.getAttribute("weishuakareasonlist");
 
@@ -111,6 +111,7 @@ function changeTag(id){
 		$("#paytype").val(-1);
 	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
 		$("#leavedreasonid").parent().show();
+		$("#firstlevelreasonid").parent().show();
 		$("#resendtime").parent().show();
 		$("#zhiliuremark").parent().show();
 		$("#backreasonid").parent().hide();
@@ -276,15 +277,27 @@ function resub(form){
 					
 					<tr>
 					<td>&nbsp;&nbsp; 
+						
 						<em style="display:none">
-							滞留原因：
-							 <select name="leavedreasonid" id="leavedreasonid">
-					        	<option value ="0">请选择</option>
-					        	<%for(Reason r : leavedlist){ %>
+							一级原因：
+							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
+					        	<option value ="-1">==请选择==</option>
+					        	<%if(firstlist!=null&&firstlist.size()>0)
+					        		for(Reason r : firstlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			           			<%} %>
 					        </select>
 						</em>
+						<em style="display:none">
+							滞留原因：
+							 <select name="leavedreasonid" id="leavedreasonid">
+					        	<option value ="-1">==请选择==</option>
+					        	<%-- <%for(Reason r : leavedlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %> --%>
+					        </select>
+						</em>
+						
 						<em style="display:none">
 							再次配送时间：<input type ="text" name ="resendtime" id="resendtime" readonly="readonly"  value="<%=resendtime %>"/>
 						</em>

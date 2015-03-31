@@ -5,6 +5,24 @@ public class Reason {
 	private long reasonid;
 	private String reasoncontent;
 	private long reasontype;
+	private int whichreason;
+	private int parentid;
+
+	public int getParentid() {
+		return parentid;
+	}
+
+	public void setParentid(int parentid) {
+		this.parentid = parentid;
+	}
+	
+	public int getWhichreason() {
+		return whichreason;
+	}
+
+	public void setWhichreason(int whichreason) {
+		this.whichreason = whichreason;
+	}
 
 	public long getReasonid() {
 		return reasonid;

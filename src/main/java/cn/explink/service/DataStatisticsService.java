@@ -192,9 +192,10 @@ public class DataStatisticsService {
 			long isnowdata = request.getParameter("isnowdata") == null ? 0 : Long.parseLong(request.getParameter("isnowdata").toString());
 			Integer paybackfeeIsZero = request.getParameter("paybackfeeIsZero1") == null ? -1 : Integer.parseInt(request.getParameter("paybackfeeIsZero1").toString());
 			String servicetype = request.getParameter("servicetype1") == null ? "全部" : request.getParameter("servicetype1").toString();
-
+			int firstlevelid = request.getParameter("firstzhiliureasonid") ==null ? 0  : Integer.parseInt(request.getParameter("firstzhiliureasonid"));
+			
 			String orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
-					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata);
+					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);
 
 			if ((sign == 1) || (sign == 2)) {// 滞留、拒收
 				begindate = enddate = "";
@@ -1915,7 +1916,7 @@ public class DataStatisticsService {
 
 	private String getCwbs(long sign, String begindate, String enddate, long isauditTime, String[] nextbranchid, String[] startbranchid, long isaudit, String[] operationOrderResultTypes,
 			String[] dispatchbranchid, long deliverid, long flowordertype, String[] kufangid, String[] currentBranchid, long branchid1, String type, String[] branchid2s, String[] customerid,
-			long isnowdata) {
+			long isnowdata,int firstlevelid ) {
 		String orderflowcwbs = "";
 		String customerids = this.getStrings(customerid);
 		if (sign == 1) {
@@ -1931,7 +1932,7 @@ public class DataStatisticsService {
 			}
 			operationOrderResultTypes[0] = DeliveryStateEnum.FenZhanZhiLiu.getValue() + "";
 			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, zhiliucheck, customerids);
+					deliverid, zhiliucheck, customerids, firstlevelid);
 
 			if (orderFlowList.size() > 0) {
 
@@ -1961,7 +1962,7 @@ public class DataStatisticsService {
 				}
 			}
 			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, jushouCheck, customerids);
+					deliverid, jushouCheck, customerids, firstlevelid);
 
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowList);
@@ -1998,7 +1999,7 @@ public class DataStatisticsService {
 						DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "" };
 			}
 			List<String> orderFlowLastList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, 1, customerids);
+					deliverid, 1, customerids, firstlevelid);
 			if (orderFlowLastList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowLastList);
 			} else {

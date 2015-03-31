@@ -12,6 +12,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<User> deliverlist = request.getAttribute("deliverlist")==null?null:( List<User>)request.getAttribute("deliverlist");
+List<Reason> levellist = (List<Reason>)request.getAttribute("levelreasonlist");
 int loginUserType =  request.getAttribute("loginUserType")==null ? 0 : (Integer)request.getAttribute("loginUserType");
 
   List<CwbOrderView> orderlist = (List<CwbOrderView>)request.getAttribute("orderlist");
@@ -275,7 +276,20 @@ function isauditEdit(){
 			            }
 				     }%>><%=c.getText()%></option>
 		          <%} %>
-			</select>	
+			</select>
+			 一级
+			<select name ="firstlevelid" id ="firstlevelid" >
+		          <option value ="0">请选择</option>
+		          <% if(levellist!=null&&levellist.size()>0)for(Reason rs :levellist){ %>
+		          	<option value="<%=rs.getReasonid() %>"  <%if(rs.getReasonid()==(request.getParameter("firstlevelid")==null ? 0 : Integer.parseInt(request.getParameter("firstlevelid").toString()))){%>
+		          		selected="selected"
+		          	<%}%>>
+		          	<%=rs.getReasoncontent() %>
+		          	</option>
+		          <%}%>
+		          
+			 </select>
+
 			<input type="button" id="find" onclick="" value="查询" class="input_button2" />
 			&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
 			<%if(!orderlist.isEmpty()) {%>
@@ -311,6 +325,8 @@ function isauditEdit(){
 		<input type="hidden" name="deliverid1" id="deliverid1" value="<%=request.getParameter("deliverid")==null?"-1":request.getParameter("deliverid")%>"/>
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
+		<input type="hidden" name="firstzhiliureasonid" id="firstzhiliureasonid" />
+		
 		<div style="display: none;">
 			<select name =operationOrderResultTypes1 id ="operationOrderResultTypes1" multiple="multiple" style="width: 320px;">
 	               	<%for(DeliveryStateEnum c : DeliveryStateEnum.values()){ %>
@@ -460,6 +476,7 @@ $("#isaudit").val(<%=request.getParameter("isaudit")==null?"-1":request.getParam
 function exportField(page,j){
 	if($("#isshow").val()=="1"&&<%=orderlist != null && orderlist.size()>0  %>){
 		$("#exportmould2").val($("#exportmould").val());
+		$("#firstzhiliureasonid").val($("#firstlevelid").val());
 		$("#btnval"+j).attr("disabled","disabled");
 	 	$("#btnval"+j).val("请稍后……");
 	 	$("#begin").val(page);

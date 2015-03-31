@@ -17,13 +17,13 @@ var initReasontype = "<%=reason.getReasontype() %>,reasontype";
 		<form id="reason_save_Form" name="reason_save_Form"  onSubmit="if(check_reason()){submitSaveForm(this);}return false;" action="<%=request.getContextPath()%>/reason/save/${reason.reasonid}" method="post">
 		<div id="box_form">
 				<ul>
-					<li><span>类型：</span> 
-					<select name ="reasontype" id="reasontype">
-				       <option value ="0">请选择</option>
-		               <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ %>
-		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>
-		               <%} %>
-		           </select>*</li>
+					<li><span style="margin-left: 50px">类型：
+		           <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ 
+		              if(ry.getValue()==reason.getReasontype())
+		            	  out.print(ry.getText());
+		              } %>
+		           </span>
+		           </li>
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="${reason.reasoncontent}" maxlength="30" ></li>
 				</ul>
 		</div>

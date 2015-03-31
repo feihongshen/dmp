@@ -734,7 +734,7 @@ public class DeliverypercentService {
 
 	private String getCwbs(long sign, String begindate, String enddate, long isauditTime, String[] nextbranchid, String[] startbranchid, long isaudit, String[] operationOrderResultTypes,
 			String[] dispatchbranchid, long deliverid, long flowordertype, String[] kufangid, String[] currentBranchid, long branchid1, String type, String[] branchid2s, String[] customerid,
-			long isnowdata) {
+			long isnowdata,int firstlevelid) {
 		String orderflowcwbs = "";
 		String customerids = getStrings(customerid);
 		if (sign == 1) {
@@ -750,7 +750,7 @@ public class DeliverypercentService {
 			}
 			operationOrderResultTypes[0] = DeliveryStateEnum.FenZhanZhiLiu.getValue() + "";
 			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
-					zhiliucheck, customerids);
+					zhiliucheck, customerids,firstlevelid);
 
 			if (orderFlowList.size() > 0) {
 
@@ -780,7 +780,7 @@ public class DeliverypercentService {
 				}
 			}
 			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
-					jushouCheck, customerids);
+					jushouCheck, customerids, firstlevelid);
 
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowList);
@@ -817,7 +817,7 @@ public class DeliverypercentService {
 						DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "" };
 			}
 			List<String> orderFlowLastList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, 1, customerids);
+					deliverid, 1, customerids, firstlevelid);
 			if (orderFlowLastList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowLastList);
 			} else {

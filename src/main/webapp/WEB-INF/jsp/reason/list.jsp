@@ -1,3 +1,4 @@
+<%@page import="cn.explink.enumutil.FirstReasonEnum"%>
 <%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.Page"%>
@@ -58,22 +59,24 @@ function delSuccess(data){
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
-	<tr class="font_1">
-			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编号</td>
-			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">类型</td>
-			<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">常用语内容</td>
-			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+		<tr class="font_1">
+				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编号</td>
+				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">类型</td>
+				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">级别</td>
+				<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">常用语内容</td>
+				<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 	<%for(Reason r:reasonList){ %>
 		<tr>
 			<td width="15%" align="center" valign="middle"><%=r.getReasonid()%></td>
-			<td width="20%" align="center" valign="middle"><%for(ReasonTypeEnum rte : ReasonTypeEnum.values()){if(r.getReasontype()==rte.getValue()){%><%=rte.getText()%><%}}%></td>
-			<td width="40%" align="center" valign="middle"><%=r.getReasoncontent()%></td>
+			<td width="15%" align="center" valign="middle"><%for(ReasonTypeEnum rte : ReasonTypeEnum.values()){if(r.getReasontype()==rte.getValue()){%><%=rte.getText()%><%}}%></td>
+			<td width="15%" align="center" valign="middle"><%=r.getWhichreason()==1?"1":r.getWhichreason()==0?"":"2" %></td>
+			<td width="30%" align="center" valign="middle"><%=r.getReasoncontent()%></td>
 			<td width="25%" align="center" valign="middle">
 			[<a href="javascript:edit_button(<%=r.getReasonid() %>);">修改</a>]
 			</td>
 		</tr>
-		<%} %>
+	<%} %>
 	</table>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
@@ -86,13 +89,13 @@ function delSuccess(data){
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
-			　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
-					id="selectPg"
+			共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第
+			<select id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
 					<option value="<%=i %>"><%=i %></option>
 					<% } %>
-				</select>页
+			</select>页
 		</td>
 	</tr>
 	</table>

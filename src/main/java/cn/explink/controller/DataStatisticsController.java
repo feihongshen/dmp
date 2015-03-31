@@ -35,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -274,6 +275,7 @@ public class DataStatisticsController {
 			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
 			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
 			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@RequestParam(value = "firstlevelid", required = false, defaultValue = "0" ) int firstlevelreasonid,
 			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
@@ -329,7 +331,7 @@ public class DataStatisticsController {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, zhiliucheck, customerids);
+					deliverid, zhiliucheck, customerids, firstlevelreasonid);
 
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
@@ -358,6 +360,8 @@ public class DataStatisticsController {
 
 		}
 		model.addAttribute("deliverlist", deliverlist);
+		
+		List<Reason> levelreasonlist = this.reasonDao.add();
 		List<User> nowUserList = new ArrayList<User>();
 		nowUserList.addAll(this.userDAO.getUserByRole(2));
 		nowUserList.addAll(this.userDAO.getUserByRole(4));
@@ -370,10 +374,12 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 		model.addAttribute("check", 1);
 		model.addAttribute("deliverid", deliverid);
+		model.addAttribute("levelreasonlist",levelreasonlist);
+		
 		this.logger.info("滞留订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 1, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
-
+	
 	/**
 	 * 拒收订单汇总
 	 *
@@ -403,6 +409,7 @@ public class DataStatisticsController {
 			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
 			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
 			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
+			@RequestParam(value = "", required = false, defaultValue = "0" ) int firstlevelreasonid,
 			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes, @PathVariable(value = "page") long page,
 			HttpServletResponse response, HttpServletRequest request) {
@@ -472,7 +479,7 @@ public class DataStatisticsController {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, jushouCheck, customerids);
+					deliverid, jushouCheck, customerids,firstlevelreasonid);
 
 			if (orderFlowList.size() > 0) {
 
@@ -734,6 +741,7 @@ public class DataStatisticsController {
 			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
 			@RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes,
 			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
+			@RequestParam(value = "", required = false, defaultValue = "0" ) int firstlevelreasonid,
 			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "paybackfeeIsZero", required = false, defaultValue = "-1") Integer paybackfeeIsZero, @PathVariable(value = "page") long page, HttpServletResponse response,
 			HttpServletRequest request) {
@@ -787,7 +795,7 @@ public class DataStatisticsController {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			List<String> orderFlowLastList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, 1, customerids);
+					deliverid, 1, customerids,firstlevelreasonid);
 			if (orderFlowLastList.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowLastList);
 			} else {

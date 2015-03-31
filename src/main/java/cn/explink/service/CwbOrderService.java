@@ -3580,6 +3580,7 @@ public class CwbOrderService {
 		String resendtime = parameters.get("resendtime") == null ? "" : (String) parameters.get("resendtime");
 		long weishuakareasonid = parameters.get("weishuakareasonid") == null ? 0l : (Long) parameters.get("weishuakareasonid");
 		long losereasonid = parameters.get("losereasonid") == null ? 0l : (Long) parameters.get("losereasonid");
+		int firstlevelreasonid = parameters.get("firstlevelreasonid")==null? 0 :Integer.parseInt(parameters.get("firstlevelreasonid").toString());
 		String zhiliuremark = parameters.get("zhiliuremark") == null ? "" : (String) parameters.get("zhiliuremark");
 		// 名字为deliverytime_now 是因为时间紧急，为了避免与其他调这个方法的地方冲突。
 		String deliverytime = parameters.get("deliverytime_now") == null ? DateTimeUtil.getNowTime() : (String) parameters.get("deliverytime_now");
@@ -3704,6 +3705,7 @@ public class CwbOrderService {
 			if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) && (resendtime.length() > 0)) {
 				this.cwbDAO.saveResendtimeByCwb(resendtime, co.getCwb());
 			}
+			
 			if (zhiliuremark.length() > 0) {
 				String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
 				String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + zhiliuremark;
@@ -3792,7 +3794,7 @@ public class CwbOrderService {
 
 		if ((leavedreasonid != 0) && ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(leavedreasonid);
-			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid);
+			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
 		// 为货物丢失添加的
@@ -3806,6 +3808,11 @@ public class CwbOrderService {
 			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
 			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb(1, co.getCwb());
 		}
+		
+		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()||podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(1, co.getCwb() ,firstlevelreasonid);
+		}
+		
 		// 反馈为分站滞留、拒收、上门拒退、滞留自动领货的时候，现金、pos、支票、其他金额处理为0
 		if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())
 				|| (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue())) {

@@ -15,7 +15,9 @@
 <%
 DeliveryStateView deliverystate =request.getAttribute("deliverystate")==null?new DeliveryStateView(): (DeliveryStateView)request.getAttribute("deliverystate");
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
-List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
+List<Reason> levellist = (List<Reason>)request.getAttribute("levelreasonlist");
+List<Reason> leveltwolist = (List<Reason>)request.getAttribute("leveltwolist");
+//List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
 Long deliveryStateType=(Long)session.getAttribute("deliveryStateType"); 
 List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
 
@@ -113,7 +115,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
 					<input type="hidden" id="shishou" value="<%=deliverystate.getInfactfare()%>"/>
-					<select id ="podresultid" name ="podresultid" 
+				<select id ="podresultid" name ="podresultid" 
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
 		   			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()%>,
@@ -158,13 +160,25 @@ if(parseInt($("#isOpenFlag").val())!=0){
 	           				<option value="<%=r.getReasonid()%>" title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
 	           			<%} %>
 	           		</select>
-	           	</li>	
-	           	<li><span>滞留原因：</span>
-			        <select name="leavedreasonid" id="leavedreasonid">
+	           	</li>
+	           		
+	           	<li><span>一级原因：</span>
+			        <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
 			        	<option value ="0">==请选择==</option>
-			        	<%for(Reason r : leavedlist){ %>
-	           				<option value="<%=r.getReasonid()%>" title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
-	           			<%} %>
+			        	<%
+			        	if(levellist!=null&&levellist.size()>0){
+			        	for(Reason r :levellist){%>
+			        		<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			        	<%}}%>
+			        </select>
+		        </li>
+		        
+	           	<li><span>二级原因：</span>
+			        <select name="leavedreasonid" id="leavedreasonid">
+			        	<option value ="-1">==请选择==</option>
+			        	<%-- <%for(Reason r : leveltwolist){ %>
+	           				<option value="<%=r.getParentid()%>" title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
+	           			<%} %> --%>
 			        </select>
 		        </li>
 		        <li><span>配送结果备注：</span>

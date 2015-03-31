@@ -6,9 +6,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <%
-
 List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist");
-
 %>
 
 
@@ -22,7 +20,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 		<div id="box_form">
 				<ul>
 					<li><span>请选择异常类型：</span>
-						<select name ="expt_type" id="expt_type" onchange="updateExptReasonByType('<%=request.getContextPath()%>/exptcodejoint/reasonByType',this.value),updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',support_key.value,this.value)">
+						<select name ="expt_type" id="expt_type" onchange="updateExptReasonByType('<%=request.getContextPath()%>/exptcodejoint/reasonByType',this.value),updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',support_key.value,this.value),getfirstlevel(this.value),getfirstvalue('<%=request.getContextPath()%>/exptcodejoint/getfirstvalue',this.value)">
 				               <option value ="-1">全部</option>
 				               <option value="<%=ReasonTypeEnum.BeHelpUp.getValue()%>"><%=ReasonTypeEnum.BeHelpUp.getText()%></option>
 				           	   <option value="<%=ReasonTypeEnum.ReturnGoods.getValue()%>"><%=ReasonTypeEnum.ReturnGoods.getText()%></option>
@@ -30,14 +28,22 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 				           	   <option value="<%=ReasonTypeEnum.DiuShi.getValue()%>"><%=ReasonTypeEnum.DiuShi.getText()%></option>
 		          		 </select>
 					</li>
-					
+					<em id="first" hidden="true">
+					<li><span>一级滞留原因：</span>
+					<select id="firstreasonid" name="firstreasonid"  onchange="reasonByLevel('<%=request.getContextPath()%>/exptcodejoint/reasonByLevel',this.value)">
+						<option value="-1">==一级滞留==</option>
+ 					</select> 
+					</li>
+					</em>
 					<li><span>物流公司异常原因：</span>
 					<select id="reasonid" name="reasonid">
 						<option value="-1">请选择异常原因</option>
  					</select> 
 					</li>
+					
 					<li ><span>选择异常码提供方：</span>
  						<select name ="support_key" id="support_key" onchange="updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',this.value,expt_type.value)">
+ 						
 			                 <option value ="1_-2">通用</option>
 							<%for(Customer en : customerlist){ %>
 			               <option value ="1_<%=en.getCustomerid()%>" ><%=en.getCustomername() %></option>

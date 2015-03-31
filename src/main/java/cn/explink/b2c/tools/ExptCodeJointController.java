@@ -44,8 +44,29 @@ public class ExptCodeJointController {
 
 	@RequestMapping("/reasonByType")
 	public @ResponseBody String reasonByType(Model model, @RequestParam("expt_type") long expt_type) {
-		if (expt_type > 0) {
+		if (expt_type > 0 ) {
 			List<Reason> reasonlist = reasonDAO.getAllReasonByReasonType(expt_type);
+			return JSONArray.fromObject(reasonlist).toString();
+		} else {
+			return "[]";
+		}
+	}
+	
+	@RequestMapping("/getfirstvalue")
+	public @ResponseBody String getfirstvalue(Model model, @RequestParam("expt_type") long expt_type) {
+		if (expt_type > 0) {
+			List<Reason> reasonlist = reasonDAO.getReasonByReasontype(expt_type);
+			return JSONArray.fromObject(reasonlist).toString();
+		} else {
+			return "[]";
+		}
+
+	}
+	
+	@RequestMapping("/reasonByLevel")
+	public @ResponseBody String reasonByLevel(Model model, @RequestParam("firstreasonid") long firstreasonid) {
+		if (firstreasonid > 0) {
+			List<Reason> reasonlist = reasonDAO.getAllSecondLevelReason(firstreasonid);
 			return JSONArray.fromObject(reasonlist).toString();
 		} else {
 			return "[]";

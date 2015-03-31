@@ -2346,9 +2346,9 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, backreturnreason, backreturnreasonid, cwb);
 	}
 
-	public void saveCwbForLeavereason(String cwb, String leavedreason, long leavedreasonid) {
-		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=? where cwb=?";
-		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, cwb);
+	public void saveCwbForLeavereason(String cwb, String leavedreason, long leavedreasonid, int firstlevelreasonid) {
+		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=?, firstlevelid=? where cwb=?";
+		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, firstlevelreasonid, cwb);
 	}
 
 	private final class CwbCountAndSumByEmaildateIdMapper implements RowMapper<BigDecimal[]> {

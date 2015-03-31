@@ -1196,6 +1196,7 @@ function checkPDAAll() {
 function init_deliverystate() {
 	$("#backreasonid").parent().hide();
 	$("#leavedreasonid").parent().hide();
+	$("#firstlevelreasonid").parent().hide();
 	$("#podremarkid").parent().hide();
 	// $("#shouldfee").parent().hide();
 	$("#infactfee").parent().hide();
@@ -1268,6 +1269,7 @@ function bufentuihuoObj(podremarkid) {
 function zhiliuObj() {
 	gonggong();
 	$("#leavedreasonid").parent().show();
+	$("#firstlevelreasonid").parent().show();
 }
 function shangmenjutuiObj() {
 	gonggong();
@@ -4668,4 +4670,105 @@ var replyDetail=$("#replyDetail").val();
 			}
 		}
 	});
+}
+
+
+function getfirstvalue(URL, expt_type) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "expt_type=" + expt_type,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#firstreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value='-1'>==一级滞留==</option>").appendTo("#firstreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value='" + json[j].reasonid + "'>" + json[j].reasoncontent + "</option>").appendTo("#firstreasonid");
+			}
+		}
+	});
+}
+
+
+function reasonByLevel(URL, expt_type){
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstreasonid=" + expt_type,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#reasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value='-1'>请选择异常原因</option>").appendTo("#reasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value='" + json[j].reasonid + "'>" + json[j].reasoncontent + "</option>").appendTo("#reasonid");
+			}
+		}
+	});
+}
+
+function whenhidden(){
+	$("#div_2").attr('hidden','true');
+	$("#divs").attr('hidden','true');
+	if($("#reasontype").val()==2)
+	{
+		$("#divs").removeAttr('hidden');
+		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
+			$("#div_2").removeAttr('hidden');
+		}
+	}
+} 
+
+function to_change(flag){
+	if($("#reasontype").val()==2)
+	{
+		$("#divs").removeAttr('hidden');
+			if(flag==1){
+				$("#div_2").attr('hidden','true');
+			}
+			else 
+			{
+			$("#div_2").removeAttr('hidden');
+			}
+	}else{
+		$("#div_2").attr('hidden','true');
+		}
+}
+
+function updaterelatelevel(URL, firstlevelreasonid) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstlevelreasonid=" + firstlevelreasonid,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#leavedreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='-1'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#leavedreasonid");
+			}
+		}
+	});
+}
+
+function updaterelatelevel2(URL, firstlevelreasonid) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstzhiliureason=" + firstlevelreasonid,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#leavedreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#leavedreasonid");
+			}
+		}
+	});
+}
+function getfirstlevel(flag){
+	$("#first").attr('hidden',true); 
+	if(flag==2){
+		$("#first").attr('hidden',false);
+	}
+	
 }
