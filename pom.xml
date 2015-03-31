@@ -2986,7 +2986,7 @@
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://172.20.200.28:61616</jms.brokerURL>
-				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
