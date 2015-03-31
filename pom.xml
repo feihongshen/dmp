@@ -2865,10 +2865,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>JXFY</label>
-				<addresscustomerid>9</addresscustomerid>
-				<addressid>9</addressid>
+				<addresscustomerid>12</addresscustomerid>
+				<addressid>12</addressid>
 				<addresspassword>jxfy</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>183.61.89.252/addressmatchfjfy</addressWebserviceIp>
 			</properties>
 		</profile>
 
