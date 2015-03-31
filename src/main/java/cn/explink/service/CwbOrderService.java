@@ -3795,15 +3795,12 @@ public class CwbOrderService {
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
-		//哈哈哈  为货物丢失添加的
+		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
-			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), losereasonid);
+			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
-		
-		
-		//哈哈哈
 
 		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
 			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
