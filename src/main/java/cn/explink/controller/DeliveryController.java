@@ -989,8 +989,8 @@ public class DeliveryController {
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
-					parameters.put("resendtime", "");
-					parameters.put("zhiliuremark", "");
+					parameters.put("resendtime", resendtime);
+					parameters.put("zhiliuremark", zhiliuremark);
 					parameters.put("fankuileixing", "SHANGMENTUI");//添加的
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
@@ -1108,7 +1108,7 @@ public class DeliveryController {
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
 					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 					parameters.put("sessionuserid", this.getSessionUser().getUserid());

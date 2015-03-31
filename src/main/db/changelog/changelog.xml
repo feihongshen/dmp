@@ -6085,6 +6085,16 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ADD INDEX `Applyeditdeliverystate_applybranchid_Idx` (`applybranchid`) ;
 		</sql>
 	</changeSet>
-
+		<changeSet id="wukong-2015-03-27-1" author="wukong">
+		<sql>
+			ALTER TABLE `express_service_revise_address`
+			ADD COLUMN `receivemen`  VARCHAR (1500) COLLATE utf8_bin DEFAULT NULL AFTER `cwb`,
+			ADD COLUMN `phone` varchar(500) collate utf8_bin default NULL AFTER `receivemen`, 
+			ADD COLUMN `peisongtime` VARCHAR (60) COLLATE utf8_bin DEFAULT '' AFTER `phone`,
+			ADD COLUMN `destination` varchar(50) collate utf8_bin default NULL AFTER `address`,
+			ADD COLUMN `customerrequest` varchar(100) collate utf8_bin default NULL AFTER `destination`;
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
  

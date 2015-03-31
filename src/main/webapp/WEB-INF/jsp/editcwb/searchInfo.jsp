@@ -81,6 +81,10 @@ function exportField(){
 		$("#searchForm1").attr("action","<%=request.getContextPath()%>/editcwb/toSearchCwb/1");
 		$("#searchForm1").submit();
 	}
+	
+	function editInit(){
+		
+	}
 </script>
 
 
@@ -138,6 +142,7 @@ function exportField(){
 											<td valign="middle"  align="center"   width="15%"  bgcolor="#e7f4e3">备注（修改）</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改人</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改时间</td>
+											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">操作</td>
 									</tr>
 									<%for(SearcheditInfo sl:List){
 										String user="";
@@ -159,6 +164,7 @@ function exportField(){
 									<td   valign="middle"  align="center" ><textarea ><%=sl.getNewremark()%></textarea></td>
 									<td   valign="middle"  align="center" ><%=user%></td>
 									<td   valign="middle"  align="center" ><%=sl.getCretime()%></td>
+									<td   valign="middle"  align="center" ><a href="javascript:edit_button('<%=sl.getCwb()%>');" id="cwbdetail" name="cwbdetail"  > 修改详情 </a> </td>
 									</tr>
 									<%} %>
 										
@@ -196,5 +202,7 @@ function exportField(){
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 </script>
+<input type="hidden" id="edit" value="<%=request.getContextPath()%>/editcwb/findCwbDetail/" />
+
 </body>
 </html>

@@ -10,6 +10,42 @@ public class OrderAddressRevise {
 	private String address;//修改的地址
 	private String revisetime;//修改的时间
 	private String modifiername;//修改人
+	private String receivemen;//收件人
+	private String phone;//电话
+	private String peisongtime;//配送时间
+	private String destination;//目的站
+	private String customerrequest;//客户请求
+	
+	public String getReceivemen() {
+		return receivemen;
+	}
+	public void setReceivemen(String receivemen) {
+		this.receivemen = receivemen;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getPeisongtime() {
+		return peisongtime;
+	}
+	public void setPeisongtime(String peisongtime) {
+		this.peisongtime = peisongtime;
+	}
+	public String getDestination() {
+		return destination;
+	}
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+	public String getCustomerrequest() {
+		return customerrequest;
+	}
+	public void setCustomerrequest(String customerrequest) {
+		this.customerrequest = customerrequest;
+	}
 	public long getId() {
 		return id;
 	}

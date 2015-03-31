@@ -7,6 +7,8 @@
     <%
     List<CwbOrder> List = request.getAttribute("cwbList")==null?new ArrayList<CwbOrder>():(List<CwbOrder>)request.getAttribute("cwbList");
     List<Branch> branchs = request.getAttribute("branchs")==null?new ArrayList<Branch>():(List<Branch>)request.getAttribute("branchs");
+    String destinationName=request.getAttribute("destinationName")==null?"":request.getAttribute("destinationName").toString();
+    
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -138,7 +140,7 @@ function editInit(){
 											<td width="8%"  valign="middle"  align="center"  ><input type="text" size="12px"   value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
 											<td width="15%" valign="middle"  align="center"  ><textarea  cols="20"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
 											<td width="15%" valign="middle"  align="center"  >
-											<input type="text" onkeyup="findbranch()" value=" "  name="matchaddress" id="matchaddress" />
+											<input type="text" onkeyup="findbranch()" value=""  name="matchaddress" id="matchaddress" />
 											<select id="branchlist" onchange="setMatchAddress(this)">
 											<option>请选择</option>
 											<%for(Branch b:branchs) {%>
@@ -154,9 +156,14 @@ function editInit(){
 											<input name="button2" type="button" class="input_button2" id="buttonMatch" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
 											<input name="button2" type="button" class="input_button2" id="button2" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
 											</br>
-											<a href="javascript:edit_button('<%=c.getCwb() %>');" id="cwbdetail" name="cwbdetail"  > 地址修改详情 </a> 
+											<%-- <a href="javascript:edit_button('<%=c.getCwb() %>');" id="cwbdetail" name="cwbdetail"  > 地址修改详情 </a>  --%>
 											<input type="hidden" value="1" name="editshow" id="editshow">
 											<textarea type= cols="20"  name="checkeditaddress" id="checkeditaddress" style="display:none" ><%=c.getConsigneeaddress() %></textarea>
+											<input type="hidden"   value="<%=c.getConsigneenameOfkf() %>" id="checkeditname" name="checkeditname"/>
+											<input type="hidden"   value="<%=c.getConsigneemobileOfkf()%>" id="checkeditmobile" name="checkeditmobile"/>
+											<input type="hidden"   value="<%=destinationName%>" id="checkbranchname" name="checkbranchname"/>
+											<input type="hidden"  value="<%=c.getCustomercommand() %>" id="checkeditcommand" name="checkeditcommand"/>
+											<input type="hidden"  value="<%=c.getResendtime() %>" id="checkbegindate" name="checkbegindate"/>
 											</td>
 											
 										</tr><%} %>
@@ -190,8 +197,20 @@ function editInit(){
 						success:function(data){
 							if(data.errorCode == 1){
 								 alert(data.error);
+								 $("#button2").removeAttr('disabled');
+									$("#button2").val('修改');
 							}else{
 								$("#checkeditaddress").val($("#editaddress").val());
+								$("#checkeditname").val($("#editname").val());
+								$("#checkeditmobile").val($("#editmobile").val());
+								if(($("#matchaddress").val()!="请选择")){
+									if($("#matchaddress").val()==""){
+									}else{
+										$("#checkbranchname").val($("#matchaddress").val());
+									}
+								}
+								$("#checkeditcommand").val($("#editcommand").val());
+								$("#checkbegindate").val($("#strtime").val());
 								$("#button2").removeAttr('disabled');
 								$("#button2").val('修改');
 								alert(data.error);

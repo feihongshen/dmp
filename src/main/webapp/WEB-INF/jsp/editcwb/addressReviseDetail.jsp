@@ -23,7 +23,12 @@
 								<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" >
 										<tr class="font_1">
 											<td valign="middle"  align="center" width="10%" align="center" bgcolor="#e7f4e3">订单号</td>
-											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">收件人地址</td>
+											<td valign="middle"  align="center" width="10%" align="center" bgcolor="#e7f4e3">收件人姓名修改信息</td>
+											<td valign="middle"  align="center" width="10%" align="center" bgcolor="#e7f4e3">收件人电话修改信息</td>
+											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">收件人地址修改信息</td>
+											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">配送站点修改信息</td>
+											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">配送时间修改信息</td>
+											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">电商要求修改信息</td>
 											<td valign="middle"  align="center" width="10%" bgcolor="#e7f4e3">修改人</td>
 											<td valign="middle"  align="center" width="10%" bgcolor="#e7f4e3">修改时间</td>
 											
@@ -32,7 +37,12 @@
 									%>
 									<tr>
 									<td   valign="middle" align="center"  ><%=data.getCwb() %></td>
+									<td   valign="middle" align="center"  ><%=data.getReceivemen()==null?"":data.getReceivemen() %></td>
+									<td   valign="middle" align="center"  ><%=data.getPhone()==null?"":data.getPhone() %></td>
 									<td   valign="middle"  align="center" ><textarea readonly="readonly"><%=data.getAddress()%></textarea></td>
+									<td   valign="middle"  align="center" ><%=data.getDestination()==null?"":data.getDestination() %></td>
+									<td   valign="middle"  align="center" ><%=data.getPeisongtime() %></td>
+									<td   valign="middle"  align="center" ><%=data.getCustomerrequest()==null?"":data.getCustomerrequest() %></td>
 									<td   valign="middle"  align="center" ><%=data.getModifiername() %></td>
 									<td   valign="middle"  align="center" ><%=data.getRevisetime() %></td>
 									</tr>

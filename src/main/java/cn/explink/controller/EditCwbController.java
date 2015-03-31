@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -511,9 +512,21 @@ public class EditCwbController {
 					cwborderlist.add(co);
 				}
 			}
+			String destinationName="";
 			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "");
+			if(cwborderlist.size()>0){
+				for (Iterator<Branch> iterator = branchs.iterator(); iterator.hasNext();) {
+					Branch branch = (Branch) iterator.next();
+					if (branch.getBranchid()==cwborderlist.get(0).getDeliverybranchid()) {
+						destinationName=branch.getBranchname();
+					}
+				}
+			}
 			model.addAttribute("cwbList", cwborderlist);
 			model.addAttribute("branchs", branchs);
+			if (!destinationName.equals("")) {
+				model.addAttribute("destinationName",destinationName);
+			}
 		}
 		return "editcwb/editInfo";
 
@@ -545,7 +558,12 @@ public class EditCwbController {
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, 
 			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress,
-			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress
+			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress,
+			@RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname,
+			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
+			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
+			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand,
+			@RequestParam(value = "checkbegindate", required = false, defaultValue = "") String checkbegindate
 			) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -610,11 +628,30 @@ public class EditCwbController {
 			this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
 			long count=orderAddressReviseDao.countReviseAddress(cwb);
 			if (count==0) {
-				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入");
+				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCwbremark());
 			}
-			if (!checkeditaddress.equals(editaddress)) {
-				this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname());
+			
+			if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!begindate.equals(checkbegindate))||(!editcommand.equals(checkeditcommand))||(!branchname.equals(""))) {
+				/**
+				 * 关于站点的一点判断
+				 */
+				String revisebranchName=checkbranchname;
+				if ((!branchname.equals(checkbranchname))&&(!branchname.equals("请选择"))) {
+					revisebranchName=branchname;
+					this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
+					
+					
+				}else {
+					if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!begindate.equals(checkbegindate))||(!editcommand.equals(checkeditcommand))) {
+						
+						this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
+
+					}
+
+				}
+				
 			}
+		
 			// 2.更新到主表
 			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
 			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
