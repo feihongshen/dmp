@@ -1751,6 +1751,7 @@ src/main/webapp/WEB-INF/jsp/common/showlist.jsp -text
 src/main/webapp/WEB-INF/jsp/common/showlist_branch.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/add.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/common_coordinateModel.jsp -text
+src/main/webapp/WEB-INF/jsp/complaint/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/selectlist.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/show/chaoshi.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/show/cuijiantousu.jsp -text

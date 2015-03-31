@@ -284,15 +284,14 @@ function submitSaveFormAndCloseBox(form) {
 		}
 	});
 }
-function yichuli1()
-{
+function yichuli1() {
 	$("#describe2").val($("#describe").val());
-//	alert($("#describe2").val());
-//	$("#form2").submit();
+	// alert($("#describe2").val());
+	// $("#form2").submit();
 	$.ajax({
 		type : "POST",
 		url : $("#form2").attr("action"),
-		data :$("#form2").serialize(),
+		data : $("#form2").serialize(),
 		dataType : "json",
 		success : function(data) {
 			$(".tishi_box").html(data.error);
@@ -400,7 +399,7 @@ function uploadFormInit(form, contextPath) {
 		$(".tishi_box", parent.document).html(dataObj.error);
 		$(".tishi_box", parent.document).show();
 		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
-		//$("#wavText").val("");
+		// $("#wavText").val("");
 		if (dataObj.errorCode == 0) {
 			if (dataObj.type == "add") {
 				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
@@ -992,10 +991,10 @@ function check_user() {
 		alert("请选择员工所在机构");
 		return false;
 	}
-/*	if ($("#showphoneflag").val() == -1) {
-		alert("请选择员工 订单电话/手机是否可见");
-		return false;
-	}*/
+	/*
+	 * if ($("#showphoneflag").val() == -1) { alert("请选择员工 订单电话/手机是否可见"); return
+	 * false; }
+	 */
 	if ($("#update").contents().find("#wavText").val().length > 4
 			&& $("#update").contents().find("#wavText").val().substring($("#update").contents().find("#wavText").val().length - 4) != ".wav"
 			&& $("#update").contents().find("#wavText").val().substring($("#wavText").val().length - 4) != ".WAV") {
@@ -1028,13 +1027,14 @@ function check_user() {
 			return false;
 		}
 
-	/*	else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
-			alert("手机号码格式有误!");
-			return false;
-		}*/
+		/*
+		 * else if ($("#usermobile").val().length != 11 ||
+		 * isMobileNumber($("#usermobile").val()) == false) {
+		 * alert("手机号码格式有误!"); return false; }
+		 */
 	}
 	return true;
-} 
+}
 function roleChange() {
 	$("#tip").html("");
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
@@ -1311,9 +1311,9 @@ function signmanchange() {
 }
 
 // 监控配送状态变化 对显示字段做相应处理
-function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
-		ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
-		needdefault) {
+function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu,
+		ZhiLiuZiDongLingHuo, ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid,
+		showposandqita, needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
 	$("#infactfare").removeAttr('disabled');
 	init_deliverystate();
@@ -1435,10 +1435,10 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 
 	// $("#remandtype").val(0);
 	centerBox();
-	if(podresultid==7){
-		$("#infactfare").attr('disabled','true');
+	if (podresultid == 7) {
+		$("#infactfare").attr('disabled', 'true');
 		$("#infactfare").val(0);
-		
+
 	}
 }
 
@@ -4025,10 +4025,11 @@ function check_userbranch() {
 		alert("员工手机不能为空");
 		return false;
 	}
-	/*if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
-		alert("手机号码格式有误!");
-		return false;
-	}*/
+	/*
+	 * if ($("#usermobile").val().length != 11 ||
+	 * isMobileNumber($("#usermobile").val()) == false) { alert("手机号码格式有误!");
+	 * return false; }
+	 */
 	return true;
 }
 
@@ -4632,7 +4633,39 @@ function check_transferResasonMatch() {
 
 	return true;
 }
-function SubmitHandleabnormalBatch(flag)
-{
+function SubmitHandleabnormalBatch(flag) {
 	$("#ishandle").val(flag);
+}
+function detail(key) {
+	$.ajax({
+		type : "POST",
+		url : $("#detail").val() + key,
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+		},
+		complete : function() {
+			editInit();// 初始化ajax弹出页面
+			viewBox();
+		}
+	});
+}
+function setFlag(url) {
+var replyDetail=$("#replyDetail").val();
+	$.ajax({
+		url : url, // 后台处理程序
+		type : "POST",// 数据发送方式
+		dataType : 'json',// 接受数据格式
+		data:{"replyDetail":replyDetail},
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				closeBox();
+				$("#WORK_AREA")[0].contentWindow.addSuccess(data);
+			}
+		}
+	});
 }

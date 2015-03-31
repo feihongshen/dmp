@@ -27,17 +27,19 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
-
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-
+function editInit(){
+	//无处理
+}
 $(function() {
 	$("#startid").datetimepicker({
 		
@@ -61,19 +63,8 @@ $(function() {
 
 </script>
 <script type="text/javascript">
-function setFlag(b2cid){
- 	  $.ajax({
-			url:"<%=request.getContextPath()%>/complaint/updateZD/"+b2cid,  //后台处理程序
-			type:"POST",//数据发送方式 
-			dataType:'json',//接受数据格式
-			success:function(html){
-				if(html.errorCode==0){
-					alert(html.error);
-					location.reload();
-				}
-			}		
-		});
-    }
+
+
 $(document).ready(function() {
 	$("#find").click(function(){
 		if($("#startid").val()=='' ||$("#endid").val()==''){
@@ -119,6 +110,12 @@ function Days(){
 	}        
 	return true;
 }
+function addSuccess(data){
+	$("#alert_box input[type='text']" , parent.document).val("");
+	$("#alert_box textarea" , parent.document).val("");
+	$("#alert_box select", parent.document).val("");
+	$("#searchForm").submit();
+}
 </script>
 </head>
 
@@ -144,9 +141,10 @@ function Days(){
 	   <tr class="font_1">
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff"> 生成时间</td>
+			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff"> 生成时间</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">审核状态</td>
-			<td width="42%" align="center" valign="middle" bgcolor="#eef6ff">客户投诉内容</td>
+			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">客户投诉内容</td>
+			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">处理回复</td>
 			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">处理</td>
 		</tr>
 		
@@ -157,7 +155,8 @@ function Days(){
 			<td  align="center" valign="middle"><%=c.getCreateTime()%></td>
 			<td  align="center" valign="middle" id="thisshow"><%for(ComplaintAuditTypeEnum ct : ComplaintAuditTypeEnum.values()){if(c.getAuditType()==ct.getValue()){ %><%=ct.getText()%><%}} %></td>
 			<td  align="center" valign="middle"><%=c.getContent()%></td>
-			<td  align="center" valign="middle"><%if(0==c.getAuditUser()){%>[<a href="javascript:setFlag(<%=c.getId() %>);">处理</a>] <%}else{ %>已处理<%} %></td>
+			<td  align="center" valign="middle"><%=c.getReplyDetail()%></td>
+			<td  align="center" valign="middle"><%if(0==c.getAuditUser()){%>[<a href="javascript:detail(<%=c.getId() %>);">处理</a>] <%}else{ %>已处理<%} %></td>
 			<input type="hidden" id="id" name="id" value="<%=c.getId()%>">
 		</tr>
 		<%} %>
@@ -196,6 +195,6 @@ function Days(){
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 </script>
-
+	<input type="hidden" id="detail" value="<%=request.getContextPath()%>/complaint/detail/"/>
 </body>
 </html>

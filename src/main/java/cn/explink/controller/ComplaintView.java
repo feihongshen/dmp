@@ -20,6 +20,7 @@ public class ComplaintView {
 	private String consigneephone;// 收件人电话
 	private String consigneemobile;// 收件人手机
 	private String branchname = "";// 投诉站点
+	private String replyDetail = "";// 处理回复
 
 	private long id; // 投诉类型，按枚举类型保存
 	private long type; // 投诉类型，按枚举类型保存
@@ -35,7 +36,7 @@ public class ComplaintView {
 	private long auditUser;// 投诉审核人
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -43,7 +44,7 @@ public class ComplaintView {
 	}
 
 	public String getDelivername() {
-		return delivername;
+		return this.delivername;
 	}
 
 	public void setDelivername(String delivername) {
@@ -51,7 +52,7 @@ public class ComplaintView {
 	}
 
 	public String getCustomername() {
-		return customername;
+		return this.customername;
 	}
 
 	public void setCustomername(String customername) {
@@ -59,7 +60,7 @@ public class ComplaintView {
 	}
 
 	public String getEmaildate() {
-		return emaildate;
+		return this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -67,7 +68,7 @@ public class ComplaintView {
 	}
 
 	public String getInstoreroomtime() {
-		return instoreroomtime;
+		return this.instoreroomtime;
 	}
 
 	public void setInstoreroomtime(String instoreroomtime) {
@@ -75,7 +76,7 @@ public class ComplaintView {
 	}
 
 	public String getOutstoreroomtime() {
-		return outstoreroomtime;
+		return this.outstoreroomtime;
 	}
 
 	public void setOutstoreroomtime(String outstoreroomtime) {
@@ -83,7 +84,7 @@ public class ComplaintView {
 	}
 
 	public String getInSitetime() {
-		return inSitetime;
+		return this.inSitetime;
 	}
 
 	public void setInSitetime(String inSitetime) {
@@ -91,7 +92,7 @@ public class ComplaintView {
 	}
 
 	public String getGoclasstime() {
-		return goclasstime;
+		return this.goclasstime;
 	}
 
 	public void setGoclasstime(String goclasstime) {
@@ -99,7 +100,7 @@ public class ComplaintView {
 	}
 
 	public long getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(long deliverystate) {
@@ -107,7 +108,7 @@ public class ComplaintView {
 	}
 
 	public String getCwbdelivername() {
-		return cwbdelivername;
+		return this.cwbdelivername;
 	}
 
 	public void setCwbdelivername(String cwbdelivername) {
@@ -115,7 +116,7 @@ public class ComplaintView {
 	}
 
 	public String getBranchname() {
-		return branchname;
+		return this.branchname;
 	}
 
 	public void setBranchname(String branchname) {
@@ -123,7 +124,7 @@ public class ComplaintView {
 	}
 
 	public String getConsigneename() {
-		return consigneename;
+		return this.consigneename;
 	}
 
 	public void setConsigneename(String consigneename) {
@@ -131,7 +132,7 @@ public class ComplaintView {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -139,7 +140,7 @@ public class ComplaintView {
 	}
 
 	public long getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(long type) {
@@ -147,7 +148,7 @@ public class ComplaintView {
 	}
 
 	public long getAuditType() {
-		return auditType;
+		return this.auditType;
 	}
 
 	public void setAuditType(long auditType) {
@@ -155,7 +156,7 @@ public class ComplaintView {
 	}
 
 	public long getOrderflowtype() {
-		return orderflowtype;
+		return this.orderflowtype;
 	}
 
 	public void setOrderflowtype(long orderflowtype) {
@@ -163,7 +164,7 @@ public class ComplaintView {
 	}
 
 	public String getContent() {
-		return content;
+		return this.content;
 	}
 
 	public void setContent(String content) {
@@ -171,7 +172,7 @@ public class ComplaintView {
 	}
 
 	public String getAuditRemark() {
-		return auditRemark;
+		return this.auditRemark;
 	}
 
 	public void setAuditRemark(String auditRemark) {
@@ -179,7 +180,7 @@ public class ComplaintView {
 	}
 
 	public String getCreateTime() {
-		return createTime;
+		return this.createTime;
 	}
 
 	public void setCreateTime(String createTime) {
@@ -187,7 +188,7 @@ public class ComplaintView {
 	}
 
 	public String getAuditTime() {
-		return auditTime;
+		return this.auditTime;
 	}
 
 	public void setAuditTime(String auditTime) {
@@ -195,7 +196,7 @@ public class ComplaintView {
 	}
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -203,7 +204,7 @@ public class ComplaintView {
 	}
 
 	public long getDeliveryid() {
-		return deliveryid;
+		return this.deliveryid;
 	}
 
 	public void setDeliveryid(long deliveryid) {
@@ -211,7 +212,7 @@ public class ComplaintView {
 	}
 
 	public String getCreateUser() {
-		return createUser;
+		return this.createUser;
 	}
 
 	public void setCreateUser(String createUser) {
@@ -219,7 +220,7 @@ public class ComplaintView {
 	}
 
 	public long getAuditUser() {
-		return auditUser;
+		return this.auditUser;
 	}
 
 	public void setAuditUser(long auditUser) {
@@ -227,7 +228,7 @@ public class ComplaintView {
 	}
 
 	public String getConsigneeaddress() {
-		return consigneeaddress;
+		return this.consigneeaddress;
 	}
 
 	public void setConsigneeaddress(String consigneeaddress) {
@@ -235,7 +236,7 @@ public class ComplaintView {
 	}
 
 	public String getConsigneephone() {
-		return consigneephone;
+		return this.consigneephone;
 	}
 
 	public void setConsigneephone(String consigneephone) {
@@ -243,11 +244,19 @@ public class ComplaintView {
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile;
+		return this.consigneemobile;
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
 		this.consigneemobile = consigneemobile;
+	}
+
+	public String getReplyDetail() {
+		return this.replyDetail;
+	}
+
+	public void setReplyDetail(String replyDetail) {
+		this.replyDetail = replyDetail;
 	}
 
 }

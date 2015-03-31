@@ -44,6 +44,10 @@ ComplaintView c  = (ComplaintView)request.getAttribute("complaintView");
 							<td width="100" valign="top">备注：</td>
 							<td align="left"><textarea name="auditRemark" cols="80" rows="2" id="auditRemarkid"><%=c.getAuditRemark() %></textarea></td>
 						</tr>
+						<tr >
+							<td width="100" valign="top">处理回复：</td>
+							<td align="left"><textarea name="replyDetail" cols="80" rows="2" id="replyDetail"><%=c.getReplyDetail()%></textarea></td>
+						</tr>
 	</table>
 				<div align="center">
 					<input type="submit" value="确定" class="button">
