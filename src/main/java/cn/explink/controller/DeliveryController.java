@@ -693,7 +693,7 @@ public class DeliveryController {
 	}
 
 	/**
-	 * 配送订单批量反馈功能
+	 *	
 	 *
 	 * @param model
 	 * @param request
@@ -843,7 +843,8 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
-			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
@@ -851,6 +852,7 @@ public class DeliveryController {
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<JSONObject> objList = new ArrayList<JSONObject>();
+		List<Reason> firstlist = this.reasonDao.add();
 
 		long successcount = 0;
 		if (cwbs.split("\r\n").length < 501) {
@@ -931,6 +933,7 @@ public class DeliveryController {
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("losereasonid", losereasonid);
 		model.addAttribute("backreasonlist", backreasonlist);
+		model.addAttribute("firstlist",firstlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("deliverstateremark", deliverstateremark);
@@ -962,7 +965,9 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime,
-			@RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark) {
+			@RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
+		List<Reason> firstlist = this.reasonDao.add();
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
@@ -1056,6 +1061,7 @@ public class DeliveryController {
 		model.addAttribute("losereasonlist", losereasonlist);
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("losereasonid", losereasonid);
+		model.addAttribute("firstlist", firstlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		//以上为添加的
 		model.addAttribute("backreasonid", backreasonid);

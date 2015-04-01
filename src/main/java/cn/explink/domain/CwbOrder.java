@@ -129,6 +129,17 @@ public class CwbOrder {
 	private String zhongzhuanreason;//中转原因
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
 	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	private int firstlevelid; //一级滞留原因id
+
+	public int getFirstlevelid() {
+		return firstlevelid;
+	}
+
+
+	public void setFirstlevelid(int firstlevelid) {
+		this.firstlevelid = firstlevelid;
+	}
+
 
 	public int getFnorgoffsetflag() {
 		return fnorgoffsetflag;

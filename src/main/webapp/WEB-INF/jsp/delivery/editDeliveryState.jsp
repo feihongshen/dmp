@@ -175,7 +175,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 		        
 	           	<li><span>二级原因：</span>
 			        <select name="leavedreasonid" id="leavedreasonid">
-			        	<option value ="-1">==请选择==</option>
+			        	<option value ="0">==请选择==</option>
 			        	<%-- <%for(Reason r : leveltwolist){ %>
 	           				<option value="<%=r.getParentid()%>" title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
 	           			<%} %> --%>
@@ -183,7 +183,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 		        </li>
 		        <li><span>配送结果备注：</span>
 			        <select name="podremarkid" id="podremarkid">
-			        	<option value ="0">==请选择==</option>
+			        	<option value ="-1">==请选择==</option>
 			        	<%for(Reason r : podremarkreasonlist){ %>
 	           				<option value="<%=r.getReasonid()%>" title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
 	           			<%} %>
