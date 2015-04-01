@@ -196,12 +196,21 @@ function editInit(){
 					<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 					<%} %>
 				</select>
+				<%if(isService){%>
+				审核状态：
+				<select name="audit" id="audit">
+					<option value="-1">请选择</option>
+					<option value="0">未审核</option>
+					<option value="1">已审核</option>
+				</select>
+			<%} else {%>
 			处理状态：
 				<select name="ishandle" id="ishandle">
 					<option value="-1">请选择</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
 				</select>
+				<%} %>
 			<input type="button"  value="筛选" class="input_button2" onclick="sub();">
 		</form>
 	</div>
@@ -240,8 +249,10 @@ function editInit(){
 			</td>
 			<td align="center" valign="middle"><%=adse.getEditreason() %></td>
 			<td align="center" valign="middle"><!-- <input type="button" name="button2" id="button2" value="修改"> -->
-			<%
-			if(isService){%>
+			<%if(isService==false&&isFinancial==false){%>
+				
+			<%} 
+			else if(isService){%>
 				<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>" <%if(adse.getAudit()==1){ %> disabled="disabled" <%} %> value='<%=adse.getAudit()==1?"已审核":"审核"%>' onclick="Audit(<%=adse.getId()%>)" />
 			<%}
 			else{

@@ -219,11 +219,11 @@ public class ApplyEditDeliverystateController {
 		isFinancial = this.IsRole("FinancialID");// 判断是不是财务角色
 
 		model.addAttribute("applyEditDeliverystateList",
-				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial));
+				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial, -1));
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("userList", this.userDAO.getAllUser());
 		model.addAttribute("page_obj",
-				new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial), page,
+				new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, this.getSessionUser().getBranchid(), ishandle, "", isFinancial, -1), page,
 						Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
@@ -244,7 +244,8 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/tohandleApplyEditDeliverystateList/{page}")
 	public String tohandleApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "applybranchid", defaultValue = "0", required = false) long applybranchid, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
+			@RequestParam(value = "applybranchid", defaultValue = "0", required = false) long applybranchid, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle,
+			@RequestParam(value = "audit", defaultValue = "-1", required = false) long audit) {
 		boolean isFinancial = false;
 		boolean isService = false;
 
@@ -253,10 +254,11 @@ public class ApplyEditDeliverystateController {
 		model.addAttribute("isFinancial", isFinancial);
 		model.addAttribute("isService", isService);
 
-		model.addAttribute("applyEditDeliverystateList", this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb, isFinancial));
+		model.addAttribute("applyEditDeliverystateList",
+				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit));
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("userList", this.userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb, isFinancial), page,
+		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit), page,
 				Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/handleApplyEditDeliverystatelist";

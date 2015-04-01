@@ -106,13 +106,13 @@ public class ApplyEditDeliverystateDAO {
 		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb, ishandle);
 	}
 
-	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByWherePage(long page, String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial) {
+	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByWherePage(long page, String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial, long audit) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where state=1 ";
 		if (cwb.length() > 0) {
 			StringBuffer w = new StringBuffer();
 			w.append(" and cwb = '" + cwb + "'");
 			sql += w.toString();
-		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1)) {
+		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1) || (audit > -1)) {
 
 			StringBuffer w = new StringBuffer();
 
@@ -127,6 +127,9 @@ public class ApplyEditDeliverystateDAO {
 			}
 			if (ishandle > -1) {
 				w.append(" and ishandle = " + ishandle);
+			}
+			if (audit > -1) {
+				w.append(" and audit = " + audit);
 			}
 			sql += w.toString();
 		}
@@ -138,13 +141,13 @@ public class ApplyEditDeliverystateDAO {
 		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
 
-	public long getApplyEditDeliverystateByWhereCount(String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial) {
+	public long getApplyEditDeliverystateByWhereCount(String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial, long audit) {
 		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where state=1 ";
 		if (cwb.length() > 0) {
 			StringBuffer w = new StringBuffer();
 			w.append(" and cwb = '" + cwb + "'");
 			sql += w.toString();
-		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1)) {
+		} else if ((begindate.length() > 0) || (enddate.length() > 0) || (applybranchid > 0) || (ishandle > -1) || (audit > -1)) {
 			StringBuffer w = new StringBuffer();
 
 			if (begindate.length() > 0) {
@@ -159,11 +162,15 @@ public class ApplyEditDeliverystateDAO {
 			if (ishandle > -1) {
 				w.append(" and ishandle = " + ishandle);
 			}
-			if (isFinancial) {
-				w.append(" and audit =1 ");
+			if (audit > -1) {
+				w.append(" and audit = " + audit);
 			}
+
 			sql += w.toString();
 
+		}
+		if (isFinancial) {
+			sql += " and audit =1 ";
 		}
 		return this.jdbcTemplate.queryForLong(sql);
 	}
