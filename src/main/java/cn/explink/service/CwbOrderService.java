@@ -3810,7 +3810,7 @@ public class CwbOrderService {
 		}
 		
 		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()||podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
-			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(1, co.getCwb() ,firstlevelreasonid);
+			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(0, co.getCwb() ,firstlevelreasonid);
 		}
 		
 		// 反馈为分站滞留、拒收、上门拒退、滞留自动领货的时候，现金、pos、支票、其他金额处理为0
