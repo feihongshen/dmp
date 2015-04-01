@@ -9,10 +9,11 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 @Component
 public class DES3Utils {
@@ -26,8 +27,9 @@ public class DES3Utils {
 
 		MessageDigest md5 = MessageDigest.getInstance("MD5");
 		byte[] md5key = md5.digest(key.getBytes("UTF-8"));
-		BASE64Encoder base64Encoder = new BASE64Encoder();
-		String MD5Codekey = base64Encoder.encode(md5key);
+//		BASE64Encoder base64Encoder = new BASE64Encoder();
+//		String MD5Codekey = base64Encoder.encode(md5key);
+		String MD5Codekey = new String(Base64.encodeBase64(md5key));
 		return MD5Codekey.getBytes("UTF-8");
 	}
 
@@ -57,9 +59,10 @@ public class DES3Utils {
 			Cipher c1 = Cipher.getInstance(Algorithm);
 			c1.init(Cipher.ENCRYPT_MODE, deskey);
 			byte[] b = c1.doFinal(src);
-			BASE64Encoder base64Encoder = new BASE64Encoder();
-			String DesBase64Code = base64Encoder.encode(b);
-			return new String(DesBase64Code);
+//			BASE64Encoder base64Encoder = new BASE64Encoder();
+//			String DesBase64Code = base64Encoder.encode(b);
+			String MD5Codekey = new String(Base64.encodeBase64(b));
+			return MD5Codekey;
 		} catch (java.security.NoSuchAlgorithmException e1) {
 			e1.printStackTrace();
 		} catch (javax.crypto.NoSuchPaddingException e2) {
@@ -73,8 +76,9 @@ public class DES3Utils {
 	// keybyte为加密密钥，长度为24字节
 	// src为加密后的缓冲区
 	private static String decryptMode(byte[] keybyte, String enCode) throws IOException {
-		BASE64Decoder base64Decoder = new BASE64Decoder();
-		byte[] src = base64Decoder.decodeBuffer(enCode);
+//		BASE64Decoder base64Decoder = new BASE64Decoder();
+//		byte[] src = base64Decoder.decodeBuffer(enCode);
+		byte[] src = Base64.decodeBase64(enCode.getBytes());
 		// byte[] keybyte = key.getBytes();
 		try {
 			// 生成密钥

@@ -1,7 +1,9 @@
 package cn.explink.pos.alipayCodApp;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,10 +93,17 @@ public class AlipayCore {
 	 */
 	public static String getAbstract(String strFilePath, String file_digest_type) throws IOException {
 		PartSource file = new FilePartSource(new File(strFilePath));
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		InputStream input = file.createInputStream();
+		byte[] buffer = new byte[4096];
+	    int n = 0;
+	    while (-1 != (n = input.read(buffer))) {
+	        output.write(buffer, 0, n);
+	    }
 		if (file_digest_type.equals("MD5")) {
-			return DigestUtils.md5Hex(file.createInputStream());
+			return DigestUtils.md5Hex( output.toByteArray());
 		} else if (file_digest_type.equals("SHA")) {
-			return DigestUtils.sha256Hex(file.createInputStream());
+			return DigestUtils.shaHex(output.toByteArray());
 		} else {
 			return "";
 		}

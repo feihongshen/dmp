@@ -16,7 +16,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.misc.BASE64Encoder;
 import cn.explink.pos.bill99.Bill99;
 
 public class CertificateCoderUtil {
@@ -367,7 +366,14 @@ public class CertificateCoderUtil {
 	 * @throws Exception
 	 */
 	public static String encryptBASE64(byte[] key) throws Exception {
-		return (new BASE64Encoder()).encodeBuffer(key);
+		Base64 temp = new Base64();
+		/**
+		 * change by gaoll
+		 * 替换BASE64 工具类（BASE64Encoder()为spring测试用类，正式开发不可用）
+		 */
+		String result = new String(temp.encode(key));
+		return result;
+//		return (new BASE64Encoder()).encodeBuffer(key);
 	}
 
 }

@@ -64,7 +64,7 @@ public class UnionPayTestService {
 		}
 
 		model.addAttribute("requestjson", data);
-		data = Base64Utils.encryptBASE64(data.getBytes());
+		data = Base64Utils.encode(data.getBytes());
 		String Md5str = (MD5Util.md5(data + unionpay.getPrivate_key()).substring(8, 24)).toLowerCase().trim(); // 16位的md5加密
 
 		return HTTPClient_Send(unionpay.getRequest_url(), command, data, Md5str);

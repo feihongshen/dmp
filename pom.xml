@@ -456,6 +456,12 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.1</version>
 		</dependency>
+		
+		<dependency> 
+		    <groupId>commons-codec</groupId> 
+		    <artifactId>commons-codec</artifactId> 
+		    <version>20041127.091804</version> 
+		</dependency> 
 	</dependencies>
 	<build>
 		<finalName>dmp_pxwl_smt</finalName>
@@ -478,6 +484,7 @@
 				<targetPath>../db</targetPath>
 			</resource>
 		</resources>
+		<pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -505,6 +512,7 @@
 						</goals>
 					</execution>
 				</executions>
+			
 				<configuration>
 					<outxml>true</outxml>
 					<aspectLibraries>
@@ -619,12 +627,8 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on 
-					the Maven build itself. -->
-			</plugins>
 		</pluginManagement>
+		
 	</build>
 	<profiles>
 		<profile>
@@ -636,7 +640,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>

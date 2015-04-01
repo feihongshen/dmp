@@ -9,8 +9,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
+
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 /**
  * 提供加密算法，可以对输入的字符串进行加密、解密操作
@@ -88,8 +90,11 @@ public class EncryptData {
 			// 2012.9.17 by xiaoqiang start
 			// 转成字符串，得到加密后的密码（新）
 			// 加密完byte[] 后，需要将加密了的byte[] 转换成base64保存
-			BASE64Encoder base64encoder = new BASE64Encoder();
-			encrypted_password = base64encoder.encode(encrypted_pwd);
+			
+//			BASE64Encoder base64encoder = new BASE64Encoder();
+//			encrypted_password = base64encoder.encode(encrypted_pwd);
+
+			encrypted_password = new String(Base64.encodeBase64(encrypted_pwd));
 
 			// encrypted_password = new String(encrypted_pwd);
 			// 2012.9.17 by xiaoqiang end
@@ -118,8 +123,11 @@ public class EncryptData {
 
 			// 2012.9.17 by xiaoqiang start
 			// 解密前，需要将加密后的字符串从base64转回来再解密
-			BASE64Decoder base64decoder = new BASE64Decoder();
-			byte[] decryptedPassword = base64decoder.decodeBuffer(epassword);
+			
+//			BASE64Decoder base64decoder = new BASE64Decoder();
+//			byte[] decryptedPassword = base64decoder.decodeBuffer(epassword);
+
+			byte[] decryptedPassword =Base64.decodeBase64(epassword.getBytes());
 
 			// 构造解密前的密码
 			// byte[] decryptedPassword = password;
