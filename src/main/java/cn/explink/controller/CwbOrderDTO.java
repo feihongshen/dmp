@@ -77,8 +77,17 @@ public class CwbOrderDTO {
 	long paywayid;// 支付方式（导入数据的时候会导入）
 	String newpaywayid;// 新的支付方式（反馈的时候可能会更改的支付方式）
 	long customerid;
+	String resendtime;// 滞留订单再次配送时间
 	BigDecimal shouldfare = BigDecimal.ZERO;
 	BigDecimal infactfare = BigDecimal.ZERO;
+	
+	public String getResendtime() {
+		return resendtime;
+	}
+
+	public void setResendtime(String resendtime) {
+		this.resendtime = resendtime;
+	}
 
 	public BigDecimal getShouldfare() {
 		return this.shouldfare;

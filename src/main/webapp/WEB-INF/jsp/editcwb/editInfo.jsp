@@ -126,7 +126,7 @@ function editInit(){
 											<td bgcolor="#e7f4e3">手机（修改）</td>
 											<td bgcolor="#e7f4e3">地址（修改）</td>
 											<td bgcolor="#e7f4e3">配送站点（修改）</td>
-											<td bgcolor="#e7f4e3">配送时间（修改）</td>
+											<!-- <td bgcolor="#e7f4e3">配送时间（修改）</td> -->
 											<td bgcolor="#e7f4e3">电商要求</td>
 											<td bgcolor="#e7f4e3">备注</td>
 											<td bgcolor="#e7f4e3">操作</td>
@@ -148,7 +148,7 @@ function editInit(){
 											<%} %>
 											</select>
 											</td>
-											<td width="10%" valign="middle"  align="center"  ><input type ="text" name ="begindate" id="strtime"  value="<%=c.getResendtime()%>"/></td>
+											<%-- <td width="10%" valign="middle"  align="center"  ><input type ="text" name ="begindate" id="strtime"  value="<%=c.getResendtime()%>"/></td> --%>
 											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
 											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
 											<td>
@@ -163,7 +163,6 @@ function editInit(){
 											<input type="hidden"   value="<%=c.getConsigneemobileOfkf()%>" id="checkeditmobile" name="checkeditmobile"/>
 											<input type="hidden"   value="<%=destinationName%>" id="checkbranchname" name="checkbranchname"/>
 											<input type="hidden"  value="<%=c.getCustomercommand() %>" id="checkeditcommand" name="checkeditcommand"/>
-											<input type="hidden"  value="<%=c.getResendtime() %>" id="checkbegindate" name="checkbegindate"/>
 											</td>
 											
 										</tr><%} %>

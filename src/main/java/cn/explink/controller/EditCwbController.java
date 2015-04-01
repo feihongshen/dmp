@@ -562,8 +562,7 @@ public class EditCwbController {
 			@RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname,
 			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
 			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
-			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand,
-			@RequestParam(value = "checkbegindate", required = false, defaultValue = "") String checkbegindate
+			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand
 			) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -624,25 +623,26 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			
 			this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
 			long count=orderAddressReviseDao.countReviseAddress(cwb);
 			if (count==0) {
-				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCwbremark());
+				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCustomercommand());
 			}
 			
-			if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!begindate.equals(checkbegindate))||(!editcommand.equals(checkeditcommand))||(!branchname.equals(""))) {
+			if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!editcommand.equals(checkeditcommand))||(!branchname.equals(""))) {
 				/**
 				 * 关于站点的一点判断
 				 */
 				String revisebranchName=checkbranchname;
 				if ((!branchname.equals(checkbranchname))&&(!branchname.equals("请选择"))) {
-					revisebranchName=branchname;
+					if (!branchname.equals("")) {
+						revisebranchName=branchname;
+					}
 					this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
 					
 					
 				}else {
-					if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!begindate.equals(checkbegindate))||(!editcommand.equals(checkeditcommand))) {
+					if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!editcommand.equals(checkeditcommand))) {
 						
 						this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
 
