@@ -6118,6 +6118,12 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ADD COLUMN `customerrequest` varchar(100) collate utf8_bin default NULL AFTER `destination`;
 		</sql>
 	</changeSet>
+		<changeSet id="wangyonghe-2015-04-01" author="wangyonghe">
+		<sql>
+		ALTER TABLE `express_ops_complaint`
+		ADD COLUMN `replyDetail`  varchar(500) NULL DEFAULT '' AFTER `servertreasonid`;
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>
  
