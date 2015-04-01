@@ -12,6 +12,7 @@
 <%
 List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
 List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
+List<Reason> firstlist = (List<Reason>)request.getAttribute("firstlist");
 long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
 String batchEditDeliveryStateisUseCash = request.getAttribute("batchEditDeliveryStateisUseCash")==null?"no":(String)request.getAttribute("batchEditDeliveryStateisUseCash");
 String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("resendtime"));
@@ -62,6 +63,7 @@ function changeTag(id)
 		$("#backreasonid").parent().hide();
 		$("#backreasonid").val(0);
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		$("#losereasonid").parent().hide();
@@ -77,6 +79,7 @@ function changeTag(id)
 		$("#backreasonid").parent().show();
 		$("#backreasonid").val(0);
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		$("#losereasonid").parent().hide();
@@ -90,6 +93,7 @@ function changeTag(id)
 		
 	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
 		$("#leavedreasonid").parent().show();
+		$("#firstlevelreasonid").parent().show();
 		$("#resendtime").parent().show();
 		$("#zhiliuremark").parent().show();
 		$("#losereasonid").parent().hide();
@@ -110,6 +114,7 @@ function changeTag(id)
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 	}
@@ -265,6 +270,19 @@ function resub(form){
 						拒退备注输入内容：
 							<input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
 							</em>
+							
+							<em style="display:none">
+							
+							一级原因：
+							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
+					        	<option value ="-1">==请选择==</option>
+					        	<%if(firstlist!=null&&firstlist.size()>0)
+					        		for(Reason r : firstlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+							</em>
+							
 							<em style="display:none">
 							滞留原因：
 							 <select name="leavedreasonid" id="leavedreasonid">

@@ -94,6 +94,7 @@ $(function(){
 function changeTag(id){
 	if(id==<%=DeliveryStateEnum.JuShou.getValue()%>){
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		
@@ -132,6 +133,7 @@ function changeTag(id){
 		$("#backreasonid").parent().hide();
 		$("#deliverstateremark").parent().hide();
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		$("#losereasonid").parent().hide();
@@ -158,6 +160,7 @@ function changeTag(id){
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 		$("#paytype").val(-1);
