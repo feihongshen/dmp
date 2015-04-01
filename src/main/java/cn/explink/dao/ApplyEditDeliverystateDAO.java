@@ -128,10 +128,10 @@ public class ApplyEditDeliverystateDAO {
 			if (ishandle > -1) {
 				w.append(" and ishandle = " + ishandle);
 			}
-			if (isFinancial) {
-				w.append(" and audit =1 ");
-			}
 			sql += w.toString();
+		}
+		if (isFinancial) {
+			sql += " and audit =1 ";
 		}
 
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
