@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Reason;
-import cn.explink.enumutil.FirstReasonEnum;
 import cn.explink.util.Page;
 
 @Component
