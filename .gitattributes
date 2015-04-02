@@ -1950,6 +1950,7 @@ src/main/webapp/WEB-INF/jsp/jointmanage/yalian/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/yeepay/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/zhongliang/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/login.jsp -text
+src/main/webapp/WEB-INF/jsp/login1.jsp -text
 src/main/webapp/WEB-INF/jsp/logtoday/allhistorylog/allhistorylog.jsp -text
 src/main/webapp/WEB-INF/jsp/logtoday/allhistorylog/show.jsp -text
 src/main/webapp/WEB-INF/jsp/logtoday/alllogmanage/allarrivallogmanage.jsp -text
