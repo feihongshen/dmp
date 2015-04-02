@@ -110,18 +110,15 @@ public class EditService {
 	@Transactional
 	public void saveEdit(OrderFlow orderFlow) {
 		try {
-
-			SystemInstall transcwbSupport = this.systemInstallDAO.getSystemInstallByName("transcwbSupport");
-			if ((transcwbSupport == null) || !transcwbSupport.getValue().equals("true")) {
-				return;
-			}
-
-			if ((orderFlow.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || (orderFlow.getFlowordertype() != FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
+			if (orderFlow.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()
+					|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
+					|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
+					|| orderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
 				// 删除edit表
 				this.excelImportEditDao.deleteEdit(orderFlow.getCwb());
 				return;
 			}
-			if (!((orderFlow.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (orderFlow.getFlowordertype() != FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()))) {
+			if (orderFlow.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue() && orderFlow.getFlowordertype() != FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()) {
 				return;
 			}
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderFlow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
@@ -130,11 +127,11 @@ public class EditService {
 				this.logger.warn("消息不完整，没有订单信息,id:", orderFlow.getFloworderid());
 				return;
 			}
-			Customer c = this.customerDAO.getCustomerById(dmpcwbOrder.getCustomerid());
+			/*Customer c = this.customerDAO.getCustomerById(dmpcwbOrder.getCustomerid());
 			if (c.getIsUsetranscwb() == 2) {// 如果不扫描运单，不保存订单和运单对应用表
 				this.logger.info("该供货商不使用扫描运单，订单号:{},供货商：{}", orderFlow.getCwb(), c.getCustomername());
 				return;
-			}
+			}*/
 			// 如果不区分大小写先将订单号的大小写存入
 			this.logger.info("订单号,站点{}", dmpcwbOrder.getCwb(), dmpcwbOrder.getDeliverybranchid());
 			ExcelImportEdit e = this.excelImportEditDao.getEditInfoByCwb(dmpcwbOrder.getCwb());
