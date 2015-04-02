@@ -10,7 +10,6 @@ src/main/db/changelog/quartz_init.sql -text
 src/main/db/changelog/schedule_init.sql -text
 src/main/db/pom.xml -text
 src/main/java/cn/emay/sdk/test/SingletonClient.java -text
-src/main/java/cn/emay/sdk/test/TestSDKClient.java -text
 src/main/java/cn/explink/aspect/CwbOperationValidateAspect.java -text
 src/main/java/cn/explink/aspect/CwbTranslateAspect.java -text
 src/main/java/cn/explink/aspect/OperationRecord.java -text

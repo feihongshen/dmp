@@ -153,8 +153,8 @@ public class Base64Utils {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-//		return new String(Base64.encode(str.getBytes(charset)));
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encode(str.getBytes(charset)));
+	//	return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
 	}
 
 	
