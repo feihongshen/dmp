@@ -3803,15 +3803,18 @@ public class CwbOrderService {
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
-
-		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
-			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
-			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb(1, co.getCwb());
-		}
-		
-		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()||podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(0, co.getCwb() ,firstlevelreasonid);
 		}
+		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
+			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
+			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(1, co.getCwb(), firstlevelreasonid);
+		}
+		//podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()||
+	
+	/*	if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
+			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(1, co.getCwb() ,firstlevelreasonid);
+		}*/
 		
 		// 反馈为分站滞留、拒收、上门拒退、滞留自动领货的时候，现金、pos、支票、其他金额处理为0
 		if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())
