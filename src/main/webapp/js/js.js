@@ -1450,6 +1450,7 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 	var podresultid = parseInt($("#podresultid").val());
 	var backreasonid = parseInt($("#backreasonid").val());
 	var leavereasonid = parseInt($("#leavedreasonid").val());
+	var firstlevelreasonid = parseInt($("#firstlevelreasonid").val());
 	if (!checkTime($("#deliverytime").val())) {
 		return false;
 	}
@@ -1478,7 +1479,7 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == FenZhanZhiLiu || podresultid == ZhiLiuZiDongLingHuo) {// 分站滞留、滞留自动领货
-		if (isReasonRequired == 'yes' && !leavereasonid > 0) {
+		if (isReasonRequired == 'yes' && (firstlevelreasonid==0||leavereasonid==0)) {//!leavereasonid > 0||!firstlevelreasonid>0
 			alert("请选择滞留原因");
 			return false;
 		} else {
@@ -4742,7 +4743,7 @@ function updaterelatelevel(URL, firstlevelreasonid) {
 		dataType : 'json',// 接受数据格式
 		success : function(json) {
 			$("#leavedreasonid").empty();// 清空下拉框//$("#select").html('');
-			$("<option value ='-1'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
+			$("<option value ='0'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
 			for (var j = 0; j < json.length; j++) {
 				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#leavedreasonid");
 			}
