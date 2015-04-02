@@ -1,6 +1,8 @@
 package cn.explink.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +12,12 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.FnCustomerBillDetailDAO;
 import cn.explink.dao.FnOrgBillDetailDAO;
 import cn.explink.dao.OrgBillAdjustmentRecordDao;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.FnOrgBillDetail;
 import cn.explink.domain.OrgBillAdjustmentRecord;
 import cn.explink.domain.User;
@@ -37,10 +41,15 @@ public class OrgBillAdjustmentRecordService {
 	CwbDAO cwbDao;
 	
 	@Autowired
+	DeliveryStateDAO deliverStateDao;
+	
+	@Autowired
 	FnCustomerBillDetailDAO FnCustomerBillDetaildao;
 	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -65,50 +74,62 @@ public class OrgBillAdjustmentRecordService {
 		fnOrgBillDetails = fnOrgBillDetailDAO.getFnOrgBillDetailByCwb(order.getCwb());
 		//订单的类型
 		Integer orderType = order.getCwbordertypeid();
-		
 		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
+			DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
 			if(adjustRecord.size()<=0){//没有生成过调整单记录
 				//根据不同的订单类型
+				//配送
+				record.setOrderNo(order.getCwb());
+				record.setBillNo("");
+				record.setBillId(0L);
+				record.setAdjustBillNo("");
+				record.setCustomerId(order.getCustomerid());
+				
 				if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
-					//配送
-					record.setOrderNo(order.getCwb());
-					record.setBillNo("");
-					record.setAdjustBillNo("");
-					record.setCustomerId(order.getCustomerid());
-					
 					record.setReceiveFee(order.getReceivablefee());
 					record.setRefundFee(order.getPaybackfee());
 					record.setModifyFee(modifyFeeReceiveFee);
 					record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
 					record.setRemark(order.getReceivablefee()+"元修改成"+modifyFeeReceiveFee+"元");
 					
-					record.setCreator(getSessionUser().getUsername());
-					record.setCreateTime(new Date());
-					record.setStatus(1);
-					record.setOrderType(orderType);
-					
 				}else if(CwbOrderTypeIdEnum.Shangmentui.getValue()==orderType.intValue()){
 					//上门退
-					record.setOrderNo(order.getCwb());
-					record.setBillNo("");
-					record.setAdjustBillNo("");
-					record.setCustomerId(order.getCustomerid());
-					
 					record.setReceiveFee(order.getReceivablefee());
 					record.setRefundFee(order.getPaybackfee());
 					record.setModifyFee(modifyPaybackfee);
 					record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
 					record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
 					
-					record.setCreator(getSessionUser().getUsername());
-					record.setCreateTime(new Date());
-					record.setStatus(1);
-					record.setOrderType(orderType);
-					
 				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
 					//判断
+					//上门退
+					record.setReceiveFee(order.getReceivablefee());
+					record.setRefundFee(order.getPaybackfee());
+					//修改的是应退金额
+					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
+						record.setModifyFee(modifyPaybackfee);
+						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+						record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
+					}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
+						record.setModifyFee(modifyFeeReceiveFee);
+						record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
+						record.setRemark(order.getReceivablefee()+"元修改成"+modifyFeeReceiveFee+"元");
+					}
+					
 				}
+				record.setDeliverId(order.getDeliverid());
+				record.setCreator(getSessionUser().getUsername());
+				record.setCreateTime(new Date());
+				record.setOrderType(orderType);
+				record.setPayMethod(Long.valueOf(order.getPaywayid()).intValue());
+				record.setDeliverybranchid(order.getDeliverybranchid());
+				try {
+					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 			}else{//该订单已经生成过调整单记录  不让其修改
 				//提示信息
@@ -140,9 +161,11 @@ public class OrgBillAdjustmentRecordService {
 		
 		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
+			DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
 			if(adjustRecord.size()<=0){//没有生成过调整单记录
 				record.setOrderNo(order.getCwb());
 				record.setBillNo("");
+				record.setBillId(0L);
 				record.setAdjustBillNo("");
 				record.setCustomerId(order.getCustomerid());
 				
@@ -152,10 +175,18 @@ public class OrgBillAdjustmentRecordService {
 				record.setAdjustAmount(BigDecimal.ZERO);
 				record.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
 				
+				record.setDeliverId(order.getDeliverid());
 				record.setCreator(getSessionUser().getUsername());
 				record.setCreateTime(new Date());
-				record.setStatus(1);
 				record.setOrderType(orderType);
+				record.setPayMethod(Long.valueOf(order.getPaywayid()).intValue());
+				record.setDeliverybranchid(order.getDeliverybranchid());
+				try {
+					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 			}
 		}
 	}

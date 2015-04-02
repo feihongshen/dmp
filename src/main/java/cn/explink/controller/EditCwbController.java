@@ -337,8 +337,6 @@ public class EditCwbController {
 			List<String> errorList = new ArrayList<String>();
 			// 定义一个客户账单调整单List
 			List<AdjustmentRecord> adjustmentRecords = new ArrayList<AdjustmentRecord>();
-			// 定义一个站点账单调整当List
-			List<OrgBillAdjustmentRecord> orgBillAdjustmentRecords = new ArrayList<OrgBillAdjustmentRecord>();
 			
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
@@ -359,7 +357,7 @@ public class EditCwbController {
 
 				if ((receivablefee != null) && !receivablefee.equals(cwbOrder.getReceivablefee())) {
 					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
-//					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
+					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
 				}
 
 				try {
@@ -404,7 +402,7 @@ public class EditCwbController {
 				try {
 					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, this.getSessionUser().getUserid());
 					adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
-//					orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
+					orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
 					//修改支付方式,判断是否生成调整单
 					ecList.add(ec_dsd);
 				} catch (ExplinkException ee) {

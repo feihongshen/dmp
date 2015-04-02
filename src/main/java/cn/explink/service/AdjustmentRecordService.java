@@ -81,7 +81,8 @@ public class AdjustmentRecordService {
 								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
 								aRecord.setRefund_fee(payBackFee);
 								aRecord.setModify_fee(refund_fee);
-								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+								aRecord.setAdjust_amount(payBackFee.subtract(refund_fee));
 								aRecord.setRemark(payBackFee+"元修改成"+refund_fee+"元");
 								aRecord.setCreator(getSessionUser().getUsername());
 								aRecord.setCreate_time(DateTimeUtil.getNowTime());
@@ -108,7 +109,8 @@ public class AdjustmentRecordService {
 								aRecord.setReceive_fee(receive_fee);
 								aRecord.setRefund_fee(payBackFee);
 								aRecord.setModify_fee(refund_fee);
-								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+								aRecord.setAdjust_amount(payBackFee.subtract(refund_fee));
 								aRecord.setRemark(payBackFee+"元修改成"+refund_fee+"元");
 								aRecord.setCreator(getSessionUser().getUsername());
 								aRecord.setCreate_time(DateTimeUtil.getNowTime());

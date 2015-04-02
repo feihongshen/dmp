@@ -1427,4 +1427,9 @@ public class DeliveryStateDAO {
 		}
 	}
 
+	public DeliveryState getDeliverSignTime(String cwb) {
+		String sql = "select d.* from express_ops_cwb_detail AS c  LEFT OUTER JOIN express_ops_delivery_state as d ON c.cwb=d.cwb  where c.state=1 and c.cwb=?";
+		return this.jdbcTemplate.queryForObject(sql, new DeliveryStateRowMapper(), cwb);
+	}
+
 }

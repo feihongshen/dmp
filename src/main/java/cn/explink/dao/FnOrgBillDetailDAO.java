@@ -92,7 +92,7 @@ public class FnOrgBillDetailDAO{
 	 * @return
 	 */
 	public List<FnOrgBillDetail> getFnOrgBillDetailByCwb(String cwbid) {
-		String sql = "select * from `fn_customer_bill_detail` where `order_no`=?  ";
+		String sql = "select * from `fn_org_bill_detail` where `order_no`=?  ";
 		return this.jdbcTemplate.query(sql, new FnOrgBillDetailRowMapper(), cwbid);
 	}
 }

@@ -14,7 +14,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrgBillAdjustmentRecord;
-
+/**
+ * 结算 站内调整账单的生成
+ * @author jiangyu 2015年4月1日
+ *
+ */
 @Component
 public class OrgBillAdjustmentRecordDao {
 	
@@ -25,22 +29,25 @@ public class OrgBillAdjustmentRecordDao {
 
 			adjustmentRecord.setId(rs.getLong("id"));
 			adjustmentRecord.setOrderNo(rs.getString("order_no"));
-			adjustmentRecord.setBillNo(rs.getString("bill_no"));
 			adjustmentRecord.setBillId(rs.getLong("bill_id"));
+			adjustmentRecord.setBillNo(rs.getString("bill_no"));
+			adjustmentRecord.setDeliverybranchid(rs.getLong("deliverybranchid"));
 			adjustmentRecord.setAdjustBillNo(rs.getString("adjust_bill_no"));
 			adjustmentRecord.setCustomerId(rs.getLong("customer_id"));
 			adjustmentRecord.setReceiveFee(rs.getBigDecimal("receive_fee"));
 			adjustmentRecord.setRefundFee(rs.getBigDecimal("refund_fee"));
 			adjustmentRecord.setModifyFee(rs.getBigDecimal("modify_fee"));
+			adjustmentRecord.setGoodsAmount(rs.getBigDecimal("goods_amount"));
 			adjustmentRecord.setAdjustAmount(rs.getBigDecimal("adjust_amount"));
+			adjustmentRecord.setVerifyAmount(rs.getBigDecimal("verify_amount"));
 			adjustmentRecord.setRemark(rs.getString("remark"));
 			adjustmentRecord.setCreator(rs.getString("creator"));
 			adjustmentRecord.setCreateTime(rs.getDate("create_time"));
-			adjustmentRecord.setStatus(rs.getInt("status"));
-			adjustmentRecord.setCheckUser(rs.getString("check_user"));
-			adjustmentRecord.setCheckTime(rs.getDate("check_time"));
 			adjustmentRecord.setOrderType(rs.getInt("order_type"));
 			adjustmentRecord.setPayMethod(rs.getInt("pay_method"));
+			adjustmentRecord.setDeliverId(rs.getLong("deliver_id"));
+			adjustmentRecord.setSignTime(rs.getDate("sign_time"));
+			adjustmentRecord.setStatus(rs.getInt("status"));
 			return adjustmentRecord;
 		}
 	}
@@ -62,13 +69,14 @@ public class OrgBillAdjustmentRecordDao {
 				+ "remark,"
 				+ "creator,"
 				+ "create_time,"
-				+ "check_user,"
-				+ "check_time,"
 				+ "order_type,"
 				+ "pay_method,"
-				+ "status"
+				+ "deliver_id,"
+				+ "sign_time,"
+				+ "deliverybranchid,"
+				+ "goods_amount"
 				+ ") " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -84,11 +92,12 @@ public class OrgBillAdjustmentRecordDao {
 						ps.setString(10, adjustmentRecord.getRemark());
 						ps.setString(11, adjustmentRecord.getCreator());
 						ps.setDate(12, new Date(adjustmentRecord.getCreateTime().getTime()));
-						ps.setString(13, adjustmentRecord.getCheckUser());
-						ps.setDate(14, new Date(adjustmentRecord.getCheckTime().getTime()));
-						ps.setInt(15, adjustmentRecord.getOrderType());
-						ps.setInt(16, adjustmentRecord.getPayMethod());
-						ps.setInt(17,adjustmentRecord.getStatus());
+						ps.setInt(13, adjustmentRecord.getOrderType());
+						ps.setInt(14, adjustmentRecord.getPayMethod());
+						ps.setLong(15, adjustmentRecord.getDeliverId());
+						ps.setDate(16, new Date(adjustmentRecord.getSignTime().getTime()));
+						ps.setLong(17, adjustmentRecord.getDeliverybranchid());
+						ps.setBigDecimal(18, adjustmentRecord.getAdjustAmount());
 					}
 				});
 	}

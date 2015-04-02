@@ -3,11 +3,11 @@ package cn.explink.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 /**
- * 站点站内调整单
- * @author jiangyu 2015年3月30日
+ * 站点机构调整单
+ * @author JY
  *
  */
-public class OrgBillAdjustmentRecord {
+public class OrgBillAdjustmentRecord{
 	/**
 	 * 调整单id
 	 */
@@ -49,6 +49,14 @@ public class OrgBillAdjustmentRecord {
 	 */
 	private BigDecimal adjustAmount;
 	/**
+	 * 货款金额
+	 */
+	private BigDecimal goodsAmount;
+	/**
+	 * 核销金额
+	 */
+	private BigDecimal verifyAmount;
+	/**
 	 * 备注
 	 */
 	private String remark;
@@ -60,14 +68,6 @@ public class OrgBillAdjustmentRecord {
 	 * 创建时间
 	 */
 	private Date createTime;
-	/**
-	 * 核销人
-	 */
-	private String checkUser;
-	/**
-	 * 核销时间
-	 */
-	private Date checkTime; 
 	
 	/**
 	 * 订单类型
@@ -78,9 +78,22 @@ public class OrgBillAdjustmentRecord {
 	 */
 	private Integer payMethod;
 	/**
-	 * 核销标识
+	 *小件员
+	 */
+	private Long deliverId;
+	/**
+	 * 签收时间
+	 */
+	private Date signTime;
+	/**
+	 * 付款状态
 	 */
 	private Integer status;
+	
+	/**
+	 * 目的站
+	 */
+	private Long deliverybranchid;
 	
 	public OrgBillAdjustmentRecord() {
 	}
@@ -189,20 +202,12 @@ public class OrgBillAdjustmentRecord {
 		this.createTime = createTime;
 	}
 
-	public String getCheckUser() {
-		return checkUser;
+	public BigDecimal getVerifyAmount() {
+		return verifyAmount;
 	}
 
-	public void setCheckUser(String checkUser) {
-		this.checkUser = checkUser;
-	}
-
-	public Date getCheckTime() {
-		return checkTime;
-	}
-
-	public void setCheckTime(Date checkTime) {
-		this.checkTime = checkTime;
+	public void setVerifyAmount(BigDecimal verifyAmount) {
+		this.verifyAmount = verifyAmount;
 	}
 
 	public Integer getOrderType() {
@@ -212,7 +217,7 @@ public class OrgBillAdjustmentRecord {
 	public void setOrderType(Integer orderType) {
 		this.orderType = orderType;
 	}
-
+	
 	public Integer getPayMethod() {
 		return payMethod;
 	}
@@ -221,11 +226,43 @@ public class OrgBillAdjustmentRecord {
 		this.payMethod = payMethod;
 	}
 
+	public Long getDeliverId() {
+		return deliverId;
+	}
+
+	public void setDeliverId(Long deliverId) {
+		this.deliverId = deliverId;
+	}
+
+	public Date getSignTime() {
+		return signTime;
+	}
+
+	public void setSignTime(Date signTime) {
+		this.signTime = signTime;
+	}
+
+	public Long getDeliverybranchid() {
+		return deliverybranchid;
+	}
+
+	public void setDeliverybranchid(Long deliverybranchid) {
+		this.deliverybranchid = deliverybranchid;
+	}
+
 	public Integer getStatus() {
 		return status;
 	}
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public BigDecimal getGoodsAmount() {
+		return goodsAmount;
+	}
+
+	public void setGoodsAmount(BigDecimal goodsAmount) {
+		this.goodsAmount = goodsAmount;
 	}
 }

@@ -5563,4 +5563,5 @@ public class CwbDAO {
 		
 		return  jdbcTemplate.queryForLong(sql.toString());
 	}
+	
 }
