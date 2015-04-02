@@ -689,8 +689,8 @@ public class EditCwbController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request) {
 
-		String[] cloumnName1 = new String[16]; // 导出的列名
-		String[] cloumnName2 = new String[16]; // 导出的英文列名
+		String[] cloumnName1 = new String[14]; // 导出的列名
+		String[] cloumnName2 = new String[14]; // 导出的英文列名
 
 		this.exportService.SetEditOrderFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;

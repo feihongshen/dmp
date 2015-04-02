@@ -173,6 +173,8 @@ function exportField(){
 						</tr>
 					</tbody>
 				</table></div></div>
+				<br/>
+				<br/>
 				<%if(page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">

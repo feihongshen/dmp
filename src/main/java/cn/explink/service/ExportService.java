@@ -2115,22 +2115,22 @@ public class ExportService {
 		cloumnName2[6] = "oldconsigneeaddress";
 		cloumnName1[7] = "地址（修改）";
 		cloumnName2[7] = "newconsigneeaddress";
-		cloumnName1[8] = "修改前再次配送时间";
-		cloumnName2[8] = "oldResendtime";
-		cloumnName1[9] = "再次配送时间（修改）";
-		cloumnName2[9] = "newResendtime";
-		cloumnName1[10] = "修改前供货商需求";
-		cloumnName2[10] = "oldcommand";
-		cloumnName1[11] = "供货商需求（修改）";
-		cloumnName2[11] = "newcommand";
-		cloumnName1[12] = "修改时间";
-		cloumnName2[12] = "cretime";
-		cloumnName1[13] = "修改人";
-		cloumnName2[13] = "crename";
-		cloumnName1[14] = "修改前备注";
-		cloumnName2[14] = "oldremark";
-		cloumnName1[15] = "备注（修改）";
-		cloumnName2[15] = "newremark";
+		//cloumnName1[8] = "修改前再次配送时间";
+		//cloumnName2[8] = "oldResendtime";
+		//cloumnName1[9] = "再次配送时间（修改）";
+		//cloumnName2[9] = "newResendtime";
+		cloumnName1[8] = "修改前供货商需求";
+		cloumnName2[8] = "oldcommand";
+		cloumnName1[9] = "供货商需求（修改）";
+		cloumnName2[9] = "newcommand";
+		cloumnName1[10] = "修改时间";
+		cloumnName2[10] = "cretime";
+		cloumnName1[11] = "修改人";
+		cloumnName2[11] = "crename";
+		cloumnName1[12] = "修改前备注";
+		cloumnName2[12] = "oldremark";
+		cloumnName1[13] = "备注（修改）";
+		cloumnName2[13] = "newremark";
 	}
 
 	// 订单修改处理功能导出
