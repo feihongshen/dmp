@@ -17,7 +17,7 @@
 		订单相关信息修改详情</h1>
 		<div style="padding:10px; background:#FFF">		 
 	
-    <div class="tabbox" style="width:1000px;overflow-y:scroll;padding-right:15px" >
+    <div class="tabbox" style="width:900px;overflow-y:scroll;padding-right:15px;height:400px" >
     
         <li>
         <div class="right_title">
