@@ -1482,7 +1482,14 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 		if (isReasonRequired == 'yes' && (firstlevelreasonid==0||leavereasonid==0)) {//!leavereasonid > 0||!firstlevelreasonid>0
 			alert("请选择滞留原因");
 			return false;
-		} else {
+			//&& (firstlevelreasonid==0||leavereasonid==0)
+		} else if(isReasonRequired != 'yes'){
+			if(firstlevelreasonid!=0&&leavereasonid==0){
+				alert("请选择滞留原因");
+				return false;
+			}
+		}
+		else {
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == ShangMenJuTui) {// 上门拒退
