@@ -340,11 +340,13 @@ public class EditCwbController {
 			
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
+				//页面修改的应收金额
 				BigDecimal receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
 				BigDecimal cash = request.getParameter("Receivablefee_cash_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_cash_" + cwb));
 				BigDecimal pos = request.getParameter("Receivablefee_pos_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_pos_" + cwb));
 				BigDecimal checkfee = request.getParameter("Receivablefee_checkfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_checkfee_" + cwb));
 				BigDecimal otherfee = request.getParameter("Receivablefee_otherfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_otherfee_" + cwb));
+				//页面修改后的应退金额
 				BigDecimal paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
 				CwbOrder cwbOrder = new CwbOrder();
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -354,9 +356,11 @@ public class EditCwbController {
 				}
 
 				// 先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
-
 				if ((receivablefee != null) && !receivablefee.equals(cwbOrder.getReceivablefee())) {
-					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
+//					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
+					//客户调整单逻辑入口
+					this.adjustmentRecordService.processAdjusRecordByMoney(cwbOrder, paybackfee, receivablefee, "", user.getUsername());
+					//站内调整单逻辑入口
 					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
 				}
 
