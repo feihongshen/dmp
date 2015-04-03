@@ -98,7 +98,8 @@ public class OrgBillAdjustmentRecordService {
 					record.setReceiveFee(order.getReceivablefee());
 					record.setRefundFee(order.getPaybackfee());
 					record.setModifyFee(modifyPaybackfee);
-					record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+//					record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+					record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 					record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
 					
 				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
@@ -109,7 +110,8 @@ public class OrgBillAdjustmentRecordService {
 					//修改的是应退金额
 					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
 						record.setModifyFee(modifyPaybackfee);
-						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+//						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+						record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 						record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
 					}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
 						record.setModifyFee(modifyFeeReceiveFee);
