@@ -907,6 +907,9 @@ src/main/java/cn/explink/dbPool/DBOperator.java -text
 src/main/java/cn/explink/dbPool/DBtest.java -text
 src/main/java/cn/explink/dbPool/Database.java -text
 src/main/java/cn/explink/dbPool/PageQueryForSqlserver.java -text
+src/main/java/cn/explink/dmp40/Dmp40Function.java -text
+src/main/java/cn/explink/dmp40/Dmp40FunctionDAO.java -text
+src/main/java/cn/explink/dmp40/Dmp40MenuTag.java -text
 src/main/java/cn/explink/domain/AbnormalOrder.java -text
 src/main/java/cn/explink/domain/AbnormalType.java -text
 src/main/java/cn/explink/domain/AbnormalWriteBack.java -text
