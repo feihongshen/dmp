@@ -1,7 +1,7 @@
 ﻿$(function() {
-	
-	//easy ui树加载会在文档加载完执行,所以初始化菜单要延迟一秒 by jueyue
-	setTimeout(InitLeftMenu,100);
+
+	// easy ui树加载会在文档加载完执行,所以初始化菜单要延迟一秒 by jueyue
+	setTimeout(InitLeftMenu, 100);
 	tabClose();
 	tabCloseEven();
 	// 释放内存
@@ -18,13 +18,15 @@
 			}
 		}
 	});
-	
-	  $('#maintabs').tabs({ onSelect : function(title) {
-	  	rowid="";
-	  } });
-	
+
+	$('#maintabs').tabs({
+		onSelect : function(title) {
+			rowid = "";
+		}
+	});
+
 });
-var rowid="";
+var rowid = "";
 // 初始化左侧
 function InitLeftMenu() {
 	$("#nav").show();
@@ -38,26 +40,27 @@ function InitLeftMenu() {
 		$(this).parent().removeClass("hover");
 	});
 	$('.easyui-tree').tree({
-		onClick: function(node){
+		onClick : function(node) {
 			openThisNoed(node);
 		}
 	});
 }
 
 function openThisNoed(node) {
-	if(node.state == "open"){
+	if (node.state == "open") {
 		$('.easyui-tree').tree('collapse', node.target);
 		return;
 	}
 	var children = $('.easyui-tree').tree('getChildren', node.target);
 	var pnode = null;
-	try{
+	try {
 		pnode = $('.easyui-tree').tree('getParent', node.target);
-	}catch(e){}
+	} catch (e) {
+	}
 	if (pnode && children && children.length > 0) {
 		$(pnode).each(function() {
-					$('.easyui-tree').tree('collapse', this);
-				});
+			$('.easyui-tree').tree('collapse', this);
+		});
 		$('.easyui-tree').tree('expand', node.target);
 	} else if (children && children.length > 0) {
 		$('.easyui-tree').tree('collapseAll');
@@ -71,8 +74,8 @@ function openThisNoed(node) {
 	}
 }
 
-String.prototype.replaceAll = function(s1,s2) { 
-    return this.replace(new RegExp(s1,"gm"),s2); 
+String.prototype.replaceAll = function(s1, s2) {
+	return this.replace(new RegExp(s1, "gm"), s2);
 };
 // 获取左侧导航的图标
 function getIcon(menuid) {
@@ -90,31 +93,26 @@ function getIcon(menuid) {
 
 function addTab(subtitle, url, icon) {
 	var progress = $("div.messager-progress");
-	if(progress.length){return;}
-	rowid="";
+	if (progress.length) {
+		return;
+	}
+	rowid = "";
 	$.messager.progress({
 		text : '页面加载中....',
 		interval : 200
 	});
 	if (!$('#maintabs').tabs('exists', subtitle)) {
-		//判断是否进行iframe方式打开tab，默认为href方式
-		if(url.indexOf('isIframe') != -1){
-			$('#maintabs').tabs('add', {
-				title : subtitle,
-				content : '<iframe src="' + url + '" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>',
-				closable : true,
-				icon : icon
-			});			
-		}else{
-			$('#maintabs').tabs('add', {
-				title : subtitle,
-				href : url,
-				closable : true,
-				icon : icon
-			});			
-			
-		}
-
+		$('#maintabs')
+				.tabs(
+						'add',
+						{
+							title : subtitle,
+							content : '<iframe src="'
+									+ url
+									+ '" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>',
+							closable : true,
+							icon : icon
+						});
 	} else {
 		$('#maintabs').tabs('select', subtitle);
 		$.messager.progress('close');
@@ -126,18 +124,17 @@ function addTab(subtitle, url, icon) {
 }
 var title_now;
 function addLeftOneTab(subtitle, url, icon) {
-	rowid="";
+	rowid = "";
 	if ($('#maintabs').tabs('exists', title_now)) {
 		$('#maintabs').tabs('select', title_now);
-			if(title_now!=subtitle)
-			{
+		if (title_now != subtitle) {
 			addmask();
 			$('#maintabs').tabs('update', {
 				tab : $('#maintabs').tabs('getSelected'),
 				options : {
 					title : subtitle,
 					href : url,
-					cache:false,
+					cache : false,
 					closable : false,
 					icon : icon
 				}
@@ -167,7 +164,9 @@ function addmask() {
 	});
 }
 function createFrame(url) {
-	var s = '<iframe name="tabiframe" id="tabiframe"  scrolling="no" frameborder="0"  src="'+url+'" style="width:100%;height:99.5%;overflow-y:hidden;"></iframe>';
+	var s = '<iframe name="tabiframe" id="tabiframe"  scrolling="no" frameborder="0"  src="'
+			+ url
+			+ '" style="width:100%;height:99.5%;overflow-y:hidden;"></iframe>';
 	return s;
 }
 
@@ -213,7 +212,7 @@ function tabCloseEven() {
 	$('#mm-tabcloseall').click(function() {
 		$('.tabs-inner span').each(function(i, n) {
 			var t = $(n).text();
-			if(t != '首页'){
+			if (t != '首页') {
 				$('#maintabs').tabs('close', t);
 			}
 		});
@@ -246,9 +245,9 @@ function tabCloseEven() {
 		}
 		prevall.each(function(i, n) {
 			var t = $('a:eq(0) span', $(n)).text();
-			if(t != '首页'){
+			if (t != '首页') {
 				$('#maintabs').tabs('close', t);
-			}	
+			}
 		});
 		return false;
 	});
@@ -266,4 +265,3 @@ $.parser.onComplete = function() {/* 页面所有easyui组件渲染成功后，�
 		$.messager.progress('close');
 	}, 200);
 };
-
