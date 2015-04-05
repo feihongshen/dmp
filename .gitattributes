@@ -1912,6 +1912,7 @@ src/main/webapp/WEB-INF/jsp/iframe_welcome.jsp -text
 src/main/webapp/WEB-INF/jsp/image.jsp -text
 src/main/webapp/WEB-INF/jsp/imageForOutside.jsp -text
 src/main/webapp/WEB-INF/jsp/index.jsp -text
+src/main/webapp/WEB-INF/jsp/index1.jsp -text
 src/main/webapp/WEB-INF/jsp/joinlist/list.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipay/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipayapp/edit.jsp -text

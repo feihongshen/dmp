@@ -134,14 +134,25 @@ label.iPhoneCheckLabelOn span {
 	line-height: 23px;
 	z-index: 9999;
 	opacity: .60;
-	filter: alpha(opacity =         60);
+	filter: alpha(opacity =                                                       60
+		);
 	_bottom: auto;
 	_width: 100%;
 	_position: absolute;
-	_top: expression(eval(document.documentElement.scrollTop +     
-		     document.documentElement.clientHeight-this.offsetHeight- (     
-		   parseInt(this.currentStyle.marginTop, 10)||0 )-(parseInt(this.currentStyle.marginBottom, 10)||0
-		) ) );
+	_top: expression(eval(document.documentElement.scrollTop +       
+		                    
+		              
+		             document.documentElement.clientHeight-this.offsetHeight-
+		( 
+		
+		 
+		   
+		       
+		 
+		  
+		      
+		                          parseInt(this.currentStyle.marginTop, 10)||0
+		)-(parseInt(this.currentStyle.marginBottom, 10)||0 ) ) );
 }
 
 .copyright {
@@ -204,19 +215,27 @@ h1,h2,h3,h4,h5,h6 {
 								</div>
 								<div class="formLogin">
 									<form name="formLogin" id="formLogin"
-										action="loginController.do?login"
-										check="loginController.do?checkuser" method="post">
-										<input name="userKey" type="hidden" id="userKey"
-											value="D1B5CC2FE46C4CC983C073BCA897935608D926CD32992B5900" />
+										action="<%=request.getContextPath()%>/resources/j_spring_security_check"
+										method="post">
+										<!-- <input name="userKey" type="hidden" id="userKey"
+											value="D1B5CC2FE46C4CC983C073BCA897935608D926CD32992B5900" /> -->
 										<div class="tip">
-											<input class="userName" name="userName" type="text"
-												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!" />
+											<input class="userName" name="j_username" type="text"
+												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
+												style="height: 25px" />
 										</div>
 										<div class="tip">
-											<input class="password" name="password" type="password"
-												id="password" title="密码" nullmsg="请输入密码!" />
+											<input class="password" name="j_password" type="password"
+												id="password" title="密码" nullmsg="请输入密码!"
+												style="height: 25px" />
 										</div>
-										<div class="loginButton">
+										<div class="tip">
+											<input name="validateCode" type="text"
+												class="login_forminput" id="validateCode" maxlength="4"
+												style="width: 120px; height: 25px" />&nbsp;&nbsp;&nbsp;<img
+												src="<%=request.getContextPath()%>/image?a=<%=System.currentTimeMillis()%>">
+										</div>
+										<!-- <div class="loginButton">
 											<div>
 												<button type="button"
 													class="width-35 pull-right btn btn-sm btn-primary"
@@ -225,8 +244,20 @@ h1,h2,h3,h4,h5,h6 {
 												</button>
 											</div>
 											<div class="clear"></div>
+										</div> -->
+										<div class="loginButton">
+											<div style="width: 260px">
+												<input type="submit" value="登录"
+													class="width-35 btn btn-sm btn-primary"
+													style="height: 30px; font-size: 10px; padding-top: 0px;" />
+												<input type="reset" value="重置"
+													class="width-35 btn btn-sm btn-primary"
+													style="height: 30px; font-size: 10px; padding-top: 0px;" />
+											</div>
 										</div>
+										<div class="clear"></div>
 									</form>
+
 								</div>
 							</div>
 						</div>
