@@ -5,6 +5,8 @@
 <html>
 <head>
 <title>唯易配送信息系统</title>
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-1.8.3.js"></script>
 <script type="text/javascript"
@@ -39,6 +41,21 @@
 	type="text/css"></link>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/dmp40/plug-in/accordion/js/leftmenu.js"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/js.js"></script>
+<script
+	src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js"
+	type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js"
+	type="text/javascript"></script>
+<script
+	src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js"
+	type="text/javascript"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
+
 <style type="text/css">
 .navbar {
 	margin: 0px -2px 0px -2px;
@@ -70,6 +87,8 @@
 </SCRIPT>
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">
+	<div id="alert_box"></div>
+	<div class="tishi_box"></div>
 	<!-- 顶部-->
 	<div region="north" border="false" id="main_top_div" title="工具栏"
 		style="height: 90px; overflow: hidden;">
