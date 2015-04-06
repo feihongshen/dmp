@@ -23,7 +23,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 
 </head>
-<body style="background:#eef9ff;overflow: hidden;" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
 <div style="margin-left: 20px;margin-top: 20px">问题件数据迁移
 <form action="<%=request.getContextPath()%>/abnormalOrder/abnormaldataMove" method="post">
 <textarea  id="opscwbids" name="opscwbids"rows="30"></textarea>

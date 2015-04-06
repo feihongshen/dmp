@@ -169,7 +169,7 @@ function printByOrder(){
 }
 </script>
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<input type="radio" checked="checked" id="printByCondation" name="printByCondation" value="0" onclick="accordToCondation();"/><strong >按条件打印</strong>     <input type="radio" id="printByOrder"  name="printByOrder"  value="1"  onclick="printByOrder();"/><strong >按订单号打印</strong>

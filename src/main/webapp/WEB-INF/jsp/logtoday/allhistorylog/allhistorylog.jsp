@@ -76,7 +76,7 @@ $("#right_hideboxbtn").click(function(){
 
 </script>
 </head>
-<body style="background:#eef9ff;overflow-y:hidden" marginwidth="0" marginheight="0" >
+<body style="background:#f5f5f5;overflow-y:hidden" marginwidth="0" marginheight="0" >
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="" method="post" id="searchForm">

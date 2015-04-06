@@ -43,7 +43,7 @@ function orderForm(ordername){
 </script>
 </head>
 <form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div style="overflow-x: scroll; " id="scroll2">
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">

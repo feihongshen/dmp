@@ -42,7 +42,7 @@ String values = request.getAttribute("values")==null?"":(String)request.getAttri
 
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 	<font  color="red">请在对接管理设置配置信息</font>
 	<br><br><br>

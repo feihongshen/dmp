@@ -60,7 +60,7 @@ function checkfeereg(){
 }
 </script>
 </head>
-<body style="background:#eef9ff" >
+<body style="background:#f5f5f5" >
 <div class="right_box">
   <div class="right_title">
 	<form action="financeauditBack" id="financeauditForm" method="POST" onsubmit="if(checkfeereg()){$('#financeauditForm').submit();}return false;">

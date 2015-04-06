@@ -294,7 +294,7 @@ function saveSuccess(data){
     }
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="right_title">
 	<div style="background:#FFF">
 		基本信息：

@@ -25,7 +25,7 @@ $(function(){
 });
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 			&nbsp;&nbsp;公司当日妥投率：<strong class="high" id="totailPercent_title">90% </strong>

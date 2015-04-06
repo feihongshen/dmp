@@ -58,7 +58,7 @@ function isok(){
 </script>
 </head>
 
-<body style="background:#eef9ff" onload="isok();">
+<body style="background:#f5f5f5" onload="isok();">
 
 <div class="right_box">
 	<div class="inputselect_box">

@@ -40,7 +40,7 @@ $(function(){
 </script>
 </HEAD>
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:10px">

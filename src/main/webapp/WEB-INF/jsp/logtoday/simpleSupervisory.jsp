@@ -14,7 +14,7 @@
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 </head>
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 	<div class="right_box">
 		<div class="inputselect_box">
 			站点： <select name="branchid" id="branid" onchange="location.href='simpleSupervisory?branchid='+$(this).val();">

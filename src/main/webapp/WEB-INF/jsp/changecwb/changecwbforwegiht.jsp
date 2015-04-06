@@ -96,7 +96,7 @@ function carrealweightPrint(){
 }
 </script>
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 	<form id="wegihtForm" name="wegihtForm" onSubmit="if(verifiForm()){submitChangeCwbSaveForm(this);}return false;" action="<%=request.getContextPath()%>/changecwb/changecwbforwegiht" method="post" >
 		<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">

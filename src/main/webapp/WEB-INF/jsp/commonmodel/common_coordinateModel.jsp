@@ -568,7 +568,7 @@ function addSuccess(data){
 }
 </script>
 </head>
-<body style="background:#eef9ff" class="yui-skin-sam">
+<body style="background:#f5f5f5" class="yui-skin-sam">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form id="searchForm" name="searchForm" action="<%=request.getContextPath()%>/commonmodel/tosetcoordinate"></form>

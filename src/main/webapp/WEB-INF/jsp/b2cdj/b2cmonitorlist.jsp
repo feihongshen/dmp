@@ -154,7 +154,7 @@ $(function() {
 
 </head>
 
-<body style="background:#eef9ff"><div class="inputselect_box">
+<body style="background:#f5f5f5"><div class="inputselect_box">
 <form  id="searchForm" name="searchForm" action="<%=request.getContextPath()%>/b2cjointmonitor/list/1" method = "post">
 		
 		

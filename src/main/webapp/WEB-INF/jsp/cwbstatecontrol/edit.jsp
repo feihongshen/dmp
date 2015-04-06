@@ -33,7 +33,7 @@ function check_cwbstatecontrol(form){
 	});
 }
 </script>
-<div style="background:#eef9ff">
+<div style="background:#f5f5f5">
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改订单流程</h1>
 		<form id="cwbstatecontrol_cre_Form" name="cwbstatecontrol_cre_Form"

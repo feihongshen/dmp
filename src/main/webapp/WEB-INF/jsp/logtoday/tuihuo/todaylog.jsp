@@ -46,7 +46,7 @@ $(function(){
 
 
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 	         &nbsp;&nbsp;当前日期：<%=new SimpleDateFormat("yyyy-MM-dd").format(new Date()) %> &nbsp;&nbsp; 当前统计的是从

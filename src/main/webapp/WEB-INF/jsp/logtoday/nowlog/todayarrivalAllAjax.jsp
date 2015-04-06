@@ -113,7 +113,7 @@ $(function(){
 
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <input type="hidden" id="daohuo" value="0" />
 <input type="hidden" id="toudi" value="0" />
 <input type="hidden" id="kuanxiang" value="0" />

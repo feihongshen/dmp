@@ -24,7 +24,7 @@ $(function(){
 </script>
 
 </head>
-<body style="position:relative;background:#eef9ff;margin:20px">
+<body style="position:relative;background:#f5f5f5;margin:20px">
 	<div  style="position:absolute;top:0px;right:50px;left:50px;">
 		<table style="border:0px;width:100%">
 			<tr>

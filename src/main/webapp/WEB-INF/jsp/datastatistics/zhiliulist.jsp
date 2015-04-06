@@ -192,7 +192,7 @@ function isauditEdit(){
 </script>
 </head>
 
-<body style="background:#eef9ff"  onload="isauditEdit();">
+<body style="background:#f5f5f5"  onload="isauditEdit();">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form action="1" method="post" id="searchForm">

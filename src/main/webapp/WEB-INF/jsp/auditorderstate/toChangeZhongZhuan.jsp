@@ -84,7 +84,7 @@ function submitCwb(){
 }
 </script>
 </HEAD>
-<BODY style="background:#eef9ff"  marginwidth="0" marginheight="0">
+<BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">

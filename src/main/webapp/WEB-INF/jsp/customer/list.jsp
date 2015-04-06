@@ -37,14 +37,14 @@ function delSuccess(data){
 </script>
 </head>
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="创建供货商" class="input_button1"  id="add_button"  />
+	<span><input name="" type="button" value="创建客户" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		供货商公司名称：<input type ="text" name ="customername"value="<%=request.getParameter("customername")==null?"":request.getParameter("customername") %>" />
+		客户名称：<input type ="text" name ="customername"value="<%=request.getParameter("customername")==null?"":request.getParameter("customername") %>" />
 		<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
 		<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 	</form>
@@ -55,10 +55,10 @@ function delSuccess(data){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 			<td width="4%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">供货商名称</td>
+			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">客户名称</td>
 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">公司名称</td>
 			<!-- <td width="10%" align="center" valign="middle" bgcolor="#eef6ff">对接枚举编号</td> -->
-			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">供货商编码</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">客户编码</td>
 			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">地址</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">联系人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">电话</td>

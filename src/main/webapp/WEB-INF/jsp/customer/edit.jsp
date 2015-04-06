@@ -11,9 +11,9 @@ Customer customer = (Customer)request.getAttribute("customer");
 		<form id="customer_save_Form" name="customer_save_Form" onSubmit="if(check_customer()){submitEditCustomer(this,${customer.customerid });}return false;"  action="<%=request.getContextPath()%>/customer/saveFile/${customer.customerid }" method="post"  >
 		<div id="box_form">
 				<ul style="width:450px;height: 400px;overflow-y: scroll;">
-					<li><span>供货商名称：</span><input type ="text" id ="customername" name ="customername" value ="${customer.customername}"  maxlength="30"/>*</li>
+					<li><span>客户名称：</span><input type ="text" id ="customername" name ="customername" value ="${customer.customername}"  maxlength="30"/>*</li>
 					<li><span>公司名称：</span><input type ="text" id ="companyname" name ="companyname" maxlength="30" value="${customer.companyname}"/>*</li>
-					<li><span>供货商编码：</span><input type ="text" id ="customercode" name ="customercode" value ="${customer.customercode}"  maxlength="30"/>*</li>
+					<li><span>客户编码：</span><input type ="text" id ="customercode" name ="customercode" value ="${customer.customercode}"  maxlength="30"/>*</li>
 					<%-- <li><span>对接枚举编号：</span><input type ="text" id ="b2cEnum" name ="b2cEnum" value ="${customer.b2cEnum}"  maxlength="30"/></li> --%>
 					<li><span>地址：</span><input type ="text" id ="customeraddress" name ="customeraddress" value ="${customer.customeraddress}"  maxlength="100"/></li>
 					<li><span>联系人：</span><input type ="text" id ="customercontactman" name ="customercontactman"  value ="${customer.customercontactman}"  maxlength="30"/></li>

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 </HEAD>
-<BODY  style="background:#eef9ff">
+<BODY  style="background:#f5f5f5">
 <%=(String)request.getAttribute("showMessage")==null?"":request.getAttribute("showMessage") %>
 <form action ="<%=request.getContextPath()%>/joinlist/upload" method ="post"  enctype="multipart/form-data" target="_self">
 上传文件：<input type ="file" name = "txt" >   

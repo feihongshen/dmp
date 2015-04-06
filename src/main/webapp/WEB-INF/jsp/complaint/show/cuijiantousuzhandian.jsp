@@ -122,7 +122,7 @@ function Days(){
 </script>
 </head>
 
-<body style="background:#eef9ff;color:#0000FFF;">
+<body style="background:#f5f5f5;color:#0000FFF;">
 	<div class="inputselect_box"   >
 	<form action="<%=request.getAttribute("page")==null?1:request.getAttribute("page") %>" method="post" id="searchForm">
 	<label>

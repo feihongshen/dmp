@@ -8,7 +8,7 @@
 <link href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 <div class="menucontant">
 							
 <div class="form_topbg">

@@ -142,7 +142,7 @@ function clearSelect(){
 </script>
 </head>
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form action="1" method="post" id="searchForm">

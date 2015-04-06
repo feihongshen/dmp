@@ -309,7 +309,7 @@ function chuku(){
 }
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
  <div id="emb"></div>
 <div class="saomiao_box">
  

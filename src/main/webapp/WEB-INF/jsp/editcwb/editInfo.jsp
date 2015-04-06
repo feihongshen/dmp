@@ -80,7 +80,7 @@ $(function(){
 
 </script>
 </head>
-<body  style="background:#eef9ff">
+<body  style="background:#f5f5f5">
 <div class="saomiao_box2"> 
 	<div>
 		<div class="kfsh_tabbtn">
@@ -96,7 +96,7 @@ $(function(){
 							<td width="10%" height="26" align="left" valign="top">
 							<table width="100%" border="0" cellspacing="0" cellpadding="5" class="table_5" >
 									<tr>
-										<td width="120" align="left" valign="top" bgcolor="#eef9ff">
+										<td width="120" align="left" valign="top" bgcolor="#f5f5f5">
 										<form action="<%=request.getContextPath()%>/editcwb/editCwbInfo" method="post">
 										订单号：
 										<input name="cwb" type="text" id="cwb" onfocus="if(this.value=='输入单个订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入单个订单号查询后进行修改……'}" />

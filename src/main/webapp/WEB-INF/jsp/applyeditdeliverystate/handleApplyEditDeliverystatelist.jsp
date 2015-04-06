@@ -160,7 +160,7 @@ function editInit(){
 }
 </script>
 </head>
-<body style="background:#eef9ff;overflow: hidden;" >
+<body style="background:#f5f5f5;overflow: hidden;" >
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="1" method="post" id="searchForm">

@@ -29,7 +29,7 @@ List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exp
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form id="searchForm2" action ="<%=request.getContextPath()%>/datastatistics/zhandiandaohuodata_excel" method = "post" > 

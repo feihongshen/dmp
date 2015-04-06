@@ -223,7 +223,7 @@ function changeback(type){
 }
 </script>
 </head>
-<body style="background:#eef9ff" onload="startRequest();">
+<body style="background:#f5f5f5" onload="startRequest();">
 <input type="hidden" id="xiaoxitype" value=""/>
 <!--弹出公告begin -->
 <div class="xiaoxi_center" id="axiaoxi" style="desplay:none;" >

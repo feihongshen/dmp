@@ -30,7 +30,7 @@ System.out.println("sssssssssssssssss"+p+" "+o);
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 		<form action="<%=request.getContextPath()%>/exportwarhousesummary/exportExcle" method="post" id="searchForm2">
 <div>
 		<input type="hidden" name="cwbs" id="cwbs" value="<%=cwbs%>"/>

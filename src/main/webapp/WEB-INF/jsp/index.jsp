@@ -81,12 +81,13 @@
 }
 </style>
 <SCRIPT type="text/javascript">
-	$(function() {
+	function quit() {
 
-	});
+	}
 </SCRIPT>
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">
+	<!-- 弹出对话框-->
 	<div id="alert_box"></div>
 	<div class="tishi_box"></div>
 	<!-- 顶部-->
@@ -116,17 +117,23 @@
 						</div>
 						<div id="layout_north_kzmbMenu"
 							style="width: 100px; display: none;">
-							<div onclick="openwindow('用户信息','userController.do?userinfo')">
-								<i class="icon-user" style="position: relative; left: -25px;"></i>个人信息
+							<div
+								onclick="addTab('通讯录','contact/list/1?&clickFunctionId=10000','folder')">
+								<i class="icon-user" style="position: relative; left: -25px;"></i>通讯录
 							</div>
 							<div class="menu-sep"></div>
-							<div onclick="add('修改密码','userController.do?changepassword')">
+							<div
+								onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
-							<div onclick="exit('loginController.do?logout','确定退出该系统吗 ?',1);">
-								<i class="icon-off" style="position: relative; left: -25px;"></i>退出系统
+							<div>
+								<a onclick="return confirm('确定退出系统吗？');"
+									href="<%=request.getContextPath()%>/resources/j_spring_security_logout"
+									target="_top"> <i class="icon-off"
+									style="position: relative; left: -25px;"></i>退出系统
+								</a>
 							</div>
 						</div>
 					</div>

@@ -114,7 +114,7 @@ function exportField(){
 }
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box">
 	<div class="inputselect_box" style="top: 0px ">
 		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">

@@ -156,7 +156,7 @@ function clickCustomerSelect(){
 
 </head>
 
-<body style="background:#eef9ff" onload="clickCustomerSelect();">
+<body style="background:#f5f5f5" onload="clickCustomerSelect();">
 
 <div class="right_box">
 	<div class="inputselect_box">

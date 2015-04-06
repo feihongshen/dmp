@@ -174,7 +174,7 @@ function checkuser(type){
 
 </script>
 </HEAD>
-<BODY style="background:#eef9ff">
+<BODY style="background:#f5f5f5">
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/start" method = "post">
 <table>
 	<tr>

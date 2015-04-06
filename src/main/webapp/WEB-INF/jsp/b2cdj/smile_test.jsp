@@ -26,7 +26,7 @@ String MD5 = request.getAttribute("MD5")==null?"":(String)request.getAttribute("
  
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 
 	<form action="<%=request.getContextPath()%>/smile/order"  method="post" id="searchForm">

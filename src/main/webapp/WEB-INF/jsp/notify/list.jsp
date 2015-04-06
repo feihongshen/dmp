@@ -74,7 +74,7 @@ $(function (){
 });
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="kfsh_tabbtn" style="top: 0px; height:50px ">
 	<table width="100%" style="padding:10px">
 		<tr>

@@ -32,7 +32,7 @@ String delivermobile = request.getAttribute("delivermobile")==null?"":(String)re
  
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 
 	<form action="<%=request.getContextPath()%>/mobiledcb/feedback_test"  method="post" id="searchForm">

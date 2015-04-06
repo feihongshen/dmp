@@ -75,7 +75,7 @@ function sub(customerid){
 }
 </script>
 </head>
-<body style="background: #eef9ff" >
+<body style="background: #f5f5f5" >
 <div class="menucontant">
 	<div class="form_topbg" style="height:40px">
 		<form action="<%=request.getContextPath() %>/datastatistics/customerfahuodata" method="post" onSubmit="if(checkParam()){submitSaveFormAndCloseBox('$(this)');}return false;">

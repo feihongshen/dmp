@@ -196,7 +196,7 @@ $(function(){
 });
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div class="list_topbar">
 		<div style="border:1px solid #6CF; border-bottom-width:0; background:#ebf1b1; height:30px">

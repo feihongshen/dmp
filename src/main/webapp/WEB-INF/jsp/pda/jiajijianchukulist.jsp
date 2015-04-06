@@ -205,7 +205,7 @@ function  falshdata(){
 }
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
  
 	<div class="saomiao_topnum2">

@@ -17,7 +17,7 @@
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
 </head>
-<body style="background: #eef9ff" marginwidth="0" marginheight="0">
+<body style="background: #f5f5f5" marginwidth="0" marginheight="0">
 	<div>
 		<form action='<%=request.getContextPath() + "/deliverpayup/exportDetail?gcaid=" + gcaid%>'
 			method="post" id="searchForm2" style="padding: 10px">

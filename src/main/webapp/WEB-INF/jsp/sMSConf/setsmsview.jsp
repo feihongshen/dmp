@@ -83,7 +83,7 @@ function saveSuccess(data){
 </head>
 
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="right_title">
 		<form action="<%=request.getContextPath()%>/smsconfig/createORsave" method="post" id="searchForm">

@@ -59,7 +59,7 @@ function addSuccess(data){
 </script>
 </head>
 
-<body style="background:#eef9ff" onload="showpdaMenu();">
+<body style="background:#f5f5f5" onload="showpdaMenu();">
 
 <div class="right_box">
 	<div class="inputselect_box3">

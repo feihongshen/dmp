@@ -38,7 +38,7 @@ function buttonSave(form){
 	}
 }
 </script>
-<div style="background:#eef9ff">
+<div style="background:#f5f5f5">
 	<div id="box_in_bg">
 		<h1>创建系统设置</h1>
 		<form id="cwbAllStateControl_cre_Form" name="cwbAllStateControl_cre_Form"

@@ -23,7 +23,7 @@
 
 </head>
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="jg_10"></div>
 <div class="jg_10"></div>
 <div class="jg_10"></div>

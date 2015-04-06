@@ -34,7 +34,7 @@ function exportContact(){
 </script>
 </head>
 
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 
 <div class="right_box">
 	<div style="padding:5px 10px;width:100%; background:url(<%=request.getContextPath() %>/images/repeatx.png) repeat-x 0 -485px; border:1px solid #86AFD5;">

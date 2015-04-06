@@ -30,7 +30,7 @@ String values = request.getAttribute("values")==null?"":(String)request.getAttri
  
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 
 	<form action="<%=request.getContextPath()%>/explinkInterface/test"  method="post" id="searchForm">

@@ -68,7 +68,7 @@ function checkfeereg(){
 
 </script>
 </head>
-<body style="background:#eef9ff" >
+<body style="background:#f5f5f5" >
 <div class="right_box">
   <div class="right_title">
 	<form id="financechargeForm" action="<%=request.getContextPath() %>/funds/financecharge/<%=financeChargeDetail.getId() %>" method="POST" onsubmit="if(checkfeereg()){$('#financechargeForm').submit();}return false;">

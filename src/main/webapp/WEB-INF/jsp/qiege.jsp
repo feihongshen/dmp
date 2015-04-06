@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <form action="qiege" method="post">
 回车分割标识<input size=50 name="Hqie" value="<%=request.getParameter("Hqie")==null?"":request.getParameter("Hqie").replaceAll("\"", "”") %>" />多个3个英文逗号分割<br/>
 制表分割标识<input size=50 name="qie" value="<%=request.getParameter("qie")==null?"":request.getParameter("qie").replaceAll("\"", "”") %>" />多个3个英文逗号分割<br/>

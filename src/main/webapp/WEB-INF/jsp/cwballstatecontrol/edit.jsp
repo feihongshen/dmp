@@ -33,7 +33,7 @@ function buttonSave(form){
 	});
 }
 </script>
-<div style="background:#eef9ff">
+<div style="background:#f5f5f5">
 	<div id="box_in_bg">
 		<h1>修改订单状态设置</h1>
 		<form onSubmit="buttonSave(this);return false;" action="<%=request.getContextPath()%>/cwbAllStateControl/save/<%=cwbstate%>" method="post"  >

@@ -247,7 +247,7 @@ var file_id;
 	
 </script>
 </head>
-<body  style="background:#eef9ff">
+<body  style="background:#f5f5f5">
 
 
 <div class="menucontant">

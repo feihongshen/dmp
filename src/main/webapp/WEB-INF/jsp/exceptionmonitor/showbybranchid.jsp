@@ -34,7 +34,7 @@ long modelid =Long.parseLong(request.getParameter("modelid")==null?"0":request.g
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form id="searchForm2" action ="<%=request.getContextPath()%>/ExceptionMonitor/exportException" method = "post" > 

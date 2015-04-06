@@ -235,7 +235,7 @@ function stateBatch(state)
 	}
 </script>
 </head>
-<body style="background:#eef9ff;overflow: hidden;" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div style="background:#FFF">
 		<div style="position:relative; z-index:0;" >

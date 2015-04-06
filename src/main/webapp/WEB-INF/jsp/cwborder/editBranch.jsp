@@ -101,7 +101,7 @@ $(function(){
 });
 </script>
 </head>
-<body  style="background:#eef9ff" onload="showMsg()">
+<body  style="background:#f5f5f5" onload="showMsg()">
 <div class="right_box">
 	<div class="menucontant">
 	<form name="editBranchForm" id="editBranchForm" method="POST" action="geteditBranch"  >

@@ -24,7 +24,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
  
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="menucontant">
 	<font  color="red">国美测试平台</font>
 	<br><br><br>

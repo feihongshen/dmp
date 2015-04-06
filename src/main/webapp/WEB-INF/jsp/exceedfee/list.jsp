@@ -14,7 +14,7 @@ ExceedFee ef = request.getAttribute("exceedFee")==null?null:(ExceedFee)request.g
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 
 <div class="right_box">
 				<div class="right_title">

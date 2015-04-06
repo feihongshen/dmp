@@ -10,9 +10,9 @@
 		<form id="customer_cre_Form" name="customer_cre_Form" onSubmit="if(check_customer()){submitAddCustomer(this);}return false;" action="<%=request.getContextPath()%>/customer/createFile;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 				<ul style="width:450px;height: 400px;overflow-y: scroll;">
-					<li><span>供货商名称：</span><input type ="text" id ="customername" name ="customername" maxlength="30"/>*</li>
+					<li><span>客户名称：</span><input type ="text" id ="customername" name ="customername" maxlength="30"/>*</li>
 					<li><span>公司名称：</span><input type ="text" id ="companyname" name ="companyname" maxlength="30"/>*</li>
-					<li><span>供货商编码：</span><input type ="text" id ="customercode" name ="customercode" maxlength="30"/>*</li>
+					<li><span>客户编码：</span><input type ="text" id ="customercode" name ="customercode" maxlength="30"/>*</li>
 					<!-- <li><span>对接枚举编号：</span><input type ="text" id ="b2cEnum" name ="b2cEnum" maxlength="30"/></li> -->
 					<li><span>地址：</span><input type ="text" id ="customeraddress" name ="customeraddress"  maxlength="100"/></li>
 					<li><span>联系人：</span><input type ="text" id ="customercontactman" name ="customercontactman"  maxlength="30"/></li>

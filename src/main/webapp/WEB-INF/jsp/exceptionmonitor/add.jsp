@@ -101,7 +101,7 @@ function changeSitetype(){
 
 </script>
 
-<div style="background:#eef9ff">
+<div style="background:#f5f5f5">
 <form id="subForm" action="" method="post">
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="location='<%=request.getContextPath()%>/ExceptionMonitor/system'"></div>设置监控时长</h1>

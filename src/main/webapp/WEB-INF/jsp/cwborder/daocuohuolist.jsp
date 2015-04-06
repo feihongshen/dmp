@@ -31,7 +31,7 @@ function editSuccess(data){
 
 </script>
 </HEAD>
-<BODY style="background:#eef9ff">
+<BODY style="background:#f5f5f5">
 <div class="right_box">
 <div class="inputselect_box">
 <form id="searchForm" action ="1" method = "post">

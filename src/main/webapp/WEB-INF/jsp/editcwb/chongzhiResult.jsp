@@ -28,7 +28,7 @@ List<String> errorList = request.getAttribute("errorList")==null?new ArrayList<S
 
 </style>
 </HEAD>
-<BODY style="background:#eef9ff">
+<BODY style="background:#f5f5f5">
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 	<tr>
 		<td colspan="3">重置成功：<%if(ecList.size()>0){ %><%=ecList.size() %><%} %>单　重置失败<%if(errorList.size()>0) {%>：<%=errorList.size() %><%} %>单</td>

@@ -112,7 +112,7 @@ function exportField(){
 							<td width="10%" height="26" align="left" valign="top">
 							<table width="100%" border="0" cellspacing="0" cellpadding="5" class="table_5" >
 									<tr>
-										<td width="120" align="left" valign="top" bgcolor="#eef9ff">
+										<td width="120" align="left" valign="top" bgcolor="#f5f5f5">
 										<form action="1" method="post"  id="searchForm1">
 										订单信息修改时间：
 											

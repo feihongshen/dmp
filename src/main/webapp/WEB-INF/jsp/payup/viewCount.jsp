@@ -72,7 +72,7 @@ if(<%=gcaids.length() %><=0){
 </script>
 </head>
 
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 <div class="menucontant">
 							
 <form id="subPayUp" name="subPayUp" method="post" action="subPayUp" >

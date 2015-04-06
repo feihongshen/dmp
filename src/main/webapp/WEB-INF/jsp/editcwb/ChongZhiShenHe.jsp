@@ -29,7 +29,7 @@ List<CwbOrder> prohibitedCwb = (List<CwbOrder>)request.getAttribute("prohibitedC
 
 </style>
 </HEAD>
-<BODY style="background:#eef9ff">
+<BODY style="background:#f5f5f5">
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/editChongZhiShenHeZhuangTai" method = "post">
 <input type="hidden" name="requestUser" value="<%=request.getParameter("requestUser") %>" />
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">

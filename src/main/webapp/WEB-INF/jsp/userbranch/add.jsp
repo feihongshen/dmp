@@ -55,7 +55,7 @@ function check_cwbstatecontrol(form){
 
 </script>
 
-<div style="background:#eef9ff">
+<div style="background:#f5f5f5">
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="location='<%=request.getContextPath()%>/userBranchControl/list/1'"></div>创建用户区域权限</h1>
 		<form id="userbranch_cre_Form" name="userbranch_cre_Form"

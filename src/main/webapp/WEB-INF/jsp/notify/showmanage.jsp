@@ -23,7 +23,7 @@ $(function(){
 });
 </script>
 </head>
-<body style="position:relative;background:#eef9ff;margin-left:20px;margin-right:20px;">
+<body style="position:relative;background:#f5f5f5;margin-left:20px;margin-right:20px;">
 	<div  style="position:absolute;top:0px;right:20px;left:20px;">
 		<table style="border:0px;width:100%">
 			<tr>

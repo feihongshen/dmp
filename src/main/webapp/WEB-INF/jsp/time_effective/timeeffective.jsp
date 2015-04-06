@@ -37,7 +37,7 @@
 
 </head>
 
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 
 	<form class="form" action="${ctx_path}/time_effective/submit" method="post">
 		<table width="50%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="modelAndView">

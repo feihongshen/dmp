@@ -44,7 +44,7 @@ $(function(){
 });
 </script>
 </HEAD>
-<BODY  style="background:#eef9ff">
+<BODY  style="background:#f5f5f5">
 <form id="searchForm" action ="1" method = "post">
 客户名称： <select id ="customerid" name = "customerid" >
             <option value =-1>全部</option>

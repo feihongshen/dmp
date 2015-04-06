@@ -131,7 +131,7 @@ $(function() {
 });
 </script>
 </HEAD>
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 	<div class="menucontant">
 		<form id="searchForm"
 			action="<%=request.getContextPath()%>/funds/payamount" method="post">

@@ -278,7 +278,7 @@
 
 </head>
 
-<body style="background: #eef9ff">
+<body style="background: #f5f5f5">
 	<div class="search_div">
 		<form id="searchForm" name="searchForm" action="${ctx_path}/smtfaresettle/station/1" method="post">
 			<div>

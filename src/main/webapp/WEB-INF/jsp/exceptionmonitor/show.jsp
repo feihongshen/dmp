@@ -35,7 +35,7 @@ long modelid = request.getAttribute("modelid") == null ?0L : (Long)request.getAt
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
 </head>
-<body style="background:#eef9ff">
+<body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
 	<form id="searchForm2" action ="<%=request.getContextPath()%>/ExceptionMonitor/exportException" method = "post" > 

@@ -121,7 +121,7 @@ function exportField2(){
 }
 </script>
 </head>
-<body style="background:#eef9ff" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 	<div class="right_title">
 		<div>
 			<h1>帐户基本信息

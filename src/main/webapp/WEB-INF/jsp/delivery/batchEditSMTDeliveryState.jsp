@@ -147,7 +147,7 @@ function load(deliverystateid)
 	}
 </script>
 </head>
-<body style="background: #eef9ff" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>)">
+<body style="background: #f5f5f5" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>)">
 	<div class="right_box">
 		<div class="kfsh_tabbtn">
 			<ul>
