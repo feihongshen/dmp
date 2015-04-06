@@ -438,3 +438,41 @@ border:1px solid #ccc; color:#000; background:#fff; }
 .kfsh_tabbtn2 li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg3.png) no-repeat }
 .kfsh_tabbtn2 li a:hover { text-decoration:none; color:#C30; background-position:0px -31px }
 .kfsh_tabbtn2 .light { background-position:0px -62px }
+
+/*菜单图标*/
+.menu_item_jczl{
+		background-image:url('../images/ggfb.png');
+		background-size:cover;
+}
+.menu_item_yhgl{
+		background-image:url('../images/ghshzcx.png');
+		background-size:cover;
+}
+.menu_item_xtsz{
+		background-image:url('../images/jcsz.png');
+		background-size:cover;
+}
+.menu_item_ddcl{
+		background-image:url('../images/plxg.png');
+		background-size:cover;
+}
+.menu_item_fbgl{
+		background-image:url('../images/jjtssz.png');
+		background-size:cover;
+}
+.menu_item_kfgl{
+		background-image:url('../images/ghssz.png');
+		background-size:cover;
+}
+.menu_item_yyjk{
+		background-image:url('../images/sjjk].png');
+		background-size:cover;
+}
+.menu_item_cwjs{
+		background-image:url('../images/afhsjjs.png');
+		background-size:cover;
+}
+.menu_item_gjcx{
+		background-image:url('../images/azsjjk.png');
+		background-size:cover;
+}
