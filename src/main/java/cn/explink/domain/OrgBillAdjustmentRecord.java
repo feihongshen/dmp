@@ -94,6 +94,10 @@ public class OrgBillAdjustmentRecord{
 	 * 目的站
 	 */
 	private Long deliverybranchid;
+	/**
+	 * 充值编号id
+	 */
+	private Long rechargesId;
 	
 	public OrgBillAdjustmentRecord() {
 	}
@@ -264,5 +268,13 @@ public class OrgBillAdjustmentRecord{
 
 	public void setGoodsAmount(BigDecimal goodsAmount) {
 		this.goodsAmount = goodsAmount;
+	}
+
+	public Long getRechargesId() {
+		return rechargesId;
+	}
+
+	public void setRechargesId(Long rechargesId) {
+		this.rechargesId = rechargesId;
 	}
 }

@@ -335,8 +335,6 @@ public class EditCwbController {
 			this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 			List<String> errorList = new ArrayList<String>();
-			// 定义一个客户账单调整单List
-			List<AdjustmentRecord> adjustmentRecords = new ArrayList<AdjustmentRecord>();
 			
 			for (String cwb : cwbs) {
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
