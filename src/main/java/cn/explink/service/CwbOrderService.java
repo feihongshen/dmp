@@ -3551,7 +3551,8 @@ public class CwbOrderService {
 	 */
 	@OrderFlowOperation(FlowOrderTypeEnum.YiFanKui)
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
+	public Map<String, Object> deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
+		Map<String,Object> map = new HashMap<String, Object>();
 		String fankuileixing=parameters.get("fankuileixing")==null?"":parameters.get("fankuileixing").toString();
 		long deliverid = parameters.get("deliverid") == null ? 0l : Long.parseLong(parameters.get("deliverid").toString());
 		long podresultid = parameters.get("podresultid") == null ? 0l : (Long) parameters.get("podresultid");
@@ -3594,6 +3595,9 @@ public class CwbOrderService {
 		this.logger.info("修改反馈时间用户：" + user.getRealname() + " cwb" + cwb + "：当前{}改为{}", DateTimeUtil.getNowTime(), deliverytime);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		//缓存一下原先的支付方式
+		map.put("preObj", co);
+		map.put("oldpaywayid", co.getPaywayid());
 
 		// 委托派送变更状态为已反馈
 		this.orderDeliveryClientDAO.updateFanKun(cwb);
@@ -3864,9 +3868,10 @@ public class CwbOrderService {
 				newpaywayid = PaytypeEnum.Xianjin.getValue();
 			}
 		}
+		map.put("newpaywayid", newpaywayid);
 		// 更新当前反馈状态需要指定订单的下一站
 		this.saveFanKuiNextBranchId(user, deliveryState.getDeliverystate(), cwb);
-
+		
 		String sql2 = "update express_ops_cwb_detail set flowordertype=?,deliverystate=?,newpaywayid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql2, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), newpaywayid, co.getCwb());
 		this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark,
@@ -3878,6 +3883,7 @@ public class CwbOrderService {
 
 		this.logger.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
+		return map;
 	}
 
 	/**
@@ -6030,6 +6036,27 @@ public class CwbOrderService {
 			this.transferReasonStasticsDao.updateTransferReasonStastics(transRes);
 		}
 
+	}
+	/***
+	 * 判断是否修改了支付方式
+	 * @param parameters
+	 * @param newpaywayParams 
+	 * @return
+	 */
+	public Map<String, Object> checkIsModifyPayMethod(Map<String, Object> parameters, Map<String, Object> newpaywayParams) {
+		boolean flag = false;
+		Map<String, Object> map = new HashMap<String, Object>();
+		long newpaywayid = (Long)newpaywayParams.get("newpaywayid");
+		//根据订单号查询订单实体
+		CwbOrder co = new CwbOrder();
+		co = (CwbOrder) newpaywayParams.get("preObj");
+		if (co.getPaywayid()!=newpaywayid) {
+			flag = true;
+		}
+		map.put("flag", flag);
+		map.put("oldPayWayId", co.getPaywayid());
+		map.put("newPayWayId", newpaywayid);
+		return map;
 	}
 
 }

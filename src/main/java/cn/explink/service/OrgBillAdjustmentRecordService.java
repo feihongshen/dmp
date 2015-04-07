@@ -173,15 +173,41 @@ public class OrgBillAdjustmentRecordService {
 				
 				record.setReceiveFee(order.getReceivablefee());
 				record.setRefundFee(order.getPaybackfee());
-				record.setModifyFee(BigDecimal.ZERO);
-				record.setAdjustAmount(BigDecimal.ZERO);
+				
+				BigDecimal modifyFeeReceiveFee = BigDecimal.ZERO;
+				BigDecimal modifyPaybackfee = BigDecimal.ZERO;
+				
+				if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
+					record.setModifyFee(modifyFeeReceiveFee);
+					record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
+				}else if(CwbOrderTypeIdEnum.Shangmentui.getValue()==orderType.intValue()){
+					//上门退
+					record.setModifyFee(modifyPaybackfee);
+//					record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+					record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
+					
+				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
+					//判断
+					//上门退
+					//修改的是应退金额
+					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
+						record.setModifyFee(modifyPaybackfee);
+//						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
+						record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
+					}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
+						record.setModifyFee(modifyFeeReceiveFee);
+						record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
+					}
+					
+				}
+				
 				record.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
 				
 				record.setDeliverId(order.getDeliverid());
 				record.setCreator(getSessionUser().getUsername());
 				record.setCreateTime(new Date());
 				record.setOrderType(orderType);
-				record.setPayMethod(Long.valueOf(order.getPaywayid()).intValue());
+				record.setPayMethod(Long.valueOf(newPayWayId).intValue());
 				record.setDeliverybranchid(order.getDeliverybranchid());
 				try {
 					record.setSignTime(sdf.parse(deliveryState.getSign_time()));

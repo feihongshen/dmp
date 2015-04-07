@@ -71,9 +71,11 @@ import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
+import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -131,6 +133,11 @@ public class DeliveryController {
 	AmazonService amazonService;
 	@Autowired
 	HttpSession session;
+	
+	@Autowired
+	AdjustmentRecordService adjustmentRecordService;
+	@Autowired
+	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -596,7 +603,7 @@ public class DeliveryController {
 			cwb = this.cwborderService.translateCwb(cwb);
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("deliverid", deliveryid);
+			parameters.put("deliverid", deliveryid);//小件员
 			parameters.put("podresultid", podresultid);
 			parameters.put("backreasonid", backreasonid);
 			parameters.put("leavedreasonid", leavedreasonid);
@@ -621,7 +628,17 @@ public class DeliveryController {
 			parameters.put("infactfare", infactfare);
 			parameters.put("firstlevelreasonid", firstlevelreasonid);
 			
-			this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
+			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
+			
+			//操作之前判断是否修改了支付方式
+			Map<String, Object> preParams = this.cwborderService.checkIsModifyPayMethod(parameters,paywayParams);
+			
+			if((Boolean)preParams.get("flag")){
+				Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
+				Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("oldPayWayId"));
+				adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
+				orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
+			}
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
