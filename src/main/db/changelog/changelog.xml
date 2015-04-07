@@ -5921,6 +5921,8 @@ CREATE TABLE
 		INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'showbranchPhone', 'no', '到货是否显示站点电话号码');
 		</sql>
 	</changeSet>
-	
+	<changeSet id="lixuedong-2015-04-07-1" author="lixuedong">
+  	      <sqlFile path="dmp40_function.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+     </changeSet>
 </databaseChangeLog>
  

@@ -5,6 +5,7 @@ lib/winxuan-api-sdk-1.0.jar -text
 /log.roo -text
 /pom.xml -text
 src/main/db/changelog/changelog.xml -text
+src/main/db/changelog/dmp40_function.sql -text
 src/main/db/changelog/dmp_init.sql -text
 src/main/db/changelog/quartz_init.sql -text
 src/main/db/changelog/schedule_init.sql -text
