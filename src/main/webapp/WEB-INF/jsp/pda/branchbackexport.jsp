@@ -568,6 +568,13 @@ function chuku(){
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
  <div id="emb"></div>
 <div class="saomiao_box">
+
+<div class="saomiao_tab2">
+		<ul>
+			<li><a href="#"  class="light">退货出站明细</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbbranchbackexportBatch">退货出站批量</a></li>
+		</ul>
+	</div>
 	<div class="saomiao_topnum">
 		<dl class="blue" >
 			<dt>待退货出站</dt>
