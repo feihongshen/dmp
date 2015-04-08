@@ -10,13 +10,20 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
+
+import cn.explink.domain.User;
+import cn.explink.service.ExplinkUserDetail;
 
 @Component
 public class Dmp40FunctionDAO {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	public Map<Integer, List<Dmp40Function>> getFunctionMap() {
 
@@ -50,16 +57,27 @@ public class Dmp40FunctionDAO {
 	public Map<String, Dmp40Function> getFunctions() {
 
 		Map<String, Dmp40Function> loginActionlist = new HashMap<String, Dmp40Function>();
-		List<Dmp40Function> functionList = getFunctionFromDB();
+		List<Dmp40Function> functionList = getFunctionFromDB(this
+				.getSessionUser().getRoleid());
 		for (Dmp40Function function : functionList) {
 			loginActionlist.put(function.getId(), function);
 		}
 		return loginActionlist;
 	}
 
-	public List<Dmp40Function> getFunctionFromDB() {
+	public List<Dmp40Function> getAllFunctionFromDB() {
+		return this.getFunctionFromDB(-1);
+	}
+
+	public List<Dmp40Function> getFunctionFromDB(long roleid) {
+		String sql = null;
+		if (roleid == -1) {
+			sql = "select * from dmp40_function";
+		} else {
+			sql = "select * from dmp40_function a inner join express_set_role_menu_new b on a.ID = b.menuid where b.roleid = "
+					+ roleid;
+		}
 		List<Dmp40Function> lt = new ArrayList<Dmp40Function>();
-		String sql = "select * from dmp40_function";
 		List<Map<String, Object>> list = this.jdbcTemplate.queryForList(sql);
 		if (list != null) {
 			for (int i = 0; i < list.size(); i++) {
@@ -67,26 +85,31 @@ public class Dmp40FunctionDAO {
 				Dmp40Function tsf = new Dmp40Function();
 				tsf.setId(map.get("ID").toString());
 				if (map.get("functionlevel") != null) {
-					tsf.setFunctionLevel(Integer.parseInt(map.get(
-							"functionlevel").toString()));
+					tsf.setFunctionLevel((Integer) map.get("functionlevel"));
 				}
 				if (map.get("functionname") != null) {
-					tsf.setFunctionName(map.get("functionname").toString());
+					tsf.setFunctionName((String) map.get("functionname"));
 				}
 				if (map.get("functionorder") != null) {
-					tsf.setFunctionOrder(map.get("functionorder").toString());
+					tsf.setFunctionOrder((String) map.get("functionorder"));
 				}
 				if (map.get("functionurl") != null) {
-					tsf.setFunctionUrl(map.get("functionurl").toString());
+					tsf.setFunctionUrl((String) map.get("functionurl"));
 				}
 				if (map.get("parentfunctionid") != null) {
-					tsf.setParentFunctionId(map.get("parentfunctionid")
-							.toString());
+					tsf.setParentFunctionId((String) map
+							.get("parentfunctionid"));
 				}
 				lt.add(tsf);
 			}
 		}
 		return lt;
+	}
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
+				.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
 	}
 }
 

@@ -54,8 +54,9 @@ public class Dmp40MenuTag extends TagSupport {
 		StringBuffer menuString = new StringBuffer();
 		List<Dmp40Function> list = map.get(0);
 		for (Dmp40Function function : list) {
-			menuString.append("<div title=\"&nbsp;&nbsp;" + function.getFunctionName()
-					+ "\" iconCls=\"" + function.getFunctionUrl() + "\">");
+			menuString.append("<div title=\"&nbsp;&nbsp;"
+					+ function.getFunctionName() + "\" iconCls=\""
+					+ function.getFunctionUrl() + "\">");
 			int submenusize = function.getDmp40FunctionList().size();
 			if (submenusize == 0) {
 				menuString.append("</div>");
