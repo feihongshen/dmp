@@ -34,7 +34,6 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.LogTodayDAO;
-import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchTodayLog;
@@ -81,9 +80,6 @@ public class LogToDayController {
 
 	@Autowired
 	LogTodayDAO logTodayDAO;
-
-	@Autowired
-	OrderFlowDAO orderFlowDAO;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
 	@Autowired

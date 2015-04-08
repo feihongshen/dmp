@@ -5,23 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.homegobj.Homegobj;
-import cn.explink.b2c.homegobj.xmldto.Good;
-import cn.explink.b2c.homegobj.xmldto.OrderDto;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dbPool.DBOperator;
 import cn.explink.dbPool.Database;
-import cn.explink.enumutil.CwbOrderTypeIdEnum;
 
 @Service
 public class SfxhmService_getOrder extends SfxhmService {

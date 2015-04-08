@@ -107,6 +107,22 @@ public class ChangeLogContronller {
 		model.addAttribute("msg", "迁移数据,已停止");
 		return "/changeLog/accountNeedChange";
 	}
+	@RequestMapping("/changeFlow")
+	public String changeFlow(Model model) {
+		
+		return "/changeLog/tuotouChange";
+	}
+	@RequestMapping("/changeFlowChange")
+	public String changeFlowChange(Model model,HttpServletRequest request) {
+		long sid = Long.parseLong(request.getParameter("sid")) ;
+		long eid = Long.parseLong(request.getParameter("eid")) ;
+		
+		String sql ="INSERT INTO `express_ops_order_flow_log`(floworderid,`cwb`, `branchid`, `credate`,  `userid`, `floworderdetail`, `flowordertype`, `isnow`, `outwarehouseid`,`comment`) " +
+				"SELECT floworderid,`cwb`, `branchid`, `credate`,  `userid`,`floworderdetail`, `flowordertype`, `isnow`,`outwarehouseid`, `comment` FROM `express_ops_order_flow` where floworderid >="+sid+" and floworderid <= "+eid+" ";
+		
+		jdbcTemplate.update(sql);
+		return "/changeLog/tuotouChange";
+	}
 
 	/**
 	 * 迁移出库统计

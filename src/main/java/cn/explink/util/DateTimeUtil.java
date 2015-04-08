@@ -250,7 +250,7 @@ public class DateTimeUtil {
 	 * @return
 	 */
 	public static String getNeedDate(String strDate, int nCount) {
-		GregorianCalendar worldTour = new GregorianCalendar(Integer.parseInt(strDate.substring(0, 4)), Integer.parseInt(strDate.substring(5, 7)) - 1, Integer.parseInt(strDate.substring(8)));
+		GregorianCalendar worldTour = new GregorianCalendar(Integer.parseInt(strDate.substring(0, 4)), Integer.parseInt(strDate.substring(5, 7)) - 1, Integer.parseInt(strDate.substring(8,10)));
 		worldTour.add(GregorianCalendar.DATE, nCount);
 		java.util.Date d = worldTour.getTime();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");

@@ -5921,6 +5921,25 @@ CREATE TABLE
 		INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'showbranchPhone', 'no', '到货是否显示站点电话号码');
 		</sql>
 	</changeSet>
-	
+	<changeSet id="lansheng-2015-01-25-1" author="lansheng">
+		<sql>
+		CREATE TABLE `express_ops_order_flow_log` (
+		  `floworderid` bigint(11) NOT NULL AUTO_INCREMENT,
+		  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+		  `branchid` int(11) DEFAULT NULL,
+		  `credate` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+		  `userid` int(11) DEFAULT NULL,
+		  `floworderdetail` longtext COLLATE utf8_bin,
+		  `flowordertype` int(11) DEFAULT NULL,
+		  `isnow` int(1) DEFAULT '0',
+		  `outwarehouseid` int(11) DEFAULT '0',
+		  `comment` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+		  PRIMARY KEY (`floworderid`),
+		  KEY `FlowCwbIdx` (`cwb`),
+		  KEY `FlowCredateIdx` (`credate`),
+		  KEY `FlowBranchidIdx` (`branchid`)
+		) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
