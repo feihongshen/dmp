@@ -3024,10 +3024,10 @@
 				<word></word>
 				<logoimgurl>images/logo_scpj.png</logoimgurl>
 				<label>JLPJ</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
+				<addresscustomerid>14</addresscustomerid>
+				<addressid>14</addressid>
 				<addresspassword>jlpj</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -3048,10 +3048,10 @@
 				<word></word>
 				<logoimgurl>images/logo_scpj.png</logoimgurl>
 				<label>SHPJ</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
+				<addresscustomerid>13</addresscustomerid>
+				<addressid>13</addressid>
 				<addresspassword>shpj</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
 			</properties>
 		</profile>
 
