@@ -187,7 +187,6 @@ public class OrgBillAdjustmentRecordService {
 					record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 					
 				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
-					//判断
 					//上门退
 					//修改的是应退金额
 					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
