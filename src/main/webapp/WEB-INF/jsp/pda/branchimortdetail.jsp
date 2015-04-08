@@ -511,6 +511,14 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
 
+	<div class="saomiao_tab2">
+		<ul>
+			<li><a href="#"  class="light">到货扫描明细</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbbranchintowarhouseBatch">到货扫描批量</a></li>
+		</ul>
+	</div>
+
+
 	<div class="saomiao_topnum2">
 		<dl class="blue">
 			<dt>今日未到货</dt>
