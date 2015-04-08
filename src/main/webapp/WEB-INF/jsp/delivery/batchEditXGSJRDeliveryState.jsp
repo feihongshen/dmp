@@ -70,6 +70,14 @@ $(function(){
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
 	<div class="right_box">
+	
+		<div class="saomiao_tab2">
+		<ul>
+			<li><a href="<%=request.getContextPath()%>/delivery/auditView" >归班审核</a></li>		
+			<li><a href="#" class="light" >反馈批量</a></li>
+		</ul>
+
+	</div>
 		<div class="kfsh_tabbtn">
 			<ul>
 				<li><a href="./batchEditDeliveryState" >配送订单</a></li>

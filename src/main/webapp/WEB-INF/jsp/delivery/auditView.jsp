@@ -349,6 +349,13 @@ function exportYifankui(){
 
 
 	<div class="menucontant">
+	
+	<div class="saomiao_tab2">
+		<ul>
+			<li><a href="#"  class="light">归班审核</a></li>		
+			<li><a href="<%=request.getContextPath()%>/delivery/batchEditDeliveryState">反馈批量</a></li>
+		</ul>
+	</div>
 
 		<form name="form1" method="post" action="commonupload" >
 
