@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : local
-Source Server Version : 50704
+Source Server         : wzy
+Source Server Version : 50162
 Source Host           : localhost:3306
-Source Database       : dmp4.0
+Source Database       : pj_dmp
 
 Target Server Type    : MYSQL
-Target Server Version : 50704
+Target Server Version : 50162
 File Encoding         : 65001
 
-Date: 2015-04-08 15:06:32
+Date: 2015-04-08 21:12:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -66,7 +66,7 @@ INSERT INTO `dmp40_function` VALUES ('303020', '2', '订单操作流程', '30302
 INSERT INTO `dmp40_function` VALUES ('303030', '2', '订单状态流程', '303030', 'cwbAllStateControl/list?', '3030');
 INSERT INTO `dmp40_function` VALUES ('40', '0', '订单处理', '40', 'menu_item_ddcl', '');
 INSERT INTO `dmp40_function` VALUES ('4020', '1', '订单导入', '4020', 'dataimport/excelimportPage?', '40');
-INSERT INTO `dmp40_function` VALUES ('4030', '1', '匹配管理', '4030', 'dataimport/excelimportPage?', '40');
+INSERT INTO `dmp40_function` VALUES ('4030', '1', '匹配管理', '4030', 'dataimport/editBranch?', '40');
 INSERT INTO `dmp40_function` VALUES ('4040', '1', '生成运单号', '4040', 'dataimport/excelimportPage?', '40');
 INSERT INTO `dmp40_function` VALUES ('4050', '1', '导入数据失效', '4050', 'dataimport/excelimportPage?', '40');
 INSERT INTO `dmp40_function` VALUES ('50', '0', '分拨管理', '50', 'menu_item_fbgl', '');
@@ -115,8 +115,9 @@ INSERT INTO `dmp40_function` VALUES ('603010', '2', '问题件类型', '603010',
 INSERT INTO `dmp40_function` VALUES ('603020', '2', '创建问题件', '603020', 'abnormalOrder/toCreateabnormal?', '6030');
 INSERT INTO `dmp40_function` VALUES ('603030', '2', '问题件处理', '603030', 'abnormalOrder/toHandleabnormal/1?', '6030');
 INSERT INTO `dmp40_function` VALUES ('6040', '1', '查询投诉', '6040', '', '60');
-INSERT INTO `dmp40_function` VALUES ('604010', '2', '投诉处理', '604010', 'complaint/list/1?', '6040');
+INSERT INTO `dmp40_function` VALUES ('604010', '2', '投诉受理', '604010', 'order/complaintlist/1?', '6040');
 INSERT INTO `dmp40_function` VALUES ('604020', '2', '催单投诉', '604020', 'complaint/cuijiantousufozhanzhang/1?', '6040');
+INSERT INTO `dmp40_function` VALUES ('604030', '2', '投诉处理', '604030', 'complaint/list/1?', '6040');
 INSERT INTO `dmp40_function` VALUES ('6050', '1', '异常处理', '6050', '', '60');
 INSERT INTO `dmp40_function` VALUES ('605010', '2', '异常订单处理', '605010', 'cwborder/toEnd?', '6050');
 INSERT INTO `dmp40_function` VALUES ('6060', '1', '短信发送', '6060', '', '60');
@@ -128,8 +129,10 @@ INSERT INTO `dmp40_function` VALUES ('7010', '1', '妥投率', '7010', '', '70')
 INSERT INTO `dmp40_function` VALUES ('701010', '2', '妥投率条件', '701010', 'datastatistics/mobileDeliveryRateSetup?', '7010');
 INSERT INTO `dmp40_function` VALUES ('701020', '2', '妥投率查询', '701020', 'datastatistics/deliveryRateList?', '7010');
 INSERT INTO `dmp40_function` VALUES ('7020', '1', '库房日志', '7020', '', '70');
-INSERT INTO `dmp40_function` VALUES ('702010', '2', '今日库房日志', '702010', 'warehouseLog/nowlog?', '7020');
-INSERT INTO `dmp40_function` VALUES ('702020', '2', '历史库房日志', '702020', 'warehouseLog/historylog?', '7020');
+INSERT INTO `dmp40_function` VALUES ('702010', '2', '今日分拣库日志', '702010', 'warehouseLog/nowlog?', '7020');
+INSERT INTO `dmp40_function` VALUES ('702020', '2', '历史分拣库日志', '702020', 'warehouseLog/historylog?', '7020');
+INSERT INTO `dmp40_function` VALUES ('702030', '2', '今日退货库日志', '702030', 'tuihuoLog/nowlog?', '7020');
+INSERT INTO `dmp40_function` VALUES ('702040', '2', '历史退货库日志', '702040', 'tuihuoLog/historylog?', '7020');
 INSERT INTO `dmp40_function` VALUES ('7030', '1', '站点日志', '7030', '', '70');
 INSERT INTO `dmp40_function` VALUES ('703010', '2', '今日站点日志', '703010', 'logtoday/todayArrivalAllAjax?', '7030');
 INSERT INTO `dmp40_function` VALUES ('703020', '2', '历史站点日志', '703020', 'logtoday/allhistorylog/1?', '7030');
@@ -167,16 +170,20 @@ INSERT INTO `dmp40_function` VALUES ('804050', '2', '上门退站点运费结算
 INSERT INTO `dmp40_function` VALUES ('804055', '2', '上门退小件员运费结算', '804055', 'smtfaresettle/deliver/1?', '8040');
 INSERT INTO `dmp40_function` VALUES ('90', '0', '高级查询', '90', 'menu_item_gjcx', '');
 INSERT INTO `dmp40_function` VALUES ('9005', '1', '订单批量查询', '9005', 'batchselectcwb/list/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9010', '1', '客户发货统计', '9010', 'datastatistics/fahuodata/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9015', '1', '库房入库统计', '9015', 'datastatistics/intowarehousedata/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9020', '1', '库房出库统计', '9020', 'datastatistics/outwarehousedata/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9025', '1', '分站到货统计', '9025', 'datastatistics/daohuodata/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9030', '1', '站点出站统计', '9030', 'datastatistics/zhandianchuzhanlist/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9035', '1', '退货出站统计', '9035', 'datastatistics/tuihuochuzhanlist/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9040', '1', '中转订单统计', '9040', 'datastatistics/zhongzhuandata/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9043', '1', '小件员领货查询', '9043', 'delivery/searchDeliveryLead/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9045', '1', '小件员工作量统计', '9045', 'deliverycash/list?', '90');
-INSERT INTO `dmp40_function` VALUES ('9050', '1', '妥投订单汇总', '9050', 'datastatistics/tuotousearch/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9055', '1', '滞留订单汇总', '9055', 'datastatistics/zhiliusearch/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9060', '1', '拒收订单汇总', '9060', 'datastatistics/jushousearch/1?', '90');
-INSERT INTO `dmp40_function` VALUES ('9065', '1', '退客户订单汇总', '9065', 'datastatistics/tuigonghuoshangsearch/1?', '90');
+INSERT INTO `dmp40_function` VALUES ('9010', '1', '库房数据查询', '9010', '', '90');
+INSERT INTO `dmp40_function` VALUES ('901010', '2', '客户发货统计', '901010', 'datastatistics/fahuodata/1?', '9010');
+INSERT INTO `dmp40_function` VALUES ('901020', '2', '库房入库统计', '901020', 'datastatistics/intowarehousedata/1?', '9010');
+INSERT INTO `dmp40_function` VALUES ('901030', '2', '库房出库统计', '901030', 'datastatistics/outwarehousedata/1?', '9010');
+INSERT INTO `dmp40_function` VALUES ('9020', '1', '站点数据查询', '9020', '', '90');
+INSERT INTO `dmp40_function` VALUES ('902010', '2', '分站到货统计', '902010', 'datastatistics/daohuodata/1?', '9020');
+INSERT INTO `dmp40_function` VALUES ('902020', '2', '站点出站统计', '902020', 'datastatistics/zhandianchuzhanlist/1?', '9020');
+INSERT INTO `dmp40_function` VALUES ('902030', '2', '退货出站统计', '902030', 'datastatistics/tuihuochuzhanlist/1?', '9020');
+INSERT INTO `dmp40_function` VALUES ('902040', '2', '中转订单统计', '902040', 'datastatistics/zhongzhuandata/1?', '9020');
+INSERT INTO `dmp40_function` VALUES ('9030', '1', '订单数据汇总', '9030', '', '90');
+INSERT INTO `dmp40_function` VALUES ('903010', '2', '妥投订单汇总', '903010', 'datastatistics/tuotousearch/1?', '9030');
+INSERT INTO `dmp40_function` VALUES ('903020', '2', '滞留订单汇总', '903020', 'datastatistics/zhiliusearch/1?', '9030');
+INSERT INTO `dmp40_function` VALUES ('903030', '2', '拒收订单汇总', '903030', 'datastatistics/jushousearch/1?', '9030');
+INSERT INTO `dmp40_function` VALUES ('903040', '2', '退客户订单汇总', '903040', 'datastatistics/tuigonghuoshangsearch/1?', '9030');
+INSERT INTO `dmp40_function` VALUES ('9040', '1', '小件员查询', '9040', '', '90');
+INSERT INTO `dmp40_function` VALUES ('904010', '2', '小件员领货查询', '904010', 'delivery/searchDeliveryLead/1?', '9040');
+INSERT INTO `dmp40_function` VALUES ('904020', '2', '小件员工作量统计', '904020', 'deliverycash/list?', '9040');
