@@ -648,7 +648,20 @@ $(function(){
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
+
+				
+	
+				
+				
+
+
 <div class="saomiao_box2">
+		<!-- 新添加 --><div class="saomiao_tab2">
+		<ul>
+			<li><a href="#"  class="light">入库明细</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbintowarhouseBatch">入库批量</a></li>
+		</ul>
+	</div><!-- 新添加 -->		
 
 	<div class="saomiao_topnum2">
 		<dl class="blue">
@@ -761,8 +774,9 @@ $(function(){
 			</div><!-- </form> -->
 		</div>
 	</div>
-
+	
 		<div>
+		
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
 					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/intowarhouse'" />
