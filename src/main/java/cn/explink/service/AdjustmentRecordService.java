@@ -352,16 +352,17 @@ public class AdjustmentRecordService {
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(order.getCustomerid());
 		
+		aRecord.setReceive_fee(order.getReceivablefee());
+		aRecord.setRefund_fee(order.getPaybackfee());
+		
 		if(orderType==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 			//没有生成过调整单新加一个记录
-			aRecord.setReceive_fee(order.getReceivablefee());
-			aRecord.setRefund_fee(order.getPaybackfee());
 			aRecord.setModify_fee(page_payback_fee);
 			aRecord.setAdjust_amount(order.getPaybackfee().subtract(page_payback_fee));
 			aRecord.setRemark(order.getPaybackfee()+"元修改成"+page_payback_fee+"元");
 		}else if(orderType==CwbOrderTypeIdEnum.Peisong.getValue()){
 			//没有生成过调整单新加一个记录
-			aRecord.setRefund_fee(page_payback_fee);
+//			aRecord.setRefund_fee(page_payback_fee);
 			aRecord.setModify_fee(page_receive_fee);
 			aRecord.setAdjust_amount(page_receive_fee.subtract(order.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
 			aRecord.setRemark(order.getReceivablefee()+"元修改成"+page_receive_fee+"元");
