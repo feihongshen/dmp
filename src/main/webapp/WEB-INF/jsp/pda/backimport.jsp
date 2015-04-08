@@ -509,6 +509,14 @@ function yiruku(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box">
+		
+		<div class="saomiao_tab2">
+		<ul>
+			<li><a href="#"  class="light">入库明细</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbbackintowarhouseBatch">入库批量</a></li>
+		</ul>
+	</div>
+	
 
 	<div class="saomiao_topnum">
 		<!-- <dl style="cursor:pointer" onclick="tabView('table_weituihuoruku')"  class="blue">

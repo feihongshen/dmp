@@ -137,6 +137,14 @@ function yiruku(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
+	
+		<div class="saomiao_tab2">
+		<ul>
+			<li><a href="<%=request.getContextPath()%>/PDA/backimport" >入库明细</a></li>		
+			<li><a href="#" class="light" >入库批量</a></li>
+		</ul>
+	</div>
+
 
 	<div class="saomiao_topnum2">
 		<dl style="cursor:pointer" onclick="tabView('table_weituihuoruku')"  class="blue">
