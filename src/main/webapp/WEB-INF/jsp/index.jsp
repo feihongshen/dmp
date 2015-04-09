@@ -80,11 +80,8 @@
 	font-weight: normal;
 }
 </style>
-<SCRIPT type="text/javascript">
-	function quit() {
 
-	}
-</SCRIPT>
+
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">
 	<!-- 弹出对话框-->
@@ -106,14 +103,25 @@
 							<h2>
 								<label style="font-size: 1em;">唯易配送信息系统v4.1</label>
 							</h2>
+
 						</div>
 					</div>
 					<div class="pull-right" style="text-align: right;">
-						<div>
-							<a href="javascript:void(0);" class="easyui-menubutton"
-								menu="#layout_north_kzmbMenu"><i class="icon-th"></i>控制面板</a> <a
-								href="javascript:void(0);" class="easyui-menubutton"
-								menu="#layout_north_zxMenu"><i class="icon-share-alt"></i>注销</a>
+						<div style="float: right; margin-top: 10px;">
+							<table>
+								<tr>
+									<td><div>
+											<lable> 快速查询： </lable>
+											<input id="playSearch" type="text">
+										</div></td>
+									<td><div>
+											<a href="javascript:void(0);" class="easyui-menubutton"
+												menu="#layout_north_kzmbMenu"><i class="icon-th"></i>控制面板</a>
+											<a href="javascript:void(0);" class="easyui-menubutton"
+												menu="#layout_north_zxMenu"><i class="icon-share-alt"></i>注销</a>
+										</div></td>
+								</tr>
+							</table>
 						</div>
 						<div id="layout_north_kzmbMenu"
 							style="width: 100px; display: none;">
@@ -154,4 +162,16 @@
 		</div>
 	</div>
 </body>
+<script type="text/javascript">
+	$("#playSearch").keydown(
+			function(event) {
+				if (event.keyCode == 13) {
+					addTab('快速查询', 'order/queckSelectOrder/' + this.value
+							+ '?&clickFunctionId=10002',
+
+					'folder');
+					$("#playSearch").val('');
+				}
+			});
+</script>
 </html>
