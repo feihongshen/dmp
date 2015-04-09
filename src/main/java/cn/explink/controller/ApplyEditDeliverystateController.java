@@ -539,8 +539,8 @@ public class ApplyEditDeliverystateController {
 
 	@RequestMapping("/audit")
 	public @ResponseBody
-	int audit(Model model, @RequestParam(value = "id", required = false, defaultValue = "0") long id) {
-		int count = this.applyEditDeliverystateDAO.updateAudit(id);
+	int audit(Model model, @RequestParam(value = "id", required = false, defaultValue = "0") long id, @RequestParam(value = "flag", required = false, defaultValue = "0") long flag) {
+		int count = this.applyEditDeliverystateDAO.updateAudit(id, flag, this.getSessionUser().getUserid());
 		return count;
 	}
 
