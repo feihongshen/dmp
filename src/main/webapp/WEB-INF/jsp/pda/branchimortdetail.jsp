@@ -445,7 +445,7 @@ function getdaohuocwbquejiandataList(){
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"'>"
 					+"<td width='120' align='center'>"+data[i].cwb+"</td>"
 					+"<td width='120' align='center'>"+data[i].transcwb+"</td>"
-					+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+					+"<td width='120' align='center'>"+data[i].packagecode+"</td>"
 					+"<td width='100' align='center'> "+data[i].customername+"</td>"
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
