@@ -1,4 +1,4 @@
-package main.java.cn.explink.service;
+package cn.explink.service;
 
 import java.math.BigDecimal;
 import java.text.ParseException;

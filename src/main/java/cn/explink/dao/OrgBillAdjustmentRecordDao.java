@@ -1,4 +1,4 @@
-package main.java.cn.explink.dao;
+package cn.explink.dao;
 
 import java.math.BigDecimal;
 import java.sql.Date;
