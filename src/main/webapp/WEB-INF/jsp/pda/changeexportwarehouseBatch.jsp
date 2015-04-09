@@ -264,8 +264,8 @@ function tohome(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/changeexportwarhouse" >入库明细</a></li>		
-			<li><a href="#" class="light" >入库批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/changeexportwarhouse" >出库明细</a></li>		
+			<li><a href="#" class="light" >出库批量</a></li>
 		</ul>
 	</div>
  
