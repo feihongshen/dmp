@@ -105,18 +105,28 @@ function getThisBox(id){
 		}
 	});
 }
-function Audit(id){
+function Audit(id,flag){
 	if(confirm("确认要审核吗   ?")){
 	$.ajax({
 		type: "POST",
 		url:$("#auditurl").val(),
-		data:{"id":id},
+		data:{"id":id,"flag":flag},
 		dataType:"json",
 		success : function(data) {
 			if(data>0)
 				{
-				$("#auditButton_"+id).val("已审核");
+				if(flag==1)
+				{
+				$("#auditButton1_"+id).val("已通过");
+				$("#auditButton2_"+id).remove();
+				}
+				else {
+					$("#auditButton2_"+id).val("未通过");
+					$("#auditButton1_"+id).remove();
+				}
 				$("#auditButton_"+id).attr("disabled","disabled");
+				$("#auditButton1_"+id).attr("disabled","disabled");
+				$("#auditButton2_"+id).attr("disabled","disabled");
 				}
 		}
 	});
@@ -201,7 +211,8 @@ function editInit(){
 				<select name="audit" id="audit">
 					<option value="-1">请选择</option>
 					<option value="0">未审核</option>
-					<option value="1">已审核</option>
+					<option value="1">已通过</option>
+					<option value="2">未通过</option>
 				</select>
 			<%} else {%>
 			处理状态：
@@ -250,11 +261,17 @@ function editInit(){
 			<td align="center" valign="middle"><%=adse.getEditreason() %></td>
 			<td align="center" valign="middle"><!-- <input type="button" name="button2" id="button2" value="修改"> -->
 			<%if(isService==false&&isFinancial==false){%>
-				
-			<%} 
-			else if(isService){%>
-				<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>" <%if(adse.getAudit()==1){ %> disabled="disabled" <%} %> value='<%=adse.getAudit()==1?"已审核":"审核"%>' onclick="Audit(<%=adse.getId()%>)" />
+			<%}else if(isService)
+			{if(adse.getAudit()==0){
+			%>
+			<input type="button" name="auditButton" id="auditButton1_<%=adse.getId() %>" value='通过' onclick="Audit(<%=adse.getId()%>,1)" />
+			<input type="button" name="auditButton" id="auditButton2_<%=adse.getId() %>" value='不通过' onclick="Audit(<%=adse.getId()%>,2)" />
+			<%}else if(adse.getAudit()==1){%>
+				<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>"  value='已通过' disabled="disabled" />
+			<%}else if(adse.getAudit()==2){%>
+			<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>"  value='未通过' disabled="disabled" />
 			<%}
+			}
 			else{
 			if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>
 			<input type="button" name="button2" id="button2" value="修改" onclick="edit_button(<%=adse.getId()%>);" class="input_button2">
