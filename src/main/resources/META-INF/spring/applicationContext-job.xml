@@ -84,6 +84,7 @@
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
 							 <ref bean="doTime_gztl" />
+							 <ref bean="doTime_deleteFlow" />
 							 
 			           </list>                 
 	               </property>         
@@ -794,6 +795,24 @@
          </property>
          <property name="targetMethod">
              <value>getGztlCwbDetail_Task</value>
+         </property>
+     </bean>
+     
+     <bean id="doTime_deleteFlow" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="deleteFlow" />
+           </property>
+             <property name="cronExpression">
+               <value>0 0 12 * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="deleteFlow" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>deleteflowlog_Task</value>
          </property>
      </bean>
      

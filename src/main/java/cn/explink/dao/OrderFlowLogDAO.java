@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -1145,4 +1143,42 @@ public class OrderFlowLogDAO {
 		this.jdbcTemplate.update(setSql, cwb);
 	}
 
+	public void deleteFlowLogByid(long startid,long endid){
+		String sql = "DELETE FROM express_ops_order_flow_log WHERE floworderid >="+startid+" AND floworderid <"+endid+"";
+		jdbcTemplate.update(sql);
+	}
+	
+	public String getEndTime(){
+		String sql ="SELECT `createdate`  FROM `express_ops_branch_todaylog` ORDER BY `createdate` DESC LIMIT 0,1";
+		String time = "";
+		try {
+			time = jdbcTemplate.queryForObject(sql, String.class);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		}
+		return time;
+	}
+	public long getEndFlowId(String credate){
+		String sql ="SELECT max(floworderid)  FROM `express_ops_order_flow_log` where credate <'"+credate+"'";
+		long id = 0;
+		try {
+			id = jdbcTemplate.queryForLong(sql);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			id = 0;
+		}
+		return id;
+	}
+	public long getStartFlowId(String credate){
+		String sql ="SELECT min(floworderid)  FROM `express_ops_order_flow_log` where credate <'"+credate+"'";
+		long id = 0;
+		try {
+			id = jdbcTemplate.queryForLong(sql);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			id = 0;
+		}
+		return id;
+	}
 }

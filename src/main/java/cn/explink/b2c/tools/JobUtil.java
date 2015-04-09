@@ -69,6 +69,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.ExpressSysMonitorEnum;
 import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
+import cn.explink.service.FloworderLogService;
 
 @Component
 public class JobUtil {
@@ -195,7 +196,9 @@ public class JobUtil {
 	ExpressSysMonitorDAO expressSysMonitorDAO;
 	@Autowired
 	GuangZhouTongLuInsertCwbDetailTimmer guangZhouTongLuInsertCwbDetailTimmer;
-
+	@Autowired
+	FloworderLogService floworderLogService;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -1024,5 +1027,17 @@ public class JobUtil {
 		}
 
 	}
-
+	/**
+	 * 定时删除flowLog表
+	 */
+	public void deleteflowlog_Task() {
+		try {
+			
+			this.floworderLogService.deteFlow();
+		} catch (Exception e) {
+			this.logger.error("执行了删除flowlog表定时器!", e);
+		}
+		
+		this.logger.info("执行了删除flowlog表定时器!");
+	}
 }

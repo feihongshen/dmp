@@ -1433,6 +1433,7 @@ src/main/java/cn/explink/service/ExcelExtractor.java -text
 src/main/java/cn/explink/service/ExplinkUserDetail.java -text
 src/main/java/cn/explink/service/ExportService.java -text
 src/main/java/cn/explink/service/ExportmouldService.java -text
+src/main/java/cn/explink/service/FloworderLogService.java -text
 src/main/java/cn/explink/service/ImportCwbErrorService.java -text
 src/main/java/cn/explink/service/LogToDayByTuihuoService.java -text
 src/main/java/cn/explink/service/LogToDayByWarehouseService.java -text
