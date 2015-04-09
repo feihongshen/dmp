@@ -72,6 +72,7 @@ import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.StockResultDAO;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -98,6 +99,7 @@ import cn.explink.domain.OrderGoods;
 import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
+import cn.explink.domain.Role;
 import cn.explink.domain.SetExportField;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.StockResult;
@@ -229,6 +231,8 @@ public class PDAController {
 	EmailDateService emailDateService;
 	@Autowired
 	ExportwarhousesummaryDAO exportwarhousesummaryDAO;
+	@Autowired
+	RoleDAO roleDAO;
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -1455,6 +1459,12 @@ public class PDAController {
 	@RequestMapping("/branchdeliver")
 	public String branchdeliver(Model model) {
 		String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleids += "," + r.getRoleid();
+			}
+		}
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 
 		model.addAttribute("userList", uList);
@@ -1466,6 +1476,12 @@ public class PDAController {
 	public @ResponseBody
 	List<User> getBranchDeliver(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleids += "," + r.getRoleid();
+			}
+		}
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, branchid);
 
 		return uList;
@@ -1481,6 +1497,12 @@ public class PDAController {
 	@RequestMapping("/branchdeliverdetail")
 	public String branchdeliverdetail(Model model, @RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(value = "customerid", defaultValue = "-1") long customerid) {
 		String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleids += "," + r.getRoleid();
+			}
+		}
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 
 		List<Customer> cList = this.customerDAO.getAllCustomers();
@@ -4473,7 +4495,7 @@ public class PDAController {
 		}
 		CwbOrder cwbOrder = null;
 		if (checktype == 1) {
-			if (customerid >0 && co.getCustomerid() != customerid) {
+			if ((customerid > 0) && (co.getCustomerid() != customerid)) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.GongHuoShang_Bufu);
 			}
 			OperationTime op = this.operationTimeDAO.getObjectBycwb(cwb);
