@@ -408,6 +408,7 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (ShangMenTuiCwbDetail smtcd : smtlist) {
+			logger.info("上门退订单打印记录cwb={}",smtcd.getCwb());
 			cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
 			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
 		}
