@@ -2229,7 +2229,7 @@ public class PDAController {
 			String s = (String) it.next();
 			cwbs += "'" + s + "',";
 		}
-		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "--";
+		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : ""; 
 
 	}
 
@@ -4567,7 +4567,14 @@ public class PDAController {
 
 		String wavPath = null;
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
-			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+			if(cwbOrder.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() ){
+				//TODO 退货站入库   声音
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.TUI_HUO_RU_KU.getVediourl();
+			}else if(cwbOrder.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
+				//TODO 中转站入库   声音
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.ZHONG_ZHUAN_RU_KU.getVediourl();
+			}
 		} else {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
