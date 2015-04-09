@@ -122,6 +122,9 @@ public class CwbOrder {
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
 	private int outareaflag = 0;// 超区标识.
+	
+	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
+	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
 
 	public CwbOrder() {
 		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {
@@ -988,5 +991,26 @@ public class CwbOrder {
 	public void setOutareaflag(int outareaflag) {
 		this.outareaflag = outareaflag;
 	}
+	
+	
+	public int getFnorgoffsetflag() {
+		return fnorgoffsetflag;
+	}
+
+
+	public void setFnorgoffsetflag(int fnorgoffsetflag) {
+		this.fnorgoffsetflag = fnorgoffsetflag;
+	}
+
+
+	public BigDecimal getFnorgoffset() {
+		return fnorgoffset;
+	}
+
+
+	public void setFnorgoffset(BigDecimal fnorgoffset) {
+		this.fnorgoffset = fnorgoffset;
+	}
+
 
 }
