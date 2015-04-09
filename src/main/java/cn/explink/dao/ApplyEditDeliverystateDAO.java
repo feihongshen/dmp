@@ -185,8 +185,8 @@ public class ApplyEditDeliverystateDAO {
 		this.jdbcTemplate.update(sql, issendcustomer);
 	}
 
-	public int updateAudit(long id) {
-		String sql = "update express_ops_applyeditdeliverystate set audit=1 where id =" + id;
+	public int updateAudit(long id, long flag, long userid) {
+		String sql = "update express_ops_applyeditdeliverystate set audit=" + flag + ",edituserid=" + userid + " where id =" + id;
 		return this.jdbcTemplate.update(sql);
 	}
 }
