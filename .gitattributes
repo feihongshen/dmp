@@ -794,6 +794,7 @@ src/main/java/cn/explink/dao/AccountDeductRecordDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeDetailDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeTypeDAO.java -text
 src/main/java/cn/explink/dao/AddressStartDAO.java -text
+src/main/java/cn/explink/dao/AdjustmentRecordDAO.java -text
 src/main/java/cn/explink/dao/AppearWindowDao.java -text
 src/main/java/cn/explink/dao/ApplyEditDeliverystateDAO.java -text
 src/main/java/cn/explink/dao/AutomaticSetDAO.java -text
@@ -839,6 +840,8 @@ src/main/java/cn/explink/dao/ExpressSysMonitorDAO.java -text
 src/main/java/cn/explink/dao/FinanceAuditDAO.java -text
 src/main/java/cn/explink/dao/FinanceDeliverPayUpDetailDAO.java -text
 src/main/java/cn/explink/dao/FinancePayUpAuditDAO.java -text
+src/main/java/cn/explink/dao/FnCustomerBillDetailDAO.java -text
+src/main/java/cn/explink/dao/FnOrgBillDetailDAO.java -text
 src/main/java/cn/explink/dao/GotoClassAuditingDAO.java -text
 src/main/java/cn/explink/dao/GotoClassOldDAO.java -text
 src/main/java/cn/explink/dao/GroupDetailDao.java -text
@@ -860,6 +863,7 @@ src/main/java/cn/explink/dao/OrderDeliveryClientDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowDAO.java -text
 src/main/java/cn/explink/dao/OrderGoodsDAO.java -text
 src/main/java/cn/explink/dao/OrderPartGoodsRtDAO.java -text
+src/main/java/cn/explink/dao/OrgBillAdjustmentRecordDao.java -text
 src/main/java/cn/explink/dao/OutWarehouseGroupDAO.java -text
 src/main/java/cn/explink/dao/OverdueExMoDAO.java -text
 src/main/java/cn/explink/dao/ParameterDetailDAO.java -text
