@@ -1618,6 +1618,7 @@ src/main/webapp/WEB-INF/jsp/auditorderstate/toEnd.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiGongHuoShang.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiGongHuoShangSuccess.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuo.jsp -text
+src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuo1.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuoCheck.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuoZaiTou.jsp -text
 src/main/webapp/WEB-INF/jsp/automaticset/edit.jsp -text

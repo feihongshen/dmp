@@ -275,8 +275,8 @@ function getdaohuocwbquejiandataList(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/branchimortdetail" >到货扫描明细</a></li>		
-			<li><a href="#" class="light" >到货扫描批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/branchimortdetail" >逐单操作</a></li>		
+			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
 

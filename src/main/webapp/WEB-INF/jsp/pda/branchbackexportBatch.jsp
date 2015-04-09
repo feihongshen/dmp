@@ -182,8 +182,8 @@ function tohome(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/branchbackexport" >退货出站明细</a></li>		
-			<li><a href="#" class="light" >退货出站批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/branchbackexport" >逐单操作</a></li>		
+			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
  

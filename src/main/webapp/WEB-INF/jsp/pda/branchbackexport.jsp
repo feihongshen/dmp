@@ -571,8 +571,8 @@ function chuku(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="#"  class="light">退货出站明细</a></li>		
-			<li><a href="<%=request.getContextPath()%>/PDA/cwbbranchbackexportBatch">退货出站批量</a></li>
+			<li><a href="#"  class="light">逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbbranchbackexportBatch">批量操作</a></li>
 		</ul>
 	</div>
 	<div class="saomiao_topnum">

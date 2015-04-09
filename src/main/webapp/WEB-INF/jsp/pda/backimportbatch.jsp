@@ -140,8 +140,8 @@ function yiruku(){
 	
 		<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/backimport" >入库明细</a></li>		
-			<li><a href="#" class="light" >入库批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/backimport" >逐单操作</a></li>		
+			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
 

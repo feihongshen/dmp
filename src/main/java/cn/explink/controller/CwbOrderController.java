@@ -870,6 +870,59 @@ public class CwbOrderController {
 
 		return "auditorderstate/toTuiHuo";
 	}
+	
+	/**
+	 * 审为退货 针对所在机构是库房的不是退货状态的订单
+	 * 
+	 * @param model
+	 * @param request
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/toTuiHuo1")
+	public String toTuiHuo1(Model model, HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb// 订单状态类型
+	) {
+		String quot = "'", quotAndComma = "',";
+		int isOpenFlag = jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		model.addAttribute("amazonIsOpen", isOpenFlag);
+		String isUseAuditTuiHuo = systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
+		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
+		String isUseAuditZhongZhuan = systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
+		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
+		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+
+		if (cwb.length() > 0) {
+			List<String> scancwblist = new ArrayList<String>();
+			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
+
+			StringBuffer cwbs = new StringBuffer();
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				String lastcwb = cwborderService.translateCwb(cwbStr);
+				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
+				CwbOrder co = cwbDao.getCwbByCwb(lastcwb);
+				if (co != null) {
+					scancwblist.add(cwbStr);
+					cwborderlist.add(co);
+				}
+			}
+			request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
+			List<Customer> customerList = customerDao.getAllCustomers();
+			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = branchDAO.getAllEffectBranches();
+			List<User> userList = userDAO.getAllUser();
+			List<Reason> reasonList = reasonDAO.getAllReason();
+			List<Remark> remarkList = remarkDAO.getRemarkByCwbs(cwbs.substring(0, cwbs.length() - 1));
+			model.addAttribute("cwbList", getCwbOrderView(scancwblist, cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList));
+			model.addAttribute("branchList", branchList);
+			model.addAttribute("customerList", customerList);
+			model.addAttribute("reasonList", reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue()));
+		}
+
+		return "auditorderstate/toTuiHuo1";
+	}
 
 	/**
 	 * 审为退货再投

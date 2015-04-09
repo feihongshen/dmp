@@ -367,8 +367,8 @@ function tohome(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="#"  class="light">领货明细</a></li>		
-			<li><a href="<%=request.getContextPath()%>/PDA/branchdeliverBatch">领货批量</a></li>
+			<li><a href="#"  class="light">逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/branchdeliverBatch">批量操作</a></li>
 		</ul>
 	</div>
  

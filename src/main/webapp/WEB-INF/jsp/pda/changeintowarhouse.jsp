@@ -633,8 +633,8 @@ $(function(){
 	
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="#"  class="light">入库明细</a></li>		
-			<li><a href="<%=request.getContextPath()%>/PDA/cwbChangeintowarhouseBatch">入库批量</a></li>
+			<li><a href="#"  class="light">逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/cwbChangeintowarhouseBatch">批量操作</a></li>
 		</ul>
 	</div>
 

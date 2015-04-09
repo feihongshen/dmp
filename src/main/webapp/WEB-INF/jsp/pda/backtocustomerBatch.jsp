@@ -140,8 +140,8 @@ function yichuku(){
 
 <div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/backtocustomer">出库明细</a></li>		
-			<li><a href="#" class="light" >出库批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/backtocustomer">逐单操作</a></li>		
+			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
  
