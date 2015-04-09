@@ -151,9 +151,11 @@ function load(val){
 			机构类型：
 			<select name="sitetype">
 			<option value="0">请选择</option>
-			<%for(BranchEnum branchEnum:BranchEnum.values()){ %>
-			<option value="<%=branchEnum.getValue() %>" <%if(sitetype==branchEnum.getValue()){%>selected="selected" <%} %>><%=branchEnum.getText() %></option>
-			<%} %>
+			<option value="<%=BranchEnum.KuFang.getValue() %>" <%if(sitetype==BranchEnum.KuFang.getValue()){%>selected="selected" <%} %>><%=BranchEnum.KuFang.getText() %></option>
+			<option value="<%=BranchEnum.ZhanDian.getValue() %>" <%if(sitetype==BranchEnum.ZhanDian.getValue()){%>selected="selected" <%} %>><%=BranchEnum.ZhanDian.getText() %></option>
+			<option value="<%=BranchEnum.TuiHuo.getValue() %>" <%if(sitetype==BranchEnum.TuiHuo.getValue()){%>selected="selected" <%} %>><%=BranchEnum.TuiHuo.getText() %></option>
+			<option value="<%=BranchEnum.ZhongZhuan.getValue() %>" <%if(sitetype==BranchEnum.ZhongZhuan.getValue()){%>selected="selected" <%} %>><%=BranchEnum.ZhongZhuan.getText() %></option>
+			
 			</select>
 			每页显示条数：
 			<select name="pagesize">
