@@ -1377,6 +1377,7 @@ src/main/java/cn/explink/service/AccountDeducDetailService.java -text
 src/main/java/cn/explink/service/AccountDeductRecordService.java -text
 src/main/java/cn/explink/service/AccountFeeDetailService.java -text
 src/main/java/cn/explink/service/AccountFeeTypeService.java -text
+src/main/java/cn/explink/service/AdjustmentRecordService.java -text
 src/main/java/cn/explink/service/AdvancedQueryService.java -text
 src/main/java/cn/explink/service/AppearWindowService.java -text
 src/main/java/cn/explink/service/ApplyDeliverstateService.java -text
@@ -1429,6 +1430,7 @@ src/main/java/cn/explink/service/OrderArriveTimeService.java -text
 src/main/java/cn/explink/service/OrderBackCheckService.java -text
 src/main/java/cn/explink/service/OrderDeliveryClientService.java -text
 src/main/java/cn/explink/service/OrderPartGoodsReturnService.java -text
+src/main/java/cn/explink/service/OrgBillAdjustmentRecordService.java -text
 src/main/java/cn/explink/service/ParameterDetailService.java -text
 src/main/java/cn/explink/service/PayUpService.java -text
 src/main/java/cn/explink/service/PosPayMoneyService.java -text
