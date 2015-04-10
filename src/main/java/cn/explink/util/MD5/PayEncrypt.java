@@ -1,11 +1,14 @@
 package cn.explink.util.MD5;
 
 import java.security.*;
+
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
+
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 public class PayEncrypt {
 	private final String Algorithm = "DESede"; // 定义 加密算法,可用 DES,DESede,Blowfish
@@ -18,8 +21,9 @@ public class PayEncrypt {
 	public String encryptMode(String key, String src) throws EncException {
 		try {
 			byte[] destbyte = encryptMode(key.getBytes("utf-8"), src.getBytes("utf-8"));
-			BASE64Encoder base64en = new BASE64Encoder();
-			return base64en.encode(destbyte);
+//			BASE64Encoder base64en = new BASE64Encoder();
+			
+			return new String(Base64.encodeBase64(destbyte));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
@@ -41,9 +45,10 @@ public class PayEncrypt {
 	}
 
 	public String decryptMode(String key, String src) throws EncException {
-		BASE64Decoder decoder = new BASE64Decoder();
+//		BASE64Decoder decoder = new BASE64Decoder();
 		try {
-			byte[] srcbyte = decoder.decodeBuffer(src);
+//			byte[] srcbyte = decoder.decodeBuffer(src);
+			byte[] srcbyte = Base64.decodeBase64(src.getBytes());
 			byte[] destbyte = decryptMode(key.getBytes("utf-8"), srcbyte);
 			return new String(destbyte);
 		} catch (Exception e) {

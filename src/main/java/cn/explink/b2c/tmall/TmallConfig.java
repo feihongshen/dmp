@@ -15,6 +15,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.springframework.security.crypto.codec.Base64;
 import org.xml.sax.InputSource;
 
 import cn.explink.pos.tools.JacksonMapper;
@@ -96,7 +97,8 @@ public class TmallConfig {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encode(str.getBytes(charset)));
+//		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
 	}
 
 	/**

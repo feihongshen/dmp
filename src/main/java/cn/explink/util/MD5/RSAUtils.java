@@ -1,7 +1,6 @@
 package cn.explink.util.MD5;
 
 import java.io.IOException;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -15,12 +14,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
+import org.apache.commons.codec.binary.Base64;
+
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 import cn.explink.b2c.rufengda.Rufengda;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 
 public class RSAUtils {
 
@@ -48,12 +48,13 @@ public class RSAUtils {
 	 * @return
 	 * @throws Base64DecodingException
 	 */
-	public static PublicKey getPublicKey(Rufengda rfd) throws Base64DecodingException {
+	public static PublicKey getPublicKey(Rufengda rfd) {
 		byte[] modulusBytes;
 		PublicKey pubKey = null;
 		try {
-			modulusBytes = Base64.decode(rfd.getModulePuk());
-			byte[] exponentBytes = Base64.decode(rfd.getExponentPublic());
+//			Base64.decode(rfd.getModulePuk());
+			modulusBytes = Base64.decodeBase64(rfd.getModulePuk().getBytes());
+			byte[] exponentBytes = Base64.decodeBase64(rfd.getExponentPublic().getBytes());
 			BigInteger modulus = new BigInteger(1, modulusBytes);
 			BigInteger exponent = new BigInteger(1, exponentBytes);
 			RSAPublicKeySpec rsaPubKey = new RSAPublicKeySpec(modulus, exponent);
@@ -73,12 +74,12 @@ public class RSAUtils {
 	 * @return
 	 * @throws Base64DecodingException
 	 */
-	public static PrivateKey getPrivateKey(Rufengda rfd) throws Base64DecodingException {
+	public static PrivateKey getPrivateKey(Rufengda rfd) {
 		byte[] modulusBytes;
 		PrivateKey priKey = null;
 		try {
-			modulusBytes = Base64.decode(rfd.getModulePrk());
-			byte[] exponentBytes = Base64.decode(rfd.getExponetPrivate());
+			modulusBytes = Base64.decodeBase64(rfd.getModulePuk().getBytes());
+			byte[] exponentBytes = Base64.decodeBase64(rfd.getExponentPublic().getBytes());
 			BigInteger modulus = new BigInteger(1, modulusBytes);
 			BigInteger exponent = new BigInteger(1, exponentBytes);
 			RSAPrivateKeySpec rsaPriKey = new RSAPrivateKeySpec(modulus, exponent);
@@ -102,18 +103,21 @@ public class RSAUtils {
 	 * @throws UnsupportedEncodingException
 	 * @throws Base64DecodingException
 	 */
-	public static String sign(String plainText, Rufengda rfd) throws NoSuchAlgorithmException, UnsupportedEncodingException, Base64DecodingException {
+	public static String sign(String plainText, Rufengda rfd) throws NoSuchAlgorithmException, UnsupportedEncodingException{
 		// 明文MD5加密转Base64再签名
 		MessageDigest md5 = MessageDigest.getInstance("MD5");
-		BASE64Encoder base64en = new BASE64Encoder();
-		plainText = base64en.encode(md5.digest(plainText.getBytes("GB2312")));
+//		BASE64Encoder base64en = new BASE64Encoder();
+		plainText = new String(Base64.encodeBase64(md5.digest(plainText.getBytes("GB2312"))));
+//		plainText = Base64.encode(md5.digest(plainText.getBytes("GB2312")));
+//		plainText = base64en.encode(md5.digest(plainText.getBytes("GB2312")));
 		PrivateKey key = getPrivateKey(rfd);
 		java.security.Signature sign;
 		try {
 			sign = java.security.Signature.getInstance("SHA1withRSA");
 			sign.initSign(key);
 			sign.update(plainText.getBytes());
-			return base64en.encode(sign.sign());
+//			return base64en.encode(sign.sign());
+			return new String(Base64.encodeBase64(sign.sign()));
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
@@ -135,20 +139,22 @@ public class RSAUtils {
 	 * @throws Base64DecodingException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static boolean verify(String plainText, String signed, Rufengda rfd) throws IOException, Base64DecodingException, NoSuchAlgorithmException {
+	public static boolean verify(String plainText, String signed, Rufengda rfd) throws IOException, NoSuchAlgorithmException {
 
 		// 明文MD5加密转Base64再签名
 		MessageDigest md5 = MessageDigest.getInstance("MD5");
-		BASE64Encoder base64en = new BASE64Encoder();
-		plainText = base64en.encode(md5.digest(plainText.getBytes("GB2312")));
+//		BASE64Encoder base64en = new BASE64Encoder();
+//		plainText = base64en.encode(md5.digest(plainText.getBytes("GB2312")));
+		plainText = new String(Base64.encodeBase64(md5.digest(plainText.getBytes("GB2312"))));
 		PublicKey key = getPublicKey(rfd);
 		boolean ret = false;
 		java.security.Signature signatureChecker;
 		try {
 			signatureChecker = java.security.Signature.getInstance("SHA1withRSA");
 			signatureChecker.initVerify(key);
-			BASE64Decoder base64Decoder = new BASE64Decoder();
-			byte[] decodebase64Sign = base64Decoder.decodeBufferToByteBuffer(signed).array();
+//			BASE64Decoder base64Decoder = new BASE64Decoder();
+//			byte[] decodebase64Sign = base64Decoder.decodeBufferToByteBuffer(signed).array();
+			byte[] decodebase64Sign = Base64.decodeBase64(signed.getBytes());
 			signatureChecker.update(plainText.getBytes());
 			if (signatureChecker.verify(decodebase64Sign)) {
 				ret = true;

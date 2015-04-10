@@ -6,6 +6,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.MD5.MD5Util;
+
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -84,7 +85,8 @@ public class WangjiuConfig {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+//		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encodeBase64(str.getBytes(charset)));
 	}
 
 	public static String base64Md5Result(String xml, String customerCode, String secretKey) throws Exception {

@@ -160,7 +160,7 @@ public class UnionPayService {
 	 */
 	protected JSONObject ConvertJsonObject(String jsondata) {
 		try {
-			String jsonDataInfo = new String(Base64Utils.decryptBASE64(jsondata.replaceAll("@", "+")), "utf-8");
+			String jsonDataInfo = new String(Base64Utils.decode(jsondata.replaceAll("@", "+")), "utf-8");
 			JSONObject json = JSONObject.fromObject(jsonDataInfo);
 			return json;
 		} catch (Exception e) {

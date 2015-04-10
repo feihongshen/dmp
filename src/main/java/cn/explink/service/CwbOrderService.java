@@ -82,6 +82,7 @@ import cn.explink.dao.OrderArriveTimeDAO;
 import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderFlowLogDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.PosPayMoneyDAO;
 import cn.explink.dao.ReasonDao;
@@ -358,6 +359,8 @@ public class CwbOrderService {
 	TransferReasonStasticsDao transferReasonStasticsDao;
 	@Autowired
 	TransferResMatchDao transferResMatchDao;
+	@Autowired
+	OrderFlowLogDAO orderFlowLogDAO;
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -1733,7 +1736,13 @@ public class CwbOrderService {
 		try {
 			OrderFlow of = new OrderFlow(0, cwb, branchid, new Timestamp(credate), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), flowordertype.getValue(),
 					comment);
-			this.orderFlowDAO.creAndUpdateOrderFlow(of);
+			long floworderid = this.orderFlowDAO.creAndUpdateOrderFlow(of);
+			try {
+				this.orderFlowLogDAO.creAndUpdateOrderFlow(of,floworderid);
+			} catch (Exception e) {
+				logger.info("存储flow日志异常，订单号：{}",cwb);
+				e.printStackTrace();
+			}
 			this.updateOrInsertWareHouseToBranch(cwbOrder, of);
 			this.updateOutToCommen(cwbOrder, of, 0); // 出库 承运商库房
 			this.updateOutToCommen_toTwoLeavelBranch(cwbOrder, of, 1); // 一级站出库二级站

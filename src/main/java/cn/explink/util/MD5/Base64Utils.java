@@ -1,27 +1,27 @@
 package cn.explink.util.MD5;
 
-import sun.misc.BASE64Decoder;
-
-import sun.misc.BASE64Encoder;
 import java.io.ByteArrayInputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+import org.springframework.security.crypto.codec.Base64;
+
+
+
 
 public class Base64Utils {
 
-	public static byte[] decryptBASE64(String key) throws Exception {
-		return (new BASE64Decoder()).decodeBuffer(key);
-	}
-
-	public static String encryptBASE64(byte[] key) throws Exception {
-		return (new BASE64Encoder()).encodeBuffer(key);
-	}
+//	public static byte[] decryptBASE64(String key) throws Exception {
+//		return (new BASE64Decoder()).decodeBuffer(key);
+//	}
+//
+//	public static String encryptBASE64(byte[] key) throws Exception {
+//		return (new BASE64Encoder()).encodeBuffer(key);
+//	}
 
 	/**
 	 * 文件读取缓冲区大小
@@ -153,7 +153,10 @@ public class Base64Utils {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encode(str.getBytes(charset)));
+	//	return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
 	}
+
+	
 
 }

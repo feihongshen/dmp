@@ -28,6 +28,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.LogTodayDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderFlowLogDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -61,7 +62,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 	@Autowired
 	CwbDAO cwbDAO;
 	@Autowired
-	OrderFlowDAO orderFlowDAO;
+	OrderFlowLogDAO orderFlowDAO;
 	@Autowired
 	LogTodayDAO logTodayDAO;
 	@Autowired
@@ -70,8 +71,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 	DeliveryStateDAO deliveryStateDAO;
 	@Autowired
 	DeliveryPercentDAO deliveryPercentDAO;
-	@Autowired
-	LogTodayDAO todayDAO;
+
 
 	@Autowired
 	UserDAO userDAO;
@@ -1599,14 +1599,14 @@ public class LogToDayService implements SystemConfigChangeListner {
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 			try {
 				Date startDate;
-				BranchTodayLog lastBranchTodayLog = todayDAO.getLastBranchTodayLogByBranchid(branch.getBranchid());
+				BranchTodayLog lastBranchTodayLog = logTodayDAO.getLastBranchTodayLogByBranchid(branch.getBranchid());
 				if (lastBranchTodayLog != null) {
 					startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastBranchTodayLog.getCreatedate());
 				} else {
 					startDate = DateDayUtil.getTimeByDay(-1);
 				}
 				BranchTodayLog generateTodaylog = generateTodaylog(user.getUserid(), branch.getBranchid(), startDate, endDate);
-				todayDAO.creBranchTodayLog(generateTodaylog);
+				logTodayDAO.creBranchTodayLog(generateTodaylog);
 			} catch (Exception e) {
 				logger.error("error while generating dailylog for branchid: " + branch.getBranchname(), e);
 			}

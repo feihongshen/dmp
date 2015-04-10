@@ -2,6 +2,7 @@ package cn.explink.b2c.tools;
 
 import java.security.MessageDigest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import cn.explink.pos.tools.JacksonMapper;
@@ -50,7 +51,8 @@ public class SaohuobangSign {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+//		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encodeBase64(str.getBytes(charset)));
 	}
 
 }

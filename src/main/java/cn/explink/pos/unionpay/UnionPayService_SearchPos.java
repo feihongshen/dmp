@@ -65,7 +65,7 @@ public class UnionPayService_SearchPos extends UnionPayService {
 
 			String data = JacksonMapper.getInstance().writeValueAsString(reqdata); // 转化为json
 
-			String base64_data = Base64Utils.encryptBASE64(data.replaceAll("+", "_").replaceAll("_", "/").getBytes("UTF-8"));
+			String base64_data = Base64Utils.encode(data.replaceAll("+", "_").replaceAll("_", "/").getBytes("UTF-8"));
 
 			String sign = MD5Util.md5(base64_data + unionpay.getPrivate_key()).substring(8, 24); // 16位的md5加密
 

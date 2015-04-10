@@ -50,7 +50,15 @@ public class DeliveryService {
 			}
 
 			User user = this.userDAO.getUserByUsername(delivery.getDelivery_man());
-			this.cwbOrderService.receiveGoods(user, user, delivery.getOrder_no(), delivery.getOrder_no());
+			for(String orderNo:delivery.getOrder_no().split(",")){
+				try {
+					this.cwbOrderService.receiveGoods(user, user, delivery.getOrder_no(), delivery.getOrder_no());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 
 			return this.responseXML(DeliveryEnum.Success.getResult_code(), DeliveryEnum.Success.getResult_msg());
 

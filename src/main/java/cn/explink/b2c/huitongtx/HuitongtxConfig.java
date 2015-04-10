@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -82,7 +83,8 @@ public class HuitongtxConfig {
 	 * @throws Exception
 	 */
 	public static String base64(String str, String charset) throws Exception {
-		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+//		return (new sun.misc.BASE64Encoder()).encode(str.getBytes(charset));
+		return new String(Base64.encodeBase64(str.getBytes(charset)));
 	}
 
 	/**

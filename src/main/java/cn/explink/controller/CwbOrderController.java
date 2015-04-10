@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -344,6 +344,8 @@ public class CwbOrderController {
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
 			cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
+			
 		}
 		List<Customer> customerlist = customerDao.getAllCustomers();
 
@@ -367,6 +369,7 @@ public class CwbOrderController {
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
 			cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
 		}
 		List<Customer> customerlist = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getAllEffectBranches();
@@ -407,10 +410,7 @@ public class CwbOrderController {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String printtime = df.format(date);
-		for (ShangMenTuiCwbDetail smtcd : smtlist) {
-			cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
-			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
-		}
+		updatePrinttimeState(smtlist, printtime);
 		List<Customer> customerlist = customerDao.getAllCustomers();
 
 		SystemInstall companyName = systemInstallDAO.getSystemInstallByName("CompanyName");
@@ -422,6 +422,15 @@ public class CwbOrderController {
 		model.addAttribute("smtlist", smtlist);
 		model.addAttribute("customerlist", customerlist);
 		return "cwborder/selectforsmtprint";
+	}
+
+	@Transactional
+	private void updatePrinttimeState(List<ShangMenTuiCwbDetail> smtlist,String printtime) {
+		for (ShangMenTuiCwbDetail smtcd : smtlist) {
+			logger.info("上门退订单打印记录cwb={}",smtcd.getCwb());
+			cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
+		}
 	}
 
 	// 家有购物模板
