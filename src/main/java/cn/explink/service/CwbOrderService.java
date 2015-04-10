@@ -3516,7 +3516,9 @@ public class CwbOrderService {
 	 */
 	@OrderFlowOperation(FlowOrderTypeEnum.YiFanKui)
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
+	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters,int idControl) {
+		logger.info("订单反馈cwb={},idControl={}",cwb,idControl);
+		
 		long deliverid = parameters.get("deliverid") == null ? 0l : Long.parseLong(parameters.get("deliverid").toString());
 		long podresultid = parameters.get("podresultid") == null ? 0l : (Long) parameters.get("podresultid");
 		long backreasonid = parameters.get("backreasonid") == null ? 0l : (Long) parameters.get("backreasonid");
@@ -6028,10 +6030,16 @@ public class CwbOrderService {
 				long cwbcount = emailDateDAO.getEmailDateById(co.getEmaildateid()).getCwbcount() - 1;
 				emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
 			}
-			shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
-					co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+			if(co!=null){
+				shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
+						co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+			}
+		
+			//删除打印表记录
+			shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
+			
 		} catch (Exception e) {
-			logger.error("唯品会失效异常",e);
+			logger.error("唯品会失效异常cwb="+cwb,e);
 		}
 	}
 
