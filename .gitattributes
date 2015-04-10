@@ -1121,6 +1121,7 @@ src/main/java/cn/explink/enumutil/AbnormalOrderHandleEnum.java -text
 src/main/java/cn/explink/enumutil/AbnormalWriteBackEnum.java -text
 src/main/java/cn/explink/enumutil/AccountFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/AccountTongjiEnum.java -text
+src/main/java/cn/explink/enumutil/AdjustWayEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEditDeliverystateIshandleEnum.java -text
 src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
