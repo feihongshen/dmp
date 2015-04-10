@@ -12,7 +12,7 @@ List<User> uList = (List<User>)request.getAttribute("userList");
 Switch ck_switch = (Switch) request.getAttribute("ck_switch");
 int sitetype=(Integer)request.getAttribute("sitetype");
 String RUKUPCandPDAaboutYJDPWAV = request.getAttribute("RUKUPCandPDAaboutYJDPWAV").toString();
-String cid=request.getParameter("customerid")==null?"0":request.getParameter("customerid");
+String cid=request.  bgetParameter("customerid")==null?"0":request.getParameter("customerid");
 long customerid=Long.parseLong(cid);
 String  showMassage=(String)request.getAttribute("showMassage");
 boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
@@ -50,7 +50,7 @@ function initEmailDateUI(emaildate){
 			url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
 			data:{customerids:$("#customerid").val(),state:"-1"},
 			success:function(optionData){
-				data=optionData;
+				data=optionDa    ta;
 				var optionstring="";
 				var high ="";
 				var preStep;
