@@ -3561,7 +3561,7 @@ public class CwbOrderService {
 		//added by jiangyu begin
 		//缓存一下原先的支付方式
 		map.put("preObj", co);
-		map.put("oldpaywayid", co.getPaywayid());
+		map.put("oldpaywayid", co.getNewpaywayid());
 		//added by jiangyu end
 		// 委托派送变更状态为已反馈
 		this.orderDeliveryClientDAO.updateFanKun(cwb);
@@ -3818,13 +3818,14 @@ public class CwbOrderService {
 			} else if (deliveryState.getCodpos().compareTo(BigDecimal.ZERO) > 0) {
 				newpaywayid = PaytypeEnum.CodPos.getValue();
 			}
+			//added by jiangyu begin
+			map.put("newpaywayid", newpaywayid);
+			//added by jiangyu end
 			if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {// 上门退订单，支付方式都要变成现金
 				newpaywayid = PaytypeEnum.Xianjin.getValue();
 			}
 		}
-		//added by jiangyu begin
-		map.put("newpaywayid", newpaywayid);
-		//added by jiangyu end
+		
 		// 更新当前反馈状态需要指定订单的下一站
 		this.saveFanKuiNextBranchId(user, deliveryState.getDeliverystate(), cwb);
 
