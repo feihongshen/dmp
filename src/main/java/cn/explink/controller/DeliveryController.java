@@ -635,7 +635,7 @@ public class DeliveryController {
 			
 			if((Boolean)preParams.get("flag")){
 				Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
-				Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("oldPayWayId"));
+				Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("newPayWayId"));
 				adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
 				orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
 			}
