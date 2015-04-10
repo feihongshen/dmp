@@ -220,6 +220,9 @@ public class OrgBillAdjustmentRecordService {
 					
 					record.setModifyFee(modifyFeeReceiveFee);
 					record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
+				}else{
+					record.setModifyFee(modifyFeeReceiveFee);
+					record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
 				}
 			}
 			//原先的支付方式
@@ -244,6 +247,9 @@ public class OrgBillAdjustmentRecordService {
 					record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
 //					record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 				}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
+					record.setModifyFee(modifyFeeReceiveFee);
+					record.setAdjustAmount(order.getReceivablefee().subtract(modifyFeeReceiveFee));
+				}else {
 					record.setModifyFee(modifyFeeReceiveFee);
 					record.setAdjustAmount(order.getReceivablefee().subtract(modifyFeeReceiveFee));
 				}
