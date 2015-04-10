@@ -5924,5 +5924,13 @@ CREATE TABLE
 	<changeSet id="lixuedong-2015-04-07-1" author="lixuedong">
   	      <sqlFile path="dmp40_function.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
      </changeSet>
+     
+     <changeSet id="jiangyu-2015-04-09-1" author="jiangyu">
+  	      <sqlFile path="fnc.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+     </changeSet>
+     
+     <changeSet id="jiangyu-2015-04-09-2" author="jiangyu">
+  	      <sqlFile path="order_add_field.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+     </changeSet>
 </databaseChangeLog>
  
