@@ -217,8 +217,8 @@ public class AdjustmentRecordService {
 						
 						int adjust_status=adjustmentRecord.getStatus();
 						
-						if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//未核销,并且存在调整账单信息,则需要修改该信息
+						if(adjust_bill_id==0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+							//未核销,并且不存在调整账单信息,则需要修改该信息
 							//上门退订单
 							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 //								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
@@ -245,8 +245,8 @@ public class AdjustmentRecordService {
 							//表示存在该订单信息,并且已经核销,需要生成新的调整单信息
 							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 							
-						}else if(adjust_bill_id==0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//没有生成过调整账单&&是未核销的状态  则创建新的记录
+						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+							//生成过调整账单&&是未核销的状态  则创建新的记录
 							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 						}
 					}	
