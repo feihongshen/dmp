@@ -5954,6 +5954,12 @@ CREATE TABLE
 		) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	
+	<changeSet id="jiangyu-2015-04-10-1" author="jiangyu">
+		<sql>
+			ALTER TABLE fn_org_bill_adjustment_record ADD COLUMN `pay_way_change_flag` int(2) DEFAULT 0 comment '是否修改支付方式标识';
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  
