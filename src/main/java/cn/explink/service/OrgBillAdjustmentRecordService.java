@@ -88,6 +88,7 @@ public class OrgBillAdjustmentRecordService {
 				record.setCustomerId(order.getCustomerid());
 				record.setReceiveFee(order.getReceivablefee());
 				record.setRefundFee(order.getPaybackfee());
+				record.setPayWayChangeFlag(0);//正向的是0
 				
 				if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 					record.setModifyFee(modifyFeeReceiveFee);
@@ -196,6 +197,7 @@ public class OrgBillAdjustmentRecordService {
 		BigDecimal modifyPaybackfee = BigDecimal.ZERO;
 		
 		if(AdjustWayEnum.Forward.getValue().equals(adjustWay.getValue())){//正向--负的记录
+			record.setPayWayChangeFlag(0);
 			if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 				record.setModifyFee(modifyFeeReceiveFee);
 				record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
@@ -223,6 +225,7 @@ public class OrgBillAdjustmentRecordService {
 			//原先的支付方式
 			record.setPayMethod(Long.valueOf(payWayId).intValue());
 		}else {//逆向 -- 正的记录
+			record.setPayWayChangeFlag(1);
 			if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 				record.setModifyFee(modifyFeeReceiveFee);
 				record.setAdjustAmount(order.getReceivablefee().subtract(modifyFeeReceiveFee));

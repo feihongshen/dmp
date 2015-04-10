@@ -48,6 +48,8 @@ public class OrgBillAdjustmentRecordDao {
 			adjustmentRecord.setDeliverId(rs.getLong("deliver_id"));
 			adjustmentRecord.setSignTime(rs.getDate("sign_time"));
 			adjustmentRecord.setStatus(rs.getInt("status"));
+			adjustmentRecord.setStatus(rs.getInt("payWayChangeFlag"));
+			
 			return adjustmentRecord;
 		}
 	}
@@ -74,9 +76,10 @@ public class OrgBillAdjustmentRecordDao {
 				+ "deliver_id,"
 				+ "sign_time,"
 				+ "deliverybranchid,"
-				+ "goods_amount"
+				+ "goods_amount,"
+				+ "pay_way_change_flag"
 				+ ") " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -98,6 +101,7 @@ public class OrgBillAdjustmentRecordDao {
 						ps.setDate(16, new Date(adjustmentRecord.getSignTime().getTime()));
 						ps.setLong(17, adjustmentRecord.getDeliverybranchid());
 						ps.setBigDecimal(18, adjustmentRecord.getAdjustAmount());
+						ps.setInt(19, adjustmentRecord.getPayWayChangeFlag());
 					}
 				});
 	}

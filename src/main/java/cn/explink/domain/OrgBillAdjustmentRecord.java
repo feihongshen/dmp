@@ -98,6 +98,10 @@ public class OrgBillAdjustmentRecord{
 	 * 充值编号id
 	 */
 	private Long rechargesId;
+	/**
+	 * 支付方式改变标识
+	 */
+	private Integer payWayChangeFlag ;
 	
 	public OrgBillAdjustmentRecord() {
 	}
@@ -277,4 +281,13 @@ public class OrgBillAdjustmentRecord{
 	public void setRechargesId(Long rechargesId) {
 		this.rechargesId = rechargesId;
 	}
+
+	public Integer getPayWayChangeFlag() {
+		return payWayChangeFlag;
+	}
+
+	public void setPayWayChangeFlag(Integer payWayChangeFlag) {
+		this.payWayChangeFlag = payWayChangeFlag;
+	}
+	
 }
