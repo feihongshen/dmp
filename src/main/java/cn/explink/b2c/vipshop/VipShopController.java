@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CwbDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -38,6 +41,12 @@ public class VipShopController {
 	CwbOrderService  cwbOrderService;
 	@Autowired
 	UserDAO  userDAO;
+	@Autowired
+	DataImportDAO_B2c dataImportDAO_B2c;
+	@Autowired
+	CwbDAO cwbDAO;
+	@Autowired
+	OrderGoodsDAO orderGoodsDAO;
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
@@ -92,6 +101,18 @@ public class VipShopController {
 		cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cwb, cwb,0);
 
 		return "执行订单"+cwb+"拦截成功";
+
+	}
+	
+	@RequestMapping("/shixiao/{cwb}")
+	public @ResponseBody String shixiao(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
+
+		dataImportDAO_B2c.dataLoseB2ctempByCwb(cwb);
+		this.cwbDAO.dataLoseByCwb(cwb);
+		orderGoodsDAO.loseOrderGoods(cwb);
+		cwbOrderService.datalose_vipshop(cwb);
+
+		return "执行订单"+cwb+"失效成功";
 
 	}
 
