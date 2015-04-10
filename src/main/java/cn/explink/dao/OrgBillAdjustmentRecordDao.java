@@ -48,7 +48,7 @@ public class OrgBillAdjustmentRecordDao {
 			adjustmentRecord.setDeliverId(rs.getLong("deliver_id"));
 			adjustmentRecord.setSignTime(rs.getDate("sign_time"));
 			adjustmentRecord.setStatus(rs.getInt("status"));
-			adjustmentRecord.setStatus(rs.getInt("payWayChangeFlag"));
+			adjustmentRecord.setStatus(rs.getInt("pay_way_change_flag"));
 			
 			return adjustmentRecord;
 		}
