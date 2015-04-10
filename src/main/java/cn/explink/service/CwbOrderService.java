@@ -3864,11 +3864,14 @@ public class CwbOrderService {
 			} else if (deliveryState.getCodpos().compareTo(BigDecimal.ZERO) > 0) {
 				newpaywayid = PaytypeEnum.CodPos.getValue();
 			}
+			//added by jiangyu begin
+			map.put("newpaywayid", newpaywayid);
+			//added by jiangyu end
 			if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {// 上门退订单，支付方式都要变成现金
 				newpaywayid = PaytypeEnum.Xianjin.getValue();
 			}
 		}
-		map.put("newpaywayid", newpaywayid);
+		
 		// 更新当前反馈状态需要指定订单的下一站
 		this.saveFanKuiNextBranchId(user, deliveryState.getDeliverystate(), cwb);
 		
