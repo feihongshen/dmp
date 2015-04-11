@@ -360,7 +360,7 @@ function loadTodayOutAreaOrder(){
 	function showTipDialog() {
 		var $box = $("#tip_dialog");
 		$box.show();
-		innerCenterBox($("#box_contant"));
+		//innerCenterBox($("#box_contant"));
 	}
 
 	function closeTipDialog() {
