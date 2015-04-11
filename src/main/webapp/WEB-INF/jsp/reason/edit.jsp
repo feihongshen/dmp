@@ -18,13 +18,13 @@ var initReasontype = "<%=reason.getReasontype() %>,reasontype";
 		<div id="box_form">
 				<ul>
 					<li><span>类型：</span> 
-					<select name ="reasontype" id="reasontype">
+					<select name ="reasontype" id="reasontype" class="select1">
 				       <option value ="0">请选择</option>
 		               <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ %>
 		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>
 		               <%} %>
 		           </select>*</li>
-					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="${reason.reasoncontent}" maxlength="30" ></li>
+					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="${reason.reasoncontent}" maxlength="30" class="input_text1"></li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="保存" class="button" /></div>

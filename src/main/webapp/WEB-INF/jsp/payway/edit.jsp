@@ -15,13 +15,13 @@ PayWay payway = (PayWay)request.getAttribute("payway");
 		<div id="box_form">
 				<ul>
 					<li><span>支付方式：</span> 
-					<select id="paywayid" name="paywayid" >
+					<select id="paywayid" name="paywayid" class="select1">
 							<option value=-1>请选择支付方式</option>
 							<%for(PaytypeEnum pe : PaytypeEnum.values()){ %>
 								<option value="<%=pe.getValue()%>" <%=payway.getPaywayid()==pe.getValue()?"selected":"" %>><%=pe.getText() %></option>
 							<%} %>
 					</select>*</li>
-					<li><span>对应文字：</span><input type="text" name="payway" id="payway" value="${payway.payway}"  maxlength="50" ></li>
+					<li><span>对应文字：</span><input type="text" name="payway" id="payway" value="${payway.payway}"  maxlength="50" class="input_text1"></li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="保存" class="button" /></div>

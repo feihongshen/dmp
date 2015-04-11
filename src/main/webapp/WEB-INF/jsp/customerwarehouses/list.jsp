@@ -55,7 +55,7 @@ function delSuccess(data){
 				<span><input name="" type="button" value="创建供货商仓库" class="input_button1"  id="add_button"  />
 				</span>
 				<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-					供货商：<select id="customerid" name="customerid">	
+					供货商：<select id="customerid" name="customerid" class="select1">	
 								<option value=-1>全部</option>
 								<%
 									for(Customer c : customers){

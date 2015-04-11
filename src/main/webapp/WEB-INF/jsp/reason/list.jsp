@@ -45,7 +45,7 @@ function delSuccess(data){
 	<span><input name="" type="button" value="新建常用语" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		 请选择类型：<select name ="reasontype" id="reasontype">
+		 请选择类型：<select name ="reasontype" id="reasontype" class="select1">
 		               <option value ="0">全部</option>
 		               <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ %>
 		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>

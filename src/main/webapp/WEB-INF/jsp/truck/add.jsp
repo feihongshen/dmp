@@ -13,9 +13,9 @@ List<User> userList = (List<User>)request.getAttribute("userList");
 		<form id="truck_cre_Form" name="truck_cre_Form"  onSubmit="if(check_truck()){submitCreateForm(this);}return false;" action="<%=request.getContextPath()%>/truck/create" method="post"  >
 		<div id="box_form">
 				<ul>				
-					<li><span>车牌号：</span><input type="text" name="truckno" id="truckno" value ="" maxlength="20">*</li>
-					<li><span>型号：</span><input type="text" name="trucktype" id="trucktype" value ="" maxlength="50"></li>
-					<li><span>驾驶员：</span><select id ="truckdriver" name ="truckdriver">
+					<li><span>车牌号：</span><input type="text" name="truckno" id="truckno" value ="" maxlength="20" class="input_text1">*</li>
+					<li><span>型号：</span><input type="text" name="trucktype" id="trucktype" value ="" maxlength="50" class="input_text1"></li>
+					<li><span>驾驶员：</span><select id ="truckdriver" name ="truckdriver" class="select1">
 									           <option value ="">请选择</option>
 									           <%for(User user:userList){ %>
 									           <option value ="<%=user.getUserid()%>"><%=user.getRealname() %></option>

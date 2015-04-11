@@ -10,7 +10,7 @@
 		<div id="box_form">
 				<ul>
 					<li><span>支付方式：</span> 
-					<select id="paywayid" name="paywayid" >
+					<select id="paywayid" name="paywayid" class="select1">
 							<option value=-1>请选择支付方式</option>
 							<%for(PaytypeEnum pe : PaytypeEnum.values()){ %>
 								<option value="<%=pe.getValue()%>"><%=pe.getText() %></option>
@@ -20,7 +20,7 @@
 							<option value="3">支票</option>
 							<option value="4">其他</option> -->
 					</select>*</li>
-					<li><span>对应文字：</span><input type="text" name="payway" id="payway" value=""  maxlength="50"></li>
+					<li><span>对应文字：</span><input type="text" name="payway" id="payway" value=""  maxlength="50" class="input_text1"></li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="确认" class="button" /></div>

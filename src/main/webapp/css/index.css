@@ -125,7 +125,8 @@ _width:600px }
 #add_userid_text span { display:block; float:left; width:110px }
 #add_userid_text textarea { overflow-y:hidden; width:280px; height:60px; float:left }
 #box_form h2 { font-size:14px; font-weight:bold }
-.input_text1 { border:1px solid #09C; background:url(../images/repeatx.png) repeat-x 0 -175px; height:16px; line-height:16px; color:#999}
+.input_text1 { border:1px solid #09C; background:url(../images/repeatx.png) repeat-x 0 -175px; width:150px; height:16px; line-height:16px; color:#000}
+.select1 { border:1px solid #09C; background:url(../images/repeatx.png) repeat-x 0 -175px; width:150px; height:20px; line-height:20px; color:#000}
 .input_button1 { width:135px; line-height:24px; height:24px; background:url(../images/indexbg.png) no-repeat right 0px; border:none; cursor:pointer; padding:0; text-align:center;font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif; font-size:12px;}
 .input_button2 { width:65px; height:20px; border:none; background:url(../images/indexbg.png) no-repeat 0 -200px; cursor:pointer; padding:0; text-align:center;font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif;font-size:12px;}
 .top_line { height:3px; background:url(../images/repeatx.png) repeat-x; color:#FFF }

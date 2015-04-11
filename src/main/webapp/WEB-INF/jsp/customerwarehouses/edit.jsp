@@ -14,9 +14,9 @@
 		<div id="box_form">
 				<ul>
 					<li><span>供货商：</span>${name.customername}</li>
-					<li><span>发货仓库：</span><input type="text" name="customerwarehouse" value="${customerwarehouse.customerwarehouse}" id="customerwarehouse"  maxlength="50">*</li>
-					<li><span>仓库编码：</span><input type="text" name="warehouse_no" value="${customerwarehouse.warehouse_no}" id="warehouse_no"  maxlength="50">*</li>
-					<li><span>备注：</span><input type="text" name="warehouseremark" id="warehouseremark" value="${customerwarehouse.warehouseremark}"  maxlength="50"></li>
+					<li><span>发货仓库：</span><input type="text" class="input_text1" name="customerwarehouse" value="${customerwarehouse.customerwarehouse}" id="customerwarehouse"  maxlength="50">*</li>
+					<li><span>仓库编码：</span><input type="text" class="input_text1" name="warehouse_no" value="${customerwarehouse.warehouse_no}" id="warehouse_no"  maxlength="50">*</li>
+					<li><span>备注：</span><input type="text" class="input_text1" name="warehouseremark" id="warehouseremark" value="${customerwarehouse.warehouseremark}"  maxlength="50"></li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="保存"  class="button" /></div>

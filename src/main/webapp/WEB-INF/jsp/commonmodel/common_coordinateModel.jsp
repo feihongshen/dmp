@@ -70,7 +70,7 @@ body {
     border:4px solid #666;
     text-align:center;
     color:#fff;
-    height:40px;
+    height:20px;
     width:200px;
 }
 
@@ -149,7 +149,7 @@ body {
     border:4px solid #666;
     text-align:center;
     color:#fff;
-    height:30px;
+    height:20px;
     width:220px;
 }
 
@@ -574,7 +574,7 @@ function addSuccess(data){
 	<form id="searchForm" name="searchForm" action="<%=request.getContextPath()%>/commonmodel/tosetcoordinate"></form>
 	<form  action="<%=request.getContextPath()%>/commonmodel/setimageurl/" method="post"  enctype="multipart/form-data">
 			模版：
-				<select id="modelname" name="modelname" onchange="changeBackground($(this).val());">
+				<select id="modelname" name="modelname" class="select1" onchange="changeBackground($(this).val());">
 					<option value="0">请选择模版名称</option>
 					<%if(commonmodellist!=null){for(CommonModel c : commonmodellist){ %>
 						<option value="<%=c.getId()%>"><%=c.getModelname() %></option>
@@ -582,8 +582,8 @@ function addSuccess(data){
 				</select>
 				
 				上传面单图片：<input type ="file" name="imageurl"  id="imageurl"/>
-				<input type="submit" value="上传">
-				<input type="button" value="保存" onclick='if(check_setcommonmodel()){SetCommonModel("setcoordinateForm",$("#modelname").val(),getXY());}return false;'>
+				<input type="submit" value="上传" class="input_button2">
+				<input type="button" value="保存" class="input_button2" onclick='if(check_setcommonmodel()){SetCommonModel("setcoordinateForm",$("#modelname").val(),getXY());}return false;'>
 				<span><input name="" type="button" value="创建模版" class="input_button1"  id="add_button"  /></span>
 				<br/>
 	</form>
@@ -593,7 +593,8 @@ function addSuccess(data){
 <div class="jg_10"></div>
 <div class="right_title">
 		<form id="setcoordinateForm" name="setcoordinateForm" action="<%=request.getContextPath()%>/commonmodel/setcoordinate/" method="post" onSubmit="return false;">
-			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">		
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">	
+			    <tr><td style="height:5px;"></td></tr>	
 				<tr class="font_1">
 					<td>	
 						请选择按钮：

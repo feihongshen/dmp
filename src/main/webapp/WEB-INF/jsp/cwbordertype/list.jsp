@@ -47,7 +47,7 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建订单类型" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		订单类型： <select name="cwbordertype" id="cwbordertypes">
+		订单类型： <select name="cwbordertype" id="cwbordertypes" class="select1">
 			<option value="-1">请选择类型</option>
 			<option value="1">配送</option>
 			<option value="2">上门退</option>

@@ -14,13 +14,13 @@ ImportCwbOrderType importCwbOrderType = (ImportCwbOrderType)request.getAttribute
 		<div id="box_form">
 				<ul>
 					<li><span>订单类型：</span> 
-					<select id="importtypeid" name="importtypeid" >
+					<select id="importtypeid" name="importtypeid" class="select1">
 							<option value=-1>请选择类型</option>
 							<option value="1" <%=importCwbOrderType.getImporttypeid()==1?"selected":"" %>>配送</option>
 							<option value="2" <%=importCwbOrderType.getImporttypeid()==2?"selected":"" %>>上门退</option>
 							<option value="3" <%=importCwbOrderType.getImporttypeid()==3?"selected":"" %>>上门换</option>
 					</select>*</li>
-					<li><span>对应文字：</span><input type="text" name="importtype" id="importtype" value="${importCwbOrderType.importtype}"  maxlength="50" ></li>
+					<li><span>对应文字：</span><input type="text" name="importtype" id="importtype" value="${importCwbOrderType.importtype}"  maxlength="50" class="input_text1"></li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="保存" class="button" /></div>

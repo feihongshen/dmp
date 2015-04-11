@@ -58,8 +58,8 @@ initEditArray[42]=("<%=columnList.getShouldfareindex() %>,shouldfareindex");
 		<h1><div id="close_box" onclick="closeBox()"></div>修改设置</h1>
 		<form id="excelcolumn_save_Form" name="excelcolumn_save_Form" method="POST" action="<%=request.getContextPath()%>/excelcolumn/save/${e.columnid }" onSubmit="if(check_excelcolumn()){submitSaveForm(this);}return false;" >
 		<div id="box_form" style="width: 800px" >
-			<p class="gysselect"><span>供货商选择：</span>
-					${name.customername}</p>
+			<div class="gysselect"><span>供货商选择：</span>
+					${name.customername}</div>
 			<table width="100%" border="0" cellspacing="10" cellpadding="0">
 				<tr>
 					<td>	

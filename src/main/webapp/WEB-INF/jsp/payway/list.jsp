@@ -45,7 +45,7 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建支付方式" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		支付方式： <select name="paywayid" id="paywayid">
+		支付方式： <select name="paywayid" id="paywayid" class="select1">
 			<option value="-1">请选择支付方式</option>
 			<%for(PaytypeEnum pe : PaytypeEnum.values()){ %>
 				<option value="<%=pe.getValue()%>"><%=pe.getText() %></option>

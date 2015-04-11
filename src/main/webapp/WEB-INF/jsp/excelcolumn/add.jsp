@@ -11,13 +11,14 @@ List<Customer> customerList = (List<Customer>)request.getAttribute("customers");
 		<h1><div id="close_box" onclick="closeBox()"></div>创建设置</h1>
 		<form id="excelcolumn_cre_Form" name="excelcolumn_cre_Form" method="POST" action="<%=request.getContextPath()%>/excelcolumn/create" onSubmit="if(check_excelcolumn()){submitCreateForm(this);}return false;" >
 		<div id="box_form" style="width: 800px">
-				<p  class="gysselect"><span>供货商选择：</span>
+		<div class="gysselect">
+				<span>供货商选择：</span>
 					<select id="customerid" name="customerid">
 						<option value="0">请选择</option>
 						<% for(Customer w1 : customerList){ %>
 					<option value="<%=w1.getCustomerid()%>-<%=w1.getIsAutoProductcwb()%>"><%=w1.getCustomername() %></option>
 					<%} %>
-					</select>*</p>
+					</select>*</div>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0">
 				<tr>
 					<td>	

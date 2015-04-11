@@ -20,9 +20,9 @@ initEditArray[0]="<%=truck.getTruckdriver()%>,truckdriver";
 		<form id="truck_save_Form" name="truck_save_Form"  onSubmit="if(check_truck()){submitSaveForm(this);}return false;" action="<%=request.getContextPath()%>/truck/save/${truck.truckid}" method="post"  >
 		<div id="box_form">
 				<ul>
-				    <li><span>车牌号：</span><input type="text" name="truckno" id="truckno" value="${truck.truckno}" maxlength="20">*</li>
-				    <li><span>型号：</span><input type="text" name="trucktype" id="trucktype" value="${truck.trucktype}" maxlength="50"></li>
-				    <li><span>驾驶员：</span><select id ="truckdriver" name ="truckdriver">
+				    <li><span>车牌号：</span><input type="text" name="truckno" id="truckno" value="${truck.truckno}" maxlength="20" class="input_text1">*</li>
+				    <li><span>型号：</span><input type="text" name="trucktype" id="trucktype" value="${truck.trucktype}" maxlength="50" class="input_text1"></li>
+				    <li><span>驾驶员：</span><select id ="truckdriver" name ="truckdriver" class="select1">
 				                               <option value ="">请选择</option>
 									           <%for(User user:userList){ %>
 									           <option value ="<%=user.getUserid()%>"><%=user.getRealname() %></option>

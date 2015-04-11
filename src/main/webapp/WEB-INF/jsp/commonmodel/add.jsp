@@ -7,7 +7,7 @@
 		<form id="common_cre_Form" name="common_cre_Form" onSubmit="if(check_commonmodel()){submitCreateForm(this);}return false;" action="<%=request.getContextPath()%>/commonmodel/create" method="post"  >
 		<div id="box_form">
 				<ul>
-					<li><span>模版名称：</span><input type ="text" id ="modelname" name ="modelname" maxlength="30"/>*</li>
+					<li><span>模版名称：</span><input type ="text" id ="modelname" name ="modelname" maxlength="30" class="input_text1"/>*</li>
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="确认" class="button" /></div>

@@ -44,7 +44,7 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建客户" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		客户名称：<input type ="text" name ="customername"value="<%=request.getParameter("customername")==null?"":request.getParameter("customername") %>" />
+		客户名称：<input type ="text" name ="customername" value="<%=request.getParameter("customername")==null?"":request.getParameter("customername") %>" class="input_text1" />
 		<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
 		<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 	</form>
