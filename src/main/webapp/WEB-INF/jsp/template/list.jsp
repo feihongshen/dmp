@@ -56,9 +56,9 @@ function editRoleAndMenuSuccess(data){
 		<span><input name="" type="button" value="创建模版" class="input_button1"  onclick='window.location.href="<%=request.getContextPath()%>/printtemplate/add";'/>
 		</span>
 		<form action="1" method="post" id="searchForm">
-			模版名称：<input type="text" name="name" id="name" value="" />
+			模版名称：<input type="text" name="name" id="name" value="" class="input_text1"/>
 			交接单类型：
-					<select id="opertatetype" name="opertatetype">
+					<select id="opertatetype" name="opertatetype" class="select1">
 						<option value="0">请选择</option>
 						<%for(PrintTemplateOpertatetypeEnum pe : PrintTemplateOpertatetypeEnum.values()){ %>
 						<option value="<%=pe.getValue()%>"><%=pe.getText() %></option>

@@ -42,15 +42,15 @@ function buttonSave(form){
 </script>
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
-		<h1>修改系统设置</h1>
+		<h2>修改系统设置</h2>
 		<form id="SystemInstall_cre_Form" name="SystemInstall_cre_Form"
 			 onSubmit="buttonSave(this);return false;" 
 			 action="<%=request.getContextPath()%>/systeminstall/save/<%=systemInstall.getId()%>" method="post"  >
 			<div id="box_form">
 				<ul>
-					<li><span>名称：</span><input type="text" id="chinesename" name="chinesename" value="<%=systemInstall.getChinesename()%>"/>*</li>
-					<li><span>变量：</span><input type="text" id="name" name="name" value="<%=systemInstall.getName() %>"/>*</li>
-	           		<li><span>值：</span><input type="text" id="value" name="value" value="<%=systemInstall.getValue() %>"/>*</li>
+					<li><span>名称：</span><input type="text" id="chinesename" name="chinesename" class="input_text1" value="<%=systemInstall.getChinesename()%>"/>*</li>
+					<li><span>变量：</span><input type="text" id="name" name="name" class="input_text1" value="<%=systemInstall.getName() %>"/>*</li>
+	           		<li><span>值：</span><input type="text" id="value" name="value" class="input_text1" value="<%=systemInstall.getValue() %>"/>*</li>
 	           		
 		         </ul>
 			</div>

@@ -47,21 +47,21 @@ function delSuccess(data){
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		当前站点：
-			<select id="fromBranchId" name="fromBranchId">
+			<select id="fromBranchId" name="fromBranchId" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 				<%} %>
 			</select>
 		目的站点：
-         	<select id="toBranchId"  name="toBranchId">
+         	<select id="toBranchId"  name="toBranchId" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 				<%} %>
 			</select>
 		流向方向：
-	        <select id="type"  name="type">
+	        <select id="type"  name="type" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(BranchRouteEnum br : BranchRouteEnum.values()){ %>
 					<option value="<%=br.getValue() %>" ><%=br.getText() %></option>

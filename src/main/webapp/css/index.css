@@ -107,7 +107,7 @@ ul.index_dh2 a:hover { }
 #box_bg { position:absolute; z-index:99999999; width:100%; height:100%; background:#000; filter:alpha(opacity=30); opacity:0.3; -moz-opacity:0.3 }
 #box_contant { position:absolute; z-index:99999999999; top:50%; left:50%; *width:600px;
 _width:600px }
-#box_in_bg { overflow:hidden; border:5px solid #7c7c7c; padding-bottom:5px; background:#e5e5e5 }
+#box_in_bg { overflow:hidden; border:1px solid #7c7c7c; padding-bottom:5px; background:#e5e5e5 }
 #box_contant h1 { font-size:12px; line-height:28px; text-indent:5px; font-weight:bold }
 #close_box { float:right; width:16px; height:16px; cursor:pointer; background:url(../images/indexbg.png) no-repeat 0px -150px; margin-top:5px; margin-right:9px; display:inline }
 #send_addcityuser { background:url(../images/indexbg.png) no-repeat 0 -200px; width:65px; line-height:24px }

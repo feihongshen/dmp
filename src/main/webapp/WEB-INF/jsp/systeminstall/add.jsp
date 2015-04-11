@@ -40,15 +40,15 @@ function buttonSave(form){
 </script>
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
-		<h1>创建系统设置</h1>
+		<h2>创建系统设置</h2>
 		<form id="cwbAllStateControl_cre_Form" name="cwbAllStateControl_cre_Form"
 			 onSubmit="buttonSave(this);return false;" 
 			 action="<%=request.getContextPath()%>/systeminstall/create;jsessionid=<%=session.getId()%>" method="post"  >
 			<div id="box_form">
 				<ul>
-					<li><span>名称：</span><input type="text" id="chinesename" name="chinesename"/>*</li>
-					<li><span>变量：</span><input type="text" id="name" name="name"/>*</li>
-	           		<li><span>值：</span><input type="text" id="value" name="value"/>*</li>
+					<li><span>名称：</span><input type="text" id="chinesename" name="chinesename" class="input_text1"/>*</li>
+					<li><span>变量：</span><input type="text" id="name" name="name" class="input_text1"/>*</li>
+	           		<li><span>值：</span><input type="text" id="value" name="value" class="input_text1"/>*</li>
 	         </ul>
 		</div>
 		<div align="center">

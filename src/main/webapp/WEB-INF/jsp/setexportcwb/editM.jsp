@@ -60,8 +60,8 @@ $("document").ready(function(){
 		<form id="setexport_save_Form" name="setexport_save_Form" method="post" action="<%=request.getContextPath()%>/setexportcwb/save/<%=exportmould.getId() %>" onSubmit="if(checkMouldEdit()){submitSaveForm(this)};return false;" >
 		<div id="box_form" style = "width:1200px;">
 				<p  class="gysselect">
-				 模板名称：<input type ="text" name ="mouldname" id ="mouldname" value ="${exportmould.mouldname}">*
-				 请选择角色：<select id="roleid" name="roleid">
+				 模板名称：<input type ="text" name ="mouldname" id ="mouldname" value ="${exportmould.mouldname}" class="input_text1">*
+				 用户角色：<select id="roleid" name="roleid" class="select1">
 								<option value="-1">请选择</option>
 								<% for(Role r : roleList){ %>
 							     <option value=<%=r.getRoleid()%> <%if(exportmould.getRoleid()==r.getRoleid()){ %> selected="selected" <%}%>><%=r.getRolename() %></option>
@@ -77,6 +77,7 @@ $("document").ready(function(){
 				        <%}%> 
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -89,6 +90,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -101,6 +103,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -113,6 +116,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -125,6 +129,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -137,6 +142,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>
@@ -149,6 +155,7 @@ $("document").ready(function(){
 				        <%} %>
 				        <p>
 				        	<input type ="checkbox" name="fieldid" id ="se_<%= exportfieldlist.get(i).getId()%>"  value ="<%= exportfieldlist.get(i).getId()%>" ><%=exportfieldlist.get(i).getFieldname()%>
+				        	<br/>
 				        	<input type="button" class="upButton" value="上移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',-1);"/>
 				        	<input type="button" class="downButton" value="下移" onclick="upOrDown(<%= exportfieldlist.get(i).getId()%>,'<%=request.getContextPath()%>',1);"/>
 				        </p>

@@ -15,7 +15,7 @@ List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 			<div id="box_form">
 				<ul>
 					<li><span>当前站点：</span>
-						<select id="fromBranchId" name="fromBranchId">
+						<select id="fromBranchId" name="fromBranchId" class="select1">
 							<option value="0" selected>----请选择----</option>
 							<%for(Branch b : branchlist){ %>
 								<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -23,7 +23,7 @@ List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 						</select>*
 					</li>
 	           		<li><span>目的站点：</span>
-	           			<select id="toBranchId"  name="toBranchId">
+	           			<select id="toBranchId"  name="toBranchId" class="select1">
 							<option value="0" selected>----请选择----</option>
 							<%for(Branch b : branchlist){ %>
 								<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -31,7 +31,7 @@ List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 						</select>*
 					</li>
 					<li><span>流向方向：</span>
-	           			<select id="type"  name="type">
+	           			<select id="type"  name="type" class="select1">
 							<option value="0" selected>----请选择----</option>
 							<%for(BranchRouteEnum br : BranchRouteEnum.values()){ %>
 								<option value="<%=br.getValue() %>" ><%=br.getText() %></option>

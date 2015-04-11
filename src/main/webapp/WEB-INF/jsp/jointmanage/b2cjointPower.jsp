@@ -56,17 +56,21 @@ function submitSaveForm(form){
 <body style="background:#f5f5f5">
 <div class="menucontant">
 <div class="uc_midbg">
-		<ul>
-			<li><a href="<%=request.getContextPath()%>/jointManage/jointpos" >POS对接</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/jointb2c" >B2C对接</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/exptreason/1" >异常码设置</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1" >异常码关联</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/getchengyunshang/1" >异常码设置-承</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/Cuscodejoint/1" >异常码关联-承</a></li>
-			<li><a href="#" class="light">对接权限设置</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/poscodemapp/1"  >POS/商户映射</a></li>
-			<li><a href="<%=request.getContextPath()%>/jointManage/epaiApi/1"  >e派系统对接</a></li>
-		</ul>
+			<ul>
+				<li><a href="#" class="light">对接权限设置</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/jointb2c">电商对接</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/jointpos">POS对接</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/poscodemapp/1">POS/商户映射</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/exptreason/1">异常码设置</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
+			</ul>
 	</div>
 	<form onSubmit="submitSaveForm(this); return false;" action="<%=request.getContextPath()%>/jointpower/save"  method="post" id="searchForm">
 	

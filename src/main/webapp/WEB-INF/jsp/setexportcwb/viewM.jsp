@@ -33,7 +33,7 @@ String field[] = (String [])request.getAttribute("field");
 		<div id="box_form">
 				<p  class="gysselect">
 				 模板名称：<%=exportmould.getMouldname() %>
-				 请选择角色：<%=exportmould.getRolename() %>
+				 用户角色：<%=exportmould.getRolename() %>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0">
 				<tr>
 			        
