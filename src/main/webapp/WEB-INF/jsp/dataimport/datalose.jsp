@@ -43,9 +43,9 @@ function checkSel(){
 	</div>
 	<form name="uploadForm" id="uploadForm" method="POST" action="datalose" onsubmit="return checkSel()" enctype="multipart/form-data" >
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">
-			  <tr id="customertr" class=VwCtr style="display:">
+			  <tr id="customertr" class=VwCtr >
 			    <td width="100%" align="center">发货批次：
-					<select id="emaildate" name="emaildate" >
+					<select id="emaildate" name="emaildate" class="select1" style="height:20px;width:300px">
 						<option value="">请选择(5天内)(供货商_供货商仓库_结算区域)</option>
 						<%for (EmailDate e : emaildatelist) {%>
 						<%if(e.getState()!=1){ %>
@@ -54,14 +54,10 @@ function checkSel(){
 						</option>
 						<%}}%>
 					</select>*
-				 </td>
-			  </tr>
-			  <tr id="customertr" class=VwCtr >
-			    <td width="100%"  align="center">
-					<input type ="hidden" value="yes" name ="isEdit">
+										<input type ="hidden" value="yes" name ="isEdit">
 			       <input type="submit"  id ="btn"  value="数据失效"  class="input_button2" /><br/>
 			       <font color="red"> ${ReturnMessage}</font>
-				</td>
+				 </td>
 			  </tr>
 			</table>
 		</form>

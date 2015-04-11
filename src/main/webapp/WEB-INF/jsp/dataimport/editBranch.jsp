@@ -124,35 +124,44 @@ function searchForm(){
 	<form name="editBranchForm" id="editBranchForm" method="POST" action="editBranch"  >
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">
 				<tr id="customertr" class=VwCtr style="display:">
-					<td width="100%" colspan="2">订单号：<input id="cwb" type="text" value="" name="cwb" />
-					供货商：<select name="customerid" id="customerid" onchange="changeCustomerid()" style="height: 20px;width: 280px">
+					<td width="100%" colspan="2">
+					订单号：<input id="cwb" type="text" value="" name="cwb" class="input_text1" style="height: 20px;width: 180px" />
+					供货商：<select name="customerid" id="customerid" class="select1" onchange="changeCustomerid()" style="height: 20px;width: 280px">
 							<option value="0">请选择</option>
 							<%for(Customer c : customerlist){ %>
 							<option value="<%=c.getCustomerid() %>" <% if((c.getCustomerid()+"").equals(request.getParameter("customerid"))){out.print("selected");} %>><%=c.getCustomername() %></option>
 							<%} %>
 							</select>
 					发货批次：
-						<select id="emaildate" name="emaildate" style="height: 20px;width: 280px">
+						<select id="emaildate" name="emaildate" class="select1" style="height: 20px;width: 280px">
 							<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option> 
 							<%if(!emaildatelist.isEmpty())for(EmailDate e : emaildatelist){ %>
 							<option value =<%=e.getEmaildateid() %>><%=e.getEmaildatetime()%><%=e.getState()==1?"（已到货）":"" %> <%=e.getCustomername()+"_"+e.getWarehousename()+"_"+e.getAreaname()%></option>
 							<%}%>
-						</select>
-					 每页<select name="onePageNumber" id="onePageNumber">
+						</select>	
+					每页<select name="onePageNumber" id="onePageNumber" class="select1" style="height: 20px;width: 50px">
 								<option value="10">10</option>
 								<option value="30">30</option>
 								<option value="50">50</option>
 								<option value="100">100</option>
 							</select>行
 							<input type="button" class="input_button2" value="查询" onclick="searchForm();">
-							<select name ="exportmould" id ="exportmould">
+				</tr>
+				<tr id="customertr" class=VwCtr style="display:">
+				<td>
+
+							<select name ="exportmould" id ="exportmould" class="select1">
 					          <option value ="0">默认导出模板</option>
 					          <%for(Exportmould e:exportmouldlist){%>
 					           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 					          <%} %>
 							</select>
 							<input type="button" id="btnval0" class="input_button2" value="导出" onclick="exportField();"/><br/>
-					(共<a href="javascript:$('#addressCodeEditType').val(-1);selectPage(1);" style="font-size:18;font-weight: bold;color:red;" >${AllAddress}</a>单
+				</td>
+				</tr>
+				<tr id="customertr" class=VwCtr style="display:">
+				<td>
+				(共<a href="javascript:$('#addressCodeEditType').val(-1);selectPage(1);" style="font-size:18;font-weight: bold;color:red;" >${AllAddress}</a>单
 				地址库匹配<a <%if(SuccessAddress==0){ %> href="#" <%} else{%>href="javascript:$('#addressCodeEditType').val(<%=CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() %>);selectPage(1);"<%} %> style="font-size:18;font-weight: bold;color:red;" >${SuccessAddress}</a>
 				修改匹配<a <%if(SuccessEdit==0){ %> href="#" <%} else{%> href="javascript:$('#addressCodeEditType').val(<%=CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue() %>);selectPage(1);"<%} %> style="font-size:18;font-weight: bold;color:red;" >${SuccessEdit}</a>
 				人工匹配<a <%if(SuccessNew==0){ %> href="#" <%} else{%> href="javascript:$('#addressCodeEditType').val(<%=CwbOrderAddressCodeEditTypeEnum.RenGong.getValue() %>);selectPage(1);" <%} %>style="font-size:18;font-weight: bold;color:red;" >${SuccessNew}</a>
@@ -164,7 +173,9 @@ function searchForm(){
 					
 					<input type="hidden" id="page" name="page" value="1" />
 					<input type="hidden" id="isshow" name="isshow" value="1" />
+				</td>
 				</tr>
+				
 				<tr class=VwCtr style="display:">
 					<td width="100%" colspan="2">
 					站点表：

@@ -310,7 +310,7 @@ function editSuccess(data){
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">
 				<tr id="customertr" class=VwCtr style="display:">
 					<td width="650" colspan="2">发货批次：
-						<select id="emaildate" name="emaildate" >
+						<select id="emaildate" name="emaildate" class="select1" style="height:20px;width:300px">
 						<option value="">请选择(5天内)(供货商_供货商仓库_结算区域)</option>
 						<%for (EmailDate e : emaildatelist) {%>
 						<option customerid="<%=e.getCustomerid()%>" warehouseid="<%=e.getWarehouseid() %>" areaid="<%=e.getAreaid() %>"  value="<%=e.getEmaildateid()%>" <%=(e.getEmaildateid()+"").equals(emaildateidParam)?"selected":"" %> 
@@ -327,14 +327,14 @@ function editSuccess(data){
 				</tr>
 				<tr id="customertr" class=VwCtr style="display:">
 					<td width="350">订单入库库房：
-						<select id="branchid" name="branchid" >
+						<select id="branchid" name="branchid" class="select1">
 						<%for (Branch branch : branchlist) {%>
 						<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 						<%}%>
 						</select>
 					</td>
 					<td width="350">发件供货商：
-						 <select name="customerid" id="customerid" onchange="changeCustomerid()" >
+						 <select name="customerid" id="customerid" class="select1" onchange="changeCustomerid()" >
 							<option value="0">请选择</option>
 							<%for (Customer customer : customerlist) {%>
 							<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
@@ -342,13 +342,13 @@ function editSuccess(data){
 						</select>*
 					</td>
 					<td>发货仓库：
-						<select name="warehouseid" id="warehouseidflag"   >
+						<select name="warehouseid" id="warehouseidflag" class="select1">
 								<option value="0">请选择</option>
 						</select>
 					</td>
 					<td >结算区域：
 					<span style="height: 25">
-					<select name="serviceareaid" id="serviceareaidflag"   >
+					<select name="serviceareaid" id="serviceareaidflag" class="select1">
 							<option value="0">请选择</option>
 					</select>
 					</span></td>

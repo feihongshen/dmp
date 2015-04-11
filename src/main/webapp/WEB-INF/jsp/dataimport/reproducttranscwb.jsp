@@ -86,14 +86,14 @@ function searchForm(){
 					<td width="100%" colspan="2">
 					订单号：<textarea cols="24" rows="4"  name ="cwb" id="cwbs" ></textarea>
 					供货商：
-						<select name="customerid" id="customerid" onchange="changeCustomerid()" style="height: 20px;width: 280px">
+						<select name="customerid" id="customerid" onchange="changeCustomerid()" class="select1" style="height: 20px;width: 280px">
 							<option value="0">请选择</option>
 							<%for(Customer c : customerlist){ %>
 							<option value="<%=c.getCustomerid() %>" <% if((c.getCustomerid()+"").equals(request.getParameter("customerid"))){out.print("selected");} %>><%=c.getCustomername() %></option>
 							<%} %>
 						</select>
 					发货批次：
-						<select id="emaildate" name="emaildate" style="height: 20px;width: 280px">
+						<select id="emaildate" name="emaildate" style="height: 20px;width: 280px" class="select1">
 							<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option> 
 							<%if(!emaildatelist.isEmpty())for(EmailDate e : emaildatelist){ %>
 							<option value =<%=e.getEmaildateid() %>><%=e.getEmaildatetime()%><%=e.getState()==1?"（已到货）":"" %> <%=e.getCustomername()+"_"+e.getWarehousename()+"_"+e.getAreaname()%></option>
