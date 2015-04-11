@@ -3,6 +3,8 @@ package cn.explink.pos.tonglianpos.delivery;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
@@ -21,6 +23,7 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.User;
 import cn.explink.pos.tonglianpos.Tlmpos;
+import cn.explink.pos.tonglianpos.delivery.respDto.ErrorInfo;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.MD5.MD5Util;
@@ -50,12 +53,19 @@ public class DeliveryService {
 			}
 
 			User user = this.userDAO.getUserByUsername(delivery.getDelivery_man());
+			
+			List<ErrorInfo> errorList = new ArrayList<ErrorInfo>();
 			for(String orderNo:delivery.getOrder_no().split(",")){
+				orderNo = cwbOrderService.translateCwb(orderNo);
 				try {
-					this.cwbOrderService.receiveGoods(user, user, delivery.getOrder_no(), delivery.getOrder_no());
+					this.cwbOrderService.receiveGoods(user, user, orderNo, orderNo);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					ErrorInfo errorInfo = new ErrorInfo();
+					errorInfo.setCwb(orderNo);
+					errorInfo.setMsg(e.getMessage());
+					errorList.add(errorInfo);
+					logger.error("领货扫描异常",e);
+					
 				}
 			}
 			

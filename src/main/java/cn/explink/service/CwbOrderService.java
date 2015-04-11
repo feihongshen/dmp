@@ -6035,6 +6035,7 @@ public class CwbOrderService {
 					shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
 							co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
 				}
+				orderFlowDAO.deleteOrderFlowByCwb(cwb);
 			}
 			
 		

@@ -106,7 +106,8 @@ public class VipShopController {
 	
 	@RequestMapping("/shixiao/{cwb}")
 	public @ResponseBody String shixiao(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
-
+		
+		
 		dataImportDAO_B2c.dataLoseB2ctempByCwb(cwb);
 		this.cwbDAO.dataLoseByCwb(cwb);
 		orderGoodsDAO.loseOrderGoods(cwb);
