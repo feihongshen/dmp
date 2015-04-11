@@ -1470,13 +1470,24 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			 * parseFloat($("#shouldfare").val()));
 			 * $("#infactfare").val(parseFloat($("#shouldfare").val())); return
 			 * false; }
-			 */else if (parseFloat($("#shouldfare").val()) == 0 && parseFloat($("#infactfare").val()) > 0) {
+			 */
+		else if (parseFloat($("#shouldfare").val()) == 0 && parseFloat($("#infactfare").val()) > 0) {
 			alert("应收运费为0，实收运费不允许大于应收运费。");
 			return false;
-		} else if (!isFloat($("#infactfare").val())) {
+		}
+		
+		
+		else if (!isFloat($("#infactfare").val())) {
 			alert("实收运费只能为数值");
 			return false;
-		} else {
+		} 
+		
+		else if (parseFloat($("#shouldfare").val()) > 0 && parseFloat($("#infactfare").val()) == 0) {
+			if(!confirm('当前填入实收运费为0，确定提交么？')){
+				return false;
+			}
+		} 
+		else {
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == HuoWuDiuShi) {// 货物丢失
