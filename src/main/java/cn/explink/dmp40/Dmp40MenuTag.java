@@ -122,7 +122,8 @@ public class Dmp40MenuTag extends TagSupport {
 	private static String getLeafOfTree(Dmp40Function function, String dmpid,Properties properties,String httppath) {
 		String menuurl = function.getFunctionUrl();
 		if(function.getFunctionUrl().indexOf("{") >-1){
-			menuurl =httppath + placeholderHelper.replacePlaceholders(function.getFunctionUrl(), properties);
+//			menuurl =httppath + placeholderHelper.replacePlaceholders(function.getFunctionUrl(), properties);
+			menuurl = placeholderHelper.replacePlaceholders(function.getFunctionUrl(), properties);
 		}
 		StringBuffer menuString = new StringBuffer();
 		String icon = "folder";
