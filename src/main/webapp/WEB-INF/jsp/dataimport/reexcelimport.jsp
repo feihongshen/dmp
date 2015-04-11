@@ -304,8 +304,6 @@ function editSuccess(data){
 		<ul>
 			<li><a href="excelimportPage" >导入数据</a></li>
 			<li><a href="#" class="light">导入查询</a></li>
-			
-			<li><font color="red">地址库已开启</font></li>
 		</ul>
 	</div>
 	<form name="uploadForm" id="uploadForm" method="POST" action="excelimport;jsessionid=<%=session.getId() %>" enctype="multipart/form-data" >
@@ -320,11 +318,12 @@ function editSuccess(data){
 						</option>
 						<%}%>
 						</select>*
-						<input type="button" onclick="selectCwbByEmail(1,1)" value="获取导入结果" />
+						<input type="button" onclick="selectCwbByEmail(1,1)" value="获取导入结果" class="input_button1" />
 						<input type="hidden" id="Failurespage" value="1" />
 						<input type="hidden" id="Successpage" value="1" />
 					</td>
-					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
 				</tr>
 				<tr id="customertr" class=VwCtr style="display:">
 					<td width="350">订单入库库房：
@@ -364,6 +363,8 @@ function editSuccess(data){
 					<input type="button" name="stop" id="stop" value="停止导入" disabled="disabled" class="input_button2" />
 					<input type="hidden" id="anyid"/>
 					</td>
+					<td></td>
+					<td></td>
 				</tr>
 			</table>
 		</form>

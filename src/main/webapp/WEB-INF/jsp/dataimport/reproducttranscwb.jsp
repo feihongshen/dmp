@@ -76,9 +76,7 @@ function searchForm(){
 	<div class="menucontant">
 		<div class="uc_midbg">
 			<ul>
-				
 				<li><a href="#" class="light">运单号生成</a></li>
-				<li><font color="red">地址库已开启</font></li>
 			</ul>
 		</div>
 		<form name="reproducttranscwbForm" id="reproducttranscwbForm" method="POST" action="reproducttranscwb">

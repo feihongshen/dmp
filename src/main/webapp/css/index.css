@@ -2,7 +2,7 @@
 /* CSS Document */
 
 #main_body { background:#f5f5f5 }
-body { font-size:12px; height:100%; overflow-x:hidden; width:100%}
+body { font-size:12px; height:100%; overflow-x:hidden; width:100%;font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif;}
 strong { font-weight:bold }
 textarea {font-size: 12px;margin: 0;padding: 0;}
 a { text-decoration:none; color:#333 }
@@ -17,11 +17,11 @@ a:hover { color:#F30; text-decoration:underline }
 .address_nav a { color:#333; }
 .right_box {  position:relative; z-index:9}
 .uc_menubox { height:37px; position:relative; z-index:0 }
-.uc_midbg { position:relative; background:#AFD6EB; height:37px; z-index:0 }
+.uc_midbg { position:relative; background:#e0ecff; height:37px; z-index:0 }
 .uc_midbg ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
 .uc_midbg li { float:left; display:block; width:80px; height:31px; line-height:31px; text-align:center; margin-right:8px }
 .uc_midbg li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg.png) no-repeat }
-.uc_midbg li a:hover { text-decoration:none; color:#C30; background-position:0px -31px }
+.uc_midbg li a:hover { text-decoration:none; color:#0e2d5f; background-position:0px -31px;font-weight:bold; }
 .uc_midbg .light { background-position:0px -62px }
 .right_box_bottom { width:731px; height:5px; overflow:hidden; background:url(../images/right_box.png) no-repeat 0px -5px }
 .right_bolar_right { float:left; width:5px; height:44px; background:url(../images/right_borlar.png) no-repeat -5px 0 }
@@ -35,7 +35,7 @@ a:hover { color:#F30; text-decoration:underline }
 .table_1 strong { font-size:14px; color:#F60; font-family:Arial, Helvetica, sans-serif; line-height:120% }
 .table_1 h2 { font-size:36px; font-weight:bold; color:#06C; display:inline }
 .table_1 h3 { font-size:24px; font-weight:bold; color:#06C; display:inline }
-.table_2 { background:#82b8ef; font-size:12px}
+.table_2 { background:#ccc; font-size:12px}
 .table_2 tr { background:#fff }
 .table_2 td { line-height:26px; }
 .table_2 strong { font-size:14px; color:#F60; font-weight:bold; font-family:Arial, Helvetica, sans-serif; line-height:120% }
@@ -43,7 +43,7 @@ a:hover { color:#F30; text-decoration:underline }
 .table_2 h1 { font-size:14px; font-weight:bold; color:#FFF; display:inline }
 .table_2 h2 { font-size:36px; font-weight:bold; color:#06C; display:inline }
 .table_2 h3 { font-size:24px; font-weight:bold; color:#06C; display:inline }
-.table_2 a { color:#03F }
+.table_2 a { color:#000;font-weight:bold; }
 .right_title { background:#fff  }
 .right_title h1 { line-height:37px; background:url(../images/list_ico2.png) no-repeat 0 9px; padding-left:26px; padding-right:26px; font-size:16px; font-weight:bold; color:#316496; letter-spacing:2px }
 .right_title span { float:right; font-size:12px; color:#F30; font-weight:normal; letter-spacing:0px }
@@ -59,7 +59,7 @@ a:hover { color:#F30; text-decoration:underline }
 .table_list2 li { text-align:left; display:block; line-height:30px; background:#f1f1f1; border-bottom:1px solid #fff; overflow:hidden }
 .table_list2 img { width:16px; height:16px; display:block; float:left; margin-left:10px; margin-top:7px }
 .table_list2 span { display:block; float:left; width:130px; padding-left:10px; overflow:hidden; height:30px }
-.font_1 { color:#06C; font-weight:bold; font-size:12px }
+.font_1 { color:#05040A; font-weight:bold; font-size:12px }
 .font_2 { color:#333; font-weight:bold; font-size:12px }
 .font_3 { color:red; font-size:12px; font-weight:normal }
 .table_2 { text-align:center }
@@ -126,8 +126,8 @@ _width:600px }
 #add_userid_text textarea { overflow-y:hidden; width:280px; height:60px; float:left }
 #box_form h2 { font-size:14px; font-weight:bold }
 .input_text1 { border:1px solid #09C; background:url(../images/repeatx.png) repeat-x 0 -175px; height:16px; line-height:16px; color:#999}
-.input_button1 { width:135px; line-height:24px; height:24px; background:url(../images/indexbg.png) no-repeat right 0px; border:none; cursor:pointer; padding:0; text-align:center }
-.input_button2 { width:65px; height:20px; border:none; background:url(../images/indexbg.png) no-repeat 0 -200px; cursor:pointer; padding:0; text-align:center }
+.input_button1 { width:135px; line-height:24px; height:24px; background:url(../images/indexbg.png) no-repeat right 0px; border:none; cursor:pointer; padding:0; text-align:center;font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif; font-size:12px;}
+.input_button2 { width:65px; height:20px; border:none; background:url(../images/indexbg.png) no-repeat 0 -200px; cursor:pointer; padding:0; text-align:center;font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif;font-size:12px;}
 .top_line { height:3px; background:url(../images/repeatx.png) repeat-x; color:#FFF }
 .inputselect_box {padding:5px 10px; position:absolute; z-index:9; width:100%; border:1px solid #86AFD5; background-color:#F5F5F5}
 .inputselect_box span{float:right; margin-right:20px; display:inline}
@@ -149,17 +149,16 @@ ul#left_menu li a { display:block; line-height:30px; text-align:left; padding-le
 ul#left_menu li a:hover { color:#600; background:url(../images/indexbg.png) no-repeat 0 -400px }
 ul#left_menu li a.click { background:url(../images/indexbg.png) no-repeat 0 -300px; font-weight:bold; color:#FFF }
 
-.right_set1{padding:0px 5px 0px 5px}
-	.right_set1 h3{font-size:14px; font-weight:bold; line-height:30px }
-		.right_set1 h3 a{color:#09C; padding:0; margin:0}
-		.right_setin{ background:#FFF; border:1px solid #56b1ff; margin-left:4px; margin-right:4px; overflow:hidden; padding-bottom:20px }
-
-	.right_set1 ul{padding-left:20px; padding-top:10px}
-	.right_set1 li{line-height:16px}
-	.right_set1 textarea{margin:0; padding:0; font-size:12px; line-height:14px}
+.right_set1{padding:0px 0px 0px 0px}
+.right_set1 h3{font-size:14px; font-weight:bold; line-height:30px }
+.right_set1 h3 a{color:#09C; padding:0; margin:0}
+.right_setin{ background:#FFF; border:1px solid #56b1ff; margin-left:4px; margin-right:4px; overflow:hidden; padding-bottom:20px }
+.right_set1 ul{padding-left:20px; padding-top:10px}
+.right_set1 li{line-height:16px}
+.right_set1 textarea{margin:0; padding:0; font-size:12px; line-height:14px}
 
 .button { width:115px; height:27px; background:url(../images/indexbg.png) no-repeat 0 -250px; border:none; margin-top:10px; cursor:pointer; margin-right:10px; padding:0; font-size:16px; font-family:"微软雅黑", "黑体"}
-.right_set1 td{font-size:14px; line-height:24px; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding:2px; background:#E1FBE6}
+.right_set1 td{font-size:14px; line-height:24px; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding:2px; background:#e0ecff}
 
 .gysselect{padding:10px 0 0 10px; border-bottom:1px solid #CCC; background:#f8f8f8}
 

@@ -116,12 +116,9 @@ function searchForm(){
 	<div class="menucontant">
 	<div class="uc_midbg">
 		<ul>
-			
 			<li><a href="#" class="light">修改匹配站</a></li>
 			<!-- <li><a href="editBranchonBranch" >匹配站按站</a></li> -->
 			<li><a href="editBatchBranch" >批量匹配站</a></li>
-			<li><font color="red">地址库已开启</font></li>
-			
 		</ul>
 	</div>
 	<form name="editBranchForm" id="editBranchForm" method="POST" action="editBranch"  >

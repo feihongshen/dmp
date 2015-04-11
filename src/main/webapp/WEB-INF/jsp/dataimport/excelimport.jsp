@@ -255,8 +255,6 @@ var file_id;
 		<ul>
 			<li><a href="#" class="light">导入数据</a></li>
 			<li><a href="reexcelimportPage" >导入查询</a></li>
-			
-			<li><font color="red">地址库已开启</font></li>
 		</ul>
 	</div>
 	<form name="uploadForm" id="uploadForm" method="POST" action="excelimport;jsessionid=<%=session.getId() %>" enctype="multipart/form-data" >
@@ -282,7 +280,7 @@ var file_id;
 								<option value="0">请选择</option>
 						</select>
 					</td>
-					<td>　</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>结算区域：
@@ -304,10 +302,6 @@ var file_id;
 					<input type="button" name="stop" id="stop" value="停止导入" disabled="disabled" class="input_button2" />
 					<input type="hidden" id="anyid"/>
 					</td>
-				</tr>
-				<tr>
-					<td></td>
-					<td>&nbsp;</td>
 				</tr>
 			</table>
 		</form>

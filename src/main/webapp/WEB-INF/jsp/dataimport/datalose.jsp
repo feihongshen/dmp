@@ -38,10 +38,7 @@ function checkSel(){
 	<div class="menucontant">
 	<div class="uc_midbg">
 		<ul>
-			
-			
-			<li><a href="reproducttranscwb" >运单号生成</a></li>
-			<li><font color="red">地址库已开启</font></li>
+			<li><a href="#" class="light">导入数据失效</a></li>
 		</ul>
 	</div>
 	<form name="uploadForm" id="uploadForm" method="POST" action="datalose" onsubmit="return checkSel()" enctype="multipart/form-data" >
