@@ -1482,11 +1482,7 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			return false;
 		} 
 		
-		else if (parseFloat($("#shouldfare").val()) > 0 && parseFloat($("#infactfare").val()) == 0) {
-			if(!confirm('当前填入实收运费为0，确定提交么？')){
-				return false;
-			}
-		} 
+		
 		else {
 			return checkGongGong_delivery();
 		}
@@ -1616,6 +1612,11 @@ function checkShangMenTui() {
 		alert("实收运费只能为数值");
 		return false;
 	}
+	if (parseFloat($("#shouldfare").val()) > 0 && parseFloat($("#infactfare").val()) == 0) {
+		if(!confirm('当前填入实收运费为0，确定提交么？')){
+			return false;
+		}
+	} 
 	/*
 	 * if (parseFloat($("#shouldfare").val()) !=
 	 * parseFloat($("#infactfare").val())) { alert("实收运费应该为" +
