@@ -92,7 +92,7 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建用户" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
-		所属机构：<select name="branchid">
+		所属机构：<select name="branchid" class="select1">
 				 	<option value="-1">全部</option>
 				 	<%if(brancheEffectList!=null&&brancheEffectList.size()>0){
 				 		for(Branch b:brancheEffectList){
@@ -102,7 +102,7 @@ function delSuccess(data){
 				 	} %>
 				 	
 				 </select>
-		角    色：<select name="roleid">
+		角    色：<select name="roleid" class="select1">
 				 	<option value="-1">全部</option>
 				 	<%if(roleList!=null&&roleList.size()>0){
 				 		for(Role r:roleList){

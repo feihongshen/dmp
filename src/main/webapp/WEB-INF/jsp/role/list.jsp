@@ -54,7 +54,7 @@ function editRoleAndMenuSuccess(data){
 		<span><input name="" type="button" value="创建角色" class="input_button1"  id="add_button"  />
 		</span>
 		<form action="list" method="post" id="searchForm">
-					角色名：<input type="text" name="rolename" value="" />
+					角色名：<input type="text" name="rolename" value="" class="input_text1"/>
 					<input type="submit" id="find"  value="查询" class="input_button2" />
 					<input type="button"  onclick="location.href='list'" value="返回" class="input_button2" />
 				</form>

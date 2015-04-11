@@ -15,8 +15,10 @@
 			 action="<%=request.getContextPath()%>/user/createFile;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 				<ul>
-					<li><span>姓名：</span><input type="text" id="realname" name="realname" value="" maxlength="50"/>*</li>
-	           		<li><span>所属机构：</span><select id="branchid"  name="branchid">
+					<li><span>姓名：</span>
+					<input type="text" id="realname" name="realname" value="" maxlength="50"/>*</li>
+	           		<li><span>所属机构：</span>
+	           		<select id="branchid"  name="branchid">
 						<option value="-1" selected>----请选择----</option>
 						<%for(Branch b : branchList){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>

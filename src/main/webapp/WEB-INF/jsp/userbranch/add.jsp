@@ -57,21 +57,21 @@ function check_cwbstatecontrol(form){
 
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="location='<%=request.getContextPath()%>/userBranchControl/list/1'"></div>创建用户区域权限</h1>
+		<h2><div id="close_box" onclick="location='<%=request.getContextPath()%>/userBranchControl/list/1'"></div>创建用户区域权限</h2>
 		<form id="userbranch_cre_Form" name="userbranch_cre_Form"
 			 onSubmit="if(check()){check_cwbstatecontrol(this);}return false;" 
 			 action="<%=request.getContextPath()%>/userBranchControl/create;jsessionid=<%=session.getId()%>" method="post"  >
 			<div id="box_form">
 				<ul>
 					<li><span>用户：</span>
-						<select id="userid" name="userid" multiple="multiple" >
+						<select id="userid" name="userid" multiple="multiple" class="select1" style="height 30px;width: 600px" >
 							<%for(User u : userlist){ %>
 								<option value="<%=u.getUserid() %>" >(<%for(Branch b : branchlist){if(u.getBranchid()==b.getBranchid()){ out.print(b.getBranchname()); break;}} %>)<%=u.getRealname() %></option>
 							<%} %>
 						</select>*
 					</li>
 	           		<li><span>可查询站点：</span>
-	           			<select id="branchid"  name="branchid" multiple="multiple" style="height 30px;width: 500px" >
+	           			<select id="branchid"  name="branchid" multiple="multiple" class="select1" style="height 30px;width: 600px" >
 							<%for(Branch b : branchlist){ %>
 								<option value="<%=b.getBranchid() %>" selected="selected"  ><%=b.getBranchname() %></option>
 							<%} %>

@@ -44,27 +44,27 @@ function delSuccess(data){
 </head>
 
 <body style="background:#f5f5f5">
-<div class="right_box">
-	<div class="kfsh_tabbtn">
+<div class="menucontant">
+	<div class="uc_midbg">
 		<ul>
 			<li><a href="<%=request.getContextPath() %>/userBranchControl/list/1" class="light">按用户设置</a></li>
 			<li><a href="<%=request.getContextPath() %>/userBranchControl/listbybranch/1">按机构设置</a></li>
 		</ul>
 	</div>
 	<div class="tabbox">
-	<div class="kfsh_search">
+	<div class="inputselect_box">
 	<span><input name="" type="button" value="创建用户区域权限" class="input_button1"  id="add" onclick="location='<%=request.getContextPath()%>/userBranchControl/add'" />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		用户：
-			<select id="userid" name="userid">
+			<select id="userid" name="userid" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(User u : userlist){ %>
 					<option value="<%=u.getUserid() %>" >(<%for(Branch b : branchlist){if(u.getBranchid()==b.getBranchid()){ out.print(b.getBranchname()); }} %>)<%=u.getRealname() %></option>
 				<%} %>
 			</select>
 		可查询站点：
-         	<select id="branchid"  name="branchid">
+         	<select id="branchid"  name="branchid" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -74,8 +74,6 @@ function delSuccess(data){
 		<!-- <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" /> -->
 	</form>
 	</div>
-	<div class="jg_10"></div>
-
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">用户</td>

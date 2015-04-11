@@ -10,7 +10,7 @@
 		<form id="role_cre_Form" name="role_cre_Form" onSubmit="if(check_role()){submitCreateForm(this);}return false;" action="<%=request.getContextPath()%>/role/create" method="post"  >
 		<div id="box_form">
 				<ul>
-					<li><span>角色名称：</span><input type="text" id="rolename" name="rolename" maxlength="30"/>*</li>
+					<li><span>角色名称：</span><input type="text" id="rolename" name="rolename" maxlength="30" class="input_text1"/>*</li>
 				</ul>
 				
 		</div>
