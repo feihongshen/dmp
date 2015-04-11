@@ -3516,8 +3516,8 @@ public class CwbOrderService {
 	 */
 	@OrderFlowOperation(FlowOrderTypeEnum.YiFanKui)
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters,int idControl) {
-		logger.info("订单反馈cwb={},idControl={}",cwb,idControl);
+	public void deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
+		//logger.info("订单反馈cwb={},idControl={}",cwb,idControl);
 		
 		long deliverid = parameters.get("deliverid") == null ? 0l : Long.parseLong(parameters.get("deliverid").toString());
 		long podresultid = parameters.get("podresultid") == null ? 0l : (Long) parameters.get("podresultid");
