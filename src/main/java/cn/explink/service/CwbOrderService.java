@@ -6026,14 +6026,17 @@ public class CwbOrderService {
 			// 删除审核为退货再投的订单
 			orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
 
-			if (emailDateDAO.getEmailDateById(co.getEmaildateid()) != null) {
-				long cwbcount = emailDateDAO.getEmailDateById(co.getEmaildateid()).getCwbcount() - 1;
-				emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
-			}
 			if(co!=null){
-				shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
-						co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+				if (emailDateDAO.getEmailDateById(co.getEmaildateid()) != null) {
+					long cwbcount = emailDateDAO.getEmailDateById(co.getEmaildateid()).getCwbcount() - 1;
+					emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
+				}
+				if(co!=null){
+					shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
+							co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+				}
 			}
+			
 		
 			//删除打印表记录
 			shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
