@@ -22,8 +22,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>出库交接单打印</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"></link>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -73,15 +73,15 @@ function bdprint(id,printtemplateid){
 				<span>
 				</span>
 				<form action="1" method="post" id="searchForm">
-					下一站：<select id ="branchid" name ="branchid"> 
+					下一站：<select id ="branchid" name ="branchid" class="select1"> 
 					              <option value ="0">全部</option>
 					              <%for(Branch b:branchList){ %>
 					                <option value ="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 					              <%} %>
 					            </select>　
-					        出库时间：从<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>&nbsp;到
-					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
-				      　　<input type="submit" id="find" value="查询" class="input_button2" />
+					        出库时间：<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>
+					        到
+					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/><input type="submit" id="find" value="查询" class="input_button2" />
 				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/returnlist/1">返回未打印列表 >></a>
 				</form>
 				</div>

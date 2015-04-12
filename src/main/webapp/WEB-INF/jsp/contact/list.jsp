@@ -37,7 +37,7 @@ function exportContact(){
 <body style="background:#f5f5f5">
 
 <div class="right_box">
-	<div style="padding:5px 10px;width:100%; background:url(<%=request.getContextPath() %>/images/repeatx.png) repeat-x 0 -485px; border:1px solid #86AFD5;">
+	<div style="padding:5px 10px;width:100%; background:#e0ecff;">
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		<input type="text" id="branchoruser"  name="branchoruser"  value="请输入机构名" class="input_text1"  onfocus="if(this.value=='请输入机构名'){this.value=''}" onblur="if(this.value==''){this.value='请输入机构名'}" onkeyup="selectbranchbybranchname('<%=request.getContextPath()%>','branchid',$(this).val());"/>
 		
@@ -77,8 +77,7 @@ function exportContact(){
 		<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 	</form>
 	</div>
-	<div class="right_title" style="width:100%">
-	<div class="jg_10"></div><!--<div class="jg_10"></div> <div class="jg_10"></div> -->
+	<div class="right_title" style="width:100%"><!--<div class="jg_10"></div> <div class="jg_10"></div> -->
 	<div id="box_top_bg"></div>
 	 <div style="width:100%">
 			<table width="100%" border="0" cellspacing="1" cellpadding="5" class="table_2">

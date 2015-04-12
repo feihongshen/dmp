@@ -49,10 +49,7 @@ function submitForm(form){
  <body style="background:#f5f5f5">
 
 <div class="right_box">
-				<div class="inputselect_box">
-				</div>
 				<div class="right_title">
-				<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10" style ="margin-top:20px;"></div>
                 <form action="<%=request.getContextPath() %>/user/updatepassword" method="post" name="form1" target="_self">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				  <tr class="font_1">

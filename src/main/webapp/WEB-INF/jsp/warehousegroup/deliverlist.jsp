@@ -118,7 +118,7 @@ $(function(){
 				<form action="1" method="post" id="searchForm">
 					<input type="hidden" name="isshow" value="1"/>
 					<div style="float:right">   
-						打印模版：<select name="templateid" id="templateid">
+						打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
 					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
 					  			<%} %>
@@ -127,25 +127,25 @@ $(function(){
 						<a href="<%=request.getContextPath() %>/warehousegroup/historydeliverlist/1">历史打印列表>></a>
 					</div>
 					领货人：
-					<select name="deliverid" id="deliverid">
+					<select name="deliverid" id="deliverid" class="select1">
 						<option value="0">请选择领货人</option>
 						<%for(User u : deliverList){ %>
 							<option value="<%=u.getUserid()%>"><%=u.getRealname()%></option>
 						<%} %>
 					</select>
 					领货时间：
-					<input type ="text" name ="begintime" id="begintime" value ="<%=starttime %>">
-                                                     到<input type ="text" name ="endtime" id="endtime" value ="<%=endtime%>">
+					<input type ="text" name ="begintime" id="begintime" value ="<%=starttime %>" class="input_text1">
+                                                     到<input type ="text" name ="endtime" id="endtime" value ="<%=endtime%>" class="input_text1">
                                                      <input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
 					<%if(printList!=null&&printList.size()>0){ %>
-					<select name ="exportmould" id ="exportmould">
+					<select name ="exportmould" id ="exportmould" class="select1">
 			          <option value ="0">默认导出模板</option>
 			          <%for(Exportmould e:exportmouldlist){%>
 			           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 			          <%} %>
 					</select>
 					
-					&nbsp;&nbsp;<input type ="button" id="btnval0" value="导出" class="input_button1" onclick="exportField('0','0');"/>
+					<input type ="button" id="btnval0" value="导出" class="input_button1" onclick="exportField('0','0');"/>
 					<%} %>
 					
 					<!-- <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" /> -->

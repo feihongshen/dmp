@@ -22,8 +22,8 @@ transitional.dtd">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>小件员领货交接单打印</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"></link>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -75,7 +75,7 @@ function bdprint(id,printtemplateid){
 				</span>
 				<form action="1" method="post" id="searchForm">
 					领货人：
-					<select name="deliverid" id="deliverid">
+					<select name="deliverid" id="deliverid" class="select1">
 						<option value="0">请选择领货人</option>
 						<%for(User u : deliverList){ %>
 							<option value="<%=u.getUserid()%>"><%=u.getRealname()%></option>

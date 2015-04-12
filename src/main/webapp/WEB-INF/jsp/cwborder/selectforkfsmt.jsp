@@ -174,9 +174,10 @@ function printByOrder(){
 	<div class="inputselect_box">
 	<input type="radio" checked="checked" id="printByCondation" name="printByCondation" value="0" onclick="accordToCondation();"/><strong >按条件打印</strong>     <input type="radio" id="printByOrder"  name="printByOrder"  value="1"  onclick="printByOrder();"/><strong >按订单号打印</strong>
 	<form action="1" method="post" id="searchForm" >
+	<br/>
 		<div id="manyCondations">
 		配送站点：
-		<select id="branchid" name="branchid" >
+		<select id="branchid" name="branchid" class="select1">
 			<%if(bList != null && bList.size()>0){ %>
 				<%if(bList.size()>1){ %>
 				<option value="-1">全部</option>
@@ -186,7 +187,7 @@ function printByOrder(){
 				<%} 
 			}%>
 		</select>
-		供货商：
+		客户：
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%if(customerlist!=null&&customerlist.size()>0)for(Customer c : customerlist){ %>
 		           <option value ="<%=c.getCustomerid() %>" 
@@ -199,21 +200,26 @@ function printByOrder(){
 			            }
 				     }%> ><%=c.getCustomername() %></option>
 		          <%} %>
-		        </select>[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
-						[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-		   <select id="printType" name="printType">
+		        </select>
+		        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]		
+				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+		   <br/>
+		    <br/>
+		    打印状态：
+		   <select id="printType" name="printType" class="select1">
 			<option value="0" <%if((request.getParameter("printType")==null?0:Integer.parseInt(request.getParameter("printType").toString()))==0) {%>selected="selected"<%} %>>未打印</option>
 			<option value="1" <%if((request.getParameter("printType")==null?0:Integer.parseInt(request.getParameter("printType").toString()))==1){ %>selected="selected"<%} %>>已打印</option>
 		 </select>
 		打印时间：
-		 	<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+		 	<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 			到
-			<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+			<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
 		 <input type="hidden" id="isshow" name="isshow" value="1" /><br />
 		 </div>
+		 <br/>
 		  <textarea name="orders"  id="orders"  rows="3"  cols="25"  style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过500个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过500个';this.style.color='#CCCCCC';}">每次输入的订单不超过500个</textarea>
-	      　　<input type="button" id="find" value="查询" class="input_button2" onclick="sub();"/>
-	      <select id="modal" name="modal">
+	      <input type="button" id="find" value="查询" class="input_button2" onclick="sub();"/>
+	      <select id="modal" name="modal" class="select1">
 	     	<option value="0">默认模版</option>
 			<option value="1">国美模版</option>
 			<option value="2" >家有购物模版</option>
@@ -227,10 +233,7 @@ function printByOrder(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-	<br></br>
-	<br></br>
-	
+	<div style="height:150px;"></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr class="font_1">
 			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>

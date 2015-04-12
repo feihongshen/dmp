@@ -131,16 +131,9 @@ function cwbexport(){
 				</span>
 				<form action="1" method="post" id="searchForm">
 					<input type="hidden"  name="isshow" value="1"  />
-					<div style="float:right">   
-				     	 打印模版：<select name="templateid" id="templateid">
-					  			<%for(PrintTemplate pt : pList){ %>
-					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
-					  			<%} %>
-							</select>
-				      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
-				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/historyoutlist/1/${type}">历史打印列表>></a>
-					</div>
-					 下一站：<select name="branchid" id="branchid" multiple="multiple" style="width:180px;">
+					 <div>  
+					 下一站
+					 <select name="branchid" id="branchid" multiple="multiple" style="width:180px;">
 				        <%for(Branch b :branchlist){ %>
 				           <option value="<%=b.getBranchid()%>" 
 				           <%if(branchidList!=null&&branchidList.length>0){
@@ -154,18 +147,29 @@ function cwbexport(){
 			        [<a href="javascript:multiSelectAll('branchid',1,'请选择');">全选</a>]
 					[<a href="javascript:multiSelectAll('branchid',0,'请选择');">取消全选</a>]
 			      <%=request.getAttribute("time") %>
-				<input type ="text" name ="strtime" id="strtime"  value="<%=strtime %>"/>
+				<input type ="text" name ="strtime" id="strtime"  value="<%=strtime %>" class="input_text1"/>
 				到
-				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>"/>
-				（未打印订单只保留15天）
-		      　　<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
+				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+				（未打印订单只保留15天）<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
+		      </div>
+		      <br/>
+		      <div>   
+				     	 打印模版
+				     	 <select name="templateid" id="templateid" class="select1">
+					  			<%for(PrintTemplate pt : pList){ %>
+					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
+					  			<%} %>
+							</select>
+				      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
+				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/historyoutlist/1/${type}">历史打印列表>></a>
+			  </div>
 		      <%if(printList!=null&&printList.size()>0){ %>
 		      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />
 		      <%} %>
 				</form>
 				</div>
 				<div class="right_title">
-				<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
+				<div style="height:70px;"></div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>

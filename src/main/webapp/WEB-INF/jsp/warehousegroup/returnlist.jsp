@@ -138,7 +138,7 @@ function cwbexport(){
 				<form action="1" method="post" id="searchForm">
 					<input type="hidden" name="isshow" value="1"/> 
 					<div style="float:right">  
-				        打印模版：<select name="templateid" id="templateid">
+				        打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
 					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
 					  			<%} %>
@@ -146,16 +146,16 @@ function cwbexport(){
 				      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
 				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/historyreturnlist/1">历史打印列表>></a>
 				      </div>
-					 下一站：<select name="branchid" id="branchid">
+					 下一站：<select name="branchid" id="branchid" class="select1">
 			        <option value="0">请选择下一站</option>
 				        <%for(Branch b :branchlist){ %>
 				           <option value="<%=b.getBranchid()%>"><%=b.getBranchname()%></option>
 				        <%} %>
 			        </select>　
-			        <input type="text" name="begindate" id="begindate"  value="<%=begindate %>"/>到
-			        <input type="text" name="enddate" id="enddate" value="<%=enddate %>"/>
-			        	（未打印订单只保留15天）
-				      　　<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
+			        <input type="text" name="begindate" id="begindate"  value="<%=begindate %>" class="input_text1"/>
+			        到
+			        <input type="text" name="enddate" id="enddate" value="<%=enddate %>" class="input_text1"/>
+			        	（未打印订单只保留15天）<input type="button" id="find" onclick="cwbfind();" value="查询" class="input_button2" />
 				       <%if(printList!=null&&printList.size()>0){ %>
 					      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />
 					   <%} %>
