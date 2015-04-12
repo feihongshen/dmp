@@ -674,7 +674,8 @@ function chuku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<!-- <form action="" method="get"> -->
 			<div class="saomiao_selet2">
-					下一站： <select id="branchid" name="branchid" onchange="tohome();">
+					下一站：
+					 <select id="branchid" name="branchid" onchange="tohome();" class="select1">
 					<option value="0" selected>请选择</option>
 						<%
 							for (Branch b : bList) {
@@ -684,7 +685,9 @@ function chuku(){
 						<%
 							}
 						%>
-					</select> 驾驶员： <select id="driverid" name="driverid">
+					</select> 
+					驾驶员： 
+					<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 						<%
 							for (User u : uList) {
@@ -693,7 +696,9 @@ function chuku(){
 						<%
 							}
 						%>
-					</select> 车辆： <select id="truckid" name="truckid">
+					</select> 
+					车辆： 
+					<select id="truckid" name="truckid" class="select1">
 					<option value="-1" selected>请选择</option>
 						<%
 							for (Truck t : tList) {
@@ -706,7 +711,7 @@ function chuku(){
 					<%
 						if (isshowzhongzhuan == 1) {
 					%>
-					中转原因： <select name="reasonid" id="reasonid">
+					中转原因： <select name="reasonid" id="reasonid" class="select1">
 			        	<option value ="0">==请选择==</option>
 						<%
 							if (reasonlist != null && reasonlist.size() > 0)
@@ -777,7 +782,8 @@ function chuku(){
 	
 		<div>
 			<div class="saomiao_tab2">
-				<span style="float: right; padding: 10px"> <input class="input_button2" type="button"
+				<span style="float: right; padding: 10px">
+				<input class="input_button1" type="button"
 					name="littlefalshbutton" id="flash" value="刷新"
 					onclick="location.href='<%=request.getContextPath()%>/PDA/exportwarhouse'" />
 					</span>
@@ -790,7 +796,8 @@ function chuku(){
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
-				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
+				<li>
+				<input type="button" id="btnval0" value="导出Excel" class="input_button1"
 					onclick='exportField(1,$("#branchid").val());' />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>

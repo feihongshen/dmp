@@ -365,20 +365,20 @@ border:1px solid #ccc; color:#000; background:#fff; }
    .table_6 .font_1{color:#333}
      .table_6 strong{color:#F60; font-weight:bold; font-size:12px; font-family:Verdana, Geneva, sans-serif}
 /*扫描新加样式*/
-.saomiao_tab{padding:10px; border-left:1px solid #0CF; border-right:1px solid #0cf; background:#FFF; overflow:hidden}
+.saomiao_tab{padding:10px; background:#FFF; overflow:hidden}
 .saomiao_tab *{vertical-align:middle}
 .saomiao_tab span{float:right}
-.saomiao_tab { position:relative; background:#AFD6EB; height:37px; z-index:9 }
+.saomiao_tab { position:relative; background:#e0ecff; height:20px; z-index:9 }
 .saomiao_tab ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
 .saomiao_tab li { float:left; display:block; width:140px; height:31px; line-height:31px; text-align:center; margin-right:8px }
 .saomiao_tab li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg3.png) no-repeat }
-.saomiao_tab li a:hover { text-decoration:none; color:#C30; background-position:0px -31px }
+.saomiao_tab li a:hover { text-decoration:none; color:#0e2d5f; font-weight:bold; background-position:0px -31px }
 .saomiao_tab .light { background-position:0px -62px }
-.saomiao_tab2 { position:relative; background:#AFD6EB; height:37px; z-index:0 }
+.saomiao_tab2 { position:relative; background:#e0ecff; height:37px; z-index:0 }
 .saomiao_tab2 ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
 .saomiao_tab2 li { float:left; display:block; width:80px; height:31px; line-height:31px; text-align:center; margin-right:8px }
 .saomiao_tab2 li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg.png) no-repeat }
-.saomiao_tab2 li a:hover { text-decoration:none; color:#C30; background-position:0px -31px }
+.saomiao_tab2 li a:hover { text-decoration:none; color:#0e2d5f; font-weight:bold; background-position:0px -31px }
 .saomiao_tab2 .light { background-position:0px -62px }
 
 

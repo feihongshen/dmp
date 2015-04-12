@@ -33,8 +33,8 @@ String isprintnew = request.getAttribute("isprintnew").toString();
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -648,14 +648,7 @@ $(function(){
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
-
-				
-	
-				
-				
-
-
-<div class="saomiao_box2">
+<div class="saomiao_box2" style="margin-top:-18px;">
 		<!-- 新添加 --><div class="saomiao_tab2">
 		<ul>
 			<li><a href="#"  class="light">逐单操作</a></li>		
@@ -703,20 +696,20 @@ $(function(){
 				</ul>
 				</div>
 			<div class="saomiao_selet2">
-				供应商：
-				<select id="customerid" name="customerid" onchange="tohome();">
+				客户：
+				<select id="customerid" name="customerid" onchange="tohome();" class="select1">
 					<option value="-1" selected>全部供应商</option>
 					<%for(Customer c : cList){ %>
 						<option value="<%=c.getCustomerid() %>" <%if(customerid==c.getCustomerid()){ %> selected=selected <%} %> ><%=c.getCustomername() %></option>
 					<%} %>
 				</select>
 				发货批次：
-				<select id="emaildate" name="emaildate" onchange="tohome();" style="height: 20px;width: 280px">
+				<select id="emaildate" name="emaildate" onchange="tohome();" style="height: 20px;width: 280px" class="select1">
 					<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option> 
 				</select>
 				<a href="#" id="more" style="color:#222222">更多</a>
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
@@ -774,12 +767,10 @@ $(function(){
 			</div><!-- </form> -->
 		</div>
 	</div>
-	
 		<div>
-		
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
-					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/intowarhouse'" />
+					<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/intowarhouse'" />
 				</span>
 				<ul>
 					<li><a id="table_weiruku" href="#" class="light">未入库明细</a></li>

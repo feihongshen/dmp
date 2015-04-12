@@ -22,8 +22,8 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>入库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -422,20 +422,20 @@ function tohome(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<form id="cwbintoform" action="<%=request.getContextPath() %>/PDA/cwbintowarhouseBatch" method="post">
 			<div class="saomiao_selet2">
-				供应商：
-				<select id="customerid" name="customerid" onchange="tohome();">
+				客户：
+				<select id="customerid" name="customerid" onchange="tohome();" class="select1">
 					<option value="-1" selected>全部供应商</option>
 					<%for(Customer c : cList){ %>
 						<option value="<%=c.getCustomerid() %>"  <%if(customerid==c.getCustomerid()){ %> selected=selected <%} %> ><%=c.getCustomername() %></option>
 					<%} %>
 				</select>
 				发货批次：
-				<select id="emaildate" name="emaildate" onchange="tohome();" style="height: 20px;width: 280px">
+				<select id="emaildate" name="emaildate" onchange="tohome();" style="height: 20px;width: 280px" class="select1">
 					<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option> 
 				</select>
 				<a href="#" id="more" style="color:#222222">更多</a>
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
@@ -459,9 +459,6 @@ function tohome(){
 			</div></form>
 		</div>
 	</div>
-
-
-
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px"></span>
@@ -474,7 +471,7 @@ function tohome(){
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1,$("#customerid").val());'/>
+				    <input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1,$("#customerid").val());'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
