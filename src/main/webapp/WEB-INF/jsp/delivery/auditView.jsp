@@ -352,15 +352,15 @@ function exportYifankui(){
 	
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="#"  class="light">归班审核</a></li>		
-			<li><a href="<%=request.getContextPath()%>/delivery/batchEditDeliveryState">反馈批量</a></li>
+			<li><a href="#"  class="light">归班反馈</a></li>		
+			<li><a href="<%=request.getContextPath()%>/delivery/batchEditDeliveryState">批量反馈</a></li>
 		</ul>
 	</div>
 
 		<form name="form1" method="post" action="commonupload" >
 
 			<div class="form_topbg">
-				本站投递中订单： <select id="deliveryid" name="deliveryid" onchange="getDeliveryStateByDeliveryId()" >
+				本站投递中订单： <select id="deliveryid" name="deliveryid" class="select1" onchange="getDeliveryStateByDeliveryId()" >
 					<option value="0">总览</option>
 					<%
 					String nowDeliverName = "";
@@ -377,7 +377,6 @@ function exportYifankui(){
 			<%if(deliveryInCountMap != null){ %>
 			<%if(customerList != null && customerList.size()>0){ %>
 			<div class="right_title">
-				<div style="height:5px"></div>
 				<div style="position:relative; z-index:0; width:100% ">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" style="height:30px">
 							<tbody>

@@ -22,8 +22,8 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>领货扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -38,15 +38,22 @@ $(function(){
 	});
 })
 
-$(function() {
-	var $menuli = $(".saomiao_tab2 ul li");
-	$menuli.click(function() {
+$(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
-});
+	
+})
 
 function tabView(tab){
 	$("#"+tab).click();
@@ -405,8 +412,8 @@ function tohome(){
 			<!-- <div class="saomiao_lefttitle">扫描订单</div> -->
 			<div class="saomiao_righttitle" id="pagemsg"></div>
 			<div class="saomiao_selet2">
-				选择小件员：
-					<select id="deliverid" name="deliverid" onchange="tohome();">
+				小件员：
+					<select id="deliverid" name="deliverid" onchange="tohome();" class="select1">
 						<option value="-1" selected>请选择</option>
 						<%for(User u : uList){ %>
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %>    ><%=u.getRealname() %></option>
@@ -445,10 +452,10 @@ function tohome(){
 	<div>
 		<div class="saomiao_tab2">
 			<span style="float: right; padding: 10px">
-			<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchdeliverdetail'" />
+			<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchdeliverdetail'" />
 			
 			</span>
-			<ul>
+			<ul id="smallTag">
 				<li><a id="table_todayweilinghuo" href="#" class="light">今日未领货</a></li>
 				<li><a id="table_historyweilinghuo" href="#">历史未领货</a></li>
 				<li><a id="table_yilinghuo" href="#">已领货明细</a></li>

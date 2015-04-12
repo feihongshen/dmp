@@ -25,13 +25,20 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
-	var $menuli = $(".saomiao_tab2 ul li");
-	$menuli.click(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
+	
 })
 
 $(function(){
@@ -309,7 +316,7 @@ function getdaohuocwbquejiandataList(){
 				 <p><span>订单号：</span>
 					<textarea name="cwbs" cols="45" rows="3" id="cwbs"></textarea>
 				</p>
-				<span>&nbsp;</span><input type="button" id="subButton" value="确定批量处理" onclick="sub()" class="input_button1" />
+				<span>&nbsp;</span><input type="button" id="subButton" value="确定批量处理" onclick="sub()" class="button" />
 				</div>
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" >${msg }</p>
@@ -321,7 +328,7 @@ function getdaohuocwbquejiandataList(){
 	<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px"></span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_jinriweidaohuo" href="#" class="light">今日未到货</a></li>
 					<li><a id="table_historyweidaohuo" href="#">历史未到货</a></li>
 					<li><a id="table_yidaohuo" href="#">已到货明细</a></li>

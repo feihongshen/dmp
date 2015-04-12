@@ -342,38 +342,40 @@ function chuku(){
 			<!-- <form action="" method="get"> -->
 			<div class="saomiao_selet">
 				下一站：
-				<select id="branchid" name="branchid" onchange="getOutSum('<%=request.getContextPath()%>',$(this).val())">
+				<select id="branchid" name="branchid" class="select1" onchange="getOutSum('<%=request.getContextPath()%>',$(this).val())">
 					<!-- <option value="-1" selected>请选择</option> -->
 					<%for(Branch b : bList){ %>
 						<%if(b.getBranchid()!=Long.parseLong(usermap.get("branchid").toString())){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 					<%}} %>
 				</select>
-				站点名称：<input name="branchname" id="branchname" onkeyup="selectnotallnexusbranch('<%=request.getContextPath()%>','deliverybranchid',$(this).val());"/>
+				站点：<input name="branchname" id="branchname" class="input_text1" onkeyup="selectnotallnexusbranch('<%=request.getContextPath()%>','deliverybranchid',$(this).val());"/>
 				正确的配送站点：
-				<select id="deliverybranchid" name="deliverybranchid">
+				<select id="deliverybranchid" name="deliverybranchid" class="select1">
 					<option value="-1">不选择</option>
 					<%for(Branch b : AllbList){ %>
 					<%if(b.getBranchid()!=Long.parseLong(usermap.get("branchid").toString())){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 					<%} }%>
 				</select>
+				<br/>
+				<br/>
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
 					<%} %>
 		        </select>
 				车辆：
-				<select id="truckid" name="truckid">
+				<select id="truckid" name="truckid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(Truck t : tList){ %>
 						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
 					<%} %>
 		        </select>
 				中转原因：
-					<select name="reasonid" id="reasonid">
+					<select name="reasonid" id="reasonid" class="select1">
 			        	<option value ="0">==请选择==</option>
 			        	<%if(reasonlist!=null&&reasonlist.size()>0)for(Reason r : reasonlist){ %>
 	           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>

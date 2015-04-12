@@ -31,8 +31,8 @@ Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>批量反馈-上门退订单</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
@@ -152,12 +152,12 @@ function load(deliverystateid)
 	
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/delivery/auditView" >归班审核</a></li>		
-			<li><a href="#" class="light" >反馈批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/delivery/auditView" >归班反馈</a></li>		
+			<li><a href="#" class="light" >批量反馈</a></li>
 		</ul>	
 	</div>
 	
-		<div class="kfsh_tabbtn">
+		<div class="saomiao_tab2">
 			<ul>
 				<li><a href="./batchEditDeliveryState">配送订单</a></li>
 				<li><a href="./batchEditSMHDeliveryState">上门换订单</a></li>
@@ -168,7 +168,7 @@ function load(deliverystateid)
 		<div class="tabbox">
 		<div class="kfsh_search">
 			<form action="<%=request.getContextPath()%>/delivery/batchEditSMTDeliveryState" method="post" id="subForm">
-				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px;height:150px">
 					<tr>
 						<td valign="middle" >&nbsp;&nbsp; 
 							<input type="radio" name="deliverystate" id="deliverystate2" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(deliverystateid==2){ %> checked="checked"<%} %> onclick="changeTag(1)"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
@@ -181,7 +181,7 @@ function load(deliverystateid)
 					<tr>
 					<td>		<div id="smjt" style="display: none">
 							拒退原因：
-							 <select name="backreasonid" id="backreasonid">
+							 <select name="backreasonid" id="backreasonid" class="select1">
 					        	<option value ="0" selected="selected">请选择</option>
 					        	<%for(Reason r : backlist){ %>
 			           				<option value="<%=r.getReasonid()%>" <%if((backreasonid==r.getReasonid())&&r.getReasoncontent()!=null){%> selected="selected"<%} %>><%=r.getReasoncontent() %></option>
@@ -189,7 +189,7 @@ function load(deliverystateid)
 					        </select>
 						
 						拒退备注输入内容：
-							<input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
+							<input type="text" class="input_text1" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
 						</div>
 						</td>
 					</tr>

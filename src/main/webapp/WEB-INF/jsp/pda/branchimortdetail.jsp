@@ -563,7 +563,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 			<!-- <form action="" method="get"> -->
 			<div class="saomiao_selet2">
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
@@ -616,7 +616,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 	<div>
 		<div id="smallTag"class="saomiao_tab2">
 			<span style="float: right; padding: 10px">
-			<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchimortdetail'" />
+			<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchimortdetail'" />
 			</span>
 			<ul>
 				<li><a id="table_jinriweidaohuo" href="#" class="light">今日未到货</a></li>

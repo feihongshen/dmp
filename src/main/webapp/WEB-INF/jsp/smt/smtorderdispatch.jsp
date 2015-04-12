@@ -18,8 +18,8 @@ List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
@@ -581,7 +581,7 @@ dl dd span {
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					小件员：<select id="deliverid" name="deliverid">
+					小件员：<select id="deliverid" name="deliverid" class="select1">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (User c : deliverList) {
@@ -591,6 +591,9 @@ dl dd span {
 							}
 						%>
 					</select>
+					快捷超区：<input type="text" class="input_text1" id="today_table_quick" name="today_table_quick" value=""
+						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
+						id="today_table_msg" style="color: red"></label>
 				</div>
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
@@ -612,11 +615,6 @@ dl dd span {
 					</div>
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> <input
 						type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
-				</div>
-				<div>
-					快捷超区：<input type="text" id="today_table_quick" name="today_table_quick" value=""
-						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
-						id="today_table_msg" style="color: red"></label>
 				</div>
 			</div>
 		</div>
@@ -663,8 +661,8 @@ dl dd span {
 					</table></li>
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="超区"
-					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left: 20px">快捷超区</label>
-					<input type="text" id="history_table_quick" name="history_table_quick" value=""
+					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left: 20px">快捷超区：</label>
+					<input type="text" class="input_text1" id="history_table_quick" name="history_table_quick" value=""
 					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('history_table');}" /> <label
 					id="history_table_msg" style="color: red"></label>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">

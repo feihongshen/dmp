@@ -390,7 +390,7 @@ function tohome(){
 				<div class="saomiao_righttitle2" id="pagemsg"></div>
 				<!-- <form action="" method="get"> -->
 				<div class="saomiao_selet2">
-					下一站： <select id="branchid" name="branchid" onchange="tohome()">
+					下一站： <select id="branchid" name="branchid" onchange="tohome()" class="select1">
 						<%
 							for(Branch b : bList){
 						%>
@@ -402,7 +402,7 @@ function tohome(){
 						<%
 							}}
 						%>
-					</select> 驾驶员： <select id="driverid" name="driverid">
+					</select> 驾驶员： <select id="driverid" name="driverid" class="select1">
 						<option value="-1" selected>请选择</option>
 						<%
 							for(User u : uList){
@@ -467,7 +467,7 @@ function tohome(){
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px"> <input
-					class="input_button2" type="button" name="littlefalshbutton"
+					class="input_button1" type="button" name="littlefalshbutton"
 					id="flash" value="刷新"
 					onclick="location.href='<%=request.getContextPath()%>/PDA/branchexportwarhouse'" />
 				</span>

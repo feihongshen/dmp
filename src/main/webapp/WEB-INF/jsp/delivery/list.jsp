@@ -58,16 +58,16 @@ $(function() {
 	<div class="inputselect_box">
 		<span></span>
 		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-			归班人：<select name="deliverealuser" id="deliverealuser">
+			归班人：<select name="deliverealuser" id="deliverealuser" class="select1">
 			<option value="0">请选择</option>
 			<%for(User u : us){ %>
 			<option value="<%=u.getUserid() %>"><%=u.getRealname() %></option>
 			<%} %>
 			</select>
 			归班时间：
-			<input  type="text" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" id="begindate" name="begindate"/>
+			<input type="text" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" id="begindate" name="begindate" class="input_text1"/>
 			  到
-			<input type="text" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" id="enddate" name="enddate"/>
+			<input type="text" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" id="enddate" name="enddate" class="input_text1"/>
 			(默认为当天归班记录)
 			<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询"  class="input_button2" />
 			<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />

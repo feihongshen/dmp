@@ -41,15 +41,7 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
-	var $menuli = $(".saomiao_tab2 ul li");
 	var $menulilink = $(".kfsh_tabbtn ul li a");
-	$menuli.click(function(){
-		$(this).children().addClass("light");
-		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
-		$(".tabbox li").eq(index).show().siblings().hide();
-		showbybranchid($("#branchid").val());
-	});
 	showbybranchid($("#branchid").val());
 });
 $(function(){
@@ -62,6 +54,22 @@ $(function(){
 	});
 	
 }); 
+$(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
+		$(".tabbox li").eq(index).show().siblings().hide();
+	});
+	
+})
 function tohome(){
 	var isscanbaleTag = 1;
 	if($("#scanbaleTag").hasClass("light")){
@@ -629,14 +637,14 @@ function chuku(){
 			<div class="saomiao_selet2">
 			
 				下一站：
-				<select id="branchid" name="branchid" onchange="tohome();">
+				<select id="branchid" name="branchid" onchange="tohome();" class="select1">
 					<%for(Branch b : bList){ %>
 						<%if(b.getBranchid()!=Long.parseLong(usermap.get("branchid").toString())){ %>
 						<option value="<%=b.getBranchid() %>"  <%if(branchid==b.getBranchid()) {%>selected <%} %> ><%=b.getBranchname() %></option>
 					<%} }%>
 				</select>
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
@@ -694,9 +702,9 @@ function chuku(){
  <div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
-				<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchbackexport'" />
+				<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchbackexport'" />
 				</span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weituihuochuku" href="javascript:tabView('table_weituihuochuku','wall')" class="light">待出库明细</a></li>
 					<li><a id="table_yituihuochuku" href="javascript:tabView('table_yituihuochuku','yall')">已出库明细</a></li>
 					<li><a href="#">异常单明细</a></li>

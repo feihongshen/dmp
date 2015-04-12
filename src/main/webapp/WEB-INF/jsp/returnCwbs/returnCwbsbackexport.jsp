@@ -225,7 +225,7 @@ function search(flag){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid">
+				<select id="branchid" name="branchid" class="select1">
 					<%for(Branch b : branchlist){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 					<%} %>
@@ -256,8 +256,8 @@ function search(flag){
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-				 &nbsp;&nbsp;供货商：
-				 <select name="customeridwei" id="customeridwei" style="height: 20px;width:200px">
+				 &nbsp;&nbsp;客户：
+				 <select name="customeridwei" id="customeridwei" style="height: 20px;width:200px" class="select1">
 					<option value="0">请选择</option>
 					<%if(customerList!=null&&!customerList.isEmpty()){
 						for(Customer c:customerList){ %>
@@ -265,13 +265,13 @@ function search(flag){
 					<%}}%>
 				 </select>
 				 &nbsp;&nbsp;操作时间：
-				 <select name="timetypewei" id="timetypewei" style="height: 20px;width:100px">
+				 <select name="timetypewei" id="timetypewei" style="height: 20px;width:100px" class="select1">
 					<option value="1">发货时间</option>
 					<option value="2">反馈时间</option>
 					<option value="3">审核时间</option>
 				 </select>
-				 <input type="text" name="starttimewei" id="starttimewei" value ="<%=starttime%>"/>
-				 到<input type="text" name="endtimewei" id="endtimewei" value ="<%=endtime%>"/>
+				 <input type="text" name="starttimewei" id="starttimewei" value ="<%=starttime%>" class="input_text1"/>
+				 到<input type="text" name="endtimewei" id="endtimewei" value ="<%=endtime%>" class="input_text1"/>
 					<input type ="button" id="btnval0" value="查询" class="input_button1" onclick='search(1);'/>
 					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1);'/>
 					
@@ -316,8 +316,8 @@ function search(flag){
 				</li>
 				
 				<li style="display: none">
-					&nbsp;&nbsp;供货商：
-				 <select name="customeridyi" id="customeridyi" style="height: 20px;width:200px">
+					&nbsp;&nbsp;客户：
+				 <select name="customeridyi" id="customeridyi" style="height: 20px;width:200px" class="select1">
 					<option value="0">请选择</option>
 					<%if(customerList!=null&&!customerList.isEmpty()){
 						for(Customer c:customerList){ %>
@@ -325,8 +325,8 @@ function search(flag){
 					<%}}%>
 				 </select>
 				 &nbsp;&nbsp;返单出站时间：
-				 <input type="text" name="starttimeyi" id="starttimeyi" value ="<%=starttime%>"/>
-				 到<input type="text" name="endtimeyi" id="endtimeyi" value ="<%=endtime%>"/>
+				 <input type="text" name="starttimeyi" id="starttimeyi" value ="<%=starttime%>" class="input_text1"/>
+				 到<input type="text" name="endtimeyi" id="endtimeyi" value ="<%=endtime%>" class="input_text1"/>
 					<input type ="button" id="btnval0" value="查询" class="input_button1" onclick='search(2);'/>
 					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(2);'/>
 					

@@ -39,8 +39,8 @@ String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("re
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>批量反馈</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
@@ -229,13 +229,13 @@ function resub(form){
 	
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/delivery/auditView" >归班审核</a></li>		
-			<li><a href="#" class="light" >反馈批量</a></li>
+			<li><a href="<%=request.getContextPath()%>/delivery/auditView" >归班反馈</a></li>		
+			<li><a href="#" class="light" >批量反馈</a></li>
 		</ul>
 
 	</div>
 	
-		<div class="kfsh_tabbtn">		
+		<div class="saomiao_tab2">		
 			<ul>
 				<li><a href="./batchEditDeliveryState" class="light">配送订单</a></li>
 				<li><a href="./batchEditSMHDeliveryState">上门换订单</a></li>
@@ -246,7 +246,7 @@ function resub(form){
 		<div class="tabbox">
 		<div class="kfsh_search">
 			<form action="<%=request.getContextPath()%>/delivery/batchEditDeliveryState" method="post" id="subForm">
-				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px;height:150px">
 					<tr>
 						<td valign="middle" >&nbsp;&nbsp; 
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.JuShou.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.JuShou.getValue() %>);"/> <%=DeliveryStateEnum.JuShou.getText() %>
@@ -258,7 +258,7 @@ function resub(form){
 					<td>&nbsp;&nbsp; 
 						<em style="display:none">
 							滞留原因：
-							 <select name="leavedreasonid" id="leavedreasonid">
+							 <select name="leavedreasonid" id="leavedreasonid" class="select1">
 					        	<option value ="0">请选择</option>
 					        	<%for(Reason r : leavedlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
@@ -266,14 +266,14 @@ function resub(form){
 					        </select>
 						</em>
 						<em style="display:none">
-							再次配送时间：<input type ="text" name ="resendtime" id="resendtime" readonly="readonly"  value="<%=resendtime %>"/>
+							再次配送时间：<input type ="text" name ="resendtime" id="resendtime" readonly="readonly"  value="<%=resendtime %>" class="input_text1"/>
 						</em>
 						<em style="display:none">
-							滞留备注：<input type ="text" name ="zhiliuremark" id="zhiliuremark"  value=""/>
+							滞留备注：<input type ="text" class="input_text1" name ="zhiliuremark" id="zhiliuremark"  value=""/>
 						</em>
 						<em style="display:none">
 							拒收原因：
-							 <select name="backreasonid" id="backreasonid">
+							 <select name="backreasonid" id="backreasonid" class="select1">
 					        	<option value ="0">请选择</option>
 					        	<%for(Reason r : backlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
@@ -284,7 +284,7 @@ function resub(form){
 							<em style="display:none"><input name="paytype" id="paytype" value="<%=PaytypeEnum.Xianjin.getValue()%>" type="hidden"/></em>
 						<%}else{ %>
 							<em style="display:none">支付方式：
-								<select name="paytype" id="paytype">
+								<select name="paytype" id="paytype" class="select1">
 									<option value="5" <%if(5==(request.getParameter("paytype")==null?5:Integer.parseInt(request.getParameter("paytype")))){ %>selected="selected" <%} %>>默认支付方式</option>
 									<option value="<%=PaytypeEnum.Xianjin.getValue()%>" <%if(PaytypeEnum.Xianjin.getValue()==(request.getParameter("paytype")==null?5:Integer.parseInt(request.getParameter("paytype")))){ %>selected="selected" <%} %>><%=PaytypeEnum.Xianjin.getText()%></option>
 									<%if(pl_switch.equals("yes")){ %>
@@ -298,7 +298,7 @@ function resub(form){
 							</em>
 						<%} %>
 						<em style="display:none">拒收备注输入内容：
-							<input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=request.getParameter("deliverstateremark")==null?"":request.getParameter("deliverstateremark")%>" maxlength="50" />
+							<input type="text" name="deliverstateremark" class="input_text1" id="deliverstateremark" value ="<%=request.getParameter("deliverstateremark")==null?"":request.getParameter("deliverstateremark")%>" maxlength="50" />
 						</em>
 						</td>
 					</tr>

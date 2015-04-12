@@ -26,8 +26,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
@@ -316,9 +316,9 @@ function returnGoods(){
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
 <div class="addresstishi_box"></div>
-<div class="right_box">
-	<div style="background:#FFF;overflow:auto;min-height:550px">
-		<div class="kfsh_tabbtn">
+<div class="saomiao_box">
+	<div style="background:#f5f5f5;overflow:auto;min-height:550px">
+		<div class="saomiao_tab2">
 			<ul>
 				<li><a href="#" class="light">待反馈明细</a></li>
 				<li><a href="../ordergoodsbycwbs">按订单号反馈</a></li>
@@ -331,21 +331,20 @@ function returnGoods(){
 						<div class="kfsh_search" id="returndetail" >
 						<form action="<%=request.getContextPath() %>/orderpartgoodsreturn/ordergoodslist/1" method="post" id="searchForm">
 						    小件员：
-							 <select name="userid" id="userid" onchange="search()">
+							 <select name="userid" id="userid" onchange="search()" class="select1">
 					        	<option value ="-1">全部</option>
 					        	<%for(User r : userList){ %>
 			           				<option value="<%=r.getUserid()%>" <%if(userid == r.getUserid()){%>selected<%}%>><%=r.getRealname() %></option>
 			           			<%} %> 
-					        </select>&nbsp&nbsp&nbsp&nbsp&nbsp
+					        </select>
 					        
-					               供货商 ：
-							 <select name="customerid" id="customerid" onchange="search()">
+					               客户 ：
+							 <select name="customerid" id="customerid" onchange="search()" class="select1">
 					        	<option value ="-1">全部</option>
 					        	<%for(Customer cus : customerList){ %>
 			           				<option value="<%=cus.getCustomerid()%>" <%if(customerid == cus.getCustomerid()){%>selected<%}%>><%=cus.getCustomername() %></option>
 			           			<%} %>
 					        </select>
-					        &nbsp&nbsp&nbsp&nbsp&nbsp
 					        
 					        <input type="button" value="部分退货" class="input_button2" onclick="returnGoods()" id="rb">
 							
@@ -364,15 +363,15 @@ function returnGoods(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="table_orders" style="overflow:auto;">
 							<tbody>
 								<tr class="font_1" height="30" >
-								    <td width="50" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
-									<td width="130" align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">应收金额[元]</td>
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">取件承运商</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">领货时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">上门揽收时间</td>									
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">退货仓库地址</td>
+								    <td width="50" align="center" valign="middle" bgcolor="#eef6ff"></td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">收件人</td>
+									<td width="130" align="center" valign="middle" bgcolor="#eef6ff">收件地址</td>
+									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">应收金额[元]</td>
+									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">取件承运商</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">领货时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">上门揽收时间</td>									
+									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">退货仓库地址</td>
 								</tr>
 								<%if(orderPartGoodsRtList!=null&&orderPartGoodsRtList.size()>0)
 									for(OrderPartGoodsRt ort : orderPartGoodsRtList){ %>
