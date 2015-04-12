@@ -322,27 +322,38 @@
 	<div class="search_div">
 		<form id="searchForm" name="searchForm" action="${ctx_ath}/smtfaresettle/deliver/1" method="post">
 			<div>
-				操作时间：<select id="optTimeType" name="optTimeType">
+				操作时间：
+				<select id="optTimeType" name="optTimeType" class="select1">
 					<c:forEach items="${constant.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 供货商：<select id="venders"
-					name="venders" style="width: 100px;" multiple="multiple">
+				</select>
+				<input type="text" name="startTime" id="startTime" value="${cond.startTime}" class="input_text1" style="height:20px;"/>
+				 到
+				  <input
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" class="input_text1" style="height:20px;"/> 
+			             客户：
+			      <select id="venders"
+					name="venders" style="width: 300px;" multiple="multiple">
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('venders',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 站点： <select id="orgId"
-					name="orgId" style="width: 100px;">
+					href="javascript:multiSelectAll('venders',0,'请选择');">取消全选</a>] 
+					<br/>
+					<br/>
+					站点：
+				 <select id="orgId"
+					name="orgId" class="select1">
 					<option value="0">请选择</option>
 					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${cond.orgId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> 小件员：
+				</select> 
+				小件员：
 				<div id="deliver_area" style="display: inline">
-					<select id="delivers" name="delivers" style="width: 100px;" multiple="multiple">
+					<select id="delivers" name="delivers" style="width: 300px;" multiple="multiple">
 						<c:forEach items="${constant.deliverMap}" var="entry">
 							<option value="${entry.key}"
 								<c:if test="${fn:contains(cond.delivers,entry.key)}">selected</c:if>>${entry.value}</option>

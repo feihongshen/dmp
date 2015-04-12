@@ -37,8 +37,8 @@ Date now = new Date();
 <TITLE></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -219,7 +219,7 @@ function changeTime(){
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" border="1">
 			  <tr>
 					<td width="100%">
-						供货商:
+						客户：
 						<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 				          <%for(Customer c : customerlist){ %>
 				           <option value ="<%=c.getCustomerid() %>" 
@@ -235,50 +235,59 @@ function changeTime(){
 				        </select>
 				        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 						[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-						运费状态:
-						<select id="verifyflag" name="verifyflag" onchange="changeTime();">
-							<option value="2" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("2")?"selected":"" %>>已归班未交款</option>
-							<option value="0" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("0")?"selected":"" %>>已交款未审核</option>
-							<option value="1" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("1")?"selected":"" %>>已交款已审核</option>
-							
-						</select>
-						
-						<select id="verifytime" name="verifytime" disabled="disabled">
-							<option value="0" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("0")?"selected":"" %>>归班时间</option>
-							<option value="1" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("1")?"selected":"" %>>交款时间</option>
-							<option value="2" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("2")?"selected":"" %>>审核时间</option>
-						</select>
-							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
-						到
-							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-						<font color="red">（查询31天以内数据）</font>
-					        <br/>
-						配送站点：<select name ="deliverybranchid" id="branchid" onchange="change()">
+						配送站点：
+						<select name ="deliverybranchid" id="branchid" onchange="change()" class="select1">
 				               <option value="-1">全部</option>
 				               <%if(branchList != null && branchList.size()>0){ %>
 				                <%for( Branch b:branchList){ %>
 				               <option value ="<%=b.getBranchid()%>" <%if(b.getBranchid() == new Long(request.getParameter("deliverybranchid")==null?"-1":request.getParameter("deliverybranchid"))) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 				               <%} }%>
 			              </select>
-			            小件员：  <select name ="userid" id ="userid" >
+			            小件员：
+			            <select name ="userid" id ="userid" class="select1">
 			            <option value="0">请选择</option>
 						<%for(User u:userListofbranch){ %>
 						<option value="<%=u.getUserid()%>" <%if(userid.equals(u.getUserid()+"")) {%> selected="selected"<%} %>><%=u.getRealname()%></option>
 						<%} %>
 			            </select>
+					       </td></tr>
+					       <tr>
+					       <td>
+					       运费状态：
+						<select id="verifyflag" name="verifyflag" onchange="changeTime();" class="select1">
+							<option value="2" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("2")?"selected":"" %>>已归班未交款</option>
+							<option value="0" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("0")?"selected":"" %>>已交款未审核</option>
+							<option value="1" <%=request.getParameter("verifyflag")!=null&&request.getParameter("verifyflag").equals("1")?"selected":"" %>>已交款已审核</option>
+							
+						</select>
+						
+						<select id="verifytime" name="verifytime" disabled="disabled" class="select1">
+							<option value="0" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("0")?"selected":"" %>>归班时间</option>
+							<option value="1" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("1")?"selected":"" %>>交款时间</option>
+							<option value="2" <%=request.getParameter("verifytime")!=null&&request.getParameter("verifytime").equals("2")?"selected":"" %>>审核时间</option>
+						</select>
+							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
+						到
+							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
+						<font color="red">（查询31天以内数据）</font>
+					       </td>
+					       </tr>
+					       <tr><td>
+						
 						 配送结果：
-						<select name ="deliverystate" id ="deliverystate" >
+						<select name ="deliverystate" id ="deliverystate" class="select1">
 							<option value ="-1">请选择</option>
 							<option value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenTuiChengGong.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
 							<option value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystate.equals(""+DeliveryStateEnum.ShangMenJuTui.getValue())){ %>selected="selected"<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
 						</select>
 						
 						 应收运费：
-						<select name ="shoulefarefeesign" id ="shoulefarefeesign" >
+						<select name ="shoulefarefeesign" id ="shoulefarefeesign" class="select1">
 							<option value="1" <%=request.getParameter("shoulefarefeesign")!=null&&request.getParameter("shoulefarefeesign").equals("1")?"selected":"" %>>大于0</option>
 							<option value="0" <%=request.getParameter("shoulefarefeesign")!=null&&request.getParameter("shoulefarefeesign").equals("0")?"selected":"" %>>等于0</option>
 						</select>	
-						 每页<select name="pageNumber" id="pageNumber">
+						 每页：
+						 <select name="pageNumber" id="pageNumber" class="select1">
 								<option value="100">100</option>
 								<option value="300">300</option>
 								<option value="500">500</option>
@@ -331,7 +340,7 @@ function changeTime(){
 								<td width="80" align="center" valign="middle" ><a style="cursor: pointer;" onclick="isgetallcheck();">[全选/反选]</a></td>
 								<td  align="center" valign="middle" >订单号</td>
 								<td  align="center" valign="middle" >小件员</td>
-								<td align="center" valign="middle" >供货商</td>
+								<td align="center" valign="middle" >客户</td>
 								<td align="center" valign="middle" >配送站点</td>
 								<td align="center" valign="middle" >归班时间</td>
 								<td align="center" valign="middle" >配送结果</td>
@@ -422,7 +431,7 @@ function changeTime(){
 						       <td colspan ="20" align="center" valign="middle" >
 							      <form id="updateForm" action ="<%=request.getContextPath()%>/funds/update"  method = "post">
 				                      
-				                      <input type="button" id="updateF"  value="审核"/>
+				                      <input type="button" id="updateF"  value="审核" class="input_button1"/>
 				                  </form>
 			                  </td>
 				            </tr>

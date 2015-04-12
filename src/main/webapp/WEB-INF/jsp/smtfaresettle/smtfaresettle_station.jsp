@@ -282,19 +282,29 @@
 	<div class="search_div">
 		<form id="searchForm" name="searchForm" action="${ctx_path}/smtfaresettle/station/1" method="post">
 			<div>
-				操作时间：<select id="optTimeType" name="optTimeType">
+				操作时间：
+				<select id="optTimeType" name="optTimeType" class="select1">
 					<c:forEach items="${constant.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 站点： <select id="orgs"
-					name="orgs" multiple="multiple" style="width: 100px;">
+				</select>
+				<input type="text" name="startTime" id="startTime" value="${cond.startTime}" class="input_text1" style="height:20px;"/> 
+				到 
+				<input
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" class="input_text1" style="height:20px;"/> 
+					站点： 
+					<select id="orgs"
+					name="orgs" multiple="multiple" style="width: 300px;">
 					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
 				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商：<select id="venders"
-					name="venders" style="width: 100px;" multiple="multiple">
+					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 
+					<br/>
+					<br/>
+					客户：
+					<select id="venders"
+					name="venders" style="width: 300px;" multiple="multiple">
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.venders,entry.key)}">selected</c:if>>${entry.value}</option>

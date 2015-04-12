@@ -37,8 +37,8 @@ Date now = new Date();
 <TITLE></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -324,14 +324,14 @@ function changeYj(){
 			  <tr>
 					<td width="100%">
 				
-				当前站点:<%=branch.getBranchname() %><input type="hidden" value="<%=branch.getBranchid() %>"/>
+				当前站点：<%=branch.getBranchname() %><input type="hidden" value="<%=branch.getBranchid() %>"/>
 						
 						审核时间：
-							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
 						到
-							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
 						<font color="red">（查询31天以内数据）</font>
-						订单类型：<select id="cwbordertypeid" name="cwbordertypeid">
+						订单类型：<select id="cwbordertypeid" name="cwbordertypeid" class="select1">
 						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Shangmentui.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
 						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Shangmenhuan.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
 						<option <%if(cwbordertypeid.equals(CwbOrderTypeIdEnum.Peisong.getValue()+"")){%>selected="selected"<%}%> value="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
@@ -340,7 +340,7 @@ function changeYj(){
 				</tr>
 				 <tr>
 					<td width="100%">
-					交款状态：<select id="faretypeid" name="faretypeid">
+					交款状态：<select id="faretypeid" name="faretypeid" class="select1">
 						<option value="1" <%if(faretypeid.equals("1")){%>selected="selected"<%}%>>未交款</option>
 						<option value="2" <%if(faretypeid.equals("2")){%>selected="selected"<%}%>>已交款未审核</option>
 						<option value="3" <%if(faretypeid.equals("3")){%>selected="selected"<%}%>>已审核</option>
@@ -376,9 +376,6 @@ function changeYj(){
 		<input type="hidden" name="faretypeid" value="<%=faretypeid%>"/>
 		<input type="hidden" id="userids" name="userids" value="<%=userids%>"/>
 	</form>
- 	<br/>
- 	<br/>
- 	<br/>
 	<div>	
 		<h1 style="line-height:30px; font-size:18px; font-family:'微软雅黑', '黑体'; font-weight:bold; color:#369"><%="1".equals(request.getParameter("ispay"))?"已交款":"未交款" %>记录：</h1>	
 		<div>	
