@@ -14,8 +14,8 @@ List<JSONObject> objList = request.getAttribute("objList")==null?null:(List<JSON
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>退供应商出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -23,13 +23,20 @@ $(function(){
 	$("#scancwb").focus();
 });
 $(function(){
-	var $menuli = $(".saomiao_tab2 ul li");
-	$menuli.click(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
+	
 })
 
 function tabView(tab){

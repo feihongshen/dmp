@@ -22,8 +22,8 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>入库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -129,15 +129,22 @@ var promt=${promt};
 		});
 	});
 
-	$(function() {
-		var $menuli = $(".saomiao_tab2 ul li");
-		$menuli.click(function() {
+	$(function(){
+		var $menuli1 = $("#bigTag li");
+		$menuli1.click(function(){
 			$(this).children().addClass("light");
 			$(this).siblings().children().removeClass("light");
-			var index = $menuli.index(this);
+		});
+		
+		var $menuli2 = $("#smallTag li");
+		$menuli2.click(function(){
+			$(this).children().addClass("light");
+			$(this).siblings().children().removeClass("light");
+			var index = $menuli2.index(this);
 			$(".tabbox li").eq(index).show().siblings().hide();
 		});
-	});
+		
+	})
 	
 	function focusCwb(){
 		$("#cwbs").focus();
@@ -408,8 +415,8 @@ function tohome(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<form id="cwbintoform" action="<%=request.getContextPath() %>/PDA/cwbChangeintowarhouseBatch" method="post">
 			<div class="saomiao_selet2">
-				供应商：
-				<select id="customerid" name="customerid" onchange="tohome();">
+				客户：
+				<select id="customerid" name="customerid" onchange="tohome();" class="select1">
 					<option value="-1" selected>全部供应商</option>
 					<%for(Customer c : cList){ %>
 						<option value="<%=c.getCustomerid() %>"  <%if(customerid==c.getCustomerid()){ %> selected=selected <%} %> ><%=c.getCustomername() %></option>
@@ -451,7 +458,7 @@ function tohome(){
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px"></span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weiruku" href="#" class="light">未入库明细</a></li>
 					<li><a id="table_yiruku" href="#">已入库明细</a></li>
 					<li><a id="table_quejian" href="#" onclick='getrukucwbquejiandataList($("#customerid").val());'>一票多件缺件</a></li>

@@ -296,7 +296,7 @@ function tohome(){
 			<form action="<%=request.getContextPath()%>/PDA/cwbexportwarhouseBatch" id="submitform" method="post">
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid" onchange="tohome();">
+				<select id="branchid" name="branchid" onchange="tohome();" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%
 					for(Branch b : bList){ %>
@@ -304,14 +304,14 @@ function tohome(){
 					<%} %>
 				</select>
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
 					<%} %>
 		        </select>
 				车辆：
-				<select id="truckid" name="truckid">
+				<select id="truckid" name="truckid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(Truck t : tList){ %>
 						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>

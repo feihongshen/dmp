@@ -35,13 +35,13 @@ function editSuccess(data){
 <div class="right_box">
 <div class="inputselect_box">
 <form id="searchForm" action ="1" method = "post">
-出库站点： <select id="branchid" name="branchid">
+出库站点： <select id="branchid" name="branchid" class="select1">
                <option value =-1>请选择</option>
               <%for(Branch b : branchList){ %>
                 <option value ="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
               <%} %>
               </select>
-<input type ="submit"  value ="查询">
+<input type ="submit"  value ="查询" class="input_button2">
 <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 </form>
 </div>

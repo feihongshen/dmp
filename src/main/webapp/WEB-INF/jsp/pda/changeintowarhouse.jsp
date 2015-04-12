@@ -24,8 +24,8 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>中转站入库扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -114,15 +114,22 @@ var emaildate=0;
 			
 		}) 
 
-	 $(function() {
-		var $menuli = $(".saomiao_tab2 ul li");
-		$menuli.click(function() {
-			$(this).children().addClass("light");
-			$(this).siblings().children().removeClass("light");
-			var index = $menuli.index(this);
-			$(".tabbox li").eq(index).show().siblings().hide();
-		});
+$(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
 	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
+		$(".tabbox li").eq(index).show().siblings().hide();
+	});
+	
+})
 	
 	function focusCwb(){
 		$("#scancwb").focus();
@@ -629,15 +636,13 @@ $(function(){
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
-	<div class="saomiao_box2">
-	
 	<div class="saomiao_tab2">
 		<ul>
 			<li><a href="#"  class="light">逐单操作</a></li>		
 			<li><a href="<%=request.getContextPath()%>/PDA/cwbChangeintowarhouseBatch">批量操作</a></li>
 		</ul>
 	</div>
-
+	<div class="saomiao_box2">
 		<div class="saomiao_topnum2">
 			<dl class="blue">
 				<dt>未入库合计</dt>
@@ -690,7 +695,8 @@ $(function(){
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					供应商： <select id="customerid" name="customerid" onchange="tohome();">
+					客户：
+					 <select id="customerid" name="customerid" onchange="tohome();" class="select1">
 						<option value="-1" selected>全部供应商</option>
 						<%
 							for (Customer c : cList) {
@@ -776,11 +782,11 @@ $(function(){
 
 		<div>
 			<div class="saomiao_tab2">
-				<span style="float: right; padding: 10px"> <input class="input_button2" type="button"
+				<span style="float: right; padding: 10px"> <input class="input_button1" type="button"
 					name="littlefalshbutton" id="flash" value="刷新"
 					onclick="location.href='<%=request.getContextPath()%>/PDA/changeintowarhouse'" />
 				</span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weiruku" href="#" class="light">未入库明细</a></li>
 					<li><a id="table_yiruku" href="#">已入库明细</a></li>
 					<li><a id="table_quejian" href="#"

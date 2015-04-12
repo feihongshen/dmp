@@ -24,8 +24,8 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>退货站入库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -34,15 +34,22 @@ $(function(){
 	$("#scancwb").focus();
 });
 
-$(function() {
-	var $menuli = $(".saomiao_tab2 ul li");
-	$menuli.click(function() {
+$(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
-});
+	
+})
 
 function tabView(tab){
 	$("#"+tab).click();
@@ -577,7 +584,7 @@ function yiruku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				驾驶员：
-				<select id="driverid" name="driverid">
+				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
@@ -638,9 +645,9 @@ function yiruku(){
 		<div id="view">
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
-					<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'" />
+					<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/backimport'" />
 				</span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weituihuoruku" href="javascript:tabView('table_weituihuoruku','wall')" class="light">未入库明细</a></li>
 					<li><a id="table_yituihuoruku" href="javascript:tabView('table_yituihuoruku','yall')">已入库明细</a></li>
 					<li><a href="#">异常单明细</a></li>

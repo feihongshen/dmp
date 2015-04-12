@@ -50,7 +50,7 @@ function initEmailDateUI(emaildate){
 			url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
 			data:{customerids:$("#customerid").val(),state:"-1"},
 			success:function(optionData){
-				data=optionDa    ta;
+				data=optionData;
 				var optionstring="";
 				var high ="";
 				var preStep;
@@ -114,26 +114,22 @@ var emaildate=0;
 			});
 		});
 	});
-	 $(function(){
-			var $menuli = $(".saomiao_tab ul li");
-			$menuli.click(function(){
-				$(this).children().addClass("light");
-				$(this).siblings().children().removeClass("light");
-				var index = $menuli.index(this);
-				/* $(".tabbox li").eq(index).show().siblings().hide(); */
-			});
-			
-		}) 
-
-	 $(function() {
-		var $menuli = $(".saomiao_tab2 ul li");
-		$menuli.click(function() {
+	$(function(){
+		var $menuli1 = $("#bigTag li");
+		$menuli1.click(function(){
 			$(this).children().addClass("light");
 			$(this).siblings().children().removeClass("light");
-			var index = $menuli.index(this);
+		});
+		
+		var $menuli2 = $("#smallTag li");
+		$menuli2.click(function(){
+			$(this).children().addClass("light");
+			$(this).siblings().children().removeClass("light");
+			var index = $menuli2.index(this);
 			$(".tabbox li").eq(index).show().siblings().hide();
 		});
-	});
+		
+	})
 	
 	function focusCwb(){
 		$("#scancwb").focus();
@@ -647,15 +643,14 @@ $(function(){
  }
 </script>
 </head>
-<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
+<body style="background:#eef9ff" marginwidth="0" marginheight="0">
 <div class="saomiao_box2" style="margin-top:-18px;">
-		<!-- 新添加 --><div class="saomiao_tab2">
+<!-- 新添加 --><div class="saomiao_tab2">
 		<ul>
 			<li><a href="#"  class="light">逐单操作</a></li>		
 			<li><a href="<%=request.getContextPath()%>/PDA/cwbintowarhouseBatch">批量操作</a></li>
 		</ul>
-	</div><!-- 新添加 -->		
-
+	</div><!-- 新添加 -->
 	<div class="saomiao_topnum2">
 		<dl class="blue">
 			<dt>未入库合计</dt>
@@ -767,12 +762,13 @@ $(function(){
 			</div><!-- </form> -->
 		</div>
 	</div>
+
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
 					<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/intowarhouse'" />
 				</span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weiruku" href="#" class="light">未入库明细</a></li>
 					<li><a id="table_yiruku" href="#">已入库明细</a></li>
 					<li><a id="table_quejian" href="#" onclick='getrukucwbquejiandataList($("#customerid").val());'>一票多件缺件</a></li>

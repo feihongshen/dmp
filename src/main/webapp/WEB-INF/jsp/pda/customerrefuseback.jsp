@@ -31,6 +31,23 @@ List<CwbOrder> yichukuList = (List<CwbOrder>)request.getAttribute("yichukulist")
 		});
 	});
 	
+	$(function(){
+		var $menuli1 = $("#bigTag li");
+		$menuli1.click(function(){
+			$(this).children().addClass("light");
+			$(this).siblings().children().removeClass("light");
+		});
+		
+		var $menuli2 = $("#smallTag li");
+		$menuli2.click(function(){
+			$(this).children().addClass("light");
+			$(this).siblings().children().removeClass("light");
+			var index = $menuli2.index(this);
+			$(".tabbox li").eq(index).show().siblings().hide();
+		});
+		
+	})
+	
 	function tabView(tab){
 		$("#"+tab).click();
 	}
@@ -219,7 +236,7 @@ List<CwbOrder> yichukuList = (List<CwbOrder>)request.getAttribute("yichukulist")
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px">
-				<input  class="input_button2" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/customerrefuseback'" />
+				<input  class="input_button1" type="button" name="littlefalshbutton" id="flash" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/customerrefuseback'" />
 				</span>
 				<ul id="smallTag">
 					<li><a id="table_weichuku" href="#" class="light">待返库明细</a></li>

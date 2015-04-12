@@ -21,8 +21,8 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>退供应商出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -53,15 +53,21 @@ function tabView(tab,tip){
 	
 }
 $(function(){
-	var $menuli = $(".saomiao_tab ul li");
-	$menuli.click(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
 		$(this).children().addClass("light");
 		$(this).siblings().children().removeClass("light");
-		var index = $menuli.index(this);
-		/* $(".tabbox li").eq(index).show().siblings().hide(); */
 	});
 	
-}) 
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
+		$(".tabbox li").eq(index).show().siblings().hide();
+	});
+	
+})
 function addAndRemoval(cwb,tab,isRemoval){
 	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
 	if(isRemoval){
@@ -530,7 +536,7 @@ function chuku(){
 
 		<div>
 			<div class="saomiao_tab2">
-				<span style="float: right; padding: 10px"> <input style="" input_button2" type="button"
+				<span style="float: right; padding: 10px"> <input class="input_button1" type="button"
 					name="littlefalshbutton" id="flash" value="刷新"
 					onclick="location.href='<%=request.getContextPath()%>/PDA/backtocustomer'" />
 				</span>

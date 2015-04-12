@@ -27,6 +27,22 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+$(function(){
+	var $menuli1 = $("#bigTag li");
+	$menuli1.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+	});
+	
+	var $menuli2 = $("#smallTag li");
+	$menuli2.click(function(){
+		$(this).children().addClass("light");
+		$(this).siblings().children().removeClass("light");
+		var index = $menuli2.index(this);
+		$(".tabbox li").eq(index).show().siblings().hide();
+	});
+	
+})
 var promt=${promt};
 	<%-- $(function(){
 		getcwbsdataForCustomer('<%=request.getContextPath() %>','-1','');
@@ -127,16 +143,6 @@ var promt=${promt};
 		initEmailDateUI(emaildate);
 		var $menuli = $(".saomiao_tab ul li");
 		$menuli.click(function(){
-			$(this).children().addClass("light");
-			$(this).siblings().children().removeClass("light");
-			var index = $menuli.index(this);
-			$(".tabbox li").eq(index).show().siblings().hide();
-		});
-	});
-
-	$(function() {
-		var $menuli = $(".saomiao_tab2 ul li");
-		$menuli.click(function() {
 			$(this).children().addClass("light");
 			$(this).siblings().children().removeClass("light");
 			var index = $menuli.index(this);
@@ -462,7 +468,7 @@ function tohome(){
 		<div>
 			<div class="saomiao_tab2">
 				<span style="float: right; padding: 10px"></span>
-				<ul>
+				<ul id="smallTag">
 					<li><a id="table_weiruku" href="#" class="light">未入库明细</a></li>
 					<li><a id="table_yiruku" href="#">已入库明细</a></li>
 					<li><a id="table_quejian" href="#" onclick='getrukucwbquejiandataList($("#customerid").val());'>一票多件缺件</a></li>

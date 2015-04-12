@@ -16,8 +16,8 @@
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>异常匹配处理</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
@@ -362,7 +362,7 @@ dl dd span {
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					站&#12288;点：<select id="branchid" name="branchid">
+					站点：<select id="branchid" name="branchid" class="select1">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Branch b : branchList) {
