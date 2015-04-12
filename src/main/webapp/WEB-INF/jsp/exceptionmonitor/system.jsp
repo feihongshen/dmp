@@ -58,17 +58,18 @@ function changeSitetype(){
 		<span><input name="" type="button" value="设置监控时长" class="input_button1" onclick="location='<%=request.getContextPath()%>/ExceptionMonitor/add'" />
 		</span>
 		<form action="" method="post" id="searchForm">
-			超期异常名称：<input type ="text" name ="modelname"  class="input_text1" value = "<%=request.getParameter("modelname")==null?"":request.getParameter("modelname") %>"/>
-			机构类型：
-			<select name="sitetype" id="sitetype" onchange="changeSitetype()">
+			超期异常名称
+			<input type ="text" name ="modelname"  class="input_text1" value = "<%=request.getParameter("modelname")==null?"":request.getParameter("modelname") %>"/>
+			机构类型
+			<select name="sitetype" id="sitetype" class="select1" onchange="changeSitetype()">
 	            <option value="0">全部</option>
 	            <option value="<%=BranchEnum.KuFang.getValue()%>" <%=BranchEnum.KuFang.getValue()==sitetype?"selected":"" %>><%=BranchEnum.KuFang.getText()%></option>
 	            <option value="<%=BranchEnum.ZhanDian.getValue()%>" <%=BranchEnum.ZhanDian.getValue()==sitetype?"selected":"" %>><%=BranchEnum.ZhanDian.getText()%></option>
 	            <option value="<%=BranchEnum.ZhongZhuan.getValue()%>" <%=BranchEnum.ZhongZhuan.getValue()==sitetype?"selected":"" %>><%=BranchEnum.ZhongZhuan.getText()%></option>
 	            <option value="<%=BranchEnum.TuiHuo.getValue()%>" <%=BranchEnum.TuiHuo.getValue()==sitetype?"selected":"" %>><%=BranchEnum.TuiHuo.getText()%></option>
            	</select>
-           	机构名称:
-			<select name ="branchids" id ="branchids"  multiple="multiple" style="width:320px;">
+           	机构名称
+			<select name ="branchids" id ="branchids"  multiple="multiple" style="width:300px;">
 	         <%if(branchList!=null&&!branchList.isEmpty()){
 	         	for(Branch b : branchList){ %>
 	          	<option value ="<%=b.getBranchid()%>" 

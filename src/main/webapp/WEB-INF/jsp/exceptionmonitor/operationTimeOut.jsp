@@ -48,8 +48,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -181,14 +181,14 @@ function changeSitetype(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="right_box">
-	<div style="background:#FFF">
+	<div style="background:#f5f5f5">
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 ">
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 					<form action="" method="post" id="searchForm">
-						<div class="kfsh_search">
+						<div class="kfsh_search" style="background:#f5f5f5;">
 							超期异常名称：
-							<select name="modelid" id="modelid" onchange="changeSitetype()">
+							<select name="modelid" id="modelid" class="select1" onchange="changeSitetype()">
 								<option value="0">请选择</option>
 							  <%if(modelList!=null&&modelList.size()>0)for(OperationSetTime c : modelList){ %>
 							  	<option value="<%=c.getId()%>"<%if(modelid==c.getId()){%>selected<%} %>><%=c.getName() %></option>
@@ -197,7 +197,7 @@ function changeSitetype(){
 							&nbsp;机构类型：
 							<%for(BranchEnum be:BranchEnum.values()){if(sitetype==be.getValue()){ %><%=be.getText() %><%}} %>
 				           	&nbsp;机构名称：
-							<select name ="branchids" id ="branchids"  multiple="multiple" style="width:320px;">
+							<select name ="branchids" id ="branchids"  multiple="multiple" style="width:300px;">
 					         <%if(branchList!=null&&!branchList.isEmpty()){
 					         	for(Branch b : branchList){ %>
 					          	<option value ="<%=b.getBranchid()%>" 
@@ -212,38 +212,40 @@ function changeSitetype(){
 							 </select>
 							 [<a href="javascript:multiSelectAll('branchids',1,'请选择');">全选</a>]
 							 [<a href="javascript:multiSelectAll('branchids',0,'请选择');">取消全选</a>]
-							&nbsp;供货商：
-							<select name="customerid" id="customerid">
+							<br/>
+							<br/>
+                                                                                     客户：
+							<select name="customerid" id="customerid" class="select1">
 								<option value="0">请选择</option>
 							  <%if(customerList!=null&&customerList.size()>0)for(Customer c : customerList){ %>
 							  	<option value="<%=c.getCustomerid()%>"<%if(Long.parseLong(request.getParameter("customerid")==null?"0":request.getParameter("customerid").toString())==c.getCustomerid()){%>selected<%} %>><%=c.getCustomername() %></option>
 							  <%} %>
 							</select>
 							&nbsp;入库时间：
-								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
-							&nbsp;到
-								<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
+							到
+								<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
 								<input type="button" id="find" value="查询"  class="input_button2" />
 							</div>
 						</form>
 						
 						</div>
 						
-						<div style="height:60px"></div>
+						<div style="height:80px"></div>
 						<table id="viewTitle"   width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tr class="font_1" height="30" >
-								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">机构名称</td>
-								<td id="A1_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未出库<br/><%=A1>=24?A1/24+"天":A1+"小时"%></td>
-								<td id="A6_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未到货<br/><%=A6>=24?A6/24+"天":A6+"小时"%></td>
-								<td id="A3_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未领货<br/><%=A3>=24?A3/24+"天":A3+"小时"%></td>
-								<td id="A4_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未归班<br/><%=A4>=24?A4/24+"天":A4+"小时"%></td>
-								<td id="A9_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期滞留<br/><%=A9>=24?A9/24+"天":A9+"小时"%></td>
-								<td id="A10_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未退货<br/><%=A10>=24?A10/24+"天":A10+"小时"%></td>
-								<td id="A7_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未到中转<br/><%=A7>=24?A7/24+"天":A7+"小时"%></td>
-								<td id="A2_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未中转<br/><%=A2>=24?A2/24+"天":A2+"小时"%></td>
-								<td id="A8_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未到退货<br/><%=A8>=24?A8/24+"天":A8+"小时"%></td>
-								<td id="A5_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#E7F4E3">超期未退供货商<br/><%=A5>=24?A5/24+"天":A5+"小时"%></td>
-								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">合计<br/></td>
+								<td width="100" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
+								<td id="A1_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未出库<br/><%=A1>=24?A1/24+"天":A1+"小时"%></td>
+								<td id="A6_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未到货<br/><%=A6>=24?A6/24+"天":A6+"小时"%></td>
+								<td id="A3_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未领货<br/><%=A3>=24?A3/24+"天":A3+"小时"%></td>
+								<td id="A4_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未归班<br/><%=A4>=24?A4/24+"天":A4+"小时"%></td>
+								<td id="A9_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期滞留<br/><%=A9>=24?A9/24+"天":A9+"小时"%></td>
+								<td id="A10_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未退货<br/><%=A10>=24?A10/24+"天":A10+"小时"%></td>
+								<td id="A7_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未到中转<br/><%=A7>=24?A7/24+"天":A7+"小时"%></td>
+								<td id="A2_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未中转<br/><%=A2>=24?A2/24+"天":A2+"小时"%></td>
+								<td id="A8_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未到退货<br/><%=A8>=24?A8/24+"天":A8+"小时"%></td>
+								<td id="A5_title" style="display:none" width="100" align="center" valign="middle" bgcolor="#eef6ff">超期未退供货商<br/><%=A5>=24?A5/24+"天":A5+"小时"%></td>
+								<td width="100" align="center" valign="middle" bgcolor="#eef6ff">合计<br/></td>
 							</tr>
 						<%if(branchdata!=null&&!branchdata.isEmpty()){
 							for(int i=0;i<branchdata.size();i++){

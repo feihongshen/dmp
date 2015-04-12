@@ -104,7 +104,7 @@ function changeSitetype(){
 <div style="background:#f5f5f5">
 <form id="subForm" action="" method="post">
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="location='<%=request.getContextPath()%>/ExceptionMonitor/system'"></div>设置监控时长</h1>
+		<h2><div id="close_box" onclick="location='<%=request.getContextPath()%>/ExceptionMonitor/system'"></div>设置监控时长</h2>
 			<div id="box_form">
 				<ul>
 	           		<li><span>机构类型：</span>
@@ -113,7 +113,7 @@ function changeSitetype(){
 	           			%>
 	           				<input type="hidden" name="sitetype" id="sitetype" value="<%=sitetype%>"/>
 	           			<%}else{%>
-	           			<select name="sitetype" id="sitetype" onchange="changeSitetype()">
+	           			<select name="sitetype" id="sitetype" class="select1" onchange="changeSitetype()">
 				            <option value="0">请选择</option>
 				            <option value="<%=BranchEnum.KuFang.getValue()%>" <%=BranchEnum.KuFang.getValue()==sitetype?"selected":"" %>><%=BranchEnum.KuFang.getText()%></option>
 				            <option value="<%=BranchEnum.ZhanDian.getValue()%>" <%=BranchEnum.ZhanDian.getValue()==sitetype?"selected":"" %>><%=BranchEnum.ZhanDian.getText()%></option>
@@ -123,7 +123,7 @@ function changeSitetype(){
 			           	<%}%>
 					</li>
 					<li><span>机构名称：</span>
-	           			<select name ="branchids" id ="branchids"  multiple="multiple" style="width:320px;">
+	           			<select name ="branchids" id ="branchids"  multiple="multiple" style="width:300px;">
 				         <%if(branchlist!=null&&!branchlist.isEmpty()){
 				         	for(Branch b : branchlist){ %>
 				          	<option value ="<%=b.getBranchid()%>" 
@@ -140,7 +140,7 @@ function changeSitetype(){
 						[<a href="javascript:multiSelectAll('branchids',0,'请选择');">取消全选</a>]
 					</li>
 					<li><span>超期异常名称：</span>
-						<input type="text" id="modelname" name="modelname" value="<%=modelname%>"/>*
+						<input type="text" id="modelname" name="modelname" class="input_text1" value="<%=modelname%>"/>*
 					</li>
 					<li id="viewA1" style="display:none"><span>超期未出库：</span>
 	           			<select name="A1">
