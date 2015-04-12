@@ -126,27 +126,24 @@ function actionType(src)
 <body style="background:#f5f5f5">
 <div class="right_box">
 	<div class="inputselect_box">
-	<span>
-	</span>
 	<form action="1" method="post" id="searchFormFlash" >
-		订单号：<input type="text" id="cwb" name="cwb" value="<%=cwb %>" />
-		操作机构：
-			<select name="branchid" id="branchid">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:80px">
+	    <tr>
+    <td>
+    订单号<input type="text" id="cwb" name="cwb" value="<%=cwb %>" class="input_text1"/>
+    </td>
+    <td>
+    操作机构
+			<select name="branchid" id="branchid" class="select1">
 		        <option value="0">请选择</option>
 		        <%for(Branch b : branchlist){ %>
 		           <option  value="<%=b.getBranchid()%>" <% if(branchid==b.getBranchid()){ %>selected="selected" <% }%>><%=b.getBranchname()%></option>
 		        <%} %>
 	        </select>
-	        操作人：
-			<select name="userid" id="userid">
-		        <option value="0">请选择</option>
-		         <%for(User u : ulist){ %>
-		           <option value="<%=u.getUserid()%>" <% if(userid==u.getUserid()){ %>selected="selected" <% }%>><%=u.getRealname()%></option>
-		        <%} %>
-	        </select>
-	      
-		扫描类型：
-				<select name="flowOrderTypeEnumid" id="flowOrderTypeEnumid">
+    </td>
+    <td>
+      扫描类型
+				<select name="flowOrderTypeEnumid" id="flowOrderTypeEnumid" class="select1">
 			        <option value="0">请选择扫描类型</option>
 			        <option value="<%=FlowOrderTypeEnum.TiHuo.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.TiHuo.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.TiHuo.getText()%></option>
 		        	<option value="<%=FlowOrderTypeEnum.RuKu.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.RuKu.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.RuKu.getText()%></option>
@@ -167,16 +164,40 @@ function actionType(src)
 		        	<option value="<%=FlowOrderTypeEnum.GaiDan.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.GaiDan.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.GaiDan.getText()%></option>
 		        	
 		        </select>
-		      &nbsp;&nbsp;&nbsp;    类型:
-		        <select id="scopeValue" name="scopeValue" style="width: 130px">
+
+    </td>
+    </tr>
+    <tr>
+    <td>
+       操作人
+			<select name="userid" id="userid" class="select1">
+		        <option value="0">请选择</option>
+		         <%for(User u : ulist){ %>
+		           <option value="<%=u.getUserid()%>" <% if(userid==u.getUserid()){ %>selected="selected" <% }%>><%=u.getRealname()%></option>
+		        <%} %>
+	        </select>
+    </td>
+    <td>
+    操作状态
+		        <select id="scopeValue" name="scopeValue" class="select1">
 		        <option value="-1" <% if(-1==scopeValue){ %>selected="selected" <% }%>>请选择</option>
 		        <option value="1"  <% if(1==scopeValue){ %>selected="selected" <% }%>>正常</option>
 		        <option value="2"  <% if(2==scopeValue){ %>selected="selected" <% }%>>异常</option>
 		        </select>
-	     <br/> 操作时间：
-		<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=beginemaildate %>"/>&nbsp;到
+    </td>
+    <td>
+    	     操作时间<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=beginemaildate %>"/>
+		到
 		<input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=endemaildate %>"/>
-		<input type="submit" value="查询" onclick="actionType('1')"/>
+    </td>
+    </tr>
+    <tr>
+    <td>
+    <input type="submit" value="查询" onclick="actionType('1')" class="input_button2"/>
+    </td>
+    </tr>
+	</table>
+	
 <%if(eclist != null && eclist.size()>0){																
 %>																	
 <input type="hidden" name="cwbs" id="cwbs" value="<%=cwbs%>" />																																	
@@ -186,14 +207,13 @@ function actionType(src)
 <input type="submit" id="btnval0" onclick="actionType('<%=request.getContextPath()%>/cwborderPDA/exportExcle')" value="导出Excel" />																	
 <%																	
 	}																
-%>																	
-		<br />
+%>			
 		<!-- <span><input name="" type="button" value="批量处理" class="input_button1"  onclick="allCheck("<%=request.getContextPath()%>");"/></span> -->
 	</form>
 	
 	</div>
+	<div style="height:90px;"></div>
 	<div class="right_title">
-		<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 			<tr class="font_1">
 				<!-- <td width="6%" align="center" valign="middle" bgcolor="#eef6ff">选择</td> -->

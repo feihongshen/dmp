@@ -160,7 +160,7 @@ $(function() {
 		
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="height:50px; font-size:12px"  >
 			<tr><td>
-				供货商：<select id="customerid" name="customerid" >
+				客户：<select id="customerid" name="customerid" class="select1">
 		           <option value="0" >全部</option>
 		           
 		          	<%
@@ -174,15 +174,22 @@ $(function() {
 		            <option value="<%=cu.getCustomerid()%>" <%if(customerid.equals(cu.getCustomerid()+"")){%>selected<%} %>><%=cu.getCustomername()%></option>
 		        <%} 	}%>
         	   </select>
-        	      记录时间：<input type ="text" name ="starttime" id="starttime"  value ="<%=starttime%>">
-                                到     <input type ="text" name ="endtime" id="endtime"  value ="<%=endtime%>">
-			
-        	      订单号：<input type="text" name="cwb" value="" />
+        	   </td>
+        	   <td>
+        	      记录时间：
+        	      <input type ="text" name ="starttime" id="starttime"  value ="<%=starttime%>" class="input_text1" style="height:20px;">
+                                到     
+                                <input type ="text" name ="endtime" id="endtime"  value ="<%=endtime%>" class="input_text1" style="height:20px;">
+			 </td>
+        	   <td>
+        	      订单号：
+        	      <input type="text" name="cwb" value="" class="input_text1" style="height:20px;"/>
                 </td> </tr>
                 
                <tr>
 	               	<td>
-					推送状态订单:<select name="send_b2c_flag">
+					推送状态订单：
+					<select name="send_b2c_flag" class="select1">
 								<option value="-1" <%if(send_b2c_flag.equals("-1")){%>selected<%} %>>全部</option>
 								<option value="3" <%if(send_b2c_flag.equals("3")){%>selected<%} %>>未推送、失败</option>
 								<option value="0" <%if(send_b2c_flag.equals("0")){%>selected<%} %>>未推送</option>
@@ -191,12 +198,18 @@ $(function() {
 								
 								
 								</select>
+								 </td>
+        	   <td>
 					<input type="checkbox" name="hand_deal_flag" value="1" <%if(hand_deal_flag.equals("1")){%>checked<%} %>
 					onchange="$('#searchForm').attr('action','<%=request.getContextPath()%>/b2cjointmonitor/list/1');$('#searchForm').submit()"
-					/> 查询已处理数据
-					<input type="submit" id="btnval" value="查询" class="input_button2" />
-	                <input type="button" id="btnexport" value="导出excel"  />	
-	                <input type="button" id="btndeal" value="标记当前查询订单为已处理"  />	
+					/> 
+					查询已处理数据
+										<input type="submit" id="btnval" value="查询" class="input_button2" />
+	                <input type="button" id="btnexport" value="导出excel" class="input_button2" />	
+					 </td>
+        	   <td>
+
+	                <input type="button" id="btndeal" value="标记当前查询订单为已处理" />	
 	                </td>
                 </tr>
            

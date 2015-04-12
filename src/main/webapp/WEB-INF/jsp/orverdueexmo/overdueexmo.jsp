@@ -267,49 +267,81 @@
 </head>
 
 <body style="background: #f5f5f5">
-	<div class="search_div">
+	<div class="inputselect_box">
 		<form id="searchForm" name="searchForm" action="${ctx_path}/overdueexmo/1" method="post">
 			<div>
 				<input id="enableTEQuery" name="enableTEQuery" type="checkbox" class="sys_query_checkbox"
 					<c:if test="${cond.enableTEQuery}">checked</c:if>>启用时效设置
 			</div>
 			<div>
-				操作时间：<select id="optTimeType" name="optTimeType">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:12px;height:90px;">
+			    <tr>
+    <td>
+    操作时间
+				<select id="optTimeType" name="optTimeType" class="select1">
 					<c:forEach items="${constant.timeTypeMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${entry.key == cond.optTimeType}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select><input type="text" name="startTime" id="startTime" value="${cond.startTime}" /> 到 <input
-					type="text" name="endTime" id="endTime" value="${cond.endTime}" /> 机构名称<label class="red">*</label>： <select id="orgs"
-					name="orgs" multiple="multiple" style="width: 100px;">
+				</select>
+				<input type="text" name="startTime" id="startTime" class="input_text1" style="height:20px;" value="${cond.startTime}" />
+				到 
+				<input
+					type="text" name="endTime" id="endTime" value="${cond.endTime}" class="input_text1" />
+    </td>
+    <td>
+    机构名称
+    <label class="red">*</label><select id="orgs"
+					name="orgs" multiple="multiple" class="select1">
 					<c:forEach items="${constant.orgMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${fn:contains(cond.orgs,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>] 供货商<label class="red">*</label>：<select id="venderId"
-					name="venderId" style="width: 100px;">
+				</select>
+				[<a href="javascript:multiSelectAll('orgs',1,'请选择');">全选</a>] 
+				[<a href="javascript:multiSelectAll('orgs',0,'请选择');">取消全选</a>]
+    </td>
+    </tr>
+    <td>
+    客户
+    <label class="red">*</label><select id="venderId"
+					name="venderId" class="select1">
 					<option value="0" <c:if test="${cond.venderId == 0}">selected</c:if>>请选择</option>
 					<c:forEach items="${constant.venderMap}" var="entry">
 						<option value="${entry.key}" <c:if test="${cond.venderId == entry.key}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> 列表展示选择：<select id="showCols" name="showCols" multiple="multiple" style="width: 100px;">
+				</select>
+    </td>
+    <td>
+    列表展示
+    <select id="showCols" name="showCols" multiple="multiple" class="select1">
 					<c:forEach items="${constant.showColMap}" var="entry">
 						<option value="${entry.key}"
 							<c:if test="${fn:contains(cond.showCols,entry.key)}">selected</c:if>>${entry.value}</option>
 					</c:forEach>
-				</select> [<a href="javascript:multiSelectAll('showCols',1,'请选择');">全选</a>] [<a
-					href="javascript:multiSelectAll('showCols',0,'请选择');">取消全选</a>] <input type="button" id="find"
-					value="查询" class="input_button2" /> <input type="button" id="btn_export" value="导出"
-					class="input_button2" onclick="exportData()" />
+				</select>
+				[<a href="javascript:multiSelectAll('showCols',1,'请选择');">全选</a>] 
+				[<a href="javascript:multiSelectAll('showCols',0,'请选择');">取消全选</a>]
+    </td>
+    </tr>
+    <tr>
+    <td>
+    <input type="button" id="find"value="查询" class="input_button2" /> 
+    <input type="button" id="btn_export" value="导出" class="input_button2" onclick="exportData()" />
+    </td>
+    <td>
+    </td>
+    </tr>
+			</table>	      
 			</div>
 		</form>
 	</div>
+	<div style="height:130px"></div>
 	<div class="table_div">
 		<div style="float: left; width: 20%">
 			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
 				id="static_table">
 				<tr class="font_1">
 					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
-					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+					<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">客户</td>
 				</tr>
 				<c:forEach items="${result.branchMap}" var="entry">
 					<tr>
@@ -340,7 +372,6 @@
 			</table>
 		</div>
 	</div>
-
 
 	<div class="iframe_bottom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">

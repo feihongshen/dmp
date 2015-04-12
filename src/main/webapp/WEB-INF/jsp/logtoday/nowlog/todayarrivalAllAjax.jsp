@@ -7,8 +7,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>站点日志（本站）</title>
-<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/branchLogAll.js" type="text/javascript"></script>
@@ -135,7 +135,7 @@ $(function(){
 	</div>
     <div style="padding:10px">
     <form id="searchForm" action ="<%=request.getContextPath()%>/logtoday/todayArrivalAllAjax" method = "post">
-    站点：<select name ="branchid" id="branid" onchange="$('#searchForm').submit()">
+    站点：<select name ="branchid" id="branid" class="select1" onchange="$('#searchForm').submit()">
 	              <%if(branchnameList != null && branchnameList.size()>0){ %>
 	               <%for( Branch b:branchnameList){ %>
 	               		<option value ="<%=b.getBranchid()%>" 

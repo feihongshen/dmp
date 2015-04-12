@@ -40,8 +40,8 @@ int loginUserType =  request.getAttribute("loginUserType")==null ? 0 : (Integer)
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>妥投订单汇总</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -196,18 +196,41 @@ function isauditEdit(){
 	<input type="hidden" id="orderByTypeId" name="orderbyType" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
 	<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 	<input type="hidden" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:150px">
+	<tr>
+	<td>
+	时间类型
+			  <select id="isauditTime" name="isauditTime" onchange="isauditEdit()" class="select1">
+			<option value="0" <%=request.getParameter("isauditTime")!=null&&request.getParameter("isauditTime").equals("0")?"selected":"" %>>反馈时间</option>
+			<option value="1" <%=request.getParameter("isauditTime")!=null&&request.getParameter("isauditTime").equals("1")?"selected":"" %>>审核时间</option>
+			</select>
+				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
+			到
+				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+	</td>
+	<td>
+							<label id="isauditLabel">    归班审核状态
+			<select name ="isaudit" id ="isaudit" class="select1">
+		          <option value ="-1">全部</option>
+		           <option value ="0">未审核</option>
+		           <option value ="1">已审核</option>
+		    </select>
+		    </label>
+	</td>
+	</tr>
 	<tr>
 		<td align="left">
-			站点名称：
-			<select name="ismohu" id="ismohu" >
+			站点名称
+			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 <input name="branchname" id="branchname" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','dispatchbranchid',$(this).val());}"/>
-			配送站点
+			 <input name="branchname" id="branchname" class="input_text1" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','dispatchbranchid',$(this).val());}"/>
+		</td>
+		<td>			
+		配送站点
 			  <label onclick="change();">
-			<select name ="dispatchbranchid" id ="dispatchbranchid"  multiple="multiple" style="width: 320px;">
+			<select name ="dispatchbranchid" id ="dispatchbranchid"  multiple="multiple" style="width: 300px;">
 		          <%for(Branch b : branchlist){ %>
 		          <option value ="<%=b.getBranchid() %>" 
 		           <%if(!dispatchbranchidList.isEmpty()) 
@@ -219,31 +242,39 @@ function isauditEdit(){
 			            }
 				     }%>  ><%=b.getBranchname()%></option>
 		          <%}%>
-			 </select>[<a href="javascript:multiSelectAll('dispatchbranchid',1,'请选择');">全选</a>][<a href="javascript:multiSelectAll('dispatchbranchid',0,'请选择');">取消全选</a>]
+			 </select>
+			 [<a href="javascript:multiSelectAll('dispatchbranchid',1,'请选择');">全选</a>]
+			 [<a href="javascript:multiSelectAll('dispatchbranchid',0,'请选择');">取消全选</a>]
 			 </label>
+		</td>
+	</tr>
+	<tr>
+	<td>
+	  订单类型
+			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" style="width:120px;">
+		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
+						<option value ="<%=c.getValue() %>" 
+		           <%if(!cwbordertypeidList.isEmpty()) 
+			            {for(int i=0;i<cwbordertypeidList.size();i++){
+			            	if(c.getValue()== new Long(cwbordertypeidList.get(i).toString())){
+			            		%>selected="selected"<%
+			            	 break;
+			            	}
+			            }
+				     }%> ><%=c.getText()%></option>
+		          <%} %>
+			</select>
 			 小件员
-			<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();">
+			<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();" class="select1">
 		          <option value ="-1">请选择</option>
 		          <%if(deliverlist!=null&&deliverlist.size()>0)for(User u : deliverlist){ %>
 		          	<option value="<%=u.getUserid() %>" <%if(u.getUserid()==(request.getParameter("deliverid")==null?-1:Long.parseLong(request.getParameter("deliverid").toString()))){ %>selected="selected"<%} %>><%=u.getRealname() %></option>
 		          <%} %>
 			 </select>
-			<select id="isauditTime" name="isauditTime" onchange="isauditEdit()">
-			<option value="0" <%=request.getParameter("isauditTime")!=null&&request.getParameter("isauditTime").equals("0")?"selected":"" %>>反馈时间</option>
-			<option value="1" <%=request.getParameter("isauditTime")!=null&&request.getParameter("isauditTime").equals("1")?"selected":"" %>>审核时间</option>
-			</select>
-				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
-			到
-				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-
-			<label id="isauditLabel">    归班审核状态：
-			<select name ="isaudit" id ="isaudit">
-		          <option value ="-1">全部</option>
-		           <option value ="0">未审核</option>
-		           <option value ="1">已审核</option>
-		    </select>
-		    </label>
-			供货商
+	
+	</td>
+	<td>
+	供货客户
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%for(Customer c : customerlist){ %>
 		           <option value ="<%=c.getCustomerid() %>" 
@@ -259,7 +290,29 @@ function isauditEdit(){
 		    </select>
 		    [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 			[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-		    配送结果
+	</td>
+	</tr>
+	<tr>
+	<td>
+	支付方式
+			<select id="paytype" name ="paytype" class="select1">
+		    <option value ="-1">请选择支付方式</option>
+              <%for(PaytypeEnum c : PaytypeEnum.values()){ %>
+				<option value ="<%=c.getValue() %>" 
+		           <%if(c.getValue()==Integer.parseInt(request.getParameter("paytype")==null?"-1":request.getParameter("paytype"))){ %>selected="selected" <%} %> ><%=c.getText()%></option>
+		         <%} %>
+			</select>
+			 应收金额
+			 <select name="paybackfeeIsZero" class="select1">
+						 <option value="-1" >全部</option>
+						 <option value="0" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("0")?"selected":"" %>>=0</option>
+						 <option value="1" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("1")?"selected":"" %>>>0</option>
+						 </select>
+
+
+	</td>
+	<td>
+			    配送结果
 		    <select name =operationOrderResultType id ="operationOrderResultType" multiple="multiple" style="width: 300px;">
 		    	<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>"
 		    	<%if(!operationOrderResultTypeList.isEmpty()) 
@@ -292,36 +345,17 @@ function isauditEdit(){
 			     }%>
 		    	><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
 		</select>
-		    订单类型
-			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" >
-		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
-						<option value ="<%=c.getValue() %>" 
-		           <%if(!cwbordertypeidList.isEmpty()) 
-			            {for(int i=0;i<cwbordertypeidList.size();i++){
-			            	if(c.getValue()== new Long(cwbordertypeidList.get(i).toString())){
-			            		%>selected="selected"<%
-			            	 break;
-			            	}
-			            }
-				     }%> ><%=c.getText()%></option>
-		          <%} %>
-			</select>	
-			<select id="paytype" name ="paytype">
-		    <option value ="-1">请选择支付方式</option>
-              <%for(PaytypeEnum c : PaytypeEnum.values()){ %>
-				<option value ="<%=c.getValue() %>" 
-		           <%if(c.getValue()==Integer.parseInt(request.getParameter("paytype")==null?"-1":request.getParameter("paytype"))){ %>selected="selected" <%} %> ><%=c.getText()%></option>
-		         <%} %>
-			</select>
-			 应收金额：<select name="paybackfeeIsZero">
-						 <option value="-1" >全部</option>
-						 <option value="0" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("0")?"selected":"" %>>=0</option>
-						 <option value="1" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("1")?"selected":"" %>>>0</option>
-						 </select>
-			<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-			&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
-			<%if(orderlist != null && orderlist.size()>0){  %>
-			<select name ="exportmould" id ="exportmould">
+	</td>
+	</tr>
+	<tr>
+	<td>
+				<input type="button" id="find" onclick="" value="查询" class="input_button2" />
+			<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+	</td>
+	<td>
+	<%if(orderlist != null && orderlist.size()>0){  %>
+	导出模板
+			<select name ="exportmould" id ="exportmould" class="select1">
 	          <option value ="0">默认导出模板</option>
 	          <%for(Exportmould e:exportmouldlist){%>
 	           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
@@ -338,7 +372,7 @@ function isauditEdit(){
 				&nbsp;&nbsp;<input size="10px" type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
 			<%}} %>
-		</td>
+	</td>
 	</tr>
 </table>
 	</form>
@@ -413,15 +447,15 @@ function isauditEdit(){
 			</select>
 		</div>
 	</form>
-	</div>&nbsp;&nbsp;
+	</div>
 	<div class="right_title">
-	<div style="height:60px"></div><%if(orderlist != null && orderlist.size()>0){  %>
+	<div style="height:160px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >订单号</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverybranchid');" >配送站点</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >供货商</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >客户</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverid');" >小件员</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('emaildate');" >发货时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('receivablefee');" >应收金额</td>
@@ -477,7 +511,7 @@ function isauditEdit(){
 	<tr>
 	<td>代退金额总计：<font color="red"><%=request.getAttribute("paybackfeesum")==null?"0.00":request.getAttribute("paybackfeesum") %></font>&nbsp;元 </td>
 	</tr> --%>
-	</div><%} %>
+	</div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>

@@ -1,7 +1,7 @@
 .multiSelect {
-	border: solid 1px #BBB;
-	background: #FFF url(dropdown.gif) right center no-repeat;
-	padding: 2px 4px;
+	border: solid 1px #09C;
+	background:url(../images/repeatx.png) repeat-x 0 -175px;
+	padding: 4px 2px 2px 2px;
 	padding-right: 20px;
 	display: inline;
 	cursor: default;
@@ -16,9 +16,8 @@
 	background: url(dropdown_hover.gif) right center no-repeat;
 }
 
-.multiSelect.active,
-.multiSelect.focus {
-	border: inset 1px #000;
+.multiSelect.active,.multiSelect.focus {
+	border: solid 1px #09C;
 }
 
 .multiSelect.active {
@@ -28,8 +27,8 @@
 .multiSelectOptions {
 	max-height: 150px;
 	margin-top: -1px;
-	overflow-y:auto;
-	overflow-x:hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 	border: solid 1px #B2B2B2;
 	background: #FFF;
 }

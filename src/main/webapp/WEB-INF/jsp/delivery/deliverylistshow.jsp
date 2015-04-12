@@ -21,8 +21,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>小件员领货查询</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -103,8 +103,8 @@ function Days(){
 <body style="background:#f5f5f5;color:#0000FFF;">
 	<div class="inputselect_box"   >
 	<form action="<%=request.getAttribute("page")==null?1:request.getAttribute("page") %>" method="post" id="searchForm">
-		货物状态：
-		<select name ="deliverystate" id ="deliverystate"   style="height 30px;width: 180px">
+		货物状态
+		<select name ="deliverystate" id ="deliverystate" class="select1">
 		<option value="-1" selected="selected">--请选择--</option>
 					          <%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){
 					        	  if(ds.getValue()!=DeliveryStateEnum.WeiFanKui.getValue()&&ds.getValue()!=
@@ -125,7 +125,10 @@ function Days(){
 		</select>
 		
 		
-		领货时间：<input type ="text" value="<%=request.getAttribute("startid")==null?"":request.getAttribute("startid") %>" id="startid" name="startid"/>到：<input type ="text" value="<%=request.getAttribute("endid")==null?"":request.getAttribute("endid") %>" id="endid" name="endid"/>
+		领货时间
+		<input type ="text" value="<%=request.getAttribute("startid")==null?"":request.getAttribute("startid") %>" id="startid" name="startid" class="input_text1"/>
+		到
+		<input type ="text" value="<%=request.getAttribute("endid")==null?"":request.getAttribute("endid") %>" id="endid" name="endid" class="input_text1"/>
 		<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
 	</form>
 	</div>
@@ -135,7 +138,7 @@ function Days(){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff"> 供货商</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">客户</td>
 			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">领货时间</td>
 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">收件人</td>
 			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">代收金额</td>

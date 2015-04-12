@@ -30,8 +30,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>中转订单统计</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -227,26 +227,28 @@ function clearSelect(){
 	<input type="hidden" id="orderByTypeId" name="orderbyType" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
 	<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 	<input type="hidden" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:60px">
 		<tr>
 			<td align="left">
-				中转出库时间：
-					<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+				中转出库时间
+					<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 				到
-					<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-				中转站：
-				<select name ="branchid" id ="branchid">
+					<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+			</td>
+			<td>
+			中转站
+				<select name ="branchid" id ="branchid" class="select1">
 			          <%if(zhongzhuanbranchList!=null && zhongzhuanbranchList.size()>0) {%>
 			          <%for(Branch b : zhongzhuanbranchList){ %>
 				 		<option value ="<%=b.getBranchid() %>" 
 				     <%if(b.getBranchid()==Integer.parseInt(request.getParameter("branchid")==null?"-1":request.getParameter("branchid"))){ %>selected="selected" <%} %> ><%=b.getBranchname()%></option>
 			          <%} }%>
 				</select>
-				<select name ="type" id ="type" >
+				<select name ="type" id ="type" class="select1">
 				 		<option value ="startbranchid" <%if("startbranchid".equals(request.getParameter("type")==null?"startbranchid":request.getParameter("type").toString())){ %>selected="selected" <%} %> >发出站</option>
 				 		<option value ="nextbranchid" <%if("nextbranchid".equals(request.getParameter("type")==null?"startbranchid":request.getParameter("type").toString())){ %>selected="selected" <%} %> >目的站</option>
 				</select>
-				<select name ="branchid2" id ="branchid2" multiple="multiple" style="width: 320px;">
+				<select name ="branchid2" id ="branchid2" multiple="multiple" style="width: 260px;">
 			          <%if(notuihuobranchList!=null && notuihuobranchList.size()>0) {%>
 			          <%for(Branch b : notuihuobranchList){ %>
 				 		<option value ="<%=b.getBranchid() %>" 
@@ -260,9 +262,16 @@ function clearSelect(){
 				     }%>><%=b.getBranchname()%></option>
 			          <%} }%>
 				</select>
+			</td>
+		</tr>
+		<tr>
+	<td>
 				<input type="button" id="find"  value="查询" class="input_button2" />
-				&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
-				<%if(orderlist != null && orderlist.size()>0){  %>
+				<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+	</td>
+	<td>
+	<%if(orderlist != null && orderlist.size()>0){  %>
+	导出模板
 				<select name ="exportmould" id ="exportmould">
 		          <option value ="0">默认导出模板</option>
 		          <%for(Exportmould e:exportmouldlist){%>
@@ -280,8 +289,8 @@ function clearSelect(){
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
 			<%}} %>
-			</td>
-		</tr>
+	</td>
+	</tr>		
 	</table>
 	</form>
 	<form action="<%=request.getContextPath()%>/datastatistics/exportExcle" method="post" id="searchForm2">
@@ -313,7 +322,7 @@ function clearSelect(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div style="height:60px"></div><%if(orderlist != null && orderlist.size()>0){  %>
+	<div style="height:80px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
@@ -360,7 +369,7 @@ function clearSelect(){
 	<tr>
 	<td>代退金额总计：<font color="red"><%=request.getAttribute("paybackfeesum")==null?"0.00":request.getAttribute("paybackfeesum") %></font>&nbsp;元 </td>
 	</tr> --%>
-	</div><%} %>
+	</div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>

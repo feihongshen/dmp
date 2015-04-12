@@ -31,8 +31,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>退货站入库统计</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -112,15 +112,16 @@ function clearSelect(){
 	<form action="1" method="post" id="searchForm">
 	<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 	<input type="hidden" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:100px">
 	<tr>
 		<td align="left">
-			退货站入库时间：
-				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+			入库时间<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 			到
-				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-			退货站点：
-		    <select name ="branchid" id ="branchid" multiple="multiple" style="width: 320px;">
+				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+		</td>
+		<td>
+		退货站点
+		    <select name ="branchid" id ="branchid" multiple="multiple" style="width: 300px;">
 		          <%if(branchnameList!=null && branchnameList.size()>0) {%>
 		          <%for(Branch b : branchnameList){ %>
 			 			<option value ="<%=b.getBranchid() %>" 
@@ -134,7 +135,26 @@ function clearSelect(){
 				     }%>><%=b.getBranchname()%></option>
 		          <%} }%>
 			</select>
-			供货商：
+		</td>
+	</tr>
+	<tr>
+	<td>
+	订单类型
+			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" >
+		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
+						<option value ="<%=c.getValue() %>"  <%if(cwbordertypeidList!=null) 
+			            {for(int i=0;i<cwbordertypeidList.size();i++){
+			            	if(c.getValue()== new Long(cwbordertypeidList.get(i).toString())){
+			            		%>selected="selected"<%
+			            	 break;
+			            	}
+			            }
+				     }%>><%=c.getText()%></option>
+		          <%} %>
+			</select>
+	</td>
+	<td>
+	供货客户
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%if(customerlist!=null&&customerlist.size()>0)for(Customer c : customerlist){ %>
 		           <option value ="<%=c.getCustomerid() %>" 
@@ -150,28 +170,23 @@ function clearSelect(){
 		        </select>
 		        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
-			<br />
-			订单类型：
-			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" >
-		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
-						<option value ="<%=c.getValue() %>"  <%if(cwbordertypeidList!=null) 
-			            {for(int i=0;i<cwbordertypeidList.size();i++){
-			            	if(c.getValue()== new Long(cwbordertypeidList.get(i).toString())){
-			            		%>selected="selected"<%
-			            	 break;
-			            	}
-			            }
-				     }%>><%=c.getText()%></option>
-		          <%} %>
-			</select>	
+	</td>
+	</tr>
+	<tr>
+	<td>
 			<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-			&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
-			<select name ="exportmould" id ="exportmould">
+			<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+			
+	</td>
+	<td>
+	<%if(exportmouldlist!=null&&exportmouldlist.size()>0){%>
+	导出模板
+	<select name ="exportmould" id ="exportmould" class="select1">
 	          <option value ="0">默认导出模板</option>
-	          <%if(exportmouldlist!=null&&exportmouldlist.size()>0)for(Exportmould e:exportmouldlist){%>
+	          <%for(Exportmould e:exportmouldlist){%>
 	           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 	          <%} %>
-			</select>
+			</select><%} %>
 			 <%if(count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0)==1){ %>
 				&nbsp;&nbsp;<input type ="button" id="btnval0" value="导出1-<%=count %>" class="input_button1" onclick="exportField('0','0');"/>
 			<%}else{for(int j=0;j<count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0);j++){ %>
@@ -183,7 +198,7 @@ function clearSelect(){
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
 			<%}} %>
-		</td>
+	</td>
 	</tr>
 </table>
 	</form>
@@ -238,13 +253,12 @@ function clearSelect(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div style="height:60px"></div>
-	<%if(orderlist != null && orderlist.size()>0){  %>
+	<div style="height:110px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >客户</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >退货入库时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >退货站点</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
@@ -262,7 +276,6 @@ function clearSelect(){
 		 <%}%>
 	</table>
 	</div>
-	<%} %>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>

@@ -33,8 +33,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>库房入库统计</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -173,10 +173,10 @@ function isshowdate(){
 	<form action="1" method="post" id="searchForm">
 	<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 	<input type="hidden" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:100px">
 	<tr>
 		<td align="left">
-			供货商：
+			发货客户
 				<select name ="customerid" id ="customerid" multiple="multiple" style="width: 200px;">
 		          <%if(customerlist != null && customerlist.size()>0){ %>
 		           <%for( Customer c:customerlist){ %>
@@ -193,19 +193,19 @@ function isshowdate(){
 		        </select>
 		        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+		</td>
+		<td>
 				发货时间
-				<input type ="text" name ="emaildatebegin" id="emaildatebegin"  value="<%=emaildatebegin %>"/>
+				<input type ="text" name ="emaildatebegin" id="emaildatebegin"  value="<%=emaildatebegin %>" class="input_text1"/>
 				到
-				<input type ="text" name ="emaildateend" id="emaildateend"  value="<%=emaildateend %>"/>
-		        <strong id="date" >
-				入库时间
-				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
-				到
-				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-				</strong>	
-			<br />
-			入库库房：
-		    <select name ="kufangid" id ="kufangid" >
+				<input type ="text" name ="emaildateend" id="emaildateend"  value="<%=emaildateend %>" class="input_text1"/>
+	
+		</td>
+	</tr>
+	<tr>
+	<td>
+			入库库房
+		    <select name ="kufangid" id ="kufangid" class="select1">
 		          <%if(kufanglist!=null && kufanglist.size()>0) {%>
 		          <%for(Branch b : kufanglist){ %>
 			 			<option value ="<%=b.getBranchid() %>" 
@@ -216,21 +216,33 @@ function isshowdate(){
 		          <%} }%>
 			</select>
 			 订单类型
-			<select name ="cwbordertypeid" id ="cwbordertypeid" >
+			<select name ="cwbordertypeid" id ="cwbordertypeid" class="select1">
 				<option value="-2">请选择</option>
 		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
 						<option value ="<%=c.getValue() %>" <%if(c.getValue()== (request.getParameter("cwbordertypeid")==null?0:Long.parseLong(request.getParameter("cwbordertypeid")))){%>selected="selected"<%}%> ><%=c.getText()%></option>
 		          <%} %>
 			</select>
-			<select name ="isruku" id ="isruku"  onchange="isshowdate()">
+			<select name ="isruku" id ="isruku"  onchange="isshowdate()" class="select1">
 				<option value ="false" <%if("false".equals(request.getParameter("isruku")==null?"false":request.getParameter("isruku"))){%>selected="selected"<%}%> >未入库</option>
 				<option value ="true" <%if("true".equals(request.getParameter("isruku")==null?"false":request.getParameter("isruku"))){%>selected="selected"<%}%> >已入库</option>
-			</select>	
-			
-			<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-			&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
-			<%if(orderlist != null && orderlist.size()>0){  %>
-			<select name ="exportmould" id ="exportmould">
+			</select>
+	</td>
+	<td>
+				入库时间
+				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
+				到
+				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+	</td>
+	</tr>
+	<tr>
+	<td>
+		<input type="button" id="find" onclick="" value="查询" class="input_button2" />
+		<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+	</td>
+	<td>
+	<%if(orderlist != null && orderlist.size()>0){  %>
+	导出模板
+			<select name ="exportmould" id ="exportmould" class="select1">
 	          <option value ="0">默认导出模板</option>
 	          <%for(Exportmould e:exportmouldlist){%>
 	           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
@@ -247,7 +259,7 @@ function isshowdate(){
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
 			<%}} %>
-		</td>
+	</td>
 	</tr>
 </table>
 	</form>
@@ -274,12 +286,12 @@ function isshowdate(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div style="height:60px"></div><%if(orderlist != null && orderlist.size()>0){  %>
+	<div style="height:110px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
+				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >客户</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >配送站点</td>
@@ -302,7 +314,7 @@ function isshowdate(){
 			<td  align="center" valign="middle">&nbsp;</td>
 		</tr>
 	</table>
-	</div><%} %>
+	</div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>

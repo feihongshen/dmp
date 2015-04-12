@@ -9,8 +9,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>站点历史日志</title>
-<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 
@@ -81,7 +81,7 @@ $("#right_hideboxbtn").click(function(){
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="" method="post" id="searchForm">
 		  &nbsp;&nbsp;选择站点：
-			<select name ="branchid" id="branid">
+			<select name ="branchid" id="branid" class="select1">
             <%String nowzhandian="全部"; %>
             <%if(nowBranch !=null){ %>
             <option value ="<%=nowBranch.getBranchid()%>"><%=nowBranch.getBranchname() %><%nowzhandian=nowBranch.getBranchname();%></option>
@@ -92,7 +92,7 @@ $("#right_hideboxbtn").click(function(){
 	               		<option value ="<%=b.getBranchid()%>" <%if(b.getBranchid() == new Long(request.getAttribute("branchidSession")==null?"-1":request.getAttribute("branchidSession").toString())) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 	               <%} }}%>
 	              </select>
-选择日期： <input type ="text" name ="createdate" id="createdate" 
+选择日期： <input type ="text" name ="createdate" id="createdate" class="input_text1" style="height:20px;"
  value ="<%=request.getAttribute("createdate")==null || "".equals(request.getAttribute("createdate"))?
 	 new SimpleDateFormat("yyyy-MM-dd").format(new Date()):request.getAttribute("createdate") %>">
 			<input type="submit" class="input_button2" id="chakan" value="查看">

@@ -36,8 +36,9 @@ if(!dispatchbranchidList.isEmpty())
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -176,12 +177,16 @@ function exportForDelivery(){
 	<div style="background:#FFF">
 		<div>
 			<div>
-				<div>
-					<div class="kfsh_search">
+				<div class="right_box">
+					<div class="inputselect_box">
 						<form action="<%=request.getContextPath() %>/deliverycash/list" method="post" onSubmit="if(checkParam()){submitSaveFormAndCloseBox('$(this)');}return false;">
-						站点名称：<input name="branchname" id="branchname" onkeyup="selectallnexusbranch('<%=request.getContextPath()%>','dispatchbranchid',$(this).val());"/>
+						<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:80px;font-size:13px;">
+						<tr>
+    <td >
+    站点名称
+						<input name="branchname" id="branchname" style="height:20px;" class="input_text1" onkeyup="selectallnexusbranch('<%=request.getContextPath()%>','dispatchbranchid',$(this).val());"/>
 						 <label onClick="change();">
-						 <select name ="dispatchbranchid" id ="dispatchbranchid"  multiple="multiple" style="width: 320px;">
+						 <select name ="dispatchbranchid" id ="dispatchbranchid"  multiple="multiple" style="width: 300px;height:20px;">
 					          <%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){ %>
 					          <option value ="<%=b.getBranchid() %>" 
 					           <%if(!dispatchbranchidList.isEmpty()) 
@@ -195,47 +200,60 @@ function exportForDelivery(){
 					          <%}%>
 						 </select>
 						 </label>
-						<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();">
+						  小件员
+    <select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();" class="select1">
 					          <option value ="-1">请选择小件员</option>
 					           <%if(deliverList!=null&&deliverList.size()>0)for(User u : deliverList){ %>
 					          <option value ="<%=u.getUserid() %>" 
 					           <%if(u.getUserid()==Integer.parseInt(request.getParameter("deliverid")==null?"-1":request.getParameter("deliverid"))){ %>selected="selected" <%} %> ><%=u.getRealname()%></option>
 					          <%}%>
 						 </select>
-						 <select name ="flowordertype" id ="flowordertype">
-					          <option value ="-1">请选择操作</option>
-					          <option value ="<%=FlowOrderTypeEnum.FenZhanLingHuo.getValue() %>"<%if(FlowOrderTypeEnum.FenZhanLingHuo.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.FenZhanLingHuo.getText()%></option>
-					          <option value ="<%=FlowOrderTypeEnum.YiFanKui.getValue() %>"<%if(FlowOrderTypeEnum.YiFanKui.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.YiFanKui.getText()%></option>
-					          <option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>"<%if(FlowOrderTypeEnum.YiShenHe.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.YiShenHe.getText()%></option>
-						 </select>
-						操作时间：
-							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
-						到
-							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-						<select name ="deliverystate" id ="deliverystate" multiple="multiple"  style="height 30px;width: 180px">
+						     配送结果
+    						 <select name ="deliverystate" id ="deliverystate" multiple="multiple"  style="width: 180px">
 					          <%for(DeliveryStateEnum ds : DeliveryStateEnum.values()){if(ds.getValue()!=DeliveryStateEnum.WeiFanKui.getValue()){ %>
 					          <option value ="<%=ds.getValue() %>" 
 					           <% if((request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate")).indexOf(","+ds.getValue()+",")>-1){ %>selected="selected" <%} %> ><%=ds.getText()%></option>
 					          <%}}%>
 						 </select>
-						　 应收金额：<select name="paybackfeeIsZero" id="paybackfeeIsZero">
+    </td>
+    </tr>
+    <tr>
+    <td>
+    操作类型
+    						 <select name ="flowordertype" id ="flowordertype" class="select1">
+					          <option value ="-1">请选择操作</option>
+					          <option value ="<%=FlowOrderTypeEnum.FenZhanLingHuo.getValue() %>"<%if(FlowOrderTypeEnum.FenZhanLingHuo.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.FenZhanLingHuo.getText()%></option>
+					          <option value ="<%=FlowOrderTypeEnum.YiFanKui.getValue() %>"<%if(FlowOrderTypeEnum.YiFanKui.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.YiFanKui.getText()%></option>
+					          <option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>"<%if(FlowOrderTypeEnum.YiShenHe.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> ><%=FlowOrderTypeEnum.YiShenHe.getText()%></option>
+						 </select>
+    						操作时间
+							<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
+						到
+							<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
+							 应收金额
+    						<select name="paybackfeeIsZero" id="paybackfeeIsZero" class="select1">
 						 <option value="-1" >全部</option>
 						 <option value="0" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("0")?"selected":"" %>>=0</option>
 						 <option value="1" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("1")?"selected":"" %>>>0</option>
 						 </select>
-						 <input type="submit" id="find"  value="查询" class="input_button2" />
-						 
+    </td>
+    </tr>
+    <tr>
+    <td>
+        						 <input type="submit" id="find"  value="查询" class="input_button2" />
 						 <input type="button" id="exp" onclick="exportForDelivery()"  value="导出" class="input_button2" />
-						
+    </td>
+    </tr>
+						</table>
 						</form>
 						</div>
-						
+						<div style="height:90px"></div>
 						<div style="position:relative; z-index:0; width:100% ">
 							<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_6" style="border-left:1px solid #CCC; border-top:1px solid #CCC">
 								<tbody>
 									<tr class="font_1" style="background-color: rgb(255, 255, 255); ">
 										<td width="120" align="center" valign="middle" bgcolor="#EEF6FF">小件员</td>
-										<td align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
+										<td align="center" valign="middle" bgcolor="#eef6ff" >客户</td>
 									</tr>
 								</tbody>
 							</table>

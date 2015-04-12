@@ -29,8 +29,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>站点出站统计</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -130,21 +130,34 @@ function clearSelect(){
 	<input type="hidden" id="orderByTypeId" name="orderbyType" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
 	<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 	<input type="hidden" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:120px">
 	<tr>
 		<td align="left">
-			出站时间：
-				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+			出站时间
+			<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 			到
-				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
-			出站站点名称：
-			<select name="ismohu" id="ismohu" >
+				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
+		</td>
+		<td>
+		 订单状态
+			<select name ="flowordertype" id ="flowordertype" class="select1">
+		          <option value ="<%=FlowOrderTypeEnum.ChuKuSaoMiao.getValue()%>" <%if(FlowOrderTypeEnum.ChuKuSaoMiao.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?FlowOrderTypeEnum.ChuKuSaoMiao.getValue()+"":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> >未到货</option>
+		          <option value ="<%=FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()%>" <%if(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?FlowOrderTypeEnum.ChuKuSaoMiao.getValue()+"":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> >已到站</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+	<td>
+		出站站点名称
+			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 <input name="branchname" id="branchname" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','startbranchid',$(this).val());}"/>
-			出站站点：
-		    <select name ="startbranchid" id ="startbranchid" multiple="multiple" style="width: 320px;">
+			 <input name="branchname" id="branchname" class="input_text1" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','startbranchid',$(this).val());}"/>
+	</td>
+	<td>
+		出站站点
+		    <select name ="startbranchid" id ="startbranchid" multiple="multiple" style="width: 300px;">
 		          <%if(branchList!=null && branchList.size()>0) {%>
 		          <%for(Branch b : branchList){ %>
 			 			<option value ="<%=b.getBranchid() %>" 
@@ -157,16 +170,23 @@ function clearSelect(){
 			            }
 				     }%>><%=b.getBranchname()%></option>
 		          <%} }%>
-			</select>[<a href="javascript:multiSelectAll('startbranchid',1,'请选择');">全选</a>][<a href="javascript:multiSelectAll('startbranchid',0,'请选择');">取消全选</a>]
-			<br />
-			到货站点名称：
-			<select name="ismohu" id="ismohu" >
+			</select>
+			[<a href="javascript:multiSelectAll('startbranchid',1,'请选择');">全选</a>]
+			[<a href="javascript:multiSelectAll('startbranchid',0,'请选择');">取消全选</a>]
+	</td>
+	</tr>
+	<tr>
+	<td>
+		到货站点名称
+			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 <input name="branchname" id="branchname" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','nextbranchid',$(this).val());}"/>
-			到货站点：
-			<select name =nextbranchid id ="nextbranchid" multiple="multiple" style="width: 320px;">
+			 <input name="branchname" id="branchname" class="input_text1" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','nextbranchid',$(this).val());}"/>
+	</td>
+	<td>
+		到货站点
+			<select name =nextbranchid id ="nextbranchid" multiple="multiple" style="width: 300px;">
 		          <%if(branchList!=null && branchList.size()>0){ %>
 		          <%for(Branch b : branchList){ %>
 						<option value ="<%=b.getBranchid() %>" 
@@ -179,15 +199,19 @@ function clearSelect(){
 			            }
 				     }%>><%=b.getBranchname()%></option>
 		          <%} }%>
-			 </select>[<a href="javascript:multiSelectAll('nextbranchid',1,'请选择');">全选</a>][<a href="javascript:multiSelectAll('nextbranchid',0,'请选择');">取消全选</a>]
-			 订单状态：
-			<select name ="flowordertype" id ="flowordertype">
-		          <option value ="<%=FlowOrderTypeEnum.ChuKuSaoMiao.getValue()%>" <%if(FlowOrderTypeEnum.ChuKuSaoMiao.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?FlowOrderTypeEnum.ChuKuSaoMiao.getValue()+"":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> >未到货</option>
-		          <option value ="<%=FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()%>" <%if(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()==Integer.parseInt(request.getParameter("flowordertype")==null?FlowOrderTypeEnum.ChuKuSaoMiao.getValue()+"":request.getParameter("flowordertype"))){ %>selected="selected" <%} %> >已到站</option>
-			</select>	
+			 </select>
+			 [<a href="javascript:multiSelectAll('nextbranchid',1,'请选择');">全选</a>]
+			 [<a href="javascript:multiSelectAll('nextbranchid',0,'请选择');">取消全选</a>]
+	</td>
+	</tr>
+	<tr>
+	<td>
 			<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-			&nbsp;&nbsp;<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
-			<%if(orderlist != null && orderlist.size()>0){  %>
+			<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+	</td>
+	<td>
+	<%if(orderlist != null && orderlist.size()>0){  %>
+	导出模板
 			<select name ="exportmould" id ="exportmould">
 	          <option value ="0">默认导出模板</option>
 	          <%for(Exportmould e:exportmouldlist){%>
@@ -205,7 +229,7 @@ function clearSelect(){
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
 			<%}} %>
-		</td>
+	</td>
 	</tr>
 </table>
 	</form>
@@ -251,12 +275,12 @@ function clearSelect(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div style="height:60px"></div><%if(orderlist != null && orderlist.size()>0){  %>
+	<div style="height:130px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >订单号</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >供货商</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >客户</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >出站时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('nextbranchid');" >出站站点</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >到货时间</td>
@@ -274,7 +298,7 @@ function clearSelect(){
 				 </tr>
 		 <%} %>
 	</table>
-	</div><%} %>
+	</div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>

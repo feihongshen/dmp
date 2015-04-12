@@ -5,8 +5,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>站点日志（本站）</title>
-<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 
@@ -60,7 +60,7 @@ $("#right_hideboxbtn").click(function(){
 	<div class="inputselect_box" style="top: 0px; ">
 		
 		<form action="<%=request.getContextPath()%>/warehouseLog/historylog" method="post" id="searchForm">
-		   库房：<select name ="branchid" id="branid" onchange="$('#searchForm').submit()">
+		   库房：<select name ="branchid" id="branid" class="select1" onchange="$('#searchForm').submit()">
 	              <%if(branchnameList != null && branchnameList.size()>0){ %>
 	               <%for( Branch b:branchnameList){ %>
 	               		<option value ="<%=b.getBranchid()%>" 
@@ -68,7 +68,7 @@ $("#right_hideboxbtn").click(function(){
 	               <%} }%>
 	              </select>
 	              &nbsp;&nbsp;
-		选择日期： <input type ="text" name ="createdate" id="createdate" 
+		选择日期： <input type ="text" name ="createdate" id="createdate" class="input_text1" style="height:20px;"
  value ="<%=request.getAttribute("createdate")==null || "".equals(request.getAttribute("createdate"))?
 	 new SimpleDateFormat("yyyy-MM-dd").format(new Date()):request.getAttribute("createdate") %>">
 		<input type="submit" name="button2" id="button2" value="查看" class="input_button2"> 

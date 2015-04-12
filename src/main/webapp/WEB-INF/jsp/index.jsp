@@ -94,7 +94,7 @@
 			<div class="navbar-inner">
 				<div class="container">
 					<div class="brand">
-						<div>
+						<div style="margin-left:10px;">
 							<img
 								src="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/pylogo.png"
 								alt="" style="height: 60px;">
@@ -106,7 +106,7 @@
 
 						</div>
 					</div>
-					<div class="pull-right" style="text-align: right;">
+					<div class="pull-right" style="text-align: right; margin-right: 10px;">
 						<div style="float: right; margin-top: 10px;">
 							<table>
 								<tr>

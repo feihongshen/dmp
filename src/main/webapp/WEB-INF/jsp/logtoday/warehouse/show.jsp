@@ -24,8 +24,8 @@ List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exp
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
@@ -45,7 +45,7 @@ function check(){
 			<tr>
 				<td align="left">
 				<input type ="button" id="back" value="返回" class="input_button2" onclick="$('#searchForm1').submit()"/>
-				<select name ="exportmould" id ="exportmould">
+				<select name ="exportmould" id ="exportmould" class="select1">
 		          <option value ="0">默认导出模板</option>
 		          <%for(Exportmould e:exportmouldlist){%>
 		           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
