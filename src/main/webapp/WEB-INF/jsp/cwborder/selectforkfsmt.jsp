@@ -17,6 +17,7 @@ List customeridList =request.getAttribute("customeridStr")==null?null:(List) req
 String starttime=request.getParameter("begindate")==null?"":request.getParameter("begindate");
 String endtime=request.getParameter("enddate")==null?"":request.getParameter("enddate");
 String selectCondation=request.getParameter("selectype")==null?"0":request.getParameter("selectype");
+String orders=request.getAttribute("orders")==null?"":request.getAttribute("orders").toString();
 %>
 
 
@@ -150,7 +151,7 @@ $(function() {
 });
 function sub(){
 	if(check()){
-		$("#searchForm").submit();
+			$("#searchForm").submit();
 	}
 }
 function accordToCondation(){
@@ -159,6 +160,7 @@ function accordToCondation(){
 	$("#orders").hide();
 	$("#selectype").val("0");
 	$("#gd_table").html("");
+	 $("#copyorders").val("");
 }
 function printByOrder(){
 	$("#printByCondation").attr("checked",false);
@@ -166,6 +168,7 @@ function printByOrder(){
 	$("#orders").show();
 	$("#selectype").val("1");
 	 $("#gd_table").html("");
+	
 }
 </script>
 </head>
@@ -224,6 +227,9 @@ function printByOrder(){
 	     <!--  <a href ="javascript:newprint();">未打印订单打印</a> -->
 	      <%} %>
 	      <input  id="selectype" name="selectype" type="hidden" value="<%=selectCondation %>"/>
+	      <em style="display: none">
+	       <textarea name="copyorders"  id="copyorders"><%=orders %></textarea>
+	       </em>
 	</form>
 	</div>
 	<div class="right_title">
