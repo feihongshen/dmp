@@ -6053,11 +6053,12 @@ public class CwbOrderService {
 		//根据订单号查询订单实体
 		CwbOrder co = new CwbOrder();
 		co = (CwbOrder) newpaywayParams.get("preObj");
-		if (co.getPaywayid()!=newpaywayid) {
+		long payWayId = Long.valueOf(co.getNewpaywayid()==null?"1":co.getNewpaywayid());
+		if (payWayId!=newpaywayid) {
 			flag = true;
 		}
 		map.put("flag", flag);
-		map.put("oldPayWayId", co.getPaywayid());
+		map.put("oldPayWayId", Long.valueOf(co.getNewpaywayid()==null?"1":co.getNewpaywayid()));
 		map.put("newPayWayId", newpaywayid);
 		return map;
 	}
