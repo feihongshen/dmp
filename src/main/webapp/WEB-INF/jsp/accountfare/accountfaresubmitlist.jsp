@@ -271,7 +271,7 @@ function changeYj(){
 <body style="background:#fff" marginwidth="0" marginheight="0">
 <form id="createForm" action="<%=request.getContextPath()%>/accountcwbfare/payfare" method="post">
 	<!-- 弹出框开始 -->
-	<div id="alert_box" style="display:none">
+	<div id="alert_box" style="display:none; " align="center">
 	  <div id="box_bg" ></div>
 	  <div id="box_contant" >
 	    <div id="box_top_bg"></div>
