@@ -3060,7 +3060,7 @@
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://170.20.200.23:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://172.20.200.23:61616</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
