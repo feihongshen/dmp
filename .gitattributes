@@ -1589,6 +1589,7 @@ src/main/webapp/WEB-INF/jsp/accountdeductrecord/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfareVerifylist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfarelist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfaresubmitlist.jsp -text
+src/main/webapp/WEB-INF/jsp/accountfare/submitaAlert.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/add.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/edit.jsp -text

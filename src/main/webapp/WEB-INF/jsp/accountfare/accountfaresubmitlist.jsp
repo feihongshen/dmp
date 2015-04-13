@@ -271,6 +271,7 @@ function changeYj(){
 <body style="background:#fff" marginwidth="0" marginheight="0">
 
 	<!-- 弹出框开始 -->
+	<!-- 
 	<div id="alert_box" style="display:none; " align="center">
 	  <div id="box_bg" ></div>
 	  <div id="box_contant" >
@@ -317,6 +318,7 @@ function changeYj(){
 	  </div>
 	  <div id="box_yy"></div>
 	</div>
+	 -->
 	<!-- 弹出框结束 -->
 	
 
@@ -443,7 +445,9 @@ function changeYj(){
 						       <td colspan ="20" align="center" valign="middle" >
 							      <form id="updateForm" action ="<%=request.getContextPath()%>/funds/update"  method = "post">
 				                      
-				                      <input type="button" id="updateF"  value="交款"/>
+				                      <input type="button"   id="add_button"   value="交款"/>
+				                      <!-- 创建的ajax地址 -->
+									  <input type="hidden" id="add" value="<%=request.getContextPath()%>/accountcwbfare/add" />
 				                  </form>
 			                  </td>
 				            </tr>
@@ -469,4 +473,5 @@ function exportfile(){
 </script> 
 </body>
 </HTML>
+
    
