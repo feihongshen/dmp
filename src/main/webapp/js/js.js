@@ -4615,3 +4615,54 @@ function check_transferResasonMatch() {
 
 	return true;
 }
+
+
+
+
+/////////////////////运费交款////////////////////////////////////
+
+function checkFClick(){
+	if($("#feetransfer").val()!=""){
+		if(!isFloat($("#feetransfer").val())){
+			alert("转账金额应为数字");
+			return false;
+		}
+	}
+	if($("#feecash").val()!=""){
+		if(!isFloat($("#feecash").val())){
+			alert("现金金额应为数字");
+			return false;
+		}
+	}
+	
+	if((zfhjFee*100)>(infactyingjiao*100)){
+		alert("超额支付！");
+		return false;
+	}
+	
+	if((zfhjFee*100)<(infactyingjiao*100)){
+		alert("您有未交款,请检查交款金额！");
+		return false;
+	}
+	
+	if(confirm("确定交款吗？")){
+ 		$("#checkF").attr("disabled","disabled");
+    	$("#checkF").val("请稍候");
+    	$.ajax({
+    		type: "POST",
+    		url:'<%=request.getContextPath()%>/accountcwbfare/payfare',
+    		data:$('#createForm').serialize(),
+    		dataType : "json",
+    		success : function(data) {
+    			if(data.errorCode==0){
+    				alert(data.error);
+    				sumitForm();
+    			}else{
+    				alert(data.error);
+    			}
+    		}
+    	});
+	}
+}
+
+/////////////////////////////////////////////////////////
