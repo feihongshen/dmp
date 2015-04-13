@@ -1613,7 +1613,7 @@ function checkShangMenTui() {
 		return false;
 	}
 	if (parseFloat($("#shouldfare").val()) > 0 && parseFloat($("#infactfare").val()) == 0) {
-		if(!confirm('当前填入实收运费为0，确定提交么？')){
+		if(!confirm('实收运费为0，默认会等于应收运费，确定提交么？')){
 			return false;
 		}
 	} 
