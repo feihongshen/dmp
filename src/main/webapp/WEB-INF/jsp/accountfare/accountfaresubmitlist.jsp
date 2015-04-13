@@ -73,6 +73,19 @@ function Days(){
 	}        
 	return true;
 }
+
+function addInit(){
+	
+	
+}
+function addSuccess(data){
+	$("#alert_box input[type='text']" , parent.document).val("");
+	$("#alert_box select", parent.document).val(0);
+	$("#searchForm").submit();
+}
+function editInit(){
+
+}
 function check(){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
