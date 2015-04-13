@@ -10,7 +10,7 @@
 </script>
 <!-- 弹出框开始 -->
 
-	<div id="alert_box" style="display:none; " align="center">
+	<div id="alert_box">
 	  <div id="box_bg" ></div>
 	  <div id="box_contant" >
 	    <div id="box_top_bg"></div>
