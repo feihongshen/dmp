@@ -5941,5 +5941,11 @@ CREATE TABLE
 		) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+		<changeSet id="wukong-2015-04-13-1" author="wukong">
+		<sql>
+		INSERT INTO `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`)VALUES('145','应收运费','1','Shouldfare'); 
+		INSERT INTO `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`)VALUES('146','实收运费','1','Infactfare'); 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
