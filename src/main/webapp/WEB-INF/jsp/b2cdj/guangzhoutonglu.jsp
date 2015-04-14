@@ -27,7 +27,7 @@
 					<%if(gztl != null){ %>
 					
 						<li><span>在配送公司中id：</span>
-	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value="<%=gztl.getCustomerids()%>"  size="30" > 
+	 						<input type ="text" id="customerids" name ="customerids"  maxlength="600"  value="<%=gztl.getCustomerids()%>"  size="30" > 
 						</li>
 						<li><span>状态回传URL：</span>
 	 						<input type ="text" id="search_url" name ="search_url"  maxlength="300"  value="<%=gztl.getSearch_url()%>"  size="30" > 
