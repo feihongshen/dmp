@@ -388,7 +388,7 @@ public class JobUtil {
 			JobUtil.threadMap.put("guangzhoutonglu", 0);
 		}
 
-		this.logger.info("执行了获取vipshop订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		this.logger.info("执行了广州通路订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 	/*
