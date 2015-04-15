@@ -15,6 +15,13 @@ public class Backintowarehouse_print {
 	private String baleno;
 	private long driverid;
 	private long backreasonid;
+	private String breasonremark;//退货备注
+	public String getBreasonremark() {
+		return breasonremark;
+	}
+	public void setBreasonremark(String breasonremark) {
+		this.breasonremark = breasonremark;
+	}
 	private String remark1;
 	private String remark2;
 	private String remark3;

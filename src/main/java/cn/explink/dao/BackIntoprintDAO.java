@@ -38,6 +38,7 @@ public class BackIntoprintDAO {
 			b.setBaleno(rs.getString("baleno"));
 			b.setDriverid(rs.getLong("driverid"));
 			b.setBackreasonid(rs.getLong("backreasonid"));
+			b.setBreasonremark(rs.getString("breasonremark"));
 			b.setRemark1(rs.getString("remark1"));
 			b.setRemark2(rs.getString("remark2"));
 			b.setRemark3(rs.getString("remark3"));
@@ -45,18 +46,18 @@ public class BackIntoprintDAO {
 		}
 	}
 
-	public void creBackIntoprint(CwbOrder co, User user, long driverid, long nextbranchid, String baleno, String remark1, String remark2, String remark3) {
-		String sql = "insert into `express_ops_backintowarehous_print` (`cwb`, `transcwb`, `userid`, `issignprint`, `createtime`, `flowordertype`, `startbranchid`, `branchid`, `nextbranchid`, `deliverid`, `customerid`, `baleno`, `driverid`, `backreasonid`, `remark1`, `remark2`, `remark3`) "
-				+ "VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	public void creBackIntoprint(CwbOrder co, User user, long driverid, long nextbranchid, String baleno, String remark1, String remark2, String remark3,String comment) {
+		String sql = "insert into `express_ops_backintowarehous_print` (`cwb`, `transcwb`, `userid`, `issignprint`, `createtime`, `flowordertype`, `startbranchid`, `branchid`, `nextbranchid`, `deliverid`, `customerid`, `baleno`, `driverid`, `backreasonid`, `remark1`, `remark2`, `remark3`,`breasonremark`) "
+				+ "VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		this.jdbcTemplate.update(sql, co.getCwb(), co.getTranscwb(), user.getUserid(), 0, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), co.getStartbranchid(), user.getBranchid(), nextbranchid,
-				co.getDeliverid(), co.getCustomerid(), baleno, driverid, co.getBackreasonid(), remark1, remark2, remark3);
+				co.getDeliverid(), co.getCustomerid(), baleno, driverid, co.getBackreasonid(), remark1, remark2, remark3, comment);
 	}
 
-	public List<Backintowarehouse_print> getBackintoPrint(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user) {
+	public List<Backintowarehouse_print> getBackintoPrints(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user,String breasonremark) {
 
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
 		if (issignprint != 0) {
-			sql = "select * from express_ops_backintowarehous_print where printtime>=? and printtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+			sql = "select * from express_ops_backintowarehous_print where  printtime>=? and printtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
 		}
 		if (driverid > 0) {
 			sql += " and driverid=" + driverid;
@@ -64,16 +65,22 @@ public class BackIntoprintDAO {
 		if (!startbranchid.equals("0")) {
 			sql += " and startbranchid in(" + startbranchid + ")";
 		}
+		if (breasonremark.length()>0) {
+			sql += " and breasonremark in('" + breasonremark + "')";
+		}
 
 		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype, issignprint);
 	}
 
-	public List<Backintowarehouse_print> getBackintoPrint(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user, String cwbs) {
-		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+	public List<Backintowarehouse_print> getBackintoPrint(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user,String cwbs) {
+		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=? and issignprint=? and branchid=" + user.getBranchid();
 		if (issignprint != 0) {
-			sql = "select * from express_ops_backintowarehous_print where printtime>=? and printtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
+			sql = "select * from express_ops_backintowarehous_print where printtime>=? and printtime<=? and flowordertype=? and issignprint=? and branchid=" + user.getBranchid();
 
 		}
+		/*if(!breasonremark.equals("")){
+			sql += " and breasonremark=" + breasonremark;
+		}*/
 		if (driverid > 0) {
 			sql += " and driverid=" + driverid;
 		}
@@ -84,7 +91,7 @@ public class BackIntoprintDAO {
 			sql += " and cwb in(" + cwbs + ")";
 		}
 
-		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype, issignprint);
+		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype,issignprint);
 	}
 
 	public int updateBackintoPrint(String starttime, String endtime, String cwbs, User user, long flowordertype) {

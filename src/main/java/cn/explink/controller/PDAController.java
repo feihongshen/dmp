@@ -131,6 +131,9 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.EmailDateService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.OneToMoreService;
+import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -233,6 +236,11 @@ public class PDAController {
 	ExportwarhousesummaryDAO exportwarhousesummaryDAO;
 	@Autowired
 	RoleDAO roleDAO;
+	@Autowired
+	OneToMoreService otmservice;
+	@Autowired
+	TransCwbDao transCwbDao;
+	
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -317,7 +325,43 @@ public class PDAController {
 
 		return "pda/intowarhouse_nodetail";
 	}
-
+	
+	@RequestMapping("/onetomore")
+	public String getmore(){
+		
+		return "pda/onetomore";
+	}
+	@RequestMapping("/oneTOmore")
+	public String getMoreByOne(Model model,HttpServletRequest request){
+		String cwb = request.getParameter("cwb")==null?"":request.getParameter("cwb");
+		String transcwb = request.getParameter("transcwb")==null?"":request.getParameter("transcwb");
+		CwbOrder cwbOrder =cwbDAO.getCwbByCwb(cwb);
+		if(cwbOrder== null){
+			request.setAttribute("message", "订单号不存在！");
+			return "pda/onetomore";
+		}
+		if(!(cwbOrder.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||cwbOrder.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue())){
+			request.setAttribute("message", "已入库订单,运单号无法补入!");
+			return "pda/onetomore";
+		}
+		String transcwbs = otmservice.replaceTranscwb(cwb,transcwb);
+		cwbDAO.updateTranscwb(cwb,transcwbs);//更新数据库一票多件订单补入
+		List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
+		StringBuffer buffer=new StringBuffer();
+		for (Iterator iterator = translist.iterator(); iterator.hasNext();) {
+			TranscwbView transcwbView = (TranscwbView) iterator.next();
+			buffer.append(transcwbView.getTranscwb()+",");
+		}
+		String trancwbs=buffer.substring(0,buffer.length()-1).toString();
+		for(String str:transcwbs.split(",")){
+			if(!trancwbs.contains(str)){
+				transCwbDao.saveTranscwb(str,cwb);
+			}
+		}
+		request.setAttribute("message", "补入成功！");	
+		return "pda/onetomore";
+	}
+	
 	/**
 	 * 进入入库的功能页面（明细）
 	 * 
@@ -2043,6 +2087,8 @@ public class PDAController {
 	public String backandchangeimport(Model model) {
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Customer> cList = this.customerDAO.getAllCustomers();
+		//TODO 退货中转入库备注
+		List<Reason> backreasonList = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Tuituozhanruku.getValue());
 
 		List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
 		List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
@@ -2185,6 +2231,7 @@ public class PDAController {
 
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
+		model.addAttribute("backreasonList",backreasonList);
 		return "pda/backandchangeimport";
 	}
 
@@ -2565,6 +2612,7 @@ public class PDAController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+		
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
@@ -2679,7 +2727,7 @@ public class PDAController {
 
 		}
 	}
-
+	
 	private boolean addNoOrderWav(HttpServletRequest request, CwbException e, ExplinkResponse explinkResponse) {
 		if (!ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI.equals(e.getError())) {
 			return false;
@@ -3093,7 +3141,7 @@ public class PDAController {
 		// 未入库明细
 		List<CwbOrder> weirukulist = this.cwbDAO.getZhongZhuanZhanRukuByBranchidForList(b.getBranchid(), b.getSitetype(), 1, customerid);
 		List<CwbDetailView> weirukuViewlist = this.getcwbDetail(weirukulist, cList, showCustomerjSONArray, null, 0);
-
+		
 		// 已入库明细
 		List<CwbOrder> yirukulist = this.cwbDAO.getZhongZhuanZhanYiRukubyBranchidList(b.getBranchid(), customerid, 1);
 		List<CwbDetailView> yirukuViewlist = this.getcwbDetail(yirukulist, cList, showCustomerjSONArray, null, 0);

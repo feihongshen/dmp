@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
@@ -5,6 +6,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 
+List<Reason> backreasonList = (List<Reason>)request.getAttribute("backreasonList");
 
 List<CwbOrder> weituihuorukuList = (List<CwbOrder>)request.getAttribute("weituihuorukuList");
 List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuorukuList");
@@ -12,6 +14,7 @@ List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuo
 List<CwbOrder> ypeisonglist = (List<CwbOrder>)request.getAttribute("ypeisong");
 List<CwbOrder> yshangmenhuanlist = (List<CwbOrder>)request.getAttribute("yshangmenhuan");
 List<CwbOrder> yshangmentuilist = (List<CwbOrder>)request.getAttribute("yshangmentui");
+
 List<CwbOrder> wpeisongList = (List<CwbOrder>)request.getAttribute("wpeisong");
 List<CwbOrder> wshangmenhuanList = (List<CwbOrder>)request.getAttribute("wshangmenhuan");
 List<CwbOrder> wshangmentuiList = (List<CwbOrder>)request.getAttribute("wshangmentui");
@@ -22,6 +25,7 @@ List<CwbOrder> zyituihuorukuList = (List<CwbOrder>)request.getAttribute("zyituih
 List<CwbOrder> zypeisong = (List<CwbOrder>)request.getAttribute("zypeisong");
 List<CwbOrder> zyshangmenhuan = (List<CwbOrder>)request.getAttribute("zyshangmenhuan");
 List<CwbOrder> zyshangmentui = (List<CwbOrder>)request.getAttribute("zyshangmentui");
+
 List<CwbOrder> zwpeisong = (List<CwbOrder>)request.getAttribute("zwpeisong");
 List<CwbOrder> zwshangmenhuan = (List<CwbOrder>)request.getAttribute("zwshangmenhuan");
 List<CwbOrder> zwshangmentui = (List<CwbOrder>)request.getAttribute("zwshangmentui");
@@ -641,9 +645,17 @@ function yiruku(){
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
-					<p><span>备注：</span>
+					<!-- <p><span>备注：</span>
 						<input type="text" class="inputtext_2" id="comment" name="comment" value="" maxlength="50" />
-					</p>
+					</p> -->
+					<p><span>备注：</span>
+						 <select id="comment" name="comment">
+						 <option value="">请选择</option>
+						 <%for(Reason r:backreasonList){ %>
+						 <option value="<%=r.getReasoncontent()%>"><%=r.getReasoncontent() %></option>
+						 <%} %>
+						 </select>
+ 					</p>
 					<p style="display: none;"><span>包号：</span>
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 					</p>

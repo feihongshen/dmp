@@ -115,6 +115,8 @@ $(function(){
 			$("#columnSetting input[field=backintotime]").attr("checked",false);
 			$("#columnSetting input[field=backreason]").parent().parent().show();
 			$("#columnSetting input[field=backreason]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().show();
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=driver]").parent().parent().show();
 			$("#columnSetting input[field=driver]").attr("checked",false);
 		}
@@ -178,6 +180,8 @@ $(function(){
 			$("#columnSetting input[field=sendcarname]").attr("checked",false);
 			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
 			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().hide();//退货入库备注
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
 			$("#columnSetting input[field=backcarname]").attr("checked",false);
 			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
@@ -248,6 +252,8 @@ $(function(){
 			$("#columnSetting input[field=sendcarname]").attr("checked",false);
 			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
 			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().hide();//退货入库备注
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
 			$("#columnSetting input[field=backcarname]").attr("checked",false);
 			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
@@ -312,6 +318,8 @@ $(function(){
 			$("#columnSetting input[field=sendcarname]").attr("checked",false);
 			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
 			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().hide();//退货入库备注
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
 			$("#columnSetting input[field=backcarname]").attr("checked",false);
 			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
@@ -376,6 +384,8 @@ $(function(){
 			$("#columnSetting input[field=sendcarname]").attr("checked",false);
 			$("#columnSetting input[field=reasoncontent]").parent().parent().show();//隐藏退货原因
 			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().show();//退货入库备注
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=backcarname]").parent().parent().show();//隐藏取货商品
 			$("#columnSetting input[field=backcarname]").attr("checked",false);
 			$("#columnSetting input[field=emaildate]").parent().parent().show();//隐藏发货日期商品
@@ -445,6 +455,8 @@ $(function(){
 			$("#columnSetting input[field=sendcarname]").attr("checked",false);
 			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
 			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=breasonremark]").parent().parent().hide();//退货入库备注
+			$("#columnSetting input[field=breasonremark]").attr("checked",false);
 			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
 			$("#columnSetting input[field=backcarname]").attr("checked",false);
 			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
@@ -809,6 +821,14 @@ $(function(){
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="reasoncontent" columnName="退货原因"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货原因</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 退货入库备注   breasonremark -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="breasonremark" columnName="退货入库备注"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货入库备注</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>

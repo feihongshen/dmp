@@ -6124,6 +6124,16 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		ADD COLUMN `replyDetail`  varchar(500) NULL DEFAULT '' AFTER `servertreasonid`;
 		</sql>
 	</changeSet>
+	<changeSet id="liuxiao-2015-04-11" author="liuxiao">
+		<sql>
+			INSERT  INTO `express_set_menu_info_new`(`menuname`,`menuurl`,`menulevel`,`menuno`,`parentno`,`menuimage`,`adminshowflag`) VALUES ('一票多件补入','PDA/onetomore','3','yd01','303','images/kdkthck.png',NULL);
+		</sql>
+	</changeSet>
+	<changeSet id="liuxiao-2015-04-13" author="liuxiao">
+		<sql>
+			ALTER TABLE `express_ops_backintowarehous_print` ADD COLUMN `breasonremark` VARCHAR(225) DEFAULT '' ; 
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>
  

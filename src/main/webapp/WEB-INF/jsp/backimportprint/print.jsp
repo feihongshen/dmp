@@ -10,19 +10,19 @@
 	PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("pt");
 	List<Map<String, String>> listMap  = (List<Map<String, String>>) request.getAttribute("listMap");
 	List<Backintowarehouse_print> backIntoprintList = (List<Backintowarehouse_print>) request.getAttribute("bPrints");
-	 List<User> driverList = (List<User>)request.getAttribute("driverList");
-	  List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
-	  List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
-	  List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
-	  List<User> userList = (List<User>)request.getAttribute("userList");
-	  String starttime = request.getAttribute("starttime").toString();
-	  String endtime = request.getAttribute("endtime").toString();
-	  String cwbs = request.getAttribute("cwbs").toString();
-	  Branch branch = request.getAttribute("branch")==null?new Branch():(Branch)request.getAttribute("branch");
-	  int count=backIntoprintList.size()/num;
-	  int isno=backIntoprintList.size()%num;
-	  if(count==0){count=1;}
-	  if(backIntoprintList.size()>num&&isno>0){count+=1;}
+	List<User> driverList = (List<User>)request.getAttribute("driverList");
+	List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
+	List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
+	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
+	List<User> userList = (List<User>)request.getAttribute("userList");
+	String starttime = request.getAttribute("starttime").toString();
+	String endtime = request.getAttribute("endtime").toString();
+	String cwbs = request.getAttribute("cwbs").toString();
+	Branch branch = request.getAttribute("branch")==null?new Branch():(Branch)request.getAttribute("branch");
+	int count=backIntoprintList.size()/num;
+	int isno=backIntoprintList.size()%num;
+	if(count==0){count=1;}
+	if(backIntoprintList.size()>num&&isno>0){count+=1;}
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"

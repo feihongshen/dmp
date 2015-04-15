@@ -5563,5 +5563,8 @@ public class CwbDAO {
 		
 		return  jdbcTemplate.queryForLong(sql.toString());
 	}
-	
+	//更改一票多件时运单不足的补入情况
+	public void updateTranscwb(String cwb, String transcwb) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=? where cwb=? and state = 1  ", transcwb, cwb);
+	}
 }

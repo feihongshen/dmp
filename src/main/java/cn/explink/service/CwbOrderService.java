@@ -206,7 +206,6 @@ public class CwbOrderService {
 	ExceptionCwbDAO exceptionCwbDAO;
 	@Autowired
 	UserDAO userDAO;
-
 	@Autowired
 	GotoClassOldDAO gotoClassOldDAO;
 
@@ -1614,7 +1613,7 @@ public class CwbOrderService {
 		/**
 		 * 退货入库交接单打印
 		 */
-		this.backIntoprintDAO.creBackIntoprint(co, user, driverid, nextbranchid, "", "", "", "");
+		this.backIntoprintDAO.creBackIntoprint(co, user, driverid, nextbranchid, "", "", "", "",comment);
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 		}

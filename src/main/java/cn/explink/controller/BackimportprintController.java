@@ -29,6 +29,7 @@ import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
+import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.print.template.PrintColumn;
 import cn.explink.print.template.PrintTemplate;
 import cn.explink.print.template.PrintTemplateDAO;
@@ -67,7 +68,8 @@ public class BackimportprintController {
 	public String list(Model model, @PathVariable("page") long page, HttpServletRequest request, @RequestParam(value = "branchid", required = false, defaultValue = "0") String[] branchid,
 			@RequestParam(value = "begincredate", required = false, defaultValue = "") String begincredate, @RequestParam(value = "endcredate", required = false, defaultValue = "") String endcredate,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "flag", required = false, defaultValue = "0") long flag,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String reasoncontent) {
 		model.addAttribute("branches", this.branchDAO.getBranchesByKuFangAndZhanDian());
 		model.addAttribute("driverList", this.userDAO.getUserByRole(3));
 		model.addAttribute("userList", this.userDAO.getAllUser());
@@ -75,6 +77,7 @@ public class BackimportprintController {
 		model.addAttribute("flag", flag);
 		model.addAttribute("begincredate", begincredate);
 		model.addAttribute("endcredate", endcredate);
+		model.addAttribute("reasoncontent", reasoncontent);//添加退货备注！
 		model.addAttribute("templete", this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() + ""));
 		List<String> branchArrlist = new ArrayList<String>();
 		if ((branchid != null) && (branchid.length > 0)) {
@@ -84,17 +87,18 @@ public class BackimportprintController {
 		}
 		String branchids = this.getStringByBranchids(branchid);
 		long flowordertype = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue();
-
+		List<Reason> backreasonList = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.Tuituozhanruku.getValue());
 		List<Backintowarehouse_print> backIntoprintList = new ArrayList<Backintowarehouse_print>();
 		if (isshow > 0) {
 
-			backIntoprintList = this.backIntoprintDAO.getBackintoPrint(begincredate, endcredate, flowordertype, branchids, driverid, flag, this.getSessionUser());
+			backIntoprintList = this.backIntoprintDAO.getBackintoPrints(begincredate, endcredate, flowordertype, branchids, driverid, flag, this.getSessionUser(),reasoncontent);
 		}
 		model.addAttribute("backIntoprintList", backIntoprintList);
 		model.addAttribute("reasonList", this.reasonDao.getAllReason());
 		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 		model.addAttribute("branchArrlist", branchArrlist);
 		model.addAttribute("branchids", branchids);
+		model.addAttribute("backreasonList",backreasonList);
 		return "backimportprint/list";
 	}
 
@@ -115,8 +119,10 @@ public class BackimportprintController {
 		}
 		PrintTemplate pt = this.printTemplateDAO.getPrintTemplate(printid);
 		List<Backintowarehouse_print> bPrints = new ArrayList<Backintowarehouse_print>();
-		bPrints = this.backIntoprintDAO.getBackintoPrint(starttime, endtime, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), branchids, driverid, flag, this.getSessionUser(), cwbs);
+		bPrints = this.backIntoprintDAO.getBackintoPrint(starttime, endtime, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), branchids, driverid, flag, this.getSessionUser(),cwbs);
 		List<Reason> reasonList = this.reasonDao.getAllReason();
+		//done
+		List<Reason> backreasonList = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.Tuituozhanruku.getValue());
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<User> driverList = this.userDAO.getUserByRole(3);
 		List<User> userList = this.userDAO.getAllUser();
@@ -130,6 +136,8 @@ public class BackimportprintController {
 		model.addAttribute("endtime", endtime);
 		model.addAttribute("cwbs", cwbs);
 		model.addAttribute("reasonList", reasonList);
+		//done
+		model.addAttribute("backreasonList", backreasonList);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branch", this.branchDAO.getBranchById(this.getSessionUser().getBranchid()));
 		List<PrintColumn> printColumns = pt.getColumns();
@@ -171,6 +179,14 @@ public class BackimportprintController {
 				if (printColumn.getField().equals("backreason")) {
 					for (Reason r : reasonList) {
 						if (r.getReasonid() == bPrints.get(i).getBackreasonid()) {
+							map.put(printColumn.getField(), r.getReasoncontent());
+						}
+					}
+				}
+				//done
+				if (printColumn.getField().equals("breasonremark")) {
+					for (Reason r : backreasonList) {
+						if (r.getReasoncontent().equals(bPrints.get(i).getBreasonremark())) {
 							map.put(printColumn.getField(), r.getReasoncontent());
 						}
 					}

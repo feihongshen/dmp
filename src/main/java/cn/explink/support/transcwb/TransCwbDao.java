@@ -45,6 +45,15 @@ public class TransCwbDao {
 			return null;
 		}
 	}
+	
+	public List<TranscwbView> getcwbBytranscwb(String transcwb) {
+		String sql = "select * from express_ops_transcwb where transcwb=?";
+		try {
+			return jdbcTemplate.query(sql, new TranscwbRowMapper(), transcwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 
 	public void saveTranscwb(String transcwb, String cwb) {
 		try {
@@ -66,6 +75,8 @@ public class TransCwbDao {
 		} catch (DataAccessException e) {
 		}
 	}
+	
+	
 
 	public void delTranscwb() {
 		// 这真是一条超牛的sql JM

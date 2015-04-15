@@ -508,9 +508,7 @@ function yiruku(){
  	$.ajax({
  		type: "POST",
  		url:"<%=request.getContextPath()%>/bale/baletuihuodaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid="+driverid,
- 		data:{
-			"comment":comment
-		},
+ 		data:{"comment":comment},
  		dataType : "json",
  		success : function(data) {
  			clearMsg();

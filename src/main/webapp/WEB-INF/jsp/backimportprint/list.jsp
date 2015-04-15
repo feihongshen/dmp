@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.print.template.PrintTemplate"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.util.Page"%>
@@ -8,6 +9,7 @@
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+  List<Reason> backreasonList = (List<Reason>)request.getAttribute("backreasonList");
   List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
   List<PrintTemplate> templetelist = (List<PrintTemplate>)request.getAttribute("templete");
   List<Branch> branchList = (List<Branch>)request.getAttribute("branches");
@@ -21,6 +23,7 @@
   String  flag =request.getAttribute("flag").toString();
   String  begincredate =request.getAttribute("begincredate").toString();
   String  endcredate =request.getAttribute("endcredate").toString();
+  String reasoncontent = request.getAttribute("reasoncontent").toString();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -178,7 +181,7 @@
 			<form action="1" method="post" id="searchForm">
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height: 30px">
 					<tr>
-						<td align="left">上一站:： <select name="branchid" id="branchid" multiple="multiple"
+						<td align="left">上一站: <select name="branchid" id="branchid" multiple="multiple"
 							style="width: 220px;">
 								<%
 									if (branchList != null && branchList.size() > 0) {
@@ -215,8 +218,18 @@
 									}
 								%>
 						</select> <input type="hidden" name="isshow" id="isshow" value="1" /> 
+						备注：<select id="comment" name="comment">
+								 <option value="">请选择</option>
+								 <%for(Reason r:backreasonList){ %>
+									 <option value="<%=r.getReasoncontent()%>"
+									 	<%if (r.getReasoncontent().equals(reasoncontent)) {%> selected="selected" <%}%>
+									 	>
+									 	<%=r.getReasoncontent()%>
+									 </option>
+								 <%} %>
+						 	</select>
 						<input type="button" id="find" value="查询" class="input_button2" /> 
-							打印模版:<select id="printtype" name="printtype">
+						打印模版:<select id="printtype" name="printtype">
 								<option value="0">请选择</option>
 								<%
 									for (PrintTemplate pt : templetelist) {
@@ -239,8 +252,8 @@
 			<div class="right_title" style="overflow: auto; height: 100%; margin-top: 10px">
 				<table id="table1" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 					<tr class="font_1">
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">序号<a
-							style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">序号
+						<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">运单号</td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
@@ -248,6 +261,7 @@
 						<td align="center" valign="middle" bgcolor="#eef6ff">扫描人</td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">退货站入库时间</td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">退货原因</td>
+						<td align="center" valign="middle" bgcolor="#eef6ff">退货站入库备注</td>
 						<td align="center" valign="middle" bgcolor="#eef6ff">司机</td>
 					</tr>
 					<%
@@ -288,9 +302,20 @@
 						<td align="center" valign="middle">
 							<%
 								for (Reason r : reasonList) {
-										if (r.getReasonid() == pv.getBackreasonid())
-											out.print(r.getReasoncontent());
-									}
+									if (r.getReasonid() == pv.getBackreasonid())
+										out.print(r.getReasoncontent());
+								}
+							%>
+						</td>
+						<td align="center" valign="middle">
+							<%
+							/* if(reasoncontent.equals(pv.getBreasonremark())){
+								out.print(reasoncontent);	
+							}  */
+							for (Reason r : backreasonList) {
+								if (r.getReasoncontent().equals(pv.getBreasonremark()))
+								out.print(r.getReasoncontent());
+							}
 							%>
 						</td>
 						<td align="center" valign="middle">
@@ -309,14 +334,12 @@
 			</div>
 			<input type="hidden" value="<%=begincredate%>" name="starttime" id="starttime" /> 
 			<input type="hidden" value="<%=endcredate%>" name="endtime" id="endtime" />
-			 <input type="hidden" value="<%=branchids%>" name="branchids" id="branchids" /> 
-			 <input type="hidden" value="<%=driverid%>" name="driverid" id="driverid" /> 
-			 <input type="hidden" value="<%=flag%>" name="flag" id="flag" />
-			 <input type="hidden"  name="printid" id="printid"/>
+			<input type="hidden" value="<%=branchids%>" name="branchids" id="branchids" /> 
+			<input type="hidden" value="<%=driverid%>" name="driverid" id="driverid" /> 
+			<input type="hidden" value="<%=flag%>" name="flag" id="flag" />
+			<input type="hidden"  name="printid" id="printid"/>
 		</form>
-
 	</div>
-
 </body>
 </html>
 
