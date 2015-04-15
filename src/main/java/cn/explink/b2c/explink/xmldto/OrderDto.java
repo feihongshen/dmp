@@ -37,7 +37,35 @@ public class OrderDto implements Serializable {
 	private String cargosize;
 	private long sendcargonum;
 	private long customerid;
+	private String consigneenameOfkf;
+	private String consigneemobileOfkf;
+	private String consigneephoneOfkf;
 	
+	
+
+	public String getConsigneenameOfkf() {
+		return consigneenameOfkf;
+	}
+
+	public void setConsigneenameOfkf(String consigneenameOfkf) {
+		this.consigneenameOfkf = consigneenameOfkf;
+	}
+
+	public String getConsigneemobileOfkf() {
+		return consigneemobileOfkf;
+	}
+
+	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
+		this.consigneemobileOfkf = consigneemobileOfkf;
+	}
+
+	public String getConsigneephoneOfkf() {
+		return consigneephoneOfkf;
+	}
+
+	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
+		this.consigneephoneOfkf = consigneephoneOfkf;
+	}
 
 	public long getCustomerid() {
 		return customerid;

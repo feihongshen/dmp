@@ -18,6 +18,7 @@ public class CwbColumnSetGztl {
 		excelColumnSet.setConsigneenameindex(1);
 		excelColumnSet.setConsigneeaddressindex(1);
 		excelColumnSet.setConsigneephoneindex(1);
+		excelColumnSet.setConsigneemobileindex(1);
 		excelColumnSet.setSendcargonameindex(1);// ??sendcarname
 		excelColumnSet.setBackcargonameindex(1);
 		excelColumnSet.setCargoamountindex(1);// ??caramount

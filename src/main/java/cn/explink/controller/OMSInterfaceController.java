@@ -857,7 +857,9 @@ public class OMSInterfaceController {
 				orderDto.setConsigneephone(cwbOrder.getConsigneephone());//广州通路接口中我把电话或手机都放在了这个字段中
 				orderDto.setCustomerid(cwbOrder.getCustomerid());
 				//发货时间？？
-				
+				orderDto.setConsigneenameOfkf(cwbOrder.getConsigneenameOfkf());
+				orderDto.setConsigneemobileOfkf(cwbOrder.getConsigneemobileOfkf());
+				orderDto.setConsigneephoneOfkf(cwbOrder.getConsigneephoneOfkf());
 				orderDtoList.add(orderDto);
 			} catch (Exception e) {
 				logger.error("环形对接-根据订单号获取订单详细信息发生错误" + cwbOrder.getCwb(), e);

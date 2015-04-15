@@ -3703,7 +3703,7 @@ public class CwbOrderService {
 			if (!isjutui) {
 				paybackedfee = co.getPaybackfee();
 			}
-			sign_man = co.getConsigneename();
+			sign_man = co.getConsigneenameOfkf();
 
 			if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) && (resendtime.length() > 0)) {
 				this.cwbDAO.saveResendtimeByCwb(resendtime, co.getCwb());

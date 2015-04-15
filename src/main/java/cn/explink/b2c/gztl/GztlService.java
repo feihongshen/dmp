@@ -190,6 +190,7 @@ public class GztlService {
 
 			xmlMap.put("consigneename", order.getCustomername());// 收货人
 			xmlMap.put("consigneeaddress", order.getCustomeraddress());// 收货人地址
+			String consigneemobile="";
 			String consigneephone = "";
 			if (!order.getCustomermobile().isEmpty() && !order.getCustomerphone().isEmpty()) {
 				consigneephone = order.getCustomermobile() + "," + order.getCustomerphone();
@@ -198,7 +199,14 @@ public class GztlService {
 			} else {
 				consigneephone = order.getCustomermobile();
 			}
+			if (!order.getCustomerphone().isEmpty()) {
+				consigneephone=order.getCustomerphone();
+			}
+			if (!order.getCustomermobile().isEmpty()) {
+				consigneephone=order.getCustomermobile();
+			}
 			xmlMap.put("consigneephone", consigneephone);// 收货人手机或电话？？？提供两个，本系统只有一个
+			xmlMap.put("consigneemobile", consigneemobile);// 收货人手机或电话？？？提供两个，本系统只有一个
 			xmlMap.put("sendcarname", order.getDeliverygoods());// 配送货物
 			xmlMap.put("backcargoname", order.getReturngoods());// 退货货物
 			String caramount = "";
