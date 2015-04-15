@@ -223,7 +223,7 @@ public class AdjustmentRecordService {
 							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 //								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
 //								aRecord.setRefund_fee(cwbOrder.getPaybackfee());//应退金额
-								BigDecimal refundFee = aRecord.getRefund_fee()==null?BigDecimal.ZERO:aRecord.getRefund_fee();
+								BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
 								aRecord.setModify_fee(page_payback_fee);
 //								aRecord.setAdjust_amount(cwbOrder.getPaybackfee().subtract(page_payback_fee));
 								aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
@@ -234,8 +234,8 @@ public class AdjustmentRecordService {
 //								aRecord.setRefund_fee(page_payback_fee);
 								aRecord.setModify_fee(page_receive_fee);
 //								aRecord.setAdjust_amount(page_receive_fee.subtract(cwbOrder.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setAdjust_amount(page_receive_fee.subtract(aRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
-								aRecord.setRemark(aRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+								aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
+								aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
 							}
 							aRecord.setCreator(getSessionUser().getUsername());
 							aRecord.setCreate_time(DateTimeUtil.getNowTime());
