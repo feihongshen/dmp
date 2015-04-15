@@ -47,7 +47,7 @@
 							<li><span>客户编码：</span>
 	 						<input type ="text" id="code" name ="code"  maxlength="300"  value="<%=gztl.getCode()%>"  size="30"> 
 						</li>
-							<li><span>接口名称(FBI)：</span>
+							<li><span>接口名称(ODI)：</span>
 	 						<input type ="text" id="invokeMethod" name ="invokeMethod"  maxlength="300"  value="<%=gztl.getInvokeMethod()%>"  size="30"> 
 						</li>
 							<li><span>私匙：</span>
