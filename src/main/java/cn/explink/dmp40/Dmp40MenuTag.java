@@ -88,7 +88,7 @@ public class Dmp40MenuTag extends TagSupport {
 		StringBuffer menuString = new StringBuffer();
 		List<Dmp40Function> list = map.get(level);
 		for (Dmp40Function function : list) {
-			if (function.getDmp40Function().getId().equals(parent.getId())) {
+			if (function.getDmp40Function() != null && function.getDmp40Function().getId() != null && function.getDmp40Function().getId().equals(parent.getId())) {
 				if (function.getDmp40FunctionList().size() == 0
 						|| !map.containsKey(level + 1)) {
 					menuString.append(getLeafOfTree(function, dmpid, properties,httppath));
