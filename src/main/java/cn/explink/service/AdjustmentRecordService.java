@@ -223,10 +223,11 @@ public class AdjustmentRecordService {
 							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 //								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
 //								aRecord.setRefund_fee(cwbOrder.getPaybackfee());//应退金额
+								BigDecimal refundFee = aRecord.getRefund_fee()==null?BigDecimal.ZERO:aRecord.getRefund_fee();
 								aRecord.setModify_fee(page_payback_fee);
 //								aRecord.setAdjust_amount(cwbOrder.getPaybackfee().subtract(page_payback_fee));
-								aRecord.setAdjust_amount(aRecord.getRefund_fee().subtract(page_payback_fee));
-								aRecord.setRemark(aRecord.getRefund_fee()+"元修改成"+page_payback_fee+"元");
+								aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
+								aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
 							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
 								//配送订单
 //								aRecord.setReceive_fee(cwbOrder.getReceivablefee());//修改调整单记录,原始金额为原有数据中的原始金额
