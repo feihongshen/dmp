@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
+import cn.explink.b2c.tools.ObjectUnMarchal;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.User;
 import cn.explink.pos.tonglianpos.Tlmpos;
@@ -68,7 +69,13 @@ public class DeliveryService {
 					
 				}
 			}
-			
+			if(errorList.size()>0){
+				Delivery_response response=new Delivery_response();
+				response.setResult_code(DeliveryEnum.Success.getResult_code());
+				response.setResult_msg(DeliveryEnum.Success.getResult_msg());
+				response.setErrorList(errorList);
+				return  ObjectUnMarchal.POJOtoXml(response);
+			}
 
 			return this.responseXML(DeliveryEnum.Success.getResult_code(), DeliveryEnum.Success.getResult_msg());
 
