@@ -209,11 +209,13 @@ function submitCreateForm(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.addSuccess(data);
+				$(form)[0].reset();
+				$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
 			}
 		}
 	});
 }
+
 
 function submitCreateFormAndCloseBox(form) {
 	$.ajax({
@@ -250,6 +252,7 @@ function submitSaveForm(form) {
 		}
 	});
 }
+
 
 function submitChangeCwbSaveForm(form) {
 	$.ajax({
