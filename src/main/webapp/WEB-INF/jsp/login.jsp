@@ -134,32 +134,22 @@ label.iPhoneCheckLabelOn span {
 	line-height: 23px;
 	z-index: 9999;
 	opacity: .60;
-	filter: alpha(opacity =                                                       60
-		);
+	filter: alpha(opacity =                                                        
+		 60);
 	_bottom: auto;
 	_width: 100%;
 	_position: absolute;
-	_top: expression(eval(document.documentElement.scrollTop +       
-		                    
-		              
+	_top: expression(eval(document.documentElement.scrollTop + 
 		             document.documentElement.clientHeight-this.offsetHeight-
 		( 
-		
-		 
-		   
-		       
-		 
-		  
-		      
-		                          parseInt(this.currentStyle.marginTop, 10)||0
-		)-(parseInt(this.currentStyle.marginBottom, 10)||0 ) ) );
+		                          parseInt(this.currentStyle.marginTop, 10)||0)-(parseInt(this.currentStyle.marginBottom, 10)||0)));
 }
 
 .copyright {
 	margin-top: 20px;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
 	font-family: "Microsoft YaHei", STHeiti, SimHei, "STHeiti Light",
 		Arial !important;
 }
@@ -188,7 +178,7 @@ h1,h2,h3,h4,h5,h6 {
 					</div>
 					<div>
 						<h2>
-							<label style="font-size: 1em;">唯易配送信息系统v4.1</label>
+							<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统v4.1</label>
 						</h2>
 					</div>
 				</div>
@@ -199,7 +189,7 @@ h1,h2,h3,h4,h5,h6 {
 		<div class="container">
 			<table>
 				<tr>
-					<td><img
+					<td><img style="margin-top: -50px;"
 						src="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/banner-login.png"
 						alt=""></td>
 					<td>
@@ -210,50 +200,34 @@ h1,h2,h3,h4,h5,h6 {
 									<h4 class="header lighter bigger">
 										<i class="ace-icon fa fa-coffee"
 											style="color: #69aa46 !important;"></i> <small
-											style="font-size: 1em; color: #69aa46; font-weight: normal;">系统登陆</small>
+											style="font-size: 1em; color: #69aa46; font-weight: normal;">系统登录</small>
 									</h4>
 								</div>
-								<div class="formLogin">
+								<div class="formLogin" style="text-align: left">
 									<form name="formLogin" id="formLogin"
 										action="<%=request.getContextPath()%>/resources/j_spring_security_check"
 										method="post">
-										<!-- <input name="userKey" type="hidden" id="userKey"
-											value="D1B5CC2FE46C4CC983C073BCA897935608D926CD32992B5900" /> -->
-										<div class="tip">
+										<div style="padding-left: 50px;" class="tip">
 											<input class="userName" name="j_username" type="text"
 												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
-												style="height: 25px" />
+												style="width: 200px; height: 25px" />
 										</div>
-										<div class="tip">
+										<div style="padding-left: 50px;" class="tip">
 											<input class="password" name="j_password" type="password"
 												id="password" title="密码" nullmsg="请输入密码!"
-												style="height: 25px" />
+												style="width: 200px; height: 25px" />
 										</div>
-										<div class="tip">
+										<div style="padding-left: 50px;">
 											<input name="validateCode" type="text"
 												class="login_forminput" id="validateCode" maxlength="4"
-												style="width: 120px; height: 25px" />&nbsp;&nbsp;&nbsp;<img
+												style="width: 120px; height: 25px" />&nbsp;&nbsp;<img
 												src="<%=request.getContextPath()%>/image?a=<%=System.currentTimeMillis()%>">
 										</div>
-										<!-- <div class="loginButton">
-											<div>
-												<button type="button"
-													class="width-35 pull-right btn btn-sm btn-primary"
-													id="but_login">
-													<i class="ace-icon fa fa-key"></i> <span class="bigger-110">登录</span>
-												</button>
-											</div>
-											<div class="clear"></div>
-										</div> -->
-										<div class="loginButton">
-											<div style="width: 260px">
-												<input type="submit" value="登录"
-													class="width-35 btn btn-sm btn-primary"
-													style="height: 30px; font-size: 10px; padding-top: 0px;" />
-												<input type="reset" value="重置"
-													class="width-35 btn btn-sm btn-primary"
-													style="height: 30px; font-size: 10px; padding-top: 0px;" />
-											</div>
+										<div style="padding-left: 50px;">
+											<input type="submit" value=" "
+												style="background:url(<%=request.getContextPath()%>/dmp40/eap/sys/image/login/denglu.png);width:80px;height:33px;" />
+											<input type="reset" value=" "
+												style="background:url(<%=request.getContextPath()%>/dmp40/eap/sys/image/login/chongzhi.png);width:80px;height:33px;" />
 										</div>
 										<div class="clear"></div>
 									</form>

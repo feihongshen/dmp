@@ -94,19 +94,20 @@
 			<div class="navbar-inner">
 				<div class="container">
 					<div class="brand">
-						<div style="margin-left:10px;">
+						<div style="margin-left: 10px;">
 							<img
 								src="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/pylogo.png"
 								alt="" style="height: 60px;">
 						</div>
 						<div>
 							<h2>
-								<label style="font-size: 1em;">唯易配送信息系统v4.1</label>
+								<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统v4.1</label>
 							</h2>
 
 						</div>
 					</div>
-					<div class="pull-right" style="text-align: right; margin-right: 10px;">
+					<div class="pull-right"
+						style="text-align: right; margin-right: 10px;">
 						<div style="float: right; margin-top: 10px;">
 							<table>
 								<tr>
@@ -136,12 +137,9 @@
 							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
-							<div>
-								<a onclick="return confirm('确定退出系统吗？');"
-									href="<%=request.getContextPath()%>/resources/j_spring_security_logout"
-									target="_top"> <i class="icon-off"
-									style="position: relative; left: -25px;"></i>退出系统
-								</a>
+							<div
+								onclick="if(confirm('确定退出系统吗？')){window.location='<%=request.getContextPath()%>/resources/j_spring_security_logout'}">
+								<i class="icon-off" style="position: relative; left: -25px;"></i>退出系统
 							</div>
 						</div>
 					</div>
@@ -166,10 +164,9 @@
 	$("#playSearch").keydown(
 			function(event) {
 				if (event.keyCode == 13) {
+					$('#maintabs').tabs('close', '快速查询');
 					addTab('快速查询', 'order/queckSelectOrder/' + this.value
-							+ '?&clickFunctionId=10002',
-
-					'folder');
+							+ '?&clickFunctionId=10002', 'folder');
 					$("#playSearch").val('');
 				}
 			});

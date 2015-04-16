@@ -2540,6 +2540,9 @@ src/main/webapp/dmp40/eap/sys/ftl/eap_auto_list.ftl -text
 src/main/webapp/dmp40/eap/sys/ftl/template.ftl -text
 src/main/webapp/dmp40/eap/sys/ftl/tmplate.html -text
 src/main/webapp/dmp40/eap/sys/image/login/banner-login.png -text
+src/main/webapp/dmp40/eap/sys/image/login/banner-login1.png -text
+src/main/webapp/dmp40/eap/sys/image/login/chongzhi.png -text
+src/main/webapp/dmp40/eap/sys/image/login/denglu.png -text
 src/main/webapp/dmp40/eap/sys/image/login/explink.ico -text
 src/main/webapp/dmp40/eap/sys/image/login/pylogo.png -text
 src/main/webapp/dmp40/eap/sys/js/bootstrap-extend-v1.js -text

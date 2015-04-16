@@ -46,12 +46,7 @@ $('#forgetpass').click(function(e) {
 $('#but_login').click(function(e) {
 	submit();
 });
-//回车登录
-$(document).keydown(function(e){
-	if(e.keyCode == 13) {
-		submit();
-	}
-});
+
 //表单提交
 function submit()
 {
