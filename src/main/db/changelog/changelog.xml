@@ -5960,6 +5960,11 @@ CREATE TABLE
 			ALTER TABLE fn_org_bill_adjustment_record ADD COLUMN `pay_way_change_flag` int(2) DEFAULT 0 comment '是否修改支付方式标识';
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-4-16-1" author="wangzhiyong">
+		<sql>
+			INSERT INTO express_set_system_install(name,value,chinesename) VALUES('isUseAuditZhongZhuan','yes','是否使用中转订单申请与审核');
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
  
