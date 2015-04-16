@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50704
 File Encoding         : 65001
 
-Date: 2015-04-16 19:47:56
+Date: 2015-04-16 20:59:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -153,15 +153,15 @@ INSERT INTO `dmp40_function` VALUES ('705010', '2', '扫描监控', '705010', 'c
 INSERT INTO `dmp40_function` VALUES ('705020', '2', '对接异常监控', '705020', 'b2cjointmonitor/list/1?', '7050');
 INSERT INTO `dmp40_function` VALUES ('80', '0', '财务结算', '80', 'menu_item_cwjs', '');
 INSERT INTO `dmp40_function` VALUES ('8020', '1', '客户返款结算', '8020', '', '80');
-INSERT INTO `dmp40_function` VALUES ('802010', '2', '客户账单核对', '802010', '${eapUrl}customerCheckBill.do?list&id=fn_customer_bill', '8020');
-INSERT INTO `dmp40_function` VALUES ('802020', '2', '客户账单管理', '802020', '${eapUrl}customerBillManagement.do?index', '8020');
-INSERT INTO `dmp40_function` VALUES ('802030', '2', '账单调整查询', '802030', '${eapUrl}AdjustmentRecordController123.do?list', '8020');
-INSERT INTO `dmp40_function` VALUES ('802040', '2', '应付客户报表', '802040', '${eapUrl}reportForm.do?payableCustomerFormIndex', '8020');
+INSERT INTO `dmp40_function` VALUES ('802010', '2', '客户账单核对', '802010', '${eapUrl}customerCheckBill.do?list&id=fn_customer_bill&', '8020');
+INSERT INTO `dmp40_function` VALUES ('802020', '2', '客户账单管理', '802020', '${eapUrl}customerBillManagement.do?index&', '8020');
+INSERT INTO `dmp40_function` VALUES ('802030', '2', '账单调整查询', '802030', '${eapUrl}AdjustmentRecordController123.do?list&', '8020');
+INSERT INTO `dmp40_function` VALUES ('802040', '2', '应付客户报表', '802040', '${eapUrl}reportForm.do?payableCustomerFormIndex&', '8020');
 INSERT INTO `dmp40_function` VALUES ('8030', '1', '站内返款结算', '8030', '', '80');
-INSERT INTO `dmp40_function` VALUES ('803010', '2', '账单生成策略', '803010', '${eapUrl}billPolicyCreatorController.do?index', '8030');
-INSERT INTO `dmp40_function` VALUES ('803020', '2', '站点账单生成', '803020', '${eapUrl}orgBillCreator.do?index', '8030');
-INSERT INTO `dmp40_function` VALUES ('803030', '2', '站内账单管理', '803030', '${eapUrl}orgBillManager.do?index', '8030');
-INSERT INTO `dmp40_function` VALUES ('803040', '2', '签收站点余额报表', '803040', '${eapUrl}reportForm.do?index', '8030');
+INSERT INTO `dmp40_function` VALUES ('803010', '2', '账单生成策略', '803010', '${eapUrl}billPolicyCreatorController.do?index&', '8030');
+INSERT INTO `dmp40_function` VALUES ('803020', '2', '站点账单生成', '803020', '${eapUrl}orgBillCreator.do?index&', '8030');
+INSERT INTO `dmp40_function` VALUES ('803030', '2', '站内账单管理', '803030', '${eapUrl}orgBillManager.do?index&', '8030');
+INSERT INTO `dmp40_function` VALUES ('803040', '2', '签收站点余额报表', '803040', '${eapUrl}reportForm.do?index&', '8030');
 INSERT INTO `dmp40_function` VALUES ('8035', '1', '站内扣款结算', '8035', '', '80');
 INSERT INTO `dmp40_function` VALUES ('803510', '2', '账户管理', '803510', 'accountdeductrecord/branchList/1?', '8035');
 INSERT INTO `dmp40_function` VALUES ('803520', '2', '预扣款冲正', '803520', 'accountdeductrecord/detailList?', '8035');
