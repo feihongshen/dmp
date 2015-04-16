@@ -20,6 +20,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbFare;
 import cn.explink.domain.User;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.ExplinkUserDetail;
 
@@ -51,6 +52,7 @@ public class AccountCwbFareController {
 		return userDetail.getUser();
 	}
 
+	
 	@RequestMapping("/payfare")
 	public @ResponseBody String payfare(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "girofee", required = false, defaultValue = "") BigDecimal girofee, @RequestParam(value = "girouser", required = false, defaultValue = "") String girouser,
@@ -74,5 +76,11 @@ public class AccountCwbFareController {
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}
+	}
+	
+	
+	@RequestMapping("/add")
+	public String add(Model model) {
+		return "accountfare/submitaAlert";
 	}
 }

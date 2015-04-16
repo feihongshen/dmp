@@ -456,6 +456,12 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.1</version>
 		</dependency>
+		
+		<dependency> 
+		    <groupId>commons-codec</groupId> 
+		    <artifactId>commons-codec</artifactId> 
+		    <version>20041127.091804</version> 
+		</dependency> 
 	</dependencies>
 	<build>
 		<finalName>dmp_pxwl_smt</finalName>
@@ -478,6 +484,7 @@
 				<targetPath>../db</targetPath>
 			</resource>
 		</resources>
+		<pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -505,6 +512,7 @@
 						</goals>
 					</execution>
 				</executions>
+			
 				<configuration>
 					<outxml>true</outxml>
 					<aspectLibraries>
@@ -619,12 +627,8 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on 
-					the Maven build itself. -->
-			</plugins>
 		</pluginManagement>
+		
 	</build>
 	<profiles>
 		<profile>
@@ -2723,14 +2727,14 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.61.12:3306/cqhy_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.35:3306/cqhy_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
-				<expressurl.password></expressurl.password>
+				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
-				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
-				<wavPath>/home/appusr/data/wav/</wavPath>
-				<filePath>/home/appusr/data/moule/</filePath>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/logo_cqhy2.png</logoimgurl>
@@ -2741,6 +2745,7 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
+
 
 
 		<profile>
@@ -2866,10 +2871,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>JXFY</label>
-				<addresscustomerid>9</addresscustomerid>
-				<addressid>9</addressid>
+				<addresscustomerid>12</addresscustomerid>
+				<addressid>12</addressid>
 				<addresspassword>jxfy</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>183.61.89.252/addressmatchfjfy</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -3001,6 +3006,7 @@
 			</properties>
 		</profile>
 		
+		
 		<profile>
 			<id>JLPJ</id>
 			<properties>
@@ -3049,7 +3055,6 @@
 				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
 			</properties>
 		</profile>
-		
 		<profile>
 			<id>AHPJ</id>
 			<properties>
@@ -3074,6 +3079,57 @@
 				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
 			</properties>
 		</profile>
+		<profile>
+			<id>HLJPJ</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.31:3306/hljpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_scpj.png</logoimgurl>
+				<label>HLJPJ</label>
+				<addresscustomerid>15</addresscustomerid>
+				<addressid>15</addressid>
+				<addresspassword>hljpj</addresspassword>
+				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
+			</properties>
+		</profile>
+
+
+	<profile>
+			<id>QLK</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://localhost:3306/qlk_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkqlk</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_scpj.png</logoimgurl>
+				<label>QLK</label>
+				<addresscustomerid>15</addresscustomerid>
+				<addressid>15</addressid>
+				<addresspassword>qlk</addresspassword>
+				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
+			</properties>
+		</profile>
+
 
 	</profiles>
 

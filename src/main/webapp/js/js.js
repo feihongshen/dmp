@@ -1473,13 +1473,20 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			 * parseFloat($("#shouldfare").val()));
 			 * $("#infactfare").val(parseFloat($("#shouldfare").val())); return
 			 * false; }
-			 */else if (parseFloat($("#shouldfare").val()) == 0 && parseFloat($("#infactfare").val()) > 0) {
+			 */
+		else if (parseFloat($("#shouldfare").val()) == 0 && parseFloat($("#infactfare").val()) > 0) {
 			alert("应收运费为0，实收运费不允许大于应收运费。");
 			return false;
-		} else if (!isFloat($("#infactfare").val())) {
+		}
+		
+		
+		else if (!isFloat($("#infactfare").val())) {
 			alert("实收运费只能为数值");
 			return false;
-		} else {
+		} 
+		
+		
+		else {
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == HuoWuDiuShi) {// 货物丢失
@@ -1608,6 +1615,11 @@ function checkShangMenTui() {
 		alert("实收运费只能为数值");
 		return false;
 	}
+	if (parseFloat($("#shouldfare").val()) > 0 && parseFloat($("#infactfare").val()) == 0) {
+		if(!confirm('实收运费为0，默认会等于应收运费，确定提交么？')){
+			return false;
+		}
+	} 
 	/*
 	 * if (parseFloat($("#shouldfare").val()) !=
 	 * parseFloat($("#infactfare").val())) { alert("实收运费应该为" +
@@ -4606,3 +4618,54 @@ function check_transferResasonMatch() {
 
 	return true;
 }
+
+
+
+
+/////////////////////运费交款////////////////////////////////////
+
+function checkFClick(){
+	if($("#feetransfer").val()!=""){
+		if(!isFloat($("#feetransfer").val())){
+			alert("转账金额应为数字");
+			return false;
+		}
+	}
+	if($("#feecash").val()!=""){
+		if(!isFloat($("#feecash").val())){
+			alert("现金金额应为数字");
+			return false;
+		}
+	}
+	
+	if((zfhjFee*100)>(infactyingjiao*100)){
+		alert("超额支付！");
+		return false;
+	}
+	
+	if((zfhjFee*100)<(infactyingjiao*100)){
+		alert("您有未交款,请检查交款金额！");
+		return false;
+	}
+	
+	if(confirm("确定交款吗？")){
+ 		$("#checkF").attr("disabled","disabled");
+    	$("#checkF").val("请稍候");
+    	$.ajax({
+    		type: "POST",
+    		url:'<%=request.getContextPath()%>/accountcwbfare/payfare',
+    		data:$('#createForm').serialize(),
+    		dataType : "json",
+    		success : function(data) {
+    			if(data.errorCode==0){
+    				alert(data.error);
+    				sumitForm();
+    			}else{
+    				alert(data.error);
+    			}
+    		}
+    	});
+	}
+}
+
+/////////////////////////////////////////////////////////

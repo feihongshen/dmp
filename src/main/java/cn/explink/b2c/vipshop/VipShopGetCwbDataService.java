@@ -331,11 +331,13 @@ public class VipShopGetCwbDataService {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop) {
+		
 		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
+				
 				seq_arrs = this.SaveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap);
 			}
 		}
@@ -347,6 +349,9 @@ public class VipShopGetCwbDataService {
 	}
 
 	private String SaveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap) {
+		
+		
+		
 		String order_sn = null;
 		try {
 			Map<String, String> dataMap = new HashMap<String, String>();
@@ -486,6 +491,7 @@ public class VipShopGetCwbDataService {
 						cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
 					}
 					
+					filterRepeatCwbs(paraList, order_sn);
 					
 					seq_arrs += seq + ",";
 					return seq_arrs;
@@ -514,6 +520,7 @@ public class VipShopGetCwbDataService {
 				seq_arrs += seq + ",";
 				return seq_arrs;
 			}
+		
 			paraList.add(dataMap);
 			seq_arrs += seq + ",";
 
@@ -521,6 +528,22 @@ public class VipShopGetCwbDataService {
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
 		}
 		return seq_arrs;
+	}
+
+	private void filterRepeatCwbs(List<Map<String, String>> paraList,
+			String order_sn) {
+		try {
+			if(paraList!=null&&paraList.size()>0){
+				for(int i=0;i<paraList.size();i++){
+					Map<String,String> data =paraList.get(i);
+					if(data.get("cwb").toString().equals(order_sn)){
+						paraList.remove(data);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("订单过滤异常order_sn"+order_sn,e);
+		}
 	}
 
 	private void insertOrderGoods(Map<String, Object> datamap, String order_sn) {

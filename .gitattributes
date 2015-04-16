@@ -1310,6 +1310,7 @@ src/main/java/cn/explink/pos/tonglianpos/delivery/DeliveryEnum.java -text
 src/main/java/cn/explink/pos/tonglianpos/delivery/DeliveryService.java -text
 src/main/java/cn/explink/pos/tonglianpos/delivery/Delivery_request.java -text
 src/main/java/cn/explink/pos/tonglianpos/delivery/Delivery_response.java -text
+src/main/java/cn/explink/pos/tonglianpos/delivery/respDto/ErrorInfo.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/TlmposUnmarchal.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/Transaction.java -text
 src/main/java/cn/explink/pos/tonglianpos/xmldto/Transaction_Body.java -text
@@ -1606,6 +1607,7 @@ src/main/webapp/WEB-INF/jsp/accountdeductrecord/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfareVerifylist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfarelist.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfare/accountfaresubmitlist.jsp -text
+src/main/webapp/WEB-INF/jsp/accountfare/submitaAlert.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/add.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/detailList.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeedetail/edit.jsp -text

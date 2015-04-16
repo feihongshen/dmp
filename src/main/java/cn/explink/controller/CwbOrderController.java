@@ -275,7 +275,10 @@ public class CwbOrderController {
 			@RequestParam(value = "printType", required = false, defaultValue = "3") long printType, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "orders", required = false, defaultValue = "") String orders,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,@RequestParam(value = "selectype", required = false, defaultValue = "") String selectype) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@RequestParam(value = "selectype", required = false, defaultValue = "") String selectype,
+			@RequestParam(value = "copyorders", required = false, defaultValue = "") String copyorders
+			) {
 		List<Branch> bList = branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		Branch nowbranch = branchDAO.getBranchById(getSessionUser().getBranchid());
 		if (branchid == -1 || branchid == 0) {
@@ -298,16 +301,21 @@ public class CwbOrderController {
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			String customerids = dataStatisticsService.getStrings(customerid);
 			StringBuffer buffer=new StringBuffer();
-			if (!orders.isEmpty()&&!orders.equals("每次输入的订单不超过500个")) {
-				String[] orderStrings=orders.split("\\r\\n");
-				for (int i = 0; i < orderStrings.length; i++) {
-					buffer.append("'").append(orderStrings[i]+"',");
+			if(selectype.equals("1")){
+				if (!orders.isEmpty()&&!orders.equals("每次输入的订单不超过500个")) {
+					String[] orderStrings=orders.split("\\r\\n");
+					for (int i = 0; i < orderStrings.length; i++) {
+						buffer.append("'").append(orderStrings[i]+"',");
+					}
+					if (buffer.length()>0) {
+						orders=buffer.substring(0,buffer.length()-1).toString();
+					}
+				}else if((orders.isEmpty()||orders.equals("每次输入的订单不超过500个"))&&!copyorders.isEmpty()&&selectype.equals("1")){
+					orders=copyorders;
+				}else {
+					orders="";
 				}
-				if (buffer.length()>0) {
-					orders=buffer.substring(0,buffer.length()-1).toString();
-				}
-			}else {
-				orders="";
+				model.addAttribute("orders",orders);
 			}
 			
 			List<String> smtcwbsList = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCustomerid(customerids, printType, begindate, enddate, branchid,orders,selectype);

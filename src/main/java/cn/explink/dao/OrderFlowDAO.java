@@ -1163,5 +1163,11 @@ public class OrderFlowDAO {
 		String setSql = "update express_ops_order_flow set isnow = 1 where cwb = ? and flowordertype = " + flow.getValue();
 		this.jdbcTemplate.update(setSql, cwb);
 	}
+	
+	public void deleteOrderFlowByCwb(String cwb) {
+		
+		String sql = "delete from express_ops_order_flow where cwb = ? ";
+		this.jdbcTemplate.update(sql, cwb);
+	}
 
 }

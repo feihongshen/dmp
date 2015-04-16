@@ -269,13 +269,15 @@ function changeYj(){
 </script>   
 </HEAD>
 <body style="background:#fff" marginwidth="0" marginheight="0">
-<form id="createForm" action="<%=request.getContextPath()%>/accountcwbfare/payfare" method="post">
+
 	<!-- 弹出框开始 -->
-	<div id="alert_box" style="display:none">
+
+	<div id="alert_box" style="display:none; " align="center">
 	  <div id="box_bg" ></div>
 	  <div id="box_contant" >
 	    <div id="box_top_bg"></div>
 	    <div id="box_in_bg">
+	    <form id="createForm" action="<%=request.getContextPath()%>/accountcwbfare/payfare" method="post">
 	      <h1><div id="close_box" onclick="closeBox()"></div>
 	        	交款信息</h1>
 	        <div class="right_title" style="padding:10px">
@@ -311,12 +313,14 @@ function changeYj(){
 	            </tr>
 	          </table>
 	        </div>
+	        </form>
 	    </div>
 	  </div>
 	  <div id="box_yy"></div>
 	</div>
+
 	<!-- 弹出框结束 -->
-</form>	
+	
 
    <div class="menucontant">
 		<form id="searchForm" action ="<%=request.getContextPath()%>/accountcwbfaresubmit/accountfaresubmitlist/2" method = "post">
