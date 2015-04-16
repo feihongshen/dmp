@@ -9,7 +9,9 @@
 		onBeforeDestroy : function() {
 			var frame = $('iframe', this);
 			if (frame.length > 0) {
-				frame[0].contentWindow.document.write('');
+				try{
+					frame[0].contentWindow.document.write('');
+				}catch(e){}
 				frame[0].contentWindow.close();
 				frame.remove();
 			}
