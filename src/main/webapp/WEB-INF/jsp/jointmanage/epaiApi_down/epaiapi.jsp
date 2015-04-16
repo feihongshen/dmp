@@ -28,15 +28,15 @@
 			.getAttribute("warehouselist");
 %>
 
-<scrip function addInit() {
+<script type="text/javascript">
+function addInit() {
 		//无处理
 	}
 	function
 	addSuccess(data) {
-		$("#alert_box input[type='text'
-	]", parent.document).val("");
-		$("#alert_box
-	select", parent.document).val(0);
+		$("#alert_box input[type='text']"
+	, parent.document).val("");
+		$("#alert_box select", parent.document).val(0);
 		$("#searchForm").submit();
 	}
 	function
