@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : wzy
-Source Server Version : 50162
+Source Server         : local
+Source Server Version : 50704
 Source Host           : localhost:3306
-Source Database       : pj_dmp
+Source Database       : dmp_40
 
 Target Server Type    : MYSQL
-Target Server Version : 50162
+Target Server Version : 50704
 File Encoding         : 65001
 
-Date: 2015-04-13 00:46:35
+Date: 2015-04-16 19:47:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -44,9 +44,18 @@ INSERT INTO `dmp40_function` VALUES ('1025', '1', '订单类型管理', '1025', 
 INSERT INTO `dmp40_function` VALUES ('1028', '1', '支付方式管理', '1028', 'payway/list/1?', '10');
 INSERT INTO `dmp40_function` VALUES ('1030', '1', '车辆管理', '1030', 'truck/list/1?', '10');
 INSERT INTO `dmp40_function` VALUES ('1040', '1', '常用语管理', '1040', 'reason/list/1?', '10');
-INSERT INTO `dmp40_function` VALUES ('15', '0', '地址库', '15', 'menu_item_dzk', '');
-INSERT INTO `dmp40_function` VALUES ('1510', '1', '登录地址库', '1510', '', '15');
-INSERT INTO `dmp40_function` VALUES ('1550', '1', '配送员关联维护', '1550', 'addressdelivertostation/inittree?', '15');
+INSERT INTO `dmp40_function` VALUES ('15', '0', '阡陌地址库', '15', 'menu_item_dzk', '');
+INSERT INTO `dmp40_function` VALUES ('1510', '1', '地址库匹配', '1510', '${addrUrl}address/addressMapping?${addrUser}${addrPsw}', '15');
+INSERT INTO `dmp40_function` VALUES ('1515', '1', '关键词匹配', '1515', '${addrUrl}address/keywordMapping?${addrUser}${addrPsw}', '15');
+INSERT INTO `dmp40_function` VALUES ('1520', '1', '数据维护', '1520', '', '15');
+INSERT INTO `dmp40_function` VALUES ('152010', '2', '关键词导入', '152010', '${addrUrl}address/addressImportPage?${addrUser}${addrPsw}', '1520');
+INSERT INTO `dmp40_function` VALUES ('152020', '2', '关键词维护', '152020', '${addrUrl}keyword/keywordMaintain?${addrUser}${addrPsw}', '1520');
+INSERT INTO `dmp40_function` VALUES ('152030', '2', '地址库维护', '152030', '${addrUrl}address/addressEditPage?${addrUser}${addrPsw}', '1520');
+INSERT INTO `dmp40_function` VALUES ('152040', '2', '站点管理', '152040', '${addrUrl}address/importStationAddress?${addrUser}${addrPsw}', '1520');
+INSERT INTO `dmp40_function` VALUES ('1530', '1', '关联设置', '1530', '', '15');
+INSERT INTO `dmp40_function` VALUES ('153010', '2', '拆合站维护', '153010', '${addrUrl}stationAdressRelation/stationAdressRelation?${addrUser}${addrPsw}', '1530');
+INSERT INTO `dmp40_function` VALUES ('153020', '2', '配送站点关联维护', '153020', '${addrUrl}deliveryStationRule/deliveryStationRule?${addrUser}${addrPsw}', '1530');
+INSERT INTO `dmp40_function` VALUES ('153030', '2', '配送员关联维护', '153030', 'addressdelivertostation/inittree?', '1530');
 INSERT INTO `dmp40_function` VALUES ('20', '0', '用户管理', '20', 'menu_item_yhgl', '');
 INSERT INTO `dmp40_function` VALUES ('2010', '1', '机构管理', '2010', 'branch/list/1?', '20');
 INSERT INTO `dmp40_function` VALUES ('2020', '1', '岗位管理', '2020', 'role/list?', '20');
@@ -91,6 +100,7 @@ INSERT INTO `dmp40_function` VALUES ('504010', '2', '站点到货', '504010', 'P
 INSERT INTO `dmp40_function` VALUES ('504020', '2', '小件员领货', '504020', 'PDA/branchdeliverdetail?', '5040');
 INSERT INTO `dmp40_function` VALUES ('504030', '2', '归班反馈', '504030', 'delivery/auditView?', '5040');
 INSERT INTO `dmp40_function` VALUES ('504035', '2', '站点出站', '504035', 'PDA/branchexportwarhouse?', '5040');
+INSERT INTO `dmp40_function` VALUES ('504038', '2', '中转申请', '504038', 'cwbapply/applytoZhongZhuan?', '5040');
 INSERT INTO `dmp40_function` VALUES ('504040', '2', '中转出站', '504040', 'PDA/branchchangeexport?', '5040');
 INSERT INTO `dmp40_function` VALUES ('504050', '2', '退货出站', '504050', 'PDA/branchbackexport?', '5040');
 INSERT INTO `dmp40_function` VALUES ('504065', '2', '返单出站', '504065', 'returnCwbs/returnCwbsbackexport?', '5040');
@@ -158,7 +168,6 @@ INSERT INTO `dmp40_function` VALUES ('803520', '2', '预扣款冲正', '803520',
 INSERT INTO `dmp40_function` VALUES ('803530', '2', '账户信息', '803530', 'accountdeductrecord/accountBasic/1?', '8035');
 INSERT INTO `dmp40_function` VALUES ('803540', '2', '本站账户信息', '803540', 'accountdeductrecord/accountBasic/1?', '8035');
 INSERT INTO `dmp40_function` VALUES ('8040', '1', '上门退运费结算', '8040', '', '80');
-INSERT INTO `dmp40_function` VALUES ('804005', '2', '时效设置', '804005', 'time_effective/?', '8040');
 INSERT INTO `dmp40_function` VALUES ('804010', '2', '运费交款', '804010', 'accountcwbfaresubmit/accountfaresubmitlist/1?', '8040');
 INSERT INTO `dmp40_function` VALUES ('804020', '2', '运费审核', '804020', 'accountcwbfaredetailVerify/accountfarelist/1?', '8040');
 INSERT INTO `dmp40_function` VALUES ('804050', '2', '站点运费统计', '804050', 'smtfaresettle/station/1?', '8040');
@@ -182,6 +191,7 @@ INSERT INTO `dmp40_function` VALUES ('903010', '2', '妥投订单汇总', '90301
 INSERT INTO `dmp40_function` VALUES ('903020', '2', '滞留订单汇总', '903020', 'datastatistics/zhiliusearch/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('903030', '2', '拒收订单汇总', '903030', 'datastatistics/jushousearch/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('903040', '2', '退客户订单汇总', '903040', 'datastatistics/tuigonghuoshangsearch/1?', '9030');
+INSERT INTO `dmp40_function` VALUES ('903045', '2', '上门退时效设置', '903045', 'time_effective/?', '9030');
 INSERT INTO `dmp40_function` VALUES ('903050', '2', '上门退揽收汇总', '903050', 'overdueexmo/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('9040', '1', '小件员查询', '9040', '', '90');
 INSERT INTO `dmp40_function` VALUES ('904010', '2', '小件员领货查询', '904010', 'delivery/searchDeliveryLead/1?', '9040');
