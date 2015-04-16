@@ -169,7 +169,7 @@ function cwbexport(){
 				</form>
 				</div>
 				<div class="right_title">
-				<div style="height:70px;"></div>
+				<div style="height:88px;"></div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
