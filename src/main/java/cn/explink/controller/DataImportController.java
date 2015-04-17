@@ -50,6 +50,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelImportEdit;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
@@ -414,6 +415,24 @@ public class DataImportController {
 		model.addAttribute("SuccessEdit", SuccessEdit);
 		model.addAttribute("SuccessNew", SuccessNew);
 		model.addAttribute("AllAddress", SuccessAddress + NotSuccess + SuccessEdit + SuccessNew);
+		
+		//获取系统参数
+		List<SystemInstall> systemInstalls = systemInstallDAO.getAllProperties();
+		for (SystemInstall systemInstall : systemInstalls) {
+			if(systemInstall.getName().equals("addrDeliveryStationUrl")){
+				model.addAttribute("addrDeliveryStationUrl", systemInstall.getValue());
+				continue;
+			}
+			if(systemInstall.getName().equals("addrUser")){
+				model.addAttribute("addrUser", systemInstall.getValue());
+				continue;
+			}
+			if(systemInstall.getName().equals("addrPsw")){
+				model.addAttribute("addrPsw", systemInstall.getValue());
+				continue;
+			}
+		}
+		
 		// 处理批次
 		List<EmailDate> eList = emaildateDAO.getEmailDateByCustomerid(customerid);
 		List<AccountArea> aList = accountAreaDAO.getAllAccountArea();
