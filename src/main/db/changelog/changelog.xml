@@ -6141,6 +6141,11 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			ALTER TABLE `express_ops_backintowarehous_print` ADD COLUMN `breasonremark` VARCHAR(225) DEFAULT '' ; 
 		</sql>
 	</changeSet>
+		<changeSet id="wukong-2015-04-17" author="wukong">
+		<sql>
+		 ALTER TABLE `express_set_system_install` MODIFY COLUMN `chinesename` VARCHAR(200);
+		</sql>
+	</changeSet>
 
 	
 </databaseChangeLog>
