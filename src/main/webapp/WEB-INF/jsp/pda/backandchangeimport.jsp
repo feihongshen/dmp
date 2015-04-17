@@ -222,9 +222,9 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 
 						if(data.body.cwbbranchnamewav!=pname+"/wav/"){
 							$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
-						}else{
+						}/* else{
 							$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-						}
+						} */
 						/*
 						if(data.body.cwbgaojia!=undefined&&data.body.cwbgaojia!=''){
 							$("#cwbgaojia").parent().show();
