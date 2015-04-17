@@ -1043,8 +1043,10 @@ function submitSaveUser(form, key) {
 		$(form).attr("action", "user/save/" + key);
 		submitSaveForm(form, key);
 		return;
+		
 	}
 	$("#update")[0].contentWindow.submitUserLoad();
+
 }
 
 // 创建和修改用户时 如果选择上传声音文件 泽通过 swfupload插件上传
@@ -4672,3 +4674,23 @@ function checkFClick(){
 }
 
 /////////////////////////////////////////////////////////
+function initMultipSelect(){
+	
+	
+ //	$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+}
+
+function ghhg(){
+	var sitetype = $("#sitetype").val();
+	if (sitetype == -1) {
+		$('#la').css('color','red');
+		$('#la').show();
+		setTimeout('hidelalast()',3000);
+	}
+	
+}
+
+function hidelalast(){
+	$("#la").hide();
+}
+

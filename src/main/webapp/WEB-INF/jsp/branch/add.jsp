@@ -13,8 +13,7 @@
 	List<Stores> mskbranchlist = (List<Stores>) request.getAttribute("mskbranchlist");
 	
 	List<Branch> accountbranchList = (List<Branch>) request.getAttribute("accountbranchList");//结算对象
-%>
-
+%>	
 
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -27,8 +26,10 @@
 			 <%=BranchEnum.CaiWu.getValue()%>)){submitAddBranch(this);}return false;" 
 			 action="<%=request.getContextPath()%>/branch/createFile;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
-				<ul>
-					<li><span>机构类型：</span> 
+			<div id="la" hidden="true">请选择机构类型</div>
+				<ul>					
+					<li> 
+					<span>机构类型：</span> 
 					<select id ="sitetype" name ="sitetype" 
    			onChange="click_sitetype(<%=BranchEnum.ZhanDian.getValue()%>,
 			 <%=BranchEnum.YunYing.getValue()%>,<%=BranchEnum.KeFu.getValue()%>,
@@ -172,7 +173,7 @@
 	         
 			
 		</div>
-		<div align="center"><input type="submit" value="确认" class="button" id="sub" /></div>
+		<div align="center"><input type="submit" value="确认" class="button" id="sub" onclick="ghhg()"/></div>
 		</form>	
 	</div>
 </div>
