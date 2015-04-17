@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import cn.explink.b2c.homegobj.xmldto.Page;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.FnCustomerBillDetailDAO;
@@ -107,17 +108,19 @@ public class OrgBillAdjustmentRecordService {
 					record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
 					
 				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
+					//获取订单的应收和应退金额
+					BigDecimal orderReceiveFee = order.getReceivablefee()==null?BigDecimal.ZERO:order.getReceivablefee();
+					BigDecimal orderPayBackFee = order.getPaybackfee()==null?BigDecimal.ZERO:order.getPaybackfee();
+					//计算是否修改过金额
+					BigDecimal changeReceiveableFee = orderReceiveFee.subtract(modifyFeeReceiveFee==null?BigDecimal.ZERO:modifyFeeReceiveFee);
+					BigDecimal changePayBackFee = orderPayBackFee.subtract(modifyPaybackfee==null?BigDecimal.ZERO:modifyPaybackfee);
 					//判断
-					//上门退
-//					record.setReceiveFee(order.getReceivablefee());
-//					record.setRefundFee(order.getPaybackfee());
-					//修改的是应退金额
-					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
+					if(changePayBackFee.doubleValue()>0&&changeReceiveableFee.doubleValue()<=0){
 						record.setModifyFee(modifyPaybackfee);
 //						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
 						record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 						record.setRemark(order.getPaybackfee( )+"元修改成"+modifyPaybackfee+"元");
-					}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
+					}else if(changeReceiveableFee.doubleValue()>0&&changePayBackFee.doubleValue()<=0){
 						record.setModifyFee(modifyFeeReceiveFee);
 						record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
 						record.setRemark(order.getReceivablefee()+"元修改成"+modifyFeeReceiveFee+"元");
