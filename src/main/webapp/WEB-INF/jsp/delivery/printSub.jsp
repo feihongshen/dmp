@@ -114,7 +114,7 @@ function nowprint(){
 								<tr>
 									<td width="10%" align="center" valign="middle" bgcolor="#eef6ff" >配送成功</td>
 									<td align="center" valign="middle" ><%=request.getParameter("pscg") %></td>
-									<td width="10%" align="center" >POS收款:<%=request.getParameter("pscgposamount") %>元　COD扫码收款:<%=request.getParameter("pscgcodposamount") %>元　其他收款:<%=request.getParameter("pscgamount") %>元</td>
+									<td width="10%" align="center" >POS收款:<%=request.getParameter("pscgposamount") %>元　COD扫码收款:<%=request.getParameter("pscgcodposamount")==null?"0.00":request.getParameter("pscgcodposamount") %>元　其他收款:<%=request.getParameter("pscgamount") %>元</td>
 								</tr>
 								<tr>
 									<td align="center" valign="middle" bgcolor="#eef6ff" >拒收</td>
@@ -144,7 +144,7 @@ function nowprint(){
 								<tr>
 									<td align="center" valign="middle" bgcolor="#eef6ff" >上门换成功</td>
 									<td align="center" valign="middle" ><%=request.getParameter("smhcg") %></td>
-									<td align="center" >POS收款:<%=request.getParameter("smhcgposamount") %>元　COD扫码收款:<%=request.getParameter("smhcgcodposamount") %>元　其他收款:<%=request.getParameter("smhcgamount") %>元</td>
+									<td align="center" >POS收款:<%=request.getParameter("smhcgposamount") %>元　COD扫码收款:<%=request.getParameter("smhcgcodposamount")==null?"0.00":request.getParameter("smhcgcodposamount") %>元　其他收款:<%=request.getParameter("smhcgamount") %>元</td>
 								</tr>
 								<tr>
 									<td align="center" valign="middle" bgcolor="#eef6ff" >丢失破损</td>

@@ -270,6 +270,9 @@ function editInit(){
 function editSuccess(data){
 	location.href="<%=request.getContextPath()%>/delivery/auditView?deliveryId="+$("#deliveryid").val()+"&cwb_C="+cwb_C;
 }
+
+
+
 function delSuccess(data){
 }
 

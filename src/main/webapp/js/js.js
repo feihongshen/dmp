@@ -279,9 +279,12 @@ function submitSaveFormAndCloseBox(form) {
 			$(".tishi_box").html(data.error);
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			console.info(data.errorCode);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 				closeBox();
+//				alert($("#WORK_AREA"));
+//				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
 			}
 		}
 	});
