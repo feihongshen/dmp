@@ -58,15 +58,18 @@ public class BranchRouteControlController {
 
 	@RequestMapping("/create")
 	public @ResponseBody String create(@RequestParam(value = "fromBranchId", required = false, defaultValue = "0") long fromBranchId,
-			@RequestParam(value = "toBranchId", required = false, defaultValue = "0") long toBranchId, @RequestParam(value = "type", required = false, defaultValue = "0") int type) throws Exception {
-		List<BranchRoute> brlist = branchRouteDAO.getBranchRouteByWheresql(fromBranchId, toBranchId, type);
-		if (brlist.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"该货物流向设置已存在\"}";
-		} else {
-			branchRouteDAO.creBranchRoute(fromBranchId, toBranchId, type);
-			logger.info("operatorUser={},货物流向设置->create", getSessionUser().getUsername());
-			return "{\"errorCode\":0,\"error\":\"创建成功\"}";
+			@RequestParam(value = "toBranchId", required = false, defaultValue = "") String[] toBranchId, @RequestParam(value = "type", required = false, defaultValue = "0") int type) throws Exception {
+		
+		for( String tempToBranchId : toBranchId){
+			List<BranchRoute> brlist = branchRouteDAO.getBranchRouteByWheresql(fromBranchId, Long.valueOf(tempToBranchId), type);
+			if (brlist.size() > 0) {
+				continue;
+			} else {
+				branchRouteDAO.creBranchRoute(fromBranchId, Long.valueOf(tempToBranchId), type);
+				logger.info("operatorUser={},货物流向设置->create", getSessionUser().getUsername());
+			}
 		}
+		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 
 	@RequestMapping("/list/{page}")
