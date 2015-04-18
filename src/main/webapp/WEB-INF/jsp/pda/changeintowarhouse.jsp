@@ -629,7 +629,7 @@ $(function(){
  			clearMsg();
  			$("#msg").html(data.body.errorinfo);
  			$("#scancwb").val("");
- 			errorvedioplay("<%=request.getContextPath()%>",data);
+ 		//	errorvedioplay("<%=request.getContextPath()%>",data);
  		}
  	});
  }
