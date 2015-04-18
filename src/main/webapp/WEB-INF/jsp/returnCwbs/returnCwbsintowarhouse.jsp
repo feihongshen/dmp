@@ -69,7 +69,7 @@ var flag="<%=flag%>";
 		$("#"+tab).click();
 	}
 	
-	function addAndRemoval(cwb,tab,isRemoval,customerid){
+	function addAndRemoval(cwb,tab,isRemoval){
 		var trObj = $("#ViewList tr[id='TR"+cwb+"']");
 		if(isRemoval){
 			trObj.remove();
@@ -88,7 +88,7 @@ var flag="<%=flag%>";
 	function getReturnCwbsintowarhouseSum() {
 		$.ajax({
 			type : "POST",
-			url : "<%=request.getContextPath()%>/returnCwbs/getReturnCwbsintowarhouseSum",
+			url : "<%=request.getContextPath()%>/returnCwbs/getReturnCwbssintowarhouseSum",
 			dataType : "json",
 			success : function(data) {
 				$("#rukukucundanshu").html(data.size);
@@ -379,10 +379,8 @@ function search(flag){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">出站时间</td>
+											<td width="140" align="center" bgcolor="#f1f1f1">返单时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td align="center" bgcolor="#f1f1f1">地址</td>
