@@ -84,6 +84,7 @@
 
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">
+    <audio id="wavPlay1"></audio>
 	<!-- 弹出对话框-->
 	<div id="alert_box"></div>
 	<div class="tishi_box"></div>
