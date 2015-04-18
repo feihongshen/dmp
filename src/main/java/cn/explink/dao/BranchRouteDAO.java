@@ -93,4 +93,23 @@ public class BranchRouteDAO {
 		String sql = "DELETE FROM express_set_branch_route WHERE fromBranchId = ? and type=? ";
 		jdbcTemplate.update(sql, fromBranchId, type);
 	}
+
+	
+	/**
+	 * 
+	 * @param fromBranchId 
+	 * @param toBranchIds 
+	 * @param type 
+	 */
+	public void setBranchRoutesql(long fromBranchId,List<Long> toBranchIds, int type) {
+		
+		for(Long l:toBranchIds){			
+		String sql="insert into express_set_branch_route(fromBranchId,toBranchId,type) values(?,?,?)";
+		jdbcTemplate.update(sql,fromBranchId,l.longValue(),type);
+		}
+		// TODO Auto-generated method stub
+		//查询（已经保存的不进行  处理）
+		//未保存的 （凭借  保存语句）
+		
+	}
 }

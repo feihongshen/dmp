@@ -134,13 +134,13 @@ public class BranchController {
 			}
 
 			try {
-				this.resendOmsPutBranchMap();
+				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
 				e.printStackTrace();
 			}
 			try {
-				this.resendAccountPutBranchMap(request);
+				//this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
 				e.printStackTrace();
@@ -179,7 +179,7 @@ public class BranchController {
 			}
 
 			try {
-				this.resendOmsPutBranchMap();
+				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
 				e.printStackTrace();
@@ -379,7 +379,7 @@ public class BranchController {
 		final String url = url1;
 		try {
 			String dmpid = request.getSession().getId() == null ? "" : request.getSession().getId();
-			String result = JSONReslutUtil.getResultMessageChangeLog(url + "jmsCenter/pushBranchMap", "dmpid=" + dmpid, "POST").toString();
+			String result = JSONReslutUtil.getResultMessageChangeLog(url + "jmsCenter/pushBranchMap", "dmpid=" + dmpid, "POST",1).toString();
 			if ((result == null) || result.equals("")) {
 				this.logger.info("msg", "请求account的站点异常");
 			} else if (result.indexOf("01") > -1) {

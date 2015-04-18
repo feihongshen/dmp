@@ -93,6 +93,43 @@ public class JSONReslutUtil {
 		return responseXml;
 
 	}
+	
+	/**
+	 * 不需要写日志的，用于迁移使用
+	 * 
+	 * @param url
+	 * @param params
+	 * @param method
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getResultMessageChangeLog(String url, String params, String method,int timeOut) throws IOException {
+		String responseXml = "";
+		HttpClient httpClient = new HttpClient();
+		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(timeOut*1000);
+		httpClient.getHttpConnectionManager().getParams().setSoTimeout(timeOut*1000*4);
+		PostMethod postMethod = new PostMethod(url);
+		postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		postMethod.getParams().setSoTimeout(timeOut * 1000*3);
+		String[] paramStr = params.split("&");// 按“&”拆分
+		if (paramStr != null && paramStr.length > 0) {
+			for (int i = 0; i < paramStr.length; i++) {
+				postMethod.addParameter(paramStr[i].split("=")[0], paramStr[i].split("=")[1]);// 按“=”拆分，第一个做为参数名，第二个作为参数值
+			}
+		}
+		try {
+			httpClient.executeMethod(postMethod); // post数据
+			responseXml = postMethod.getResponseBodyAsString();
+		} catch (HttpException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+		return responseXml;
+
+	}
 
 	public static void sendUrl(String param) {
 
