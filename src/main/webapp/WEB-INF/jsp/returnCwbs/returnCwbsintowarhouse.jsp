@@ -353,11 +353,11 @@ function search(flag){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>">
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
-												<td width="140"><%=co.getShenhetime()%></td>
-												<td width="140"><%=co.getChuzhantime()%></td>
-												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="140"><%=co.getShenhetime()==null?"":co.getShenhetime()%></td>
+												<td width="140"><%=co.getChuzhantime()==null?"":co.getChuzhantime()%></td>
+												<td width="100"><%=co.getConsigneename()==null?"":co.getConsigneename()%></td>
 												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
-												<td align="left"><%=co.getConsigneeaddress() %></td>
+												<td align="left" align="center"><%=co.getConsigneeaddress() %></td>
 											</tr>
 											<%} %>
 										</table>
