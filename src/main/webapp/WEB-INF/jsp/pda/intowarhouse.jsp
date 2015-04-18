@@ -758,7 +758,6 @@ $(function(){
 					</p>
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" />
 			        <input type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
-			        <input type="hidden" id="rk_switch" name="rk_switch" value="<%=ck_switch.getState() %>" />
 			</div><!-- </form> -->
 		</div>
 	</div>
@@ -809,7 +808,7 @@ $(function(){
 												<td width="100"><%=co.getConsigneename() %></td>
 												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 												<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
 												<td align="left"><%=co.getConsigneeaddress() %></td>
 												</tr>
@@ -884,7 +883,7 @@ $(function(){
 									<table width="100%" border="0" cellspacing="0" cellpadding="2"
 										class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号33</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
@@ -913,6 +912,7 @@ $(function(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
