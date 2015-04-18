@@ -945,7 +945,7 @@ public class CwbDAO {
 		StringBuffer w = new StringBuffer();
 
 		if (ordercwb.trim().length() > 0) {
-			w.append(" and cwb='" + ordercwb + "'");
+			w.append(" and cwb in (" + ordercwb+ ")");
 		} else if ((customerid > 0) || (emaildateid > 0) || (addressCodeEditType != null) || (branchid > 0)) {
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
@@ -959,6 +959,7 @@ public class CwbDAO {
 			if (branchid > 0) {
 				w.append(" and deliverybranchid=" + branchid);
 			}
+			
 		}
 		sql += w.toString();
 		sql += " order by CONVERT( excelbranch USING gbk ) COLLATE gbk_chinese_ci DESC,consigneeaddress desc ,nextbranchid ";
@@ -1002,7 +1003,7 @@ public class CwbDAO {
 		String sql = "select count(1) from express_ops_cwb_detail where state=1 ";
 		StringBuffer w = new StringBuffer();
 		if (ordercwb.trim().length() > 0) {
-			w.append(" and cwb='" + ordercwb + "'");
+			w.append(" and cwb in (" + ordercwb+ ")");
 		} else if ((customerid > 0) || (emaildateid > 0) || (addressCodeEditType != null) || (branchid > 0)) {
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
@@ -1062,7 +1063,7 @@ public class CwbDAO {
 		String sql = "select count(1) from express_ops_cwb_detail where state=1 ";
 		StringBuffer w = new StringBuffer();
 		if (ordercwb.trim().length() > 0) {
-			w.append(" and cwb='" + ordercwb + "'");
+			w.append(" and cwb in (" + ordercwb+ ")");
 		} else if ((customerid > 0) || (beginemaildate.length() > 0) || (endemaildate.length() > 0) || (emaildateid > 0)) {
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);

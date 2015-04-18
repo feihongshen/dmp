@@ -376,7 +376,7 @@ public class DataImportController {
 	 */
 
 	@RequestMapping("/editBranch")
-	public String editBranch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+	public String editBranch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "emaildate", defaultValue = "0", required = false) long emaildate, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, // 供货商编号
 			@RequestParam(value = "addressCodeEditType", defaultValue = "-1", required = false) Integer addressCodeEditType, // 是否是以匹配的站点
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "onePageNumber", defaultValue = "10", required = false) long onePageNumber, // 每页记录数
@@ -399,14 +399,31 @@ public class DataImportController {
 		long SuccessAddress = 0;
 		long SuccessEdit = 0;
 		long SuccessNew = 0;
-		if (isshow != 0) {
-			cwborderList = cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
-			pageobj = new Page(cwbDAO.getcwborderCountIsMyWarehouse(customerid, cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid), page, onePageNumber);
-			NotSuccess = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.WeiPiPei);
-			SuccessAddress = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
-			SuccessEdit = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.XiuGai);
-			SuccessNew = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.RenGong);
+		
+		String[] cwbstr=cwbs.trim().split("\r\n");
+		StringBuffer cwbBuffer = new StringBuffer();
+		String cwbstrs = "";
+		for(String cwbss:cwbstr){
+			if(cwbss.length()>0){
+				cwbBuffer = cwbBuffer.append("'" + cwbss + "',");
+			}
 		}
+		
+	if (cwbBuffer.length() > 0) {
+			cwbstrs = cwbBuffer.toString().substring(0, cwbBuffer.length() - 1);
+		}
+		
+		if (isshow != 0) {
+			
+			cwborderList = cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
+			pageobj = new Page(cwbDAO.getcwborderCountIsMyWarehouse(customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid), page, onePageNumber);
+			NotSuccess = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.WeiPiPei);
+			SuccessAddress = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
+			SuccessEdit = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.XiuGai);
+			SuccessNew = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.RenGong);
+			
+		}
+		
 		model.addAttribute("Order", cwborderList);
 		model.addAttribute("page_obj", pageobj);
 		model.addAttribute("page", page);
@@ -415,7 +432,7 @@ public class DataImportController {
 		model.addAttribute("SuccessEdit", SuccessEdit);
 		model.addAttribute("SuccessNew", SuccessNew);
 		model.addAttribute("AllAddress", SuccessAddress + NotSuccess + SuccessEdit + SuccessNew);
-		
+			
 		//获取系统参数
 		List<SystemInstall> systemInstalls = systemInstallDAO.getAllProperties();
 		for (SystemInstall systemInstall : systemInstalls) {
@@ -471,7 +488,7 @@ public class DataImportController {
 	 * @param isshow
 	 */
 	@RequestMapping("/resendAddressmatch")
-	public @ResponseBody String resendAddressmatch(HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+	public @ResponseBody String resendAddressmatch(HttpServletRequest request, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "emaildate", defaultValue = "0", required = false) long emaildate, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, // 供货商编号
 			@RequestParam(value = "addressCodeEditType", defaultValue = "-1", required = false) int addressCodeEditType, // 是否是以匹配的站点
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "onePageNumber", defaultValue = "50000", required = false) long onePageNumber, // 每页记录数
@@ -480,10 +497,22 @@ public class DataImportController {
 			if (emaildate == 0) {
 				return "{\"errorCode\":1,\"error\":\"请选择批次!\"}";
 			}
-
+			String[] cwbstr = cwbs.trim().split("\r\n");
+			
+			StringBuffer sb=new StringBuffer();
+			String cwb="";
+			
+			for(String cwbss:cwbstr){
+				if(cwbss.length()>0)
+				sb.append("'"+cwbss+"',");
+			}
+			if(sb.length()>0){
+			cwb=sb.toString().substring(0, sb.length() - 1);
+			}
 			if (isshow != 0) {
 				List<CwbOrder> cwborderList = cwbDAO.getcwbOrderByPageIsMyWarehouse(0, customerid, cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber,
 						branchid);
+			
 				try {
 					dataImportService.resendAddressmatch(getSessionUser(), cwborderList);
 					return "{\"errorCode\":0,\"error\":\"匹配成功!\"}";
@@ -492,7 +521,8 @@ public class DataImportController {
 				}
 
 			}
-		} catch (Exception e) {
+					
+				} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"匹配失败!\"}";
 		}
 		return null;

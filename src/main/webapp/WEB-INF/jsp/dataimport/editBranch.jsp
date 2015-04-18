@@ -92,7 +92,7 @@ function selectPage(page){
 		$("#isshow").val("1");
 		$("#editBranchForm").submit();
 }
-function resendaddressMsg(cwb,emaildate,customerid,addressCodeEditType,onePageNumber,isshow,branchid){
+function resendaddressMsg(cwbs,emaildate,customerid,addressCodeEditType,onePageNumber,isshow,branchid){
 	if(emaildate==0){
 		alert("请选择批次!");
 		return false;
@@ -103,7 +103,7 @@ function resendaddressMsg(cwb,emaildate,customerid,addressCodeEditType,onePageNu
 			type: "POST",
 			url:"<%=request.getContextPath()%>/dataimport/resendAddressmatch",
 			data:{
-				cwb:cwb,
+				cwbs:cwbs,
 				emaildate:emaildate,
 				customerid:customerid,
 				addressCodeEditType:addressCodeEditType,
@@ -120,7 +120,7 @@ function resendaddressMsg(cwb,emaildate,customerid,addressCodeEditType,onePageNu
 }
 
 function searchForm(){
-	if($("#cwb").val().length==0&&$("#emaildate").val()==0){
+	if($("#cwbs").val().length==0&&$("#emaildate").val()==0){
 		alert("请选择批次!");
 		return false;
 	}else{
@@ -145,8 +145,8 @@ function searchForm(){
 				<table width="100%" height="23" border="0" cellpadding="0"
 					cellspacing="5" class="right_set1">
 					<tr id="customertr" class=VwCtr style="display:">
-						<td>订单编号：<input id="cwb" type="text" value="" name="cwb"
-							class="input_text1" style="height: 20px;" /> 客户：<select
+						<td>订单编号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs"></textarea>
+							 客户：<select
 							name="customerid" id="customerid" class="select1"
 							onchange="changeCustomerid()">
 								<option value="0">请选择</option>
@@ -207,7 +207,7 @@ function searchForm(){
 							<%}%> style="font-size: 18; font-weight: bold; color: red;">${NotSuccess}</a>)
 							<input type="button" id="btnval1" class="input_button2"
 							value="重新匹配"
-							onclick='resendaddressMsg("<%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%>",<%=emaildateidParam%>,<%=request.getParameter("customerid")==null?0:request.getParameter("customerid")%>,<%=request.getParameter("addressCodeEditType")==null?-1:request.getParameter("addressCodeEditType")%>,<%=request.getParameter("onePageNumber")==null?10:request.getParameter("onePageNumber")%>,1,<%=branchidParam%>);'>
+							onclick='resendaddressMsg("<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs")%>",<%=emaildateidParam%>,<%=request.getParameter("customerid")==null?0:request.getParameter("customerid")%>,<%=request.getParameter("addressCodeEditType")==null?-1:request.getParameter("addressCodeEditType")%>,<%=request.getParameter("onePageNumber")==null?10:request.getParameter("onePageNumber")%>,1,<%=branchidParam%>);'>
 							<input type="hidden" id="addressCodeEditType"
 							name="addressCodeEditType" value="-1" /> <!-- 0为全部 1 为成功 2 为匹配 -->
 							<input type="hidden" id="branchid" name="branchid" value="0" />
