@@ -181,9 +181,7 @@
 	$("#playSearch").keydown(
 			function(event) {
 				if (event.keyCode == 13) {
-					$('#maintabs').tabs('close', '快速查询');
-					addTab('快速查询', 'order/queckSelectOrder/' + this.value
-							+ '?&clickFunctionId=10002', 'folder');
+					window.open ('<%=request.getContextPath() %>/order/queckSelectOrder/'+ this.value);
 					$("#playSearch").val('');
 				}
 			});
