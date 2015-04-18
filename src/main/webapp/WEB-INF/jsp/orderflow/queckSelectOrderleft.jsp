@@ -109,7 +109,7 @@ function goForm(cwb){
 				<tr>
 					<td>
 						<div style=" overflow-y:auto; overflow-x:hidden">
-							<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5"  style="font-size:14px">
+							<table width="100%" border="0" cellspacing="0" cellpadding="2" class="right_set1"  style="font-size:14px"><!-- table_5 --> 
 								<tbody>
 									<tr>
 										<td width="50%" bgcolor="#EBFFD7"><b>订&nbsp;单&nbsp;号：</b><%=view.getCwb()%><input type="hidden" id="cwb"  value="<%=view.getCwb()%>"></td>
@@ -248,14 +248,25 @@ function goForm(cwb){
 					$("#orderSearch").val(<%=request.getParameter("cwb") %>);
 					</script>
 				<%} %>
-					<div><span style="color: red;font-size: medium;">订单不存在！</span></div>
+					<!-- <div><span style="color: red;font-size: medium;">订单不存在！</span></div> -->
 					<table width="100%" border="0" cellspacing="1" cellpadding="2" style="font-size:14px">
 						<tbody>
 							<tr class="font_1">
-								<td width="10%" height="26" align="left" valign="middle" bgcolor="#00AEF0">
-								  <h1>&nbsp;订单详情</h1>
-								</td>
-							
+								<td>
+									<table cellpadding="0px" cellspacing="0px">
+										<tr>
+											<td width="10%" height="26" align="left" valign="middle"
+												bgcolor="#00AEF0">
+												<h1>&nbsp;订单详情</h1>
+											</td>
+											<td width="10%" height="26" align="left" valign="middle"
+												bgcolor="#00AEF0">
+												<h1
+													style="color: red; font-size: medium; margin-right: 10px;">订单不存在
+												</h1>
+											</td>
+										</tr>
+									</table>
 							</tr>
 							<tr>
 								<td>
