@@ -662,6 +662,10 @@ label.iPhoneCheckLabelOff span {
 	line-height: 50px;
 	padding: 0 0px;
 }
+#loginlogo {
+	position:absolute;
+	top:24%;
+}
 #login {
 	width:600px;
 	height:284px;

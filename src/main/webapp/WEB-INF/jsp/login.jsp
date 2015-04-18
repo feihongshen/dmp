@@ -162,11 +162,6 @@ h1, h2, h3, h4, h5, h6 {
 <body style="background-color: #efefef;">
 	<div id="alertMessage"></div>
 	<div id="successLogin"></div>
-	<div class="text_success">
-		<img
-			src="<%=request.getContextPath()%>/dmp40/plug-in/login/images/loader_green.gif"
-			alt="Please wait" /> <span>登陆成功!请稍后....</span>
-	</div>
 	<div class="navbar">
 		<div class="navbar-inner">
 			<div class="container">
@@ -189,9 +184,13 @@ h1, h2, h3, h4, h5, h6 {
 		<div class="container">
 			<table>
 				<tr>
-					<td><img style="margin-top: -50px;"
-						src="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/banner-login.png"
-						alt=""></td>
+					<td>
+						<div id="loginlogo">
+							<img
+								src="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/banner-login.png"
+								alt="">
+						</div>
+					</td>
 					<td>
 						<div id="login" style="width: 330px;">
 							<div class="inner">
@@ -260,5 +259,16 @@ h1, h2, h3, h4, h5, h6 {
 		src="<%=request.getContextPath()%>/dmp40/plug-in/login/js/login.js"></script>
 	<script type="text/javascript"
 		src="<%=request.getContextPath()%>/dmp40/plug-in/lhgDialog/lhgdialog.min.js"></script>
+	<%
+		if (request.getParameter("login_error") != null
+				&& request.getParameter("login_error").toString()
+						.equals("t")) {
+	%>
+	<script type="text/javascript">
+		loading('登录失败！', 0);
+	</script>
+	<%
+		}
+	%>
 </body>
 </html>

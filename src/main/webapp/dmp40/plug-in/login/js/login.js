@@ -193,7 +193,7 @@ function hideTop() {
 }
 //加载信息
 function loading(name, overlay) {
-	$('body').append('<div id="overlay"></div><div id="preloader">' + name + '..</div>');
+	$('body').append("<div id='overlay'></div><div id='preloader'><strong>" + name + '</strong></div>');
 	if (overlay == 1) {
 		$('#overlay').css('opacity', 0.1).fadeIn(function() {
 			$('#preloader').fadeIn();
@@ -201,6 +201,7 @@ function loading(name, overlay) {
 		return false;
 	}
 	$('#preloader').fadeIn();
+	setTimeout("unloading()", 1500);
 }
 
 function unloading() {
