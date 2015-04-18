@@ -4244,7 +4244,7 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(long type, long branchid, long isnow, String nowtime, long timetype, String starttime, String endtime, long customerid) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT cd.*,ds.deliverytime as fankuitime,rc.createtime as shenhetime FROM ops_returncwbs rc,express_ops_cwb_detail cd,express_ops_delivery_state ds WHERE rc.`cwb`=cd.`cwb` AND rc.cwb=ds.cwb"
-				+ " AND rc.`type`=? AND rc.`branchid`=? AND rc.`isnow`=? AND cd.`state`=1 ");
+				+ " AND rc.`type`=? AND rc.`branchid`=? AND rc.`isnow`=? AND cd.`state`=1 AND ds.`state`=1");
 		if ((timetype == 1) && !"".equals(starttime) && !"".equals(endtime)) {// 发货时间
 			sb.append(" and cd.emaildate>='" + starttime + " 00:00:00' and cd.emaildate<='" + endtime + " 59:59:59' ");
 		} else if ((timetype == 2) && !"".equals(starttime) && !"".equals(endtime)) {// 反馈时间

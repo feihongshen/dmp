@@ -69,12 +69,13 @@ public class ReturnCwbsController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("/getReturnCwbsbackexportSum")
-	public @ResponseBody JSONObject getReturnCwbsbackexportSum() {
+	@RequestMapping("/getReturnCwbsbackexportSum/{customerandid}")
+	public @ResponseBody JSONObject getReturnCwbsbackexportSum(@PathVariable("customerandid") String customerandid) {
 		JSONObject obj = new JSONObject();
+		long customereid=Long.parseLong(customerandid);
 		// 显示每天截止到”当前时间”的数据。
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
-		long count = returnCwbsDAO.getReturnCwbsByTypeAndBranchidAndIsnowCount(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime);
+		long count = returnCwbsDAO.getReturnCwbsByTypeAndBranchidAndIsnowCount(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime,customereid);
 		obj.put("size", count);
 		return obj;
 	}
@@ -111,6 +112,7 @@ public class ReturnCwbsController {
 		model.addAttribute("yichuzhannums", (yichuzhanlist != null && !yichuzhanlist.isEmpty()) ? yichuzhanlist.size() : 0);
 		model.addAttribute("customerlist", customerList);
 		model.addAttribute("branchlist", removeList);
+		model.addAttribute("customerid", customerid);
 		model.addAttribute("customerList", customerDAO.getAllCustomersByExistRules());// 经销商
 		return "returnCwbs/returnCwbsbackexport";
 	}

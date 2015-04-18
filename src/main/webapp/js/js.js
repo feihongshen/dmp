@@ -19,7 +19,9 @@ function isChinese(name) {
 	return /^[^[\u4e00-\u9fa5]*]*$/.test(name);
 }
 function focusCwb() {
-	$("#WORK_AREA")[0].contentWindow.focusCwb();
+	//$("#WORK_AREA")[0].contentWindow.focusCwb();
+	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 }
 
 function isPhoneNumber(number) {
@@ -210,7 +212,9 @@ function submitCreateForm(form) {
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
 				$(form)[0].reset();
-				$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
+				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 			}
 		}
 	});
@@ -228,7 +232,9 @@ function submitCreateFormAndCloseBox(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.addSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 				closeBox();
 			}
 		}
@@ -247,7 +253,9 @@ function submitSaveForm(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 			}
 		}
 	});
@@ -323,7 +331,9 @@ function submitAuditAndCloseBox(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+				//$("#WORK_AREA")[0].contentWindow.editSuccess(data);
 				closeBox();
 			}
 		}
@@ -1111,7 +1121,9 @@ function submitEditRoleAndMenuForm(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.editRoleAndMenuSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.editRoleAndMenuSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 			}
 		}
 	});
@@ -3556,7 +3568,9 @@ function submitDelForm(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.delSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.delSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 				closeBox();
 			}
 		}
@@ -3692,7 +3706,9 @@ function submitSysconfigForm(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$("#WORK_AREA")[0].contentWindow.saveSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.saveSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 				closeBox();
 			}
 		}
@@ -4368,7 +4384,9 @@ function submitDeliveraccountEdit(form) {
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == "0") {
-				$("#WORK_AREA")[0].contentWindow.saveSuccess(data);
+				//$("#WORK_AREA")[0].contentWindow.saveSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
 				closeBox();
 			}
 		}

@@ -84,8 +84,12 @@ public class ReturnCwbsDAO {
 		return jdbcTemplate.queryForLong(sql, type, tobranchid);
 	}
 
-	public long getReturnCwbsByTypeAndBranchidAndIsnowCount(long type, long branchid, long isnow, String nowtime) {
+	public long getReturnCwbsByTypeAndBranchidAndIsnowCount(long type, long branchid, long isnow, String nowtime,long customerid) {
 		String sql = "select count(1) from `ops_returncwbs` where `type`=? and `branchid`=? and `isnow`=? and createtime>=?";
+		if (customerid>0) {
+			sql+="  and customerid=?";
+			return jdbcTemplate.queryForLong(sql, type, branchid, isnow, nowtime,customerid);
+		}
 		return jdbcTemplate.queryForLong(sql, type, branchid, isnow, nowtime);
 	}
 

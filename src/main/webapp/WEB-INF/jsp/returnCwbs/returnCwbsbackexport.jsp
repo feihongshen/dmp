@@ -9,6 +9,7 @@
 	List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 	List<CwbOrder> yichuzhanlist = (List<CwbOrder>)request.getAttribute("yichuzhanlist");
 	String yichuzhannums=request.getAttribute("yichuzhannums").toString();
+	String customerandid=request.getAttribute("customerid")==null?"0":request.getAttribute("customerid").toString();
 	List<Customer> customerList = request.getAttribute("customerList")==null?null:(List<Customer>)request.getAttribute("customerList");
 	long customerid=Long.parseLong(request.getParameter("customerid")==null?"0":request.getParameter("customerid"));
 	long timetype=Long.parseLong(request.getParameter("timetype")==null?"3":request.getParameter("timetype"));
@@ -93,7 +94,7 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 			success : function(data) {
 				$("#scancwb").val("");
 				$("#msg").html(data.errorinfo);
-				getReturnCwbsbackexportSum();
+				getReturnCwbsbackexportSum($("#customerandid").val());
 				if(data.statuscode=="000000"){
 					//将成功扫描的订单放到已入库明细中
 					addAndRemoval(scancwb,"successTable",true);
@@ -108,14 +109,16 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 }
 
 $(function(){
-	getReturnCwbsbackexportSum();
+	console.info($("#customerandid").val());
+	getReturnCwbsbackexportSum($("#customerandid").val());
+	
 	 $("#scancwb").focus();
 });
 //得到当前待返单出站的库存量
-function getReturnCwbsbackexportSum(){
+function getReturnCwbsbackexportSum(customerandid){
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/returnCwbs/getReturnCwbsbackexportSum",
+		url:"<%=request.getContextPath()%>/returnCwbs/getReturnCwbsbackexportSum/"+customerandid,
 		dataType:"json",
 		success : function(data) {
 			$("#chukukucundanshu").html(data.size);
@@ -274,7 +277,7 @@ function search(flag){
 				 到<input type="text" name="endtimewei" id="endtimewei" value ="<%=endtime%>" class="input_text1"/>
 					<input type ="button" id="btnval0" value="查询" class="input_button1" onclick='search(1);'/>
 					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1);'/>
-					
+					<input type="hidden" id="customerandid" name="customerandid" value="<%=customerandid %>"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
