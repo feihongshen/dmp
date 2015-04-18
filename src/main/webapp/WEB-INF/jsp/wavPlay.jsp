@@ -11,18 +11,7 @@
 		type="text/javascript"></script>
 </head>
 <body>
-
-	<%
-		if (request.getParameter("wavPath") != null) {
-	%>
-	<script type="text/javascript">
-		var audioElement = document.createElement('audio');
-		audioElement.setAttribute('src', '<%=request.getParameter("wavPath")%>');
-		audioElement.load();
-		audioElement.play();
-	</script>
-	<%
-		}
-	%>
+    <input id="wavPlay" type="hidden"></input>
+	<audio id="wavPlay1"></audio>
 </body>
 </html>

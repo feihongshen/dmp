@@ -2119,6 +2119,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 									$("#msg").html(scancwb + "         （异常扫描）目标库房与指定目标库房不一致");
 									$("#wavPlay", parent.document).attr("src",
 											pname + "/wavPlay?wavPath=" + pname + "/images/waverror/fail.wav&a=" + Math.random());
+									doWavAudio(pname + "/images/waverror/fail.wav");
 								} else {
 									$.ajax({
 										type : "POST",
@@ -2145,6 +2146,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 												if (data.cwbbranchnamewav != pname + "/wav/") {
 													$("#wavPlay", parent.document).attr("src",
 															pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+													doWavAudio(data.cwbbranchnamewav);
 												}
 												errorvedioplay(pname, data);
 											} else if (data.statuscode == "200029") {// 一票多件
@@ -2159,6 +2161,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 												if (data.cwbbranchnamewav != pname + "/wav/") {
 													$("#wavPlay", parent.document).attr("src",
 															pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+													doWavAudio(data.cwbbranchnamewav);
 												}
 												document.ypdj.Play();
 												errorvedioplay(pname, data);
@@ -2190,6 +2193,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 								if (data.cwbtargetcarwarhousewav != pname + "/wav/") {
 									$("#wavPlay", parent.document).attr("src",
 											pname + "/wavPlay?wavPath=" + data.cwbtargetcarwarhousewav + "&a=" + Math.random());
+									doWavAudio(data.cwbtargetcarwarhousewav);
 								}
 								errorvedioplay(pname, data);
 							} else if ((data.cwboldtargetcarwarhouse == "" || (data.cwboldtargetcarwarhouse != "" && data.cwboldtargetcarwarhouse == data.cwbtargetcarwarhouse))
@@ -2209,6 +2213,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 								if (data.cwbtargetcarwarhousewav != pname + "/wav/") {
 									$("#wavPlay", parent.document).attr("src",
 											pname + "/wavPlay?wavPath=" + data.cwbtargetcarwarhousewav + "&a=" + Math.random());
+									doWavAudio(data.cwbtargetcarwarhousewav);
 								}
 								document.ypdj.Play();
 								errorvedioplay(pname, data);
@@ -2220,6 +2225,7 @@ function exportWarehouseforbale(pname, scancwb, targetcarwarehouseid, driverid, 
 								$("#msg").html(scancwb + "         （异常扫描）目标库房与指定目标库房不一致");
 								$("#wavPlay", parent.document).attr("src",
 										pname + "/wavPlay?wavPath=" + pname + "/images/waverror/fail.wav&a=" + Math.random());
+								doWavAudio(pname + "/images/waverror/fail.wav");
 							}
 
 							/*
@@ -2288,6 +2294,7 @@ function urgentexportWarehouse(pname, scancwb, branchid, driverid, truckid, requ
 					$("#scansuccesscwb").val(scancwb);
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 				} else if (data.statuscode == "200029") {// 一票多件
 					$("#excelbranch").parent().show();
@@ -2298,6 +2305,7 @@ function urgentexportWarehouse(pname, scancwb, branchid, driverid, truckid, requ
 					$("#scansuccesscwb").val(scancwb);
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 					document.ypdj.Play();
 				} else {
@@ -2376,6 +2384,7 @@ function branchImport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 								if (data.cwbdelivernamewav != pname + "/wav/") {
 									$("#wavPlay", parent.document).attr("src",
 											pname + "/wavPlay?wavPath=" + data.cwbdelivernamewav + "&a=" + Math.random());
+									doWavAudio(data.cwbdelivernamewav);
 								}
 								if (data.cwbgaojia != undefined) {
 									$("#cwbgaojia").parent().show();
@@ -2383,6 +2392,7 @@ function branchImport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 								}
 								$("#wavPlay", parent.document).attr("src",
 										pname + "/wavPlay?wavPath=" + pname + "/images/waverror/success.wav&a=" + Math.random());
+								doWavAudio(pname + "/images/waverror/success.wav");
 							} else {
 								$("#exceldeliverid").parent().show();
 
@@ -2392,6 +2402,7 @@ function branchImport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 								if (data.cwbdelivernamewav != pname + "/wav/") {
 									$("#wavPlay", parent.document).attr("src",
 											pname + "/wavPlay?wavPath=" + data.cwbdelivernamewav + "&a=" + Math.random());
+									doWavAudio(data.cwbdelivernamewav);
 								}
 								if (data.cwbgaojia != undefined) {
 									$("#cwbgaojia").parent().show();
@@ -2410,6 +2421,7 @@ function branchImport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 							if (data.cwbdelivernamewav != pname + "/wav/") {
 								$("#wavPlay", parent.document).attr("src",
 										pname + "/wavPlay?wavPath=" + data.cwbdelivernamewav + "&a=" + Math.random());
+								doWavAudio(data.cwbdelivernamewav);
 							}
 							document.ypdj.Play();
 							if (data.cwbgaojia != undefined) {
@@ -2897,6 +2909,7 @@ function changeimport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 							if (data.cwbbranchnamewav != pname + "/wav/") {
 								$("#wavPlay", parent.document).attr("src",
 										pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+								doWavAudio(data.cwbbranchnamewav);
 							}
 
 						} else if (data.statuscode == "200001") {// 有货无单
@@ -2912,6 +2925,7 @@ function changeimport(pname, scancwb, driverid, requestbatchno, baleno, sysintow
 							if (data.cwbbranchnamewav != pname + "/wav/") {
 								$("#wavPlay", parent.document).attr("src",
 										pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+								doWavAudio(data.cwbbranchnamewav);
 							}
 							document.ypdj.Play();
 						} else {
@@ -2993,6 +3007,7 @@ function changeexport(pname, scancwb, branchid, driverid, truckid, requestbatchn
 
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 				} else {
 					errorcwbnum += 1;
@@ -3179,6 +3194,7 @@ function backexport(pname, scancwb, branchid, driverid, truckid, requestbatchno,
 
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 				} else {
 					errorcwbnum += 1;
@@ -3285,6 +3301,7 @@ function cwbresetbranch(pname, scancwb, branchid, requestbatchno) {
 					$("#scansuccesscwb").val(scancwb);
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 				} else if (data.statuscode == "200029") {// 一票多件
 
@@ -3296,6 +3313,7 @@ function cwbresetbranch(pname, scancwb, branchid, requestbatchno) {
 					$("#scansuccesscwb").val(scancwb);
 					if (data.cwbbranchnamewav != pname + "/wav/") {
 						$("#wavPlay", parent.document).attr("src", pname + "/wavPlay?wavPath=" + data.cwbbranchnamewav + "&a=" + Math.random());
+						doWavAudio(data.cwbbranchnamewav);
 					}
 					document.ypdj.Play();
 				} else {
@@ -3364,6 +3382,7 @@ function warehousebackexport(pname, scancwb, requestbatchno) {
 					$("#scansuccesscwb").val(scancwb);
 					$("#wavPlay", parent.document).attr("src",
 							pname + "/wavPlay?wavPath=" + pname + "/images/waverror/success.wav&a=" + Math.random());
+					doWavAudio(pname + "/images/waverror/success.wav");
 
 				} else {
 					$("#msg").html(scancwb + "         （异常扫描）" + data.errorinfo);
@@ -3416,13 +3435,14 @@ function playGoodsTypeWav(contextPath, data) {
 }
 
 function newPlayWav(url) {
-	if ($.browser.mozilla || $.browser.msie) {
-		$("#wav").remove();
-		$("body").append("<bgsound id='wav' src='" + url + "' autostart='true' width='100' height='100' volume='0'/>");
-	} else {
-		$("#wav").remove();
-		$("body").append("<embed id='wav' src='" + url + "'width='0' height='0' loop='1' autostart='false' hidden='true'/>");
-	}
+//	if ($.browser.mozilla || $.browser.msie) {
+//		$("#wav").remove();
+//		$("body").append("<bgsound id='wav' src='" + url + "' autostart='true' width='100' height='100' volume='0'/>");
+//	} else {
+//		$("#wav").remove();
+//		$("body").append("<embed id='wav' src='" + url + "'width='0' height='0' loop='1' autostart='false' hidden='true'/>");
+//	}
+	doWavAudio(url);
 }
 
 // obj=[{"time":1000,url:"/images/waverror/fail.wav"}];
@@ -3437,13 +3457,14 @@ function batchPlayWav(obj) {
 
 function _play(url) {
 	return function() {
-		if ($.browser.msie && $.browser.version == "8.0") {
-			$("#wav").remove();
-			$("body").append("<bgsound id='wav' src='" + url + "' width='0' height='0'  volume='0'/>");
-		} else {
-			$("#wav").remove();
-			$("body").append("<embed id='wav' src='" + url + "' width='0' height='0'/>");
-		}
+//		if ($.browser.msie && $.browser.version == "8.0") {
+//			$("#wav").remove();
+//			$("body").append("<bgsound id='wav' src='" + url + "' width='0' height='0'  volume='0'/>");
+//		} else {
+//			$("#wav").remove();
+//			$("body").append("<embed id='wav' src='" + url + "' width='0' height='0'/>");
+//		}
+		doWavAudio(url);
 	};
 }
 
@@ -4645,6 +4666,7 @@ function check_transferResasonMatch() {
 
 
 
+
 /////////////////////运费交款////////////////////////////////////
 
 function checkFClick(){
@@ -4710,5 +4732,14 @@ function ghhg(){
 
 function hidelalast(){
 	$("#la").hide();
+}
+
+
+//报声
+function doWavAudio(wavPath){
+	var audioElement = document.getElementById('wavPlay1');
+	audioElement.setAttribute('src', wavPath);
+	audioElement.load();
+	audioElement.play();
 }
 
