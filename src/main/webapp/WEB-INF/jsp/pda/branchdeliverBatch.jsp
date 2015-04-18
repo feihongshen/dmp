@@ -475,7 +475,7 @@ function tohome(){
 											<td width="100"><%=co.getConsigneename() %></td>
 											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 											<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
 											<td align="left"><%=co.getConsigneeaddress() %></td>
 										</tr>
@@ -523,7 +523,7 @@ function tohome(){
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>
-												<td width="100"><%=obj.get("showRemark") %></td>
+												<td width="100"><%=obj.get("showRemark")==null?"":obj.get("showRemark") %></td>
 											<%} %>
 												<td width="450" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<td align="center"><%=obj.get("errorinfo") %></td>

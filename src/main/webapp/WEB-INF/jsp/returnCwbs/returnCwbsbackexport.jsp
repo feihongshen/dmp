@@ -94,7 +94,7 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 			success : function(data) {
 				$("#scancwb").val("");
 				$("#msg").html(data.errorinfo);
-				getReturnCwbsbackexportSum($("#customerandid").val());
+				getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
 				if(data.statuscode=="000000"){
 					//将成功扫描的订单放到已入库明细中
 					addAndRemoval(scancwb,"successTable",true);
@@ -110,15 +110,16 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 
 $(function(){
 	console.info($("#customerandid").val());
-	getReturnCwbsbackexportSum($("#customerandid").val());
+	getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
 	
 	 $("#scancwb").focus();
 });
 //得到当前待返单出站的库存量
-function getReturnCwbsbackexportSum(customerandid){
+function getReturnCwbsbackexportSum(customerandid,timetypewei,starttimewei,endtimewei){
+	var canshu=customerandid+"/"+timetypewei+"/"+starttimewei+"/"+endtimewei;
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/returnCwbs/getReturnCwbsbackexportSum/"+customerandid,
+		url:"<%=request.getContextPath()%>/returnCwbs/getReturnCwbsbackexportSum/"+canshu,
 		dataType:"json",
 		success : function(data) {
 			$("#chukukucundanshu").html(data.size);
@@ -288,8 +289,8 @@ function search(flag){
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td>
+											 <td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
+											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td> 
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td align="center" bgcolor="#f1f1f1">地址</td>
@@ -384,8 +385,8 @@ function search(flag){
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td>
+											<!-- <td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
+											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td> -->
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td align="center" bgcolor="#f1f1f1">地址</td>

@@ -3457,6 +3457,18 @@ function batchPlayWav(obj) {
 
 function _play(url) {
 	return function() {
+
+		if ($.browser.msie && $.browser.version == "8.0") {
+			$("#wav").remove();
+			$("body").append("<bgsound id='wav' src='" + url + "' width='0' height='0'  volume='0'/>");
+			
+		} else {
+			$("#wav").remove();
+			$("body").append("<embed id='wav' src='" + url + "' width='0' height='0'/>");
+			
+		
+		}
+
 //		if ($.browser.msie && $.browser.version == "8.0") {
 //			$("#wav").remove();
 //			$("body").append("<bgsound id='wav' src='" + url + "' width='0' height='0'  volume='0'/>");
@@ -3465,6 +3477,7 @@ function _play(url) {
 //			$("body").append("<embed id='wav' src='" + url + "' width='0' height='0'/>");
 //		}
 		doWavAudio(url);
+
 	};
 }
 
@@ -4737,7 +4750,7 @@ function hidelalast(){
 
 //报声
 function doWavAudio(wavPath){
-	var audioElement = document.getElementById('wavPlay1');
+	var audioElement = window.parent.document.getElementById('wavPlay1');
 	audioElement.setAttribute('src', wavPath);
 	audioElement.load();
 	audioElement.play();

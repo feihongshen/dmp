@@ -204,7 +204,7 @@ function loadTodayOutAreaOrder(){
 			tr += createTD("center", "40px", "<input type='checkbox'></input>");
 		}
 		tr += createTD("center", "120px", data.cwb);
-		tr += createTD("center", "100px", data.matchBranch);
+		tr += createTD("center", "100px", data.matchBranch==null?"":data.matchBranch);
 		tr += createTD("right", "100px", data.receivedFee);
 		if (data.strDeliver != undefined && !widthCheckBox && !outArea) {
 			tr += createTD("center", "100px", data.strDeliver);

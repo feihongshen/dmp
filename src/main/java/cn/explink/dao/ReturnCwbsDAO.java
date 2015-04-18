@@ -84,7 +84,8 @@ public class ReturnCwbsDAO {
 		return jdbcTemplate.queryForLong(sql, type, tobranchid);
 	}
 
-	public long getReturnCwbsByTypeAndBranchidAndIsnowCount(long type, long branchid, long isnow, String nowtime,long customerid) {
+	public long getReturnCwbsByTypeAndBranchidAndIsnowCount(long type, long branchid, long isnow, String nowtime,long customerid,long timetypewei,
+			String starttimewei,String endtimewei) {
 		String sql = "select count(1) from `ops_returncwbs` where `type`=? and `branchid`=? and `isnow`=? and createtime>=?";
 		if (customerid>0) {
 			sql+="  and customerid=?";

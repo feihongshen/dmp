@@ -69,13 +69,21 @@ public class ReturnCwbsController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("/getReturnCwbsbackexportSum/{customerandid}")
-	public @ResponseBody JSONObject getReturnCwbsbackexportSum(@PathVariable("customerandid") String customerandid) {
+	@RequestMapping("/getReturnCwbsbackexportSum/{customerandid}/{timetypewei}/{starttimewei}/{endtimewei}")
+	public @ResponseBody JSONObject getReturnCwbsbackexportSum(@PathVariable("customerandid") String customerandid,
+			@PathVariable("timetypewei") long timetypewei,
+			@PathVariable("starttimewei") String starttimewei,
+			@PathVariable("endtimewei") String endtimewei
+			
+			) {
 		JSONObject obj = new JSONObject();
 		long customereid=Long.parseLong(customerandid);
 		// 显示每天截止到”当前时间”的数据。
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
-		long count = returnCwbsDAO.getReturnCwbsByTypeAndBranchidAndIsnowCount(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime,customereid);
+	/*	long count = returnCwbsDAO.getReturnCwbsByTypeAndBranchidAndIsnowCount(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime,customereid,timetypewei,
+				starttimewei, endtimewei);*/
+		long count=cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetypewei,
+				starttimewei, endtimewei, customereid).size();
 		obj.put("size", count);
 		return obj;
 	}
