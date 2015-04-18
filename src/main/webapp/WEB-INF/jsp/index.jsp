@@ -1,6 +1,11 @@
 <%@ taglib prefix="t" uri="/easyui-tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ page language="java"
+	import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%
+	Map usermap = (Map) session.getAttribute("usermap");
+%>
 <!DOCTYPE html >
 <html>
 <head>
@@ -84,7 +89,7 @@
 
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">
-    <audio id="wavPlay1"></audio>
+	<audio id="wavPlay1"></audio>
 	<!-- 弹出对话框-->
 	<div id="alert_box"></div>
 	<div class="tishi_box"></div>
@@ -113,6 +118,9 @@
 							<table>
 								<tr>
 									<td><div>
+											<strong>用户：<%=usermap.get("realname")%>&nbsp;&nbsp;部门：<%=usermap.get("branchname") == null ? "-" : usermap
+					.get("branchname")%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											</strong>
 											<lable> 快速查询： </lable>
 											<input id="playSearch" type="text">
 										</div></td>
@@ -160,6 +168,14 @@
 				style="padding: 2px; overflow-y: initial;"></div>
 		</div>
 	</div>
+	<iframe id="printOut" name="printOut" src="" width="500" height="500"
+		style="display: none" frameborder="0" scrolling="auto"
+		marginheight="0" marginwidth="0" allowtransparency="yes"></iframe>
+	<iframe id="printcwb" name="printcwb"
+		src="<%=request.getContextPath()%>/printcwb" target="printcwb"
+		width="0" height="0" style="display: none" frameborder="0"
+		scrolling="auto" marginheight="0" marginwidth="0"
+		allowtransparency="yes"></iframe>
 </body>
 <script type="text/javascript">
 	$("#playSearch").keydown(
