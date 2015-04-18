@@ -17,10 +17,23 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script type="text/javascript">
+	function initSelect(){
+		$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+	}
+
+</script>
+<script type="text/javascript">
+
 
 function addInit(){
 	//window.parent.uploadFormInit("user_cre_Form");
+
+	window.parent.initMultipSelect();
 }
 function addSuccess(data){
 	$("#alert_box select", parent.document).val(0);
@@ -28,7 +41,7 @@ function addSuccess(data){
 }
 function editInit(){
 	window.parent.crossCapablePDA();
-	//window.parent.uploadFormInit("user_save_Form");
+	//window.parent.uploadFormInit( "user_save_Form");
 }
 function editSuccess(data){
 	$("#searchForm").submit();
@@ -36,6 +49,11 @@ function editSuccess(data){
 function delSuccess(data){
 	$("#searchForm").submit();
 }
+
+function openadd(){
+	window.location.href="<%=request.getContextPath()%>/branchRouteControl/add.action";
+}
+
 </script>
 </head>
 
@@ -43,7 +61,7 @@ function delSuccess(data){
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add_button"  />
+	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add_button"  onclick="openadd()"/>
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		当前站点：
