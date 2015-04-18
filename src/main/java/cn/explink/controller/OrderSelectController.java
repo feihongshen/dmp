@@ -1012,9 +1012,15 @@ public class OrderSelectController {
 
 	private String getDetail(OrderFlow orderFlowAll) {
 		try {
+			String currentbranchname = branchDAO.getBranchByBranchid(orderFlowAll.getBranchid()).getBranchname();
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChaoQu.getValue()) {
+				return MessageFormat.format("从<font color =\"red\">[{0}]</font>上报超区", currentbranchname);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue()) {
+				return MessageFormat.format("从<font color =\"red\">[{0}]</font>异常匹配已处理", currentbranchname);
+			}
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = objectMapper.readValue(orderFlowAll.getFloworderdetail(), CwbOrderWithDeliveryState.class);
 			CwbOrder cwbOrder = cwbOrderWithDeliveryState.getCwbOrder();
-			String currentbranchname = branchDAO.getBranchByBranchid(orderFlowAll.getBranchid()).getBranchname();
 
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>导入数据", currentbranchname);

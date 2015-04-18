@@ -131,7 +131,7 @@ public class MatchExceptionHandleService {
 		flow.setCredate(new Date());
 		flow.setUserid(this.getUserId());
 		flow.setIsnow(0);
-		flow.setFloworderdetail("");
+		flow.setFloworderdetail("1");
 
 		return flow;
 	}

@@ -130,6 +130,8 @@ public class OrderFlowDAO {
 	}
 
 	public long mehCreOrderFlow(final OrderFlow of, final String credate) {
+		String sql ="update express_ops_order_flow set floworderdetail='0' where cwb='"+of.getCwb()+"' and flowordertype ="+of.getFlowordertype()+"";
+		this.jdbcTemplate.update(sql);
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -1043,17 +1045,34 @@ public class OrderFlowDAO {
 	}
 
 	private void batchInsertOrderFlow(String[] cwbs, long reportOutAreaBranchId, long reportOutAreaUserId) {
+		
+		String cwbstr = getStrings(cwbs);
+		String sql1 = "UPDATE express_ops_order_flow SET  floworderdetail ='0' WHERE  flowordertype="+FlowOrderTypeEnum.ChaoQu.getValue()+" and cwb in("+cwbstr+") ";
+		this.jdbcTemplate.update(sql1);
 		StringBuilder sql = new StringBuilder();
-		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype ,isnow)values(? , ");
+		sql.append("insert into express_ops_order_flow(cwb , branchid , credate , userid,flowordertype ,isnow,floworderdetail)values(? , ");
 		sql.append(Long.toString(reportOutAreaBranchId) + " , ");
 		sql.append("'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " ', ");
 		sql.append(Long.toString(reportOutAreaUserId) + " , ");
 		sql.append(Integer.toString(FlowOrderTypeEnum.ChaoQu.getValue()) + ",");
-		sql.append(Integer.toString(1) + ")");
+		sql.append(Integer.toString(1) + ",'1')");
 
 		this.jdbcTemplate.batchUpdate(sql.toString(), this.getOutAreaOrderParaList(cwbs));
 	}
 
+	private  String getStrings(String[] strArr) {
+		String strs = "";
+		if (strArr.length > 0) {
+			for (String str : strArr) {
+				strs += "'"+str + "',";
+			}
+		}
+
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
 	private void batchRestNowFlow(String[] cwbs) {
 		String sql = "update express_ops_order_flow set isnow = 0 where cwb in (" + this.getInPara(cwbs) + ")";
 		this.jdbcTemplate.execute(sql);

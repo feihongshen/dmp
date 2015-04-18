@@ -569,10 +569,16 @@ public class MatchExceptionController {
 		sql.appendCondition(this.getFlowNowWhereCond(transfer));
 		// 加入订单有效条件.
 		sql.appendCondition(this.getEffectiveWhereCond());
+		if(today){
+			sql.appendCondition(this.getEffectiveWhereIsnow());
+		}
 	}
 
 	private String getEffectiveWhereCond() {
 		return "d.state = 1 ";
+	}
+	private String getEffectiveWhereIsnow() {
+		return "f.floworderdetail ='1' ";
 	}
 
 	private String getTransferBranchWhereCond(boolean transfer) {
@@ -641,11 +647,11 @@ public class MatchExceptionController {
 	}
 
 	private String getSelectCwbInnerJoinFlowCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
+		return "select count(DISTINCT d.cwb) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
 	private String getSelectFlowInnerJoinCwbCountPart() {
-		return "select count(1) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
+		return "select count(DISTINCT d.cwb) from express_ops_cwb_detail d inner join express_ops_order_flow f on d.cwb = f.cwb";
 	}
 
 	private String getQueryFields() {
