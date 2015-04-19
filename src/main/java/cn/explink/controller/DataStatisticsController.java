@@ -872,6 +872,9 @@ public class DataStatisticsController {
 			String cwbordertypeids = dataStatisticsService.getStrings(cwbordertypeid);
 			String nextbranchids = dataStatisticsService.getStrings(nextbranchid);
 			String kufangids = dataStatisticsService.getStrings(kufangid);
+			if("-1".equals(kufangids)){
+				kufangids="";
+			}
 			// 获取值
 			count = cwbDAO.getcwbOrderByOutWarehouseCountNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
 			sum = cwbDAO.getcwbOrderByOutWarehouseSumNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
