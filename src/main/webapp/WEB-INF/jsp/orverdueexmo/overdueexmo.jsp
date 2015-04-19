@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*,cn.explink.domain.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -23,7 +23,14 @@
 <script src="${ctx_path}/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/json2.min.js" type="text/javascript"></script>
+<%
+int exportFlag=0;
+OverdueResultVO overdueResultVO=request.getAttribute("request")==null?null:(OverdueResultVO)request.getAttribute("request");
+if(overdueResultVO!=null&&overdueResultVO.getBranchMap()!=null&&overdueResultVO.getBranchMap().size()>0){
+	exportFlag=1;
+}
 
+%>
 <script>
 	function check() {
 		if ($("#startTime").val() == "") {
@@ -214,6 +221,13 @@
 	}
 
 	function exportData() {
+		<%if(exportFlag==0){
+			%>
+			alert('当前没有数据，不能导出');
+			return;
+		<%}
+		%>
+		
 		var $exportBtn = $("#btn_export");
 		var $searchForm = $("#searchForm");
 		$searchForm.attr("action", "${ctx_path}/overdueexmo/exportdata");
