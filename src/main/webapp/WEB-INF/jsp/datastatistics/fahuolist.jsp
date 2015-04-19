@@ -185,7 +185,7 @@ function clearSelect(){
 			
 		</td>
 		<td align="left">
-			 发货库房
+			 导入库房
 			<select name ="kufangid" id ="kufangid" multiple="multiple" style="width: 320px;">
 		          <%if(kufanglist!=null && kufanglist.size()>0) {%>
 		          <%for(Branch b : kufanglist){ %>
