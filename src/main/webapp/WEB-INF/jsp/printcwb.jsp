@@ -29,7 +29,8 @@ function prn1_preview() {
 function prn1_print() {		
 	CreateOneFormPage();
 	LODOP.PRINT();
-	$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
+	//$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
+	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 };
 function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
