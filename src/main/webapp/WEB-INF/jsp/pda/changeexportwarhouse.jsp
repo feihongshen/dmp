@@ -494,7 +494,7 @@ function chuku(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/balechuku/"+$("#baleno").val()+"?branchid="+$("#branchid").val()+"&driverid="+$("#driverid").val()+"&truckid="+$("#truckid").val(),
+		url:"<%=request.getContextPath()%>/bale/balechangechuku/"+$("#baleno").val()+"?branchid="+$("#branchid").val()+"&driverid="+$("#driverid").val()+"&truckid="+$("#truckid").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");

@@ -329,6 +329,102 @@ public class BaleController {
 		}
 		return explinkResponse;
 	}
+	/**
+	 * 按包 中转库房出库扫描
+	 * 
+	 * @param model
+	 * @param deliverybranchid
+	 *            中转出站正确的配送站点
+	 * @return
+	 */
+	@RequestMapping("/balechangechuku/{baleno}")
+	public @ResponseBody ExplinkResponse balechangechuku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+		JSONObject obj = new JSONObject();
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		if (!"".equals(baleno.trim())) {
+			boolean flag = true;// 封包是否成功
+			// ======封包操作========
+			try {
+				baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+			} catch (CwbException e) {
+				flag = false;
+				obj.put("errorcode", "111111");
+				obj.put("errorinfo", "(按包出库异常)" + e.getMessage());
+				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
+			}
+			
+			// =====封包成功后出库======
+			if (flag) {
+				// 根据包号查找订单信息
+				List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
+				List<BaleView> errorListView = new ArrayList<BaleView>();
+				if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+					long successCount = 0;
+					long errorCount = 0;
+					for (CwbOrder co : cwbOrderList) {
+						try {
+							// 订单出库
+							CwbOrder cwbOrder = cwbOrderService.changeoutWarehous(getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false, true);
+							successCount++;
+							
+							// ====中转出站 正确的配送站点==========
+							if (deliverybranchid > 0 && branchid != deliverybranchid) {
+								Branch deliverybranch = branchDAO.getBranchByBranchid(deliverybranchid);
+								CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+								if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()
+										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+									// 都将匹配状态变更为修改
+									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+								} else if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()
+										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+									// 或者是人工匹配的
+									// 都将匹配状态变更为人工修改
+									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+								}
+								cwbOrderService.updateDeliveryOutBranch(getSessionUser(), cwbOrder, deliverybranch, addressCodeEditType, branchid);
+								obj.put("cwbdeliverybranchname", deliverybranch.getBranchname());
+								obj.put("cwbdeliverybranchnamewav",
+										request.getContextPath() + ServiceUtil.wavPath + (deliverybranch.getBranchwavfile() == null ? "" : deliverybranch.getBranchwavfile()));
+							}
+							// ====中转出站 正确的配送站点End==========
+							
+						} catch (CwbException e) {
+							errorCount++;
+							co.setRemark1(e.getMessage());// 异常原因
+							errorList.add(co);
+							// exceptionCwbDAO.createExceptionCwb(cwb,
+							// ce.getFlowordertye(), ce.getMessage(),
+							// getSessionUser().getBranchid(),
+							// getSessionUser().getUserid(),
+							// cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0,
+							// 0, "");
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					if (errorCount > 0) {
+						List<Customer> customerList = customerDAO.getAllCustomers();
+						errorListView = baleService.getCwbOrderCustomerView(errorList, customerList);
+						obj.put("errorListView", errorListView);
+						obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
+						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
+					} else {
+						obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + successCount + "件");
+						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+					}
+					if (successCount > 0) {
+						// 更改包的状态
+						baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+					}
+				}
+			}
+		}
+		return explinkResponse;
+	}
 
 	/**
 	 * 到货扫描 按包 到货扫描
@@ -506,7 +602,7 @@ public class BaleController {
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = cwbOrderService.intoWarehous(getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
+					CwbOrder cwbOrder = cwbOrderService.changeintoWarehous(getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
 					// cwbOrder=cwborderService.intoWarehous(getSessionUser(),cwb,cwb,customerid,
 					// driverid, requestbatchno,comment,"");
 					// 更改包的状态

@@ -620,7 +620,7 @@ $(function(){
  	}
  	$.ajax({
  		type: "POST",
- 		url:"<%=request.getContextPath()%>/bale/balezhongzhuandaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid="+driverid,
+ 		url:"<%=request.getContextPath()%>/bale/balezhongzhuandaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid=0",
  		data:{
 			"comment":comment
 		},
