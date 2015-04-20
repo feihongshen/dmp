@@ -181,20 +181,26 @@ function clearSelect(){
 			 </select>
 			 <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','nextbranchid',$(this).val());}"/>
 	</td>
-	<td>
-		供货客户
-			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
-		          <%for(Customer c : customerlist){ %>
-		           <option value ="<%=c.getCustomerid() %>" 
-		            <%if(!customeridList.isEmpty()) 
-			            {for(int i=0;i<customeridList.size();i++){
-			            	
+		<td>
+		下一站点
+			<select name ="nextbranchid" id ="nextbranchid"  multiple="multiple" style="width: 300px;">
+		          <%if(branchlist!=null && branchlist.size()>0){ %>
+		          <%for(Branch b : branchlist){ %>
+						<option value ="<%=b.getBranchid() %>" 
+		           <%if(!nextbranchidList.isEmpty()) 
+			            {for(int i=0;i<nextbranchidList.size();i++){
+			            	if(b.getBranchid()== new Long(nextbranchidList.get(i).toString())){
+			            		%>selected="selected"<%
+			            	 break;
+			            	}
 			            }
-				     }%> ><%=c.getCustomername() %></option>
-		          <%} %>
-		        </select>
-				[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
-				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+				     }
+				     %>><%=b.getBranchname()%></option>
+		          <%} }%>
+			 </select>
+			 [<a href="javascript:multiSelectAll('nextbranchid',1,'请选择');">全选</a>]
+			 [<a href="javascript:multiSelectAll('nextbranchid',0,'请选择');">取消全选</a>]
+	
 	</td>
 	</tr>
 	<tr>
@@ -215,25 +221,19 @@ function clearSelect(){
 			</select>
 	</td>
 	<td>
-		下一站点
-			<select name ="nextbranchid" id ="nextbranchid"  multiple="multiple" style="width: 300px;">
-		          <%if(branchlist!=null && branchlist.size()>0){ %>
-		          <%for(Branch b : branchlist){ %>
-						<option value ="<%=b.getBranchid() %>" 
-		           <%if(!nextbranchidList.isEmpty()) 
-			            {for(int i=0;i<nextbranchidList.size();i++){
-			            	if(b.getBranchid()== new Long(nextbranchidList.get(i).toString())){
-			            		%>selected="selected"<%
-			            	 break;
-			            	}
+		供货客户
+			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
+		          <%for(Customer c : customerlist){ %>
+		           <option value ="<%=c.getCustomerid() %>" 
+		            <%if(!customeridList.isEmpty()) 
+			            {for(int i=0;i<customeridList.size();i++){
+			            	
 			            }
-				     }
-				     %>><%=b.getBranchname()%></option>
-		          <%} }%>
-			 </select>
-			 [<a href="javascript:multiSelectAll('nextbranchid',1,'请选择');">全选</a>]
-			 [<a href="javascript:multiSelectAll('nextbranchid',0,'请选择');">取消全选</a>]
-	
+				     }%> ><%=c.getCustomername() %></option>
+		          <%} %>
+		        </select>
+				[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
+				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
 	</td>
 	</tr>
 	<tr>

@@ -119,7 +119,7 @@ function remarkButton(){
 						<input type="button" id="remarkSubmit" value="确定" class="input_button2" onclick="remarkButton();"/>
 						</font>
 						<%if(orderlist != null && orderlist.size()>0){  %>
-						<select name ="exportmould" id ="exportmould">
+						<select name ="exportmould" id ="exportmould" class="select1">
 				          <option value ="0">默认导出模板</option>
 				          <%for(Exportmould e:exportmouldlist){%>
 				           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
@@ -296,7 +296,7 @@ function remarkButton(){
 	<div class="clear"></div>
 
 <form action="<%=request.getContextPath() %>/order/batchselectorders" target="_blank" method="post" id="selectOrdersForm">
-	<textarea rows="" cols="" id="cwbs" name="cwbs"></textarea>
+	<textarea rows="0" cols="0" id="cwbs" name="cwbs" style="height:0px;"></textarea>
 </form>
 
 <script type="text/javascript">

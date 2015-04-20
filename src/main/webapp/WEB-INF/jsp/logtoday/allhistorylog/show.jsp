@@ -40,9 +40,6 @@ var $menuli = $(".uc_midbg ul li",parent.document);
         	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table4">
         		<tbody>
         			<tr class="font_1" height="30">
-        				<td colspan="6" align="left" valign="middle" bgcolor="#F1F1F1">今日到货日报</td>
-        				</tr>
-        			<tr class="font_1" height="30">
         				<!-- <td  align="center" valign="middle" bgcolor="#E1F0FF">今日应到货</td> -->
         				<td colspan="5" align="center" valign="middle" bgcolor="#E7F4E3">今日到货</td>
         				<td rowspan="2" align="center" valign="middle" bgcolor="#FFEFDF">到错货（单）</td>
@@ -83,9 +80,6 @@ var $menuli = $(".uc_midbg ul li",parent.document);
             
                 <table width="2400" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
                     <tbody>
-					 <tr class="font_1" height="30">
-                        	<td colspan="34" align="left" valign="middle" bgcolor="#F1F1F1">今日投递日报</td>
-                        	</tr>
                         <tr class="font_1" height="30">
                           <td colspan="4" rowspan="2" align="center" valign="middle" bgcolor="#E7F4E3">今日应投合计</td>
                           <td colspan="2"  rowspan="2" align="center" valign="middle" bgcolor="#E7F4E3">未领货</td>

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50704
 File Encoding         : 65001
 
-Date: 2015-04-16 20:59:20
+Date: 2015-04-20 18:38:11
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -173,7 +173,7 @@ INSERT INTO `dmp40_function` VALUES ('804020', '2', '运费审核', '804020', 'a
 INSERT INTO `dmp40_function` VALUES ('804050', '2', '站点运费统计', '804050', 'smtfaresettle/station/1?', '8040');
 INSERT INTO `dmp40_function` VALUES ('804055', '2', '小件员运费统计', '804055', 'smtfaresettle/deliver/1?', '8040');
 INSERT INTO `dmp40_function` VALUES ('8050', '1', '财务综合报表', '8050', '', '80');
-INSERT INTO `dmp40_function` VALUES ('805020', '2', '返款统计报表', '805020', '${eapUrl}PayBackFeeListController.do?list', '8050');
+INSERT INTO `dmp40_function` VALUES ('805020', '2', '返款统计报表', '805020', '${eapUrl}PayBackFeeListController.do?list&', '8050');
 INSERT INTO `dmp40_function` VALUES ('90', '0', '高级查询', '90', 'menu_item_gjcx', '');
 INSERT INTO `dmp40_function` VALUES ('9005', '1', '订单批量查询', '9005', 'batchselectcwb/list/1?', '90');
 INSERT INTO `dmp40_function` VALUES ('9010', '1', '库房数据查询', '9010', '', '90');
@@ -194,5 +194,4 @@ INSERT INTO `dmp40_function` VALUES ('903040', '2', '退客户订单汇总', '90
 INSERT INTO `dmp40_function` VALUES ('903045', '2', '上门退时效设置', '903045', 'time_effective/?', '9030');
 INSERT INTO `dmp40_function` VALUES ('903050', '2', '上门退揽收汇总', '903050', 'overdueexmo/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('9040', '1', '小件员查询', '9040', '', '90');
-INSERT INTO `dmp40_function` VALUES ('904010', '2', '小件员领货查询', '904010', 'delivery/searchDeliveryLead/1?', '9040');
 INSERT INTO `dmp40_function` VALUES ('904020', '2', '小件员工作量统计', '904020', 'deliverycash/list?', '9040');

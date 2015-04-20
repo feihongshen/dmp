@@ -194,20 +194,16 @@ function actionType(src)
     <tr>
     <td>
     <input type="submit" value="查询" onclick="actionType('1')" class="input_button2"/>
+    <%if(eclist != null && eclist.size()>0){%>																	
+    <input type="hidden" name="cwbs" id="cwbs" value="<%=cwbs%>" />																																	
+    <input type="hidden" name="ids" id="ids" value="<%=ids%>" />																																	
+    <input type="hidden" name="starttime" id="starttime" value="<%=starttime%>" />																																	
+    <input type="hidden" name="endtime" id="endtime" value="<%=endtime%>" />																																	
+    <input type="submit" id="btnval0" onclick="actionType('<%=request.getContextPath()%>/cwborderPDA/exportExcle')" value="导出Excel" class="input_button2"/>																	
+    <%}%>
     </td>
     </tr>
-	</table>
-	
-<%if(eclist != null && eclist.size()>0){																
-%>																	
-<input type="hidden" name="cwbs" id="cwbs" value="<%=cwbs%>" />																																	
-<input type="hidden" name="ids" id="ids" value="<%=ids%>" />																																	
-<input type="hidden" name="starttime" id="starttime" value="<%=starttime%>" />																																	
-<input type="hidden" name="endtime" id="endtime" value="<%=endtime%>" />																																	
-<input type="submit" id="btnval0" onclick="actionType('<%=request.getContextPath()%>/cwborderPDA/exportExcle')" value="导出Excel" />																	
-<%																	
-	}																
-%>			
+	</table>		
 		<!-- <span><input name="" type="button" value="批量处理" class="input_button1"  onclick="allCheck("<%=request.getContextPath()%>");"/></span> -->
 	</form>
 	
@@ -294,7 +290,6 @@ function actionType(src)
 	<div class="clear"></div>
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
-
 $("#flowOrderTypeEnumid").val(<%=request.getParameter("flowOrderTypeEnumid")%>);
 $("#branchid").val(<%=request.getParameter("branchid")%>);
 $("#userid").val(<%=request.getParameter("userid")%>);
