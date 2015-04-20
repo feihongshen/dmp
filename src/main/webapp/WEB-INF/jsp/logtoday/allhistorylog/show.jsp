@@ -25,8 +25,8 @@ var $menuli = $(".uc_midbg ul li",parent.document);
 		
 		<div style="padding:10px">当前站点：<font color="#FF6600" style="font-weight:bold"><%=nowbranch ==null?"":nowbranch.getBranchname()%></font></div>
 		 
-	<div class="uc_midbg">
-		<ul>
+	<div class="uc_midbg" style="height:35px;">
+		<ul style="height:20px;">
 			<li><a href="javascript:void(0);" class="light">当日到货日报</a></li>
 			<li><a href="javascript:void(0);">当日投递日报</a></li>
 			<li><a href="javascript:void(0);">当日款项日报</a></li>
