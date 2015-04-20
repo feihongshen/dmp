@@ -156,7 +156,8 @@ $(function(){
 					<input type="hidden" name="deliverid" id="deliverid" value="<%=request.getParameter("deliverid")==null?"0":request.getParameter("deliverid")%>"/>
 				</form>
 				</div> --%>
-				
+				<br/>
+				<br/>
 				<div class="right_title">
 				<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">

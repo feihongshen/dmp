@@ -172,6 +172,6 @@ function nowprint(){
 <a href="javascript:prn1_preview()">打印预览</a>
 <a href="javascript:nowprint()">直接打印</a>
 <a href="javascript:prn1_printA()">选择打印机</a>
-<script>$(function(){prn1_print()})</script>
+<!-- <script>$(function(){prn1_print()})</script> -->
 </body>
 </html>

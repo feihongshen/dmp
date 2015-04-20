@@ -662,7 +662,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 											<td width="100"><%=co.getConsigneename() %></td>
 											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 											<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
 											<%-- <td width="140"><%=co.getOutstoreroomtime() %></td> --%>
 											<td align="left"><%=co.getConsigneeaddress() %></td>
