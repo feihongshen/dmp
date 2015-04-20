@@ -66,6 +66,7 @@ public class BranchRouteControlController {
 				continue;
 			} else {
 				branchRouteDAO.creBranchRoute(fromBranchId, Long.valueOf(tempToBranchId), type);
+				cwbRouteService.reload();
 				logger.info("operatorUser={},货物流向设置->create", getSessionUser().getUsername());
 			}
 		}
@@ -98,6 +99,7 @@ public class BranchRouteControlController {
 			return "{\"errorCode\":1,\"error\":\"该货物流向设置已存在\"}";
 		} else {
 			branchRouteDAO.saveBranchRouteByWhere(oldfromBranchId, oldtoBranchId, oldtype, fromBranchId, toBranchId, type);
+			cwbRouteService.reload();
 			logger.info("operatorUser={},货物流向设置->save", getSessionUser().getUsername());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 		}
@@ -107,6 +109,7 @@ public class BranchRouteControlController {
 	public @ResponseBody String del(@PathVariable("fromBranchId") int fromBranchId, @PathVariable("toBranchId") int toBranchId, @PathVariable("type") int type) throws Exception {
 
 		branchRouteDAO.deleteBranchRouteByWhere(fromBranchId, toBranchId, type);
+		cwbRouteService.reload();
 		logger.info("operatorUser={},货物流向设置->del", getSessionUser().getUsername());
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
