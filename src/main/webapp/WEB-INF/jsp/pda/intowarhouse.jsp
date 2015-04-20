@@ -758,6 +758,7 @@ $(function(){
 					</p>
 					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" />
 			        <input type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
+			        <input type="hidden" id="rk_switch" name="rk_switch" value="<%=ck_switch.getState() %>" />
 			</div><!-- </form> -->
 		</div>
 	</div>
