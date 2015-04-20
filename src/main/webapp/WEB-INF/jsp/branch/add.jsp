@@ -2,6 +2,7 @@
 <%@page import="cn.explink.domain.AccountArea"%>
 <%@ page import="cn.explink.domain.Branch,cn.explink.domain.Function,cn.explink.domain.SystemInstall,cn.explink.b2c.maisike.branchsyn_json.Stores"%>
 <%@page import="cn.explink.enumutil.BranchEnum"%>
+<%@page import="cn.explink.enumutil.BranchTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<AccountArea> accountAreaList = (List<AccountArea>) request.getAttribute("accontareaList");
@@ -118,9 +119,13 @@
 				%></ul>
 				
 				<li><span>站点类型：</span><select id ="contractflag" name ="contractflag" onchange="changemskshow(this.value)">
-		             <option value ="0">直营</option> 
-		             <option value ="1">加盟</option>
-		             <option value ="2">二级站</option>
+					
+		             <option value ="<%=BranchTypeEnum.ZhiYing.getValue()%>"><%=BranchTypeEnum.ZhiYing.getText()%></option> 
+		             <option value ="<%=BranchTypeEnum.ErJiZhan.getValue()%>"><%=BranchTypeEnum.ErJiZhan.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.SanJiZhan.getValue()%>"><%=BranchTypeEnum.SanJiZhan.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMeng.getValue()%>"><%=BranchTypeEnum.JiaMeng.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMengErJi.getValue()%>"><%=BranchTypeEnum.JiaMengErJi.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMengSanJi.getValue()%>"><%=BranchTypeEnum.JiaMengSanJi.getText()%></option>
 		           </select>
 		        </li>
 		        

@@ -1117,6 +1117,7 @@ src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text
 src/main/java/cn/explink/enumutil/BranchRouteEnum.java -text
+src/main/java/cn/explink/enumutil/BranchTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ChangeFunctionidEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintAuditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintTypeEnum.java -text
