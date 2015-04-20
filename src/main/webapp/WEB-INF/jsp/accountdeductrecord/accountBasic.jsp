@@ -126,7 +126,7 @@ function exportField2(){
 		<div>
 			<h1>帐户基本信息
 				<%if(branchList!=null&&!branchList.isEmpty()){%>
-					<select id="selectBranchid" name="selectBranchid" style="width:150px;">	
+					<select id="selectBranchid" name="selectBranchid" style="width:150px;" class="select1">	
 						<option value="0">====请选择====</option>
 						<%for(Branch b: branchList){%>
 							<option value="<%=b.getBranchid()%>"><%=b.getBranchname()%></option>
@@ -168,8 +168,7 @@ function exportField2(){
 				</dl> 
 				<br clear="all">
 			</div>
-			<div class="jg_10"></div>
-			<div class="kfsh_tabbtn2">
+			<div class="uc_midbg">
 				<ul>
 					<li><a href="#" id="li1">账务明细</a></li>
 					<li><a href="#" id="li2">账务汇总</a></li>
@@ -181,7 +180,7 @@ function exportField2(){
       			<li  id="content1">
 					<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
 					&nbsp;&nbsp;
-					类型：<select id="recordtype" name="recordtype" style="width:80px;">	
+					类型：<select id="recordtype" name="recordtype" style="width:80px;" class="select1">	
 							<option value="0">全部</option>
 							<option value="8">扣款</option>
 							<option value="11">中转</option>
@@ -192,9 +191,9 @@ function exportField2(){
 					    </select>
 						<label for="select"></label>
 						交易时间：
-						<input type="text" name="strtime" id="strtime" value ="<%=strtime%>"/>
+						<input type="text" name="strtime" id="strtime" value ="<%=strtime%>" class="input_text1"/>
 						至
-						<input type="text" name="endtime" id="endtime" value ="<%=endtime%>"/>
+						<input type="text" name="endtime" id="endtime" value ="<%=endtime%>" class="input_text1"/>
 						<input type="hidden" name="branchid" id="branchid" value="<%=branchid%>"/>
 						<input type="hidden" name="flag" id="flag" value ="1"/>
 						<input type="button" onclick="searchBtn()" id="find" value="查询" class="input_button2" />
@@ -288,7 +287,7 @@ function exportField2(){
 					<div class="jg_10"></div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="gd_table" >
 						<tr class="font_1">
-							<td bgcolor="#f4f4f4">类型11</td>
+							<td bgcolor="#f4f4f4">类型</td>
 							<td bgcolor="#f4f4f4">账户增加金额[元]</td>
 							<td bgcolor="#f4f4f4">账户减少金额[元]</td>
 							<td bgcolor="#f4f4f4">单数</td>
