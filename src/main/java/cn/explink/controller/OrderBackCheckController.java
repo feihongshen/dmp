@@ -25,6 +25,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderBackCheckDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -39,9 +40,9 @@ import cn.explink.util.ExcelUtils;
 
 /**
  * 退款审核
- *
+ * 
  * @author zs
- *
+ * 
  */
 @Controller
 @RequestMapping("/orderBackCheck")
@@ -62,6 +63,8 @@ public class OrderBackCheckController {
 	BranchDAO branchDAO;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -70,7 +73,7 @@ public class OrderBackCheckController {
 
 	/**
 	 * 审核为允许退货出站
-	 *
+	 * 
 	 * @param model
 	 * @param request
 	 * @param cwb
@@ -81,6 +84,10 @@ public class OrderBackCheckController {
 			@RequestParam(value = "searchType", defaultValue = "0", required = false) String searchType) {
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		String branchids = "";
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		model.addAttribute("amazonIsOpen", isOpenFlag);
+		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
+		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
 		// 如果为选择站点则匹配用户权限
 		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
@@ -116,20 +123,19 @@ public class OrderBackCheckController {
 			model.addAttribute("orderbackList", orderbackList);
 		}
 
-		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
-		model.addAttribute("amazonIsOpen", isOpenFlag);
 		return "auditorderstate/toTuiHuoCheck";
 	}
 
 	/**
 	 * 提交审核
-	 *
+	 * 
 	 * @param model
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping("/save")
-	public @ResponseBody String save(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
+	public @ResponseBody
+	String save(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		try {
 			this.orderBackCheckService.save(ids, this.getSessionUser());
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
@@ -140,7 +146,7 @@ public class OrderBackCheckController {
 
 	/**
 	 * 导出Excel
-	 *
+	 * 
 	 * @param model
 	 * @param response
 	 * @param cwb

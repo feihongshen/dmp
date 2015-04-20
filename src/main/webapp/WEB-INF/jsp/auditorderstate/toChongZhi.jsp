@@ -105,10 +105,9 @@ function sub(){
 				<li><a href="<%=request.getContextPath() %>/cwborder/toChongZhiStatus" class="light">重置审核状态</a></li>
 				<%if(request.getAttribute("amazonIsOpen") != null && "1".equals(request.getAttribute("amazonIsOpen").toString())){ %>
 				<li><a href="./toBaoGuoWeiDao">亚马逊订单处理</a></li><%} %>
-				<!-- <li><a href="./toZhongZhuan">审核为中转</a></li> -->
-				<%-- <%if(request.getAttribute("isUseAuditTuiHuo") != null && "yes".equals(request.getAttribute("isUseAuditTuiHuo").toString())){ %>
+				< <%if(request.getAttribute("isUseAuditTuiHuo") != null && "yes".equals(request.getAttribute("isUseAuditTuiHuo").toString())){ %>
 					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoTuiHuolist/1">审核为退货</a></li>
-				<%} %> --%>
+				<%} %>
 				<%if(request.getAttribute("isUseAuditZhongZhuan") != null && "yes".equals(request.getAttribute("isUseAuditZhongZhuan").toString())){ %>
 					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoZhongZhuanlist/1">审核为中转</a></li>
 				<%} %>
