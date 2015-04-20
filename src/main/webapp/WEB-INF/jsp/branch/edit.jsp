@@ -17,6 +17,12 @@ List<Stores> mskbranchlist = (List<Stores>) request.getAttribute("mskbranchlist"
 List<Branch> accountbranchList = (List<Branch>) request.getAttribute("accountbranchList");//结算对象
 %>
 <script>
+
+function testWav(){
+	alert('haha');
+
+}
+
 var initEditArray = new Array();
 initEditArray[0]="<%=branch.getCheckremandtype()%>,remandtype";
 initEditArray[1]="<%=branch.getAccountareaid()%>,accountarea";
@@ -28,6 +34,7 @@ initEditArray[5]="<%=branch.getCaiwuid()%>,caiwuid";
 <script type="text/javascript">
 var initBranchList = new Array();
 <%int i=0 ; for(String f:branch.getFunctionids().split(",")){%>initBranchList[<%=i++ %>]="<%=f %>";<%}%>
+
 </script>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -172,7 +179,10 @@ var initBranchList = new Array();
 		         <li id="wav" style="display: none"><span>上传声音文件：</span>
 			         <iframe id="update" name="update" src="branch/update?fromAction=branch_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 			         <%if(branch.getBranchwavfile()!=null&&branch.getBranchwavfile().length()>4){ %>
-			         <a href="javascript:document.music1.Play();">点击测试</a>
+			         <a href="#" onclick="	var audioElement = document.createElement('audio');
+			        		audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile() %>');
+			     	audioElement.load();
+			     	audioElement.play();">点击测试</a>
 			         <%} %>
 		         </li>
 		         <input type="hidden" id ="wavh" name="wavh" value ="<%=branch.getBranchwavfile() %>"  />
