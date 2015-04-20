@@ -808,7 +808,7 @@ $(function(){
 												<td width="100"><%=co.getConsigneename() %></td>
 												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 												<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView().toString() %></td>
 												<%} %>
 												<td align="left"><%=co.getConsigneeaddress() %></td>
 												</tr>
