@@ -245,7 +245,7 @@ public class ApplyEditDeliverystateController {
 	public String tohandleApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "applybranchid", defaultValue = "0", required = false) long applybranchid, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle,
-			@RequestParam(value = "audit", defaultValue = "-1", required = false) long audit) {
+			@RequestParam(value = "audit", defaultValue = "-1", required = false) long audit, @RequestParam(value = "isnow", defaultValue = "0", required = false) long isnow) {
 		boolean isFinancial = false;
 		boolean isService = false;
 
@@ -253,13 +253,17 @@ public class ApplyEditDeliverystateController {
 		isService = this.IsRole("ServiceID");// 判断是不是客服角色
 		model.addAttribute("isFinancial", isFinancial);
 		model.addAttribute("isService", isService);
+		List<ApplyEditDeliverystate> applyEditDeliverystates = new ArrayList<ApplyEditDeliverystate>();
+		Page pageobj = new Page();
+		if (isnow > 0) {
+			applyEditDeliverystates = this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit);
+			pageobj = new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit), page, Page.ONE_PAGE_NUMBER);
+		}
+		model.addAttribute("applyEditDeliverystateList", applyEditDeliverystates);
 
-		model.addAttribute("applyEditDeliverystateList",
-				this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit));
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("userList", this.userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(this.applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, applybranchid, ishandle, cwb, isFinancial, audit), page,
-				Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", pageobj);
 
 		return "applyeditdeliverystate/handleApplyEditDeliverystatelist";
 	}

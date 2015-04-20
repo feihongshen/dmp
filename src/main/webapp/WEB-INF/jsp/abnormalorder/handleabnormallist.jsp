@@ -24,6 +24,8 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
   String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
   String showabnomal = request.getAttribute("showabnomal").toString();
   String ishandle = request.getAttribute("ishandle").toString();
+  long customerid = Long.parseLong(request.getAttribute("customerid").toString());
+  List<Customer> customerlist=(List<Customer>)request.getAttribute("customerlist");
 %>
 
 
@@ -248,14 +250,20 @@ function stateBatch(state)
 									<textarea id="cwb" class="kfsh_text" rows="3" name="cwb" ><%=cwb%></textarea>
 								&nbsp;机构名称：
 									<label for="select2"></label>
-									<select name="branchid" id="branchid">
+									<select name="branchid" id="branchid" style="width: 120px;">
 										<option value="0">请选择</option>
 										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
 									</select>
+									供货商:<select name ="customerid" id ="customerid"  style="width: 120px;">
+									<option value="-1">请选择</option>
+		          						<%for(Customer c : customerlist){ %>
+		      					     <option value ="<%=c.getCustomerid() %>"  <%if(c.getCustomerid()==customerid){%>  selected="selected"<%}%>><%=c.getCustomername() %></option>
+		         						 <%} %>
+		      						  </select>
 									<label for="select3"></label>
-									<select name="abnormaltypeid" id="abnormaltypeid">
+									<select name="abnormaltypeid" id="abnormaltypeid"  style="width: 120px;">
 										<option value="0">请选择问题件类型</option>
 										<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
 										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>
@@ -275,11 +283,11 @@ function stateBatch(state)
 										<%} %>
 									</select>
 									<strong id="chuli" >处理时间：</strong>
-									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
-									<input type ="text" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>
+									<input type ="text"  style="width: 120px;" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
+									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>
 									<strong id="chulidown">到</strong>
-									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>"/>
-									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>"/>
+									<input type ="text"  style="width: 120px;" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>"/>
+									<input type ="text"   style="width: 120px;" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>"/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="button"  onclick="check()" value="查询" class="input_button2">
 									<%if(views != null && views.size()>0){ %>
@@ -374,6 +382,7 @@ function stateBatch(state)
 	<input type="hidden" name="enddate1" id="enddate1" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
 	<input type="hidden" name="chuangjianbegindate1" id="chuangjianbedindate1" value="<%=request.getParameter("chuangjianbegindate")==null?"":request.getParameter("chuangjianbegindate")%>"/>
 	<input type="hidden" name="chuangjianenddate1" id="chuangjianenddate1" value="<%=request.getParameter("chuangjianenddate")==null?"":request.getParameter("chuangjianenddate")%>"/>
+	<input type="hidden" name="customerid" id="customerid" value="<%=request.getParameter("customerid")==null?"":request.getParameter("customerid")%>"/>
 </form>
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
@@ -382,6 +391,7 @@ $("#ishandle").val(<%=request.getParameter("ishandle")==null?0:Long.parseLong(re
 $("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
 $("#strtime").val('<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>');
 $("#endtime").val('<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>');
+$("#customerid").val('<%=request.getParameter("customerid")==null?"":request.getParameter("customerid")%>');
 function exportField(){
 	if(<%=views != null && views.size()>0 %>){
 		$("#btnval").attr("disabled","disabled");

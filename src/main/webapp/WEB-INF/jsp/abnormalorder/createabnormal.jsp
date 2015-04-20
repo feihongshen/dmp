@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.User"%>
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.domain.AbnormalType"%>
 <%@page import="cn.explink.domain.AbnormalOrder"%>
@@ -18,6 +19,7 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
   List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
   Page page_obj = (Page)request.getAttribute("page_obj");
   Map<Long,JSONObject> mapForAb=(Map<Long,JSONObject>)request.getAttribute("mapForAbnormal");
+  Boolean iszhandian=(Boolean)request.getAttribute("iszhandian");
 %>
 
 
@@ -109,7 +111,14 @@ function sub(){
 									</select>
 								订单号：
 								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
-									
+								<%
+								if(iszhandian){ %>
+								处理部门:<select name="handleBranch" id="handleBranch" <%if(!iszhandian){ %> disabled="disabled" <%} %>>
+								<option value="0">请选择</option>
+								<option value="<%=BranchEnum.KuFang.getValue()%>"><%=BranchEnum.KuFang.getText()%></option>
+								<option value="<%=BranchEnum.KeFu.getValue()%>"><%=BranchEnum.KeFu.getText()%></option>
+								</select>
+								<%} %>
 									<input type="submit" value="创建" class="input_button2">
 								</p>
 							</form>

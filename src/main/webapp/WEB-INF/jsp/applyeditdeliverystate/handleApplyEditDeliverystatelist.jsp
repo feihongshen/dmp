@@ -115,6 +115,7 @@ function Audit(id,flag){
 		success : function(data) {
 			if(data>0)
 				{
+				$("#searchForm").submit();
 				if(flag==1)
 				{
 				$("#auditButton1_"+id).val("已通过");
@@ -193,6 +194,7 @@ function editInit(){
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="1" method="post" id="searchForm">
+		<input type="hidden" name="isnow" value="1"/>
 			&nbsp;&nbsp;订单号：
 			<input type="text" name="cwb" id="cwb" value="" onKeyDown='if(event.keyCode==13){sub();}'>
 			申请时间：
@@ -253,7 +255,17 @@ function editInit(){
 			<td align="center" valign="middle"><%for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
 			<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 			<td align="center" valign="middle"><%for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-			<td align="center" valign="middle"><%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
+			<td align="center" valign="middle">
+			<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
+									{ 
+											if(adse.getAudit()==0){out.print("未处理");}
+										else if(adse.getAudit()==1){out.print("审核已通过");}
+										else if(adse.getAudit()==2){out.print("审核未通过");}
+									}
+								else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
+									{ out.print("<font color='red'>已处理</font>");}
+									%>
+			</td>
 			<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 			<td align="center" valign="middle">
 			<%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %>

@@ -50,6 +50,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.AbnormalService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -109,6 +110,7 @@ public class AbnormalOrderController {
 	 */
 	@RequestMapping("/toCreateabnormal")
 	public String toCreateabnormal(Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "handleBranch", defaultValue = "0", required = false) long handleBranch,
 			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
 		String quot = "'", quotAndComma = "',";
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
@@ -132,7 +134,7 @@ public class AbnormalOrderController {
 					if (ab != null) {
 						action = AbnormalWriteBackEnum.XiuGai.getValue();
 					}
-					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action);
+					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch);
 				}
 			}
 			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
@@ -140,7 +142,14 @@ public class AbnormalOrderController {
 			model.addAttribute("cwbList", cwbList);
 			model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 			model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+
 		}
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		boolean iszhandian = false;
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			iszhandian = true;
+		}
+		model.addAttribute("iszhandian", iszhandian);
 
 		return "/abnormalorder/createabnormal";
 	}
@@ -226,7 +235,7 @@ public class AbnormalOrderController {
 	public String toHandleabnormal(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid,
 			@RequestParam(value = "ishandle", required = false, defaultValue = "-1") long ishandle, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
+			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
 			@RequestParam(value = "chuangjianbegindate", required = false, defaultValue = "") String chuangjianbegindate,
 			@RequestParam(value = "chuangjianenddate", required = false, defaultValue = "") String chuangjianenddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		String quot = "'", quotAndComma = "',";
@@ -238,6 +247,11 @@ public class AbnormalOrderController {
 				}
 				cwbs1 = cwbs1.append(quot).append(cwbStr.trim()).append(quotAndComma);
 			}
+		}
+		long handleBranch = 0;
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.KeFu.getValue())) {
+			handleBranch = branch.getSitetype();
 		}
 		String cwbs = "";
 		if (cwbs1.length() > 0) {
@@ -258,8 +272,10 @@ public class AbnormalOrderController {
 					enddate = DateTimeUtil.getNowTime();
 				}
 
-				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
+				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate, customerid,
+						handleBranch);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate,
+						customerid, handleBranch);
 
 			} else {
 				if (chuangjianbegindate.length() == 0) {
@@ -273,8 +289,9 @@ public class AbnormalOrderController {
 				// abnormalOrderList=abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page,cwbs,branchid,
 				// abnormaltypeid, ishandle,begindate,enddate);
 
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
-				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid,
+						handleBranch);
+				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid, handleBranch);
 
 			}
 		}
@@ -305,8 +322,10 @@ public class AbnormalOrderController {
 		 * model.addAttribute("page_obj", new
 		 * Page(views.size(),page,Page.ONE_PAGE_NUMBER));
 		 */
-
+		List<Customer> customerlist = this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist", customerlist);
 		model.addAttribute("page", page);
+		model.addAttribute("customerid", customerid);
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		return "/abnormalorder/handleabnormallist";
 	}
@@ -465,6 +484,7 @@ public class AbnormalOrderController {
 			long branchid = request.getParameter("branchid1") == null ? 0 : Long.parseLong(request.getParameter("branchid1").toString());
 			long abnormaltypeid = request.getParameter("abnormaltypeid1") == null ? 0 : Long.parseLong(request.getParameter("abnormaltypeid1").toString());
 			long ishandle = request.getParameter("ishandle1") == null ? 0 : Long.parseLong(request.getParameter("ishandle1").toString());
+			long customerid = request.getParameter("customerid") == null ? -1 : Long.parseLong(request.getParameter("customerid").toString());
 
 			String begindate = request.getParameter("begindate1") == null ? "" : request.getParameter("begindate1");
 			String enddate = request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1");
@@ -485,6 +505,11 @@ public class AbnormalOrderController {
 			if (cwbs1.length() > 0) {
 				cwbs = cwbs1.substring(0, cwbs1.length() - 1);
 			}
+			long handleBranch = 0;
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.KeFu.getValue())) {
+				handleBranch = branch.getSitetype();
+			}
 			// 根据时间去abnormalWriteBack表查询符合条件的opscwbid
 			// List<String> abnormalWriteBackOpscwbidList = new
 			// ArrayList<String>();
@@ -501,7 +526,7 @@ public class AbnormalOrderController {
 				// this.abnormalOrderDAO.getAbnormalOrderByCredatetime(chuangjianbegindate,
 				// chuangjianenddate);
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndNohandles(chuangjianbegindate, chuangjianenddate, cwbs, branchid,
-						abnormaltypeid, ishandle);
+						abnormaltypeid, ishandle, customerid, handleBranch);
 
 			} else {
 				if (begindate.length() == 0) {
@@ -513,7 +538,8 @@ public class AbnormalOrderController {
 				// abnormalWriteBackOpscwbidList =
 				// this.abnormalWriteBackDAO.getAbnormalOrderByCredatetime(begindate,
 				// enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(begindate, enddate, cwbs, branchid, abnormaltypeid, ishandle);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(begindate, enddate, cwbs, branchid, abnormaltypeid, ishandle,
+						customerid, handleBranch);
 			}
 
 			// 根据条件查询和上一步中查出的opscwbid来查询

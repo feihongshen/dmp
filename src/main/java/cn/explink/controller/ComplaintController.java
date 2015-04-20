@@ -502,24 +502,22 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/cuijiantousufozhanzhang/{page}")
-	// long type,long auditType,long branchid, String starteTime,String
-	// endTime,long page
 	public String cuijiantousuzhanzhang(@PathVariable("page") long page, Model model, @RequestParam(value = "auditType", required = false, defaultValue = "-1") long auditType,
 			@RequestParam(value = "startid", required = false, defaultValue = "") String starteTime, @RequestParam(value = "endid", required = false, defaultValue = "") String endTime,
-			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "complaintType", required = false, defaultValue = "0") long complaintType) {
 		List<User> nowUserList = new ArrayList<User>();
 		List<Complaint> list = new ArrayList<Complaint>();
 		if ((starteTime.length() > 0) && (endTime.length() > 0)) {
 			long branchid = this.getSessionUser().getBranchid();
-			list = this.complaintDao.getComplaintForzhandian(cwb, ComplaintTypeEnum.CuijianTousu.getValue(), auditType, branchid, starteTime, endTime, page);
+			list = this.complaintDao.getComplaintForzhandian(cwb, complaintType, auditType, branchid, starteTime, endTime, page);
 			nowUserList = this.userDAO.getAllUserbybranchid(branchid);
-			model.addAttribute("page_obj", new Page(this.complaintDao.getComplaintCountForzhandian(cwb, ComplaintTypeEnum.CuijianTousu.getValue(), auditType, branchid, starteTime, endTime), page,
-					Page.ONE_PAGE_NUMBER));
+			model.addAttribute("page_obj", new Page(this.complaintDao.getComplaintCountForzhandian(cwb, complaintType, auditType, branchid, starteTime, endTime), page, Page.ONE_PAGE_NUMBER));
 			model.addAttribute("startid", starteTime);
 			model.addAttribute("endid", endTime);
 		}
 
 		model.addAttribute("auditType", auditType);
+		model.addAttribute("complaintType", complaintType);
 		model.addAttribute("page", page);
 		model.addAttribute("nowUserList", nowUserList);
 		model.addAttribute("List", list);

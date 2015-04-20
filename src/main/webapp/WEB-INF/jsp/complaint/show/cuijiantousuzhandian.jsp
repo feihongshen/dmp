@@ -1,3 +1,4 @@
+<%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
 <%@page import="cn.explink.domain.User"%>
 <%@page import="cn.explink.enumutil.ComplaintAuditTypeEnum"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -14,6 +15,7 @@
     List<Branch> deliverList1 = request.getAttribute("branchList")==null?null:( List<Branch>)request.getAttribute("branchList");
     Page page_obj = (Page)request.getAttribute("page_obj");
     long state=(Long)request.getAttribute("deliverystate");
+    long complaintType=(Long)request.getAttribute("complaintType");
     
     List<Complaint> list=request.getAttribute("List")==null?null:( List<Complaint>)request.getAttribute("List");
     List<User> nowUserList=request.getAttribute("nowUserList")==null?null:( List<User>)request.getAttribute("nowUserList");
@@ -130,7 +132,13 @@ function addSuccess(data){
 		<option value="1" <%if(type==1){%>selected<%} %>>已处理</option>
 		<option value="0" <%if(type==0){%>selected<%} %>>未处理</option>
 		</select>
-		催件时间：<input type ="text" value="<%=request.getAttribute("startid")==null?"":request.getAttribute("startid") %>" id="startid" name="startid"/>到：<input type ="text" value="<%=request.getAttribute("endid")==null?"":request.getAttribute("endid") %>" id="endid" name="endid"/>
+		投诉类型：<select id="complaintType" name="complaintType">
+		<option value="-1" >请选择</option>
+		<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue() %>"  <%if(complaintType==ComplaintTypeEnum.CuijianTousu.getValue()){ %> selected="selected"<%} %> ><%=ComplaintTypeEnum.CuijianTousu.getText() %></option>
+		<option value="<%=ComplaintTypeEnum.FuwuTousu.getValue() %>"  <%if(complaintType==ComplaintTypeEnum.FuwuTousu.getValue()){ %> selected="selected"<%} %> ><%=ComplaintTypeEnum.FuwuTousu.getText() %></option>
+		<option value="<%=ComplaintTypeEnum.KefuBeizhu.getValue() %>" <%if(complaintType==ComplaintTypeEnum.KefuBeizhu.getValue()){ %> selected="selected"<%} %> ><%=ComplaintTypeEnum.KefuBeizhu.getText() %></option>
+		</select>
+		创建时间：<input type ="text" value="<%=request.getAttribute("startid")==null?"":request.getAttribute("startid") %>" id="startid" name="startid"/>到：<input type ="text" value="<%=request.getAttribute("endid")==null?"":request.getAttribute("endid") %>" id="endid" name="endid"/>
 		<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
 	</form>
 	</div>
@@ -143,6 +151,7 @@ function addSuccess(data){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff"> 生成时间</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">审核状态</td>
+			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">投诉类型</td>
 			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">客户投诉内容</td>
 			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">处理回复</td>
 			<td width="22%" align="center" valign="middle" bgcolor="#eef6ff">处理</td>
@@ -154,6 +163,7 @@ function addSuccess(data){
 			<td  align="center" valign="middle"><%if(0==c.getAuditUser()){%>无<%}else{%><%=nowUserList.get(0).getRealname()%><%}%></td>
 			<td  align="center" valign="middle"><%=c.getCreateTime()%></td>
 			<td  align="center" valign="middle" id="thisshow"><%for(ComplaintAuditTypeEnum ct : ComplaintAuditTypeEnum.values()){if(c.getAuditType()==ct.getValue()){ %><%=ct.getText()%><%}} %></td>
+			<td  align="center" valign="middle"><%=ComplaintTypeEnum.getByValue(c.getType()).getText()%></td>
 			<td  align="center" valign="middle"><%=c.getContent()%></td>
 			<td  align="center" valign="middle"><%=c.getReplyDetail()%></td>
 			<td  align="center" valign="middle"><%if(0==c.getAuditUser()){%>[<a href="javascript:detail(<%=c.getId() %>);">处理</a>] <%}else{ %>已处理<%} %></td>
