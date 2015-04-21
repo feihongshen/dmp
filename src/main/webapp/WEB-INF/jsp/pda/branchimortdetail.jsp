@@ -303,7 +303,7 @@ function yidaohuo(){
 						+"<td width='140' align='center'> "+data[i].inSitetime+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+						+"<td width='100' align='center'> "+data[i].remarkView==null?"":data[i].remarkView+"</td>"
 						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
 						+ "</tr>";
 					<%}else{ %>
@@ -347,7 +347,7 @@ function jinriweidaohuo(){
 					+"<td width='140' align='center'> "+data[i].outstoreroomtime+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+					+"<td width='100' align='center'> "+data[i].remarkView==null?"":data[i].remarkView+"</td>"
 					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
 					+ "</tr>";
 				<%}else{ %>
@@ -442,7 +442,7 @@ function getdaohuocwbquejiandataList(){
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"'>"
 					+"<td width='120' align='center'>"+data[i].cwb+"</td>"
 					+"<td width='120' align='center'>"+data[i].transcwb+"</td>"
-					+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+					+"<td width='120' align='center'>"+data[i].packagecode+"</td>"
 					+"<td width='100' align='center'> "+data[i].customername+"</td>"
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -713,10 +713,10 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 											<td width="100"><%=co.getConsigneename() %></td>
 											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 											<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
 											<%-- <td width="140"><%=co.getOutstoreroomtime() %></td> --%>
-											<td align="left"><%=co.getConsigneeaddress() %></td>
+											<td align="left"><%=co.getConsigneeaddress()==null?"":co.getConsigneeaddress() %></td>
 											
 										</tr>
 										<%} %>
@@ -764,7 +764,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 											<td width="100"><%=co.getConsigneename() %></td>
 											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 											<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView() %></td>
+													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
 											<%-- <td width="140"><%=co.getOutstoreroomtime() %></td> --%>
 											<td align="left"><%=co.getConsigneeaddress() %></td>

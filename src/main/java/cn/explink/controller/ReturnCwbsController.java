@@ -83,9 +83,9 @@ public class ReturnCwbsController {
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 	/*	long count = returnCwbsDAO.getReturnCwbsByTypeAndBranchidAndIsnowCount(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime,customereid,timetypewei,
 				starttimewei, endtimewei);*/
-		long count=cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetypewei,
-				starttimewei, endtimewei, customereid).size();
-		obj.put("size", count);
+		List<CwbOrder> weichuzhanCwbOrders=cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetypewei,
+				starttimewei, endtimewei, customereid,false);
+		obj.put("size", (weichuzhanCwbOrders != null && !weichuzhanCwbOrders.isEmpty()) ? weichuzhanCwbOrders.size() : 0);
 		return obj;
 	}
 
@@ -112,13 +112,18 @@ public class ReturnCwbsController {
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 
 		List<CwbOrder> weichuzhanlist = cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetype,
-				starttime, endtime, customerid);
+				starttime, endtime, customerid,true);
 		List<CwbOrder> yichuzhanlist = cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetype,
-				starttime, endtime, customerid);
+				starttime, endtime, customerid,true);
+		List<CwbOrder> yichuzhanlistsize = cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetype,
+				starttime, endtime, customerid,false);
+		List<CwbOrder> weichuzhanlistsize=cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.DaiFanDanChuZhan.getValue(), getSessionUser().getBranchid(), 0, nowtime, timetype,
+				starttime, endtime, customerid,false);
+		model.addAttribute("size", (weichuzhanlistsize != null && !weichuzhanlistsize.isEmpty()) ? weichuzhanlistsize.size() : 0);
 
 		model.addAttribute("weichuzhanlist", weichuzhanlist);
 		model.addAttribute("yichuzhanlist", yichuzhanlist);
-		model.addAttribute("yichuzhannums", (yichuzhanlist != null && !yichuzhanlist.isEmpty()) ? yichuzhanlist.size() : 0);
+		model.addAttribute("yichuzhannums", (yichuzhanlistsize != null && !yichuzhanlistsize.isEmpty()) ? yichuzhanlistsize.size() : 0);
 		model.addAttribute("customerlist", customerList);
 		model.addAttribute("branchlist", removeList);
 		model.addAttribute("customerid", customerid);

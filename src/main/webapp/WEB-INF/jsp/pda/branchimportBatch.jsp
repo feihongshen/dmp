@@ -255,7 +255,7 @@ function getdaohuocwbquejiandataList(){
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 					+"<td width='120' align='center'>"+data[i].cwb+"</td>"
 					+"<td width='120' align='center'>"+data[i].transcwb+"</td>"
-					+"<td width='120' align='center'>"+data[i].packagecode+"</td>"
+					+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 					+"<td width='100' align='center'> "+data[i].customername+"</td>"
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -491,6 +491,7 @@ function getdaohuocwbquejiandataList(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
@@ -540,7 +541,7 @@ function getdaohuocwbquejiandataList(){
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>
-													<td width="100"><%=obj.get("showRemark") %></td>
+													<td width="100"><%=obj.get("showRemark")==null?"":obj.get("showRemark") %></td>
 												<%} %>
 												<td width="350" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<%-- <td width="140"><%=obj.getString("chukutime") %></td> --%>

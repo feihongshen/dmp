@@ -9,6 +9,7 @@
 	List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 	List<CwbOrder> yichuzhanlist = (List<CwbOrder>)request.getAttribute("yichuzhanlist");
 	String yichuzhannums=request.getAttribute("yichuzhannums").toString();
+	String weifandannums=request.getAttribute("size").toString();
 	String customerandid=request.getAttribute("customerid")==null?"0":request.getAttribute("customerid").toString();
 	List<Customer> customerList = request.getAttribute("customerList")==null?null:(List<Customer>)request.getAttribute("customerList");
 	long customerid=Long.parseLong(request.getParameter("customerid")==null?"0":request.getParameter("customerid"));
@@ -109,8 +110,7 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 }
 
 $(function(){
-	console.info($("#customerandid").val());
-	getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
+	//getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
 	
 	 $("#scancwb").focus();
 });
@@ -214,7 +214,7 @@ function search(flag){
 	<div class="saomiao_topnum">
 		<dl class="blue">
 			<dt>今日返单待出站</dt>
-			<dd  style="cursor:pointer" onclick="tabView('table_weituihuochuku')" id="chukukucundanshu">0</dd>
+			<dd  style="cursor:pointer" onclick="tabView('table_weituihuochuku')" id="chukukucundanshu"><%=weifandannums %></dd>
 		</dl>
 		
 		<dl class="green">
