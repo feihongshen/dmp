@@ -110,7 +110,7 @@ public class AbnormalOrderController {
 	 */
 	@RequestMapping("/toCreateabnormal")
 	public String toCreateabnormal(Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
-			@RequestParam(value = "handleBranch", defaultValue = "0", required = false) long handleBranch,
+			@RequestParam(value = "handleBranch", defaultValue = "5", required = false) long handleBranch,
 			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
 		String quot = "'", quotAndComma = "',";
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());

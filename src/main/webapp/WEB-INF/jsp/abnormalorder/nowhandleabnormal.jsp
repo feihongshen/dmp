@@ -90,11 +90,11 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 			<div align="center">
 				<%
 				 if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
-				 else if(showabnomal.equals("1")&&role.getRolename().equals("客服")) {%>
+				 else if(showabnomal.equals("1")) {%>
 				<input type="submit" value="处理中" class="button">
 				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
 				<%} 
-				else if(showabnomal.equals("0")&&role.getRolename().equals("客服")) {%>
+				else if(showabnomal.equals("0")) {%>
 				<input type="submit" value="完成处理" class="button">
 				<!-- <input type="button" value="完成处理" class="button" onclick="yichuli1();"> -->
 				<%} 

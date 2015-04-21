@@ -114,7 +114,7 @@ function sub(){
 								<%
 								if(iszhandian){ %>
 								处理部门:<select name="handleBranch" id="handleBranch" <%if(!iszhandian){ %> disabled="disabled" <%} %>>
-								<option value="0">请选择</option>
+								<option value="<%=BranchEnum.KeFu.getValue()%>">请选择</option>
 								<option value="<%=BranchEnum.KuFang.getValue()%>"><%=BranchEnum.KuFang.getText()%></option>
 								<option value="<%=BranchEnum.KeFu.getValue()%>"><%=BranchEnum.KeFu.getText()%></option>
 								</select>

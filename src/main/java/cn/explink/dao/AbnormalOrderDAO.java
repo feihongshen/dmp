@@ -220,11 +220,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` =" + handleBranch;
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 
 	}
@@ -247,11 +243,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` =" + handleBranch;
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 
 	}
@@ -357,11 +349,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` =" + handleBranch;
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
@@ -385,11 +373,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` =" + handleBranch;
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
@@ -417,11 +401,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` = " + handleBranch;
 		// sql +=" AND ao.isnow=1 ";
 		return this.jdbcTemplate.queryForInt(sql);
 	}
@@ -448,11 +428,7 @@ public class AbnormalOrderDAO {
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
-		if (handleBranch > 0) {
-			sql += " AND `handleBranch` in ( 0," + handleBranch + ")";
-		} else {
-			sql += " AND `handleBranch` = 0";
-		}
+		sql += " AND `handleBranch` =" + handleBranch;
 		// sql +=" AND ao.isnow=1 ";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
