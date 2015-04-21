@@ -31,7 +31,7 @@ function prn1_print(scancwb) {
 	CreateOneFormPage(scancwb);
 	LODOP.PRINT();
 	//$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
-	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+	//$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 };
 function CreateOneFormPage(scancwb){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
