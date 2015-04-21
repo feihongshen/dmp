@@ -3,7 +3,9 @@ package cn.explink.controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -161,7 +163,9 @@ public class SmtFareSettleController {
 		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
 		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
 		ExportDetailUtil util = new ExportDetailUtil(result);
-		util.export(response, "sheet1", "配送明细.xlsx");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+		util.export(response, "sheet1",fileName);
 	}
 
 	@RequestMapping("/export/deliver")
@@ -180,7 +184,9 @@ public class SmtFareSettleController {
 		Object[] paras = new Object[] { condVO.getDeliverId(), condVO.getVenderId() };
 		List<SmtFareSettleDetailVO> result = this.queryDetailResult(sql, paras);
 		ExportDetailUtil util = new ExportDetailUtil(result);
-		util.export(response, "sheet1", "配送明细.xlsx");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+		util.export(response, "sheet1",fileName);
 	}
 
 	private SmtFareSettleDetailResultVO getStationDetialResult(int page, SmtFareSettleDetailCondVO condVO) {
@@ -782,7 +788,9 @@ public class SmtFareSettleController {
 		}
 
 		public void export() throws Exception {
-			super.excel(this.getResponse(), this.getColNames(), "sheet1", "上门退运费结算报表(站点).xlsx");
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+			super.excel(this.getResponse(), this.getColNames(), "sheet1", fileName);
 		}
 
 		@Override
@@ -870,7 +878,9 @@ public class SmtFareSettleController {
 		}
 
 		public void export() throws Exception {
-			super.excel(this.getResponse(), this.getColNames(), "sheet1", "上门退运费结算报表(站点).xlsx");
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+			super.excel(this.getResponse(), this.getColNames(), "sheet1", fileName);
 		}
 
 		@Override

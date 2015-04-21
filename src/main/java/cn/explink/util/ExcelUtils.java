@@ -86,7 +86,7 @@ public abstract class ExcelUtils {
 
 		response.setContentType("application/x-msdownload"); // 设置生成的文件类型
 
-		response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+		response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
 
 		out = response.getOutputStream(); // 取得输出流
 

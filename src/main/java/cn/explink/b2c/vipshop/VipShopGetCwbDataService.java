@@ -98,6 +98,9 @@ public class VipShopGetCwbDataService {
 		String cancelOrIntercept=request.getParameter("cancelOrIntercept").equals("")?"0":request.getParameter("cancelOrIntercept");
 		vipshop.setCancelOrIntercept(Integer.parseInt(cancelOrIntercept));
 		
+		String isOpenLefengflag=request.getParameter("isOpenLefengflag").equals("")?"0":request.getParameter("isOpenLefengflag");
+		vipshop.setIsOpenLefengflag(Integer.parseInt(isOpenLefengflag));
+		
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
@@ -374,6 +377,7 @@ public class VipShopGetCwbDataService {
 			String customer_name = VipShopGetCwbDataService.convertEmptyString("customer_name", datamap); // 客户
 
 			String service_type = VipShopGetCwbDataService.convertEmptyString("service_type", datamap); // 服务类型：服务类型：1.
+			
 			// B2C，
 			// 2.
 			// 仓配服务，3.
@@ -435,6 +439,15 @@ public class VipShopGetCwbDataService {
 					remarkFreight = "到付";
 				}
 			}
+			
+			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
+				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))
+						&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))
+						){
+					seq_arrs += seq + ",";
+					return seq_arrs;
+				}
+			}
 
 			if ((created_dtm_loc == null) || created_dtm_loc.isEmpty()) {
 				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
@@ -470,6 +483,9 @@ public class VipShopGetCwbDataService {
 			dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
 			dataMap.put("cwbordertypeid", cwbordertype);
 
+			
+			
+			
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
 				if ("edit".equalsIgnoreCase(cmd_type)) {

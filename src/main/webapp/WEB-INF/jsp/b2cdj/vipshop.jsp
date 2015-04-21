@@ -69,6 +69,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >取消开启
 							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==1){%>checked<%}%>  >拦截开启
 						</li>
+						<li><span>正向单是否只下载乐蜂：</span>
+							<input type ="radio" id="isOpenLefengflag1" name ="isOpenLefengflag" value="0" <%if(vipshop.getIsOpenLefengflag()==0){%>checked<%}%>  >关闭
+							<input type ="radio" id="isOpenLefengflag2" name ="isOpenLefengflag" value="1" <%if(vipshop.getIsOpenLefengflag()==1){%>checked<%}%>  >开启
+						</li>
 						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
@@ -124,6 +128,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>取消或拦截：</span>
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" checked  >取消开启
 							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1"  >拦截开启
+						</li>
+						<li><span>正向单是否只下载乐蜂：</span>
+							<input type ="radio" id="isOpenLefengflag1" name ="isOpenLefengflag" value="0"  >关闭
+							<input type ="radio" id="isOpenLefengflag2" name ="isOpenLefengflag" value="1"  >开启
 						</li>
 						
 						<li><span>订单导入库房：</span>

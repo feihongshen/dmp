@@ -21,6 +21,15 @@ public class VipShop {
 	private int forward_hours; // 提前N个小时发送，可动态配置的。
 	private int isTuoYunDanFlag; // 是否开启托运单 模式，生成多个批次
 	private int cancelOrIntercept; // 0 开启取消， 1拦截
+	private int isOpenLefengflag; //下载配送单 是否只开启乐蜂下载 0关闭， 1开启    
+
+	public int getIsOpenLefengflag() {
+		return isOpenLefengflag;
+	}
+
+	public void setIsOpenLefengflag(int isOpenLefengflag) {
+		this.isOpenLefengflag = isOpenLefengflag;
+	}
 
 	public int getCancelOrIntercept() {
 		return cancelOrIntercept;
