@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50704
 File Encoding         : 65001
 
-Date: 2015-04-20 18:38:11
+Date: 2015-04-21 20:18:56
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -111,30 +111,35 @@ INSERT INTO `dmp40_function` VALUES ('505010', '2', '领货打印', '505010', 'w
 INSERT INTO `dmp40_function` VALUES ('505020', '2', '中转出站打印', '505020', 'warehousegroupdetail/branchzhongzhuanoutlist/1?', '5050');
 INSERT INTO `dmp40_function` VALUES ('505030', '2', '退货出站打印', '505030', 'warehousegroupdetail/returnlist/1?', '5050');
 INSERT INTO `dmp40_function` VALUES ('60', '0', '客服管理', '60', 'menu_item_kfgl', '');
-INSERT INTO `dmp40_function` VALUES ('6010', '1', '订单查询', '6010', 'order/orderQuery?', '60');
+INSERT INTO `dmp40_function` VALUES ('6010', '1', '订单查询', '6010', '', '60');
+INSERT INTO `dmp40_function` VALUES ('6015', '1', '工单处理', '6015', '', '60');
+INSERT INTO `dmp40_function` VALUES ('601510', '2', '客服受理工单', '601510', '', '6015');
+INSERT INTO `dmp40_function` VALUES ('601520', '2', '待处理工单', '601520', '', '6015');
+INSERT INTO `dmp40_function` VALUES ('601530', '2', '工单查询处理', '601530', '', '6015');
+INSERT INTO `dmp40_function` VALUES ('601540', '2', '来电人档案库', '601540', '', '6015');
 INSERT INTO `dmp40_function` VALUES ('6020', '1', '订单处理', '6020', '', '60');
-INSERT INTO `dmp40_function` VALUES ('602010', '2', '订单失效', '602010', 'cwborder/losecwbBatch?', '6020');
-INSERT INTO `dmp40_function` VALUES ('602015', '2', '订单拦截', '602015', 'cwborder/toTuiHuo?', '6020');
-INSERT INTO `dmp40_function` VALUES ('602020', '2', '订单操作审核', '602020', 'cwborder/toTuiHuo1?', '6020');
+INSERT INTO `dmp40_function` VALUES ('602010', '2', '订单失效', '602010', '', '6020');
+INSERT INTO `dmp40_function` VALUES ('602015', '2', '订单拦截', '602015', '', '6020');
+INSERT INTO `dmp40_function` VALUES ('602020', '2', '订单操作审核', '602020', '', '6020');
 INSERT INTO `dmp40_function` VALUES ('6025', '1', '订单修改', '6025', '', '60');
-INSERT INTO `dmp40_function` VALUES ('602530', '2', '订单修改申请', '602530', 'applyeditdeliverystate/toCreateApplyEditDeliverystate/1?', '6025');
-INSERT INTO `dmp40_function` VALUES ('602540', '2', '订单修改受理', '602540', 'applyeditdeliverystate/tohandleApplyEditDeliverystateList/1?', '6025');
-INSERT INTO `dmp40_function` VALUES ('602550', '2', '订单状态修改', '602550', 'editcwb/start?', '6025');
-INSERT INTO `dmp40_function` VALUES ('602560', '2', '订单信息修改', '602560', 'editcwb/editCwbInfo?', '6025');
-INSERT INTO `dmp40_function` VALUES ('6030', '1', '问题件', '6030', '', '60');
-INSERT INTO `dmp40_function` VALUES ('603010', '2', '问题件类型', '603010', 'abnormalType/list/1?', '6030');
-INSERT INTO `dmp40_function` VALUES ('603020', '2', '创建问题件', '603020', 'abnormalOrder/toCreateabnormal?', '6030');
-INSERT INTO `dmp40_function` VALUES ('603030', '2', '问题件处理', '603030', 'abnormalOrder/toHandleabnormal/1?', '6030');
-INSERT INTO `dmp40_function` VALUES ('6040', '1', '查询投诉', '6040', '', '60');
-INSERT INTO `dmp40_function` VALUES ('604010', '2', '投诉受理', '604010', 'order/complaintlist/1?', '6040');
-INSERT INTO `dmp40_function` VALUES ('604020', '2', '催单投诉', '604020', 'complaint/cuijiantousufozhanzhang/1?', '6040');
-INSERT INTO `dmp40_function` VALUES ('604030', '2', '投诉处理', '604030', 'complaint/list/1?', '6040');
-INSERT INTO `dmp40_function` VALUES ('6050', '1', '异常处理', '6050', '', '60');
-INSERT INTO `dmp40_function` VALUES ('605010', '2', '异常订单处理', '605010', 'cwborder/toEnd?', '6050');
+INSERT INTO `dmp40_function` VALUES ('602530', '2', '订单修改申请', '602530', '', '6025');
+INSERT INTO `dmp40_function` VALUES ('602540', '2', '签收信息修改', '602540', '', '6025');
+INSERT INTO `dmp40_function` VALUES ('602550', '2', '订单修改审核', '602550', '', '6025');
+INSERT INTO `dmp40_function` VALUES ('6030', '1', '问题件处理', '6030', '', '60');
+INSERT INTO `dmp40_function` VALUES ('603010', '2', '问题件创建', '603010', '', '6030');
+INSERT INTO `dmp40_function` VALUES ('603020', '2', '问题件查询处理', '603020', '', '6030');
+INSERT INTO `dmp40_function` VALUES ('6040', '1', '赔付扣罚', '6040', '', '60');
+INSERT INTO `dmp40_function` VALUES ('604010', '2', '对外赔付', '604010', '', '6040');
+INSERT INTO `dmp40_function` VALUES ('604020', '2', '对内扣罚', '604020', '', '6040');
+INSERT INTO `dmp40_function` VALUES ('6050', '1', '消息中心', '6050', '', '60');
+INSERT INTO `dmp40_function` VALUES ('605010', '2', '消息规则管理', '605010', '', '6050');
+INSERT INTO `dmp40_function` VALUES ('605020', '2', '消息列表', '605020', '', '6050');
 INSERT INTO `dmp40_function` VALUES ('6060', '1', '短信发送', '6060', '', '60');
-INSERT INTO `dmp40_function` VALUES ('606010', '2', '短信群发', '606010', 'sms/viewrole?', '6060');
-INSERT INTO `dmp40_function` VALUES ('606020', '2', '短信账户管理', '606020', 'smsconfigmodel/setsmsview?', '6060');
-INSERT INTO `dmp40_function` VALUES ('606030', '2', '短信发送查询', '606030', 'sms/sendList?', '6060');
+INSERT INTO `dmp40_function` VALUES ('606010', '2', '短信规则管理', '606010', '', '6060');
+INSERT INTO `dmp40_function` VALUES ('606020', '2', '短信账户管理', '606020', '', '6060');
+INSERT INTO `dmp40_function` VALUES ('606030', '2', '短信群发', '606030', '', '6060');
+INSERT INTO `dmp40_function` VALUES ('606040', '2', '短信发送记录', '606040', '', '6060');
+INSERT INTO `dmp40_function` VALUES ('606050', '2', '短信群发记录', '606050', '', '6060');
 INSERT INTO `dmp40_function` VALUES ('70', '0', '运营监控', '70', 'menu_item_yyjk', '');
 INSERT INTO `dmp40_function` VALUES ('7010', '9', '妥投率', '7010', '', '70');
 INSERT INTO `dmp40_function` VALUES ('701010', '9', '妥投率条件', '701010', 'datastatistics/mobileDeliveryRateSetup?', '7010');
