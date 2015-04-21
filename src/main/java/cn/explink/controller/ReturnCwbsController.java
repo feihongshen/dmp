@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -187,10 +188,59 @@ public class ReturnCwbsController {
 	@RequestMapping("/getReturnCwbsintowarhouseSum")
 	public @ResponseBody JSONObject getReturnCwbsintowarhouseSum() {
 		JSONObject obj = new JSONObject();
-
-		long returncwbsFandanweirukuCount = returnCwbsDAO.getReturnCwbsByTypeAndTobranchidCount(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid());
+		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
+		long returncwbsFandanweirukuCount = returnCwbsDAO.getReturnCwbsByTypeAndTobranchidCount(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(),nowtime);
 		obj.put("size", returncwbsFandanweirukuCount);
 		return obj;
+	}
+	
+	
+	/**
+	 * 返单待入库根据条件查询
+	 * 返单待入库统计
+	 * 
+	 * @return
+	 *//*
+	@RequestMapping("/getReturnCwbssintowarhouseSum")
+	public @ResponseBody JSONObject getReturnCwbssintowarhouseSum(Model model, @RequestParam(value = "flag", required = false, defaultValue = "1") long flag,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "timetype", required = false, defaultValue = "4") long timetype,
+			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+		JSONObject obj = new JSONObject();
+		// 显示每天截止到”当前时间”的数据。
+		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
+		List<CwbOrder> list = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), nowtime, timetype,
+				starttime, endtime, customerid);
+		long returncwbsFandanweirukuCount = list.size();
+		obj.put("size", returncwbsFandanweirukuCount);
+		return obj;
+	}*/
+	
+/*	*//**
+	 * 2
+	 * 返单待入库根据条件查询
+	 * 返单待入库统计
+	 * 
+	 * @return
+	 *//*
+	@RequestMapping("/getReturnCwbsssintowarhouseSum")
+	public @ResponseBody JSONObject getReturnCwbsssintowarhouseSum(Model model, 
+			@RequestParam(value = "customeridwei", required = false, defaultValue = "0") long customerid, @RequestParam(value = "timetypewei", required = false, defaultValue = "4") long timetype,
+			@RequestParam(value = "starttimewei", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtimewei", required = false, defaultValue = "") String endtimewei) {
+		JSONObject obj = new JSONObject();
+		// 显示每天截止到”当前时间”的数据。
+//		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
+		List<CwbOrder> list = cwbDAO.getReturnCwbOrder(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), timetype,
+				starttime, endtimewei, customerid);
+		long returncwbsFandanweirukuCount = list.size();
+		obj.put("size", returncwbsFandanweirukuCount);
+		return obj;
+	}*/
+
+	
+	
+	public List<CwbOrder> getyifandanrukulist(long type, long tobranchid, String nowtime, long timetype, String starttime, String endtime, long customerid){
+		List<CwbOrder> list = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, timetype, starttime, endtime, customerid);
+		return list;
 	}
 
 	/**
@@ -202,7 +252,8 @@ public class ReturnCwbsController {
 	@RequestMapping("/returnCwbsintowarhouse")
 	public String returnCwbsintowarhouse(Model model, @RequestParam(value = "flag", required = false, defaultValue = "1") long flag,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "timetype", required = false, defaultValue = "4") long timetype,
-			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime,
+			HttpSession session) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
 
 		// 显示每天截止到”当前时间”的数据。
@@ -210,7 +261,8 @@ public class ReturnCwbsController {
 
 		List<CwbOrder> weifandanrukulist = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), nowtime, timetype,
 				starttime, endtime, customerid);
-		List<CwbOrder> yifandanrukulist = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, timetype, starttime, endtime, customerid);
+		List<CwbOrder> yifandanrukulist = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, timetype, starttime, endtime, customerid);
+		List<CwbOrder> yifandansuccessList = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, 5, starttime, endtime, 0);
 
 		List<CwbOrder> yifandanrukulistView = new ArrayList<CwbOrder>();
 		if (yifandanrukulist != null && !yifandanrukulist.isEmpty()) {
@@ -220,14 +272,19 @@ public class ReturnCwbsController {
 				yifandanrukulistView.add(cwbOrder);
 			}
 		}
+		//long yifandannums=(yifandanrukulist != null && !yifandanrukulist.isEmpty()) ? yifandanrukulist.size() : 0;
+		long yifandannums=(yifandansuccessList != null && !yifandansuccessList.isEmpty()) ? yifandansuccessList.size() : 0;
 
 		model.addAttribute("weifandanrukulist", weifandanrukulist);
+		long weifandannums=(weifandanrukulist != null && !weifandanrukulist.isEmpty()) ? weifandanrukulist.size() : 0;
 		model.addAttribute("yifandanrukulist", yifandanrukulistView);
-		model.addAttribute("yifandannums", (yifandanrukulist != null && !yifandanrukulist.isEmpty()) ? yifandanrukulist.size() : 0);
+		model.addAttribute("weifandannums",weifandannums);
+		model.addAttribute("yifandannums",yifandannums);
 		model.addAttribute("customerlist", customerList);
 		model.addAttribute("customerList", customerDAO.getAllCustomersByExistRules());// 供货商
 		return "returnCwbs/returnCwbsintowarhouse";
 	}
+	
 
 	/**
 	 * 返单入库功能

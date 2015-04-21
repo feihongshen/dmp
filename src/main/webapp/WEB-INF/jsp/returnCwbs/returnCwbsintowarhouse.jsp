@@ -9,6 +9,7 @@
 	List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 	List<CwbOrder> yifandanrukulist = (List<CwbOrder>)request.getAttribute("yifandanrukulist");
 	String yifandannums=request.getAttribute("yifandannums").toString();
+	//String weifandannums = request.getAttribute("weifandannums").toString();
 	
 	List<Customer> customerList = request.getAttribute("customerList")==null?null:(List<Customer>)request.getAttribute("customerList");
 	long customerid=Long.parseLong(request.getParameter("customerid")==null?"0":request.getParameter("customerid"));
@@ -34,6 +35,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 var successcwbnum ="<%=yifandannums%>";
+<%-- var weifandan = "<%=weifandannums%>"; --%>
 var flag="<%=flag%>";
 	$(function(){
 		var $menuli = $(".saomiao_tab2 ul li");
@@ -88,7 +90,14 @@ var flag="<%=flag%>";
 	function getReturnCwbsintowarhouseSum() {
 		$.ajax({
 			type : "POST",
-			url : "<%=request.getContextPath()%>/returnCwbs/getReturnCwbssintowarhouseSum",
+			url : "<%=request.getContextPath()%>/returnCwbs/getReturnCwbsintowarhouseSum",
+			/* data:{
+				customeridwei:$("#customeridwei").val(),
+				timetypewei:$("#timetypewei").val(),
+				starttimewei:$("#starttimewei").val(),
+				endtimewei:$("#endtimewei").val()
+			},
+			 */
 			dataType : "json",
 			success : function(data) {
 				$("#rukukucundanshu").html(data.size);
@@ -404,12 +413,12 @@ function search(flag){
 	</form>
 
 	<form action="<%=request.getContextPath()%>/returnCwbs/returnCwbsintowarhouse" method="post" id="searchForm">
-			<input type="hidden" name="customerid" id="customerid" value=""/>
-			<input type="hidden" name="starttime" id="starttime" />
-			<input type="hidden" name="endtime" id="endtime" />
-			<input type="hidden" name="timetype" id="timetype" />
-			<input type="hidden" name="flag" id="flag" />
-		</form>
+		<input type="hidden" name="customerid" id="customerid" value=""/>
+		<input type="hidden" name="starttime" id="starttime" />
+		<input type="hidden" name="endtime" id="endtime" />
+		<input type="hidden" name="timetype" id="timetype" />
+		<input type="hidden" name="flag" id="flag" />
+	</form>
 	</div>
 </body>
 </html>

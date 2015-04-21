@@ -63,6 +63,7 @@ $(function(){
 		$("#printByCondation").attr("checked",false);
 		$("#manyCondations").hide();
 		$("#orders").show();
+		$("#hidetable").hide();
 		$("#selectype").val("1");
 
 	}
@@ -160,15 +161,16 @@ function accordToCondation(){
 	$("#orders").hide();
 	$("#selectype").val("0");
 	$("#gd_table").html("");
-	 $("#copyorders").val("");
+	$("#copyorders").val("");
+	$("#hidetable").hide();
 }
 function printByOrder(){
 	$("#printByCondation").attr("checked",false);
 	$("#manyCondations").hide();
 	$("#orders").show();
 	$("#selectype").val("1");
-	 $("#gd_table").html("");
-	
+	$("#gd_table").html("");
+	$("#hidetable").hide();
 }
 </script>
 </head>
@@ -306,7 +308,7 @@ function printByOrder(){
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
-	<div class="iframe_bottom">
+	<div class="iframe_bottom" id="hidetable">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 	<tr>
 		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">

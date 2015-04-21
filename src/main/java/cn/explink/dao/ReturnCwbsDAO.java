@@ -79,9 +79,14 @@ public class ReturnCwbsDAO {
 		return jdbcTemplate.query(sql, new ReturnCwbsMapper(), cwb, type);
 	}
 
-	public long getReturnCwbsByTypeAndTobranchidCount(long type, long tobranchid) {
-		String sql = "select count(1) from `ops_returncwbs` where `type`=? and `tobranchid`=? and `isnow`='0'";
-		return jdbcTemplate.queryForLong(sql, type, tobranchid);
+	public long getReturnCwbsByTypeAndTobranchidCount(long type, long tobranchid, String createtime) {
+		String sql = "select count(1) from `ops_returncwbs` where `type`=? and `tobranchid`=? and `createtime`>=? and `isnow`='0'";
+		return jdbcTemplate.queryForLong(sql, type, tobranchid,createtime);
+	}
+	//new method
+	public long getReturnCwbsByTypeAndTobranchidOther(long type, long tobranchid, int customerid) {
+		String sql = "select count(1) from `ops_returncwbs` where `type`=? and `tobranchid`=? and `customerid`=? and `isnow`='0'";
+		return jdbcTemplate.queryForLong(sql, type, tobranchid, customerid);
 	}
 
 	public long getReturnCwbsByTypeAndBranchidAndIsnowCount(long type, long branchid, long isnow, String nowtime,long customerid,long timetypewei,

@@ -355,6 +355,7 @@ public class PDAController {
 	@RequestMapping("/changeintowarhouse")
 	public String changeintowarhouse(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
+
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		List<User> uList = this.userDAO.getUserByRole(3);
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
