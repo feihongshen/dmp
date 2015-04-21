@@ -57,7 +57,6 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
@@ -503,17 +502,17 @@ public class CwbApplyController {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String datetime = df.format(date);
-			CwbOrder co = this.cwborderService.auditToTuihuo(this.getSessionUser(), cwb, cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), 0);
-			List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
-			if ((bList != null) && (bList.size() > 0)) {
-				this.cwbDAO.updateNextBranchid(cwb, bList.get(0).getBranchid());
-			}
-			if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
-				this.cwbApplyTuiHuoDAO.updateCwbApplyTuiHuoForHandle(datetime, this.getSessionUser().getUserid(), handleremark, 1, applytuihuobranchid, cwb);
-				return "{\"errorCode\":0,\"error\":\"审核成功\"}";
-			} else {
-				return "{\"errorCode\":1,\"error\":\"审核失败，不符合\"}";
-			}
+			// CwbOrder co =
+			// this.cwborderService.auditToTuihuo(this.getSessionUser(), cwb,
+			// cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), 0);
+			this.cwbApplyTuiHuoDAO.updateCwbApplyTuiHuoForHandle(datetime, this.getSessionUser().getUserid(), handleremark, 1, applytuihuobranchid, cwb);
+			this.cwbDAO.updateNextBranchid(cwb, applytuihuobranchid);
+			// if (co.getFlowordertype() ==
+			// FlowOrderTypeEnum.DingDanLanJie.getValue()) {
+			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
+			// } else {
+			// return "{\"errorCode\":1,\"error\":\"审核失败，不符合\"}";
+			// }
 		} catch (CwbException ce) {
 			return "{\"errorCode\":1,\"error\":\"审核失败，" + ce.getMessage() + "\"}";
 		}

@@ -88,6 +88,8 @@ public class OrderBackCheckController {
 		model.addAttribute("amazonIsOpen", isOpenFlag);
 		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
 		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
+		String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
+		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
 		// 如果为选择站点则匹配用户权限
 		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
