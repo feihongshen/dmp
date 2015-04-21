@@ -70,7 +70,7 @@ function afterSumit(form){
 	         </ul>
 		</div>
 		<div align="center">
-        <input type="submit" value="确认" class="button" id="sub" /></div>
+        <input type="submit" value="确认" class="button" id="sub" onclick="check_branchroute()"/></div>
 	</form>
 	</div>
 </body>

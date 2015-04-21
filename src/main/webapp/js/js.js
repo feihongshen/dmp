@@ -3907,7 +3907,7 @@ function check_branchroute() {
 		alert("当前站点不能为空");
 		return false;
 	}
-	if ($("#toBranchId").val() == 0) {
+	if ($(".checked")) {
 		alert("目的站点不能为空");
 		return false;
 	}
@@ -4767,5 +4767,33 @@ function validate(id){
 	}
 
 	}
+
+function whenhidden(){
+	$("#div_2").attr('hidden','true');
+	$("#divs").attr('hidden','true');
+	if($("#reasontype").val()==2)
+	{
+		$("#divs").removeAttr('hidden');
+		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
+			$("#div_2").removeAttr('hidden');
+		}
+	}
+} 
+
+function to_change(flag){
+	if($("#reasontype").val()==1)
+	{
+		$("#divs").removeAttr('hidden');
+			if(flag==1){
+				$("#div_2").attr('hidden','true');
+			}
+			else 
+			{
+			$("#div_2").removeAttr('hidden');
+			}
+	}else{
+		$("#div_2").attr('hidden','true');
+		}
+}
 
 
