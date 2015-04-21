@@ -2090,8 +2090,8 @@ public class PDAController {
 		//TODO 退货中转入库备注
 		List<Reason> backreasonList = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Tuituozhanruku.getValue());
 
-		List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 		Map allcwbstr = new HashMap();
 
 		Map tAllcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), 0);
@@ -5835,8 +5835,8 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 		String tbranchids = "-1";
 		String zbranchids = "-1";
-		List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 		if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 			for (Branch branch : tbranchlist) {
 				tbranchids += "," + branch.getBranchid();
@@ -7490,8 +7490,8 @@ public class PDAController {
 			String sqlstr = "";
 			String tbranchids = "-1";
 			String zbranchids = "-1";
-			List<Branch> tbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.TuiHuo.getValue());
-			List<Branch> zbranchlist = this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhongZhuan.getValue());
+			List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+			List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 			if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 				for (Branch branch : tbranchlist) {
 					tbranchids += "," + branch.getBranchid();

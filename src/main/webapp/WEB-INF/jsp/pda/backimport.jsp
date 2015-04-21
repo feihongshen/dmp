@@ -115,10 +115,10 @@ function getcwbsdataForBack(){
 function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 /* 	alert($('#tip').val()); */
 
- if($("#customerid").val().length==0){
+/*  if($("#customerid").val().length==0){
 	 alert("请选择供货商");
 	 return false;
- }
+ } */
 	if(scancwb.length>0){
 		if($('#tip').val()=='goods')
 			{
@@ -194,7 +194,7 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				data:{
 					"comment":comment,
 					"customerid":$("#customerid").val(),
-					"checktype":2,
+					"checktype":1,
 					
 				},
 				dataType:"json",
@@ -590,7 +590,7 @@ function yiruku(){
 				</select>
 				&nbsp;&nbsp;供货商：
 				<select name ="customerid" id ="customerid">
-	          <option value ="">请选择</option>
+	          <option value ="-1">请选择</option>
 	          <%if(cList!=null&&cList.size()>0){ %>
 	            <%for(Customer c : cList){ %>
 		          <option value ="<%=c.getCustomerid()%>"  ><%=c.getCustomername()%></option>
