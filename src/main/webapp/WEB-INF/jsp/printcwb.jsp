@@ -6,6 +6,8 @@
 <%
 String [] printcwbTLF = (String[])request.getAttribute("printcwbTLF");
 
+String  scancwb = request.getAttribute("scancwb").toString();
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
@@ -21,6 +23,7 @@ String [] printcwbTLF = (String[])request.getAttribute("printcwbTLF");
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <script type="text/javascript">
+
 var LODOP; //声明为全局变量 
 function prn1_preview() {	
 	CreateOneFormPage();
@@ -30,7 +33,7 @@ function prn1_print() {
 	CreateOneFormPage();
 	LODOP.PRINT();
 	//$("#WORK_AREA",parent.document)[0].contentWindow.focusCwb();
-	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+	//$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 };
 function CreateOneFormPage(){
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
@@ -40,6 +43,7 @@ function CreateOneFormPage(){
 	LODOP.ADD_PRINT_HTM(<%=printcwbTLF[0] %>,<%=printcwbTLF[1] %>,740,1100,document.getElementById("form1").innerHTML);
 };
 function cwbscan(scancwb){
+	
 	if(scancwb.length>0){
 		$.ajax({
 			type: "POST",
@@ -53,13 +57,14 @@ function cwbscan(scancwb){
 					$("#branchname").html(data.body.cwbbranchname);
 					prn1_print();
 				}
+				
 			}
 		});
 	}
 }
 </script>
 </head>
-<body <% if(request.getParameter("scancwb")!=null&&request.getParameter("scancwb").length()!=0){ %>onload="cwbscan('<%=request.getParameter("scancwb") %>');" <%} %>>
+<body <% if(scancwb!=null&&scancwb.length()!=0){ %>onload="cwbscan('<%=scancwb %>');" <%} %>>
 <% if(request.getParameter("scancwb")!=null){ %>
 
 		
@@ -79,7 +84,7 @@ function cwbscan(scancwb){
 			</form>
 		
 <%} %>
-<a href="javascript:prn1_preview()">打印预览</a>
+<a href="javascript:prn1_preview('<%=scancwb %>')">打印预览</a>
 </body>
 
 </html>

@@ -25,7 +25,7 @@
 <script src="${ctx_path}/js/json2.min.js" type="text/javascript"></script>
 <%
 int exportFlag=0;
-OverdueResultVO overdueResultVO=request.getAttribute("request")==null?null:(OverdueResultVO)request.getAttribute("request");
+OverdueResultVO overdueResultVO=request.getAttribute("result")==null?null:(OverdueResultVO)request.getAttribute("result");
 if(overdueResultVO!=null&&overdueResultVO.getBranchMap()!=null&&overdueResultVO.getBranchMap().size()>0){
 	exportFlag=1;
 }

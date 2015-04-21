@@ -17,9 +17,10 @@ public class PrintCwbController {
 	SystemInstallDAO systemInstallDAO;
 
 	@RequestMapping("")
-	public String printCwb(Model model) {
+	public String printCwb(Model model, @RequestParam(value = "scancwb", required = false, defaultValue = "") String scancwb) {
 		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("printcwbTLF");
 		String[] printcwbTLF = siteDayLogTime.getValue().split(",");
+		model.addAttribute("scancwb", scancwb);
 		model.addAttribute("printcwbTLF", printcwbTLF);
 		return "printcwb";
 	}
