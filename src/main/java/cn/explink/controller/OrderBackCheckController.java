@@ -41,7 +41,7 @@ import cn.explink.util.ExcelUtils;
  * 退款审核
  * 
  * @author zs
- *
+ * 
  */
 @Controller
 @RequestMapping("/orderBackCheck")
@@ -64,7 +64,7 @@ public class OrderBackCheckController {
 	JointService jointService;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -79,16 +79,17 @@ public class OrderBackCheckController {
 	@RequestMapping("/toTuiHuoCheck")
 	public String toTuiHuoCheck(Model model, HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "searchType", defaultValue = "0", required = false) String searchType) {
-		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		String branchids = "";
 		// 如果为选择站点则匹配用户权限
-		if (branchList != null && !branchList.isEmpty()) {
+		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
 				branchids += listb.getBranchid() + ",";
 			}
 		}
-		branchids = branchids.substring(0, branchids.lastIndexOf(","));
-
+		if (branchids.contains(",")) {
+			branchids = branchids.substring(0, branchids.lastIndexOf(","));
+		}
 		// 根据订单号查询
 		if (!"".equals(cwb.trim()) && "0".equals(searchType)) {
 			List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
@@ -96,26 +97,26 @@ public class OrderBackCheckController {
 				if ("".equals(cwbStr.trim())) {
 					continue;
 				}
-				OrderBackCheck o = orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
+				OrderBackCheck o = this.orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
 				if (o != null) {
 					list.add(o);
 				}
 			}
-			List<Customer> customerList = customerDAO.getAllCustomers();
-			List<User> userList = userDAO.getAllUser();
-			List<OrderBackCheck> orderbackList = orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			List<User> userList = this.userDAO.getAllUser();
+			List<OrderBackCheck> orderbackList = this.orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
 			model.addAttribute("orderbackList", orderbackList);
 		}
 		// 查询全部
 		if ("1".equals(searchType)) {
-			List<OrderBackCheck> list = orderBackCheckDAO.getOrderBackCheckListByBranch(branchids);
-			List<Customer> customerList = customerDAO.getAllCustomers();
-			List<User> userList = userDAO.getAllUser();
-			List<OrderBackCheck> orderbackList = orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
+			List<OrderBackCheck> list = this.orderBackCheckDAO.getOrderBackCheckListByBranch(branchids);
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			List<User> userList = this.userDAO.getAllUser();
+			List<OrderBackCheck> orderbackList = this.orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
 			model.addAttribute("orderbackList", orderbackList);
 		}
 
-		int isOpenFlag = jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("amazonIsOpen", isOpenFlag);
 		return "auditorderstate/toTuiHuoCheck";
 	}
@@ -128,9 +129,10 @@ public class OrderBackCheckController {
 	 * @return
 	 */
 	@RequestMapping("/save")
-	public @ResponseBody String save(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
+	public @ResponseBody
+	String save(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		try {
-			orderBackCheckService.save(ids, getSessionUser());
+			this.orderBackCheckService.save(ids, this.getSessionUser());
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
@@ -148,21 +150,21 @@ public class OrderBackCheckController {
 	@RequestMapping("/export")
 	public void export(Model model, HttpServletResponse response, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "searchType", defaultValue = "0", required = false) String searchType, HttpServletRequest request) {
-		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		String branchids = "";
 		// 如果为选择站点则匹配用户权限
-		if (branchList != null && !branchList.isEmpty()) {
+		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
 				branchids += listb.getBranchid() + ",";
 			}
 		}
 		branchids = branchids.substring(0, branchids.lastIndexOf(","));
 
-		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<User> userList = userDAO.getAllUser();
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		List<User> userList = this.userDAO.getAllUser();
 		String[] cloumnName1 = new String[9]; // 导出的列名
 		String[] cloumnName2 = new String[9]; // 导出的英文列名
-		exportService.SetOrderBackCheckFields(cloumnName1, cloumnName2);
+		this.exportService.SetOrderBackCheckFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		final HttpServletRequest request1 = request;
@@ -177,7 +179,7 @@ public class OrderBackCheckController {
 				if ("".equals(cwbStr.trim())) {
 					continue;
 				}
-				OrderBackCheck o = orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
+				OrderBackCheck o = this.orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
 				if (o != null) {
 					list.add(o);
 				}
@@ -185,23 +187,23 @@ public class OrderBackCheckController {
 
 		}// 根据权限导出全部
 		if ("1".equals(searchType)) {
-			list = orderBackCheckDAO.getOrderBackCheckListByBranch(branchids);
+			list = this.orderBackCheckDAO.getOrderBackCheckListByBranch(branchids);
 		}
 
-		final List<OrderBackCheck> list1 = orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
+		final List<OrderBackCheck> list1 = this.orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
 		try {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < list1.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = exportService.setOrderBackCheck(cloumnName3, request1, list1, a, i, k);
+							a = OrderBackCheckController.this.exportService.setOrderBackCheck(cloumnName3, request1, list1, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
