@@ -5971,6 +5971,13 @@ CREATE TABLE
 		INSERT INTO `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`)VALUES('146','实收运费','1','Infactfare'); 
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-4-21-1" author="wangzhiyong">
+		<sql>
+			ALTER TABLE `express_set_reason` ADD COLUMN `whichreason` INT(11) DEFAULT 0 NULL AFTER `reasontype`;
+			ALTER TABLE `express_set_reason` ADD COLUMN `parentid` INT(11) DEFAULT 0 NULL AFTER `whichreason`;
+		</sql>
+	</changeSet>
+	
 
 
 </databaseChangeLog>
