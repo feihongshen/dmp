@@ -4756,3 +4756,16 @@ function doWavAudio(wavPath){
 	audioElement.play();
 }
 
+//电商对接验证
+function validate(id){
+	  var reg = new RegExp("^[0-9]*$");
+	  var obj = document.getElementById(id);
+	if(!reg.test(obj.value)){
+	   alert("请输入数字!");
+	   obj.value="";
+	   //return false;
+	}
+
+	}
+
+

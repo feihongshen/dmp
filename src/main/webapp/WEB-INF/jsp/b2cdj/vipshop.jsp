@@ -4,6 +4,7 @@
 <%@page import="cn.explink.domain.Branch" %>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <%
 VipShop vipshop = (VipShop)request.getAttribute("vipshopObject");
 List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
@@ -11,7 +12,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 %>
 
 <script type="text/javascript">
-
 
 
 </script>
@@ -35,10 +35,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="private_key" name ="private_key" value="<%=vipshop.getPrivate_key() %>"  maxlength="300">
 						</li>
 						<li><span>每次获取订单数量：</span>
-							<input type ="text" id="getMaxCount" name ="getMaxCount" value="<%=vipshop.getGetMaxCount() %>"  maxlength="300">
+							<input type ="text" id="getMaxCount" name ="getMaxCount" onblur="validate('getMaxCount')"  value="<%=vipshop.getGetMaxCount() %>"  maxlength="300">
 						</li>
 						<li><span>每次推送订单数量：</span>
-							<input type ="text" id="sendMaxCount" name ="sendMaxCount" value="<%=vipshop.getSendMaxCount() %>"  maxlength="300">
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="<%=vipshop.getSendMaxCount() %>"  maxlength="300">
 						</li>
 						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL" value="<%=vipshop.getGetCwb_URL() %>"  maxlength="300">
@@ -47,10 +47,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">
 						</li>
 						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" value="<%=vipshop.getVipshop_seq() %>"  maxlength="300">
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="<%=vipshop.getVipshop_seq() %>"  maxlength="300">
 						</li>
 						<li><span>系统中客户id：</span>
-							<input type ="text" id="customerids" name ="customerids" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
+							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
 							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1" <%if(vipshop.getIsopendownload()==1){%>checked<%}%>  >开启
@@ -90,10 +90,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="private_key" name ="private_key"  maxlength="300">
 						</li>
 						<li><span>每次获取订单数量：</span>
-							<input type ="text" id="getMaxCount" name ="getMaxCount"   maxlength="300">
+							<input type ="text" id="getMaxCount" name ="getMaxCount"   maxlength="300" onblur="javascript:validate('getMaxCount')">
 						</li>
 						<li><span>每次推送订单数量：</span>
-							<input type ="text" id="sendMaxCount" name ="sendMaxCount"  maxlength="300">
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount"  maxlength="300" onblur="validate('sendMaxCount')">
 						</li>
 						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL"   maxlength="300">
@@ -102,13 +102,13 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>
 						</li>
 						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" value=""  maxlength="300">
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" value=""  maxlength="300">
 						</li>
 						<li><span>系统中客户id：</span>
-							<input type ="text" id="customerids" name ="customerids"   maxlength="300">
+							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
-							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1"  >开启
+							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1"  checked>开启
 							<input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   >关闭
 						</li>
 						<li><span>托运模式：</span>
