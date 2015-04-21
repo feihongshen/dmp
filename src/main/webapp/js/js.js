@@ -4771,7 +4771,7 @@ function validate(id){
 function whenhidden(){
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
-	if($("#reasontype").val()==2)
+	if($("#reasontype").val()==1)
 	{
 		$("#divs").removeAttr('hidden');
 		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){

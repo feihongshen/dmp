@@ -33,14 +33,21 @@ public class ReasonController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
+				.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(Model model, @PathVariable("page") long page, @RequestParam(value = "reasontype", required = false, defaultValue = "0") long reasontype) {
-		model.addAttribute("reasonList", reasonDao.getReasonByPage(page, reasontype));
-		model.addAttribute("page_obj", new Page(reasonDao.getReasonCount(reasontype), page, Page.ONE_PAGE_NUMBER));
+	public String list(
+			Model model,
+			@PathVariable("page") long page,
+			@RequestParam(value = "reasontype", required = false, defaultValue = "0") long reasontype) {
+		model.addAttribute("reasonList",
+				reasonDao.getReasonByPage(page, reasontype));
+		model.addAttribute("page_obj",
+				new Page(reasonDao.getReasonCount(reasontype), page,
+						Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		return "reason/list";
 	}
@@ -51,35 +58,63 @@ public class ReasonController {
 		return "reason/edit";
 	}
 
+	@RequestMapping("/add")
+	public String add(HttpServletRequest request, Model model) {
+		request.setAttribute("reasonList", reasonDao.add());
+		return "reason/add";
+	}
+
 	@RequestMapping("/save/{id}")
-	public @ResponseBody String save(Model model, HttpServletRequest request, @PathVariable("id") long reasonid, @RequestParam("reasoncontent") String reasoncontent,
-			@RequestParam("reasontype") long reasontype) {
+	public @ResponseBody
+	String save(
+			Model model,
+			HttpServletRequest request,
+			@PathVariable("id") long reasonid,
+			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent) {
 
 		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
-		if (list.size() > 0 && reasontype == list.get(0).getReasontype()) {
+		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
 		}
-		Reason reason1 = new Reason();
-		reason1.setReasoncontent(request.getParameter("reasoncontent"));
-		reason1.setReasontype(Integer.parseInt(request.getParameter("reasontype")));
-		reason1.setReasonid(reasonid);
-		reasonDao.saveReason(reason1);
-		logger.info("operatorUser={},常用语管理->save", getSessionUser().getUsername());
+		Reason reason = new Reason();
+		reason.setReasoncontent(reasoncontent);
+		reason.setReasonid(reasonid);
+		reasonDao.saveReason(reason);
+		logger.info("operatorUser={},常用语管理->save", getSessionUser()
+				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody String create(Model model, HttpServletRequest request, @RequestParam("reasoncontent") String reasoncontent, @RequestParam("reasontype") long reasontype) {
+	public @ResponseBody
+	String create(
+			Model model,
+			HttpServletRequest request,
+			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent,
+			@RequestParam(value = "reasontype", defaultValue = "0", required = false) long reasontype,
+			@RequestParam(value = "whichreason", defaultValue = "0", required = false) int whichreason,
+			@RequestParam(value = "parentid", defaultValue = "0", required = false) int parentid) {
 
 		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
 		if (list.size() > 0 && reasontype == list.get(0).getReasontype()) {
 			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
 		}
 		Reason reason = new Reason();
-		reason.setReasoncontent(request.getParameter("reasoncontent"));
-		reason.setReasontype(Long.parseLong(request.getParameter("reasontype")));
+		reason.setReasoncontent(reasoncontent);
+		reason.setReasontype(reasontype);
+		reason.setWhichreason(0);
+		if (reasontype == 1) {
+			reason.setWhichreason(1);
+			if (whichreason == 2) {
+				reason.setParentid(parentid);
+				reason.setWhichreason(2);
+			}
+		}
+
 		reasonDao.creReason(reason);
-		logger.info("operatorUser={},常用语管理->create", getSessionUser().getUsername());
+
+		logger.info("operatorUser={},常用语管理->create", getSessionUser()
+				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"新建成功\"}";
 	}
 

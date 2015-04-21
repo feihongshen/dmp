@@ -1,6 +1,13 @@
-<%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
+<%@page import="cn.explink.domain.Reason"%>
+<%@page import="cn.explink.dao.ReasonDao"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
 
+<%
+
+List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
+
+%>
 
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -12,12 +19,27 @@
 			
 				<ul>
 					<li><span>类型：</span> 
-					<select name ="reasontype" id="reasontype" class="select1">
+					<select name ="reasontype" id="reasontype" class="select1" onchange="whenhidden()">
 				       <option value ="0">请选择</option>
 		               <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ %>
 		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>
 		               <%} %>
 		           </select>*</li>
+		              <div hidden="true" id="divs">
+		           <li><span id=which style="margin-left: 50px" align="left">
+			           <input type="radio" name="whichreason" id="radio1" checked="checked" onclick="to_change(1)" value='1'>一级
+			           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2)" value='2'>二级 
+		           </span></li>
+		           </div>
+		           <div hidden="true" id="div_2" >
+			           <li><span>一级原因：</span> 
+						<select name ="parentid" id="parentid" >
+					       <option value ="0">请选择</option>
+			               <%for(Reason rs :rslist){ %>
+			               <option value ="<%=rs.getReasonid()%>"><%=rs.getReasoncontent() %></option>
+			               <%} %>
+			           </select>*</li>
+		           </div>
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" maxlength="30" class="input_text1"></li>
 				</ul>
 		</div>

@@ -1,10 +1,10 @@
 package cn.explink.dao;
 
 import java.sql.PreparedStatement;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,6 +29,8 @@ public class ReasonDao {
 			reason.setReasonid(rs.getLong("reasonid"));
 			reason.setReasoncontent(rs.getString("reasoncontent"));
 			reason.setReasontype(rs.getLong("reasontype"));
+			reason.setWhichreason(rs.getInt("whichreason"));
+			reason.setParentid(rs.getInt("parentid"));
 			return reason;
 		}
 	}
@@ -73,17 +75,27 @@ public class ReasonDao {
 			return null;
 		}
 	}
+	
+	public List<Reason> getReasonByReasontype(long reasontype) {
+		if(reasontype==2){
+			try {
+				return jdbcTemplate.query("select * from express_set_reason where reasontype=? and whichreason=1", new ReasonRowMapper(), reasontype);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
+	}
 
 	@CacheEvict(value = "reasonCache", key = "#reason.reasonid")
 	public void saveReason(final Reason reason) {
 
-		jdbcTemplate.update("update express_set_reason set reasoncontent=?,reasontype =? where reasonid=?", new PreparedStatementSetter() {
+		jdbcTemplate.update("update express_set_reason set reasoncontent=? where reasonid=?", new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, reason.getReasoncontent());
-				ps.setLong(2, reason.getReasontype());
-				ps.setLong(3, reason.getReasonid());
+				ps.setLong(2, reason.getReasonid());
 			}
 		});
 
@@ -91,12 +103,14 @@ public class ReasonDao {
 
 	public void creReason(final Reason reason) {
 
-		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype) values(?,?)", new PreparedStatementSetter() {
+		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid) values(?,?,?,?)", new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, reason.getReasoncontent());
 				ps.setLong(2, reason.getReasontype());
+				ps.setInt(3, reason.getWhichreason());
+				ps.setInt(4, reason.getParentid());
 			}
 		});
 	}
@@ -135,5 +149,18 @@ public class ReasonDao {
 
 		return reasontype;
 	}
-
+	//查出所有的一级原因
+	public List<Reason> add(){
+		String sql = "SELECT * FROM express_set_reason where whichreason=1";
+		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+		return list;
+	}
+	
+	//查出所有的二级原因
+	public List<Reason> getAllSecondLevelReason(long firstlevelreasonid){
+		String sql = "SELECT * FROM express_set_reason where parentid="+firstlevelreasonid;
+		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+		return list;
+	}
+	
 }
