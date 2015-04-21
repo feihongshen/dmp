@@ -114,6 +114,9 @@ function resendaddressMsg(cwbs,emaildate,customerid,addressCodeEditType,onePageN
 			dataType : "json",
 			success:function(data){
 				alert(data.error);
+				$("#btnval1").removeAttr("disabled","disabled");
+				$("#btnval1").val("重新匹配");
+				
 			}
 		});
 	}
@@ -125,6 +128,63 @@ function searchForm(){
 		return false;
 	}else{
 		$("#editBranchForm").submit();
+	}
+}
+function selectAll(){
+	if($('input[name="machbranch"]:checked').size()>0){
+		$('input[name="machbranch"]').each(function(){
+			$(this).attr("checked",false);
+		});
+	}else{
+		$('input[name="machbranch"]').attr("checked",true);
+	}
+}
+function bdbranchmatch(){
+	var matchcwbs="";
+	var matchbranchcode=$("#matchbranchcode").val();
+	var matchbranchname=$("#matchbranchname").val();
+	$('input[name="machbranch"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+		matchcwbs += $(this).val()+",";
+		});
+	if(matchcwbs==""){
+		alert("请选择要通过地图匹配的订单号！");
+	}else if(matchbranchname==""){
+		alert("请在地图上选择所在站点区域！！");
+	}else{
+		matchcwbs.substring(0, matchcwbs.length-1);
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/dataimport/bdmatchbranch",
+			data:{
+				matchcwbs:matchcwbs,
+				matchbranchcode:matchbranchcode,
+				matchbranchname:matchbranchname
+				},
+			dataType : "json",
+			success:function(data){
+				if(data.errorCode==0){
+					 $('input[name="machbranch"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+						 $(this).val(data.excelbranch);
+						}); 
+					var successcwbs=data.successcwb.split(",");
+					 for(var i=0;i<successcwbs.length;i++){
+						 $("#ladd"+successcwbs[i]).val(data.excelbranch);
+					 }
+					alert(data.error);
+				}else if(data.errorCode==1){
+					alert(data.error);
+				}else if(data.errorCode==111){
+					
+						var successcwbs=data.successcwb.split(",");
+						for(var i=0;i<successcwbs.length;i++){
+							 $("#ladd"+successcwbs[i]).val(data.excelbranch);
+						 }
+					alert(data.error);
+				}else{
+					alert(data.error);
+				}
+			}
+		});
 	}
 }
 </script>
@@ -208,6 +268,7 @@ function searchForm(){
 							<input type="button" id="btnval1" class="input_button2"
 							value="重新匹配"
 							onclick='resendaddressMsg("<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs")%>",<%=emaildateidParam%>,<%=request.getParameter("customerid")==null?0:request.getParameter("customerid")%>,<%=request.getParameter("addressCodeEditType")==null?-1:request.getParameter("addressCodeEditType")%>,<%=request.getParameter("onePageNumber")==null?10:request.getParameter("onePageNumber")%>,1,<%=branchidParam%>);'>
+							<input type="button" id="baidupipei" class="input_button2" value="站点匹配"  onclick='bdbranchmatch();'/>
 							<input type="hidden" id="addressCodeEditType"
 							name="addressCodeEditType" value="-1" /> <!-- 0为全部 1 为成功 2 为匹配 -->
 							<input type="hidden" id="branchid" name="branchid" value="0" />
@@ -222,20 +283,23 @@ function searchForm(){
 						<table id="Order" width="100%" border="0" cellspacing="1"
 							cellpadding="0" class="table_2">
 							<tr class="font_1">
+								
+								<td width="10%" align="center" height="19" align="center"
+									valign="middle" bgcolor="#eef6ff">操作[<a href="javascript:void(0)" style="color:blue;" onclick="selectAll();">全选/反选</a>]</td>
 								<td width="10%" align="center" height="19" align="center"
 									valign="middle" bgcolor="#eef6ff">订单号</td>
-								<td width="10%" align="center" align="center" valign="middle"
+								<!-- <td width="10%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">收件人</td>
 								<td width="10%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">手机</td>
 								<td width="8%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">订单类型</td>
+									bgcolor="#eef6ff">订单类型</td> -->
 								<td width="8%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">订单状态</td>
-								<td width="5%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">邮编</td>
-								<td width="29%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">收件地址</td>
+								<!-- <td width="5%" align="center" align="center" valign="middle"
+									bgcolor="#eef6ff">邮编</td> -->
+							 	<td width="29%" align="center" align="center" valign="middle"
+									bgcolor="#eef6ff">收件地址</td> 
 								<td width="10%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">匹配到站（回车保存）</td>
 							</tr>
@@ -247,14 +311,15 @@ function searchForm(){
 								<form id="f<%=co.getCwb()%>" method="POST"
 									onSubmit="subEdit(this);return false;"
 									action="editexcel/<%=co.getCwb()%>">
+									<td width="10%" align="center" ><input id="machbranch" name="machbranch" type="checkbox" value="<%=co.getCwb()%>" /></td>
 									<td width="10%" align="center" height="19"><%=co.getCwb()%></td>
-									<td width="10%" align="center"><%=co.getConsigneename()%></td>
+									<%-- <td width="10%" align="center"><%=co.getConsigneename()%></td>
 									<td width="10%" align="center"><%=co.getConsigneemobile()%></td>
-									<td width="8%" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText()%></td>
+									<td width="8%" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText()%></td> --%>
 									<td width="8%" align="center"><%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%></td>
-									<td width="5%" align="center"><%=co.getConsigneepostcode()%></td>
+									<%-- <td width="5%" align="center"><%=co.getConsigneepostcode()%></td> --%>
 									<td width="29%" align="left" id="add<%=co.getCwb()%>"><%=co.getConsigneeaddress()%></td>
-									<td width="10%" align="center"><input type="text"
+									<td width="10%" align="center"><input type="text" id="ladd<%=co.getCwb()%>"
 										name="excelbranch" value="<%=co.getExcelbranch()%>"
 										onfocus="$('#add<%=co.getCwb()%>').css('background','#bbffaa');"
 										onblur="$('#add<%=co.getCwb()%>').css('background','#ffffff');" /></td>
@@ -318,6 +383,11 @@ function searchForm(){
 		<input type="hidden" id="branchid1" name="branchid1"
 			value="<%=branchidParam%>" /> <input type="hidden"
 			name="exportmould2" id="exportmould2" />
+	</form>
+	<form action="<%=request.getContextPath()%>/dataimport/bdmatchbranch" id="bdmatchcwbs" method="post">
+		<!-- <input type="hidden" id="bdmatchcwbs" name="bdmatchcwbs" /> -->
+		<input type="hidden" id="matchbranchcode" name="matchbranchcode" value=""/>
+		<input type="hidden" id="matchbranchname" name="matchbranchname" value=""/>
 	</form>
 	<script type="text/javascript">
 $(function(){
@@ -396,10 +466,28 @@ function changeCustomerid(){
         success: function (data)
         {
             deliveryStation.setDeliveryStationItems(data);
+         // 设置视域
+            setTimeout(function(){
+            	deliveryStation.setViewportToAllStationRegion();
+            },300);
         }
     });
     
+    // 点击区域
+    //ExpLink.DeliveryStationEventType.STATIONREGIONCLICK
+    mapManager.add(ExpLink.DeliveryStationEventType.STATIONREGIONCLICK,function(e){
+       var info=e;
+       $("#matchbranchcode").val(e.target.id);
+       $("#matchbranchname").val(e.target.name);
+       //alert(e.target.id);
+       //alert(e.target.name);
+    });
     
+    // 设置视域
+    setTimeout(function(){
+    	deliveryStation.setViewportToAllStationRegion();
+    },2000);
+   
     // 获取当前选中区域的id
     //deliveryStation.getSelectedDeliveryStationID();
     

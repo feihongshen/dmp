@@ -803,6 +803,85 @@ public class DataImportController {
 		return "dataimport/editbrancheach";
 
 	}
+	/**
+	 * 通过地图匹配站点
+	 * @param matchcwbs
+	 * @param matchbranchcode
+	 * @param matchbranchname
+	 * @return
+	 */
+	@RequestMapping("/bdmatchbranch")
+	public @ResponseBody String bdmatchbranch(@RequestParam(value = "matchcwbs", defaultValue = "", required = false) String matchcwbs,
+			@RequestParam(value = "matchbranchcode", defaultValue = "", required = false) String matchbranchcode,	
+			@RequestParam(value = "matchbranchname", defaultValue = "", required = false) String matchbranchname	
+			){
+		String successCwb="";
+		String failCwb="";
+		//String errorMsg="";
+		//Map<String, ExceptionMsg> failcwbInfo=new HashMap<String, ExceptionMsg>();
+		//Map<String, String> infoMap=new HashMap<String, String>();
+		//List<ExceptionMsg> exceptionMsgs=new ArrayList<ExceptionMsg>();
+		List<Branch> lb = new ArrayList<Branch>();
+		List<Branch> branchnamelist = branchDAO.getBranchByBranchnameCheck(matchbranchname);
+		if (branchnamelist.size() > 0) {
+			lb = branchnamelist;
+		} else {
+			lb = branchDAO.getBranchByBranchcode(matchbranchname);
+		}
+		if (lb.size() == 0) {
+			return "{\"errorCode\":1,\"error\":\"没有找到指定站点\"}";
+		}
+		try {
+			for (String cwb : matchcwbs.split(",")) {
+				CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+				if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+																																															// 都将匹配状态变更为修改
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+				} else if (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue() || co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+				}
+					try {
+						cwbOrderService.updateDeliveryBranch(getSessionUser(), co, lb.get(0), addressCodeEditType);
+						successCwb+=cwb+",";
+					} catch (CwbException ce) {
+						failCwb+=cwb+",";
+						//infoMap.put(cwb, ce.getMessage());
+						//ExceptionMsg exceptionMsg=new ExceptionMsg();
+						//exceptionMsg.setCwb(cwb);
+						//exceptionMsg.setErrorMessage(ce.getMessage());
+						//exceptionMsg.setErrorType(ce.getError().getValue());
+						//exceptionMsg.setMatchbranchName(lb.get(0).getBranchname());
+						//failcwbInfo.put(cwb, exceptionMsg);
+						//infoMap.put(cwb,ce.getError().getValue());
+				} 
+		} 
+			}catch (Exception e) {
+			return "{\"errorCode\":111,\"error\":\"系统内部异常\",\"cwb\":\"" + matchcwbs + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
+		}
+		if (successCwb!="") {
+			successCwb=successCwb.substring(0, successCwb.length()-1);
+		}
+		if (failCwb.equals("")) {
+			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb\":\"" + matchcwbs + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\",\"successcwb\":\"" +successCwb+ "\"}";
+		}
+		failCwb=failCwb.substring(0, failCwb.length()-1);
+		if (!failCwb.equals("")&&(failCwb.split(",").length<matchcwbs.split(",").length)) {
+			/*StringBuffer errorMsgInfo=new StringBuffer();
+			 for (Map.Entry<String, String> entry : infoMap.entrySet()) {
+				 errorMsgInfo.append(entry.getKey()+":"+entry.getValue()+",");
+			  }*/
+			//String errorString=errorMsgInfo.subSequence(0, errorMsgInfo.length()-1).toString();
+			return "{\"errorCode\":111,\"error\":\""+failCwb+"部分匹配失败(可能为状态不正确)"+"\",\"cwb\":\"" + matchcwbs + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\",\"successcwb\":\"" +successCwb+ "\"}";
+		}
+		if (failCwb.split(",").length==matchcwbs.split(",").length) {
+			return "{\"errorCode\":222,\"error\":\""+failCwb+"全部匹配失败"+"\",\"cwb\":\"" + matchcwbs + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\",\"successcwb\":\"" +successCwb+ "\"}";
+
+		}
+	
+		return "";
+		
+	}
 
 	private List<CwbOrder> SearchEditInCwbOrder(String cwb, int page, long onePageNumber, String type) {
 		List<ExcelImportEdit> cwborderList;

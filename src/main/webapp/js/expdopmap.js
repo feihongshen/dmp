@@ -2815,6 +2815,29 @@ ExpLink.DeliveryStation.prototype.getSelectedDeliveryStationID = function ()
 
 
 /**
+* 地图视角定位到全部配送站区域
+*
+*/
+ExpLink.DeliveryStation.prototype.setViewportToAllStationRegion = function ()
+{
+    if (!ExpLink.Utility.isArray(this._regionMarkers) || this._regionMarkers.length == 0 || !ExpLink.Utility.isDefAndNotNull(this._map))
+    {
+        return;
+    }
+    var allPts = [];
+    for (var i = 0, length = this._regionMarkers.length; i < length; i++)
+    {
+        var bounds = this._regionMarkers[i].getBounds();
+        allPts.push(bounds.getSouthWest());
+        allPts.push(bounds.getNorthEast());
+    }
+    this._map.setViewport(allPts);
+};
+
+
+
+
+/**
 * 添加一个站点区域
 */
 ExpLink.DeliveryStation.prototype._addStationRegion = function (delstat)
@@ -2912,7 +2935,7 @@ ExpLink.DeliveryStation.prototype._bindClickEvent = function (overlay, delstat)
         _this._currentSelectedRegionMarker = selectedMarker;
 
         // 分发选中事件
-        _this.dispatch(new ExpLink.Event(ExpLink.DeliveryStationEventType.STATIONREGIONCLICK, delstat.id));
+        _this.dispatch(new ExpLink.Event(ExpLink.DeliveryStationEventType.STATIONREGIONCLICK, delstat));
 
     });
 };
@@ -2958,7 +2981,7 @@ ExpLink.DeliveryStation.prototype.clearAllOverlay = function ()
 */
 ExpLink.DeliveryStation.prototype._resetRenderStyles = function (overlay, styleOptions)
 {
-    if (!ExpLink.Utility.isDefAndNotNull || !ExpLink.Utility.isDefAndNotNull(styleOptions))
+    if (!ExpLink.Utility.isDefAndNotNull(overlay) || !ExpLink.Utility.isDefAndNotNull(styleOptions))
     {
         return;
     }
