@@ -9,7 +9,7 @@
 <!DOCTYPE html >
 <html>
 <head>
-<title>唯易配送信息系统</title>
+<title>配送信息系统</title>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
 <script type="text/javascript"
@@ -107,7 +107,7 @@
 						</div>
 						<div>
 							<h2>
-								<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统v4.1</label>
+								<label style="font-size: 1.1em; color: #46affc">配送信息系统</label>
 							</h2>
 
 						</div>

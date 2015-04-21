@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>登录-唯易配送信息系统</title>
+<title>登录-配送信息系统</title>
 <link
 	href="<%=request.getContextPath()%>/dmp40/plug-in/login/css/zice.style.css"
 	rel="stylesheet" type="text/css" />
@@ -173,7 +173,7 @@ h1, h2, h3, h4, h5, h6 {
 					</div>
 					<div>
 						<h2>
-							<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统v4.1</label>
+							<label style="font-size: 1.1em; color: #46affc">配送信息系统</label>
 						</h2>
 					</div>
 				</div>
