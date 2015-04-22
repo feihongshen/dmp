@@ -5984,7 +5984,16 @@ CREATE TABLE
 		UPDATE `express_set_menu_info_new` SET `menuname`='供货商拒收返库(p)',`menuno`='p19' WHERE `menuid`='297';
 		</sql>
 	</changeSet>
-	
+	<changeSet id="lansheng-2015-4-23-1" author="lansheng">
+		<sql>
+			insert into `express_set_system_install` ( `name`, `value`, `chinesename`) values('addrUrl','http://103.229.214.164/addressahpj/','地址库地址');
+			insert into `express_set_system_install` ( `name`, `value`, `chinesename`) values('addrUser','username=0','地址库用户');
+			insert into `express_set_system_install` ( `name`, `value`, `chinesename`) values('addrPsw','password=0','地址库密码');
+			insert into `express_set_system_install` ( `name`, `value`, `chinesename`) values('eapUrl','http://103.229.214.164/eap/','财务地址');
+			insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('addrDeliveryStationUrl','http://103.229.214.164/addressahpj/station4dmp/getAllDeliveryStation','地址库站点查询地址');
+			INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES ('csUrl', 'http://192.168.0.84:8081/dmp_4.0/', '客服管理系统地址');
+		</sql>
+	</changeSet>
 
 
 </databaseChangeLog>
