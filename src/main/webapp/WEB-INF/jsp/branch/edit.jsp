@@ -4,6 +4,7 @@
 <%@page import="cn.explink.enumutil.BranchEnum"%>
 <%@page import="cn.explink.util.ResourceBundleUtil"%>
 <%@page import="cn.explink.util.StringUtil"%>
+<%@page import="cn.explink.enumutil.BranchTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 Branch branch = (Branch)request.getAttribute("b");
@@ -134,9 +135,15 @@ var initBranchList = new Array();
 							}
 				%></ul>
 				<li><span>站点类型：</span><select id ="contractflag" name ="contractflag"  onchange="changemskshow(this.value)">
-		             <option value ="0" <%=branch.getContractflag().equals("0")?"selected":"" %>>直营</option> 
+		             <%-- <option value ="0" <%=branch.getContractflag().equals("0")?"selected":"" %>>直营</option> 
 		             <option value ="1" <%=branch.getContractflag().equals("1")?"selected":"" %> >加盟</option>
-		             <option value ="2" <%=branch.getContractflag().equals("2")?"selected":"" %>>二级站</option>
+		             <option value ="2" <%=branch.getContractflag().equals("2")?"selected":"" %>>二级站</option> --%>
+		             <option value ="<%=BranchTypeEnum.ZhiYing.getValue()%>" <%=branch.getContractflag().equals("0")?"selected":"" %>><%=BranchTypeEnum.ZhiYing.getText()%></option> 
+		             <option value ="<%=BranchTypeEnum.ErJiZhan.getValue()%>" <%=branch.getContractflag().equals("1")?"selected":"" %>><%=BranchTypeEnum.ErJiZhan.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.SanJiZhan.getValue()%>" <%=branch.getContractflag().equals("2")?"selected":"" %>><%=BranchTypeEnum.SanJiZhan.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMeng.getValue()%>" <%=branch.getContractflag().equals("3")?"selected":"" %>><%=BranchTypeEnum.JiaMeng.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMengErJi.getValue()%>" <%=branch.getContractflag().equals("4")?"selected":"" %>><%=BranchTypeEnum.JiaMengErJi.getText()%></option>
+		             <option value ="<%=BranchTypeEnum.JiaMengSanJi.getValue()%>" <%=branch.getContractflag().equals("5")?"selected":"" %>><%=BranchTypeEnum.JiaMengSanJi.getText()%></option>
 		           </select></li>
 		           <%if(bindmsksid.getValue().equals("1")){ %>
 		        	 <li><span>绑定迈思可站点：</span>
