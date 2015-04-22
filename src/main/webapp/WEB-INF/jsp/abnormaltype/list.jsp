@@ -43,7 +43,8 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建问题件类型" class="input_button1"  id="add_button"  />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-		问题件类型<input type ="text" id ="name" name ="name"  class="input_text1" value = "<%=request.getParameter("name")==null?"":request.getParameter("name") %>"  style ="border:1px solid black;"/>　　
+		问题件类型：
+		 <input type ="text" id ="name" name ="name"  class="input_text1" value = "<%=request.getParameter("name")==null?"":request.getParameter("name") %>"  class="input_text1"/>　　
 		 <input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;"  value="查询" class="input_button2" />
 		 <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 	</form>

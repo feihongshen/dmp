@@ -26,8 +26,8 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script language="javascript">
@@ -101,13 +101,13 @@ function sub(){
 							<form action="<%=request.getContextPath() %>/abnormalOrder/toCreateabnormal" method="post" id="searchForm">
 								<p>问题类型：
 									<label for="select2"></label>
-									<select name="abnormaltypeid" id="abnormaltypeid">
+									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 										<option value="0">请选择</option>
 										<%if(abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
 											<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>20){%><%=at.getName().substring(0,19)%><%}else{ %><%=at.getName() %><%} %></option>
 										<%} %>
 									</select>
-								订单号：
+								&nbsp;&nbsp;订单号：
 								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
 									
 									<input type="submit" value="创建" class="input_button2">

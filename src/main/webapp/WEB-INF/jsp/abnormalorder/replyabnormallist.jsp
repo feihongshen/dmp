@@ -34,8 +34,8 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
@@ -167,16 +167,16 @@ function sumitForm(){
 							<form action="1" method="post" id="searchForm">
 								问题件反馈时间：
 									<label for="select2"></label>
-									<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+									<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 									到
-									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
 								&nbsp;&nbsp;处理结果：
-								<select name="ishandle" id="ishandle">
+								<select name="ishandle" id="ishandle" class="select1">
 									<option value="-1">全部</option>
 									<option value="1">已回复</option>
 									<option value="2">未回复</option>
 								</select>
-								<select name="abnormaltypeid" id="abnormaltypeid">
+								<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 									<option value="0">请选择问题件类型</option>
 									<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
 										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>

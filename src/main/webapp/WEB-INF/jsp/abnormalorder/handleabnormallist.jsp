@@ -187,13 +187,13 @@ function checkstate(){
 		$("#chuangjianendtime").show();
 		$("#strtime").hide();
 		$("#endtime").hide();
-		$("#chuli").html("创建时间");
+		$("#chuli").html("创建时间：");
 	}else{
 		$("#chuangjianstrtime").hide();
 		$("#chuangjianendtime").hide();
 		$("#strtime").show();
 		$("#endtime").show();
-		$("#chuli").html("处理时间");
+		$("#chuli").html("处理时间：");
 	}
 }
 function isgetallcheck(){
@@ -246,14 +246,14 @@ function stateBatch(state)
 									<textarea id="cwb" class="kfsh_text" rows="3" name="cwb" ><%=cwb%></textarea>
 								&nbsp;机构名称：
 									<label for="select2"></label>
-									<select name="branchid" id="branchid">
+									<select name="branchid" id="branchid" class="select1">
 										<option value="0">请选择</option>
 										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
 									</select>
 									<label for="select3"></label>
-									<select name="abnormaltypeid" id="abnormaltypeid">
+									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 										<option value="0">请选择问题件类型</option>
 										<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
 										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>
@@ -261,17 +261,19 @@ function stateBatch(state)
 									</select>
 									&nbsp;处理结果：
 									<label for="select4"></label>
-									<select name="ishandle" id="ishandle" onchange="checkstate()">
+									<select name="ishandle" id="ishandle" onchange="checkstate()" class="select1">
 										<!-- <option value="-1">全部</option> -->
 										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 									</select>
-									<strong id="chuli" >处理时间：</strong>
-									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
-									<input type ="text" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>
+									<br/>
+									<br/>
+									<strong id="chuli"></strong>
+									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
+									<input type ="text" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>" class="input_text1" style="height:20px;"/>
 									<strong id="chulidown">到</strong>
-									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>"/>
-									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>"/>
+									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
+									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="button"  onclick="check()" value="查询" class="input_button2">
 									<input type ="button" value="批量处理" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="stateBatch();"/>
