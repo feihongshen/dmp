@@ -72,7 +72,7 @@
 		</div>
 		<div align="center">
         <input type="hidden" id="usercustomerid" name="usercustomerid" value="0" /><!-- 0表示为内部员工 -->
-        <input type="submit" value="确认" class="button" id="sub" onclick="closeBox()"/></div>
+        <input type="submit" value="确认" class="button" id="sub" /></div>
 	</form>
 	</div>
 </div>
