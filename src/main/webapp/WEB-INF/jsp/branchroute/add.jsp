@@ -22,7 +22,25 @@ $(function(){
 	$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
 })
 
+
+function check_branchroute() {
+	if ($("#fromBranchId").val() == 0) {
+		alert("当前站点不能为空");
+		return false;
+	}
+	if ($(".checked").length<=0) {
+		alert("目的站点不能为空");
+		return false;
+	}
+	if ($("#type").val() == 0) {
+		alert("流向方向不能为空");
+		return false;
+	}
+	return true;
+}
+
 function afterSumit(form){
+	
 	$.ajax({
 		type: "POST",
 		url:$(form).attr("action"),
@@ -39,7 +57,8 @@ function afterSumit(form){
 <body>
 <div style="background:#f5f5f5">
 		<form id="branchroute_cre_Form" name="branchroute_cre_Form"
-			 onSubmit="afterSumit(this);return false;" 
+			onSubmit="if(check_branchroute()){afterSumit(this);} return false;"
+		
 			 action="<%=request.getContextPath()%>/branchRouteControl/create;jsessionid=<%=session.getId()%>" method="post"  >
 			<div id="box_form">
 				<ul>
@@ -53,7 +72,7 @@ function afterSumit(form){
 					</li>
 					
 	           		<li><span>目的站点：</span>
-	           			<select id="toBranchId"  name="toBranchId" class="select1" multiple="multiple">
+	           			<select id="toBranchId"  name="toBranchId" class="select1" multiple="multiple" > 
 							<%for(Branch b : branchlist){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 							<%} %>
@@ -70,7 +89,7 @@ function afterSumit(form){
 	         </ul>
 		</div>
 		<div align="center">
-        <input type="submit" value="确认" class="button" id="sub" onclick="check_branchroute()"/></div>
+        <input type="submit" value="确认" class="button" id="sub" /></div>
 	</form>
 	</div>
 </body>
