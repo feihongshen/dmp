@@ -105,20 +105,7 @@ function exportField(){
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
 <div class="right_box">
-	<div style="background:#FFF">
-		<div class="kfsh_tabbtn">
-			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuo" class="light">订单拦截</a></li>
-				
-				<%if(request.getAttribute("amazonIsOpen") != null && "1".equals(request.getAttribute("amazonIsOpen").toString())){ %>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toBaoGuoWeiDao">亚马逊订单处理</a></li><%} %>
-				
-				<%if(request.getAttribute("isUseAuditZhongZhuan") != null && "yes".equals(request.getAttribute("isUseAuditZhongZhuan").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoZhongZhuanlist/1">审核为中转</a></li>
-				<%} %>
-				
-			</ul>
-		</div>
+	<div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
@@ -126,7 +113,7 @@ function exportField(){
 							<form action="./toTuiHuo" method="POST" id="searchForm">
 									<%
 							if(cwbList!=null){%><span>
-								<select name ="exportmould" id ="exportmould">
+								<select name ="exportmould" id ="exportmould" class="select1">
 									<option  value ="0">导出模板</option>
 									<%for(Exportmould e:exportmouldlist){%>
 										<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
@@ -150,7 +137,7 @@ function exportField(){
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
 									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
