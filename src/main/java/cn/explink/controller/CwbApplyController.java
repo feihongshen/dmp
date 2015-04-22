@@ -208,12 +208,20 @@ public class CwbApplyController {
 			List<Reason> reasonList = reasonDAO.getAllReason();
 			List<Remark> remarkList = remarkDAO.getRemarkByCwbs(cwbs.substring(0, cwbs.length() - 1));
 			Map<String, CwbApplyZhongZhuan> cwbapplyList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwbs(cwbs.substring(0, cwbs.length() - 1));
+			List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+			List<Branch> removeList = new ArrayList<Branch>();
+			for (Branch b:bList) {
+				if (b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
+					removeList.add(b);
+				}
+			}
+			
 			model.addAttribute("cwbList", getZhongZhuanCwbOrderView(cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList, cwbapplyList));
 			model.addAttribute("branchList", branchList);
 			model.addAttribute("customerList", customerDao.getAllCustomers());
 			model.addAttribute("userList", userDAO.getAllUser());
-			List<Branch> zhongzhuanbranchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + "");
-			model.addAttribute("zhongzhuanbranchList", zhongzhuanbranchList);
+			//List<Branch> zhongzhuanbranchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + "");//通过货物流向设置
+			model.addAttribute("zhongzhuanbranchList", removeList);
 		}
 
 		return "cwbapply/applytoZhongZhuan";
