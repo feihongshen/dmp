@@ -290,7 +290,7 @@ $(function(){
 						<input type="hidden" id="cwbs" name="cwbs" value="<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs") %>" />
 						<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight1" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
-						<input type="button" name="button" id="find1" value=" " class="button_s"/>
+						<input type="button" name="button" id="find1" value="查询" class="input_button2"/>
 						</form>
 					<form action="<%=request.getContextPath()%>/order/exportExcle" method="post" id="exportForm">
 						<input type="hidden"  name="cwbs" value="<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs") %>" />
@@ -317,23 +317,25 @@ $(function(){
 						
 						发货时间：
 						<input type ="text" name ="begindate" id="strtime"  value="<%=begindate %>"/>(默认查询该时间为起点的10天之内的数据) 
+						<br/>
+						客户：
 						<select name ="customerid" id ="customerid">
-				          <option value ="0">请选择供货商</option>
+				          <option value ="0">请选择客户</option>
 				          <%for(Customer c : customerlist){ %>
 				           <option value =<%=c.getCustomerid() %> 
 				           <%if(c.getCustomerid() == Integer.parseInt(request.getParameter("customerid")==null?"0":request.getParameter("customerid"))  ){ %>selected="selected" <%} %> ><%=c.getCustomername() %></option>
 				          <%} %>
 				        </select>
-						<br/>
-						收&nbsp;件&nbsp;人：
+						收件人：
 						<input name="consigneename" type="text" size="10" value="<%=request.getParameter("consigneename")==null?"":request.getParameter("consigneename") %>"/>
 						电话：
 						<input name="consigneemobile" type="text" size="10" value="<%=request.getParameter("consigneemobile")==null?"":request.getParameter("consigneemobile") %>"/>
+						<br/>
 						地址：
 						<input name="consigneeaddress" type="text" style="width:210px"  value="<%=request.getParameter("consigneeaddress")==null?"":request.getParameter("consigneeaddress") %>"/>
 						<input type="hidden" id="isshow2" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight2" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
-						<input type="button" name="button" id="find2" value=" " class="button_s"/>
+						<input type="button" name="button" id="find2" value="查询" class="input_button2"/>
 						</form>
 					</div>
 				</li>
@@ -344,7 +346,7 @@ $(function(){
 						<input type="hidden" id="balenoId" name="baleno" value="<%=request.getParameter("baleno")==null?"":request.getParameter("baleno") %>" />
 						<input type="hidden" id="isshow3" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight3" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
-						<input type="button" name="button" id="find3" value=" " class="button_s"/>
+						<input type="button" name="button" id="find3" value="查询" class="input_button2"/>
 						</form>
 					</div>
 				</li>
@@ -355,7 +357,7 @@ $(function(){
 						到<input type ="text" name ="chukuenddate" id="chukuendtime"  value="<%=chukuenddate %>"/>
 						<input type="hidden" id="isshow5" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight5" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
-						<input type="button" name="button" id="find5" value=" " class="button_s"/>
+						<input type="button" name="button" id="find5" value="查询" class="input_button2"/>
 						</form>
 					</div>
 				</li>
@@ -366,7 +368,7 @@ $(function(){
 						<input type="hidden" id="transcwbId" name="transcwb" value="<%=request.getParameter("transcwb")==null?"":request.getParameter("transcwb") %>" />
 						<input type="hidden" id="isshow4" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight4" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
-						<input type="button" name="button" id="find4" value=" " class="button_s"/>
+						<input type="button" name="button" id="find4" value="查询" class="input_button2"/>
 						</form>
 					</div>
 				</li>
@@ -404,17 +406,17 @@ $(function(){
 								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">收件人</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
-								<td align="center" bgcolor="#F1F1F1">订单当前状态</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
 								</tr>
 						<%}else{ %>
 						<tr>
-								<td width="80" align="center" bgcolor="#F1F1F1">订&nbsp;单&nbsp;号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">订单号</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
-								<td width="80" align="center" bgcolor="#F1F1F1">供货商</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
 								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">收件人</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
-								<td align="center" bgcolor="#F1F1F1">订单当前状态</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
 								</tr>
 						<%} %>
 							</tbody>
