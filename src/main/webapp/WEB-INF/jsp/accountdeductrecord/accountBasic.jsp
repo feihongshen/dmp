@@ -77,6 +77,21 @@ $(function(){
 		$("#li2").attr("class","light");
 		$("#content2").attr("style","display:block");
 	}
+	
+	$("#li1").click(function(){
+		$("#li1").attr("class","light");
+		$("#content1").attr("style","display:block");
+		$("#li2").attr("class","");
+		$("#content2").attr("style","display:none");
+	});
+	
+	$("#li2").click(function(){
+		$("#li2").attr("class","light");
+		$("#content2").attr("style","display:block");
+		$("#li1").attr("class","");
+		$("#content1").attr("style","display:none");
+	});
+	
 });
 
 
@@ -168,7 +183,7 @@ function exportField2(){
 				</dl> 
 				<br clear="all">
 			</div>
-			<div class="uc_midbg">
+			<div class="saomiao_tab2">
 				<ul>
 					<li><a href="#" id="li1">账务明细</a></li>
 					<li><a href="#" id="li2">账务汇总</a></li>
@@ -276,9 +291,9 @@ function exportField2(){
 					&nbsp;&nbsp;
 						<label for="select"></label>
 						交易时间：
-						<input type="text" name="starttimehz" id="starttimehz" value ="<%=starttimehz%>"/>
+						<input type="text" name="starttimehz" id="starttimehz" value ="<%=starttimehz%>" class="input_text1"/>
 						至
-						<input type="text" name="endtimehz" id="endtimehz" value ="<%=endtimehz%>"/>
+						<input type="text" name="endtimehz" id="endtimehz" value ="<%=endtimehz%>" class="input_text1"/>
 						<input type="hidden" name="branchid" id="branchid" value="<%=branchid%>"/>
 						<input type="hidden" name="flag" id="flag" value ="2"/>
 						<input type="button" onclick="searchBtnHZ()" id="find" value="查询" class="input_button2" />
