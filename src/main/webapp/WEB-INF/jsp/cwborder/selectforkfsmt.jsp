@@ -63,7 +63,7 @@ $(function(){
 		$("#printByCondation").attr("checked",false);
 		$("#manyCondations").hide();
 		$("#orders").show();
-		$("#hidetable").hide();
+		//$("#hidetable").hide();
 		$("#selectype").val("1");
 
 	}
