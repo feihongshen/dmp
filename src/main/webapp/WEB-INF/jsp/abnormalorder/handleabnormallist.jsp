@@ -101,7 +101,7 @@ $(function() {
 	
 });
 
-function getThisBox(id){
+function getThisBoxList(id){
 	$.ajax({
 		type: "POST",
 		url:$("#handle"+id).val(),
@@ -337,10 +337,10 @@ function stateBatch(state)
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
 						<td width="80" align="center" valign="middle">
 						<%if(!ishandle.equals(AbnormalOrderHandleEnum.yichuli.getValue()+"")){ %>
-						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
 						<%}else{
 							%>
-						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
 							
 						<%} %>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />

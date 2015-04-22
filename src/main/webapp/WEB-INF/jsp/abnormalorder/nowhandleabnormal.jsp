@@ -14,6 +14,7 @@ AbnormalOrder abnormalOrder = (AbnormalOrder)request.getAttribute("abnormalOrder
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 Role role = (Role)request.getAttribute("role");
 String showabnomal = request.getAttribute("showabnomal").toString();
+long isfind = request.getAttribute("isfind")==null?0:Long.parseLong(request.getAttribute("isfind").toString());
 
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
@@ -88,7 +89,14 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 			</table>
 			<input type="hidden" name="cwb" value="<%=cwborder.getCwb() %>">
 			<div align="center">
-				<%
+				<% if(isfind==1){
+					if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
+					else if(abnormalOrder.getIshandle()!=AbnormalOrderHandleEnum.yichuli.getValue()){
+				%>
+				<input type="hidden" value="1" name="isfind"/>
+				<input type="submit" value="回复" class="button">
+				<%}}
+				else{
 				 if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
 				 else if(showabnomal.equals("1")) {%>
 				<input type="submit" value="处理中" class="button">
@@ -100,7 +108,7 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 				<%} 
 				else  { %>
 				<input type="submit" value="处理" class="button">
-				<%} %>
+				<%}} %>
 			</div>
 		</form>
 		<form id="form2" action="<%=request.getContextPath()%>/abnormalOrder/SubmitOverabnormal/<%=abnormalOrder.getId() %>" method="post">

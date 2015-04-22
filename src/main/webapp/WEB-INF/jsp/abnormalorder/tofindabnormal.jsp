@@ -137,6 +137,7 @@ function getThisBox(id){
 	$.ajax({
 		type: "POST",
 		url:$("#handle"+id).val(),
+		data:{"isfind":1},
 		dataType:"html",
 		success : function(data) {
 			$("#alert_box",parent.document).html(data);

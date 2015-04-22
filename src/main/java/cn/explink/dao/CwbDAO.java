@@ -26,7 +26,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
-import cn.explink.controller.MonitorLogSim;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MatchExceptionOrder;
@@ -4086,7 +4085,7 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum flowordertype, DeliveryStateEnum deliveryState, long currentbranchid) {
-		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND flowordertype=? AND deliverystate=? AND state=1 ";
+		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND flowordertype=? AND deliverystate=? AND state=1 and cwbstate=2";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), currentbranchid, flowordertype.getValue(), deliveryState.getValue());
 	}
 
@@ -5170,7 +5169,8 @@ public class CwbDAO {
 	// }
 
 	public List<Map<String, Object>> getCwbByPrintCwbs(String cwbs) {
-		String sql = "SELECT COUNT(1) count,SUM(receivablefee) receivablefee,sum(carrealweight) carrealweight,sum(sendcarnum) sendcarnum " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN(" + cwbs + ") ";
+		String sql = "SELECT COUNT(1) count,SUM(receivablefee) receivablefee,sum(carrealweight) carrealweight,sum(sendcarnum) sendcarnum " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN("
+				+ cwbs + ") ";
 		return this.jdbcTemplate.queryForList(sql);
 	}
 
@@ -5521,49 +5521,54 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
-	
-	
-	public List<CwbOrder> getMonitorLogByBranchid(String branchids,String customerids,String wheresql,long page) {
-		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")
-				+"  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
-		System.out.println("-- 生命周期监控查看明细:\n"+sql);
-		List<CwbOrder> list = jdbcTemplate.query(sql.toString(), new CwbMapper());
+	public List<CwbOrder> getMonitorLogByBranchid(String branchids, String customerids, String wheresql, long page) {
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " ") + "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		System.out.println("-- 生命周期监控查看明细:\n" + sql);
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 		return list;
 	}
-	public long getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
-		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" "));
-		
-		System.out.println("-- 生命周期监控查看明细:\n"+sql);
-		return jdbcTemplate.queryForLong(sql.toString());
-	}
-	
-	public List<CwbOrder> getMonitorLogByType(String wheresql ,String branchid,long page,String branchids) {
-		
-		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 AND state=1  " +
-				" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 
-		List<CwbOrder> list = jdbcTemplate.query(sql.toString(),  new CwbMapper());
+	public long getMonitorLogByBranchid(String branchids, String customerids, String wheresql) {
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
+
+		System.out.println("-- 生命周期监控查看明细:\n" + sql);
+		return this.jdbcTemplate.queryForLong(sql.toString());
+	}
+
+	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid, long page, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 AND state=1  " + " limit "
+				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 
 		return list;
 	}
-	public String getMonitorLogByTypeSql(String wheresql ,String branchid,String branchids) {
-		
-		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( "+wheresql+" (flowordertype in(1,2)  and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 ) )AND state=1  " +
-				"");
-		
+
+	public String getMonitorLogByTypeSql(String wheresql, String branchid, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( " + wheresql + " (flowordertype in(1,2)  and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 ) )AND state=1  " + "");
+
 		System.out.println(sql);
-		
+
 		return sql.toString();
 	}
-	public long getMonitorLogByType(String wheresql ,String branchid,String branchids) {
-		
-		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" and "+(branchid.length()>0?(" nextbranchid in("+branchid+")  and"):" nextbranchid IN("+branchids+") and ")+" nextbranchid>0 AND state=1  " +
-				" ");
-		
-		return  jdbcTemplate.queryForLong(sql.toString());
+
+	public long getMonitorLogByType(String wheresql, String branchid, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 AND state=1  " + " ");
+
+		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
-	//更改一票多件时运单不足的补入情况
+
+	// 更改一票多件时运单不足的补入情况
 	public void updateTranscwb(String cwb, String transcwb) {
 		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=? where cwb=? and state = 1  ", transcwb, cwb);
 	}

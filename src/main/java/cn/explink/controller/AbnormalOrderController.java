@@ -331,7 +331,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("getabnormalOrder/{id}")
-	public String getabnormalOrder(@PathVariable("id") long id, Model model, @RequestParam(value = "type", required = false, defaultValue = "0") long type) {
+	public String getabnormalOrder(@PathVariable("id") long id, Model model, @RequestParam(value = "type", required = false, defaultValue = "0") long type,
+			@RequestParam(value = "isfind", required = false, defaultValue = "0") long isfind) {
 		AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderById(id);
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		model.addAttribute("abnormalOrder", abnormalOrder);
@@ -341,6 +342,7 @@ public class AbnormalOrderController {
 			branchMap.put(b.getBranchid(), b.getBranchname());
 		}
 		model.addAttribute("branchList", branchlList);
+		model.addAttribute("isfind", isfind);
 		model.addAttribute("branchMap", branchMap);
 		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 		model.addAttribute("userList", this.userDAO.getAllUser());
@@ -362,13 +364,17 @@ public class AbnormalOrderController {
 	@RequestMapping("/SubmitHandleabnormal/{id}")
 	public @ResponseBody
 	String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
-			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "isfind", defaultValue = "0", required = false) long isfind) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.chulizhong.getValue(), nowtime);
+			long ishandle = AbnormalOrderHandleEnum.chulizhong.getValue();
+			if (isfind == 1) {
+				ishandle = ab.getIshandle();
+			}
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
 					ab.getAbnormaltypeid(), cwb);
 			String json = "订单：" + cwb + "已处理";

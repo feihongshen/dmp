@@ -240,7 +240,7 @@ public class PDAController {
 	OneToMoreService otmservice;
 	@Autowired
 	TransCwbDao transCwbDao;
-	
+
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -325,43 +325,44 @@ public class PDAController {
 
 		return "pda/intowarhouse_nodetail";
 	}
-	
+
 	@RequestMapping("/onetomore")
-	public String getmore(){
-		
+	public String getmore() {
+
 		return "pda/onetomore";
 	}
+
 	@RequestMapping("/oneTOmore")
-	public String getMoreByOne(Model model,HttpServletRequest request){
-		String cwb = request.getParameter("cwb")==null?"":request.getParameter("cwb");
-		String transcwb = request.getParameter("transcwb")==null?"":request.getParameter("transcwb");
-		CwbOrder cwbOrder =cwbDAO.getCwbByCwb(cwb);
-		if(cwbOrder== null){
+	public String getMoreByOne(Model model, HttpServletRequest request) {
+		String cwb = request.getParameter("cwb") == null ? "" : request.getParameter("cwb");
+		String transcwb = request.getParameter("transcwb") == null ? "" : request.getParameter("transcwb");
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		if (cwbOrder == null) {
 			request.setAttribute("message", "订单号不存在！");
 			return "pda/onetomore";
 		}
-		if(!(cwbOrder.getFlowordertype()==FlowOrderTypeEnum.DaoRuShuJu.getValue()||cwbOrder.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue())){
+		if (!((cwbOrder.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (cwbOrder.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()))) {
 			request.setAttribute("message", "已入库订单,运单号无法补入!");
 			return "pda/onetomore";
 		}
-		String transcwbs = otmservice.replaceTranscwb(cwb,transcwb);
-		cwbDAO.updateTranscwb(cwb,transcwbs);//更新数据库一票多件订单补入
-		List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
-		StringBuffer buffer=new StringBuffer();
+		String transcwbs = this.otmservice.replaceTranscwb(cwb, transcwb);
+		this.cwbDAO.updateTranscwb(cwb, transcwbs);// 更新数据库一票多件订单补入
+		List<TranscwbView> translist = this.transCwbDao.getTransCwbByCwb(cwb);
+		StringBuffer buffer = new StringBuffer();
 		for (Iterator iterator = translist.iterator(); iterator.hasNext();) {
 			TranscwbView transcwbView = (TranscwbView) iterator.next();
-			buffer.append(transcwbView.getTranscwb()+",");
+			buffer.append(transcwbView.getTranscwb() + ",");
 		}
-		String trancwbs=buffer.substring(0,buffer.length()-1).toString();
-		for(String str:transcwbs.split(",")){
-			if(!trancwbs.contains(str)){
-				transCwbDao.saveTranscwb(str,cwb);
+		String trancwbs = buffer.substring(0, buffer.length() - 1).toString();
+		for (String str : transcwbs.split(",")) {
+			if (!trancwbs.contains(str)) {
+				this.transCwbDao.saveTranscwb(str, cwb);
 			}
 		}
-		request.setAttribute("message", "补入成功！");	
+		request.setAttribute("message", "补入成功！");
 		return "pda/onetomore";
 	}
-	
+
 	/**
 	 * 进入入库的功能页面（明细）
 	 * 
@@ -934,16 +935,19 @@ public class PDAController {
 	private List<CwbOrder> getAuditTuiHuo() {
 		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
 		List<CwbOrder> cwbAllList = new ArrayList<CwbOrder>();
-		if (isUseAuditTuiHuo.equals("yes")) {
-			cwbAllList = this.cwbDAO.getCwbOrderByFlowOrderTypeAndCurrentbranchid(FlowOrderTypeEnum.DingDanLanJie.getValue(), this.getSessionUser().getBranchid());
-		} else {
-			cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.JuShou, this.getSessionUser().getBranchid()));
-			cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.BuFenTuiHuo, this.getSessionUser().getBranchid()));
-			cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.ShangMenHuanChengGong, this.getSessionUser()
-					.getBranchid()));
-			cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.ShangMenTuiChengGong, this.getSessionUser()
-					.getBranchid()));
-		}
+		/*
+		 * if (isUseAuditTuiHuo.equals("yes")) { cwbAllList =
+		 * this.cwbDAO.getCwbOrderByFlowOrderTypeAndCurrentbranchid
+		 * (FlowOrderTypeEnum.DingDanLanJie.getValue(),
+		 * this.getSessionUser().getBranchid()); } else {
+		 */
+		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.JuShou, this.getSessionUser().getBranchid()));
+		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.BuFenTuiHuo, this.getSessionUser().getBranchid()));
+		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.ShangMenHuanChengGong, this.getSessionUser()
+				.getBranchid()));
+		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.ShangMenTuiChengGong, this.getSessionUser()
+				.getBranchid()));
+		// }
 		return cwbAllList;
 	}
 
@@ -2087,7 +2091,7 @@ public class PDAController {
 	public String backandchangeimport(Model model) {
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		//TODO 退货中转入库备注
+		// TODO 退货中转入库备注
 		List<Reason> backreasonList = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Tuituozhanruku.getValue());
 
 		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
@@ -2231,7 +2235,7 @@ public class PDAController {
 
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
-		model.addAttribute("backreasonList",backreasonList);
+		model.addAttribute("backreasonList", backreasonList);
 		return "pda/backandchangeimport";
 	}
 
@@ -2276,7 +2280,7 @@ public class PDAController {
 			String s = (String) it.next();
 			cwbs += "'" + s + "',";
 		}
-		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : ""; 
+		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
 
 	}
 
@@ -2612,7 +2616,7 @@ public class PDAController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
-		
+
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = new CwbOrder();
@@ -2727,7 +2731,7 @@ public class PDAController {
 
 		}
 	}
-	
+
 	private boolean addNoOrderWav(HttpServletRequest request, CwbException e, ExplinkResponse explinkResponse) {
 		if (!ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI.equals(e.getError())) {
 			return false;
@@ -3141,7 +3145,7 @@ public class PDAController {
 		// 未入库明细
 		List<CwbOrder> weirukulist = this.cwbDAO.getZhongZhuanZhanRukuByBranchidForList(b.getBranchid(), b.getSitetype(), 1, customerid);
 		List<CwbDetailView> weirukuViewlist = this.getcwbDetail(weirukulist, cList, showCustomerjSONArray, null, 0);
-		
+
 		// 已入库明细
 		List<CwbOrder> yirukulist = this.cwbDAO.getZhongZhuanZhanYiRukubyBranchidList(b.getBranchid(), customerid, 1);
 		List<CwbDetailView> yirukuViewlist = this.getcwbDetail(yirukulist, cList, showCustomerjSONArray, null, 0);
@@ -4615,12 +4619,13 @@ public class PDAController {
 
 		String wavPath = null;
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
-//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
-			if(cwbOrder.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() ){
-				//TODO 退货站入库   声音
+			// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
+			// CwbOrderPDAEnum.OK.getVediourl();
+			if (cwbOrder.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
+				// TODO 退货站入库 声音
 				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.TUI_HUO_RU_KU.getVediourl();
-			}else if(cwbOrder.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
-				//TODO 中转站入库   声音
+			} else if (cwbOrder.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+				// TODO 中转站入库 声音
 				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.ZHONG_ZHUAN_RU_KU.getVediourl();
 			}
 		} else {

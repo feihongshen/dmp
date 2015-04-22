@@ -57,6 +57,7 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
@@ -507,6 +508,7 @@ public class CwbApplyController {
 			// cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), 0);
 			this.cwbApplyTuiHuoDAO.updateCwbApplyTuiHuoForHandle(datetime, this.getSessionUser().getUserid(), handleremark, 1, applytuihuobranchid, cwb);
 			this.cwbDAO.updateNextBranchid(cwb, applytuihuobranchid);
+			this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 			// if (co.getFlowordertype() ==
 			// FlowOrderTypeEnum.DingDanLanJie.getValue()) {
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
