@@ -12,14 +12,13 @@ int channel = (Integer)request.getAttribute("channel");
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>短信设置</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
-
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
@@ -373,7 +372,7 @@ function saveSuccess(data){
 				<tr>
 					<td width="5%" align="center" bgcolor="#F4F4F4">创建：						</td>
 					<td width="10%" ><label for="select"></label>
-						<select name ="flowordertype" id ="flowordertype" onchange="updateCustomerids(); getSms();updateBranchids();">
+						<select name ="flowordertype" id ="flowordertype" onchange="updateCustomerids(); getSms();updateBranchids();" class="select1">
 				          <option value ="-1">操作节点或反馈结果</option>
 				          <option value ="<%=FlowOrderTypeEnum.RuKu.getValue()%> ">入库扫描</option>
 				          <option value ="<%=FlowOrderTypeEnum.ChuKuSaoMiao.getValue()%>">出库扫描</option>
@@ -386,7 +385,7 @@ function saveSuccess(data){
 					         <%} %>
 					        <%} %>
 			            </select></td>
-			            <td width="10%" id="customerid">
+			            <td width="20%" id="customerid">
 							<select name ="customerids"  id="customerids" multiple="multiple" style="width: 180px;">
 							</select>
 							[<a href="javascript:multiSelectAll('customerids',1,'请选择');">全选</a>]
@@ -397,7 +396,7 @@ function saveSuccess(data){
 							</select>
 						</td>
 						<td width="10%" >高于：
-						<select name="money" id="money">
+						<select name="money" id="money" class="select1">
 							<option value='-1'>金额</option>
 							<option value='100'>100元</option>
 							<option value='200'>200元</option>

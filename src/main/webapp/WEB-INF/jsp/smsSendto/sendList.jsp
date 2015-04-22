@@ -16,10 +16,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>客户发货统计</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
@@ -103,11 +102,14 @@ $(function() {
 	<tr>
 		<td align="left">
 			<input type="hidden" id="page" name="page" value="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"/>
-			发送时间：<input type ="text" name ="startSenddate" id="startSenddate"  value="<%=request.getAttribute("startSenddate")==null?"":(String)request.getAttribute("startSenddate") %>"/>
-			到 <input type ="text" name ="stopSenddate" id="stopSenddate"  value="<%=request.getAttribute("stopSenddate")==null?"":(String)request.getAttribute("stopSenddate")  %>"/>
-		 	手机号：<input type ="text" name ="consigneemobile" id="consigneemobile"  value="<%=request.getAttribute("consigneemobile")==null?"":(String)request.getAttribute("consigneemobile")  %>"/>
-		    订单类型
-			<select name ="sendstate" id ="sendstate" >
+			发送时间：
+			<input type ="text" name ="startSenddate" id="startSenddate"  value="<%=request.getAttribute("startSenddate")==null?"":(String)request.getAttribute("startSenddate") %>" class="input_text1"/>
+			到 
+			<input type ="text" name ="stopSenddate" id="stopSenddate"  value="<%=request.getAttribute("stopSenddate")==null?"":(String)request.getAttribute("stopSenddate")  %>" class="input_text1"/>
+		 	手机号：
+		 	<input type ="text" name ="consigneemobile" id="consigneemobile"  value="<%=request.getAttribute("consigneemobile")==null?"":(String)request.getAttribute("consigneemobile")  %>" class="input_text1"/>
+		    订单类型：
+			<select name ="sendstate" id ="sendstate" class="select1">
 				<option value ="-1" selected="selected">全部</option>
 				<option value ="0" >成功</option>
 				<option value ="1" >失败</option>

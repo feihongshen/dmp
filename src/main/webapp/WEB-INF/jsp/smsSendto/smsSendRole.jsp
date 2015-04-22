@@ -10,8 +10,8 @@
 <HEAD>
 <title>群发短信</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
