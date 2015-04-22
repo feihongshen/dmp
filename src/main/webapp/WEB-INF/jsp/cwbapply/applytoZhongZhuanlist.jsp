@@ -109,8 +109,8 @@ function delSuccess(data){
 <div style="background:#FFF">
 	<div class="kfsh_tabbtn">
 		<ul>
-			<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuan">中转订单申请</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuanlist/1" class="light">历史申请中转订单</a></li>
+			<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuan">中转申请</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuanlist/1" class="light">历史中转申请</a></li>
 		</ul>
 	</div>
 	<div class="inputselect_box">
@@ -121,18 +121,18 @@ function delSuccess(data){
 			<tr>
 				<td align="left">
 					中转订单申请时间:
-						<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+						<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 					到
-						<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+						<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
 					审核状态：
-					<select name ="ishandle" id ="ishandle">
+					<select name ="ishandle" id ="ishandle" class="select1">
 				          <option value ="-1">全部</option>
 				           <option value ="0">未处理</option>
 				           <option value ="1">已处理</option>
 				           <option value ="2">客服拒审</option>
 				    </select>
 					<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-					&nbsp;&nbsp;<input type ="button" id="btnval0" value="导出" class="input_button1" onclick="exportField('0','0');"/>
+					<input type ="button" id="btnval0" value="导出" class="input_button2" onclick="exportField('0','0');"/>
 				</td>
 			</tr>
 		</table>

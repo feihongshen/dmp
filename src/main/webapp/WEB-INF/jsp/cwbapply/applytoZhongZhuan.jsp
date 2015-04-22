@@ -104,8 +104,8 @@ function sub(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuan" class="light">中转订单申请</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuanlist/1">历史申请中转订单</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuan" class="light">中转申请</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwbapply/applytoZhongZhuanlist/1">历史中转申请</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -126,14 +126,14 @@ function sub(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">小件员</td>
-									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">申请中转站</td>
-									<td align="center" valign="middle" bgcolor="#E7F4E3">中转申请备注</td>
+									<td width="150" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">客户</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">配送结果</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+									<td width="150" align="center" valign="middle" bgcolor="#eef6ff">申请中转站</td>
+									<td align="center" valign="middle" bgcolor="#eef6ff">中转申请备注</td>
 								</tr>
 							<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrderView cwb :cwbList){ %>
 								<%if(cwb.getCurrentsitetype()!=BranchEnum.ZhanDian.getValue()

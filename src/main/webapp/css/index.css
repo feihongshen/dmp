@@ -16,13 +16,13 @@ a:hover { color:#F30; text-decoration:underline }
 .address_nav {color:#333; border:1px solid #999; border-bottom-width:0; background:url(../images/repeatx.png) repeat-x 0 -230px; color:#333; line-height:30px; padding-left:10px; padding-right:5px }
 .address_nav a { color:#333; }
 .right_box {  position:relative; z-index:9}
-.uc_menubox { height:37px; position:relative; z-index:0 }
-.uc_midbg { position:relative; background:#e0ecff; height:37px; z-index:0 }
-.uc_midbg ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
-.uc_midbg li { float:left; display:block; width:80px; height:31px; line-height:31px; text-align:center; margin-right:8px }
-.uc_midbg li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg.png) no-repeat }
-.uc_midbg li a:hover { text-decoration:none; color:#0e2d5f; background-position:0px -31px;font-weight:bold; }
-.uc_midbg .light { background-position:0px -62px }
+.uc_menubox { height:30px; position:relative; z-index:0 }
+.uc_midbg { position:relative; background:#e0ecff; height:30px; z-index:0 }
+.uc_midbg ul { position:absolute; z-index:99; height:25px; left:0; bottom:0px; padding-left:6px; }
+.uc_midbg li { float:left; display:block; width:100px; height:25px; line-height:25px; text-align:center; margin-right:8px }
+.uc_midbg li a { display:block; line-height:25px; color:#666; font-size:12px; background:url(../images/uc_menubg2.png) no-repeat; background-position:0px -60px; }
+.uc_midbg li a:hover { text-decoration:none; background-position:0px 0px;}
+.uc_midbg .light { background-position:0px 0px }
 .right_box_bottom { width:731px; height:5px; overflow:hidden; background:url(../images/right_box.png) no-repeat 0px -5px }
 .right_bolar_right { float:left; width:5px; height:44px; background:url(../images/right_borlar.png) no-repeat -5px 0 }
 .right_bolar_left { float:left; width:5px; height:44px; background:url(../images/right_borlar.png) no-repeat }
@@ -284,12 +284,12 @@ border:1px solid #ccc; color:#000; background:#fff; }
 .kfsh_search{padding:10px; border-left:1px solid #0CF; border-right:1px solid #0cf; background:#FFF; overflow:hidden}
 	.kfsh_search *{vertical-align:middle}
 	.kfsh_search span{float:right}
-.kfsh_tabbtn { position:relative; background:#AFD6EB; height:37px; z-index:9 }
-.kfsh_tabbtn ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
-.kfsh_tabbtn li { float:left; display:block; width:140px; height:31px; line-height:31px; text-align:center; margin-right:8px }
-.kfsh_tabbtn li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg3.png) no-repeat }
-.kfsh_tabbtn li a:hover { text-decoration:none; color:#C30; background-position:0px -31px }
-.kfsh_tabbtn .light { background-position:0px -62px }
+.kfsh_tabbtn { position:relative; background:#e0ecff; height:30px; z-index:9 }
+.kfsh_tabbtn ul { position:absolute; z-index:99; height:25px; left:0; bottom:0px; padding-left:6px; }
+.kfsh_tabbtn li { float:left; display:block; width:100px; height:25px; line-height:25px; text-align:center; margin-right:8px }
+.kfsh_tabbtn li a { display:block; line-height:25px; color:#666; font-size:12px; background:url(../images/uc_menubg2.png) no-repeat; background-position:0px -60px; }
+.kfsh_tabbtn li a:hover { text-decoration:none; background-position:0px 0px }
+.kfsh_tabbtn .light { background-position:0px 0px }
 .kfsh_text{height:48px}
 
 
@@ -369,18 +369,17 @@ border:1px solid #ccc; color:#000; background:#fff; }
 .saomiao_tab *{vertical-align:middle}
 .saomiao_tab span{float:right}
 .saomiao_tab { position:relative; background:#e0ecff; height:20px; z-index:9 }
-.saomiao_tab ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
-.saomiao_tab li { float:left; display:block; width:140px; height:31px; line-height:31px; text-align:center; margin-right:8px }
-.saomiao_tab li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg3.png) no-repeat }
-.saomiao_tab li a:hover { text-decoration:none; color:#0e2d5f; font-weight:bold; background-position:0px -31px }
-.saomiao_tab .light { background-position:0px -62px }
-.saomiao_tab2 { position:relative; background:#e0ecff; height:37px; z-index:0 }
-.saomiao_tab2 ul { position:absolute; z-index:99; height:31px; left:0; bottom:0px; padding-left:6px; }
-.saomiao_tab2 li { float:left; display:block; width:80px; height:31px; line-height:31px; text-align:center; margin-right:8px }
-.saomiao_tab2 li a { display:block; line-height:31px; color:#666; font-size:12px; background:url(../images/uc_menubg.png) no-repeat }
-.saomiao_tab2 li a:hover { text-decoration:none; color:#0e2d5f; font-weight:bold; background-position:0px -31px }
-.saomiao_tab2 .light { background-position:0px -62px }
-
+.saomiao_tab ul { position:absolute; z-index:99; height:25px; left:0; bottom:0px; padding-left:6px; }
+.saomiao_tab li { float:left; display:block; width:100px; height:25px; line-height:25px; text-align:center; margin-right:8px }
+.saomiao_tab li a { display:block; line-height:25px; color:#666; font-size:12px; background:url(../images/uc_menubg2.png) no-repeat;background-position:0px -60px }
+.saomiao_tab li a:hover { text-decoration:none; background-position:0px 0px }
+.saomiao_tab .light { background-position:0px 0px }
+.saomiao_tab2 { position:relative; background:#e0ecff; height:30px; z-index:0 }
+.saomiao_tab2 ul { position:absolute; z-index:99; height:25px; left:0; bottom:0px; padding-left:6px; }
+.saomiao_tab2 li { float:left; display:block; width:100px; height:25px; line-height:25px; text-align:center; margin-right:8px }
+.saomiao_tab2 li a { display:block; line-height:25px; color:#666; font-size:12px; background:url(../images/uc_menubg2.png) no-repeat; background-position:0px -60px; }
+.saomiao_tab2 li a:hover { text-decoration:none; background-position:0px 0px }
+.saomiao_tab2 .light { background-position:0px 0px }
 
 .high{font-size:18px;}
 
