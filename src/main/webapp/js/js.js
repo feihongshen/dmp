@@ -255,7 +255,7 @@ function submitSaveForm(form) {
 			if (data.errorCode == 0) {
 				//$("#WORK_AREA")[0].contentWindow.editSuccess(data);
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-
+				closeBox();
 			}
 		}
 	});
