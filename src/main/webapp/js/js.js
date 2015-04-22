@@ -3907,7 +3907,7 @@ function check_branchroute() {
 		alert("当前站点不能为空");
 		return false;
 	}
-	if ($(".checked")) {
+	if ($(".checked").length<=0) {
 		alert("目的站点不能为空");
 		return false;
 	}
