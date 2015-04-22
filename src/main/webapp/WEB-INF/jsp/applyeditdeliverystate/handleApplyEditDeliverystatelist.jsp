@@ -31,8 +31,8 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
@@ -165,20 +165,22 @@ function editInit(){
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="1" method="post" id="searchForm">
 			&nbsp;&nbsp;订单号：
-			<input type="text" name="cwb" id="cwb" value="" onKeyDown='if(event.keyCode==13){sub();}'>
-			申请时间：
-				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+			<input type="text" name="cwb" id="cwb" value="" onKeyDown='if(event.keyCode==13){sub();}' class="input_text1" style="height:20px;">
+			&nbsp;&nbsp;申请时间：
+				<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
 			到
-				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
+				<br/>
+				<br/>
 			申请机构：
-				<select name="applybranchid" id="applybranchid">
+				<select name="applybranchid" id="applybranchid" class="select1">
 					<option value="0">请选择</option>
 					<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 					<%} %>
 				</select>
-			处理状态：
-				<select name="ishandle" id="ishandle">
+			&nbsp;&nbsp;处理状态：
+				<select name="ishandle" id="ishandle" class="select1">
 					<option value="-1">请选择</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
@@ -188,21 +190,21 @@ function editInit(){
 	</div>
 	<div class="right_title">
 	<div class="jg_35"></div>
-	<%if(applyEditDeliverystateList!=null&&applyEditDeliverystateList.size()>0){ %>
+	<div class="jg_35"></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 	   <tbody><tr class="font_1" height="30" style="background-color: rgb(255, 255, 255); ">
-	   	<td width="10%" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">申请时间</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">申请人</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">订单类型</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">申请机构</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">当前配送结果</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">小件员</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">处理结果</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">申请修改配送结果</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">已修改结果</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">原因备注</td>
-			<td align="center" valign="middle" bgcolor="#F3F3F3">操作</td>
+	   	<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">申请时间</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">申请人</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">申请机构</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">当前配送结果</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">处理结果</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">申请修改配送结果</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">已修改结果</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+			<td align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
 		<tr style="background-color: rgb(249, 252, 253); ">
@@ -229,7 +231,7 @@ function editInit(){
 		</tr>
 		<%} %>
 		</tbody>
-	</table><%} %>
+	</table>
 	</div>
 	
 	<!--底部翻页 -->

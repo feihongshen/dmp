@@ -101,8 +101,11 @@ function exportField(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="../editCwbInfo" >订单信息修改</a></li>
-				<li><a href="#" class="light">订单信息修改查询</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
+				<li><a href="#" class="light">订单修改查询</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -116,9 +119,9 @@ function exportField(){
 										<form action="1" method="post"  id="searchForm1">
 										订单信息修改时间：
 											
-												<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
+												<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
 										到
-										<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>"/>
+										<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 										&nbsp;
 						<input type="button"  id="button" value="查询"  class="input_button2" onclick="check();"/>
 						<input type="hidden" value="1" name="isshow" id="isshow">

@@ -25,8 +25,8 @@ List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliver
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script language="javascript">
@@ -84,8 +84,11 @@ function  search(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">申请</a></li>
-				<li><a href="../getApplyEditDeliverystateList/1">历史申请</a></li>
+				<li><a href="#" class="light">订单修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -94,7 +97,7 @@ function  search(){
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								<span>
-								<select name="">
+								<select name="" class="select1">
 									<option>导出模板</option>
 								</select>
 								<input name="" type="button" value="导出Excel" class="input_button2">
@@ -107,16 +110,16 @@ function  search(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">小件员</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理人</td>
-									<td align="center" valign="middle" bgcolor="#E7F4E3">修改配送结果</td>
-									<td width="170" align="center" valign="middle" bgcolor="#E7F4E3">原因备注</td>
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">配送结果</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
+									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td width="170" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
 							</tbody>
 						</table>

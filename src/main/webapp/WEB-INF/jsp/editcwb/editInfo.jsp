@@ -13,8 +13,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -85,8 +85,11 @@ $(function(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
 				<li><a href="#" class="light">订单信息修改</a></li>
-				<li><a href="./toSearchCwb/1">订单信息修改查询</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -99,8 +102,8 @@ $(function(){
 										<td width="120" align="left" valign="top" bgcolor="#f5f5f5">
 										<form action="<%=request.getContextPath()%>/editcwb/editCwbInfo" method="post">
 										订单号：
-										<input name="cwb" type="text" id="cwb" onfocus="if(this.value=='输入单个订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入单个订单号查询后进行修改……'}" />
-										<input name="button" type="submit" class="input_button1" id="button" value="查询" />
+										<input name="cwb" type="text" id="cwb" onfocus="if(this.value=='输入单个订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入单个订单号查询后进行修改……'}" class="input_text1" style="height:20px;"/>
+										<input name="button" type="submit" class="input_button2" id="button" value="查询" />
 										<input type="hidden" id="isshow" name="isshow" value="1" />
 										</form>
 										</td>

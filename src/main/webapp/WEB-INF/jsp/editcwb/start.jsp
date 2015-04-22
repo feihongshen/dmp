@@ -7,6 +7,7 @@
 <HEAD>
 <TITLE>修改订单</TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -175,18 +176,29 @@ function checkuser(type){
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5">
+
+<div class="saomiao_box2"> 
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/start" method = "post">
+		<div class="kfsh_tabbtn">
+			<ul>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
+				<li><a href="#" class="light">重置反馈状态</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
+			</ul>
+		</div>
 <table>
 	<tr>
-		<td><span style="background-color: rgb(0, 174, 240);">订单号：</span><br/>[多个订单号用回车键隔开]<br/>
+		<td>订单号：<br/>[多个订单号用回车键隔开]<br/>
  			<textarea rows="25" cols="30" name ="cwbs" id ="cwbs"></textarea>
  			<br/>共<label id="num"></label>单
  		</td>
  		<td>	
  			<input type="hidden" id="type" name="type" value="0" />
  			申请人：
- 			<div id = "search"> 
-			<input type="text" id="username" name="username" /> 
+ 			<div id="search">
+			<input type="text" id="username" name="username" class="input_text1" style="height:20px;"/> 
 			<input type="hidden" id="userid" name="requestUser" value="0" />
 			</div> 
 			<br/><br/><br/><br/>
@@ -198,5 +210,7 @@ function checkuser(type){
  	</tr>
 </table>
 </form>
+</div>
+
 </BODY>
 </HTML>

@@ -31,8 +31,8 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
@@ -124,8 +124,11 @@ function sub(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="../toCreateApplyEditDeliverystate/1" >申请</a></li>
-				<li><a href="#" class="light">历史申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
+				<li><a href="#" class="light">历史申请记录</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -134,11 +137,11 @@ function sub(){
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								申请时间：
-								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>"/>
+								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
 									到
-									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>"/>
+									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
 								处理状态：
-								<select name="ishandle" id="ishandle">
+								<select name="ishandle" id="ishandle" class="select1">
 									<option value="-1">请选择</option>
 									<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
 									<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
@@ -149,15 +152,15 @@ function sub(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">申请站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">小件员</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理人</td>
-									<td align="center" valign="middle" bgcolor="#E7F4E3">修改配送结果</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">申请时间</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">申请站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">配送结果</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
+									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
 								</tr>
 							</tbody>
 						</table>
