@@ -163,9 +163,6 @@ function bdbranchmatch(){
 			dataType : "json",
 			success:function(data){
 				if(data.errorCode==0){
-					 $('input[name="machbranch"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
-						 $(this).val(data.excelbranch);
-						}); 
 					var successcwbs=data.successcwb.split(",");
 					 for(var i=0;i<successcwbs.length;i++){
 						 $("#ladd"+successcwbs[i]).val(data.excelbranch);
