@@ -3073,10 +3073,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>AHPJ</label>
-				<addresscustomerid>13</addresscustomerid>
-				<addressid>13</addressid>
+				<addresscustomerid>10</addresscustomerid>
+				<addressid>10</addressid>
 				<addresspassword>ahpj</addresspassword>
-				<addressWebserviceIp>103.229.214.164/newaddressmatch</addressWebserviceIp>
+				<addressWebserviceIp>103.229.214.164/addressahpj</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
