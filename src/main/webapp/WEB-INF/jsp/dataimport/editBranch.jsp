@@ -330,7 +330,7 @@ function bdbranchmatch(){
  	if(page_obj.getMaxpage()>1){
  %>
 						<div class="iframe_bottom" id="view_page">
-							<table width="100%" border="0" cellspacing="1" cellpadding="0"
+							<table width="50%" border="0" cellspacing="1" cellpadding="0"
 								class="table_1">
 								<tr>
 									<td height="38" align="center" valign="middle"
