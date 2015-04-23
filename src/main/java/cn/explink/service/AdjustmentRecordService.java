@@ -218,23 +218,40 @@ public class AdjustmentRecordService {
 						int adjust_status=adjustmentRecord.getStatus();
 						
 						if(adjust_bill_id==0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//未核销,并且不存在调整账单信息,则需要修改该信息
+							//未核销,并且存在调整账单信息,则需要修改该信息
 							//上门退订单
 							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 //								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
 //								aRecord.setRefund_fee(cwbOrder.getPaybackfee());//应退金额
+								BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
 								aRecord.setModify_fee(page_payback_fee);
 //								aRecord.setAdjust_amount(cwbOrder.getPaybackfee().subtract(page_payback_fee));
-								aRecord.setAdjust_amount(aRecord.getRefund_fee().subtract(page_payback_fee));
-								aRecord.setRemark(aRecord.getRefund_fee()+"元修改成"+page_payback_fee+"元");
+								aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
+								aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
+								
 							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
 								//配送订单
 //								aRecord.setReceive_fee(cwbOrder.getReceivablefee());//修改调整单记录,原始金额为原有数据中的原始金额
 //								aRecord.setRefund_fee(page_payback_fee);
 								aRecord.setModify_fee(page_receive_fee);
 //								aRecord.setAdjust_amount(page_receive_fee.subtract(cwbOrder.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setAdjust_amount(page_receive_fee.subtract(aRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
-								aRecord.setRemark(aRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+								aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
+								aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+								
+							}else {//TODO 上门换
+								if(page_payback_fee.doubleValue()>0&&page_receive_fee.doubleValue()<=0){
+									BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
+									aRecord.setModify_fee(page_payback_fee);
+									aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
+									aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
+									
+								}else if(page_receive_fee.doubleValue()>0&&page_payback_fee.doubleValue()<=0){
+									//配送订单
+									aRecord.setModify_fee(page_receive_fee);
+									aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
+									aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+									
+								}
 							}
 							aRecord.setCreator(getSessionUser().getUsername());
 							aRecord.setCreate_time(DateTimeUtil.getNowTime());
@@ -246,7 +263,7 @@ public class AdjustmentRecordService {
 							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 							
 						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//生成过调整账单&&是未核销的状态  则创建新的记录
+							//没有生成过调整账单&&是未核销的状态  则创建新的记录
 							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 						}
 					}	
@@ -367,6 +384,18 @@ public class AdjustmentRecordService {
 			aRecord.setAdjust_amount(page_receive_fee.subtract(order.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
 			aRecord.setRemark(order.getReceivablefee()+"元修改成"+page_receive_fee+"元");
 			
+		}else{//上门换的记录 TODO
+			if(page_payback_fee.doubleValue()>0&&page_receive_fee.doubleValue()<=0){
+				//没有生成过调整单新加一个记录
+				aRecord.setModify_fee(page_payback_fee);
+				aRecord.setAdjust_amount(order.getPaybackfee().subtract(page_payback_fee));
+				aRecord.setRemark(order.getPaybackfee()+"元修改成"+page_payback_fee+"元");
+			}else if(page_receive_fee.doubleValue()>0&&page_payback_fee.doubleValue()<=0){
+				aRecord.setModify_fee(page_receive_fee);
+				aRecord.setAdjust_amount(page_receive_fee.subtract(order.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
+				aRecord.setRemark(order.getReceivablefee()+"元修改成"+page_receive_fee+"元");
+				
+			}
 		}
 		
 		aRecord.setCreator(getSessionUser().getUsername());
