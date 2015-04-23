@@ -12,7 +12,7 @@ package cn.explink.enumutil;
  */
 public enum BranchTypeEnum {
 	
-	ZhiYing(1,"直营"),ErJiZhan(2,"二级站"),SanJiZhan(3,"三级站"),JiaMeng(4,"加盟"),JiaMengErJi(5,"加盟二级"),JiaMengSanJi(6,"加盟三级");
+	ZhiYing(0,"直营"),ErJiZhan(1,"二级站"),SanJiZhan(2,"三级站"),JiaMeng(3,"加盟"),JiaMengErJi(4,"加盟二级"),JiaMengSanJi(5,"加盟三级");
 	private int value;
 	private String text;
 		
