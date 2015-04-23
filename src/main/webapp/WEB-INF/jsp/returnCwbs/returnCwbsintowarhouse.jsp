@@ -74,8 +74,8 @@ var flag="<%=flag%>";
 	function addAndRemoval(cwb,tab,isRemoval){
 		var trObj = $("#ViewList tr[id='TR"+cwb+"']");
 		if(isRemoval){
-			trObj.remove();
-			/* $("#"+tab).append(trObj); */
+			/* trObj.remove(); */
+			$("#"+tab).append(trObj);
 		}else{
 			$("#ViewList #errorTable tr[id='TR"+cwb+"error']").remove();
 			trObj.clone(true).appendTo("#"+tab);
@@ -229,6 +229,7 @@ function search(flag){
 			<dt>今日已返单</dt>
 			<dd style="cursor:pointer" onclick="tabView('table_yiruku')" id="successcwbnum" name="successcwbnum"><%=yifandannums%></dd>
 		</dl>
+		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/returnCwbs/returnCwbsintowarhouse'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		<br clear="all">
 	</div>
 	
