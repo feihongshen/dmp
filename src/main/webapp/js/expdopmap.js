@@ -2885,7 +2885,7 @@ ExpLink.DeliveryStation.prototype._addStationMarker = function (point, delstat)
     // 构建标签
     var marker = new BMap.Marker(point);
     // 添加一个名称显示
-    var label = new BMap.Label(delstat.name, { offset: new BMap.Size(20, 0) });
+    var label = new BMap.Label(delstat.name+"("+delstat.externalId+")", { offset: new BMap.Size(20, 0) });
     marker.setLabel(label);
     // 初始化标签点击时显示的弹出窗
     //var infoWindow = new BMap.InfoWindow("<div style='line-height:1.8em;font-size:12px;'><b>名称:</b>" + point.title + "</br><b>地址:</b>" + point.address + "</br><b>电话:</b>" + point.phoneNumber + "</br><a style='text-decoration:none;color:#2679BA;float:right' target='_blank' href='" + point.detailUrl + "'>详情>></a></div>");  // 创建信息窗口对象

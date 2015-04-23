@@ -65,10 +65,31 @@ function tabView(tab){
 
 function addAndRemoval(cwb,tab,isRemoval){
 	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
+	var trObj1 = $("#ViewList tr[id='TR"+cwb+"']");
 	if(isRemoval){
 		trObj.remove();
-		/* $("#"+tab).append(trObj); */
+		console.info(trObj1);
+		trObj1.children('td').eq(2).remove();
+		trObj1.children('td').eq(3).remove();
+		var d = new Date();
+		console.info(d);
+		var vYear = d.getFullYear();
+		var vMon = d.getMonth() + 1;
+		var vDay = d.getDate();
+		var h = d.getHours(); 
+		var m = d.getMinutes(); 
+		var se = d.getSeconds();
+		if(se<10)se+="0";
+		if(vMon<10)vMon+="0";
+		if(vDay<10)vDay+="0";
+		if(h<10)h+="0";
+		if(m<10)m+="0";
+		trObj1.children('td').eq(2).html(vYear+"-"+vMon+"-"+vDay+"  "+h+":"+m+":"+se);
+		console.info(trObj1);
+		trObj1.clone(true).appendTo("#"+tab);
+		
 	}else{
+		
 		$("#ViewList #errorTable tr[id='TR"+cwb+"error']").remove();
 		trObj.clone(true).appendTo("#"+tab);
 		$("#ViewList #errorTable tr[id='TR"+cwb+"']").attr("id",trObj.attr("id")+"error");
@@ -221,6 +242,7 @@ function search(flag){
 			<dt>今日返单已出站</dt>
 			<dd style="cursor:pointer" onclick="tabView('table_yituihuochuku')" id="alloutnum"><%=yichuzhannums%></dd>
 		</dl>
+			<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/returnCwbs/returnCwbsbackexport'" style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		<br clear="all">
 	</div>
 	
@@ -310,6 +332,16 @@ function search(flag){
 												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 												<td align="left"><%=co.getConsigneeaddress() %></td>
 											</tr>
+												<%-- <tr id="TRL<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" style="display:none;">
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140" id="<%=co.getCwb() %>shenhetime"></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
+											</tr> --%>
+											
+											
 											<%} %>
 										</table>
 									</div>
@@ -384,7 +416,7 @@ function search(flag){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="140" align="center" bgcolor="#f1f1f1">出站时间</td>
 											<!-- <td width="140" align="center" bgcolor="#f1f1f1">反馈时间</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">审核时间</td> -->
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
