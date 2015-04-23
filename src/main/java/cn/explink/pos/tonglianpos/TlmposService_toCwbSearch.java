@@ -79,13 +79,18 @@ public class TlmposService_toCwbSearch extends TlmposService {
 	 * @return
 	 */
 	private TlmposRespNote SearchCwbDetailBytlmpos(TlmposRespNote tlmposRespNote, Tlmpos tlmpos) {
-		String consignee_contact = tlmposRespNote.getCwbOrder().getConsigneemobile() + "," + tlmposRespNote.getCwbOrder().getConsigneephone();
+		String consignee_contact = tlmposRespNote.getCwbOrder().getConsigneemobile() ;
+		String consigneephone=tlmposRespNote.getCwbOrder().getConsigneephone()==null?"":tlmposRespNote.getCwbOrder().getConsigneephone();
+		if(consignee_contact==null ||consignee_contact.isEmpty()){
+			consignee_contact=consigneephone;
+		}
+		
 		if (tlmpos.getIsshowPhone() == 0) { // 不显示联系方式
 			consignee_contact = "";
 		}
 
-		if (consignee_contact.length() > 30) {
-			consignee_contact = consignee_contact.substring(0, 30);
+		if (consignee_contact.length() > 20) {
+			consignee_contact = consignee_contact.substring(0, 20);
 		}
 		tlmposRespNote.setConsignee_contact(consignee_contact);
 		String consignee = tlmposRespNote.getCwbOrder().getConsigneename();
