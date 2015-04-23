@@ -3901,22 +3901,7 @@ function setowgfengbao(pname, owgid) {
 	});
 }
 
-// /////////////////////货物流向功能////////////////////////////////////
-function check_branchroute() {
-	if ($("#fromBranchId").val() == 0) {
-		alert("当前站点不能为空");
-		return false;
-	}
-	if ($(".checked").length<=0) {
-		alert("目的站点不能为空");
-		return false;
-	}
-	if ($("#type").val() == 0) {
-		alert("流向方向不能为空");
-		return false;
-	}
-	return true;
-}
+
 // ///////////////////默认导出模板/////////////////////////////
 function setDefaultExportViewBox() {
 	$.ajax({
@@ -4794,6 +4779,22 @@ function to_change(flag){
 	}else{
 		$("#div_2").attr('hidden','true');
 		}
+}
+
+function check_branchroute() {
+	if ($("#fromBranchId").val() == 0) {
+		alert("当前站点不能为空");
+		return false;
+	}
+	if ($("#toBranchId").val==0) {
+		alert("目的站点不能为空");
+		return false;
+	}
+	if ($("#type").val() == 0) {
+		alert("流向方向不能为空");
+		return false;
+	}
+	return true;
 }
 
 

@@ -23,7 +23,7 @@ $(function(){
 })
 
 
-function check_branchroute() {
+ function check_branchroute01() {
 	if ($("#fromBranchId").val() == 0) {
 		alert("当前站点不能为空");
 		return false;
@@ -37,7 +37,7 @@ function check_branchroute() {
 		return false;
 	}
 	return true;
-}
+} 
 
 function afterSumit(form){
 	
@@ -47,17 +47,20 @@ function afterSumit(form){
 		data:$(form).serialize(),
 		dataType:"json",
 		success : function(data) {                                                                                                                                                                                                                                      
-			location.href='<%=request.getContextPath()%>/branchRouteControl/list/1?';
+			if (data.errorCode == 0) {
+ 			 alert(data.error);
+ 				location.href='<%=request.getContextPath()%>/branchRouteControl/list/1?';
+			}
 		}
 	});
-}
+} 
 </script>
 
 </head>
 <body>
 <div style="background:#f5f5f5">
 		<form id="branchroute_cre_Form" name="branchroute_cre_Form"
-			onSubmit="if(check_branchroute()){afterSumit(this);} return false;"
+			onSubmit="if(check_branchroute01()){afterSumit(this);} return false;"
 		
 			 action="<%=request.getContextPath()%>/branchRouteControl/create;jsessionid=<%=session.getId()%>" method="post"  >
 			<div id="box_form">

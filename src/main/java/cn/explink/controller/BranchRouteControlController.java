@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchRouteEnum;
@@ -59,17 +60,28 @@ public class BranchRouteControlController {
 	@RequestMapping("/create")
 	public @ResponseBody String create(@RequestParam(value = "fromBranchId", required = false, defaultValue = "0") long fromBranchId,
 			@RequestParam(value = "toBranchId", required = false, defaultValue = "") String[] toBranchId, @RequestParam(value = "type", required = false, defaultValue = "0") int type) throws Exception {
-		
+		int flag=0;
+		StringBuilder sb = new StringBuilder();
+		String msg=null;
 		for( String tempToBranchId : toBranchId){
 			List<BranchRoute> brlist = branchRouteDAO.getBranchRouteByWheresql(fromBranchId, Long.valueOf(tempToBranchId), type);
-			if (brlist.size() > 0) {
+			if (brlist.size() > 0) {				
+				Branch branch=branchDAO.getBranchByBranchid(Long.valueOf(tempToBranchId));
+				/*msg+=branch.getBranchname()+",";*/
+				sb.append(branch.getBranchname()+",");
+				msg=sb.substring(0,sb.length()-1);
+				flag=1;
 				continue;
 			} else {
 				branchRouteDAO.creBranchRoute(fromBranchId, Long.valueOf(tempToBranchId), type);
 				cwbRouteService.reload();
 				logger.info("operatorUser={},货物流向设置->create", getSessionUser().getUsername());
 			}
+			
 		}
+		if(flag==1){
+			return "{\"errorCode\":0,\"error\":\"操作成功,已过滤重复数据 "+msg+"\"}"; 
+		}else
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 
@@ -96,7 +108,7 @@ public class BranchRouteControlController {
 		List<BranchRoute> brlist = branchRouteDAO.getBranchRouteByWheresql(fromBranchId, toBranchId, type);
 
 		if (brlist.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"该货物流向设置已存在\"}";
+			return "{\"errorCode\":0,\"error\":\"该货物流向设置已存在\"}";
 		} else {
 			branchRouteDAO.saveBranchRouteByWhere(oldfromBranchId, oldtoBranchId, oldtype, fromBranchId, toBranchId, type);
 			cwbRouteService.reload();
