@@ -347,6 +347,7 @@ public class PDAController {
 		}
 		String transcwbs = this.otmservice.replaceTranscwb(cwb, transcwb);
 		this.cwbDAO.updateTranscwb(cwb, transcwbs);// 更新数据库一票多件订单补入
+		
 		List<TranscwbView> translist = this.transCwbDao.getTransCwbByCwb(cwb);
 		StringBuffer buffer = new StringBuffer();
 		for (Iterator iterator = translist.iterator(); iterator.hasNext();) {
@@ -5279,8 +5280,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getOutSum")
-	public @ResponseBody
-	JSONObject getOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
+	public @ResponseBody JSONObject getOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
 			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
