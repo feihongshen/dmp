@@ -106,15 +106,18 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 		PoscodeMapp codemapping = this.poscodeMappDAO.getPosCodeByKey(tlmposRespNote.getCwbOrder().getCustomerid(), PosEnum.TongLianPos.getKey());
 		String end4str = ""; // 后四位 查询POS商户映射上面得出
+		String normal_code="";
 		if (codemapping != null) {
-			end4str = (codemapping.getCustomercode() == null) || codemapping.getCustomercode().isEmpty() ? "0000" : codemapping.getCustomercode();
+			normal_code = (codemapping.getCustomercode() == null) || codemapping.getCustomercode().isEmpty() ? "0000000" : codemapping.getCustomercode();
+		}else{
+			normal_code="0000000";
 		}
 
-		String idx1 = tlmpos.getIsbackout() == 1 ? "0" : "A";
-		String idx2 = "0";
-		String idx3 = "0";
-
-		String normal_code = idx1 + idx2 + idx3 + end4str;
+//		String idx1 = tlmpos.getIsbackout() == 1 ? "0" : "A";
+//		String idx2 = "0";
+//		String idx3 = "0";
+//
+//		String normal_code = idx1 + idx2 + idx3 + end4str;
 
 		tlmposRespNote.setMerchant_code(normal_code); // 支付方判断.
 
