@@ -23,6 +23,7 @@ import cn.explink.domain.OrgBillAdjustmentRecord;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AdjustWayEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
 
 /**
@@ -88,6 +89,8 @@ public class OrgBillAdjustmentRecordService {
 				record.setCustomerId(order.getCustomerid());
 				record.setReceiveFee(order.getReceivablefee());
 				record.setRefundFee(order.getPaybackfee());
+				//是否修改过支付方式的标识
+				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
 				
 				if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 					record.setModifyFee(modifyFeeReceiveFee);
@@ -104,11 +107,13 @@ public class OrgBillAdjustmentRecordService {
 					record.setRemark(order.getPaybackfee()+"元修改成"+modifyPaybackfee+"元");
 					
 				}else if(CwbOrderTypeIdEnum.Shangmenhuan.getValue()==orderType.intValue()){
+					//获取订单的应收和应退金额
+					BigDecimal orderReceiveFee = order.getReceivablefee()==null?BigDecimal.ZERO:order.getReceivablefee();
+					BigDecimal orderPayBackFee = order.getPaybackfee()==null?BigDecimal.ZERO:order.getPaybackfee();
+					//计算是否修改过金额
+					BigDecimal changeReceiveableFee = orderReceiveFee.subtract(modifyFeeReceiveFee==null?BigDecimal.ZERO:modifyFeeReceiveFee);
+					BigDecimal changePayBackFee = orderPayBackFee.subtract(modifyPaybackfee==null?BigDecimal.ZERO:modifyPaybackfee);
 					//判断
-					//上门退
-//					record.setReceiveFee(order.getReceivablefee());
-//					record.setRefundFee(order.getPaybackfee());
-					//修改的是应退金额
 					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
 						record.setModifyFee(modifyPaybackfee);
 //						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
@@ -125,7 +130,14 @@ public class OrgBillAdjustmentRecordService {
 				record.setCreator(getSessionUser().getUsername());
 				record.setCreateTime(new Date());
 				record.setOrderType(orderType);
-				record.setPayMethod(Long.valueOf(order.getPaywayid()).intValue());
+				//订单的支付方式可能是新的支付方式
+				Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
+				Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
+				if (oldPayWay.intValue()==newPayWay.intValue()) {
+					record.setPayMethod(oldPayWay.intValue());
+				}else {
+					record.setPayMethod(newPayWay.intValue());
+				}
 				record.setDeliverybranchid(order.getDeliverybranchid());
 				try {
 					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
@@ -148,6 +160,7 @@ public class OrgBillAdjustmentRecordService {
 	 * @param newpaywayid
 	 */
 	public void createAdjustmentRecordByPayType(String cwb, int payWayId,int newPayWayId) {
+		
 		List<FnOrgBillDetail> fnOrgBillDetails = new ArrayList<FnOrgBillDetail>();
 		
 		List<OrgBillAdjustmentRecord> adjustRecord = new ArrayList<OrgBillAdjustmentRecord>();
@@ -195,7 +208,8 @@ public class OrgBillAdjustmentRecordService {
 		BigDecimal modifyPaybackfee = BigDecimal.ZERO;
 		
 		if(AdjustWayEnum.Forward.getValue().equals(adjustWay.getValue())){//正向--负的记录
-			record.setPayWayChangeFlag(0);
+			//是否修改过支付方式的标识
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
 			if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 				record.setModifyFee(modifyFeeReceiveFee);
 				record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
@@ -226,7 +240,8 @@ public class OrgBillAdjustmentRecordService {
 			//原先的支付方式
 			record.setPayMethod(Long.valueOf(payWayId).intValue());
 		}else {//逆向 -- 正的记录
-			record.setPayWayChangeFlag(1);
+			//是否修改过支付方式的标识
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.Yes.getValue());
 			if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
 				record.setModifyFee(modifyFeeReceiveFee);
 				record.setAdjustAmount(order.getReceivablefee().subtract(modifyFeeReceiveFee));
@@ -270,5 +285,5 @@ public class OrgBillAdjustmentRecordService {
 		}
 		orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 	}
-
+	
 }
