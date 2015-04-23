@@ -144,7 +144,7 @@ function showMsg(){
 				<tr class=VwCtr style="display:">
 					<td width="100%" colspan="2">
 					站点表：
-					<%for(Branch b : branchlist){ out.print("<span  style='background-color:#bbffaa;' >"+b.getBranchname()+"("+b.getBranchcode()+")</span>　"); }%>
+					<%for(Branch b : branchlist){ out.print("<span  style='background-color:#eef6ff;' >"+b.getBranchname()+"("+b.getBranchcode()+")</span>　"); }%>
 					</td>
 					
 				</tr>

@@ -34,12 +34,22 @@ var initMenuList = new Array();
 								%>
 									<ul>
 										<li>
-											<h3 id="pic_<%=menu_1.getId() %>" >
-												<label>
+											<h3 id="pic_<%=menu_1.getId() %>"/>
+												<h3>
 													<input type="checkbox" id="cb_<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val())" value="<%=menu_1.getId() %>" >
-													<%=menu_1.getName() %></label>
-												<a href="javascript:;" onclick="checkAll(<%=menu_1.getId() %>)">[全选]</a> </h3>
+													<%=menu_1.getName() %></h3>
+											<%
+											boolean hasChild = false;
+											for(Menu menu_2: menuList){
+												if(menu_2.getParentid()==menu_1.getId()){
+													hasChild = true;
+													break;
+												}
+											}
+											if(hasChild){
+											%>
 											<div id="menu_<%=menu_1.getId() %>" style ="display:none ;" >
+
 											<ul>
 											<% for(Menu menu_2: menuList){ 
 												if(menu_2.getParentid()==menu_1.getId()){
@@ -52,6 +62,9 @@ var initMenuList = new Array();
 												<%}} %>
 												</ul>
 											</div>
+											<%
+											}
+											%>
 										</li>
 									</ul>
 									<%}} %>
