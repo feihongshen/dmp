@@ -5980,8 +5980,8 @@ CREATE TABLE
 	
 	<changeSet id="wangzhiyong-2015-4-22-1" author="wangzhiyong">
 		<sql>			
-		UPDATE `express_set_menu_info_new` SET `menuname`='退供货商出库(p)',`menuno`='p18' WHERE `menuid`='296'; 
-		UPDATE `express_set_menu_info_new` SET `menuname`='供货商拒收返库(p)',`menuno`='p19' WHERE `menuid`='297';
+		UPDATE `express_set_menu_info_new` SET `menuname`='退供货商出库(P)',`menuno`='P18' WHERE `menuid`='296'; 
+		UPDATE `express_set_menu_info_new` SET `menuname`='供货商拒收返库(P)',`menuno`='P19' WHERE `menuid`='297';
 		</sql>
 	</changeSet>
 	<changeSet id="lansheng-2015-4-23-1" author="lansheng">
