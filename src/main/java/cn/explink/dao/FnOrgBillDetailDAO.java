@@ -1,32 +1,18 @@
 package cn.explink.dao;
 
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import net.sf.json.JSONObject;
-
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.AbnormalOrder;
-import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.AdjustmentRecord;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.FnOrgBillDetail;
-import cn.explink.domain.User;
-import cn.explink.enumutil.VerificationEnum;
-import cn.explink.util.Page;
 /**
  * 账单明细表DAO
  * @author 140624
