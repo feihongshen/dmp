@@ -31,8 +31,8 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
@@ -299,7 +299,7 @@ function stateBatch(state)
 				</table>
 				</div>
 			<div style="height: 500px;overflow:auto; ">
-		<div style="height: 120px;"></div>
+		    <div style="height: 140px;"></div>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 				<tbody>
 					<%if(views!=null||views.size()>0)for(AbnormalView view : views){ %>
