@@ -146,22 +146,11 @@ function exportField(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuo" >订单拦截</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou">审核为退货再投</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang" class="light">审核为退供货商</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">审核为供货商确认退货</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChongZhiStatus" >重置审核状态</a></li>
-				<%if(request.getAttribute("amazonIsOpen") != null && "1".equals(request.getAttribute("amazonIsOpen").toString())){ %>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toBaoGuoWeiDao">亚马逊订单处理</a></li><%} %>
-				<!-- <li><a href="./toZhongZhuan">审核为中转</a></li> -->
-				<%-- <%if(request.getAttribute("isUseAuditTuiHuo") != null && "yes".equals(request.getAttribute("isUseAuditTuiHuo").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoTuiHuolist/1">审核为退货</a></li>
-				<%} %> --%>
-				<%if(request.getAttribute("isUseAuditZhongZhuan") != null && "yes".equals(request.getAttribute("isUseAuditZhongZhuan").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoZhongZhuanlist/1">审核为中转</a></li>
-				<%} %>
-				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">审核为允许退货出站</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan">审核为中转件</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou">退货再投审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">退货出站审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan">中转出站审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang" class="light">退客户出库审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">客户收退货确认</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -170,7 +159,7 @@ function exportField(){
 						<div class="kfsh_search">
 							<form action="./toTuiGongHuoShang" method="POST" id="searchForm">
 								<%if(cwbList!=null){ %><span>
-									<select name ="exportmould" id ="exportmould">
+									<select name ="exportmould" id ="exportmould" class="select1">
 										<option  value ="0">导出模板</option>
 										<%for(Exportmould e:exportmouldlist){%>
 											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>

@@ -117,9 +117,10 @@ function exportField(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou" class="light">审核为退货再投</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou" class="light">退货再投审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">退货出站审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan">中转出站审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang">退客户出库审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">客户收退货确认</a></li>
 			</ul>
 		</div>

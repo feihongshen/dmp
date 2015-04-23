@@ -89,9 +89,10 @@ function submitCwb(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou">审核为退货再投</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou">退货再投审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">退货出站审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan" class="light">中转出站审核</a></li>
+				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang">退客户出库审核</a></li>
 				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">客户收退货确认</a></li>
 			</ul>
 		</div>
