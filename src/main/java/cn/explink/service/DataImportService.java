@@ -336,10 +336,15 @@ public class DataImportService {
 
 		fileName = fileName + otherName + lastStr;
 		try {
-			StringBuffer sb=new StringBuffer();
-			sb.append("'"+cwb+"',");
-			String cwb1=sb.toString().substring(0, sb.length() - 1);
-			final String sql = cwbDAO.getcwbOrderByPageIsMyWarehouseSql(customerid, cwb1, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid);
+			if(cwb!=""){
+				StringBuffer sb=new StringBuffer();
+				for (String cwbString:cwb.split("\r\n")) {
+					sb.append("'"+cwbString+"',");
+				}
+				cwb=sb.toString().substring(0, sb.length() - 1);
+			}
+			
+			final String sql = cwbDAO.getcwbOrderByPageIsMyWarehouseSql(customerid, cwb, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid);
 
 			ExcelUtils excelUtil = new ExcelUtils() {
 				// 生成工具类实例，并实现填充数据的抽象方法

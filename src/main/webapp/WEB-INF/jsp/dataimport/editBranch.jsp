@@ -368,8 +368,9 @@ function bdbranchmatch(){
 	</div>
 	<form action="<%=request.getContextPath()%>/dataimport/exportExcle"
 		method="post" id="searchForm2">
-		<input type="hidden" name="cwb1" id="cwb1"
-			value="<%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%>" />
+	<%-- 	<input type="text" name="cwb1" id="cwb1"
+			value="<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs")%>" /> --%>
+		<textarea hidden="hidden" name="cwb1" id="cwb1"><%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs")%></textarea>
 		<input type="hidden" name="emaildate1" id="emaildate1"
 			value="<%=emaildateidParam%>" /> <input type="hidden"
 			name="customerid1" id="customerid1"
