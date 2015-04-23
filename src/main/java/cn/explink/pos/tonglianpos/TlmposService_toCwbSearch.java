@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMapp;
-import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.pos.tonglianpos.xmldto.Transaction;
 import cn.explink.pos.tools.PosEnum;
@@ -20,7 +19,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 	/**
 	 * 运单查询
-	 *
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("finally")
@@ -75,18 +74,23 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 	/**
 	 * 查询其他信息
-	 *
+	 * 
 	 * @param tlmposRespNote
 	 * @return
 	 */
 	private TlmposRespNote SearchCwbDetailBytlmpos(TlmposRespNote tlmposRespNote, Tlmpos tlmpos) {
-		String consignee_contact = tlmposRespNote.getCwbOrder().getConsigneemobile() + "," + tlmposRespNote.getCwbOrder().getConsigneephone();
+		String consignee_contact = tlmposRespNote.getCwbOrder().getConsigneemobile() ;
+		String consigneephone=tlmposRespNote.getCwbOrder().getConsigneephone()==null?"":tlmposRespNote.getCwbOrder().getConsigneephone();
+		if(consignee_contact==null ||consignee_contact.isEmpty()){
+			consignee_contact=consigneephone;
+		}
+		
 		if (tlmpos.getIsshowPhone() == 0) { // 不显示联系方式
 			consignee_contact = "";
 		}
 
-		if (consignee_contact.length() > 30) {
-			consignee_contact = consignee_contact.substring(0, 30);
+		if (consignee_contact.length() > 20) {
+			consignee_contact = consignee_contact.substring(0, 20);
 		}
 		tlmposRespNote.setConsignee_contact(consignee_contact);
 		String consignee = tlmposRespNote.getCwbOrder().getConsigneename();
@@ -107,19 +111,18 @@ public class TlmposService_toCwbSearch extends TlmposService {
 
 		PoscodeMapp codemapping = this.poscodeMappDAO.getPosCodeByKey(tlmposRespNote.getCwbOrder().getCustomerid(), PosEnum.TongLianPos.getKey());
 		String end4str = ""; // 后四位 查询POS商户映射上面得出
+		String normal_code="";
 		if (codemapping != null) {
-			end4str = (codemapping.getCustomercode() == null) || codemapping.getCustomercode().isEmpty() ? "0000" : codemapping.getCustomercode();
+			normal_code = (codemapping.getCustomercode() == null) || codemapping.getCustomercode().isEmpty() ? "0000000" : codemapping.getCustomercode();
+		}else{
+			normal_code="0000000";
 		}
 
-		String idx1 = tlmpos.getIsbackout() == 1 ? "0" : "A";
-		String idx2 = "0";
-		String idx3 = "0";
-
-		String normal_code = idx1 + idx2 + idx3 + end4str;
-
-		if (tlmposRespNote.getCwbOrder().getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-			normal_code = "0000000";
-		}
+//		String idx1 = tlmpos.getIsbackout() == 1 ? "0" : "A";
+//		String idx2 = "0";
+//		String idx3 = "0";
+//
+//		String normal_code = idx1 + idx2 + idx3 + end4str;
 
 		tlmposRespNote.setMerchant_code(normal_code); // 支付方判断.
 
@@ -154,10 +157,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		retMap.put("e_order_no", rootnote.getTransaction_Body().getTranscwb() == null ? "" : rootnote.getTransaction_Body().getTranscwb());
 		retMap.put("amt", tlmposRespNote.getCwbOrder() == null ? "0" : tlmposRespNote.getCwbOrder().getReceivablefee() + "");
 		retMap.put("account_keyword", tlmposRespNote.getMerchant_code());// 分账标识符,
-								
-		String shouldfee =tlmposRespNote.getCwbOrder()==null?"":String.valueOf(tlmposRespNote.getCwbOrder().getShouldfare() == null ? "0" : tlmposRespNote.getCwbOrder().getShouldfare());
-		// 配送商户编号
-		retMap.put("shouldfee", shouldfee);
+																			// 配送商户编号
 
 		// 生成待加密的字符串
 		String str = TlmposXMLHandler.createMACXML_SearchCwb(retMap);
