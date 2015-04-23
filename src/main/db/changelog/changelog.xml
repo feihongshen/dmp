@@ -5995,6 +5995,9 @@ CREATE TABLE
 		</sql>
 	</changeSet>
 
+ <changeSet id="zhangpengkai-2015-04-23-1" author="zhangpengkai">
+  	      <sqlFile path="DMP4.0base_kefu.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+     </changeSet>
 
 </databaseChangeLog>
  

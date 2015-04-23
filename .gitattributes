@@ -4,6 +4,7 @@
 lib/winxuan-api-sdk-1.0.jar -text
 /log.roo -text
 /pom.xml -text
+src/main/db/changelog/DMP4.0base_kefu.sql -text
 src/main/db/changelog/changelog.xml -text
 src/main/db/changelog/dmp40_function.sql -text
 src/main/db/changelog/dmp_init.sql -text
