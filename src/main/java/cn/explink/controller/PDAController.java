@@ -1051,9 +1051,9 @@ public class PDAController {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		int cwbstate = 1;
-		if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+	/*	if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 			cwbstate = 2;
-		}
+		}*/
 		List<String> cwbyichukuList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(b.getBranchid(), branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		String cwbs = "";
 		if (cwbyichukuList.size() > 0) {
@@ -4847,9 +4847,9 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		Branch b = this.branchDAO.getBranchById(branchid);
-		if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+	/*	if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 			cwbstate = CwbStateEnum.TuiHuo.getValue();
-		}
+		}*/
 
 		obj.put("branch", b);
 		List<Map<String, Object>> weichukudata = this.cwbDAO.getChukubyBranchid(branchid, nextbranchid, cwbstate);
