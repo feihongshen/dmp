@@ -89,7 +89,7 @@ public class OrgBillAdjustmentRecordService {
 				record.setCustomerId(order.getCustomerid());
 				record.setReceiveFee(order.getReceivablefee());
 				record.setRefundFee(order.getPaybackfee());
-				//是否修改过支付方式的标识
+				//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
 				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
 				
 				if(CwbOrderTypeIdEnum.Peisong.getValue()==orderType.intValue()){
@@ -144,7 +144,7 @@ public class OrgBillAdjustmentRecordService {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-
+				record.setPayWayChangeFlag(0);
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 			}else{//该订单已经生成过调整单记录  不让其修改
 				//提示信息
