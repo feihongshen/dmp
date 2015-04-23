@@ -1156,6 +1156,7 @@ src/main/java/cn/explink/enumutil/OpertaionResultEnum.java -text
 src/main/java/cn/explink/enumutil/OutWarehouseGroupEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehouseEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
+src/main/java/cn/explink/enumutil/PayMethodSwitchEnum.java -text
 src/main/java/cn/explink/enumutil/PaytypeEnum.java -text
 src/main/java/cn/explink/enumutil/PrintTemplateOpertatetypeEnum.java -text
 src/main/java/cn/explink/enumutil/ReachErrorFlagEnum.java -text
