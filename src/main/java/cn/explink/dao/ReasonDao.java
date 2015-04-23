@@ -76,6 +76,14 @@ public class ReasonDao {
 		}
 	}
 	
+	public List<Reason> getReasonByReasoncontentAndParentid(String reasoncontent,int parentid) {
+		try {
+			return jdbcTemplate.query("select * from express_set_reason where reasoncontent=? and parentid=?", new ReasonRowMapper(), reasoncontent,parentid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public List<Reason> getReasonByReasontype(long reasontype) {
 		if(reasontype==2){
 			try {

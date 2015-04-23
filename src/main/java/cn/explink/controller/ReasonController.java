@@ -95,8 +95,8 @@ public class ReasonController {
 			@RequestParam(value = "whichreason", defaultValue = "0", required = false) int whichreason,
 			@RequestParam(value = "parentid", defaultValue = "0", required = false) int parentid) {
 
-		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
-		if (list.size() > 0 && reasontype == list.get(0).getReasontype()) {
+		List<Reason> list = reasonDao.getReasonByReasoncontentAndParentid(reasoncontent,parentid);
+		if (list.size() > 0&& reasontype == list.get(0).getReasontype()) {
 			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
 		}
 		Reason reason = new Reason();
