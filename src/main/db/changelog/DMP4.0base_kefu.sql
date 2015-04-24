@@ -4944,272 +4944,9 @@ CREATE TABLE `optimistic_locking` (
 
 /*Data for the table `optimistic_locking` */
 
-/*Table structure for table `qtz_blob_triggers` */
 
-DROP TABLE IF EXISTS `qtz_blob_triggers`;
 
-CREATE TABLE `qtz_blob_triggers` (
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `blob_data` longblob,
-  PRIMARY KEY (`trigger_name`,`trigger_group`),
-  UNIQUE KEY `SYS_C00100332` (`trigger_name`,`trigger_group`),
-  CONSTRAINT `sys_c00100333` FOREIGN KEY (`trigger_name`, `trigger_group`) REFERENCES `qtz_triggers` (`trigger_name`, `trigger_group`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `qtz_blob_triggers` */
-
-/*Table structure for table `qtz_calendars` */
-
-DROP TABLE IF EXISTS `qtz_calendars`;
-
-CREATE TABLE `qtz_calendars` (
-  `calendar_name` varchar(200) NOT NULL,
-  `calendar` longblob NOT NULL,
-  PRIMARY KEY (`calendar_name`),
-  UNIQUE KEY `SYS_C00100341` (`calendar_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_calendars` */
-
-/*Table structure for table `qtz_cron_triggers` */
-
-DROP TABLE IF EXISTS `qtz_cron_triggers`;
-
-CREATE TABLE `qtz_cron_triggers` (
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `cron_expression` varchar(120) NOT NULL,
-  `time_zone_id` varchar(80) DEFAULT NULL,
-  PRIMARY KEY (`trigger_name`,`trigger_group`),
-  CONSTRAINT `sys_c00100329` FOREIGN KEY (`trigger_name`, `trigger_group`) REFERENCES `qtz_triggers` (`trigger_name`, `trigger_group`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_cron_triggers` */
-
-insert  into `qtz_cron_triggers`(`trigger_name`,`trigger_group`,`cron_expression`,`time_zone_id`) values ('addressAsynTimer','DEFAULT','0 0/10 * * * ?','Asia/Shanghai');
-insert  into `qtz_cron_triggers`(`trigger_name`,`trigger_group`,`cron_expression`,`time_zone_id`) values ('addressTimer','DEFAULT','0 0/5 * * * ?','Asia/Shanghai');
-insert  into `qtz_cron_triggers`(`trigger_name`,`trigger_group`,`cron_expression`,`time_zone_id`) values ('complaintTimer','DEFAULT','0 0/2 * * * ?','Asia/Shanghai');
-insert  into `qtz_cron_triggers`(`trigger_name`,`trigger_group`,`cron_expression`,`time_zone_id`) values ('smsTimer','DEFAULT','0 0/2 * * * ?','Asia/Shanghai');
-
-/*Table structure for table `qtz_fired_triggers` */
-
-DROP TABLE IF EXISTS `qtz_fired_triggers`;
-
-CREATE TABLE `qtz_fired_triggers` (
-  `entry_id` varchar(95) NOT NULL,
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `is_volatile` varchar(1) NOT NULL,
-  `instance_name` varchar(200) NOT NULL,
-  `fired_time` bigint(13) NOT NULL,
-  `priority` bigint(13) NOT NULL,
-  `state` varchar(16) NOT NULL,
-  `job_name` varchar(200) DEFAULT NULL,
-  `job_group` varchar(200) DEFAULT NULL,
-  `is_stateful` varchar(1) DEFAULT NULL,
-  `requests_recovery` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`entry_id`),
-  UNIQUE KEY `SYS_C00100352` (`entry_id`),
-  KEY `IDX_QTZ_FT_JOB_REQ_RECOVERY` (`requests_recovery`),
-  KEY `IDX_QTZ_FT_JOB_STATEFUL` (`is_stateful`),
-  KEY `IDX_QTZ_FT_JOB_GROUP` (`job_group`),
-  KEY `IDX_QTZ_FT_JOB_NAME` (`job_name`),
-  KEY `IDX_QTZ_FT_TRIG_INST_NAME` (`instance_name`),
-  KEY `IDX_QTZ_FT_TRIG_VOLATILE` (`is_volatile`),
-  KEY `IDX_QTZ_FT_TRIG_NM_GP` (`trigger_name`,`trigger_group`),
-  KEY `IDX_QTZ_FT_TRIG_GROUP` (`trigger_group`),
-  KEY `IDX_QTZ_FT_TRIG_NAME` (`trigger_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_fired_triggers` */
-
-/*Table structure for table `qtz_job_details` */
-
-DROP TABLE IF EXISTS `qtz_job_details`;
-
-CREATE TABLE `qtz_job_details` (
-  `job_name` varchar(200) NOT NULL,
-  `job_group` varchar(200) NOT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `job_class_name` varchar(250) NOT NULL,
-  `is_durable` varchar(1) NOT NULL,
-  `is_volatile` varchar(1) NOT NULL,
-  `is_stateful` varchar(1) NOT NULL,
-  `requests_recovery` varchar(1) NOT NULL,
-  `job_data` longblob,
-  PRIMARY KEY (`job_name`,`job_group`),
-  UNIQUE KEY `SYS_C00100302` (`job_name`,`job_group`),
-  KEY `IDX_QTZ_J_REQ_RECOVERY` (`requests_recovery`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_job_details` */
-
-insert  into `qtz_job_details`(`job_name`,`job_group`,`description`,`job_class_name`,`is_durable`,`is_volatile`,`is_stateful`,`requests_recovery`,`job_data`) values ('addressAsynTask','DEFAULT',NULL,'com.vip.dmp.schedule.BeanInvokingJobDetailFactoryBean$BeanInvokingJob','0','0','0','1','??\0sr\0org.quartz.JobDataMap???迩??\0\0xr\0&org.quartz.utils.StringKeyDirtyFlagMap?????](\0Z\0allowsTransientDataxr\0org.quartz.utils.DirtyFlagMap?.?(v\n?\0Z\0dirtyL\0mapt\0Ljava/util/Map;xpsr\0java.util.HashMap???`?\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0	argumentsur\0[Ljava.lang.Object;??X?s)l\0\0xp\0\0\0t\0synct\0\ntargetBeant\0scheduledExcuteServicet\0targetMethodt\0processTasksx\0');
-insert  into `qtz_job_details`(`job_name`,`job_group`,`description`,`job_class_name`,`is_durable`,`is_volatile`,`is_stateful`,`requests_recovery`,`job_data`) values ('addressTask','DEFAULT',NULL,'com.vip.dmp.schedule.BeanInvokingJobDetailFactoryBean$BeanInvokingJob','0','0','0','1','??\0sr\0org.quartz.JobDataMap???迩??\0\0xr\0&org.quartz.utils.StringKeyDirtyFlagMap?????](\0Z\0allowsTransientDataxr\0org.quartz.utils.DirtyFlagMap?.?(v\n?\0Z\0dirtyL\0mapt\0Ljava/util/Map;xpsr\0java.util.HashMap???`?\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0	argumentsur\0[Ljava.lang.Object;??X?s)l\0\0xp\0\0\0t\0singleAddressMappingt\0\ntargetBeant\0scheduledExcuteServicet\0targetMethodt\0processTasksx\0');
-insert  into `qtz_job_details`(`job_name`,`job_group`,`description`,`job_class_name`,`is_durable`,`is_volatile`,`is_stateful`,`requests_recovery`,`job_data`) values ('complaintTask','DEFAULT',NULL,'com.vip.dmp.schedule.BeanInvokingJobDetailFactoryBean$BeanInvokingJob','0','0','0','1','??\0sr\0org.quartz.JobDataMap???迩??\0\0xr\0&org.quartz.utils.StringKeyDirtyFlagMap?????](\0Z\0allowsTransientDataxr\0org.quartz.utils.DirtyFlagMap?.?(v\n?\0Z\0dirtyL\0mapt\0Ljava/util/Map;xpsr\0java.util.HashMap???`?\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0	argumentsur\0[Ljava.lang.Object;??X?s)l\0\0xp\0\0\0t\0complaintAutoEndt\0\ntargetBeant\0scheduledExcuteServicet\0targetMethodt\0processTasksx\0');
-insert  into `qtz_job_details`(`job_name`,`job_group`,`description`,`job_class_name`,`is_durable`,`is_volatile`,`is_stateful`,`requests_recovery`,`job_data`) values ('smsTask','DEFAULT',NULL,'com.vip.dmp.schedule.BeanInvokingJobDetailFactoryBean$BeanInvokingJob','0','0','0','1','??\0sr\0org.quartz.JobDataMap???迩??\0\0xr\0&org.quartz.utils.StringKeyDirtyFlagMap?????](\0Z\0allowsTransientDataxr\0org.quartz.utils.DirtyFlagMap?.?(v\n?\0Z\0dirtyL\0mapt\0Ljava/util/Map;xpsr\0java.util.HashMap???`?\0F\0\nloadFactorI\0	thresholdxp?@\0\0\0\0\0w\0\0\0\0\0\0t\0	argumentsur\0[Ljava.lang.Object;??X?s)l\0\0xp\0\0\0t\0smst\0\ntargetBeant\0scheduledExcuteServicet\0targetMethodt\0processTasksx\0');
-
-/*Table structure for table `qtz_job_listeners` */
-
-DROP TABLE IF EXISTS `qtz_job_listeners`;
-
-CREATE TABLE `qtz_job_listeners` (
-  `job_name` varchar(200) NOT NULL,
-  `job_group` varchar(200) NOT NULL,
-  `job_listener` varchar(200) NOT NULL,
-  PRIMARY KEY (`job_name`,`job_group`,`job_listener`),
-  UNIQUE KEY `SYS_C00100306` (`job_name`,`job_group`,`job_listener`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_job_listeners` */
-
-/*Table structure for table `qtz_locks` */
-
-DROP TABLE IF EXISTS `qtz_locks`;
-
-CREATE TABLE `qtz_locks` (
-  `lock_name` varchar(40) NOT NULL,
-  PRIMARY KEY (`lock_name`),
-  UNIQUE KEY `SYS_C00100358` (`lock_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_locks` */
-
-insert  into `qtz_locks`(`lock_name`) values ('STATE_ACCESS');
-insert  into `qtz_locks`(`lock_name`) values ('TRIGGER_ACCESS');
-
-/*Table structure for table `qtz_paused_trigger_grps` */
-
-DROP TABLE IF EXISTS `qtz_paused_trigger_grps`;
-
-CREATE TABLE `qtz_paused_trigger_grps` (
-  `trigger_group` varchar(200) NOT NULL,
-  PRIMARY KEY (`trigger_group`),
-  UNIQUE KEY `SYS_C00100343` (`trigger_group`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_paused_trigger_grps` */
-
-/*Table structure for table `qtz_scheduler_state` */
-
-DROP TABLE IF EXISTS `qtz_scheduler_state`;
-
-CREATE TABLE `qtz_scheduler_state` (
-  `instance_name` varchar(200) NOT NULL,
-  `last_checkin_time` bigint(13) NOT NULL,
-  `checkin_interval` bigint(13) NOT NULL,
-  PRIMARY KEY (`instance_name`),
-  UNIQUE KEY `SYS_C00100356` (`instance_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_scheduler_state` */
-
-insert  into `qtz_scheduler_state`(`instance_name`,`last_checkin_time`,`checkin_interval`) values ('高亮亮-PC1427352871841',1427356640910,7500);
-
-/*Table structure for table `qtz_simple_triggers` */
-
-DROP TABLE IF EXISTS `qtz_simple_triggers`;
-
-CREATE TABLE `qtz_simple_triggers` (
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `repeat_count` int(7) NOT NULL,
-  `repeat_interval` bigint(12) NOT NULL,
-  `times_triggered` bigint(10) NOT NULL,
-  PRIMARY KEY (`trigger_name`,`trigger_group`),
-  CONSTRAINT `sys_c00100324` FOREIGN KEY (`trigger_name`, `trigger_group`) REFERENCES `qtz_triggers` (`trigger_name`, `trigger_group`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_simple_triggers` */
-
-/*Table structure for table `qtz_trigger_listeners` */
-
-DROP TABLE IF EXISTS `qtz_trigger_listeners`;
-
-CREATE TABLE `qtz_trigger_listeners` (
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `trigger_listener` varchar(200) NOT NULL,
-  PRIMARY KEY (`trigger_name`,`trigger_group`,`trigger_listener`),
-  CONSTRAINT `sys_c00100338` FOREIGN KEY (`trigger_name`, `trigger_group`) REFERENCES `qtz_triggers` (`trigger_name`, `trigger_group`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_trigger_listeners` */
-
-/*Table structure for table `qtz_triggers` */
-
-DROP TABLE IF EXISTS `qtz_triggers`;
-
-CREATE TABLE `qtz_triggers` (
-  `trigger_name` varchar(200) NOT NULL,
-  `trigger_group` varchar(200) NOT NULL,
-  `job_name` varchar(200) NOT NULL,
-  `job_group` varchar(200) NOT NULL,
-  `is_volatile` varchar(1) NOT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `next_fire_time` bigint(13) DEFAULT NULL,
-  `prev_fire_time` bigint(13) DEFAULT NULL,
-  `priority` bigint(13) DEFAULT NULL,
-  `trigger_state` varchar(16) NOT NULL,
-  `trigger_type` varchar(8) NOT NULL,
-  `start_time` bigint(13) NOT NULL,
-  `end_time` bigint(13) DEFAULT NULL,
-  `calendar_name` varchar(200) DEFAULT NULL,
-  `misfire_instr` int(2) DEFAULT NULL,
-  `job_data` longblob,
-  PRIMARY KEY (`trigger_name`,`trigger_group`),
-  KEY `sys_c00100317` (`job_name`,`job_group`),
-  KEY `IDX_QTZ_T_VOLATILE` (`is_volatile`),
-  KEY `IDX_QTZ_T_NFT_ST` (`next_fire_time`,`trigger_state`),
-  KEY `IDX_QTZ_T_STATE` (`trigger_state`),
-  KEY `IDX_QTZ_T_NEXT_FIRE_TIME` (`next_fire_time`),
-  CONSTRAINT `sys_c00100317` FOREIGN KEY (`job_name`, `job_group`) REFERENCES `qtz_job_details` (`job_name`, `job_group`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `qtz_triggers` */
-
-insert  into `qtz_triggers`(`trigger_name`,`trigger_group`,`job_name`,`job_group`,`is_volatile`,`description`,`next_fire_time`,`prev_fire_time`,`priority`,`trigger_state`,`trigger_type`,`start_time`,`end_time`,`calendar_name`,`misfire_instr`,`job_data`) values ('addressAsynTimer','DEFAULT','addressAsynTask','DEFAULT','0',NULL,1427356800000,1427356200000,5,'WAITING','CRON',1425525184000,0,NULL,0,'');
-insert  into `qtz_triggers`(`trigger_name`,`trigger_group`,`job_name`,`job_group`,`is_volatile`,`description`,`next_fire_time`,`prev_fire_time`,`priority`,`trigger_state`,`trigger_type`,`start_time`,`end_time`,`calendar_name`,`misfire_instr`,`job_data`) values ('addressTimer','DEFAULT','addressTask','DEFAULT','0',NULL,1427356800000,1427356500000,5,'WAITING','CRON',1425525184000,0,NULL,0,'');
-insert  into `qtz_triggers`(`trigger_name`,`trigger_group`,`job_name`,`job_group`,`is_volatile`,`description`,`next_fire_time`,`prev_fire_time`,`priority`,`trigger_state`,`trigger_type`,`start_time`,`end_time`,`calendar_name`,`misfire_instr`,`job_data`) values ('complaintTimer','DEFAULT','complaintTask','DEFAULT','0',NULL,1427356680000,1427356560000,5,'WAITING','CRON',1425952777000,0,NULL,0,'');
-insert  into `qtz_triggers`(`trigger_name`,`trigger_group`,`job_name`,`job_group`,`is_volatile`,`description`,`next_fire_time`,`prev_fire_time`,`priority`,`trigger_state`,`trigger_type`,`start_time`,`end_time`,`calendar_name`,`misfire_instr`,`job_data`) values ('smsTimer','DEFAULT','smsTask','DEFAULT','0',NULL,1427356680000,1427356560000,5,'WAITING','CRON',1425525184000,0,NULL,0,'');
-
-/*Table structure for table `sb_org` */
-
-DROP TABLE IF EXISTS `sb_org`;
-
-CREATE TABLE `sb_org` (
-  `sb_org_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `sb_org_code` varchar(64) NOT NULL DEFAULT '',
-  `sb_org_name` varchar(64) NOT NULL DEFAULT '',
-  `sb_abbreviation` varchar(64) DEFAULT '',
-  `sb_short_code` varchar(64) DEFAULT '',
-  `sb_org_name_en` varchar(64) DEFAULT '',
-  `sb_parent_bodies` bigint(20) NOT NULL,
-  `sb_phone` varchar(64) DEFAULT '',
-  `sb_fax` varchar(64) DEFAULT '',
-  `sb_contact` varchar(64) DEFAULT '',
-  `sb_emaill` varchar(64) DEFAULT NULL,
-  `sb_web` varchar(64) DEFAULT '',
-  `sb_zip_code` varchar(64) DEFAULT '',
-  `sb_province_id` bigint(20) DEFAULT '0',
-  `sb_city_id` bigint(20) DEFAULT '0',
-  `sb_region_id` bigint(20) DEFAULT '0',
-  `sb_type` tinyint(4) DEFAULT '0',
-  `sb_address` varchar(256) DEFAULT NULL,
-  `is_valid` tinyint(4) DEFAULT '0',
-  `is_deleted` tinyint(4) DEFAULT '0',
-  `created_by_user` varchar(64) DEFAULT '',
-  `created_office` varchar(64) DEFAULT '',
-  `created_dtm_loc` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_time_zone` varchar(64) DEFAULT '',
-  `updated_by_user` varchar(64) DEFAULT '',
-  `updated_office` varchar(64) DEFAULT '',
-  `updated_dtm_loc` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updated_time_zone` varchar(64) DEFAULT '',
-  `record_version` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`sb_org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=237 DEFAULT CHARSET=utf8;
 
 /*Data for the table `sb_org` */
 
@@ -5228,9 +4965,9 @@ CREATE TABLE `sb_org_user` (
 
 /*Table structure for table `scheduled_tasks` */
 
-DROP TABLE IF EXISTS `scheduled_tasks`;
+DROP TABLE IF EXISTS `scheduled_tasks_1`;
 
-CREATE TABLE `scheduled_tasks` (
+CREATE TABLE `scheduled_tasks_1` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `task_type` varchar(64) NOT NULL DEFAULT '' COMMENT '任务类型',
   `task_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '任务状态',
