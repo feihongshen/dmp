@@ -95,6 +95,10 @@ public class CwbApplyZhongZhuanDAO {
 		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,handleremark=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=? and isnow=1";
 		jdbcTemplate.update(sql, handletime, handleuserid, handleremark, ishandle, applyzhongzhuanbranchid, cwb);
 	}
+	public void updateCwbApplyZhongZhuanForIds(String handletime, long handleuserid, long ishandle,String opscwbids) {
+		String sql = "update op_cwbapplyzhongzhuan as op ,express_ops_cwb_detail de set op.handletime=?,op.handleuserid=?,op.ishandle=? where op.cwb=de.cwb and de.opscwbid in (" + opscwbids + ") and op.isnow=1 ";
+		jdbcTemplate.update(sql, handletime, handleuserid,  ishandle);
+	}
 
 	public long getCwbApplyZhongZhuanByCwbCount(String cwb) {
 		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=0 and isnow=1";
