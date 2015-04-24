@@ -138,7 +138,8 @@ public class VipShopGetCwbDataService {
 		vip.setForward_hours(vipshop.getForward_hours());
 		vip.setIsTuoYunDanFlag(vipshop.getIsTuoYunDanFlag());
 		vip.setIsShangmentuiFlag(vipshop.getIsShangmentuiFlag());
-
+		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
+		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		jointEntity.setJoint_num(joint_num);
