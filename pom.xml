@@ -464,7 +464,7 @@
 		</dependency> 
 	</dependencies>
 	<build>
-		<finalName>dmp_pxwl_smt</finalName>
+		<finalName>dmp_pj</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -605,7 +605,7 @@
 					<url>${tomcat.manager.url}</url>
 					<username>tomcat</username>
 					<password>explink</password>
-					<path>/dmp_pxwl_smt</path>
+					<path>/dmp_pj</path>
 					<update>true</update>
 				</configuration>
 			</plugin>
@@ -3156,7 +3156,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>dmp4.1</id>
+			<id>version_pj</id>
 			<properties>
 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
@@ -3172,7 +3172,7 @@
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>dmp4.1</label>
+				<label>version_pj</label>
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
