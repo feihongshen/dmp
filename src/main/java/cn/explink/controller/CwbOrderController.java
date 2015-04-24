@@ -46,6 +46,7 @@ import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbApplyZhongZhuanDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EmailDateDAO;
@@ -146,6 +147,8 @@ public class CwbOrderController {
 	RemarkDAO remarkDAO;
 	@Autowired
 	ExportwarhousesummaryDAO exportwarhousesummaryDAO;
+	@Autowired
+	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
 
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
@@ -2372,6 +2375,11 @@ public class CwbOrderController {
 		try {
 
 			cwbDao.updateCwbStateByIds(ids, CwbStateEnum.ZhongZhuan);
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String datetime = df.format(date);
+
+			cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForIds(datetime, getSessionUser().getUserid(),  1, ids);
 			logger.info("订单id{}审核为中转件", ids);
 
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
