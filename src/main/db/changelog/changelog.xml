@@ -6009,7 +6009,7 @@ CREATE TABLE
 
 	<changeSet id="zhangpengkai-2015-4-23-1" author="zhangpengkai">
 		<sql>
-			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `changereason` VARCHAR(225) NULL AFTER `customerbillimportflag`, ADD COLUMN `changereasonid` INT(4) DEFAULT 0 NULL AFTER `changereason`, ADD COLUMN `firstchangereasonid` INT(4) DEFAULT 0 NULL AFTER `changereasonid`;    
+			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `changereason` VARCHAR(225) NULL , ADD COLUMN `changereasonid` INT(4) DEFAULT 0 NULL AFTER `changereason`, ADD COLUMN `firstchangereasonid` INT(4) DEFAULT 0 NULL AFTER `changereasonid`;    
 		</sql>
 	</changeSet>
 	
