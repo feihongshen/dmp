@@ -488,9 +488,25 @@ public class WarehouseGroup_detailController {
 	@RequestMapping("/outlist/{page}")
 	public String outlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-1") String[] branchid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			HttpServletRequest request) {
+		String type=request.getParameter("type");
+		long typeid=1;
+		if (type!=null&&type!="") {
+			typeid=Long.parseLong(type);
+		}
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = getNextPossibleBranches();
+		List<Branch> removeList = new ArrayList<Branch>();
+		
+		if (typeid==2) {
+			for (Branch b : bList) {// 去掉退货站
+				if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+					removeList.add(b);
+				}
+			}
+			bList.removeAll(removeList);
+		}
 		model.addAttribute("branchlist", bList);
 		String branchids = getStrings(branchid);
 		if (isshow > 0) {
@@ -521,7 +537,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("printtemplateList",
 				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue()));
 		model.addAttribute("printList", printList);
-		model.addAttribute("type", 1);
+		model.addAttribute("type", typeid);
 		model.addAttribute("time", "出库时间");
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		model.addAttribute("branchids", branchids);
@@ -1043,7 +1059,7 @@ public class WarehouseGroup_detailController {
 		}
 
 		model.addAttribute("printList", printList);
-
+		model.addAttribute("type",1);
 		model.addAttribute("printtemplateList",
 				printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()));
 		return "warehousegroup/returnlist";
@@ -1095,7 +1111,15 @@ public class WarehouseGroup_detailController {
 	public String historyreturnlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate) {
+		
 		List<Branch> blist = getNextPossibleBranches();
+		List<Branch> removeList=new ArrayList<Branch>();
+		for (Branch branch : blist) {
+			if (branch.getSitetype()==4) {
+				removeList.add(branch);
+			}
+		}
+		blist.removeAll(removeList);
 		model.addAttribute("outwarehousegroupList", outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0,
 				OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, getSessionUser().getBranchid()));
 		model.addAttribute(
@@ -1599,5 +1623,5 @@ public class WarehouseGroup_detailController {
 
 		return "warehousegroup/outbalelist_history";
 	}
-
+	
 }

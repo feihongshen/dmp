@@ -8,6 +8,7 @@
 <%
 	List<OutWarehouseGroup> outwarehousegroupList = (List<OutWarehouseGroup>)request.getAttribute("outwarehousegroupList");
     List<Branch>  branchList = (List<Branch>)request.getAttribute("branchList");
+    String type=request.getAttribute("type").toString();
     List<PrintTemplate> pList = (List<PrintTemplate>)request.getAttribute("printtemplateList");
     List<Branch> allbranch=(List<Branch>) request.getAttribute("allbranch");
     Page page_obj =(Page)request.getAttribute("page_obj");
@@ -86,7 +87,7 @@ function bdprint(id,printtemplateid){
 					        上次打印时间：<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>&nbsp;到
 					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
 				      　　<input type="submit" id="find" value="查询" class="input_button2" />
-				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1">返回未打印列表 >></a>
+				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1?type=${type}">返回未打印列表 >></a>
 				</form>
 				</div>
 				<div class="right_title">
