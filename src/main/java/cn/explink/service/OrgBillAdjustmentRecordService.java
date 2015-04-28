@@ -114,12 +114,12 @@ public class OrgBillAdjustmentRecordService {
 					BigDecimal changeReceiveableFee = orderReceiveFee.subtract(modifyFeeReceiveFee==null?BigDecimal.ZERO:modifyFeeReceiveFee);
 					BigDecimal changePayBackFee = orderPayBackFee.subtract(modifyPaybackfee==null?BigDecimal.ZERO:modifyPaybackfee);
 					//判断
-					if(modifyPaybackfee.doubleValue()>0&&modifyFeeReceiveFee.doubleValue()<=0){
+					if(modifyPaybackfee.doubleValue()>0&&orderPayBackFee.doubleValue()>0){
 						record.setModifyFee(modifyPaybackfee);
 //						record.setAdjustAmount(modifyPaybackfee.subtract(order.getPaybackfee()));
 						record.setAdjustAmount(order.getPaybackfee().subtract(modifyPaybackfee));
 						record.setRemark(order.getPaybackfee( )+"元修改成"+modifyPaybackfee+"元");
-					}else if(modifyFeeReceiveFee.doubleValue()>0&&modifyPaybackfee.doubleValue()<=0){
+					}else if(modifyFeeReceiveFee.doubleValue()>0&&orderReceiveFee.doubleValue()>0){
 						record.setModifyFee(modifyFeeReceiveFee);
 						record.setAdjustAmount(modifyFeeReceiveFee.subtract(order.getReceivablefee()));
 						record.setRemark(order.getReceivablefee()+"元修改成"+modifyFeeReceiveFee+"元");
