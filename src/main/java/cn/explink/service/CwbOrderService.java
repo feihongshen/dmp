@@ -3596,7 +3596,10 @@ public class CwbOrderService {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		//缓存一下原先的支付方式
 		map.put("preObj", co);
-		map.put("oldpaywayid", co.getNewpaywayid());
+		if (co!=null) {
+			map.put("oldpaywayid", co.getNewpaywayid());
+
+		}
 
 		// 委托派送变更状态为已反馈
 		this.orderDeliveryClientDAO.updateFanKun(cwb);

@@ -194,7 +194,7 @@ function sub(){
 		if($(this).attr("checked")=="checked"){
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 				
-				if($("#leavedreasonid").val()==0){
+				if($("#firstlevelreasonid").val()==-1){
 					alert("请选择滞留原因");
 					return false;
 				}
