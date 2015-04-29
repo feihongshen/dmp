@@ -151,6 +151,12 @@ function nowprint(){
 									<td align="center" valign="middle" ><%=request.getParameter("diushi") %></td>
 									<td align="center" ><%=request.getParameter("diushiamount") %>元</td>
 								</tr>
+								
+								<tr>
+									<td align="center" valign="middle" bgcolor="#eef6ff" >待中转</td>
+									<td align="center" valign="middle" ><%=request.getParameter("zhongzhuan") %></td>
+									<td align="center" ><%=request.getParameter("zhongzhuanamount") %>元</td>
+								</tr>
 								<tr>
 									<td align="center" valign="middle" bgcolor="#f4f4f4" >合计</td>
 									<td align="center" valign="middle" bgcolor="#f4f4f4" ><strong><%=request.getParameter("SumReturnCount")  %></strong></td>

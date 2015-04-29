@@ -284,6 +284,7 @@ public class OverdueExMoController {
 		case StationAccept:
 			return "deliver_station_id = ? ";
 		case SystemAccept:
+			return  "deliver_station_id = ? ";
 		case NotMatched:
 		case OutAreaTransfer:
 			return "warehouse_id = ? ";
@@ -675,8 +676,8 @@ public class OverdueExMoController {
 		}
 
 		protected String getTimeTypeWhereCond() {
-			String startTime = this.getCondVO().getStartTime();
 			String endTime = this.getCondVO().getEndTime();
+			String startTime = this.getCondVO().getStartTime();
 			TimeTypeEnum timeType = TimeTypeEnum.values()[this.getCondVO().getOptTimeType()];
 			StringBuilder whereCond = new StringBuilder();
 			String field = null;
@@ -724,7 +725,7 @@ public class OverdueExMoController {
 		private String getSql(boolean accept, boolean enableTEQuery) {
 			StringBuilder sql = new StringBuilder();
 			sql.append(this.getSelectPart());
-			sql.append(" where warehouse_id = ? and vender_id = ?");
+			sql.append(" where deliver_station_id = ? and vender_id = ?");
 			sql.append(" and " + this.getTimeTypeWhereCond());
 			if (accept) {
 				sql.append(" and system_accept_time != '0000-00-00 00:00:00'");

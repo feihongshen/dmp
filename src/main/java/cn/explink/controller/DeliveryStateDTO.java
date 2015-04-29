@@ -45,6 +45,12 @@ public class DeliveryStateDTO {
 	private long fankui_diushi = 0;// 丢失
 	private long fankui_diushi_zanbuchuli = 0;// 丢失 暂不处理
 	private List<DeliveryStateView> fankui_diushiList = new ArrayList<DeliveryStateView>();
+	
+	
+	private long fankui_zhongzhuan = 0;// 待中转
+	private long fankui_zhongzhuan_zanbuchuli = 0;// 待中转暂不处理
+	private List<DeliveryStateView> fankui_zhongzhuanList = new ArrayList<DeliveryStateView>();
+	
 
 	// ----------- 已反馈订单 end ------------
 	// ----------- 未反馈订单 ------------
@@ -83,6 +89,7 @@ public class DeliveryStateDTO {
 	 */
 	public long getNowNumber() {
 		return fankui_peisong_chenggong + fankui_shangmentui_chenggong + fankui_shangmentui_jutui + fankui_shangmenhuan_chenggong + fankui_tuihuo + fankui_bufentuihuo + fankui_zhiliu + fankui_diushi
+				+fankui_zhongzhuan
 				+ weifankui - lishi_weishenhe - zanbuchuli;
 	}
 
@@ -90,7 +97,8 @@ public class DeliveryStateDTO {
 	 * @return 已反馈货物数
 	 */
 	public long getYifankuiNumber() {
-		return fankui_peisong_chenggong + fankui_shangmentui_chenggong + fankui_shangmentui_jutui + fankui_shangmenhuan_chenggong + fankui_tuihuo + fankui_bufentuihuo + fankui_zhiliu + fankui_diushi;
+		return fankui_peisong_chenggong + fankui_shangmentui_chenggong + fankui_shangmentui_jutui + fankui_shangmenhuan_chenggong + fankui_tuihuo + fankui_bufentuihuo + fankui_zhiliu + fankui_diushi
+				+fankui_zhongzhuan;
 	}
 
 	/**
@@ -331,7 +339,16 @@ public class DeliveryStateDTO {
 				if (ds.getGcaid() == -1) {
 					fankui_diushi_zanbuchuli++;
 				}
-			} else {
+			}else if (ds.getDeliverystate() == DeliveryStateEnum.DaiZhongZhuan.getValue()) {
+				fankui_zhongzhuan++;
+				fankui_zhongzhuanList.add(ds);
+				if (ds.getGcaid() == -1) {
+					fankui_zhongzhuan_zanbuchuli++;
+				}
+			}  
+			
+			
+			else {
 				logger.error("归班审核时为统计到的订单编号:{}", ds.getCwb());
 				continue;
 			}
@@ -671,5 +688,29 @@ public class DeliveryStateDTO {
 	public void setSmtjtfare_amount(BigDecimal smtjtfare_amount) {
 		this.smtjtfare_amount = smtjtfare_amount;
 	}
+	
+	public long getFankui_zhongzhuan() {
+		return fankui_zhongzhuan;
+	}
 
+	public void setFankui_zhongzhuan(long fankui_zhongzhuan) {
+		this.fankui_zhongzhuan = fankui_zhongzhuan;
+	}
+
+	public long getFankui_zhongzhuan_zanbuchuli() {
+		return fankui_zhongzhuan_zanbuchuli;
+	}
+
+	public void setFankui_zhongzhuan_zanbuchuli(long fankui_zhongzhuan_zanbuchuli) {
+		this.fankui_zhongzhuan_zanbuchuli = fankui_zhongzhuan_zanbuchuli;
+	}
+
+	public List<DeliveryStateView> getFankui_zhongzhuanList() {
+		return fankui_zhongzhuanList;
+	}
+
+	public void setFankui_zhongzhuanList(
+			List<DeliveryStateView> fankui_zhongzhuanList) {
+		this.fankui_zhongzhuanList = fankui_zhongzhuanList;
+	}
 }

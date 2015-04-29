@@ -3553,6 +3553,10 @@ public class CwbOrderService {
 
 		// 标识是否系统反馈,如果 为1 则不是系统反馈,不判断未刷卡原因
 		String nosysyemflag = parameters.get("nosysyemflag") == null ? null : parameters.get("nosysyemflag").toString();
+		
+		long changereasonid = parameters.get("changereasonid") == null ? 0l : (Long) parameters.get("changereasonid");
+		long firstchangereasonid = parameters.get("firstchangereasonid") == null ? 0l : (Long) parameters.get("firstchangereasonid");
+		
 
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
 		deliverytime = deliverytime.length() != 19 ? DateTimeUtil.getNowTime() : deliverytime;
@@ -3768,6 +3772,13 @@ public class CwbOrderService {
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
+		
+		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue() )) {
+			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
+			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid,firstchangereasonid);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+		}
+		
 
 		if (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
 			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();

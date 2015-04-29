@@ -31,6 +31,7 @@ public class ReasonDao {
 			reason.setReasontype(rs.getLong("reasontype"));
 			reason.setWhichreason(rs.getInt("whichreason"));
 			reason.setParentid(rs.getInt("parentid"));
+			reason.setChangealowflag(rs.getInt("changealowflag"));
 			return reason;
 		}
 	}
@@ -111,7 +112,7 @@ public class ReasonDao {
 
 	public void creReason(final Reason reason) {
 
-		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid) values(?,?,?,?)", new PreparedStatementSetter() {
+		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid,changealowflag) values(?,?,?,?,?)", new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -119,6 +120,7 @@ public class ReasonDao {
 				ps.setLong(2, reason.getReasontype());
 				ps.setInt(3, reason.getWhichreason());
 				ps.setInt(4, reason.getParentid());
+				ps.setInt(5, reason.getChangealowflag());
 			}
 		});
 	}

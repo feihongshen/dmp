@@ -7,6 +7,7 @@ public class OverdueExMoDetailCondVO {
 	private long venderId = 0;
 
 	private int optTimeType = 0;
+	
 
 	private String startTime = null;
 
@@ -29,6 +30,7 @@ public class OverdueExMoDetailCondVO {
 	}
 
 	public void setOptTimeType(int optTimeType) {
+	
 		this.optTimeType = optTimeType;
 	}
 

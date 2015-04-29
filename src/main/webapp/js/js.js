@@ -828,6 +828,10 @@ function check_reason() {
 		alert("请选择类型");
 		return false;
 	}
+	if ($("#reasontype").val() == 1&&$("#radio2").attr("checked") == "checked"&&$("#parentid").val()==0) {
+		alert("请选择一级原因");
+		return false;
+	}
 	if ($("#reasoncontent").val().length == 0) {
 		alert("常用语不能为空");
 		return false;
@@ -1211,6 +1215,8 @@ function init_deliverystate() {
 	$("#signman").parent().hide();
 	$("#shouldfare").parent().hide();
 	$("#infactfare").parent().hide();
+	$("#changereasonid").parent().hide();
+	$("#firstchangereasonid").parent().hide();
 }
 
 function gonggong() {
@@ -1266,7 +1272,15 @@ function bufentuihuoObj(podremarkid) {
 function zhiliuObj() {
 	gonggong();
 	$("#leavedreasonid").parent().show();
+
 }
+
+function zhongzhuanObj() {
+	gonggong();
+	$("#changereasonid").parent().show();
+	$("#firstchangereasonid").parent().show();
+}
+
 function shangmenjutuiObj() {
 	gonggong();
 	$("#backreasonid").parent().show();
@@ -1310,7 +1324,7 @@ function signmanchange() {
 
 // 监控配送状态变化 对显示字段做相应处理
 function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
-		ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
+		ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
 		needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
 	$("#infactfare").removeAttr('disabled');
@@ -1409,7 +1423,11 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 			bufentuihuoObj(podresultid);
 		} else if (podresultid == FenZhanZhiLiu || podresultid == ZhiLiuZiDongLingHuo) {// 分站滞留、滞留自动领货
 			zhiliuObj();
-		} else if (podresultid == ShangMenJuTui) {// 上门拒退
+		}else if (podresultid == DaiZhongZhuan) {// 待中转
+			zhongzhuanObj();
+		}
+		
+		else if (podresultid == ShangMenJuTui) {// 上门拒退
 			if (needdefault) {
 				$("#infactfare").val(parseFloat($("#shishou").val()));
 			}
@@ -1442,10 +1460,12 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 
 // 验证字段是否正确输入
 function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
-		ShangMenJuTui, HuoWuDiuShi, isReasonRequired) {
+		ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, isReasonRequired) {
 	var podresultid = parseInt($("#podresultid").val());
 	var backreasonid = parseInt($("#backreasonid").val());
 	var leavereasonid = parseInt($("#leavedreasonid").val());
+	var firstchangereasonid = parseInt($("#firstchangereasonid").val());
+	var changereasonid = parseInt($("#changereasonid").val());
 	if (!checkTime($("#deliverytime").val())) {
 		return false;
 	}
@@ -1480,7 +1500,20 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 		} else {
 			return checkGongGong_delivery();
 		}
-	} else if (podresultid == ShangMenJuTui) {// 上门拒退
+	} else if (podresultid == DaiZhongZhuan) {// 分站滞留、滞留自动领货
+		if (firstchangereasonid == 0) {
+			alert("请选择一级中转原因");
+			return false;
+		}else if (changereasonid == 0) {
+			alert("请选择二级中转原因");
+			return false;
+		} else {
+			return checkGongGong_delivery();
+		}
+	} 
+	
+	
+	else if (podresultid == ShangMenJuTui) {// 上门拒退
 		if (isReasonRequired == 'yes' && !backreasonid > 0) {
 			alert("请选择退货原因");
 			return false;
@@ -4195,7 +4228,15 @@ function bufentuihuoObj_edit() {
 function zhiliuObj_edit() {
 	gonggong_edit();
 	$("#leavedreasonid").parent().parent().show();
+	
 }
+
+function zhongzhuanObj_edit() {
+	gonggong_edit();
+	$("#changereasonid").parent().parent().show();
+	$("#firstchangereasonid").parent().show();
+}
+
 function shangmenjutuiObj_edit() {
 	gonggong_edit();
 	$("#backreasonid").parent().parent().show();
@@ -4764,11 +4805,16 @@ function validate(id){
 function whenhidden(){
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
+	
+	$("#div_changealowflag").attr('hidden');
 	if($("#reasontype").val()==1)
 	{
 		$("#divs").removeAttr('hidden');
+		$("#div_changealowflag").removeAttr('hidden');
+		
 		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
 			$("#div_2").removeAttr('hidden');
+			$("#div_changealowflag").attr('hidden');
 		}
 	}
 } 
@@ -4776,18 +4822,42 @@ function whenhidden(){
 function to_change(flag){
 	if($("#reasontype").val()==1)
 	{
+	
 		$("#divs").removeAttr('hidden');
-			if(flag==1){
-				$("#div_2").attr('hidden','true');
-			}
-			else 
-			{
+		if(flag==1){
+			$("#div_2").attr('hidden','true');
+			$("#div_changealowflag").removeAttr('hidden');
+		}
+		else 
+		{
 			$("#div_2").removeAttr('hidden');
-			}
+			$("#div_changealowflag").attr('hidden','true');
+		}
 	}else{
 		$("#div_2").attr('hidden','true');
-		}
+		
+		
+	}
 }
+
+
+
+function updaterelatelevel(URL, firstchangereasonid) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstchangereasonid=" + firstchangereasonid,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#changereasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#changereasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#changereasonid");
+			}
+		}
+	});
+}
+
 
 function check_branchroute() {
 	if ($("#fromBranchId").val() == 0) {

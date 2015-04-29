@@ -70,6 +70,9 @@ function thisCheck(){
 		}else if(podresultid==<%=DeliveryStateEnum.HuoWuDiuShi.getValue()%>){//货物丢失
 			huowudiushiObj();
 		}
+		else if(podresultid==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){//待中转
+			zhongzhuanObj();
+		}
 	});
 }
 
@@ -158,6 +161,10 @@ $(function(){
 			break;
 		case '8':
 			$("#diushi_list").show();
+			break;
+		
+		case '10':
+			$("#zhongzhuan_list").show();
 			break;
 			
 			default :$("[id$='_list']").hide();
@@ -260,7 +267,7 @@ function editInit(){
 	window.parent.click_podresultid(<%=deliverystate.getDeliverystate()%>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
-   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,
+   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,
    			$("#backreasonid", parent.document).val(),$("#leavedreasonid", parent.document).val(),$("#podremarkid", parent.document).val(),$("#newpaywayid", parent.document).val(),
    			$("#weishuakareasonid", parent.document).val(),$("#losereasonid", parent.document).val(),false);
 	$("input[type='text']", parent.document).focus(function(){
@@ -712,6 +719,9 @@ function exportYifankui(){
 				<%} %>
 				
 				
+				
+				
+				
 				<%if(dsDTO.getFankui_shangmentui_chenggong()>0){ %>
 				<tr>
 					<td><input type="checkbox"	value="shangmentui_chenggong" id="shangmentui_chenggong_box" /> 
@@ -934,6 +944,68 @@ function exportYifankui(){
 						</table></td>
 				</tr>
 				<%} %>
+				
+				
+				
+				
+					<%if(dsDTO.getFankui_zhongzhuan()>0){ %>
+				<tr>
+					<td><input type="checkbox"	value="zhongzhuan" id="zhongzhuan_box" /> 
+					<span style="height: 25" >待中转：<%=dsDTO.getFankui_zhongzhuan() %>单 </span></td>
+					<td>&nbsp;</td>
+				</tr>
+				<tr id="zhongzhuan_list" style="display: none">
+					<td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
+							<tr class="font_1">
+								<td width="10%" height="38" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+								<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">收件人姓名</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">收件人电话</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">发货时间</td>
+								<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">收件地址</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">中转原因</td>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">反馈备注</td>
+								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
+								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+								<%} %>
+							</tr>
+							<%for(DeliveryStateView ds:dsDTO.getFankui_zhongzhuanList()){ %>
+							<tr id="<%=ds.getCwb() %>" keyName="zhongzhuan" gcaid="<%=ds.getGcaid() %>">
+								<td width="10%" align="center" valign="middle"><a  target="_blank" href="<%=request.getContextPath() %>/order/queckSelectOrder/<%=ds.getCwb()%>" ><%=ds.getCwb()+ds.isHistory() %></a></td>
+								<td>
+								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
+									<%=ce.getText() %>
+								<%}} %>
+								</td>
+								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
+								<td width="10%" align="center" valign="middle" ><%=ds.getConsigneename() %></td>
+								<td width="10%" align="center" valign="middle" ><%=ds.getConsigneemobile() %><%if(ds.getConsigneemobile()!=""){%>/<%}%><%=ds.getConsigneephone() %></td>
+								<td width="10%" align="center" valign="middle" ><%=ds.getEmaildate() %></td>
+								<td width="15%" align="left" valign="middle" ><%=ds.getConsigneeaddress() %></td>
+								<td width="10%" align="center" valign="middle" ><%=StringUtil.nullConvertToEmptyString(ds.getChangereason()) %></td>
+								<td width="10%" align="center"><%=ds.getDeliverstateremark() %></td>
+								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
+								<td width="10%" align="center">
+								
+									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
+									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
+								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
+								<%if(ds.getGcaid()==-1){ %>
+									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',0,0,0,1,0);">恢复</a>]
+								<%}else{ %>
+									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',0,0,0,1,0);">暂不处理</a>]
+								<%}} %>
+								</td>
+								<%} %>
+							</tr>
+							<%} %>
+						</table></td>
+				</tr>
+				<%} %>
+				
+				
+				
 
 				<tr>
 					<td><strong>未反馈订单：<%=dsDTO.getWeifankuiNumber() %>单</strong><%if(dsDTO.getWeifankuiNumber()>0){ %>  <input type="button" class="input_button2" value="导出"  onclick="exportWeifankui();" id="exportweifankui" /><%} %></td>

@@ -93,7 +93,8 @@ public class ReasonController {
 			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent,
 			@RequestParam(value = "reasontype", defaultValue = "0", required = false) long reasontype,
 			@RequestParam(value = "whichreason", defaultValue = "0", required = false) int whichreason,
-			@RequestParam(value = "parentid", defaultValue = "0", required = false) int parentid) {
+			@RequestParam(value = "parentid", defaultValue = "0", required = false) int parentid,
+			@RequestParam(value = "changealowflag", defaultValue = "0", required = false) int changealowflag) {
 
 		List<Reason> list = reasonDao.getReasonByReasoncontentAndParentid(reasoncontent,parentid);
 		if (list.size() > 0&& reasontype == list.get(0).getReasontype()) {
@@ -103,6 +104,7 @@ public class ReasonController {
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasontype(reasontype);
 		reason.setWhichreason(0);
+		reason.setChangealowflag(changealowflag);
 		if (reasontype == 1) {
 			reason.setWhichreason(1);
 			if (whichreason == 2) {

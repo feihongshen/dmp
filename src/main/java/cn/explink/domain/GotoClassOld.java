@@ -37,13 +37,32 @@ public class GotoClassOld {
 	private long diushi;// 丢失
 	private BigDecimal diushi_amount;// 丢失金额
 
+	private long zhongzhuan;
+	private BigDecimal zhongzhuan_amount;// 中转金额
+	
+	public long getZhongzhuan() {
+		return zhongzhuan;
+	}
+
+	public void setZhongzhuan(long zhongzhuan) {
+		this.zhongzhuan = zhongzhuan;
+	}
+
+	public BigDecimal getZhongzhuan_amount() {
+		return zhongzhuan_amount;
+	}
+
+	public void setZhongzhuan_amount(BigDecimal zhongzhuan_amount) {
+		this.zhongzhuan_amount = zhongzhuan_amount;
+	}
+
 	public long getSumReturnCount() {
-		return peisong_chenggong + tuihuo + bufentuihuo + zhiliu + shangmentui_chenggong + shangmentui_jutui + shangmenhuan_chenggong + diushi;
+		return peisong_chenggong + tuihuo + bufentuihuo + zhiliu + shangmentui_chenggong + shangmentui_jutui + shangmenhuan_chenggong + diushi+zhongzhuan;
 	}
 
 	public BigDecimal getSumReturnCountAmount() {
 		return peisong_chenggong_amount.add(tuihuo_amount).add(bufentuihuo_amount).add(zhiliu_amount).add(shangmentui_chenggong_amount).add(shangmentui_jutui_amount)
-				.add(shangmenhuan_chenggong_amount).add(diushi_amount);
+				.add(shangmenhuan_chenggong_amount).add(diushi_amount).add(zhongzhuan_amount);
 	}
 
 	public BigDecimal getSumReturnCountPosAmount() {

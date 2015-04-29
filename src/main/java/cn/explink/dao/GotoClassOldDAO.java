@@ -46,7 +46,8 @@ public class GotoClassOldDAO {
 			gco.setDiushi_amount(rs.getBigDecimal("diushiamount"));
 			gco.setShangmentui_chenggong_fare(rs.getBigDecimal("shangmentuichenggongfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("shangmentuichenggongfare"));
 			gco.setShangmentui_jutui_fare(rs.getBigDecimal("shangmentuijutuifare") == null ? BigDecimal.ZERO : rs.getBigDecimal("shangmentuijutuifare"));
-
+			gco.setZhongzhuan(rs.getInt("zhongzhuan"));
+			gco.setZhongzhuan_amount(rs.getBigDecimal("zhongzhuanamount") == null ? BigDecimal.ZERO : rs.getBigDecimal("zhongzhuanamount"));
 			return gco;
 		}
 	}
@@ -60,12 +61,12 @@ public class GotoClassOldDAO {
 						+ "yiliu,lishiweishenhe,zanbuchuli,peisongchenggong,peisongchenggongamount,peisongchenggongposamount,tuihuo,"
 						+ "tuihuoamount,bufentuihuo,bufentuihuoamount,bufentuihuoposamount,zhiliu,zhiliuamount,shangmentuichenggong,"
 						+ "shangmentuichenggongamount,shangmentuijutui,shangmentuijutuiamount,shangmenhuanchenggong,"
-						+ "shangmenhuanchenggongamount,shangmenhuanchenggongposamount,diushi,diushiamount,shangmentuichenggongfare,shangmentuijutuifare) values (?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)",
+						+ "shangmenhuanchenggongamount,shangmenhuanchenggongposamount,diushi,diushiamount,shangmentuichenggongfare,shangmentuijutuifare,zhongzhuan,zhongzhuanamount) values (?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?)",
 						gco.getGotoclassauditingid(), gco.getNownumber(), gco.getYiliu(), gco.getLishi_weishenhe(), gco.getZanbuchuli(), gco.getPeisong_chenggong(), gco.getPeisong_chenggong_amount(),
 						gco.getPeisong_chenggong_pos_amount(), gco.getTuihuo(), gco.getTuihuo_amount(), gco.getBufentuihuo(), gco.getBufentuihuo_amount(), gco.getBufentuihuo_pos_amount(),
 						gco.getZhiliu(), gco.getZhiliu_amount(), gco.getShangmentui_chenggong(), gco.getShangmentui_chenggong_amount(), gco.getShangmentui_jutui(), gco.getShangmentui_jutui_amount(),
 						gco.getShangmenhuan_chenggong(), gco.getShangmenhuan_chenggong_amount(), gco.getShangmenhuan_chenggong_pos_amount(), gco.getDiushi(), gco.getDiushi_amount(),
-						gco.getShangmentui_chenggong_fare(), gco.getShangmentui_jutui_fare());
+						gco.getShangmentui_chenggong_fare(), gco.getShangmentui_jutui_fare(),gco.getZhongzhuan(),gco.getZhongzhuan_amount());
 	}
 
 	public List<GotoClassOld> getGotoClassOld(long id) {

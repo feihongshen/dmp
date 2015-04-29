@@ -122,9 +122,42 @@ public class CwbOrder {
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
 	private int outareaflag = 0;// 超区标识.
+
 	
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
 	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	
+	private String changereason; //中转原因
+	private long firstchangereasonid; //一级中转原因
+	public long getFirstchangereasonid() {
+		return firstchangereasonid;
+	}
+
+	public void setFirstchangereasonid(long firstchangereasonid) {
+		this.firstchangereasonid = firstchangereasonid;
+	}
+
+
+	private long changereasonid;
+	
+
+	public String getChangereason() {
+		return changereason;
+	}
+
+	public void setChangereason(String changereason) {
+		this.changereason = changereason;
+	}
+
+	
+
+	public long getChangereasonid() {
+		return changereasonid;
+	}
+
+	public void setChangereasonid(long changereasonid) {
+		this.changereasonid = changereasonid;
+	}
 
 	public CwbOrder() {
 		if ((this.sendcarnum == 0) && (this.backcarnum == 0)) {

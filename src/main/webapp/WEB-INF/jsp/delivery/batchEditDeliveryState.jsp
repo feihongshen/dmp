@@ -13,6 +13,7 @@
 List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
 
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
+List<Reason> firstchangereasonlist = (List<Reason>)request.getAttribute("firstchangereasonlist");
 
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 
@@ -103,6 +104,8 @@ function changeTag(id){
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
+		$("#firstchangereasonid").parent().hide();
+		$("#changereasonid").parent().hide();
 		$("#paytype").val(-1);
 	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
 		$("#leavedreasonid").parent().show();
@@ -117,6 +120,8 @@ function changeTag(id){
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
+		$("#firstchangereasonid").parent().hide();
+		$("#changereasonid").parent().hide();
 		$("#paytype").val(-1);
 	}else if(id==<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>){
 		$("#paytype").parent().show();
@@ -131,10 +136,30 @@ function changeTag(id){
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
+		$("#firstchangereasonid").parent().hide();
+		$("#changereasonid").parent().hide();
 		<%if(batchEditDeliveryStateisUseCash.equals("no")){ %>
 			$("#paytype").val(-1);
 		<%}%>
+	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
+		$("#firstchangereasonid").parent().show();
+		$("#changereasonid").parent().show();
+		
+		$("#backreasonid").parent().hide();
+		$("#deliverstateremark").parent().hide();
+		$("#paytype").parent().hide();
+		$("#leavedreasonid").parent().hide();
+	
+		$("#zhiliuremark").parent().hide();
+		$("#backreasonid").val(0);
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		$("#paytype").val(-1);
 	}
+	
+	
 } 
 
 function checkResult(){
@@ -188,7 +213,16 @@ function sub(){
 			}else if($(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
 				alert("请选择拒收原因");
 				return false;
-			}else if($(this).val()==<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>&&$("#paytype").val()==-1){
+			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
+				alert("请选择一级中转原因");
+				return false;
+			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#changereasonid").val()==0){
+				alert("请选择二级中转原因");
+				return false;
+			}
+			
+			
+			else if($(this).val()==<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>&&$("#paytype").val()==-1){
 				alert("请选择支付方式");
 				return false;
 			}else{
@@ -252,6 +286,7 @@ function resub(form){
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.JuShou.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.JuShou.getValue() %>);"/> <%=DeliveryStateEnum.JuShou.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>);"/> <%=DeliveryStateEnum.FenZhanZhiLiu.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>);"/> <%=DeliveryStateEnum.PeiSongChengGong.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate1" value="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>);"/> <%=DeliveryStateEnum.DaiZhongZhuan.getText() %>
 						</td>
 					</tr>
 					<tr>
@@ -280,6 +315,25 @@ function resub(form){
 			           			<%} %>
 					        </select>
 						</em>
+						
+						<em style="display:none">
+							一级原因：
+							 <select name="firstchangereasonid" id="firstchangereasonid" class="select1"  onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)">
+					        	<option value ="0">请选择</option>
+					        	<%for(Reason r : firstchangereasonlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+						</em>
+						<em style="display:none">
+							二级原因：
+							 <select name="changereasonid" id="changereasonid" class="select1">
+					        	<option value ="0">请选择</option>
+					        </select>
+						</em>
+						
+						
+						
 						<%if(batchEditDeliveryStateisUseCash.equals("yes")){ %>
 							<em style="display:none"><input name="paytype" id="paytype" value="<%=PaytypeEnum.Xianjin.getValue()%>" type="hidden"/></em>
 						<%}else{ %>

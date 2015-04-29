@@ -25,6 +25,8 @@
 			+"&bufentuihuoposamount="+(dsDTO.getPosAmountNotZanbuchuli(dsDTO.getFankui_bufentuihuoList()))
 			+"&zhiliu="+(dsDTO.getFankui_zhiliu()-dsDTO.getFankui_zhiliu_zanbuchuli())
 			+"&zhiliuamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_zhiliuList()))
+			+"&zhongzhuan="+(dsDTO.getFankui_zhongzhuan()-dsDTO.getFankui_zhongzhuan_zanbuchuli())
+			+"&zhongzhuanamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_zhongzhuanList()))
 			+"&smtcg="+(dsDTO.getFankui_shangmentui_chenggong()-dsDTO.getFankui_shangmentui_chenggong_zanbuchuli())
 			+"&smtcgamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_shangmentui_chenggongList()))
 			+"&smtcgfare="+(dsDTO.getSmtcgFareAmountNotZanbuchuli(dsDTO.getFankui_shangmenhuan_chenggongList()))
@@ -223,6 +225,16 @@ String usedeliverpayup = request.getAttribute("usedeliverpayup")==null?"no":(Str
 									</td>
 									<td align="center" ><%=dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_diushiList()) %>元
 									<input type="hidden" name="diushi_amount" value="<%=dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_diushiList()) %>" />
+									</td>
+								</tr>
+								
+								<tr>
+									<td align="center" valign="middle" bgcolor="#eef6ff" >待中转</td>
+									<td align="center" valign="middle" ><%=dsDTO.getFankui_zhongzhuan()-dsDTO.getFankui_zhongzhuan_zanbuchuli() %>
+									<input type="hidden" name="zhongzhuan" value="<%=dsDTO.getFankui_zhongzhuan()-dsDTO.getFankui_zhongzhuan_zanbuchuli() %>" />
+									</td>
+									<td align="center" ><%=dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_zhongzhuanList()) %>元
+									<input type="hidden" name="zhongzhuan_amount" value="<%=dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_zhongzhuanList()) %>" />
 									</td>
 								</tr>
 								<tr>

@@ -243,6 +243,9 @@ if(overdueResultVO!=null&&overdueResultVO.getBranchMap()!=null&&overdueResultVO.
 		$("#orgId", $detailForm).val(orgId);
 		$("#venderId", $detailForm).val(venderId);
 		$("#showColIndex", $detailForm).val(showColIndex);
+	
+		alert($("#optTimeType").val());
+		$("#opeTimeTypeTemp").val($("#optTimeType").val());
 
 		$detailForm.submit();
 	}
@@ -420,7 +423,7 @@ if(overdueResultVO!=null&&overdueResultVO.getBranchMap()!=null&&overdueResultVO.
 			type="hidden" value="${cond.endTime}" /> <input type="hidden" id="orgId" name="orgId"
 			type="hidden" /> <input type="hidden" id="venderId" name="venderId" type="hidden" /> <input
 			type="hidden" id="showColIndex" name="showColIndex" type="hidden" />
-
+			<input type="hidden" id="opeTimeTypeTemp" name="optTimeType" type="hidden" value="" />
 
 	</form>
 </body>

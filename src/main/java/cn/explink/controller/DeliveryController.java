@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
 import org.slf4j.Logger;
@@ -70,6 +73,7 @@ import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -416,6 +420,7 @@ public class DeliveryController {
 		sdv.setSign_man(StringUtil.nullConvertToEmptyString(ds.getSign_man()));
 		sdv.setSign_time(StringUtil.nullConvertToEmptyString(ds.getSign_time()));
 		sdv.setDeliverytime(ds.getDeliverytime());
+		
 		CwbOrder cwbOrder = null;
 		if (clist == null) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(ds.getCwb());
@@ -456,6 +461,7 @@ public class DeliveryController {
 		sdv.setCwbremark(cwbOrder.getCwbremark());
 		sdv.setBackreason(cwbOrder.getBackreason());
 		sdv.setLeavedreason(cwbOrder.getLeavedreason());
+		sdv.setChangereason(cwbOrder.getChangereason());
 		sdv.setShouldfare(ds.getShouldfare());
 		sdv.setInfactfare(ds.getInfactfare());
 		return sdv;
@@ -572,6 +578,8 @@ public class DeliveryController {
 		gco.setShangmenhuan_chenggong_pos_amount(BigDecimal.valueOf(Double.parseDouble(request.getParameter("shangmenhuan_chenggong_pos_amount"))));
 		gco.setDiushi(Long.parseLong(request.getParameter("diushi")));
 		gco.setDiushi_amount(BigDecimal.valueOf(Double.parseDouble(request.getParameter("diushi_amount"))));
+		gco.setZhongzhuan(Long.parseLong(request.getParameter("zhongzhuan")));
+		gco.setZhongzhuan_amount(BigDecimal.valueOf(Double.parseDouble(request.getParameter("zhongzhuan_amount"))));
 		return gco;
 	}
 
@@ -584,7 +592,9 @@ public class DeliveryController {
 			@RequestParam(value = "checkremark", required = false, defaultValue = "") String checkremark,
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark, @RequestParam("weishuakareasonid") long weishuakareasonid,
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
-			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare) {
+			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
+			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid
+			) {
 
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
 		try {
@@ -615,6 +625,8 @@ public class DeliveryController {
 			parameters.put("losereasonid", losereasonid);
 			parameters.put("deliverytime_now", deliverytime);
 			parameters.put("infactfare", infactfare);
+			parameters.put("changereasonid", changereasonid);
+			parameters.put("firstchangereasonid", firstchangereasonid);
 
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 			
@@ -646,6 +658,7 @@ public class DeliveryController {
 		List<Reason> podremarkreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> changereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
 
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -663,6 +676,7 @@ public class DeliveryController {
 		Reason leavedreason = this.reasonDao.getReasonByReasonid(co.getLeavedreasonid());
 		Reason weishuakareason = this.reasonDao.getReasonByReasonid(co.getWeishuakareasonid());
 		Reason losereason = this.reasonDao.getReasonByReasonid(co.getLosereasonid());
+		Reason changereason = this.reasonDao.getReasonByReasonid(co.getChangereasonid());
 
 		if ((co.getBackreason() != null) && (co.getBackreason().length() > 0)) {
 			model.addAttribute("backreasonid", backreason == null ? 0 : backreason.getReasonid());
@@ -676,6 +690,9 @@ public class DeliveryController {
 		if ((co.getLeavedreason() != null) && (co.getLeavedreason().length() > 0)) {
 			model.addAttribute("losereasonid", losereason == null ? 0 : losereason.getReasonid());
 		}
+		if ((co.getChangereason() != null) && (co.getChangereason().length() > 0)) {
+			model.addAttribute("changereasonid", changereason == null ? 0 : changereason.getReasonid());
+		}
 
 		SystemInstall isReasonRequired = this.systemInstallDAO.getSystemInstall("isReasonRequired");
 		SystemInstall showposandqita = this.systemInstallDAO.getSystemInstall("showposandqita");
@@ -688,6 +705,7 @@ public class DeliveryController {
 		model.addAttribute("podremarkreasonlist", podremarkreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("losereasonlist", losereasonlist);
+		model.addAttribute("changereasonlist", changereasonlist);
 		model.addAttribute("isReasonRequired", isReasonRequired == null ? "no" : isReasonRequired.getValue());
 		model.addAttribute("showposandqita", showposandqita == null ? "no" : showposandqita.getValue());
 		model.addAttribute("isShowZLZDLH", isShowZLZDLH == null ? "no" : isShowZLZDLH.getValue());
@@ -714,11 +732,14 @@ public class DeliveryController {
 	public String batchEditDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
+			@RequestParam(defaultValue = "0", required = false, value = "firstchangereasonid") long firstchangereasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "changereasonid") long changereasonid,
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> firstchangereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
@@ -758,6 +779,8 @@ public class DeliveryController {
 					parameters.put("resendtime", resendtime);
 					parameters.put("zhiliuremark", zhiliuremark);
 					parameters.put("deliverstateremark", deliverstateremark);
+					parameters.put("firstchangereasonid", firstchangereasonid);
+					parameters.put("changereasonid", changereasonid);
 
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
@@ -805,6 +828,7 @@ public class DeliveryController {
 		model.addAttribute("deliverystateid", deliverystate);
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		model.addAttribute("firstchangereasonlist", firstchangereasonlist);
 		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
 		// model.addAttribute("pl_switch",
 		// switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
@@ -1663,5 +1687,22 @@ public class DeliveryController {
 			return flag = 1;
 		}
 		return flag;
+	}
+	
+	
+	@RequestMapping("/getChangeReason")
+	public @ResponseBody String getChangeReason( @RequestParam(value = "firstchangereasonid", defaultValue = "0", required = false) long firstchangereasonid){
+
+		if (firstchangereasonid > 0) {
+			List<Reason> tworeasonlist = this.reasonDao.getAllSecondLevelReason(firstchangereasonid);
+			try {
+				return JacksonMapper.getInstance().writeValueAsString(tworeasonlist);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+			return "[]";
+		} else {
+			return "[]";
+		}
 	}
 }

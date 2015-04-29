@@ -6,8 +6,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * 超期异常监控条件VO.
  *
+ * 超期异常监控条件VO.
  * @author zhaoshb
  * @since DMP3.0
  */

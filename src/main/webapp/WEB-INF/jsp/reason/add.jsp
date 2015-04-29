@@ -30,6 +30,14 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 			           <input type="radio" name="whichreason" id="radio1" checked="checked" onclick="to_change(1)" value='1'>一级
 			           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2)" value='2'>二级 
 		           </span></li>
+		           
+		          
+		           </div>
+		            <div hidden="true" id="div_changealowflag">
+			            <li><span id="changealowflag" style="margin-left: 50px;" align="left">
+				           <input type="checkbox" id="checkbox1" name="changealowflag"  value='1'>中转是否要申请 
+			           	   </span>
+			           </li>
 		           </div>
 		           <div hidden="true" id="div_2" >
 			           <li><span>一级原因：</span> 

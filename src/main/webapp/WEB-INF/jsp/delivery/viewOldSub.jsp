@@ -18,6 +18,7 @@
 			+"&tuihuo="+gco.getTuihuo()+"&tuihuoamount="+gco.getTuihuo_amount()+"&bufentuihuo="+gco.getBufentuihuo()
 			+"&bufentuihuoamount="+gco.getBufentuihuo_amount()+"&bufentuihuoposamount="+gco.getBufentuihuo_pos_amount()
 			+"&zhiliu="+gco.getZhiliu()+"&zhiliuamount="+gco.getZhiliu_amount()
+			+"&zhongzhuan="+gco.getZhongzhuan()+"&zhongzhuanamount="+gco.getZhongzhuan_amount()
 			+"&smtcg="+gco.getShangmentui_chenggong()+"&smtcgamount="+gco.getShangmentui_chenggong_amount()
 			+"&smtcgfare="+gco.getShangmentui_chenggong_fare()
 			+"&smtjutui="+gco.getShangmentui_jutui()
@@ -137,6 +138,13 @@
 									<td align="center" valign="middle" bgcolor="#eef6ff" >丢失破损</td>
 									<td align="center" valign="middle" ><%=gco.getDiushi() %></td>
 									<td align="center" ><%=gco.getDiushi_amount() %>元</td>
+								</tr>
+								
+								<tr>
+									<td align="center" valign="middle" bgcolor="#eef6ff" >待中转</td>
+									<td align="center" valign="middle" ><%=gco.getZhongzhuan() %></td>
+									<td align="center" ><%=gco.getZhongzhuan_amount()%>元</td>
+									
 								</tr>
 								<tr>
 									<td align="center" valign="middle" bgcolor="#f4f4f4" >合计</td>

@@ -33,6 +33,9 @@ public class DeliveryStateView {
 	private String sign_time; // 签收时间
 	private String backreason;// 退货原因
 	private String leavedreason;// 滞留原因
+	private String changereason; //中转原因
+	
+
 	private long customerid;
 	private String customername;// 供货商
 	private String emaildate;// 发货时间
@@ -67,6 +70,13 @@ public class DeliveryStateView {
 		this.cwb = cwb;
 	}
 
+	public String getChangereason() {
+		return changereason;
+	}
+
+	public void setChangereason(String changereason) {
+		this.changereason = changereason;
+	}
 	public long getDeliveryid() {
 		return deliveryid;
 	}

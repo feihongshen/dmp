@@ -7,6 +7,15 @@ public class Reason {
 	private long reasontype;
 	private int whichreason;
 	private int parentid;
+	private int changealowflag; //中转是否要申请 1是  0否
+
+	public int getChangealowflag() {
+		return changealowflag;
+	}
+
+	public void setChangealowflag(int changealowflag) {
+		this.changealowflag = changealowflag;
+	}
 
 	public int getParentid() {
 		return parentid;

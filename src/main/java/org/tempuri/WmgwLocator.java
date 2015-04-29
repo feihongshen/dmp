@@ -23,7 +23,7 @@ public class WmgwLocator extends org.apache.axis.client.Service implements org.t
 	// Use to get a proxy class for wmgwSoap
 	// private java.lang.String wmgwSoap_address =
 	// "http://113.106.91.66:8057/MWGate/wmgw.asmx/";
-	private java.lang.String wmgwSoap_address = "http://t1.netsms.cn:8057/MWGate/wmgw.asmx/";
+	private java.lang.String wmgwSoap_address = "http://211.100.34.81:7908/MWGate/wmgw.asmx";
 
 	public java.lang.String getwmgwSoapAddress() {
 		return wmgwSoap_address;

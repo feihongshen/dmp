@@ -151,6 +151,9 @@ public class CwbDAO {
 			cwbOrder.setHistorybranchname(rs.getString("historybranchname"));
 			cwbOrder.setGoodsType(rs.getInt("goods_type"));
 			cwbOrder.setOutareaflag(rs.getInt("outareaflag"));
+			cwbOrder.setChangereason(rs.getString("changereason"));
+			cwbOrder.setChangereasonid(rs.getLong("changereasonid"));
+			cwbOrder.setFirstchangereasonid(rs.getLong("firstchangereasonid"));
 
 			return cwbOrder;
 		}
@@ -2248,6 +2251,11 @@ public class CwbDAO {
 	public void saveCwbForLeavereason(String cwb, String leavedreason, long leavedreasonid) {
 		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=? where cwb=?";
 		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, cwb);
+	}
+	
+	public void saveCwbForChangereason(String cwb, String changereason, long changereasonid,long firstchangereasonid) {
+		String sql = "update express_ops_cwb_detail set changereason=?,changereasonid=?,firstchangereasonid=? where cwb=?";
+		this.jdbcTemplate.update(sql, changereason, changereasonid,firstchangereasonid, cwb);
 	}
 
 	private final class CwbCountAndSumByEmaildateIdMapper implements RowMapper<BigDecimal[]> {

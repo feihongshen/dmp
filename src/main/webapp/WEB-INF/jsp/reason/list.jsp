@@ -61,6 +61,7 @@ function delSuccess(data){
 	<tr class="font_1">
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编号</td>
 			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">类型</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">级别</td>
 			<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">常用语内容</td>
 			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
@@ -68,6 +69,7 @@ function delSuccess(data){
 		<tr>
 			<td width="15%" align="center" valign="middle"><%=r.getReasonid()%></td>
 			<td width="20%" align="center" valign="middle"><%for(ReasonTypeEnum rte : ReasonTypeEnum.values()){if(r.getReasontype()==rte.getValue()){%><%=rte.getText()%><%}}%></td>
+			<td width="20%" align="center" valign="middle"><%=r.getWhichreason()%></td>
 			<td width="40%" align="center" valign="middle"><%=r.getReasoncontent()%></td>
 			<td width="25%" align="center" valign="middle">
 			[<a href="javascript:edit_button(<%=r.getReasonid() %>);">修改</a>]

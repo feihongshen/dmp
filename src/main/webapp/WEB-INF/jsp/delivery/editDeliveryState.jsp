@@ -22,6 +22,7 @@ List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist
 List<Reason> podremarkreasonlist = (List<Reason>)request.getAttribute("podremarkreasonlist");
 
 List<Reason> weishuakareasonlist = (List<Reason>)request.getAttribute("weishuakareasonlist");
+List<Reason> changereasonlist = (List<Reason>)request.getAttribute("changereasonlist");
 
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 
@@ -29,6 +30,8 @@ long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.g
 long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
 long weishuakareasonid = request.getAttribute("weishuakareasonid")==null?0:(Long)request.getAttribute("weishuakareasonid");
 long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
+
+long changereasonid = request.getAttribute("changereasonid")==null?0:(Long)request.getAttribute("changereasonid"); 
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 String isShowZLZDLH = request.getAttribute("isShowZLZDLH")==null?"no":(String)request.getAttribute("isShowZLZDLH");
@@ -51,7 +54,7 @@ function editInit(){
 	window.parent.click_podresultid(<%=deliverystate.getDeliverystate()%>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
-   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,
+   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,
    			$("#backreasonid", parent.document).val(),$("#leavedreasonid", parent.document).val(),$("#podremarkid", parent.document).val(),$("#newpaywayid", parent.document).val(),
    			$("#weishuakareasonid", parent.document).val(),$("#losereasonid", parent.document).val(),false);
 	$("input[type='text']", parent.document).focus(function(){
@@ -94,7 +97,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 			 onSubmit="if(check_deliveystate(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
-   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,'<%=isReasonRequired %>')){$('#sub').attr('disabled','disabled');submitSaveFormAndCloseBox(this);$('#sub').val('处理中...');}return false;" 
+   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,'<%=isReasonRequired %>')){$('#sub').attr('disabled','disabled');submitSaveFormAndCloseBox(this);$('#sub').val('处理中...');}return false;" 
 			 action="<%=request.getContextPath()%>/delivery/editDeliveryState/<%=deliverystate.getCwb()%>/<%=deliverystate.getDeliveryid()%>" method="post"  >
 				<ul>
 					<li><span>订单号：</span><%=deliverystate.getCwb() %></li>
@@ -117,7 +120,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
 		   			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()%>,
-		   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=backreasonid%>,<%=leavedreasonid%>,
+		   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,<%=backreasonid%>,<%=leavedreasonid%>,
 		   			<%=deliverystate.getPodremarkid()%>,$('#newpaywayid', parent.document).val(),<%=weishuakareasonid%>,<%=losereasonid%>,'<%=showposandqita%>',true)">
                    		<option value ="-1">==请选择==</option>
                    <%if(deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()){%>
@@ -127,6 +130,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 							<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
 						<%}%>
 						<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+						<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
 						<%if(isShowZLZDLH.equals("yes")){ %>
 							<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 						<%} %>
@@ -137,6 +141,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 							<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
 						<%} %>
 						<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+						<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
 						<%if(isShowZLZDLH.equals("yes")){ %>
 							<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 						<%} %>
@@ -144,6 +149,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
                    		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
                    		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+                   		<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
                    		<%if(isShowZLZDLH.equals("yes")){ %>
                    			<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
                    		<%} %>
@@ -167,6 +173,26 @@ if(parseInt($("#isOpenFlag").val())!=0){
 	           			<%} %>
 			        </select>
 		        </li>
+		        
+	        	<li><span>一级原因：</span>
+			        <select name="firstchangereasonid" id="firstchangereasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)" >
+			        	<option value ="0">==请选择==</option>
+			        	<%
+			        	if(changereasonlist!=null&&changereasonlist.size()>0){
+			        	for(Reason r :changereasonlist){%>
+			        		<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			        	<%}}%>
+			        </select>
+	       		 </li>
+		        
+	           	<li><span>二级原因：</span>
+			        <select name="changereasonid" id="changereasonid">
+			        	<option value ="0">==请选择==</option>
+			        </select>
+		        </li>
+		        
+		        
+		       
 		        <li><span>配送结果备注：</span>
 			        <select name="podremarkid" id="podremarkid">
 			        	<option value ="0">==请选择==</option>
