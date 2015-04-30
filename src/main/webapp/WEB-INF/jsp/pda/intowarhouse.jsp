@@ -295,14 +295,15 @@ function callfunction(cwb){//getEmailDateByIds
 									+ "&driverid=" + driverid
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
-								"comment" : comment
+								"comment" : comment,
+								"youhuowudanflag":$("#youhuowudanflag").val()
 							},
 							dataType : "json",
 							success : function(data) {
-								$("#scancwb").val("");
+								
 								
 								if (data.statuscode == "000000") {
-									
+									$("#scancwb").val("");
 									$("#cwbgaojia").hide();
 
 									$("#excelbranch").show();
@@ -395,10 +396,33 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#showcwb").html("");
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
-									$("#msg").html("（异常扫描）" + data.errorinfo);
+									if(data.statuscode=="3"){
+										$("#scancwb").val("");
+										alert("（异常扫描）"+data.errorinfo);
+									}else if(data.statuscode=="13"){
+										$("#scancwb").val("");
+										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
+									}else if(data.statuscode=="101"){
+										if(confirm("无数据，有货无单,确定要入库吗？")){
+											$("#youhuowudanflag").val("1");
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}
+										$("#scancwb").val("");
+									}else if(data.statuscode=="102"){
+										if(confirm("尚未匹配站点，确定要入库吗？")){
+											$("#youhuowudanflag").val("1");
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}
+										$("#scancwb").val("");
+									}else{
+										$("#msg").html("（异常扫描）" + data.errorinfo);
+										
+										//errorvedioplay(pname, data);
+									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
-									//errorvedioplay(pname, data);
+									
 								}
+								$("#youhuowudanflag").val("0");
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
 							}
@@ -762,6 +786,12 @@ $(function(){
  		}
  	});
  }
+function openLogin(){
+	   document.getElementById("win").style.display="";
+	}
+	function closeLogin(){
+	   document.getElementById("win").style.display="none";
+	}
 </script>
 </head>
 <body style="background:#eef9ff" marginwidth="0" marginheight="0">
@@ -854,6 +884,7 @@ $(function(){
 					<p><span>订单号：</span>
 						<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
 					</p>
+					<input type="hidden" id="youhuowudanflag" name="youhuowudanflag" value="0" />
 				</div>
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>
@@ -1071,5 +1102,6 @@ $(function(){
 		<input type="hidden" name="type" value="" id="type"/>
 	</form>
 	</div>
+
 </body>
 </html>

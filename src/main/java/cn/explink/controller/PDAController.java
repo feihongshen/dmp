@@ -55,6 +55,7 @@ import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbALLStateControlDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.CwbKuaiDiDAO;
 import cn.explink.dao.DeliveryStateDAO;
@@ -150,6 +151,8 @@ public class PDAController {
 	private static final String PLAY_YPDJ_SOUND = "RUKUPCandPDAaboutYJDPWAV";
 
 	private Logger logger = LoggerFactory.getLogger(PDAController.class);
+	@Autowired
+	CwbALLStateControlDAO cwbALLStateControlDAO;
 	@Autowired
 	CwbDAO cwbDAO;
 	@Autowired
@@ -2616,7 +2619,10 @@ public class PDAController {
 	ExplinkResponse cwbintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
-			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate,
+			@RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag
+			
+			) {
 
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
@@ -2639,6 +2645,13 @@ public class PDAController {
 			if ((userbranch.getBranchid() != 0) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())) {
 				cwbOrder = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comment, "", false);
 			} else {
+				if (youhuowudanflag.equals("0")) {
+					this.checkyouhuowudan(this.getSessionUser(),cwb, customerid,this.getSessionUser().getBranchid());
+					if (co.getDeliverybranchid()==0) {
+						FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.RuKu;
+						throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShangWeiPiPeiZhanDian);
+					}
+				}
 				cwbOrder = this.cwborderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, requestbatchno, comment, "", false);
 			}
 			JSONObject obj = new JSONObject();
@@ -8763,6 +8776,45 @@ public class PDAController {
 
 		return yichukuVeiwList;
 
+	}
+	/**
+	 * 
+	 * @param cwb
+	 * @param customerid
+	 * @return
+	 */
+	public String checkyouhuowudan(User user,String cwb,long customerid,long currentbranchid){
+		cwb = cwborderService.translateCwb(cwb);
+		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.RuKu;
+
+		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
+		}
+
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+
+		if ((customerid > 0) && (co != null)) {
+			// TODO 因为客户的货物会混着扫描
+			customerid = co.getCustomerid();
+		
+		}
+
+		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
+
+		if (co == null) {
+			if (customerid < 1) {
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Y_H_W_D_WEI_XUAN_GONG_HUO_SHANG);
+			}
+
+			if ((userbranch.getSitetype() == BranchEnum.KuFang.getValue())
+					&& (this.cwbALLStateControlDAO.getCwbAllStateControlByParam(CwbStateEnum.WUShuju.getValue(), FlowOrderTypeEnum.RuKu.getValue()) != null)) {
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.WuShuJuYouHuoWuDanError);
+
+			} else {
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+		}
+		return "";
 	}
 
 }

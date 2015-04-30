@@ -32,7 +32,10 @@ public enum ExceptionCwbErrorTypeEnum {
 
 	Fei_ZhongZhuan_Tuihuo(99, "非待中转、待退货不能做此操作"),
 
-	GongHuoShang_Bufu(100, "请选择正确的供货商");
+	GongHuoShang_Bufu(100, "请选择正确的供货商"),
+	WuShuJuYouHuoWuDanError(101,"无数据，有货无单"),
+	ShangWeiPiPeiZhanDian(102,"尚未匹配站点")
+	;
 
 	private int value;
 	private String text;
