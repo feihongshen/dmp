@@ -81,7 +81,7 @@ public class BranchRouteControlController {
 		}
 		if(flag==1){
 			return "{\"errorCode\":0,\"error\":\"操作成功,已过滤重复数据 "+msg+"\"}"; 
-		}else
+		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 
