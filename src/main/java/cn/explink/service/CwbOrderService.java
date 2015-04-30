@@ -2603,11 +2603,19 @@ public class CwbOrderService {
 		}
 		if (iszhongzhuanout) {
 			// 中转出站操作根据系统设置，是否只有审核的订单才可以中转出站
-			String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
-			if (isUseAuditZhongZhuan.equals("yes") && (this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(co.getCwb()) == 0)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error);
+			
+			long firstchangereasonid =  co.getFirstchangereasonid(); //一级滞留原因
+			Reason reason = reasonDAO.getReasonByReasonid(firstchangereasonid);
+			int changealowflag = reason.getChangealowflag();
+			if(changealowflag != 0 || co.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()
+					||co.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){
+				String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
+				if (isUseAuditZhongZhuan.equals("yes") && (this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(co.getCwb()) == 0)) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error);
+				}
 			}
-
+			
+			
 			// 非本操作站点的订单不允许出库（中转出站）
 			if (co.getCurrentbranchid() != currentbranchid) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FeiBenZhanDianDingDanBuYunXuZhongZhuanChuZhan);
@@ -3914,7 +3922,14 @@ public class CwbOrderService {
 			}
 			this.cwbDAO.updateNextBranchid(cwb, zhongzhuanNextBranch.getBranchid());
 
-		} else {// 其他的反馈结果，都将下一站置为0
+		} else if (dse == DeliveryStateEnum.DaiZhongZhuan) {// 待中转
+			if (zhongzhuanNextBranch == null) {
+				this.logger.info("站点{0}没有指定中转站", user.getBranchid());
+				return;
+			}
+			this.cwbDAO.updateNextBranchid(cwb, zhongzhuanNextBranch.getBranchid());
+
+		}else {// 其他的反馈结果，都将下一站置为0
 			this.cwbDAO.updateNextBranchid(cwb, 0L);
 		}
 	}
