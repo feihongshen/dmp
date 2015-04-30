@@ -239,13 +239,13 @@ public class AdjustmentRecordService {
 								aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
 								
 							}else {//TODO 上门换
-								if(page_payback_fee.doubleValue()>0&&page_receive_fee.doubleValue()<=0){
+								if(page_payback_fee.doubleValue()>0&&cwbOrder.getPaybackfee().doubleValue()>0){
 									BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
 									aRecord.setModify_fee(page_payback_fee);
 									aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
 									aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
 									
-								}else if(page_receive_fee.doubleValue()>0&&page_payback_fee.doubleValue()<=0){
+								}else if(page_receive_fee.doubleValue()>0&&cwbOrder.getReceivablefee().doubleValue()<=0){
 									//配送订单
 									aRecord.setModify_fee(page_receive_fee);
 									aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
