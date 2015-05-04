@@ -4875,4 +4875,10 @@ function check_branchroute() {
 	return true;
 }
 
-
+function editoffenword(){
+	if($('#reasontype').val()==1){
+		$('#selectapply').removeAttr('hidden');
+	}else{
+		$('#selectapply').attr('hidden','true');
+	}
+}

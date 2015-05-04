@@ -16,6 +16,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+
 function addInit(){
 	//无处理
 }

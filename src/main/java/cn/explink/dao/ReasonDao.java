@@ -97,8 +97,8 @@ public class ReasonDao {
 	}
 
 	@CacheEvict(value = "reasonCache", key = "#reason.reasonid")
-	public void saveReason(final Reason reason) {
-
+	public void saveReason(final Reason reason,String changealowflag) {
+		if(changealowflag==null){
 		jdbcTemplate.update("update express_set_reason set reasoncontent=? where reasonid=?", new PreparedStatementSetter() {
 
 			@Override
@@ -107,6 +107,20 @@ public class ReasonDao {
 				ps.setLong(2, reason.getReasonid());
 			}
 		});
+		}else{
+			
+			jdbcTemplate.update("update express_set_reason set reasoncontent=?,changealowflag=? where reasonid=?", new PreparedStatementSetter() {
+
+				@Override
+				public void setValues(PreparedStatement ps) throws SQLException {
+					ps.setString(1, reason.getReasoncontent());
+					ps.setInt(2, reason.getChangealowflag());
+					ps.setLong(3, reason.getReasonid());
+					
+				}
+			});
+			
+		}
 
 	}
 

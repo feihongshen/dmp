@@ -47,8 +47,10 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 			               <option value ="<%=rs.getReasonid()%>"><%=rs.getReasoncontent() %></option>
 			               <%} %>
 			           </select>*</li>
-		           </div>
-					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" maxlength="30" class="input_text1"></li>
+		           </div>		
+		              
+					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" maxlength="30" class="input_text1"></li>				
+				 	
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="确认" class="button" /></div>

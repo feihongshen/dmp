@@ -32,6 +32,7 @@ public class ReasonController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
 				.getContext().getAuthentication().getPrincipal();
@@ -70,16 +71,22 @@ public class ReasonController {
 			Model model,
 			HttpServletRequest request,
 			@PathVariable("id") long reasonid,
-			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent) {
-
+			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent,
+			@RequestParam(value="changealowflag",defaultValue="0",required=false) String changealowflag
+			) {
+			
 		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
 		}
+		
 		Reason reason = new Reason();
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasonid(reasonid);
-		reasonDao.saveReason(reason);
+		
+		int changealowflag1 =Integer.parseInt(changealowflag);
+		reason.setChangealowflag(changealowflag1);
+		reasonDao.saveReason(reason,changealowflag);
 		logger.info("operatorUser={},常用语管理->save", getSessionUser()
 				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
