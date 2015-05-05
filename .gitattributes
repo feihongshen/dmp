@@ -468,6 +468,10 @@ src/main/java/cn/explink/b2c/tools/b2cmonntor/B2cJointMonitorDAO.java -text
 src/main/java/cn/explink/b2c/tools/b2cmonntor/B2cJointMonitorService.java -text
 src/main/java/cn/explink/b2c/tools/b2cmonntor/B2cjointMonitorController.java -text
 src/main/java/cn/explink/b2c/tools/commonExptService.java -text
+src/main/java/cn/explink/b2c/tools/encodingSetting/EncodingSetting.java -text
+src/main/java/cn/explink/b2c/tools/encodingSetting/EncodingSettingController.java -text
+src/main/java/cn/explink/b2c/tools/encodingSetting/EncodingSettingDAO.java -text
+src/main/java/cn/explink/b2c/tools/encodingSetting/EncodingSettingService.java -text
 src/main/java/cn/explink/b2c/tools/poscodeMapp/PoscodeMapp.java -text
 src/main/java/cn/explink/b2c/tools/poscodeMapp/PoscodeMappController.java -text
 src/main/java/cn/explink/b2c/tools/poscodeMapp/PoscodeMappDAO.java -text
@@ -1953,6 +1957,9 @@ src/main/webapp/WEB-INF/jsp/jointmanage/commonexpt/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/commonexpt/editjoint.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/cuscodejoint.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/cusreason.jsp -text
+src/main/webapp/WEB-INF/jsp/jointmanage/encodingsetting.jsp -text
+src/main/webapp/WEB-INF/jsp/jointmanage/encodingsetting/add.jsp -text
+src/main/webapp/WEB-INF/jsp/jointmanage/encodingsetting/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/epaiApi_down/add.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/epaiApi_down/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/epaiApi_down/epaiapi.jsp -text

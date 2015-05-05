@@ -1,5 +1,6 @@
 
 <%@page import="cn.explink.b2c.tools.*"%>
+<%@page import="cn.explink.b2c.tools.encodingSetting.*"%>
 <%@page import="cn.explink.pos.tools.*"%>
 
 <%@page import="cn.explink.enumutil.*"%>
@@ -25,9 +26,10 @@
 
 
 <%
-List<ExptReason> exptreasonlist =(List<ExptReason>)request.getAttribute("exptreasonlist");
+List<EncodingSetting> exptreasonlist =(List<EncodingSetting>)request.getAttribute("encodinglist");
+
 Page page_obj = (Page)request.getAttribute("page_obj");
-int support_key=Integer.parseInt(request.getAttribute("support_key")!=null?request.getAttribute("support_key").toString():"0");
+
 List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist");
  int customerid=Integer.parseInt(request.getAttribute("customerid")!=null?request.getAttribute("customerid").toString():"0");
 %>
@@ -66,36 +68,37 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 					href="<%=request.getContextPath()%>/jointManage/jointpos">POS对接</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/poscodemapp/1">POS/商户映射</a></li>
-				<li><a href="#" class="light">异常码设置</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/exptreason/1">异常码设置</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
+				<li><a href="#" class="light">供货商编码设置</a></li>
 			</ul>
 		</div>
 		<div class="right_box">
 			<div class="inputselect_box">
-				<span><input name="" type="button" value="新建异常原因"
-					class="input_button1" id="add_button" /></span>
 				<form
 					action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>"
 					method="post" id="searchForm">
 
-					异常码提供方：<select name="support_key" id="support_key" class="select1">
-						<option value="-1">全部</option>
-						<%for(Customer en : customerlist){ %>
-						<option value="1_<%=en.getCustomerid()%>"
-							<%if(en.getCustomerid()==support_key){%> selected <%} %>><%=en.getCustomername() %></option>
-						<%} %>
-						<%for(PosEnum p : PosEnum.values()){ %>
-						<option value="<%=p.getKey()%>" <%if(support_key==p.getKey()){%>
-							selected <%} %>><%=p.getText() %></option>
-						<%} %>
+					供货商：
+					<select id="customerid" name="customerid">
+					<option value="-1">请选择</option>
+						<%if(customerlist!=null&&customerlist.size()>0){
+							for(Customer cu:customerlist){%>
+								<option value="<%=cu.getCustomerid()%>"><%=cu.getCustomername() %></option>
+							<%}
+						} %>
+ 						</select> 
+				
+
 					</select> <input type="submit"
-						onclick="$('#searchForm').attr('action','<%=request.getContextPath()%>/exptreason/list/1');return true;"
-						id="find" value="查询" class="input_button2" />
+						onclick="$('#searchForm').attr('action','<%=request.getContextPath()%>/encodingsetting/list/1');return true;"
+						id="find" value="查询" class="input_button2" /> <span><input
+						name="" type="button" value="新建编码" class="input_button"
+						id="add_buttonn" /></span>
 			</div>
 			<div class="right_title">
 				<div class="jg_10"></div>
@@ -105,60 +108,46 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 					class="table_2" id="gd_table">
 					<tr class="font_1">
 						<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">异常码提供方</td>
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">供方编码</td>
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">对应异常编码</td>
-						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">对应异常原因</td>
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">对应异常类型(退货/滞留)</td>
+						
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">供货商编码</td>
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
 						<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 
 					</tr>
 					<%if(exptreasonlist!=null&&exptreasonlist.size()>0){ 
-					for(ExptReason expt:exptreasonlist){
-						int expt_type=expt.getExpt_type();
-						String typename="";
-						if(expt_type==ReasonTypeEnum.BeHelpUp.getValue()){
-							typename=ReasonTypeEnum.BeHelpUp.getText();
-						}else if(expt_type==ReasonTypeEnum.ReturnGoods.getValue()){
-							typename=ReasonTypeEnum.ReturnGoods.getText();
-						}
-						String exptsupportname="";
-						
-						if(expt.getCustomerid()==0){
-							for(PosEnum b:PosEnum.values()){
-								if(b.getKey()==Integer.parseInt(expt.getSupport_key())){
-									exptsupportname=b.getText();
-								}
-							}
-						}else{ //b2c
-							if(customerlist!=null&&customerlist.size()>0){
-								for(Customer c:customerlist){
-									if(c.getCustomerid()==expt.getCustomerid()){
-										exptsupportname=c.getCustomername();
-										break;
-									}
-								}
-							}
-						}
-						
+					for(EncodingSetting expt:exptreasonlist){
+						String postext="";
 				%>
 					<tr>
-						<td align="center" valign="middle"><%=expt.getExptid() %></td>
-						<td align="center" valign="middle"><%=exptsupportname%></td>
+						<td align="center" valign="middle"><%=expt.getPoscodeid() %></td>
+
+						
+						<%
+			               String customername="";
+			               for(Customer customer: customerlist){
+			            	   if(customer.getCustomerid()==expt.getCustomerid()){
+			            		   customername=customer.getCustomername();
+			            		   break;
+			            	   }
+			               }
+			               %>
+
+						
+						<td align="center" valign="middle"><%=customername%></td>
 						<td align="center" valign="middle"><%=expt.getCustomercode()==null?"":expt.getCustomercode()%></td>
-						<td align="center" valign="middle"><%=expt.getExpt_code()%></td>
-						<td align="center" valign="middle"><%=expt.getExpt_msg()%></td>
-						<td align="center" valign="middle"><%=typename%></td>
-						<td align="center" valign="middle"><%=expt.getExpt_remark() %></td>
+						<td align="center" valign="middle"><%=expt.getRemark()%></td>
 
 						<td align="center" valign="middle">[<a
-							href="javascript:edit_button('<%=expt.getExptid() %>');">修改</a>]
+							href="javascript:edit_button('<%=expt.getPoscodeid() %>');">修改</a>]
 							[<a
-							href="javascript:if(confirm('删除后不可恢复,是否确定删除?'))del('<%=expt.getExptid() %>');">删除</a>]
+							href="javascript:if(confirm('删除后不可恢复,是否确定删除?'))del('<%=expt.getPoscodeid() %>');">删除</a>]
 						</td>
 					</tr>
 					<%} }%>
+
+					
+				
 				</table>
 			</div>
 
@@ -188,7 +177,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 				</tr>
 			</table>
 		</div>
-		<%} %>
+		<%}%>
 		</form>
 		<div class="jg_10"></div>
 		<div class="clear"></div>
@@ -196,13 +185,13 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 
 		<!-- 创建常用于设置的ajax地址 -->
 		<input type="hidden" id="add"
-			value="<%=request.getContextPath()%>/exptreason/add" />
+			value="<%=request.getContextPath()%>/encodingsetting/add"/>
 		<!-- 修改常用于设置的ajax地址 -->
 		<input type="hidden" id="edit"
-			value="<%=request.getContextPath()%>/exptreason/edit/" />
+			value="<%=request.getContextPath()%>/encodingsetting/edit/" />
 		<!-- 删除的ajax地址 -->
 		<input type="hidden" id="del"
-			value="<%=request.getContextPath()%>/exptreason/del/" />
+			value="<%=request.getContextPath()%>/encodingsetting/del/" />
 	</div>
 	<script type="text/javascript">
 		$("#selectPg").val(

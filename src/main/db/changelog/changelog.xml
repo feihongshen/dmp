@@ -6019,5 +6019,19 @@ CREATE TABLE
 		</sql>
 	</changeSet>
 
+	<changeSet id="jikunlong-2015-05-05-1" author="jikunlong">
+		<sql>
+		CREATE TABLE `encodingsetting_customer_mapping` (
+			  `poscodeid` int(4) NOT NULL AUTO_INCREMENT,
+			  `customerid` int(11) DEFAULT NULL,
+			  `customercode` varchar(50) DEFAULT NULL,
+			  `remark` varchar(500) DEFAULT NULL,
+			  KEY `poscodeid` (`poscodeid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8; 	
+		</sql>
+	</changeSet>
+
+
+
 </databaseChangeLog>
  

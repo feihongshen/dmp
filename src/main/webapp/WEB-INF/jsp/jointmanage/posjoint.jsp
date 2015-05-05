@@ -79,6 +79,8 @@ function delSuccess(data){
 					href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
 			</ul>
 		</div>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -183,8 +185,8 @@ function delSuccess(data){
 		else if(obj=='1012'){
 			$("#edit").val('<%=request.getContextPath()%>/tlmpos/edit/');
 			$("#del").val('<%=request.getContextPath()%>/tlmpos/del/' + state + '/');
-				} else if (obj ==
-		'1013'){
+		} 
+		else if (obj =='1013'){
 			$("#edit").val('<%=request.getContextPath()%>/weisuda/edit/');
 			$("#del").val('<%=request.getContextPath()%>/weisuda/del/'+state+'/');
 		}

@@ -71,6 +71,8 @@ int supportkey=Integer.parseInt(request.getAttribute("support_key")!=null?reques
 				<li><a href="#" class="light">异常码关联</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
 			</ul>
 		</div>
 		<div class="right_box">
