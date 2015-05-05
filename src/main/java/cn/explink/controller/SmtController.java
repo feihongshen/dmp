@@ -79,9 +79,9 @@ public class SmtController {
 
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
-	
+
 	private ObjectMapper om = new ObjectMapper();
-	
+
 	private enum OrderTypeEnum {
 		Normal("normal"), Transfer("transfer"), All("all");
 
@@ -163,9 +163,10 @@ public class SmtController {
 
 		return "smt/smtorderdispatch";
 	}
-	
+
 	@RequestMapping("/smtorderoutarea")
-	public @ResponseBody JSONObject smtOrderOutArea(HttpServletRequest request) {
+	public @ResponseBody
+	JSONObject smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
 		JSONObject errorObj = this.validateOutArea(cwbs);
 		if (!errorObj.getBoolean("successed")) {
@@ -177,17 +178,19 @@ public class SmtController {
 		// 更新订单流程表加入超区流程.
 		// 存在多次超区可能需要修改超区流程的isnow = 1.
 		this.orderFlowDAO.batchOutArea(cwbs, this.getCurrentBranchId(), this.getCurrentUserId(), branchMap);
-		
-		for(String cwb:cwbs){
+
+		for (String cwb : cwbs) {
 			try {
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				cwbOrder.setConsigneemobile(cwbOrder.getConsigneemobileOfkf());
+				cwbOrder.setConsigneename(cwbOrder.getConsigneenameOfkf());
+				cwbOrder.setConsigneephone(cwbOrder.getConsigneephoneOfkf());
 				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 				cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 				cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
-				OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(),
-						this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), FlowOrderTypeEnum.ChaoQu.getValue(),
-						"超区");
+				OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(), this.om.writeValueAsString(
+						cwbOrderWithDeliveryState).toString(), FlowOrderTypeEnum.ChaoQu.getValue(), "超区");
 				this.orderFlowDAO.creAndUpdateOrderFlow(of);
 			} catch (Exception e) {
 				this.logger.error("error while saveing orderflow", e);
@@ -231,7 +234,8 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querysmtorder")
-	public @ResponseBody SmtOrderContainer querySmtOrder(HttpServletRequest request) {
+	public @ResponseBody
+	SmtOrderContainer querySmtOrder(HttpServletRequest request) {
 		OrderTypeEnum dataType = this.getDataType(request);
 		OptTimeTypeEnum timeType = this.getTimeType(request);
 		int page = this.getQueryPage(request);
@@ -241,7 +245,8 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querytodayoutareaorder")
-	public @ResponseBody SmtOrderContainer queryTodayOutAreaOrder() {
+	public @ResponseBody
+	SmtOrderContainer queryTodayOutAreaOrder() {
 		return this.queryTodayOutAreaOrder(1);
 	}
 

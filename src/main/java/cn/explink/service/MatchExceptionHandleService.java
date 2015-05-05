@@ -38,7 +38,7 @@ import cn.explink.util.SqlBuilder;
 
 @Service
 public class MatchExceptionHandleService {
-	
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private CwbDAO cwbDAO;
@@ -57,13 +57,14 @@ public class MatchExceptionHandleService {
 
 	@Autowired
 	private BranchDAO branchDAO;
-	
+
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 	@Autowired
-	private OrderFlowDAO orderFlowDAO ;
-	
+	private OrderFlowDAO orderFlowDAO;
+
 	private ObjectMapper om = new ObjectMapper();
+
 	@Transactional
 	public JSONObject redistributionBranch(String cwb, long newBranchId) {
 		CwbOrder cwbOrder = this.queryOrder(cwb);
@@ -85,9 +86,11 @@ public class MatchExceptionHandleService {
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 			cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 			cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
-			OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(),
-					this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue(),
-					"异常匹配已处理");
+			cwbOrder.setConsigneemobile(cwbOrder.getConsigneemobileOfkf());
+			cwbOrder.setConsigneename(cwbOrder.getConsigneenameOfkf());
+			cwbOrder.setConsigneephone(cwbOrder.getConsigneephoneOfkf());
+			OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(), this.om.writeValueAsString(cwbOrderWithDeliveryState)
+					.toString(), FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue(), "异常匹配已处理");
 			this.orderFlowDAO.creAndUpdateOrderFlow(of);
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);
@@ -100,9 +103,11 @@ public class MatchExceptionHandleService {
 
 		return obj;
 	}
+
 	private long getCurrentUserId() {
 		return this.getSessionUser().getUserid();
 	}
+
 	private void fillExtraData(JSONObject obj, CwbOrder cwbOrder, OrderFlow orderFlow) {
 		Date todayZeroTime = this.getTodayZeroTime();
 		obj.put("today", todayZeroTime.compareTo(orderFlow.getCredate()) <= 0);
