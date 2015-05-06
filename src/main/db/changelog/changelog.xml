@@ -6018,7 +6018,11 @@ CREATE TABLE
 			ALTER TABLE `express_ops_goto_class_old` ADD COLUMN `zhongzhuan` INT(11) DEFAULT 0 NULL AFTER `shangmentuijutuifare`, ADD COLUMN `zhongzhuanamount` DECIMAL(9,2) DEFAULT 0.00 NULL AFTER `zhongzhuan`;    
 		</sql>
 	</changeSet>
-
+		<changeSet id="wukong-2015-04-25" author="wukong">
+		<sql>
+          INSERT INTO `dmp40_function` (`ID`,`functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES(501075,2,'返单出库','501075','returnCwbs/returnCwbsoutwarhouse?','5010');
+		</sql>
+	</changeSet>
 	<changeSet id="jikunlong-2015-05-05-1" author="jikunlong">
 		<sql>
 		CREATE TABLE `encodingsetting_customer_mapping` (

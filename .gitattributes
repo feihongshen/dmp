@@ -2124,6 +2124,7 @@ src/main/webapp/WEB-INF/jsp/reason/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/reason/list.jsp -text
 src/main/webapp/WEB-INF/jsp/returnCwbs/returnCwbsbackexport.jsp -text
 src/main/webapp/WEB-INF/jsp/returnCwbs/returnCwbsintowarhouse.jsp -text
+src/main/webapp/WEB-INF/jsp/returnCwbs/returnCwbsoutwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/role/add.jsp -text
 src/main/webapp/WEB-INF/jsp/role/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/role/editRoleAndMenu.jsp -text

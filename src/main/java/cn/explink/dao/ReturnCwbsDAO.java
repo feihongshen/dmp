@@ -117,5 +117,23 @@ public class ReturnCwbsDAO {
 			return new ReturnCwbs();
 		}
 	}
+	public ReturnCwbs getReturnCwbsChukuByTypeAndTobranchid(long type, long branchid, String cwb) {
+		StringBuffer stringBuffer=new StringBuffer();
+		//String sql = "select * from ops_returncwbs where type=? and branchid=? AND cwb=?  limit 0,1";
+		stringBuffer.append("select * from ops_returncwbs where type=? and branchid=? AND cwb=?  ");
+		if (type==1) {
+			stringBuffer.append(" and isnow='0'");
+		}else {
+			stringBuffer.append(" and isnow>'0'");
+
+		}
+		stringBuffer.append(" limit 0,1");
+		String sql=stringBuffer.toString();
+		try {
+			return jdbcTemplate.queryForObject(sql, new ReturnCwbsMapper(), type, branchid, cwb);
+		} catch (DataAccessException e) {
+			return new ReturnCwbs();
+		}
+	}
 
 }
