@@ -6058,7 +6058,7 @@ public class CwbOrderService {
 	public Map<String, Object> checkIsModifyPayMethod(Map<String, Object> parameters, Map<String, Object> newpaywayParams) {
 		boolean flag = false;
 		Map<String, Object> map = new HashMap<String, Object>();
-		long newpaywayid = (Long) newpaywayParams.get("newpaywayid");
+		long newpaywayid = (Long) (newpaywayParams.get("newpaywayid")==null?Long.valueOf(1L):(newpaywayParams.get("newpaywayid")));
 		// 根据订单号查询订单实体
 		CwbOrder co = new CwbOrder();
 		co = (CwbOrder) newpaywayParams.get("preObj");
