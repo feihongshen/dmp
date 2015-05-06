@@ -233,12 +233,12 @@ public class GztlService {
 			xmlMap.put("sendcarnum", order.getGoodsnum());// 发货件数与件数
 			xmlMap.put("remark1", order.getSclientcode());// （本系统）签收时间与到货时间（过来的数据）
 			xmlMap.put("remark2",  order.getOrderDate());// 发货时间
-			xmlMap.put("remark3", "配送区域:" + order.getDeliverarea()+",入库时间：" + order.getPushtime() );// 配送区域与入库时间？？？？？deliverarea
+			xmlMap.put("remark3",  order.getDeliverarea());// 配送区域deliverarea
 			// xmlMap.put("remark4", "交接单号:" + order.getOrderBatchNo());//
 			// 交接单号????????
 			xmlMap.put("remark4", order.getShipperid());// 需要与通路系统基础表对应(由飞远提供)
 			xmlMap.put("remark5", "到货时间：" + order.getArrivedate() + "发货人名称:" + order.getConsignorname() + "," + "发货地址:" + order.getConsignoraddress() + "," + "手机:" + order.getConsignormobile() + ","
-					+ "电话:" + order.getConsignorphone());// 发货人信息
+					+ "电话:" + order.getConsignorphone()+",入库时间：" + order.getPushtime());// 发货人信息
 			
 			String paywayid = "";
 			if (order.getExtPayType().equals("0")) {
