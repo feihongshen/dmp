@@ -227,7 +227,7 @@ public class GztlService {
 				xmlMap.put("receivablefee", "0");// 应收金额
 				xmlMap.put("paybackfee", receivablefee);// 应退款
 			}
-			System.out.println(receivablefee);
+			//System.out.println(receivablefee);
 			// xmlMap.put("remark5", order.getAccuallyreceive());// 实收金额
 			xmlMap.put("customercommand", order.getRemark());// 备注
 			xmlMap.put("sendcarnum", order.getGoodsnum());// 发货件数与件数
@@ -315,7 +315,7 @@ public class GztlService {
 		return xml;
 	}
 
-	public static void main(String[] args) throws JAXBException {
+	/*public static void main(String[] args) throws JAXBException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><MSD><Orders><Order><typeid>1</typeid><orderid>14062502938911</orderid><sclientcode>14062502938911</sclientcode><shipperid>广州唯品会</shipperid><consignorname/><consignoraddress/><consignormobile/><consignorphone/><customername>沈晓庆</customername><customeraddress>沈晓庆</customeraddress><customermobile>138****6001</customermobile><customerphone>****</customerphone><deliverygoods/><returngoods/><deliverygoodsprice/><returngoodsprice/><weight>0.0</weight><shouldreceive>0.0</shouldreceive><accuallyreceive/><remark/><arrivedate>2014-06-25 18:34:49</arrivedate><pushtime>2014-06-25 18:34:49</pushtime><goodsnum>1</goodsnum><deliverarea/><extPayType>0</extPayType><orderBatchNo>BTH140625077453</orderBatchNo><otherservicefee/><orderDate>2014-06-26 10:05:39</orderDate></Order></Orders></MSD>";
 		GztlService gztlService = new GztlService();
 		GztlXmlElement person = (GztlXmlElement) gztlService.xmlToObj(xml, new GztlXmlElement());
@@ -337,7 +337,7 @@ public class GztlService {
 
 		}
 
-		/*
+		
 		 * try { GztlXmlElement gztlElement = (GztlXmlElement)
 		 * ObjectUnMarchal.XmltoPOJO(xml, GztlXmlElement.class); List<Order>
 		 * orders = gztlElement.getOrders(); for (Iterator iterator =
@@ -347,9 +347,9 @@ public class GztlService {
 		 * System.out.println(order.getCustomername());
 		 * System.out.println(order.getCustomerphone()); } } catch (Exception e)
 		 * { // TODO Auto-generated catch block e.printStackTrace(); }
-		 */
+		 
 
-	}
+	}*/
 
 	/**
 	 * jaxb将xml转化为对象
