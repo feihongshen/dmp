@@ -301,8 +301,8 @@ function callfunction(cwb){//getEmailDateByIds
 											data.body.cwbcustomername);
 									$("#multicwbnum").val(
 											data.body.cwbOrder.sendcarnum);
-									$("#msg").html(scancwb+ data.errorinfo+ "（共"+ data.body.cwbOrder.sendcarnum
-													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）");
+									$("#msg").html(scancwb+ data.errorinfo/* + "（共"+ data.body.cwbOrder.sendcarnum
+													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" */);
 									
 									//将成功扫描的订单放到已入库明细中
 									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#customerid").val());
