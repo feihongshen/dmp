@@ -129,7 +129,7 @@ function nowprint(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">手工输入生成订单号</a></li>
+				<li><a href="#" class="light">手工生成订单号</a></li>
 				<li><a href="./randomcodeprint">随机生成订单号</a></li>
 			</ul>
 		</div>

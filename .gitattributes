@@ -6020,6 +6020,7 @@ src/test/java/cn/explink/service/OperationRuleServiceTest.java -text
 src/test/java/cn/explink/service/YeePay_test.java -text
 src/test/java/cn/explink/service/书飞网.xls -text
 src/test/java/cn/explink/util/StringUtilTest.java -text
+target/db/changelog/dmp40_function.sql -text
 /品信菜单.sql -text
 /测试数据.sql -text
 /测试文档.doc -text
