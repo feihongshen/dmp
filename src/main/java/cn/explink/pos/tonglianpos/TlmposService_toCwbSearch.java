@@ -140,6 +140,13 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		Map<String, String> retMap = new HashMap<String, String>();
 		// 放入map
 
+		String consigneeaddress="";
+		if(tlmposRespNote.getCwbOrder() !=null){
+			consigneeaddress = tlmposRespNote.getCwbOrder().getConsigneename();
+			if(consigneeaddress.contains("|")){
+				consigneeaddress = consigneeaddress.replace("|", "");
+			}
+		}
 		String remark = this.getRemarkByPaytype(tlmposRespNote, tlmpos);
 
 		retMap.put("transaction_id", tlmposRespNote.getTransaction_id());
@@ -149,7 +156,7 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		retMap.put("requester", tlmpos.getRequester());
 		retMap.put("target", tlmpos.getTargeter());
 		retMap.put("consignee", tlmposRespNote.getCwbOrder() == null ? "" : tlmposRespNote.getCwbOrder().getConsigneename());
-		retMap.put("consignee_address", tlmposRespNote.getCwbOrder() == null ? "" : tlmposRespNote.getCwbOrder().getConsigneeaddress());
+		retMap.put("consignee_address", consigneeaddress);
 		retMap.put("consignee_contact", tlmposRespNote.getCwbOrder() == null ? "" : tlmposRespNote.getConsignee_contact());
 		retMap.put("remark", remark);
 
