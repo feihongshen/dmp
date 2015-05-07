@@ -176,10 +176,6 @@ function sub(){
 		return false;
 	}
 	
-	if($("#paytype").val()==0){
-		alert("请选择支付方式");
-		return false;
-	}
 	var result = 0;
 	$("input[name='deliverystate']").each(function(){
 		if($(this).attr("checked")=="checked"){
@@ -344,7 +340,7 @@ function resub(form){
 						<%}else{ %>
 							<em style="display:none">支付方式：
 								<select name="paytype" id="paytype" class="select1">
-									<option value="0">请选择支付方式</option>
+									
 								<%-- 	<option value="5" <%if(5==(request.getParameter("paytype")==null?5:Integer.parseInt(request.getParameter("paytype")))){ %>selected="selected" <%} %>>默认支付方式</option> --%>
 									<option value="<%=PaytypeEnum.Xianjin.getValue()%>" <%if(PaytypeEnum.Xianjin.getValue()==(request.getParameter("paytype")==null?5:Integer.parseInt(request.getParameter("paytype")))){ %>selected="selected" <%} %>><%=PaytypeEnum.Xianjin.getText()%></option>
 									<%if(pl_switch.equals("yes")){ %>
