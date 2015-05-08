@@ -700,6 +700,8 @@ src/main/java/cn/explink/controller/ExceptionMonitor.java -text
 src/main/java/cn/explink/controller/ExplinkResponse.java -text
 src/main/java/cn/explink/controller/ExportwarhousesummaryController.java -text
 src/main/java/cn/explink/controller/ExpressSysMonitorController.java -text
+src/main/java/cn/explink/controller/FindLocationController.java -text
+src/main/java/cn/explink/controller/GoodsStatusNumController.java -text
 src/main/java/cn/explink/controller/GotoClassAndDeliveryDTO.java -text
 src/main/java/cn/explink/controller/JmsCenterController.java -text
 src/main/java/cn/explink/controller/JoinListController.java -text
@@ -846,8 +848,10 @@ src/main/java/cn/explink/dao/ExpressSysMonitorDAO.java -text
 src/main/java/cn/explink/dao/FinanceAuditDAO.java -text
 src/main/java/cn/explink/dao/FinanceDeliverPayUpDetailDAO.java -text
 src/main/java/cn/explink/dao/FinancePayUpAuditDAO.java -text
+src/main/java/cn/explink/dao/FindLocationDao.java -text
 src/main/java/cn/explink/dao/FnCustomerBillDetailDAO.java -text
 src/main/java/cn/explink/dao/FnOrgBillDetailDAO.java -text
+src/main/java/cn/explink/dao/GoodsStatusNumDao.java -text
 src/main/java/cn/explink/dao/GotoClassAuditingDAO.java -text
 src/main/java/cn/explink/dao/GotoClassOldDAO.java -text
 src/main/java/cn/explink/dao/GroupDetailDao.java -text
@@ -981,6 +985,7 @@ src/main/java/cn/explink/domain/DeliveryCash.java -text
 src/main/java/cn/explink/domain/DeliveryPercent.java -text
 src/main/java/cn/explink/domain/DeliveryResultChange.java -text
 src/main/java/cn/explink/domain/DeliveryState.java -text
+src/main/java/cn/explink/domain/DeliveryStations.java -text
 src/main/java/cn/explink/domain/Department.java -text
 src/main/java/cn/explink/domain/EdtiCwb_DeliveryStateDetail.java -text
 src/main/java/cn/explink/domain/EmailDate.java -text

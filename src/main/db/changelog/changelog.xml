@@ -6034,6 +6034,20 @@ CREATE TABLE
 			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8; 	
 		</sql>
 	</changeSet>
+	
+	<changeSet id="wangzhiyong-2015-05-08-1" author="wangzhiyong">
+		<sql>
+	create table `delivery_stations` (
+	`ID` int (12) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	`NAME` varchar (60) COLLATE utf8_bin NOT NULL,
+	`COORDINATE` varchar (60000) COLLATE utf8_bin DEFAULT NULL,
+	`MAPCENTER_LNG` Decimal (52) DEFAULT NULL,
+	`MAPCENTER_LAT` Decimal (52) DEFAULT NULL,
+	`ADDRESS` VARCHAR(1000) DEFAULT NULL,
+	`typeid` int (10) DEFAULT 0
+	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
 
 
 
