@@ -641,10 +641,10 @@
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
 				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pj?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>root</expressurl.user>
-				<expressurl.password>root</expressurl.password>
+				<expressurl.user>dmp</expressurl.user>
+				<expressurl.password>dmpwei5006</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
 				<wavPath>D:\file\wav\</wavPath>
 				<filePath>D:\file\moule\</filePath>
