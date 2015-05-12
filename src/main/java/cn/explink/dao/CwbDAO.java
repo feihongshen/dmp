@@ -5407,4 +5407,14 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, remark5, cwb);
 	}
+	
+	/**
+	 * 根据小件员id查询其所配送的cwb信息
+	 */
+	
+	public List<CwbOrder> findcwbinfoBydeliveryId(int deliverid){
+		String sql="select * from express_ops_cwb_detail where deliverid=?";
+		
+		return this.jdbcTemplate.query(sql, new CwbMapper(),deliverid);
+	}
 }

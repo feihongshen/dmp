@@ -6038,16 +6038,20 @@ CREATE TABLE
 	<changeSet id="wangzhiyong-2015-05-08-1" author="wangzhiyong">
 		<sql>
 	create table `delivery_stations` (
-	`ID` int (12) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	`d_ID` int (12) PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	`NAME` varchar (60) COLLATE utf8_bin NOT NULL,
 	`COORDINATE` varchar (20000) COLLATE utf8_bin DEFAULT NULL,
 	`MAPCENTER_LNG` Decimal (52) DEFAULT NULL,
 	`MAPCENTER_LAT` Decimal (52) DEFAULT NULL,
 	`ADDRESS` VARCHAR(1000) DEFAULT NULL,
-	`typeid` int (10) DEFAULT 0
+	`typeid` int (10) DEFAULT 0,
+	`branch_id` int (10) DEFAULT 0
+	FOREIGN KEY (branch_id) REFERENCES express_set_branch(branchid)
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	
+	
 
 
 

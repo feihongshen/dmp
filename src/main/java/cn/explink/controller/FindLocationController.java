@@ -32,6 +32,7 @@ public class FindLocationController {
 	public @ResponseBody String findaddress(HttpServletRequest request){
 			
 		List<DeliveryStations> list =findLocationDao.findALLDeliveryStations();
+		//branch_id
 		
 		String responseJson = null;
 		String callback = request.getParameter("callback");

@@ -17,10 +17,7 @@ public class GoodsStatusNumDao {
 		if(flowordertype==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
 			append=" and nextbranchid=?";
 		}
-		if(flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
-			append=" and branchid=?";
-		}
-		if(flowordertype==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+		if(flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()||flowordertype==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
 			append=" and branchid=?";
 		}
 		

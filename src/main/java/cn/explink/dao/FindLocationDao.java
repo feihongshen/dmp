@@ -24,13 +24,14 @@ public class FindLocationDao {
 		public DeliveryStations mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
 			DeliveryStations ds = new DeliveryStations();
-			ds.setId(rs.getInt("ID"));
+			ds.setD_id(rs.getInt("d_ID"));
 			ds.setName(rs.getString("NAME"));
 			ds.setCoordinate(rs.getString("COORDINATE"));
 			ds.setMapcenter_lat(rs.getBigDecimal("MAPCENTER_LAT"));
 			ds.setMapcenter_lng(rs.getBigDecimal("MAPCENTER_LNG"));
 			ds.setAddress(rs.getString("ADDRESS"));
 			ds.setTypeid(rs.getInt("typeid"));
+			ds.setBrach_id(rs.getInt("branch_id"));
 			return ds;
 		}
 	
