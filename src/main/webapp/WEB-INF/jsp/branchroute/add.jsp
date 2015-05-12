@@ -39,7 +39,7 @@ $(function(){
 	return true;
 } 
 
-function afterSumit(form){
+ function afterSumit(form){
 	
 	$.ajax({
 		type: "POST",
@@ -48,12 +48,12 @@ function afterSumit(form){
 		dataType:"json",
 		success : function(data) {                                                                                                                                                                                                                                      
 			if (data.errorCode == 0) {
- 			 alert(data.error);
- 				location.href='<%=request.getContextPath()%>/branchRouteControl/list/1?';
+				alert(data.error); 
+ 				location.href='<%=request.getContextPath()%>/branchRouteControl/list/1?';				
 			}
 		}
 	});
-} 
+}  
 </script>
 
 </head>
@@ -94,6 +94,7 @@ function afterSumit(form){
 		<div align="center">
         <input type="submit" value="确认" class="button" id="sub" /></div>
 	</form>
+	<div id="div1"></div>
 	</div>
 </body>
 
