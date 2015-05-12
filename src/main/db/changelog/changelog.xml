@@ -6046,7 +6046,6 @@ CREATE TABLE
 	`ADDRESS` VARCHAR(1000) DEFAULT NULL,
 	`typeid` int (10) DEFAULT 0,
 	`branch_id` int (10) DEFAULT 0
-	FOREIGN KEY (branch_id) REFERENCES express_set_branch(branchid)
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
