@@ -86,7 +86,9 @@ public class VipShopGetCwbDataService {
 		vipshop.setForward_hours(Integer.parseInt(request.getParameter("forward_hours")));
 		vipshop.setIsTuoYunDanFlag(Integer.parseInt(request.getParameter("isTuoYunDanFlag")));
 		vipshop.setIsShangmentuiFlag(Integer.parseInt(request.getParameter("isShangmentuiFlag").equals("") ? "0" : request.getParameter("isShangmentuiFlag")));
-
+		String resuseReasonFlag=request.getParameter("resuseReasonFlag").equals("")?"0":request.getParameter("resuseReasonFlag");
+		vipshop.setResuseReasonFlag(Integer.parseInt(resuseReasonFlag));
+		
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);

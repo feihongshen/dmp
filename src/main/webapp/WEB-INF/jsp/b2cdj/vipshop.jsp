@@ -65,7 +65,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"   <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   <%if(vipshop.getIsShangmentuiFlag()==2){%>checked<%}%>  >全部
 						</li>
-					
+						<li><span>拒收原因回传：</span>
+							<input type ="radio" id="resuseReasonFlag1" name ="resuseReasonFlag" value="0" <%if(vipshop.getResuseReasonFlag()==0){%>checked<%}%>  >回传
+							<input type ="radio" id="resuseReasonFlag2" name ="resuseReasonFlag" value="1" <%if(vipshop.getResuseReasonFlag()==1){%>checked<%}%>  >不回传
+						</li>
 						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
@@ -118,7 +121,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"    >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   >全部
 						</li>
-						
+						<li><span>拒收原因回传：</span>
+							<input type ="radio" id="resuseReasonFlag1" name ="resuseReasonFlag" value="0" checked>回传
+							<input type ="radio" id="resuseReasonFlag2" name ="resuseReasonFlag" value="1" >不回传
+						</li>
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
