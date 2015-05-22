@@ -29,8 +29,15 @@ public class OrderFlowDto {
 	private String consignee;//
 	private String deliveryname;
 	private String strandedrReason;
-	
-	
+	private String deliverymobile; // 派送员电话
+
+	public String getDeliverymobile() {
+		return deliverymobile;
+	}
+
+	public void setDeliverymobile(String deliverymobile) {
+		this.deliverymobile = deliverymobile;
+	}
 
 	public String getDeliveryname() {
 		return deliveryname;

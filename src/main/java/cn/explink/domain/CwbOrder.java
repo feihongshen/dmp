@@ -122,11 +122,15 @@ public class CwbOrder {
 	private int goodsType = 0;// 货物类型(重庆华宇,大件,贵品，大件+贵品,普件)
 
 	private int outareaflag = 0;// 超区标识.
-
-	
+	private String consigneenameOfkf;
+	private String consigneemobileOfkf;
+	private String consigneephoneOfkf;
+	private long zhongzhuanreasonid;//中转id
+	private String zhongzhuanreason;//中转原因
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
 	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
-	
+	private int firstlevelid; //一级滞留原因id
+
 	private String changereason; //中转原因
 	private long firstchangereasonid; //一级中转原因
 	public long getFirstchangereasonid() {
@@ -157,6 +161,51 @@ public class CwbOrder {
 
 	public void setChangereasonid(long changereasonid) {
 		this.changereasonid = changereasonid;
+	}
+
+	public int getFirstlevelid() {
+		return firstlevelid;
+	}
+
+
+	public void setFirstlevelid(int firstlevelid) {
+		this.firstlevelid = firstlevelid;
+	}
+
+
+	public int getFnorgoffsetflag() {
+		return fnorgoffsetflag;
+	}
+
+
+	public void setFnorgoffsetflag(int fnorgoffsetflag) {
+		this.fnorgoffsetflag = fnorgoffsetflag;
+	}
+
+
+	public BigDecimal getFnorgoffset() {
+		return fnorgoffset;
+	}
+
+
+	public void setFnorgoffset(BigDecimal fnorgoffset) {
+		this.fnorgoffset = fnorgoffset;
+	}
+
+	public long getZhongzhuanreasonid() {
+		return zhongzhuanreasonid;
+	}
+
+	public void setZhongzhuanreasonid(long zhongzhuanreasonid) {
+		this.zhongzhuanreasonid = zhongzhuanreasonid;
+	}
+
+	public String getZhongzhuanreason() {
+		return zhongzhuanreason;
+	}
+
+	public void setZhongzhuanreason(String zhongzhuanreason) {
+		this.zhongzhuanreason = zhongzhuanreason;
 	}
 
 	public CwbOrder() {
@@ -360,6 +409,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
+		
 		return this.consigneemobile;
 	}
 
@@ -1025,25 +1075,29 @@ public class CwbOrder {
 		this.outareaflag = outareaflag;
 	}
 	
-	
-	public int getFnorgoffsetflag() {
-		return fnorgoffsetflag;
+
+	public String getConsigneenameOfkf() {
+		return this.consigneenameOfkf;
 	}
 
-
-	public void setFnorgoffsetflag(int fnorgoffsetflag) {
-		this.fnorgoffsetflag = fnorgoffsetflag;
+	public void setConsigneenameOfkf(String consigneenameOfkf) {
+		this.consigneenameOfkf = consigneenameOfkf;
 	}
 
-
-	public BigDecimal getFnorgoffset() {
-		return fnorgoffset;
+	public String getConsigneemobileOfkf() {
+		return this.consigneemobileOfkf;
 	}
 
-
-	public void setFnorgoffset(BigDecimal fnorgoffset) {
-		this.fnorgoffset = fnorgoffset;
+	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
+		this.consigneemobileOfkf = consigneemobileOfkf;
 	}
 
+	public String getConsigneephoneOfkf() {
+		return this.consigneephoneOfkf;
+	}
+
+	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
+		this.consigneephoneOfkf = consigneephoneOfkf;
+	}
 
 }

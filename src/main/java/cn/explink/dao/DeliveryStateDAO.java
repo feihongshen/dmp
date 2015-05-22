@@ -226,6 +226,7 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.query(stringBuilder.toString(), new DeliveryStateRowMapper());
 	}
 
+	
 	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
 	 * 
@@ -398,10 +399,16 @@ public class DeliveryStateDAO {
 		this.jdbcTemplate.update(sql, sign_man, sign_time);
 	}
 
-	public void saveDeliveyStateIsautolinghuoByCwb(long isautolinghuo, String cwb) {
+	public void saveDeliveyStateIsautolinghuoByCwb(long isautolinghuo, String cwb ) {
 		String sql = "update express_ops_delivery_state set isautolinghuo=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, isautolinghuo, cwb);
 	}
+	
+	public void saveDeliveyStateIsautolinghuoByCwb2(long isautolinghuo, String cwb ,int firstlevelreasonid) {
+		String sql = "update express_ops_delivery_state set isautolinghuo=?,firstlevelid=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, isautolinghuo, firstlevelreasonid, cwb);
+	}
+
 
 	public void saveDeliveyStateByCwb(String cwb, long deliverystate, String createtime) {
 		String sql = "update express_ops_delivery_state set deliverystate=?,createtime=? where cwb=? and state=1";
@@ -1108,9 +1115,9 @@ public class DeliveryStateDAO {
 	}
 
 	public List<String> getDeliveryStateByCredateAndFlowordertype(String begindate, String enddate, long isauditTime, long isaudit, String[] operationOrderResultTypes, String[] dispatchbranchids,
-			long deliverid, int isTuotou, String customeridStr) {
-		String sql = "select cwb from express_ops_delivery_state where ";
+			long deliverid, int isTuotou, String customeridStr, int firstlevelid) {
 
+		String sql = "select cwb from express_ops_delivery_state where ";
 		if (isauditTime == 0) {
 			sql = sql.replace("express_ops_delivery_state", "express_ops_delivery_state FORCE INDEX(ds_deliverytime_idx)");
 			sql += " deliverytime >= '" + begindate + "' ";
@@ -1121,7 +1128,7 @@ public class DeliveryStateDAO {
 			sql += " and auditingtime <= '" + enddate + "' ";
 		}
 
-		if ((dispatchbranchids.length > 0) || (operationOrderResultTypes.length > 0) || (deliverid > 0) || (isaudit >= 0)) {
+		if ((dispatchbranchids.length > 0) || (operationOrderResultTypes.length > 0) || (deliverid > 0) || (isaudit >= 0) ) {
 			StringBuffer deliverystatesql = new StringBuffer();
 			if (isTuotou > 0) {
 				deliverystatesql.append(" and state=1 ");
@@ -1155,7 +1162,10 @@ public class DeliveryStateDAO {
 			} else if (isaudit == 1) {
 				deliverystatesql.append(" and gcaid>0");
 			}
-
+			
+			if (firstlevelid>0){
+				deliverystatesql.append(" and firstlevelid= "+ firstlevelid );
+			}
 			sql += deliverystatesql.toString();
 		}
 		return this.jdbcTemplate.queryForList(sql, String.class);

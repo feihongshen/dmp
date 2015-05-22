@@ -35,8 +35,7 @@ Reason reason = (Reason)request.getAttribute("reason");
 			   			<%} %>
 		           
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="<%=reason.getReasoncontent() %><%-- ${reason.reasoncontent} --%>" maxlength="30" class="input_text1"></li>
-				
-				
+		
 				</ul>
 		</div>
 		<div align="center"><input type="submit" value="保存" class="button"/></div>

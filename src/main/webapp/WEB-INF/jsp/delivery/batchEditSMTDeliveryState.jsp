@@ -10,6 +10,16 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
+List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
+List<Reason> firstlist = (List<Reason>)request.getAttribute("firstlist");
+long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
+String batchEditDeliveryStateisUseCash = request.getAttribute("batchEditDeliveryStateisUseCash")==null?"no":(String)request.getAttribute("batchEditDeliveryStateisUseCash");
+String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("resendtime"));
+//上面为添加的
+
+
+
 List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
 /* List<Branch> branchList = (List<Branch>)request.getAttribute("branchList"); */
@@ -18,6 +28,7 @@ List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
 long deliverystateid = request.getAttribute("deliverystateid")==null?0:(Long)request.getAttribute("deliverystateid");
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
+long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
 long successcount = request.getAttribute("successcount")==null?0:Long.parseLong(request.getAttribute("successcount").toString());
 String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":request.getAttribute("deliverstateremark").toString();
 String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":request.getAttribute("isReasonRequired").toString();
@@ -46,18 +57,77 @@ Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request
 function dgetViewBox(key,durl){
 	window.parent.getViewBoxd(key,durl);
 }
-function changeTag(tip)
-{
-	$("#backreasonid").attr('value', '');
-	$("#deliverstateremark").attr('value', '');
-	if (tip == 1) {
-			$("#smjt").attr('style', 'display:none');
-		}
-	else{
-		$("#smjt").attr('style', 'display:');
+function changeTag(id)
+ {
+	if(id==<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>){
+		$("#backreasonid").parent().hide();
+		$("#backreasonid").val(0);
+		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
+		$("#resendtime").parent().hide();
+		$("#zhiliuremark").parent().hide();
+		$("#losereasonid").parent().hide();
+
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		$("#losereasonid").val(0);
+	
+    }else
+	 if(id==<%=DeliveryStateEnum.ShangMenJuTui.getValue()%>){
+		$("#backreasonid").parent().show();
+		$("#backreasonid").val(0);
+		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
+		$("#resendtime").parent().hide();
+		$("#zhiliuremark").parent().hide();
+		$("#losereasonid").parent().hide();
+
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		$("#losereasonid").val(0);
+		
+		
+	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
+		$("#leavedreasonid").parent().show();
+		$("#firstlevelreasonid").parent().show();
+		$("#resendtime").parent().show();
+		$("#zhiliuremark").parent().show();
+		$("#losereasonid").parent().hide();
+		$("#losereasonid").val(0);
+		$("#backreasonid").parent().hide();
+		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		
+		
+	}else if(id==<%=DeliveryStateEnum.HuoWuDiuShi.getValue()%>){
+		$("#losereasonid").parent().show();
+		$("#losereasonid").val(0);
+		$("#leavedreasonid").parent().hide();
+		$("#resendtime").parent().hide();
+		$("#zhiliuremark").parent().hide();
+		$("#backreasonid").parent().hide();
+		$("#backreasonid").val(0);
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#firstlevelreasonid").parent().hide();
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
 	}
 	}
 	$(function() {
+		$("#resendtime").datetimepicker({
+		    changeMonth: true,
+		    changeYear: true,
+		    hourGrid: 4,
+			minuteGrid: 10,
+		    timeFormat: 'hh:mm:ss',
+		    dateFormat: 'yy-mm-dd'
+		});
 		$("#right_hideboxbtn").click(function() {
 			var right_hidebox = $("#right_hidebox").css("right")
 			if (right_hidebox == -400 + 'px') {
@@ -84,13 +154,6 @@ function checkResult(){
 
 function sub(){
 	var isReasonRequired="<%=isReasonRequired%>";
-	var deliverystate=$("#deliverystate7").attr("checked");
-	if(isReasonRequired=='yes'&&deliverystate=='checked')
-	{	
-		if($("#backreasonid").val()=="0"||$("#backreasonid").val()==null){
-		alert("请选择拒退原因");
-		return false;
-	}}
 	if($("#cwbs").val()==""){
 		alert("请扫描订单号");
 		return false;
@@ -106,13 +169,45 @@ function sub(){
 		}
 	});
 	if(result==0){
-		alert("请选择配送结果");
+		alert("请选择上门退配送结果");
 		return;
 	}
 	$("input[name='deliverystate']").each(function(){
 		if($(this).attr("checked")=="checked"){
-			$("#subForm").submit();
-			return;
+			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
+				
+				if($("#leavedreasonid").val()==0){
+					alert("请选择滞留原因");
+					return false;
+				}
+				var myDate = new Date();
+				var myDatetime = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
+				var myDatetimeArr = myDatetime.split('-');
+				var myDateTimes = new Date(myDatetimeArr[0],myDatetimeArr[1],myDatetimeArr[2]).getTime();
+				
+				if($("#resendtime").val()!=''){
+					var selecttimeArr = $("#resendtime").val().split('-');
+					var selecttimedates = new Date(selecttimeArr[0],selecttimeArr[1],selecttimeArr[2].substring(0,2)).getTime();
+					if($("#resendtime").val()!=""&&selecttimedates<myDateTimes){
+						alert("再次配送时间不能早于当前时间");
+						return false;
+					}
+				}
+				
+				$("#subForm").submit();
+				return;
+				
+			}else if($(this).val()==<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>&&($("#backreasonid").val()==0||$("#backreasonid").val()==null)){
+				alert("请选择拒退原因");
+				return false;
+			}else if($(this).val()==<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>&&$("#losereasonid").val()==0){
+				alert("请选择货物丢失原因");
+				return false;
+			}else{
+				$("#subForm").submit();
+				return;
+			}
+			
 		}
 	});
 }
@@ -136,15 +231,7 @@ function resub(form){
 	$("#sub").submit();
 	
 }
-function load(deliverystateid)
-{
-	if(deliverystateid==2)
-		{changeTag(1);}
-	else if(deliverystateid==7)
-		{
-		$("#smjt").attr('style', 'display:');
-		}
-	}
+
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0" onload="load(<%=deliverystateid %>)">
@@ -171,15 +258,15 @@ function load(deliverystateid)
 				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 12px;height:150px">
 					<tr>
 						<td valign="middle" >&nbsp;&nbsp; 
-							<input type="radio" name="deliverystate" id="deliverystate2" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(deliverystateid==2){ %> checked="checked"<%} %> onclick="changeTag(1)"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
-						
-						&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
-							<input type="radio" name="deliverystate" id="deliverystate7" value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" <%if(deliverystateid==7){ %> checked="checked"<%} %> onclick="changeTag(2)" /> <%=DeliveryStateEnum.ShangMenJuTui.getText() %>
-						<br></br>	
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>);"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>);"/> <%=DeliveryStateEnum.ShangMenJuTui.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>);"/> <%=DeliveryStateEnum.FenZhanZhiLiu.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>);"/> <%=DeliveryStateEnum.HuoWuDiuShi.getText() %>
 						</td>
 					</tr>
 					<tr>
-					<td>		<div id="smjt" style="display: none">
+					<td>&nbsp;&nbsp; 	
+						<em style="display:none">	
 							拒退原因：
 							 <select name="backreasonid" id="backreasonid" class="select1">
 					        	<option value ="0" selected="selected">请选择</option>
@@ -190,7 +277,44 @@ function load(deliverystateid)
 						
 						拒退备注输入内容：
 							<input type="text" class="input_text1" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverstateremark%>" maxlength="50" />
-						</div>
+							</em>
+							
+							<em style="display:none">
+							
+							一级原因：
+							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
+					        	<option value ="-1">==请选择==</option>
+					        	<%if(firstlist!=null&&firstlist.size()>0)
+					        		for(Reason r : firstlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+							</em>
+							
+							<em style="display:none">
+							滞留原因：
+							 <select name="leavedreasonid" id="leavedreasonid">
+					        	<option value ="0">请选择</option>
+					        	<%for(Reason r : leavedlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+						</em>
+						<em style="display:none">
+							再次配送时间：<input type ="text" name ="resendtime" id="resendtime" readonly="readonly"  value="<%=resendtime %>"/>
+						</em>
+						<em style="display:none">
+							滞留备注：<input type ="text" name ="zhiliuremark" id="zhiliuremark"  value=""/>
+						</em>
+						<em style="display:none">
+							货物丢失原因：
+			       			 <select name="losereasonid" id="losereasonid">
+			        			<option value ="0">请选择</option>
+			        				<%for(Reason r : losereasonlist){ %>
+	           						<option value="<%=r.getReasonid()%>"  title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
+	           				<%} %>
+			      			  </select>
+						</em>
 						</td>
 					</tr>
 					<tr>
@@ -266,6 +390,9 @@ function load(deliverystateid)
 					<input type="hidden" name="deliverystate" value="<%=deliverystateid%>" />
 					<input type="hidden" name="backreasonid" value="<%=backreasonid%>" />
 					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
+					<input type="hidden" name="leavedreasonid" value="<%=leavedreasonid%>" />
+					<input type="hidden" name="losereasonid" value="<%=losereasonid%>" />
+					<input type="hidden" name="resendtime" value="<%=request.getParameter("resendtime") %>" />
 					<%if(objList!=null&&objList.size()>0) {%>
 					<input type="button" name="button2" id="button2" value="提交" class="button" onclick="resub();"/><%} %></td>
 				</tr>

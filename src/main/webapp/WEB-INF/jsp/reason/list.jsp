@@ -76,7 +76,7 @@ function delSuccess(data){
 			[<a href="javascript:edit_button(<%=r.getReasonid() %>);">修改</a>]
 			</td>
 		</tr>
-		<%} %>
+	<%} %>
 	</table>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
@@ -89,13 +89,13 @@ function delSuccess(data){
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
-			　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
-					id="selectPg"
+			共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第
+			<select id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
 					<option value="<%=i %>"><%=i %></option>
 					<% } %>
-				</select>页
+			</select>页
 		</td>
 	</tr>
 	</table>

@@ -179,6 +179,17 @@ public class CommonCoreService {
 			}
 
 		} else {
+			try {
+				// 通用模板模板 ，需反馈真实派件人电话和名称推送至唯品会 ,暂时用作如风达
+				if ((orderFlowDto.getDeliveryname() != null) && !orderFlowDto.getDeliveryname().isEmpty() && (orderFlowDto.getDeliverymobile() != null) && !orderFlowDto.getDeliverymobile().isEmpty()) {
+					String remark5 = "信息：" + orderFlowDto.getDeliveryname() + "_" + orderFlowDto.getDeliverymobile();
+					this.cwbDAO.updateCwbRemark5(cwb, remark5);
+
+				}
+			
+			} catch (Exception e) {
+				this.logger.error("处理备注5异常cwb=" + cwb, e);
+			}
 			cwborderService.receiveGoods(user, user, cwb, cwb);
 			// 非一票多件模式更新此内容，目前主要是讯祥和顺丰需求
 			String comment = orderFlowDto.getFloworderdetail();

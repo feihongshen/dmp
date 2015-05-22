@@ -4,7 +4,7 @@ public class AbnormalView {
 	private long id;
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -19,9 +19,11 @@ public class AbnormalView {
 	private String creuserName;
 	private String abnormalType;
 	private String describe;
+	private long ishandle;
+	private String credatetime;
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -29,7 +31,7 @@ public class AbnormalView {
 	}
 
 	public String getCustomerName() {
-		return customerName;
+		return this.customerName;
 	}
 
 	public void setCustomerName(String customerName) {
@@ -37,7 +39,7 @@ public class AbnormalView {
 	}
 
 	public String getEmaildate() {
-		return emaildate;
+		return this.emaildate;
 	}
 
 	public void setEmaildate(String emaildate) {
@@ -45,7 +47,7 @@ public class AbnormalView {
 	}
 
 	public String getFlowordertype() {
-		return flowordertype;
+		return this.flowordertype;
 	}
 
 	public void setFlowordertype(String flowordertype) {
@@ -53,7 +55,7 @@ public class AbnormalView {
 	}
 
 	public String getBranchName() {
-		return branchName;
+		return this.branchName;
 	}
 
 	public void setBranchName(String branchName) {
@@ -61,7 +63,7 @@ public class AbnormalView {
 	}
 
 	public String getCreuserName() {
-		return creuserName;
+		return this.creuserName;
 	}
 
 	public void setCreuserName(String creuserName) {
@@ -69,7 +71,7 @@ public class AbnormalView {
 	}
 
 	public String getAbnormalType() {
-		return abnormalType;
+		return this.abnormalType;
 	}
 
 	public void setAbnormalType(String abnormalType) {
@@ -77,11 +79,27 @@ public class AbnormalView {
 	}
 
 	public String getDescribe() {
-		return describe;
+		return this.describe;
 	}
 
 	public void setDescribe(String describe) {
 		this.describe = describe;
+	}
+
+	public long getIshandle() {
+		return this.ishandle;
+	}
+
+	public void setIshandle(long ishandle) {
+		this.ishandle = ishandle;
+	}
+
+	public String getCredatetime() {
+		return this.credatetime;
+	}
+
+	public void setCredatetime(String credatetime) {
+		this.credatetime = credatetime;
 	}
 
 }

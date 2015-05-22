@@ -83,9 +83,9 @@
 
 .brand small {
 	font-weight: normal;
+
 }
 </style>
-
 
 </head>
 <body class="easyui-layout" style="overflow-y: hidden" scroll="no">

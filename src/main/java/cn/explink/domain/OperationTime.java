@@ -8,6 +8,7 @@ public class OperationTime {
 	protected int flowordertype;
 	protected long nextbranchid;
 	protected String isupdate;
+	protected int cwbordertypeid;
 
 	public OperationTime() {
 	}
@@ -96,4 +97,13 @@ public class OperationTime {
 		this.nextbranchid = nextbranchid;
 	}
 
+	public int getCwbordertypeid() {
+		return cwbordertypeid;
+	}
+
+	public void setCwbordertypeid(int cwbordertypeid) {
+		this.cwbordertypeid = cwbordertypeid;
+	}
+
+	
 }

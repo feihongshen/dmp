@@ -69,14 +69,19 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	           		<EMBED id='music1' NAME='music1' SRC='<%=request.getContextPath()+ServiceUtil.wavPath+u.getUserwavfile() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
 	           		</li>
 	           		
-	           		<li><span>导出时联系方式：</span>
+	           		<!-- <li><span>导出时联系方式：</span>
 	           			<select id="showphoneflag" name="showphoneflag">
 							<option value="-1" selected>----请选择----</option>
 							<option value="0">不可见</option>
 							<option value="1">可见</option>
 						</select>*
+					</li> -->
+					<li><span>导出时是否可见：</span>
+					 <input  type="checkbox" value="1" id="consigneename" name="consigneename" <%if(u.getShownameflag()==1){ %> checked="checked"<%} %>>收件人</input>
+					 <input type="checkbox"  value="1" id="consigneephone" name="consigneephone" <%if(u.getShowphoneflag()==1){ %> checked="checked"<%} %>>收件人电话</input>
+					 <input type="checkbox"  value="1" id="consigneemobile" name="consigneemobile" <%if(u.getShowmobileflag()==1){ %> checked="checked"<%} %>>收件人手机</input>
 					</li>
-					 <li><span>　</span>选择不可见 订单电话/手机在页面显示/导出excel全部隐藏</li>
+					 <li><span>　</span>不勾选 ，则订单的收件人/电话/手机在页面显示/导出Excel时全部隐藏</li>
 			        <li><span>工作状态：</span>
 						<select id="employeestatus" name="employeestatus">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>

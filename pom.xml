@@ -640,7 +640,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_pj?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -659,7 +659,6 @@
 				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
 			</properties>
 		</profile>
-
 		<profile>
 			<id>test</id>
 			<properties>
@@ -687,7 +686,7 @@
 		<profile>
 			<id>version</id>
 			<properties>
-				<tomcat.manager.url>http://192.168.0.217:8011/manager</tomcat.manager.url>
+				<tomcat.manager.url>http://192.168.0.217:8087/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
 				<expressurl.url>jdbc:mysql://localhost:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
@@ -701,11 +700,35 @@
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>version-smt</label>
+				<label>version-50101</label>
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
 				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
+			<id>version-address</id>
+			<properties>
+				<tomcat.manager.url>http://192.168.0.217:8012/manager</tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_address_50101?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>version-address-50101</label>
+				<addresscustomerid>5</addresscustomerid>
+				<addressid>5</addressid>
+				<addresspassword>cqhy</addresspassword>
+				<addressWebserviceIp>192.168.0.222:9548/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -1011,8 +1034,7 @@
 			</properties>
 		</profile>
 
-
-<profile>
+			<profile>
 			<id>YZDSB_SMT</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
@@ -2851,8 +2873,7 @@
 
 			</properties>
 		</profile>
-		
-		
+
 		<profile>
 			<id>JXFY</id>
 			<properties>
@@ -3179,7 +3200,55 @@
 				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
 			</properties>
 		</profile>
-
+		<profile>
+			<id>GZTL</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.70.48:3306/gztl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://192.168.70.47:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>GZTL</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>GZTL_TEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/gztltest_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>GZTL_TEST</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+			</properties>
+		</profile>
 	</profiles>
 
 </project>

@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,7 @@ public class OperationTimeDAO {
 			operationTime.setFlowordertype(rs.getInt("flowordertype"));
 			operationTime.setNextbranchid(rs.getLong("nextbranchid"));
 			operationTime.setIsupdate(rs.getString("isupdate"));
+			operationTime.setCwbordertypeid(rs.getInt("cwbordertypeid"));
 			return operationTime;
 		}
 	}
@@ -52,13 +55,14 @@ public class OperationTimeDAO {
 	 * @param of
 	 * @return key
 	 */
-	public void creOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customerid, String inwarehouseTime, String emaildate) {
+	public void creOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customerid, String inwarehouseTime, String emaildate,int cwbordertypeid,BigDecimal receivablefee, BigDecimal paybackfee) {
 		this.jdbcTemplate.update(
-				"insert into express_ops_operation_time(cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate) values(?,?,?,?,?,?,?,?,?)", cwb, branchid,
-				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate);
+				"insert into express_ops_operation_time(cwb,branchid,credate,flowordertype,deliverystate,nextbranchid,customerid,outwarehouseTime,emaildate,cwbordertypeid,receivablefee,paybackfee) values(?,?,?,?,?,?,?,?,?,?,?,?)", cwb, branchid,
+				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate,cwbordertypeid,receivablefee,paybackfee);
 	}
 
-	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, long customeid, String inwarehouseTime, String emaildate) {
+	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, 
+			long customeid, String inwarehouseTime, String emaildate,int cwbordertypeid,BigDecimal receivablefee, BigDecimal paybackfee) {
 		String sql = "select count(1) from express_ops_operation_time where cwb=?";
 		long count = this.jdbcTemplate.queryForLong(sql, cwb);
 
@@ -69,7 +73,7 @@ public class OperationTimeDAO {
 				this.updateOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid);
 			}
 		} else {
-			this.creOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid, customeid, inwarehouseTime, emaildate);
+			this.creOperationTime(cwb, branchid, flowordertype, deliverystate, nextbranchid, customeid, inwarehouseTime, emaildate,cwbordertypeid,receivablefee,paybackfee);
 		}
 	}
 
@@ -332,10 +336,10 @@ public class OperationTimeDAO {
 	 * @return
 	 */
 	// 修改
-	public List<OperationTime> getUserExceptionAll() {
+	/*public List<OperationTime> getUserExceptionAll() {
 		String sql = "SELECT cwb,flowordertype,credate,isupdate FROM express_ops_operation_time  where isupdate=''";
 		return this.jdbcTemplate.query(sql, new OperationTimeRowMapper());
-	}
+	}*/
 
 	public void updateUserException(String time, String cwbs) {
 		String sql = "update express_ops_operation_time set isupdate=? where cwb in(" + cwbs + ")";
@@ -548,4 +552,54 @@ public class OperationTimeDAO {
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and nextbranchid=" + nextbranchid + " and flowordertype =" + flowordertype;
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
+	
+	
+	/**
+	 * 退货、中转已入库订单列表,读取超期异常监控表
+	 * @param branchids 退货或者中转站点ids
+	 * @param flowordertype 操作环节
+	 * @param cwbordertypeid 订单类型
+	 * @param page 第几页
+	 * @return 订单号list
+	 */
+	public List<String> getBackandChangeYiRukuListbyBranchid(String branchids,long flowordertype, int cwbordertypeid, long page) {
+		String sql = "SELECT cwb FROM express_ops_operation_time WHERE branchid in("+branchids+") and flowordertype="+flowordertype+"  limit ?,?";
+		if(cwbordertypeid >0){
+			sql = "SELECT cwb FROM express_ops_operation_time WHERE branchid in("+branchids+") and flowordertype="+flowordertype+" and cwbordertypeid="+cwbordertypeid+" limit ?,?";
+		}
+		return this.jdbcTemplate.queryForList(sql, String.class, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+	/**
+	 * 退货、中转未入库订单列表,读取超期异常监控表
+	 * @param branchids 退货或者中转站点ids
+	 * @param flowordertype 操作环节
+	 * @param cwbordertypeid 订单类型
+	 * @param page 第几页
+	 * @return 订单号list
+	 */
+	public List<String> getBackandChangeWeiRukuListbyBranchid(String branchids,long flowordertype, int cwbordertypeid, long page) {
+		String sql = "SELECT cwb FROM express_ops_operation_time WHERE nextbranchid in("+branchids+") and flowordertype="+flowordertype+"  limit ?,?";
+		if(cwbordertypeid >0){
+			sql = "SELECT cwb FROM express_ops_operation_time WHERE nextbranchid in("+branchids+") and flowordertype="+flowordertype+" and cwbordertypeid="+cwbordertypeid+" limit ?,?";
+		}
+		return this.jdbcTemplate.queryForList(sql, String.class, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+	
+	
+	public OperationTime getObjectBycwb(String cwb) {
+		String sql = "SELECT * FROM express_ops_operation_time  where cwb=? ";
+		
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new OperationTimeRowMapper(), cwb);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	}
+
+	public void updateOperationTimeMoney(String cwb, BigDecimal receivablefee,BigDecimal paybackfee) {
+		String sql = "update express_ops_operation_time set receivablefee="+receivablefee+",paybackfee="+paybackfee+" where cwb=?";
+		this.jdbcTemplate.update(sql,  cwb);
+	}
+	
 }

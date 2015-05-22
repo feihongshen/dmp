@@ -290,11 +290,13 @@ function isshowdate(){
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >客户</td>
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
-				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff" >配送站点</td>
+				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
+				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
+				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
+				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
+				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >配送站点</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >发货件数</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >扫描件数</td>
 		</tr>
 		
 		<% for(CwbOrderView  c : orderlist){ %>
@@ -304,10 +306,14 @@ function isshowdate(){
 					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
 					<td  align="center" valign="middle"><%=c.getOrderType() %></td>
 					<td  align="center" valign="middle"><%=c.getDeliverybranch() %></td>
+					<td  align="center" valign="middle"><%=c.getSendcarnum() %></td>
+					<td  align="center" valign="middle"><%=c.getScannum() %></td>
 				 </tr>
 		 <% }%>
 		<tr bgcolor="#FF3300">
 			<td  align="center" valign="middle" class="high">合计：<font color="red"><%=count %></font>&nbsp;单  </td>
+			<td  align="center" valign="middle">&nbsp;</td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>

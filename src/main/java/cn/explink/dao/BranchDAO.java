@@ -657,6 +657,15 @@ public class BranchDAO {
 			return null;
 		}
 	}
+	public List<Branch> getBranchByBranchidsNoType(String branchids) {
+		if (branchids.length() > 0) {
+			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid in(" + branchids
+					+ ")  order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+			return branchList;
+		} else {
+			return null;
+		}
+	}
 
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
@@ -878,5 +887,37 @@ public class BranchDAO {
 			return this.nameMap;
 		}
 
+	}
+
+	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress, int sitetype, int pagesize) {
+		String sql = "select * from express_set_branch";
+		sql += " where 1=1 ";
+		if (branchname.length() > 0) {
+			sql += " and branchname like '%" + branchname + "%' ";
+		}
+		if (branchaddress.length() > 0) {
+			sql += " and branchaddress like '%" + branchaddress + "%' ";
+		}
+		if (sitetype > 0) {
+			sql += " and sitetype=" + sitetype;
+		}
+		sql += " order by branchid desc limit " + ((page - 1) * pagesize) + " ," + pagesize;
+		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		return branchlist;
+	}
+
+	public long getBranchCount(String branchname, String branchaddress, int sitetype, int pagesize) {
+		String sql = "select count(1) from express_set_branch";
+		sql += " where 1=1 ";
+		if (branchname.length() > 0) {
+			sql += " and branchname like '%" + branchname + "%' ";
+		}
+		if (branchaddress.length() > 0) {
+			sql += " and branchaddress like '%" + branchaddress + "%' ";
+		}
+		if (sitetype > 0) {
+			sql += " and sitetype=" + sitetype;
+		}
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 }

@@ -18,6 +18,7 @@ String  showMassage=(String)request.getAttribute("showMassage");
 boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 String isprintnew = request.getAttribute("isprintnew").toString();
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -214,6 +215,26 @@ var emaildate=0;
 		});
 		
 	}
+	
+	//得到入库缺货件数的list列表
+	function orderbygetrukucwbquejiandataList(type,customerid){
+		asc++;
+		$.ajax({
+			type : "POST",
+			url : "<%=request.getContextPath()%>/PDA/orderbygetrukucwbquejiandataList",
+			data : {"asc":asc,
+				"orderby":type,
+				"customerid" : customerid,
+				"emaildate":emaildate
+			},
+			dataType : "html",
+			success : function(data) {
+				$("#lesscwbTable").empty();
+				$("#lesscwbTable").html(data);
+			}
+		});
+		
+	}
 function callfunction(cwb){//getEmailDateByIds
 	$.ajax({
 		type: "POST",
@@ -230,7 +251,6 @@ function callfunction(cwb){//getEmailDateByIds
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
-		
 		
 		var flag=false;
 		
@@ -271,14 +291,15 @@ function callfunction(cwb){//getEmailDateByIds
 									+ "&driverid=" + driverid
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
-								"comment" : comment
+								"comment" : comment,
+								"youhuowudanflag":$("#youhuowudanflag").val()
 							},
 							dataType : "json",
 							success : function(data) {
-								$("#scancwb").val("");
+								
 								
 								if (data.statuscode == "000000") {
-									
+									$("#scancwb").val("");
 									$("#cwbgaojia").hide();
 
 									$("#excelbranch").show();
@@ -312,14 +333,15 @@ function callfunction(cwb){//getEmailDateByIds
 									/* if (data.body.cwbOrder.scannum == 1) {
 										$("#successcwbnum").html(parseInt($("#successcwbnum").html()) + 1);
 									} */
-									if($("#updateswitch").attr('checked')=='checked')
-									{
-									if (rk_switch == "rkbq_01") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+									if($("#updateswitch").attr('checked')=='checked'){
+										if (rk_switch == "rkbq_01") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_03") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_04") {						
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
+										}
 									}
-									else if (rk_switch == "rkbq_03") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
-									}}
 
 									<%--if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
 										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
@@ -370,10 +392,33 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#showcwb").html("");
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
-									$("#msg").html("（异常扫描）" + data.errorinfo);
+									if(data.statuscode=="3"){
+										$("#scancwb").val("");
+										alert("（异常扫描）"+data.errorinfo);
+									}else if(data.statuscode=="13"){
+										$("#scancwb").val("");
+										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
+									}else if(data.statuscode=="101"){
+										if(confirm("无数据，有货无单,确定要入库吗？")){
+											$("#youhuowudanflag").val("1");
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}
+										$("#scancwb").val("");
+									}else if(data.statuscode=="102"){
+										if(confirm("尚未匹配站点，确定要入库吗？")){
+											$("#youhuowudanflag").val("1");
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}
+										$("#scancwb").val("");
+									}else{
+										$("#msg").html("（异常扫描）" + data.errorinfo);
+										
+										//errorvedioplay(pname, data);
+									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
-									//errorvedioplay(pname, data);
+									
 								}
+								$("#youhuowudanflag").val("0");
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
 							}
@@ -490,6 +535,7 @@ function weiruku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -500,6 +546,7 @@ function weiruku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='120' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -511,7 +558,7 @@ function weiruku(){
 				$("#weiruku").remove();
 				$("#weirukuTable").append(optionstring);
 				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>';
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>';
 				$("#weirukuTable").append(more);
 				}
 			}
@@ -520,6 +567,53 @@ function weiruku(){
 	
 	
 }
+var asc=0;
+function orderbyweiruku(type)
+{  asc++;
+	$.ajax({
+		type:"post",
+		data:{"asc":asc,"orderby":type,"customerid":$("#customerid").val()},
+		url:"<%=request.getContextPath()%>/PDA/orderbyweiruku",
+		success:function(data){
+			if(data.length>0){
+				var optionstring = "";
+				for ( var i = 0; i < data.length; i++) {
+					<%if(showCustomerSign){ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%}else{ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%} %>
+				}
+				$("#weiruku").remove();
+			//	alert($("#weirukuTable").remove());
+				$("#weirukuTable").empty();
+				$("#weirukuTable").append(optionstring);
+				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>';
+				$("#weirukuTable").append(more);
+				}
+			}
+		}
+	});
+	}
+
 function yiruku(){
 	yipage+=1;
 	$.ajax({
@@ -533,6 +627,7 @@ function yiruku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -543,6 +638,7 @@ function yiruku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -554,7 +650,52 @@ function yiruku(){
 				$("#yiruku").remove();
 				$("#successTable").append(optionstring);
 				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>'
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>'
+				$("#successTable").append(more);
+				}
+			}
+		}
+	});
+	
+}
+function orderbyyiruku(type){
+	asc+=1;
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/PDA/orderbyyiruku",
+		data:{"asc":asc,"orderby":type,"customerid":$("#customerid").val()},
+		success:function(data){
+			if(data.length>0){
+				var optionstring = "";
+				for ( var i = 0; i < data.length; i++) {
+					<%if(showCustomerSign){ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%}else{ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%} %>
+				}
+				$("#yiruku").remove();
+				$("#successTable").empty();
+				$("#successTable").append(optionstring);
+				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>'
 				$("#successTable").append(more);
 				}
 			}
@@ -641,6 +782,12 @@ $(function(){
  		}
  	});
  }
+function openLogin(){
+	   document.getElementById("win").style.display="";
+	}
+	function closeLogin(){
+	   document.getElementById("win").style.display="none";
+	}
 </script>
 </head>
 <body style="background:#eef9ff" marginwidth="0" marginheight="0">
@@ -714,11 +861,21 @@ $(function(){
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p>
-						<%if(isprintnew.equals("yes")){ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
-						<%}else{ %>
-						<input  type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
-						<%} %>
+						<%
+							if(isprintnew.equals("2")){ 
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_04" name="updateswitch"/>打印入库标签
+						<%
+							} else if (isprintnew.equals("1")) {
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
+						<%
+							} else {
+						%>
+						<input type="checkbox" id="updateswitch" value="rkbq_01" name="updateswitch" <%--  <%if(ck_switch.getState().equals("rkbq_01")){ %>checked="checked"<%} %> --%>/>打印标签
+						<%
+							}
+						%>
 					</p>
 					<p style="display: none;">
 					<span>包号：</span>
@@ -728,6 +885,7 @@ $(function(){
 					<p><span>订单号：</span>
 						<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
 					</p>
+					<input type="hidden" id="youhuowudanflag" name="youhuowudanflag" value="0" />
 				</div>
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>
@@ -787,8 +945,8 @@ $(function(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('customerid')">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<%if(showCustomerSign){ %>
@@ -816,7 +974,7 @@ $(function(){
 											<%} %>
 											 <%if(weirukuList!=null&&weirukuList.size()==Page.DETAIL_PAGE_NUMBER){ %>
 												<tr align="center"  >
-												<td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>
+												<td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="weiruku();" id="weiruku">查看更多</td></tr>
 											<%} %>
 		
 										</table>
@@ -837,8 +995,8 @@ $(function(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('customerid')">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<%if(showCustomerSign){ %>
@@ -864,7 +1022,7 @@ $(function(){
 											</tr>
 											<%} %>
 											<%if(yirukulist!=null&&yirukulist.size()==Page.DETAIL_PAGE_NUMBER){ %>
-												<tr  aglin="center"><td colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>
+												<tr  aglin="center"><td colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="yiruku();" id="yiruku">查看更多</td></tr>
 											<%} %>	
 											
 										</table>
@@ -886,8 +1044,8 @@ $(function(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('customerid',$("#customerid").val())">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('emaildate',$("#customerid").val())">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td align="center" bgcolor="#f1f1f1">地址</td>
@@ -946,5 +1104,6 @@ $(function(){
 		<input type="hidden" name="type" value="" id="type"/>
 	</form>
 	</div>
+
 </body>
 </html>

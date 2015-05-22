@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum AbnormalOrderHandleEnum {
-	WeiChuLi(2, "未处理"), yichuli(1, "已处理");
+	chulizhong(1, "处理中"), WeiChuLi(2, "未处理"), yichuli(3, "已处理");
 
 	private int value;
 	private String text;

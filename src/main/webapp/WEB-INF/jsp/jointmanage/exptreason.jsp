@@ -54,8 +54,6 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 </head>
 <body style="background: #f5f5f5">
 
-
-
 	<div class="menucontant">
 		<div class="uc_midbg">
 			<ul>
@@ -121,7 +119,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 						}else if(expt_type==ReasonTypeEnum.ReturnGoods.getValue()){
 							typename=ReasonTypeEnum.ReturnGoods.getText();
 						}
-						String exptsupportname="";
+						String exptsupportname="通用";
 						
 						if(expt.getCustomerid()==0){
 							for(PosEnum b:PosEnum.values()){

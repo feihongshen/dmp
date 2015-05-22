@@ -84,12 +84,13 @@ public class YpdjHandleRecordDAO {
 
 	public void delYpdjHandleRecordByCwb(String cwb) {
 		String sql = "delete from ops_ypdjhandlerecord where cwb=?";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 	}
 
 	public long creYpdjHandleRecord(final YpdjHandleRecord ypdjHandleRecord) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into ops_ypdjhandlerecord (cwb,customerid,flowordertype,transcwb,branchid,nextbranchid) " + "values(?,?,?,?,?,?)", new String[] { "id" });
@@ -108,7 +109,7 @@ public class YpdjHandleRecordDAO {
 
 	public void delYpdjHandleRecord(String cwb, String transcwb, long flowordertype, long customerid, long branchid, long nextbranchid) {
 		String sql = "delete from ops_ypdjhandlerecord where cwb=? and flowordertype=? and transcwb=? and customerid=? and branchid=? and nextbranchid=?";
-		jdbcTemplate.update(sql, cwb, flowordertype, transcwb, customerid, branchid, nextbranchid);
+		this.jdbcTemplate.update(sql, cwb, flowordertype, transcwb, customerid, branchid, nextbranchid);
 	}
 
 	// 得到入库缺货件数的统计
@@ -120,7 +121,7 @@ public class YpdjHandleRecordDAO {
 		if (emaildateid > 0) {
 			sql += " and cd.emaildateid =" + emaildateid;
 		}
-		return jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.RuKu.getValue());
+		return this.jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.RuKu.getValue());
 	}
 
 	// 得到中转站入库缺货件数的统计
@@ -129,7 +130,7 @@ public class YpdjHandleRecordDAO {
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
-		return jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
+		return this.jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
 	}
 
 	// 得到入库缺货件数的list列表
@@ -142,7 +143,7 @@ public class YpdjHandleRecordDAO {
 			sql += " and cd.emaildateid =" + emaildateid;
 		}
 		sql += " limit ?,?";
-		return jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, FlowOrderTypeEnum.RuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, FlowOrderTypeEnum.RuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	// 得到入库缺货件数的list列表
@@ -152,14 +153,14 @@ public class YpdjHandleRecordDAO {
 			sql += " and yp.customerid =" + customerid;
 		}
 		sql += " limit ?,?";
-		return jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER,
+		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER,
 				Page.DETAIL_PAGE_NUMBER);
 	}
 
 	public long getDaoHuoQuejianCount(long branchid) {
 		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype in("
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ")";
-		return jdbcTemplate.queryForLong(sql, branchid);
+		return this.jdbcTemplate.queryForLong(sql, branchid);
 	}
 
 	public List<JSONObject> getDaoHuoQuejianList(long branchid, long page) {
@@ -167,7 +168,7 @@ public class YpdjHandleRecordDAO {
 				+ "LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype in(" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ")";
 		sql += " limit ?,?";
-		return jdbcTemplate.query(sql, new YpdjHandleRecordAndDaohuoCwbOrderMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndDaohuoCwbOrderMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	// 得到出库缺货件数的统计
@@ -176,7 +177,7 @@ public class YpdjHandleRecordDAO {
 		if (nextbranchid > 0) {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
-		return jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+		return this.jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 	}
 
 	// 得到出库缺货件数的list列表
@@ -186,12 +187,12 @@ public class YpdjHandleRecordDAO {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
 		sql += " limit ?,?";
-		return jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, flowordertype, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid, flowordertype, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	/**
 	 * 一票多件 导出 sql
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -205,18 +206,18 @@ public class YpdjHandleRecordDAO {
 		if (emaildateid > 0) {
 			sql += " and cd.emaildateid =" + emaildateid;
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	public List<String> getDaoHuoSQLExportforypdj(long branchid) {
 		String sql = "SELECT cwb FROM `ops_ypdjhandlerecord` WHERE branchid=" + branchid + " AND flowordertype in( " + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ")";
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
 	/**
 	 * 出库 一票多件 导出 sql
-	 * 
+	 *
 	 * @param branchid
 	 * @param branchid2
 	 * @return
@@ -226,7 +227,24 @@ public class YpdjHandleRecordDAO {
 		if (nextbranchid > 0) {
 			sql += " and nextbranchid =" + nextbranchid;
 		}
-		return jdbcTemplate.queryForList(sql, String.class);
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	public List<JSONObject> getRukuQuejianbyBranchidList(long branchid, long customerid, String orderby, long emaildateid, long asc) {
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
+		if (customerid > 0) {
+			sql += " and yp.customerid =" + customerid;
+		}
+		if (emaildateid > 0) {
+			sql += " and cd.emaildateid =" + emaildateid;
+		}
+		sql += " ORDER BY  cd." + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid);
+	}
 }

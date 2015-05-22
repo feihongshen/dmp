@@ -22,6 +22,7 @@ import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
 import cn.explink.b2c.gome.GomeService;
 import cn.explink.b2c.gzabc.GuangZhouABCInsertCwbDetailTimmer;
+import cn.explink.b2c.gztl.GuangZhouTongLuInsertCwbDetailTimmer;
 import cn.explink.b2c.haoxgou.HXGInsertCwbDetailTimmer;
 import cn.explink.b2c.haoxgou.HaoXiangGouService;
 import cn.explink.b2c.haoxgou.HaoXiangGouService_PeiSong;
@@ -194,8 +195,9 @@ public class JobUtil {
 	@Autowired
 	ExpressSysMonitorDAO expressSysMonitorDAO;
 	@Autowired
+	GuangZhouTongLuInsertCwbDetailTimmer guangZhouTongLuInsertCwbDetailTimmer;
+	@Autowired
 	FloworderLogService floworderLogService;
-
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -220,6 +222,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("hxgdms", 0);
 		JobUtil.threadMap.put("homegobj", 0);
 		JobUtil.threadMap.put("zhongliang", 0);
+		JobUtil.threadMap.put("guangzhoutonglu", 0);
 
 	}
 
@@ -245,6 +248,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("hxgdms", 0);
 		JobUtil.threadMap.put("homegobj", 0);
 		JobUtil.threadMap.put("zhongliang", 0);
+		JobUtil.threadMap.put("guangzhoutonglu", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -358,6 +362,32 @@ public class JobUtil {
 		long endtime = System.currentTimeMillis();
 
 		this.logger.info("执行了获取maikolin订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+
+	/**
+	 * 执行获取广州通路从临时表查出数据插入到订单表中guangZhouTongLuInsertCwbDetailTimmer
+	 */
+	public void getGztlCwbDetail_Task() {
+
+		if (JobUtil.threadMap.get("guangzhoutonglu") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环guangzhoutonglu");
+			return;
+		}
+		JobUtil.threadMap.put("guangzhoutonglu", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.guangZhouTongLuInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.Guangzhoutonglu.getKey());
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行vipshop定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("guangzhoutonglu", 0);
+		}
+
+		this.logger.info("执行了广州通路订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 	/*
@@ -996,7 +1026,6 @@ public class JobUtil {
 		}
 
 	}
-	
 	/**
 	 * 定时删除flowLog表
 	 */
@@ -1010,5 +1039,4 @@ public class JobUtil {
 		
 		this.logger.info("执行了删除flowlog表定时器!");
 	}
-
 }

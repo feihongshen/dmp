@@ -170,6 +170,17 @@ var branchStr=[];
 var Cwbs="";
 function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag){
 	if(scancwb.length>0){
+		if(scancwb.indexOf("@zd_")>-1){
+			$("#branchid").val(scancwb.split('_')[1]);
+			if($("#branchid").val()!=scancwb.split('_')[1]){
+				$("#msg").html("         （异常扫描）扫描站点失败");
+				$("#branchid").val(0);
+			}else{
+				$("#msg").html("");
+			}
+			$("#scancwb").val("");
+			return false;
+		}
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
 			baleaddcwbCheck();
 		}else{//出库
@@ -325,7 +336,7 @@ function exportField(flag,branchid){
 	
 }
 
-var weipage=1;var yipage=1;
+var weipage=1;var yipage=1;var asc=0;
 function weichuku(){
 	weipage+=1;
 	$.ajax({
@@ -339,6 +350,7 @@ function weichuku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -349,6 +361,7 @@ function weichuku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -358,6 +371,52 @@ function weichuku(){
 					<%} %>
 				}
 				$("#weichuku").remove();
+				$("#weichukuTable").append(optionstring);
+				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="weichuku();" id="weichuku">查看更多</td></tr>';
+				$("#weichukuTable").append(more);
+				}
+			}
+		}
+	});
+	
+	
+}
+function orderbyweichuku(type){
+	asc+=1;
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/PDA/orderbyweichuku",
+		data:{"asc":asc,"branchid":$("#branchid").val(),"orderby":type},
+		success:function(data){
+			if(data.length>0){
+				var optionstring = "";
+				for ( var i = 0; i < data.length; i++) {
+					<%if(showCustomerSign){ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%}else{ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%} %>
+				}
+				$("#weichuku").remove();
+				$("#weichukuTable").empty();
 				$("#weichukuTable").append(optionstring);
 				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
 				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="weichuku();" id="weichuku">查看更多</td></tr>';
@@ -385,6 +444,7 @@ function yichuku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -395,6 +455,7 @@ function yichuku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -404,6 +465,53 @@ function yichuku(){
 					<%} %>
 				}
 				$("#yichuku").remove();
+				$("#successTable").append(optionstring);
+				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="yichuku();" id="yichuku">查看更多</td></tr>'
+				$("#successTable").append(more);
+				}
+			}
+		}
+	});
+}
+function orderbyyichuku(type){
+	asc+=1;
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/PDA/orderbyyichuku",
+		data:{"orderby":type,
+			"asc":asc,
+			"branchid":$("#branchid").val(),
+			"flowordertype":<%=FlowOrderTypeEnum.ChuKuSaoMiao.getValue()%>},
+		success:function(data){
+			if(data.length>0){
+				var optionstring = "";
+				for ( var i = 0; i < data.length; i++) {
+					<%if(showCustomerSign){ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%}else{ %>
+						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
+						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='100' align='center'> "+data[i].packagecode+"</td>"
+						+"<td width='100' align='center'> "+data[i].customername+"</td>"
+						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+						+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+						+ "</tr>";
+					<%} %>
+				}
+				$("#yichuku").remove();
+				$("#successTable").empty();
 				$("#successTable").append(optionstring);
 				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
 				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>7<%}else{ %>6<%} %>" style="cursor:pointer" onclick="yichuku();" id="yichuku">查看更多</td></tr>'
@@ -557,11 +665,14 @@ function fengbao(){
 			$("#msg").html("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
+			
+				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
 				$("#msg").html("（封包异常）"+data.body.errorinfo);
+				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
 		}
 	});
 }
@@ -580,6 +691,9 @@ function chuku(){
 			$("#msg").html("");
 			$("#msg").html(data.body.errorinfo);
 			$("#errorTable").html("");
+			
+			
+			
 			if(data.body.errorListView!=null){
 	 			$.each(data.body.errorListView, function(key, value) {
 	 				var tr = document.getElementById("errorTable").insertRow();
@@ -609,10 +723,19 @@ function chuku(){
 					var td = tr.insertCell(7);
 					td.innerHTML = value.errorreasion;
 			 	});
+	 			
+	 			
 			}
+			
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
+		 	if(data.body.errorcode=='111111'){
+				errorvedioplay("<%=request.getContextPath()%>",data);
+			}else if(data.statuscode=="000000"){
+				successvedioplay("<%=request.getContextPath()%>",data);
+			}
+			
 		}
 	});
 }
@@ -807,8 +930,8 @@ function chuku(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweichuku('customerid')">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweichuku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<%
@@ -875,8 +998,8 @@ function chuku(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyichuku('customerid')">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyichuku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<%

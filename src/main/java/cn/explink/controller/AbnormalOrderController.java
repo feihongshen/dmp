@@ -50,6 +50,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.AbnormalService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -101,7 +102,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 创建问题件
-	 *
+	 * 
 	 * @param model
 	 * @param cwb
 	 * @param abnormaltypeid
@@ -109,6 +110,7 @@ public class AbnormalOrderController {
 	 */
 	@RequestMapping("/toCreateabnormal")
 	public String toCreateabnormal(Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "handleBranch", defaultValue = "5", required = false) long handleBranch,
 			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
 		String quot = "'", quotAndComma = "',";
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
@@ -132,7 +134,7 @@ public class AbnormalOrderController {
 					if (ab != null) {
 						action = AbnormalWriteBackEnum.XiuGai.getValue();
 					}
-					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action);
+					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch);
 				}
 			}
 			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
@@ -140,20 +142,28 @@ public class AbnormalOrderController {
 			model.addAttribute("cwbList", cwbList);
 			model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 			model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+
 		}
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		boolean iszhandian = false;
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			iszhandian = true;
+		}
+		model.addAttribute("iszhandian", iszhandian);
 
 		return "/abnormalorder/createabnormal";
 	}
 
 	/**
 	 * 创建问题件的form提交
-	 *
+	 * 
 	 * @param model
 	 * @param cwbdetails
 	 * @return
 	 */
 	@RequestMapping("/submitCreateabnormal")
-	public @ResponseBody long submitCreateabnormal(Model model, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
+	public @ResponseBody
+	long submitCreateabnormal(Model model, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
 
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		long successCount = 0;
@@ -212,7 +222,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 问题件处理查询功能
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param cwb
@@ -225,7 +235,7 @@ public class AbnormalOrderController {
 	public String toHandleabnormal(@PathVariable("page") long page, Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid,
 			@RequestParam(value = "ishandle", required = false, defaultValue = "-1") long ishandle, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
+			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
 			@RequestParam(value = "chuangjianbegindate", required = false, defaultValue = "") String chuangjianbegindate,
 			@RequestParam(value = "chuangjianenddate", required = false, defaultValue = "") String chuangjianenddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		String quot = "'", quotAndComma = "',";
@@ -237,6 +247,11 @@ public class AbnormalOrderController {
 				}
 				cwbs1 = cwbs1.append(quot).append(cwbStr.trim()).append(quotAndComma);
 			}
+		}
+		long handleBranch = 0;
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.KeFu.getValue())) {
+			handleBranch = branch.getSitetype();
 		}
 		String cwbs = "";
 		if (cwbs1.length() > 0) {
@@ -257,8 +272,10 @@ public class AbnormalOrderController {
 					enddate = DateTimeUtil.getNowTime();
 				}
 
-				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate);
+				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate, customerid,
+						handleBranch);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate,
+						customerid, handleBranch);
 
 			} else {
 				if (chuangjianbegindate.length() == 0) {
@@ -272,8 +289,9 @@ public class AbnormalOrderController {
 				// abnormalOrderList=abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page,cwbs,branchid,
 				// abnormaltypeid, ishandle,begindate,enddate);
 
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
-				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid,
+						handleBranch);
+				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid, handleBranch);
 
 			}
 		}
@@ -302,18 +320,28 @@ public class AbnormalOrderController {
 		 * model.addAttribute("page_obj", new
 		 * Page(views.size(),page,Page.ONE_PAGE_NUMBER));
 		 */
-
+		List<Customer> customerlist = this.customerDAO.getAllCustomers();
+		model.addAttribute("customerlist", customerlist);
 		model.addAttribute("page", page);
+		model.addAttribute("customerid", customerid);
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		return "/abnormalorder/handleabnormallist";
 	}
 
 	@RequestMapping("getabnormalOrder/{id}")
-	public String getabnormalOrder(@PathVariable("id") long id, Model model, @RequestParam(value = "type", required = false, defaultValue = "0") long type) {
+	public String getabnormalOrder(@PathVariable("id") long id, Model model, @RequestParam(value = "type", required = false, defaultValue = "0") long type,
+			@RequestParam(value = "isfind", required = false, defaultValue = "0") long isfind) {
 		AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderById(id);
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		model.addAttribute("abnormalOrder", abnormalOrder);
-		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		List<Branch> branchlList = this.branchDAO.getAllEffectBranches();
+		HashMap<Long, String> branchMap = new HashMap<Long, String>();
+		for (Branch b : branchlList) {
+			branchMap.put(b.getBranchid(), b.getBranchname());
+		}
+		model.addAttribute("branchList", branchlList);
+		model.addAttribute("isfind", isfind);
+		model.addAttribute("branchMap", branchMap);
 		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 		model.addAttribute("userList", this.userDAO.getAllUser());
 		model.addAttribute("cwborder", this.cwbDAO.getCwbOrderByOpscwbid(abnormalOrder.getOpscwbid()));
@@ -332,14 +360,20 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitHandleabnormal/{id}")
-	public @ResponseBody String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
-			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
+	public @ResponseBody
+	String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "isfind", defaultValue = "0", required = false) long isfind) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.yichuli.getValue(), nowtime);
+			long ishandle = AbnormalOrderHandleEnum.chulizhong.getValue();
+			if (isfind == 1) {
+				ishandle = ab.getIshandle();
+			}
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
+			
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
 					ab.getAbnormaltypeid(), cwb);
 			/*
@@ -355,7 +389,7 @@ public class AbnormalOrderController {
 
 	/**
 	 * 问题件回复
-	 *
+	 * 
 	 * @param page
 	 * @param model
 	 * @param begindate
@@ -385,7 +419,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitReplyabnormal/{id}")
-	public @ResponseBody String SubmitReplyabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+	public @ResponseBody
+	String SubmitReplyabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -441,8 +476,8 @@ public class AbnormalOrderController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request) {
 
-		String[] cloumnName1 = new String[8]; // 导出的列名
-		String[] cloumnName2 = new String[8]; // 导出的英文列名
+		String[] cloumnName1 = new String[9]; // 导出的列名
+		String[] cloumnName2 = new String[9]; // 导出的英文列名
 
 		this.exportService.SetAbnormalOrderFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
@@ -456,6 +491,7 @@ public class AbnormalOrderController {
 			long branchid = request.getParameter("branchid1") == null ? 0 : Long.parseLong(request.getParameter("branchid1").toString());
 			long abnormaltypeid = request.getParameter("abnormaltypeid1") == null ? 0 : Long.parseLong(request.getParameter("abnormaltypeid1").toString());
 			long ishandle = request.getParameter("ishandle1") == null ? 0 : Long.parseLong(request.getParameter("ishandle1").toString());
+			long customerid = request.getParameter("customerid") == null ? -1 : Long.parseLong(request.getParameter("customerid").toString());
 
 			String begindate = request.getParameter("begindate1") == null ? "" : request.getParameter("begindate1");
 			String enddate = request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1");
@@ -476,6 +512,11 @@ public class AbnormalOrderController {
 			if (cwbs1.length() > 0) {
 				cwbs = cwbs1.substring(0, cwbs1.length() - 1);
 			}
+			long handleBranch = 0;
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.KeFu.getValue())) {
+				handleBranch = branch.getSitetype();
+			}
 			// 根据时间去abnormalWriteBack表查询符合条件的opscwbid
 			// List<String> abnormalWriteBackOpscwbidList = new
 			// ArrayList<String>();
@@ -492,7 +533,7 @@ public class AbnormalOrderController {
 				// this.abnormalOrderDAO.getAbnormalOrderByCredatetime(chuangjianbegindate,
 				// chuangjianenddate);
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndNohandles(chuangjianbegindate, chuangjianenddate, cwbs, branchid,
-						abnormaltypeid, ishandle);
+						abnormaltypeid, ishandle, customerid, handleBranch);
 
 			} else {
 				if (begindate.length() == 0) {
@@ -504,7 +545,8 @@ public class AbnormalOrderController {
 				// abnormalWriteBackOpscwbidList =
 				// this.abnormalWriteBackDAO.getAbnormalOrderByCredatetime(begindate,
 				// enddate);
-				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(begindate, enddate, cwbs, branchid, abnormaltypeid, ishandle);
+				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandles(begindate, enddate, cwbs, branchid, abnormaltypeid, ishandle,
+						customerid, handleBranch);
 			}
 
 			// 根据条件查询和上一步中查出的opscwbid来查询
@@ -542,7 +584,8 @@ public class AbnormalOrderController {
 	}
 
 	@RequestMapping("/SubmitOverabnormal/{id}")
-	public @ResponseBody String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
+	public @ResponseBody
+	String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -617,10 +660,123 @@ public class AbnormalOrderController {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
 		}
 	}
+	
+
+	@RequestMapping("/tofindabnormal/{page}")
+	public String tofindabnormal(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
+			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", required = false, defaultValue = "-1") long ishandle,
+			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid, @RequestParam(value = "tip", defaultValue = "0", required = false) long tip) {
+		if (begindate.length() == 0) {
+			begindate = DateTimeUtil.getDateBefore(1);
+		}
+		if (enddate.length() == 0) {
+			enddate = DateTimeUtil.getNowTime();
+		}
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		List<Branch> branchlList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchlList);
+		List<AbnormalOrder> abnormalOrderList = new ArrayList<AbnormalOrder>();
+		if (tip == 1) {
+			abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByWherefind(page, begindate, enddate, ishandle, abnormaltypeid);
+			model.addAttribute("page_obj", new Page(this.abnormalOrderDAO.getAbnormalOrderCountfind(begindate, enddate, ishandle, abnormaltypeid), page, Page.ONE_PAGE_NUMBER));
+		} else {
+			model.addAttribute("page_obj", new Page());
+		}
+		model.addAttribute("abnormalOrderList", abnormalOrderList);
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		model.addAttribute("userList", this.userDAO.getAllUser());
+
+		model.addAttribute("starttime1", begindate);
+		model.addAttribute("endtime1", enddate);
+		model.addAttribute("ishandle1", ishandle);
+		model.addAttribute("abnormaltypeid1", abnormaltypeid);
+		return "/abnormalorder/tofindabnormal";
+	}
 
 	@RequestMapping("gotoBatch")
 	public String gotoBatch(Model model, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
-		model.addAttribute("ids", ids);
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		model.addAttribute("user", this.getSessionUser());
+		model.addAttribute("role", this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid()));
 		return "/abnormalorder/nowhandleabnormalBatch";
+	}
+
+	@RequestMapping("/SubmitHandleabnormalBatch")
+	public @ResponseBody
+	String SubmitHandleabnormalBatch(@RequestParam(value = "ids", defaultValue = "", required = false) String ids,
+			@RequestParam(value = "describe", defaultValue = "", required = false) String describe, @RequestParam(value = "ishandle", defaultValue = "3", required = false) long ishandle) {
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);
+			String[] arrayIds = ids.split(",");
+
+			for (int i = 0; i < arrayIds.length; i++) {
+				int id = Integer.parseInt(arrayIds[i]);
+				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
+				this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
+				this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
+						ab.getAbnormaltypeid(), ab.getCwb());
+				/*
+				 * String json = "订单：" + ab.getCwb() + "已处理";
+				 * this.appearWindowDao.creWindowTime(json, "4",
+				 * ab.getCreuserid(), "1");
+				 */
+			}
+			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+		}
+	}
+
+	@RequestMapping("/exportExcleFind")
+	public void exportExcleFind(Model model, HttpServletResponse response, @RequestParam(value = "starttime1", required = false, defaultValue = "") String starttime,
+			@RequestParam(value = "endtime1", required = false, defaultValue = "") String endtime, @RequestParam(value = "ishandle1", required = false, defaultValue = "-1") long ishandle,
+			@RequestParam(value = "abnormaltypeid1", defaultValue = "0", required = false) long abnormaltypeid) {
+
+		String[] cloumnName1 = new String[9]; // 导出的列名
+		String[] cloumnName2 = new String[9]; // 导出的英文列名
+
+		this.exportService.SetAbnormalOrderFields(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "问题件信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "AbnormalOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
+		try {
+			// 查询出数据
+
+			List<Branch> branchs = this.branchDAO.getAllBranches();
+			List<User> users = this.userDAO.getAllUser();
+			List<Customer> customers = this.customerDAO.getAllCustomers();
+			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
+			List<JSONObject> abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByWherefindExport(starttime, endtime, ishandle, abnormaltypeid);
+			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist);
+			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+				@Override
+				public void fillData(Sheet sheet, CellStyle style) {
+					for (int k = 0; k < views.size(); k++) {
+						Row row = sheet.createRow(k + 1);
+						row.setHeightInPoints(15);
+						for (int i = 0; i < cloumnName.length; i++) {
+							Cell cell = row.createCell((short) i);
+							cell.setCellStyle(style);
+							Object a = null;
+							// 给导出excel赋值
+							a = AbnormalOrderController.this.exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
+							cell.setCellValue(a == null ? "" : a.toString());
+						}
+					}
+				}
+			};
+			excelUtil.excel(response, cloumnName, sheetName, fileName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

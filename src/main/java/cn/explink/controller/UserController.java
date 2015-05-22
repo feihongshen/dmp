@@ -72,6 +72,7 @@ public class UserController {
 	public @ResponseBody
 	List<User> getUserByBranchid(@RequestParam("branchid") long branchid) {
 		return this.userDAO.getUserByBranchid(branchid);
+
 	}
 
 	@RequestMapping("/usercheck")
@@ -123,7 +124,6 @@ public class UserController {
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			// list = this.userDAO.getUsersByUsername(username);
 			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
@@ -163,7 +163,6 @@ public class UserController {
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			// list = this.userDAO.getUsersByUsername(username);
 			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
@@ -278,7 +277,6 @@ public class UserController {
 		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			// list = this.userDAO.getUsersByUsername(username);
 			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
@@ -344,7 +342,6 @@ public class UserController {
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			// list = this.userDAO.getUsersByUsername(username);
 			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
@@ -392,7 +389,6 @@ public class UserController {
 		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
 		} else {
-			// list = this.userDAO.getUsersByUsername(username);
 			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";

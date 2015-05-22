@@ -26,6 +26,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 					<li><span>请选择异常类型：</span>
 						<select name ="expt_type" id="expt_type" onchange="updateExptReasonByType('<%=request.getContextPath()%>/exptcodejoint/reasonByType',this.value),updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',support_key.value,this.value)">
 				               <option value ="-1">全部</option>
+				                 
 				               <option <%if(exptcodejoint.getExpt_type()==ReasonTypeEnum.BeHelpUp.getValue()){%>selected<%} %> value="<%=ReasonTypeEnum.BeHelpUp.getValue()%>"><%=ReasonTypeEnum.BeHelpUp.getText()%></option>
 				           	   <option  <%if(exptcodejoint.getExpt_type()==ReasonTypeEnum.ReturnGoods.getValue()){%>selected<%} %> value="<%=ReasonTypeEnum.ReturnGoods.getValue()%>"><%=ReasonTypeEnum.ReturnGoods.getText()%></option>
 				           	   <option  <%if(exptcodejoint.getExpt_type()==ReasonTypeEnum.WeiShuaKa.getValue()){%>selected<%} %> value="<%=ReasonTypeEnum.WeiShuaKa.getValue()%>"><%=ReasonTypeEnum.WeiShuaKa.getText()%></option>
@@ -41,6 +42,7 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 					<li ><span>选择异常码提供方：</span>
  						<select name ="support_key" id="support_key" onchange="updateExptReasonSupportByType('<%=request.getContextPath()%>/exptcodejoint/searchExptReasonById',this.value,expt_type.value)">
 			               <option value ="-1">全部</option>
+			                <option value ="1_-2">通用</option>
 			               <%for(Customer en : customerlist){ %>
 			               <option value ="1_<%=en.getCustomerid()%>" <%if(en.getCustomerid()==exptcodejoint.getCustomerid()){%>selected<%} %> ><%=en.getCustomername() %></option>
 			               <%} %>

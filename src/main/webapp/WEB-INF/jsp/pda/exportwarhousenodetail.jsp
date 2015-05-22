@@ -95,6 +95,17 @@ var branchStr=[];
 var Cwbs="";
 function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag){
 	if(scancwb.length>0){
+		if(scancwb.indexOf("@zd_")>-1){
+			$("#branchid").val(scancwb.split('_')[1]);
+			if($("#branchid").val()!=scancwb.split('_')[1]){
+				$("#msg").html("         （异常扫描）扫描站点失败");
+				$("#branchid").val(-1);
+			}else{
+				$("#msg").html("");
+			}
+			$("#scancwb").val("");
+			return false;
+		}
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
 			baleaddcwbCheck();
 		}else{//出库
@@ -378,11 +389,13 @@ function fengbao(){
 			$("#msg").html("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
+				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
 				$("#msg").html("（封包异常）"+data.body.errorinfo);
+				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
 		}
 	});
 }
@@ -402,7 +415,13 @@ function chuku(){
 			$("#msg").html(data.body.errorinfo);
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
+			if(data.body.errorcode=='111111'){
+				errorvedioplay("<%=request.getContextPath()%>",data);
+			}else if(data.statuscode=="000000"){
+				successvedioplay("<%=request.getContextPath()%>",data);
+			}
+			
 		}
 	});
 }

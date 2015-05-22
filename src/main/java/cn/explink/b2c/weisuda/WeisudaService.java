@@ -338,9 +338,9 @@ public class WeisudaService {
 		if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
 			this.cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
 		}
-		if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
-			this.cwbDAO.saveCwbForLeavereason(orderFlowDto.getCwb(), orderFlowDto.getStrandedrReason(), 0);
-		}
+//		if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
+//			this.cwbDAO.saveCwbForLeavereason(orderFlowDto.getCwb(), orderFlowDto.getStrandedrReason(), 0);
+//		}
 
 		User user = this.userDAO.getAllUserByid(deliverid);
 

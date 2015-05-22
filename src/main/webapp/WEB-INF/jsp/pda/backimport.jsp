@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
@@ -16,6 +17,9 @@ List<User> uList = (List<User>)request.getAttribute("userList");
 List<CwbOrder> weituihuorukuList = (List<CwbOrder>)request.getAttribute("weituihuorukuList");
 List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuorukuList");
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
+
+List<Reason> backreasonList = (List<Reason>)request.getAttribute("backreasonList");
+
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -86,7 +90,7 @@ function clearMsg(){
 	$("#cwbgaojia").hide();
 }
 function addAndRemoval(cwb,tab,isRemoval){
-	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
+	var trObj = $("#ViewList tr[id='ATR"+cwb+"']");
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
@@ -117,6 +121,11 @@ function getcwbsdataForBack(){
  */
 function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 /* 	alert($('#tip').val()); */
+
+/*  if($("#customerid").val().length==0){
+	 alert("请选择供货商");
+	 return false;
+ } */
 	if(scancwb.length>0){
 		if($('#tip').val()=='goods')
 			{
@@ -132,6 +141,7 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				type: "POST",
 				url:pname+"/PDA/showgoodsdetail/"+scancwb,
 				dataType:"json",
+				data:{"customerid":$("#customerid").val()},
 				success : function(data) {
 					$("#scancwb").val("");
 					if(data.statuscode=="000000"){
@@ -173,8 +183,10 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 					else{
 						if(data.statuscode=="222222")
 							{$("#msg").html("         无此单号！");}
+						else if(data.statuscode=="333")
+						{$("#msg").html("         （异常扫描）请选择正确的供货商");}
 						else
-						$("#msg").html("         该订单不存在任何商品，请选择其它入库方式！");
+						$("#msg").html("         （异常扫描）该订单不存在任何商品，请选择其它入库方式！");
 					}
 				}}
 			);
@@ -187,7 +199,10 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				type: "POST",
 				url:pname+"/PDA/cwbbackintowarhouse/"+scancwb+"?driverid="+driverid,
 				data:{
-					"comment":comment
+					"comment":comment,
+					"customerid":$("#customerid").val(),
+					"checktype":1,
+					
 				},
 				dataType:"json",
 				success : function(data) {
@@ -312,7 +327,7 @@ if(flag){
 	//alert(urlstr);
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/PDA/updategoodthzrkcount?cwb="+$("#cwbgoods").val()+"&driverid="+$("#driverid").val()+"&comment="+$("#comment").val(),
+		url:"<%=request.getContextPath()%>/PDA/updategoodthzrkcount?cwb="+$("#cwbgoods").val()+"&driverid="+$("#driverid").val()+"&comment="+$("#comment").val()+"&customerid="+$("#customerid").val()+"&checktype=0",
 		//data:{"thzrkcount":$("#thzrkcount").val(),"id":$("#id").val()},
 		//data:"jasonval="+ encodeURI(jsonval),
 		data:"jasonval="+ encodeURI(json),
@@ -500,9 +515,7 @@ function yiruku(){
  	$.ajax({
  		type: "POST",
  		url:"<%=request.getContextPath()%>/bale/baletuihuodaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid="+driverid,
- 		data:{
-			"comment":comment
-		},
+ 		data:{"comment":comment},
  		dataType : "json",
  		success : function(data) {
  			clearMsg();
@@ -590,12 +603,27 @@ function yiruku(){
 						<option value="<%=u.getUserid() %>" ><%=u.getRealname() %></option>
 					<%} %>
 				</select>
+				&nbsp;&nbsp;供货商：
+				<select name ="customerid" id ="customerid">
+	          <option value ="-1">请选择</option>
+	          <%if(cList!=null&&cList.size()>0){ %>
+	            <%for(Customer c : cList){ %>
+		          <option value ="<%=c.getCustomerid()%>"  ><%=c.getCustomername()%></option>
+		        <%}}%>
+			</select>
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p><span>备注：</span>
-						<input type="text" class="inputtext_2" id="comment" name="comment" value="" maxlength="50" />
-					</p>
+<!-- 						<input type="text" class="inputtext_2" id="comment" name="comment" value="" maxlength="50" />
+ -->				
+							 <select id="comment" name="comment">
+							 <option value="">请选择</option>
+							 <%for(Reason r:backreasonList){ %>
+							 <option value="<%=r.getReasoncontent()%>"><%=r.getReasoncontent() %></option>
+							 <%} %>
+							 </select>
+ 	</p>
 					<p style="display: none;"><span>包号：</span>
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 					</p>
@@ -677,7 +705,7 @@ function yiruku(){
 										<table id="weituihuorukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 										<%for(CwbOrder co : weituihuorukuList){ %>
-											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>

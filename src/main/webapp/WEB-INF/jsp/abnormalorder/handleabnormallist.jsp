@@ -22,7 +22,11 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
+
+  String showabnomal = request.getAttribute("showabnomal").toString();
   String ishandle = request.getAttribute("ishandle").toString();
+  long customerid = Long.parseLong(request.getAttribute("customerid").toString());
+  List<Customer> customerlist=(List<Customer>)request.getAttribute("customerlist");
 %>
 
 
@@ -98,7 +102,8 @@ $(function() {
 	
 });
 
-function getThisBox(id){
+
+function getThisBoxList(id){
 	$.ajax({
 		type: "POST",
 		url:$("#handle"+id).val(),
@@ -114,9 +119,10 @@ function getThisBox(id){
 }
 
 function check(){
+
 	if($.trim($("#cwb").val()).length==0)
 	{
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>){
+	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
@@ -196,6 +202,7 @@ function checkstate(){
 		$("#chuli").html("处理时间：");
 	}
 }
+
 function isgetallcheck(){
 	if($('input[name="id"]:checked').size()>0){
 		$('input[name="id"]').each(function(){
@@ -233,6 +240,7 @@ function stateBatch(state)
 	});
 	}
 	}
+
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -252,6 +260,12 @@ function stateBatch(state)
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
 									</select>
+									供货商:<select name ="customerid" id ="customerid"  style="width: 120px;">
+									<option value="-1">请选择</option>
+		          						<%for(Customer c : customerlist){ %>
+		      					     <option value ="<%=c.getCustomerid() %>"  <%if(c.getCustomerid()==customerid){%>  selected="selected"<%}%>><%=c.getCustomername() %></option>
+		         						 <%} %>
+		      						  </select>
 									<label for="select3"></label>
 									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 										<option value="0">请选择问题件类型</option>
@@ -265,12 +279,22 @@ function stateBatch(state)
 										<!-- <option value="-1">全部</option> -->
 										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
+										<%if(showabnomal.equals("1")){%>
+										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
+										<%} %>
+										<%if(!showabnomal.equals("1")){%>
+										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
+										<%} %>
 									</select>
 									<br/>
 									<br/>
 									<strong id="chuli"></strong>
 									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
 									<input type ="text" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>" class="input_text1" style="height:20px;"/>
+									<strong id="chuli" >处理时间：</strong>
+									<input type ="text"  style="width: 120px;" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
+									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>
 									<strong id="chulidown">到</strong>
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"/>
@@ -278,6 +302,10 @@ function stateBatch(state)
 									<input type="button"  onclick="check()" value="查询" class="input_button2">
 									<input type ="button" value="批量处理" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="stateBatch();"/>
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
+									<%if(views != null && views.size()>0){ %>
+										<input type ="button" value="批量处理" class="input_button2"  onclick="stateBatch();"/>
+										<input type ="button" id="btnval" value="导出" class="input_button1" onclick="exportField();"/>
+									<%} %>
 								</p>
 							</form>
 				</div>
@@ -292,6 +320,7 @@ function stateBatch(state)
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件反馈时间</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件说明</td>
 							<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
 						</tr>
@@ -304,7 +333,11 @@ function stateBatch(state)
 				<tbody>
 					<%if(views!=null||views.size()>0)for(AbnormalView view : views){ %>
 					<tr height="30" >
-					<td width="30" align="center" valign="middle" bgcolor="#eef6ff"><input id="id" type="checkbox" value="<%=view.getId()%>"  name="id"/></td>
+						<td width="30" align="center" valign="middle" bgcolor="#eef6ff">
+						<%if(view.getIshandle()!=3) {%>
+						<input id="id" type="checkbox" value="<%=view.getId()%>"  name="id"/>
+						<%} %>
+						</td>
 						<td width="120" align="center" valign="middle"><%=view.getCwb() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getCustomerName() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getEmaildate() %></td>
@@ -312,9 +345,16 @@ function stateBatch(state)
 						<td width="100" align="center" valign="middle"><%=view.getBranchName()  %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCreuserName() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getCredatetime() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
 						<td width="80" align="center" valign="middle">
-						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBox('<%=view.getId() %>');"/></td>
+						<%if(!ishandle.equals(AbnormalOrderHandleEnum.yichuli.getValue()+"")){ %>
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
+						<%}else{
+							%>
+						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
+							
+						<%} %>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />
 					</tr>
 					<%} %>
@@ -355,6 +395,7 @@ function stateBatch(state)
 	<input type="hidden" name="enddate1" id="enddate1" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
 	<input type="hidden" name="chuangjianbegindate1" id="chuangjianbedindate1" value="<%=request.getParameter("chuangjianbegindate")==null?"":request.getParameter("chuangjianbegindate")%>"/>
 	<input type="hidden" name="chuangjianenddate1" id="chuangjianenddate1" value="<%=request.getParameter("chuangjianenddate")==null?"":request.getParameter("chuangjianenddate")%>"/>
+	<input type="hidden" name="customerid" id="customerid" value="<%=request.getParameter("customerid")==null?"":request.getParameter("customerid")%>"/>
 </form>
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
@@ -363,6 +404,7 @@ $("#ishandle").val(<%=request.getParameter("ishandle")==null?0:Long.parseLong(re
 $("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
 $("#strtime").val('<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>');
 $("#endtime").val('<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>');
+$("#customerid").val('<%=request.getParameter("customerid")==null?"":request.getParameter("customerid")%>');
 function exportField(){
 	if(<%=views != null && views.size()>0 %>){
 		$("#btnval").attr("disabled","disabled");

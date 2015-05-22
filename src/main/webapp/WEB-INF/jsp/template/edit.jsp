@@ -64,7 +64,22 @@ jQuery.extend({
         }      
     }    
 });
+function show(){
+	$("#columnSetting input[field=index]").parent().parent().hide();
+	$("#columnSetting input[field=index]").attr("checked",false);
+	$("#columnSetting input[field=transcwb]").parent().parent().hide();
+	$("#columnSetting input[field=transcwb]").attr("checked",false);
+	$("#columnSetting input[field=startbranchid]").parent().parent().hide();
+	$("#columnSetting input[field=startbranchid]").attr("checked",false);
+	$("#columnSetting input[field=backintotime]").parent().parent().hide();
+	$("#columnSetting input[field=backintotime]").attr("checked",false);
+	$("#columnSetting input[field=backreason]").parent().parent().hide();
+	$("#columnSetting input[field=backreason]").attr("checked",false);
+	$("#columnSetting input[field=driver]").parent().parent().hide();
+	$("#columnSetting input[field=driver]").attr("checked",false);
+}
 $(function(){
+	show();
 	if(<%=pt.getOpertatetype()%>%2==0){
 		$('#num').hide();
 	}else{
@@ -86,59 +101,367 @@ $(function(){
 	}
 	
 	
-	if(<%=pt.getOpertatetype()%>%2==0){
-		$("#columnSetting input[field=cwb]").parent().parent().hide();
+	switch (<%=pt.getOpertatetype()%>) {
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 9:
+	case 11:
+		$("#columnSetting input[field=cwb]").parent().parent().show();//显示订单号
 		$("#columnSetting input[field=cwb]").attr("checked",false);
-		$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();
+		$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();//显示订单类型
 		$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
-		$("#columnSetting input[field=consigneename]").parent().parent().hide();
+		$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+		$("#columnSetting input[field=cwbcount]").attr("checked",false);
+		$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+		$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+		$("#columnSetting input[field=consigneename]").parent().parent().show();//显示收件人
 		$("#columnSetting input[field=consigneename]").attr("checked",false);
-		$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();
+		$("#columnSetting input[field=consigneeaddress]").parent().parent().show();//显示地址
 		$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
-		$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();
+		$("#columnSetting input[field=consigneepostcode]").parent().parent().show();//显示邮编
 		$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
-		$("#columnSetting input[field=consigneemobile]").parent().parent().hide();
+		$("#columnSetting input[field=consigneemobile]").parent().parent().show();//显示电话
 		$("#columnSetting input[field=consigneemobile]").attr("checked",false);
-		$("#columnSetting input[field=consigneephone]").parent().parent().hide();
+		$("#columnSetting input[field=consigneephone]").parent().parent().show();//显示手机
 		$("#columnSetting input[field=consigneephone]").attr("checked",false);
-		$("#columnSetting input[field=carrealweight]").parent().parent().hide();
+		$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
 		$("#columnSetting input[field=carrealweight]").attr("checked",false);
-		$("#columnSetting input[field=carrealweight]").parent().parent().hide();
-		$("#columnSetting input[field=carrealweight]").attr("checked",false);
-		$("#columnSetting input[field=paywayid]").parent().parent().hide();
-		$("#columnSetting input[field=paywayid]").attr("checked",false);
-		$("#columnSetting input[field=cwbremark]").parent().parent().hide();
-		$("#columnSetting input[field=cwbremark]").attr("checked",false);
-		$("#columnSetting input[field=carsize]").parent().parent().hide();
+		$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+		$("#columnSetting input[field=backcarnum]").attr("checked",false);
+		$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+		$("#columnSetting input[field=caramount]").attr("checked",false);
+		$("#columnSetting input[field=carsize]").parent().parent().show();//显示尺寸
 		$("#columnSetting input[field=carsize]").attr("checked",false);
-		
-	}else{
-		$("#columnSetting input[field=cwb]").parent().parent().show();
+		$("#columnSetting input[field=paywayid]").parent().parent().show();//显示支付方式
+		$("#columnSetting input[field=paywayid]").attr("checked",false);
+		$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+		$("#columnSetting input[field=receivablefee]").attr("checked",false);
+		$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+		$("#columnSetting input[field=paybackfee]").attr("checked",false);
+		$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+		$("#columnSetting input[field=cwbremark]").attr("checked",false);
+		$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+		$("#columnSetting input[field=startbranch]").attr("checked",false);
+		$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+		$("#columnSetting input[field=baleno]").attr("checked",false);
+		$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+		$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+		$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+		$("#columnSetting input[field=credate]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+		$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+		$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+		$("#columnSetting input[field=sendcarname]").attr("checked",false);
+		$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+		$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+		$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+		$("#columnSetting input[field=backcarname]").attr("checked",false);
+		$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+		$("#columnSetting input[field=emaildate]").attr("checked",false);
+		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+		$("#columnSetting input[field=danshu]").attr("checked",false);
+		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+		$("#columnSetting input[field=jianshu]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
+		break;
+	case 2:
+	case 4:
+	case 8:
+	case 10:
+	case 12:
+		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+		$("#columnSetting input[field=jianshu]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
 		$("#columnSetting input[field=cwb]").attr("checked",false);
-		$("#columnSetting input[field=consigneename]").parent().parent().show();
+		$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+		$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+		$("#columnSetting input[field=cwbcount]").parent().parent().show();//显示订单数量
+		$("#columnSetting input[field=cwbcount]").attr("checked",false);
+		$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+		$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+		$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
 		$("#columnSetting input[field=consigneename]").attr("checked",false);
-		$("#columnSetting input[field=consigneeaddress]").parent().parent().show();
+		$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
 		$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
-		$("#columnSetting input[field=consigneepostcode]").parent().parent().show();
+		$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
 		$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
-		$("#columnSetting input[field=consigneemobile]").parent().parent().show();
+		$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
 		$("#columnSetting input[field=consigneemobile]").attr("checked",false);
-		$("#columnSetting input[field=consigneephone]").parent().parent().show();
+		$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
 		$("#columnSetting input[field=consigneephone]").attr("checked",false);
-		$("#columnSetting input[field=carrealweight]").parent().parent().show();
+		$("#columnSetting input[field=carrealweight]").parent().parent().hide();//显示重量
 		$("#columnSetting input[field=carrealweight]").attr("checked",false);
-		$("#columnSetting input[field=carrealweight]").parent().parent().show();
-		$("#columnSetting input[field=carrealweight]").attr("checked",false);
-		$("#columnSetting input[field=paywayid]").parent().parent().show();
-		$("#columnSetting input[field=paywayid]").attr("checked",false);
-		$("#columnSetting input[field=cwbremark]").parent().parent().show();
-		$("#columnSetting input[field=cwbremark]").attr("checked",false);
-		$("#columnSetting input[field=carsize]").parent().parent().show();
+		$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+		$("#columnSetting input[field=backcarnum]").attr("checked",false);
+		$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+		$("#columnSetting input[field=caramount]").attr("checked",false);
+		$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
 		$("#columnSetting input[field=carsize]").attr("checked",false);
+		$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+		$("#columnSetting input[field=paywayid]").attr("checked",false);
+		$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+		$("#columnSetting input[field=receivablefee]").attr("checked",false);
+		$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+		$("#columnSetting input[field=paybackfee]").attr("checked",false);
+		$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
+		$("#columnSetting input[field=cwbremark]").attr("checked",false);
+		$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+		$("#columnSetting input[field=startbranch]").attr("checked",false);
+		$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+		$("#columnSetting input[field=baleno]").attr("checked",false);
+		$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+		$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+		$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+		$("#columnSetting input[field=credate]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+		$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+		$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+		$("#columnSetting input[field=sendcarname]").attr("checked",false);
+		$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+		$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+		$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+		$("#columnSetting input[field=backcarname]").attr("checked",false);
+		$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+		$("#columnSetting input[field=emaildate]").attr("checked",false);
+		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+		$("#columnSetting input[field=danshu]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
+		break;
+	case 6:
+		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+		$("#columnSetting input[field=jianshu]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
+		$("#columnSetting input[field=cwb]").attr("checked",false);
+		$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+		$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+		$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+		$("#columnSetting input[field=cwbcount]").attr("checked",false);
+		$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+		$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+		$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
+		$("#columnSetting input[field=consigneename]").attr("checked",false);
+		$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
+		$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+		$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
+		$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+		$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
+		$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+		$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
+		$("#columnSetting input[field=consigneephone]").attr("checked",false);
+		$("#columnSetting input[field=carrealweight]").parent().parent().hide();//显示重量
+		$("#columnSetting input[field=carrealweight]").attr("checked",false);
+		$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+		$("#columnSetting input[field=backcarnum]").attr("checked",false);
+		$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+		$("#columnSetting input[field=caramount]").attr("checked",false);
+		$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
+		$("#columnSetting input[field=carsize]").attr("checked",false);
+		$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+		$("#columnSetting input[field=paywayid]").attr("checked",false);
+		$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+		$("#columnSetting input[field=receivablefee]").attr("checked",false);
+		$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+		$("#columnSetting input[field=paybackfee]").attr("checked",false);
+		$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
+		$("#columnSetting input[field=cwbremark]").attr("checked",false);
+		$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+		$("#columnSetting input[field=startbranch]").attr("checked",false);
+		$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+		$("#columnSetting input[field=baleno]").attr("checked",false);
+		$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+		$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+		$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+		$("#columnSetting input[field=credate]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+		$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+		$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+		$("#columnSetting input[field=sendcarname]").attr("checked",false);
+		$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+		$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+		$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+		$("#columnSetting input[field=backcarname]").attr("checked",false);
+		$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+		$("#columnSetting input[field=emaildate]").attr("checked",false);
+		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+		$("#columnSetting input[field=danshu]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
+		break;
+	case 15:
+		$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+		$("#columnSetting input[field=jianshu]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().show();//显示订单号
+		$("#columnSetting input[field=cwb]").attr("checked",false);
+		$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();//显示订单类型
+		$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+		$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+		$("#columnSetting input[field=cwbcount]").attr("checked",false);
+		$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+		$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+		$("#columnSetting input[field=consigneename]").parent().parent().show();//显示收件人
+		$("#columnSetting input[field=consigneename]").attr("checked",false);
+		$("#columnSetting input[field=consigneeaddress]").parent().parent().show();//显示地址
+		$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+		$("#columnSetting input[field=consigneepostcode]").parent().parent().show();//显示邮编
+		$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+		$("#columnSetting input[field=consigneemobile]").parent().parent().show();//显示电话
+		$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+		$("#columnSetting input[field=consigneephone]").parent().parent().show();//显示手机
+		$("#columnSetting input[field=consigneephone]").attr("checked",false);
+		$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
+		$("#columnSetting input[field=carrealweight]").attr("checked",false);
+		$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+		$("#columnSetting input[field=backcarnum]").attr("checked",false);
+		$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+		$("#columnSetting input[field=caramount]").attr("checked",false);
+		$("#columnSetting input[field=carsize]").parent().parent().show();//显示尺寸
+		$("#columnSetting input[field=carsize]").attr("checked",false);
+		$("#columnSetting input[field=paywayid]").parent().parent().show();//显示支付方式
+		$("#columnSetting input[field=paywayid]").attr("checked",false);
+		$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+		$("#columnSetting input[field=receivablefee]").attr("checked",false);
+		$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+		$("#columnSetting input[field=paybackfee]").attr("checked",false);
+		$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+		$("#columnSetting input[field=cwbremark]").attr("checked",false);
+		$("#columnSetting input[field=startbranch]").parent().parent().show();//隐藏上一站
+		$("#columnSetting input[field=startbranch]").attr("checked",false);
+		$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+		$("#columnSetting input[field=baleno]").attr("checked",false);
+		$("#columnSetting input[field=carwarehouse]").parent().parent().show();//隐藏发货仓库
+		$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+		$("#columnSetting input[field=credate]").parent().parent().show();//隐藏退货日期
+		$("#columnSetting input[field=credate]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().show();//隐藏运单号
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().show();//隐藏退货站入库时间
+		$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+		$("#columnSetting input[field=sendcarname]").parent().parent().show();//隐藏发货商品
+		$("#columnSetting input[field=sendcarname]").attr("checked",false);
+		$("#columnSetting input[field=reasoncontent]").parent().parent().show();//隐藏退货原因
+		$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+		$("#columnSetting input[field=backcarname]").parent().parent().show();//隐藏取货商品
+		$("#columnSetting input[field=backcarname]").attr("checked",false);
+		$("#columnSetting input[field=emaildate]").parent().parent().show();//隐藏发货日期商品
+		$("#columnSetting input[field=emaildate]").attr("checked",false);
+		$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+		$("#columnSetting input[field=danshu]").attr("checked",false);
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
+		
+		break;
+	case 14:
+		$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+		$("#columnSetting input[field=chengzhong]").attr("checked",false);
+		$("#columnSetting input[field=jianshu]").parent().parent().show();//隐藏件数
+		$("#columnSetting input[field=jianshu]").attr("checked",false);
+		$("#columnSetting input[field=danshu]").parent().parent().show();//隐藏单数
+		$("#columnSetting input[field=danshu]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
+		$("#columnSetting input[field=cwb]").attr("checked",false);
+		$("#columnSetting input[field=customername]").parent().parent().hide();//显示供货商
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+		$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+		$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+		$("#columnSetting input[field=cwbcount]").attr("checked",false);
+		$("#columnSetting input[field=sendcarnum]").parent().parent().hide();//显示发货数量
+		$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+		$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
+		$("#columnSetting input[field=consigneename]").attr("checked",false);
+		$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
+		$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+		$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
+		$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+		$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
+		$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+		$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
+		$("#columnSetting input[field=consigneephone]").attr("checked",false);
+		$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
+		$("#columnSetting input[field=carrealweight]").attr("checked",false);
+		$("#columnSetting input[field=backcarnum]").parent().parent().hide();//显示取货数量
+		$("#columnSetting input[field=backcarnum]").attr("checked",false);
+		$("#columnSetting input[field=caramount]").parent().parent().hide();//显示货物金额
+		$("#columnSetting input[field=caramount]").attr("checked",false);
+		$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
+		$("#columnSetting input[field=carsize]").attr("checked",false);
+		$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+		$("#columnSetting input[field=paywayid]").attr("checked",false);
+		$("#columnSetting input[field=receivablefee]").parent().parent().hide();//显示应收金额
+		$("#columnSetting input[field=receivablefee]").attr("checked",false);
+		$("#columnSetting input[field=paybackfee]").parent().parent().hide();//显示应退金额
+		$("#columnSetting input[field=paybackfee]").attr("checked",false);
+		$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
+		$("#columnSetting input[field=cwbremark]").attr("checked",false);
+		$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+		$("#columnSetting input[field=startbranch]").attr("checked",false);
+		$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+		$("#columnSetting input[field=baleno]").attr("checked",false);
+		$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+		$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+		$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+		$("#columnSetting input[field=credate]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+		$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+		$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+		$("#columnSetting input[field=sendcarname]").attr("checked",false);
+		$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+		$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+		$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+		$("#columnSetting input[field=backcarname]").attr("checked",false);
+		$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+		$("#columnSetting input[field=emaildate]").attr("checked",false);
+		break;
+	default:
+		break;
 	}
 	
 	
+	if(<%=pt.getOpertatetype()%>==<%=PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() %>){
+		$(":checkbox").parent().parent().hide();
+		$("#num").hide();
+		$("#columnSetting input[field=index]").parent().parent().show();
+		$("#columnSetting input[field=index]").attr("checked",false);
+		$("#columnSetting input[field=cwb]").parent().parent().show();
+		$("#columnSetting input[field=cwb]").attr("checked",false);
+		$("#columnSetting input[field=transcwb]").parent().parent().show();
+		$("#columnSetting input[field=transcwb]").attr("checked",false);
+		$("#columnSetting input[field=customername]").parent().parent().show();
+		$("#columnSetting input[field=customername]").attr("checked",false);
+		$("#columnSetting input[field=startbranchid]").parent().parent().show();
+		$("#columnSetting input[field=startbranchid]").attr("checked",false);
+		$("#columnSetting input[field=opreator]").parent().parent().show();
+		$("#columnSetting input[field=opreator]").attr("checked",false);
+		$("#columnSetting input[field=backintotime]").parent().parent().show();
+		$("#columnSetting input[field=backintotime]").attr("checked",false);
+		$("#columnSetting input[field=backreason]").parent().parent().show();
+		$("#columnSetting input[field=backreason]").attr("checked",false);
+		$("#columnSetting input[field=driver]").parent().parent().show();
+		$("#columnSetting input[field=driver]").attr("checked",false);
+	}
+	
 	$("#opertatetype").change(function(){
+		show();
 		if($(this).val()==<%=PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuAnDan.getValue() %>){
 			$("#opreator").show();
 			$("#columnSetting input[field=opreator]").attr("checked",false);
@@ -154,59 +477,365 @@ $(function(){
 			$("#cwbcount").hide();
 			$("#columnSetting input[field=cwbcount]").attr("checked",false);
 		}
-		if($(this).val()%2==0){
-			$("#columnSetting input[field=cwb]").parent().parent().hide();
-			$("#columnSetting input[field=cwb]").attr("checked",false);
-			$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();
-			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
-			$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();
-			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
-			$("#columnSetting input[field=consigneename]").parent().parent().hide();
-			$("#columnSetting input[field=consigneename]").attr("checked",false);
-			$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();
-			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
-			$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();
-			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
-			$("#columnSetting input[field=consigneemobile]").parent().parent().hide();
-			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
-			$("#columnSetting input[field=consigneephone]").parent().parent().hide();
-			$("#columnSetting input[field=consigneephone]").attr("checked",false);
-			$("#columnSetting input[field=carrealweight]").parent().parent().hide();
-			$("#columnSetting input[field=carrealweight]").attr("checked",false);
-			$("#columnSetting input[field=carrealweight]").parent().parent().hide();
-			$("#columnSetting input[field=carrealweight]").attr("checked",false);
-			$("#columnSetting input[field=paywayid]").parent().parent().hide();
-			$("#columnSetting input[field=paywayid]").attr("checked",false);
-			$("#columnSetting input[field=cwbremark]").parent().parent().hide();
-			$("#columnSetting input[field=cwbremark]").attr("checked",false);
-			$("#columnSetting input[field=carsize]").parent().parent().hide();
-			$("#columnSetting input[field=carsize]").attr("checked",false);
-		}else{
+		
+		if($(this).val()==<%=PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() %>){
+			$(":checkbox").parent().parent().hide();
+			$("#num").hide();
+			$("#columnSetting input[field=index]").parent().parent().show();
+			$("#columnSetting input[field=index]").attr("checked",false);
 			$("#columnSetting input[field=cwb]").parent().parent().show();
 			$("#columnSetting input[field=cwb]").attr("checked",false);
-			$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();
-			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
-			$("#columnSetting input[field=consigneename]").parent().parent().show();
-			$("#columnSetting input[field=consigneename]").attr("checked",false);
-			$("#columnSetting input[field=consigneeaddress]").parent().parent().show();
-			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
-			$("#columnSetting input[field=consigneepostcode]").parent().parent().show();
-			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
-			$("#columnSetting input[field=consigneemobile]").parent().parent().show();
-			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
-			$("#columnSetting input[field=consigneephone]").parent().parent().show();
-			$("#columnSetting input[field=consigneephone]").attr("checked",false);
-			$("#columnSetting input[field=carrealweight]").parent().parent().show();
-			$("#columnSetting input[field=carrealweight]").attr("checked",false);
-			$("#columnSetting input[field=carrealweight]").parent().parent().show();
-			$("#columnSetting input[field=carrealweight]").attr("checked",false);
-			$("#columnSetting input[field=paywayid]").parent().parent().show();
-			$("#columnSetting input[field=paywayid]").attr("checked",false);
-			$("#columnSetting input[field=cwbremark]").parent().parent().show();
-			$("#columnSetting input[field=cwbremark]").attr("checked",false);
-			$("#columnSetting input[field=carsize]").parent().parent().show();
-			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().show();
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=startbranchid]").parent().parent().show();
+			$("#columnSetting input[field=startbranchid]").attr("checked",false);
+			$("#columnSetting input[field=opreator]").parent().parent().show();
+			$("#columnSetting input[field=opreator]").attr("checked",false);
+			$("#columnSetting input[field=backintotime]").parent().parent().show();
+			$("#columnSetting input[field=backintotime]").attr("checked",false);
+			$("#columnSetting input[field=backreason]").parent().parent().show();
+			$("#columnSetting input[field=backreason]").attr("checked",false);
+			$("#columnSetting input[field=driver]").parent().parent().show();
+			$("#columnSetting input[field=driver]").attr("checked",false);
 		}
+		
+		switch ($(this).val()) {
+		case "1":
+		case "3":
+		case "5":
+		case "7":
+		case "9":
+		case "11":
+			$("#columnSetting input[field=cwb]").parent().parent().show();//显示订单号
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();//显示订单类型
+			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+			$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+			$("#columnSetting input[field=cwbcount]").attr("checked",false);
+			$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+			$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+			$("#columnSetting input[field=consigneename]").parent().parent().show();//显示收件人
+			$("#columnSetting input[field=consigneename]").attr("checked",false);
+			$("#columnSetting input[field=consigneeaddress]").parent().parent().show();//显示地址
+			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+			$("#columnSetting input[field=consigneepostcode]").parent().parent().show();//显示邮编
+			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+			$("#columnSetting input[field=consigneemobile]").parent().parent().show();//显示电话
+			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+			$("#columnSetting input[field=consigneephone]").parent().parent().show();//显示手机
+			$("#columnSetting input[field=consigneephone]").attr("checked",false);
+			$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
+			$("#columnSetting input[field=carrealweight]").attr("checked",false);
+			$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+			$("#columnSetting input[field=backcarnum]").attr("checked",false);
+			$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+			$("#columnSetting input[field=caramount]").attr("checked",false);
+			$("#columnSetting input[field=carsize]").parent().parent().show();//显示尺寸
+			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=paywayid]").parent().parent().show();//显示支付方式
+			$("#columnSetting input[field=paywayid]").attr("checked",false);
+			$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+			$("#columnSetting input[field=receivablefee]").attr("checked",false);
+			$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+			$("#columnSetting input[field=paybackfee]").attr("checked",false);
+			$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+			$("#columnSetting input[field=cwbremark]").attr("checked",false);
+			$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+			$("#columnSetting input[field=startbranch]").attr("checked",false);
+			$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").attr("checked",false);
+			$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+			$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+			$("#columnSetting input[field=credate]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+			$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+			$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+			$("#columnSetting input[field=sendcarname]").attr("checked",false);
+			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+			$("#columnSetting input[field=backcarname]").attr("checked",false);
+			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+			$("#columnSetting input[field=emaildate]").attr("checked",false);
+			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+			$("#columnSetting input[field=danshu]").attr("checked",false);
+			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+			$("#columnSetting input[field=jianshu]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
+			break;
+		case "2":
+		case "4":
+		case "8":
+		case "10":
+		case "12":
+			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+			$("#columnSetting input[field=jianshu]").attr("checked",false);
+			$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+			$("#columnSetting input[field=cwbcount]").parent().parent().show();//显示订单数量
+			$("#columnSetting input[field=cwbcount]").attr("checked",false);
+			$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+			$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+			$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
+			$("#columnSetting input[field=consigneename]").attr("checked",false);
+			$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
+			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+			$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
+			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+			$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
+			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+			$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
+			$("#columnSetting input[field=consigneephone]").attr("checked",false);
+			$("#columnSetting input[field=carrealweight]").parent().parent().hide();//显示重量
+			$("#columnSetting input[field=carrealweight]").attr("checked",false);
+			$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+			$("#columnSetting input[field=backcarnum]").attr("checked",false);
+			$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+			$("#columnSetting input[field=caramount]").attr("checked",false);
+			$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
+			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+			$("#columnSetting input[field=paywayid]").attr("checked",false);
+			$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+			$("#columnSetting input[field=receivablefee]").attr("checked",false);
+			$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+			$("#columnSetting input[field=paybackfee]").attr("checked",false);
+			$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
+			$("#columnSetting input[field=cwbremark]").attr("checked",false);
+			$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+			$("#columnSetting input[field=startbranch]").attr("checked",false);
+			$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").attr("checked",false);
+			$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+			$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+			$("#columnSetting input[field=credate]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+			$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+			$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+			$("#columnSetting input[field=sendcarname]").attr("checked",false);
+			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+			$("#columnSetting input[field=backcarname]").attr("checked",false);
+			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+			$("#columnSetting input[field=emaildate]").attr("checked",false);
+			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+			$("#columnSetting input[field=danshu]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
+			break;
+		case "6":
+			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+			$("#columnSetting input[field=jianshu]").attr("checked",false);
+			$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+			$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+			$("#columnSetting input[field=cwbcount]").attr("checked",false);
+			$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+			$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+			$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
+			$("#columnSetting input[field=consigneename]").attr("checked",false);
+			$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
+			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+			$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
+			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+			$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
+			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+			$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
+			$("#columnSetting input[field=consigneephone]").attr("checked",false);
+			$("#columnSetting input[field=carrealweight]").parent().parent().hide();//显示重量
+			$("#columnSetting input[field=carrealweight]").attr("checked",false);
+			$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+			$("#columnSetting input[field=backcarnum]").attr("checked",false);
+			$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+			$("#columnSetting input[field=caramount]").attr("checked",false);
+			$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
+			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+			$("#columnSetting input[field=paywayid]").attr("checked",false);
+			$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+			$("#columnSetting input[field=receivablefee]").attr("checked",false);
+			$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+			$("#columnSetting input[field=paybackfee]").attr("checked",false);
+			$("#columnSetting input[field=cwbremark]").parent().parent().hide();//显示备注
+			$("#columnSetting input[field=cwbremark]").attr("checked",false);
+			$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+			$("#columnSetting input[field=startbranch]").attr("checked",false);
+			$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").attr("checked",false);
+			$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+			$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+			$("#columnSetting input[field=credate]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+			$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+			$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+			$("#columnSetting input[field=sendcarname]").attr("checked",false);
+			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+			$("#columnSetting input[field=backcarname]").attr("checked",false);
+			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+			$("#columnSetting input[field=emaildate]").attr("checked",false);
+			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+			$("#columnSetting input[field=danshu]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
+			break;
+		case "15":
+			$("#columnSetting input[field=jianshu]").parent().parent().hide();//隐藏件数
+			$("#columnSetting input[field=jianshu]").attr("checked",false);
+			$("#columnSetting input[field=cwb]").parent().parent().show();//显示订单号
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().show();//显示供货商
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=cwbordertypeid]").parent().parent().show();//显示订单类型
+			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+			$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+			$("#columnSetting input[field=cwbcount]").attr("checked",false);
+			$("#columnSetting input[field=sendcarnum]").parent().parent().show();//显示发货数量
+			$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+			$("#columnSetting input[field=consigneename]").parent().parent().show();//显示收件人
+			$("#columnSetting input[field=consigneename]").attr("checked",false);
+			$("#columnSetting input[field=consigneeaddress]").parent().parent().show();//显示地址
+			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+			$("#columnSetting input[field=consigneepostcode]").parent().parent().show();//显示邮编
+			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+			$("#columnSetting input[field=consigneemobile]").parent().parent().show();//显示电话
+			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+			$("#columnSetting input[field=consigneephone]").parent().parent().show();//显示手机
+			$("#columnSetting input[field=consigneephone]").attr("checked",false);
+			$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
+			$("#columnSetting input[field=carrealweight]").attr("checked",false);
+			$("#columnSetting input[field=backcarnum]").parent().parent().show();//显示取货数量
+			$("#columnSetting input[field=backcarnum]").attr("checked",false);
+			$("#columnSetting input[field=caramount]").parent().parent().show();//显示货物金额
+			$("#columnSetting input[field=caramount]").attr("checked",false);
+			$("#columnSetting input[field=carsize]").parent().parent().show();//显示尺寸
+			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=paywayid]").parent().parent().show();//显示支付方式
+			$("#columnSetting input[field=paywayid]").attr("checked",false);
+			$("#columnSetting input[field=receivablefee]").parent().parent().show();//显示应收金额
+			$("#columnSetting input[field=receivablefee]").attr("checked",false);
+			$("#columnSetting input[field=paybackfee]").parent().parent().show();//显示应退金额
+			$("#columnSetting input[field=paybackfee]").attr("checked",false);
+			$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+			$("#columnSetting input[field=cwbremark]").attr("checked",false);
+			$("#columnSetting input[field=startbranch]").parent().parent().show();//隐藏上一站
+			$("#columnSetting input[field=startbranch]").attr("checked",false);
+			$("#columnSetting input[field=baleno]").parent().parent().hide();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").attr("checked",false);
+			$("#columnSetting input[field=carwarehouse]").parent().parent().show();//隐藏发货仓库
+			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+			$("#columnSetting input[field=credate]").parent().parent().show();//隐藏退货日期
+			$("#columnSetting input[field=credate]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().show();//隐藏运单号
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().show();//隐藏退货站入库时间
+			$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+			$("#columnSetting input[field=sendcarname]").parent().parent().show();//隐藏发货商品
+			$("#columnSetting input[field=sendcarname]").attr("checked",false);
+			$("#columnSetting input[field=reasoncontent]").parent().parent().show();//隐藏退货原因
+			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=backcarname]").parent().parent().show();//隐藏取货商品
+			$("#columnSetting input[field=backcarname]").attr("checked",false);
+			$("#columnSetting input[field=emaildate]").parent().parent().show();//隐藏发货日期商品
+			$("#columnSetting input[field=emaildate]").attr("checked",false);
+			$("#columnSetting input[field=danshu]").parent().parent().hide();//隐藏单数
+			$("#columnSetting input[field=danshu]").attr("checked",false);
+			$("#columnSetting input[field=chengzhong]").parent().parent().hide();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
+			
+			break;
+		case "14":
+			$("#columnSetting input[field=chengzhong]").parent().parent().show();//隐藏称重
+			$("#columnSetting input[field=chengzhong]").attr("checked",false);
+			$("#columnSetting input[field=jianshu]").parent().parent().show();//隐藏件数
+			$("#columnSetting input[field=jianshu]").attr("checked",false);
+			$("#columnSetting input[field=danshu]").parent().parent().show();//隐藏单数
+			$("#columnSetting input[field=danshu]").attr("checked",false);
+			$("#columnSetting input[field=cwb]").parent().parent().hide();//显示订单号
+			$("#columnSetting input[field=cwb]").attr("checked",false);
+			$("#columnSetting input[field=customername]").parent().parent().hide();//显示供货商
+			$("#columnSetting input[field=customername]").attr("checked",false);
+			$("#columnSetting input[field=cwbordertypeid]").parent().parent().hide();//显示订单类型
+			$("#columnSetting input[field=cwbordertypeid]").attr("checked",false);
+			$("#columnSetting input[field=cwbcount]").parent().parent().hide();//显示订单数量
+			$("#columnSetting input[field=cwbcount]").attr("checked",false);
+			$("#columnSetting input[field=sendcarnum]").parent().parent().hide();//显示发货数量
+			$("#columnSetting input[field=sendcarnum]").attr("checked",false);
+			$("#columnSetting input[field=consigneename]").parent().parent().hide();//显示收件人
+			$("#columnSetting input[field=consigneename]").attr("checked",false);
+			$("#columnSetting input[field=consigneeaddress]").parent().parent().hide();//显示地址
+			$("#columnSetting input[field=consigneeaddress]").attr("checked",false);
+			$("#columnSetting input[field=consigneepostcode]").parent().parent().hide();//显示邮编
+			$("#columnSetting input[field=consigneepostcode]").attr("checked",false);
+			$("#columnSetting input[field=consigneemobile]").parent().parent().hide();//显示电话
+			$("#columnSetting input[field=consigneemobile]").attr("checked",false);
+			$("#columnSetting input[field=consigneephone]").parent().parent().hide();//显示手机
+			$("#columnSetting input[field=consigneephone]").attr("checked",false);
+			$("#columnSetting input[field=carrealweight]").parent().parent().show();//显示重量
+			$("#columnSetting input[field=carrealweight]").attr("checked",false);
+			$("#columnSetting input[field=backcarnum]").parent().parent().hide();//显示取货数量
+			$("#columnSetting input[field=backcarnum]").attr("checked",false);
+			$("#columnSetting input[field=caramount]").parent().parent().hide();//显示货物金额
+			$("#columnSetting input[field=caramount]").attr("checked",false);
+			$("#columnSetting input[field=carsize]").parent().parent().hide();//显示尺寸
+			$("#columnSetting input[field=carsize]").attr("checked",false);
+			$("#columnSetting input[field=paywayid]").parent().parent().hide();//显示支付方式
+			$("#columnSetting input[field=paywayid]").attr("checked",false);
+			$("#columnSetting input[field=receivablefee]").parent().parent().hide();//显示应收金额
+			$("#columnSetting input[field=receivablefee]").attr("checked",false);
+			$("#columnSetting input[field=paybackfee]").parent().parent().hide();//显示应退金额
+			$("#columnSetting input[field=paybackfee]").attr("checked",false);
+			$("#columnSetting input[field=cwbremark]").parent().parent().show();//显示备注
+			$("#columnSetting input[field=cwbremark]").attr("checked",false);
+			$("#columnSetting input[field=startbranch]").parent().parent().hide();//隐藏上一站
+			$("#columnSetting input[field=startbranch]").attr("checked",false);
+			$("#columnSetting input[field=baleno]").parent().parent().show();//隐藏订单号包号
+			$("#columnSetting input[field=baleno]").attr("checked",false);
+			$("#columnSetting input[field=carwarehouse]").parent().parent().hide();//隐藏发货仓库
+			$("#columnSetting input[field=carwarehouse]").attr("checked",false);
+			$("#columnSetting input[field=credate]").parent().parent().hide();//隐藏退货日期
+			$("#columnSetting input[field=credate]").attr("checked",false);
+			$("#columnSetting input[field=transcwb]").parent().parent().hide();//隐藏运单号
+			$("#columnSetting input[field=transcwb]").attr("checked",false);
+			$("#columnSetting input[field=tuihuozhanrukutime]").parent().parent().hide();//隐藏退货站入库时间
+			$("#columnSetting input[field=tuihuozhanrukutime]").attr("checked",false);
+			$("#columnSetting input[field=sendcarname]").parent().parent().hide();//隐藏发货商品
+			$("#columnSetting input[field=sendcarname]").attr("checked",false);
+			$("#columnSetting input[field=reasoncontent]").parent().parent().hide();//隐藏退货原因
+			$("#columnSetting input[field=reasoncontent]").attr("checked",false);
+			$("#columnSetting input[field=backcarname]").parent().parent().hide();//隐藏取货商品
+			$("#columnSetting input[field=backcarname]").attr("checked",false);
+			$("#columnSetting input[field=emaildate]").parent().parent().hide();//隐藏发货日期商品
+			$("#columnSetting input[field=emaildate]").attr("checked",false);
+			break;
+		default:
+			break;
+		}
+		
 	});
 	
 	
@@ -347,16 +976,29 @@ $(function(){
 				<td width="33%">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
+							<!-- 退货日期   -->
 							<tr style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="customername" columnName="供货商"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>供货商</strong></td>
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="credate" columnName="退货日期"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货日期</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwb" columnName="订单号"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="transcwb" columnName="运单号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>运单号</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="customername" columnName="供货商"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>供货商</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -364,16 +1006,11 @@ $(function(){
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单类型</strong></td>
 								<td align="center" valign="middle"><input name="textfield2" type="text" id="textfield2" value="100" size="10"/>cm</td>
 							</tr>
-							<tr id="cwbcount" style="background-color: rgb(249, 252, 253); ">
-								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbcount" columnName="订单数量"/></td>
-								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单数量</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
-								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
-							</tr>
+							
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="sendcarnum" columnName="发货数量"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货数量</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -388,7 +1025,44 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							<tr id="cwbcount" style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbcount" columnName="订单数量"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单数量</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 							
+							<!-- 添加上一站ID   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranch" columnName="上一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 添加包号   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="baleno" columnName="订单号/包号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>订单号/包号</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<!-- 添加发货仓库   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="carwarehouse" columnName="发货仓库"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货仓库</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							<!-- 单数-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="danshu" columnName="单数"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>单数</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 							
 						</tbody>
 					</table>
@@ -415,6 +1089,15 @@ $(function(){
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							
+							
+							<!-- 件数-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="jianshu" columnName="件数"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>件数</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="carrealweight" columnName="重量"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>重量</strong></td>
@@ -435,6 +1118,40 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							
+							<!-- 添加退货站入库时间   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="tuihuozhanrukutime" columnName="退货站入库时间"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货站入库时间</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<!-- 添加发货商品   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="sendcarname" columnName="发货商品"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货商品</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							
+							<!-- 添加代收货款   -->
+							<!-- <tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="receivablefee" columnName="代收货款"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>代收货款</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<td><button class="upButton">上移</button><button class="downButton">下移</button></td>
+							</tr> -->
+
+							
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="startbranchid" columnName="上一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>上一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+
 						</tbody>
 					</table>
 				</td>
@@ -450,7 +1167,7 @@ $(function(){
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="receivablefee" columnName="应收金额"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>应收金额</strong></td>
-								<td width="100" align="center" valign="middle"><input type="text" value="100" size="10"/>cm</td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
 							<tr style="background-color: rgb(249, 252, 253); ">
@@ -465,19 +1182,89 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							<tr style="background-color: rgb(249, 252, 253);display:none " id="opreator">
+							<tr id="opreator" style="background-color: rgb(249, 252, 253);display:none">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="opreator" columnName="操作人"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>操作人</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
+							<!-- 称重重量-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="chengzhong" columnName="称重重量"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>称重重量</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							<!-- 退货原因   reason -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="reasoncontent" columnName="退货原因"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货原因</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 添加取货商品   -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox" field="backcarname" columnName="取货商品"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>取货商品</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<!-- 驾驶员  realname -->
+							<!-- <tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="realname" columnName="驾驶员"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>驾驶员</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<td><button class="upButton">上移</button><button class="downButton">下移</button></td>
+							</tr> -->
+							
+							<!-- 发货日期  emaildate-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="emaildate" columnName="发货日期"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>发货日期</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							<!-- 下一站-->
+							<tr style="background-color: rgb(249, 252, 253); display: none;">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="nextbranchid" columnName="下一站"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>下一站</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							
+							
+							
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbremark" columnName="备注"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>备注</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-							
+
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="backintotime" columnName="退货站入库时间"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货站入库时间</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+								<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="backreason" columnName="退货原因"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>退货原因</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="driver" columnName="司机"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>司机</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
 						</tbody>
 					</table>
 				</td>

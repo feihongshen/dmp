@@ -17,14 +17,15 @@ public class Complaint {
 	private long createUser;// 投诉创建人
 	private long auditUser;// 投诉审核人
 	private long servertreasonid;// 服务投诉类型对应的reasonid
+	private String replyDetail;// 处理回复
 
 	public Complaint() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		createTime = sdf.format(new Date());
+		this.createTime = sdf.format(new Date());
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -32,7 +33,7 @@ public class Complaint {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -40,7 +41,7 @@ public class Complaint {
 	}
 
 	public long getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(long type) {
@@ -48,7 +49,7 @@ public class Complaint {
 	}
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -56,7 +57,7 @@ public class Complaint {
 	}
 
 	public long getDeliveryid() {
-		return deliveryid;
+		return this.deliveryid;
 	}
 
 	public void setDeliveryid(long deliveryid) {
@@ -64,7 +65,7 @@ public class Complaint {
 	}
 
 	public long getAuditType() {
-		return auditType;
+		return this.auditType;
 	}
 
 	public void setAuditType(long auditType) {
@@ -72,7 +73,7 @@ public class Complaint {
 	}
 
 	public String getContent() {
-		return content;
+		return this.content;
 	}
 
 	public void setContent(String content) {
@@ -80,7 +81,7 @@ public class Complaint {
 	}
 
 	public String getAuditRemark() {
-		return auditRemark;
+		return this.auditRemark;
 	}
 
 	public void setAuditRemark(String auditRemark) {
@@ -88,7 +89,7 @@ public class Complaint {
 	}
 
 	public String getCreateTime() {
-		return createTime;
+		return this.createTime;
 	}
 
 	public void setCreateTime(String createTime) {
@@ -96,7 +97,7 @@ public class Complaint {
 	}
 
 	public String getAuditTime() {
-		return auditTime;
+		return this.auditTime;
 	}
 
 	public void setAuditTime(String auditTime) {
@@ -104,7 +105,7 @@ public class Complaint {
 	}
 
 	public long getCreateUser() {
-		return createUser;
+		return this.createUser;
 	}
 
 	public void setCreateUser(long createUser) {
@@ -112,7 +113,7 @@ public class Complaint {
 	}
 
 	public long getAuditUser() {
-		return auditUser;
+		return this.auditUser;
 	}
 
 	public void setAuditUser(long auditUser) {
@@ -120,11 +121,19 @@ public class Complaint {
 	}
 
 	public long getServertreasonid() {
-		return servertreasonid;
+		return this.servertreasonid;
 	}
 
 	public void setServertreasonid(long servertreasonid) {
 		this.servertreasonid = servertreasonid;
+	}
+
+	public String getReplyDetail() {
+		return this.replyDetail;
+	}
+
+	public void setReplyDetail(String replyDetail) {
+		this.replyDetail = replyDetail;
 	}
 
 }

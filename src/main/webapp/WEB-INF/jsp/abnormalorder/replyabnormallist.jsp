@@ -157,7 +157,7 @@ function sumitForm(){
 		<div class="kfsh_tabbtn">
 			<ul>
 				<li><a href="../toCreateabnormal">创建问题件</a></li>
-				<li><a href="#"  class="light">问题件回复</a></li>
+				<!-- <li><a href="#"  class="light">问题件回复</a></li> -->
 			</ul>
 		</div>
 		<div class="tabbox">

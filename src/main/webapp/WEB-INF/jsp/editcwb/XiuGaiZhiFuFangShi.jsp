@@ -80,7 +80,9 @@ a{
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
  		<select name="Newpaywayid_<%=cods.getCwbOrder().getCwb() %>">
  		<%for(PaytypeEnum paytypeEnum:PaytypeEnum.values()){ %>
+ 		    <%if(paytypeEnum.getValue() != PaytypeEnum.CodPos.getValue()){ %>
  			<option value="<%=paytypeEnum.getValue() %>" <%=(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())==paytypeEnum.getValue())?"selected":"" %>><%=paytypeEnum.getText() %></option>
+ 			<%} %>
  		<%} %>
  		</select>
  		</td>

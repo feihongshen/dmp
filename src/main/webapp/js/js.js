@@ -291,8 +291,27 @@ function submitSaveFormAndCloseBox(form) {
 			if (data.errorCode == 0) {
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 				closeBox();
-//				alert($("#WORK_AREA"));
-//				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				$("#WORK_AREA")[0].contentWindow.refreshState();
+			}
+		}
+	});
+}
+function yichuli1() {
+	$("#describe2").val($("#describe").val());
+	// alert($("#describe2").val());
+	// $("#form2").submit();
+	$.ajax({
+		type : "POST",
+		url : $("#form2").attr("action"),
+		data : $("#form2").serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				closeBox();
 			}
 		}
 	});
@@ -394,7 +413,7 @@ function uploadFormInit(form, contextPath) {
 		$(".tishi_box", parent.document).html(dataObj.error);
 		$(".tishi_box", parent.document).show();
 		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
-		//$("#wavText").val("");
+		// $("#wavText").val("");
 		if (dataObj.errorCode == 0) {
 			if (dataObj.type == "add") {
 				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
@@ -990,10 +1009,10 @@ function check_user() {
 		alert("请选择员工所在机构");
 		return false;
 	}
-	if ($("#showphoneflag").val() == -1) {
-		alert("请选择员工 订单电话/手机是否可见");
-		return false;
-	}
+	/*
+	 * if ($("#showphoneflag").val() == -1) { alert("请选择员工 订单电话/手机是否可见"); return
+	 * false; }
+	 */
 	if ($("#update").contents().find("#wavText").val().length > 4
 			&& $("#update").contents().find("#wavText").val().substring($("#update").contents().find("#wavText").val().length - 4) != ".wav"
 			&& $("#update").contents().find("#wavText").val().substring($("#wavText").val().length - 4) != ".WAV") {
@@ -1026,13 +1045,14 @@ function check_user() {
 			return false;
 		}
 
-	/*	else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
-			alert("手机号码格式有误!");
-			return false;
-		}*/
+		/*
+		 * else if ($("#usermobile").val().length != 11 ||
+		 * isMobileNumber($("#usermobile").val()) == false) {
+		 * alert("手机号码格式有误!"); return false; }
+		 */
 	}
 	return true;
-} 
+}
 function roleChange() {
 	$("#tip").html("");
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
@@ -1198,6 +1218,7 @@ function checkPDAAll() {
 function init_deliverystate() {
 	$("#backreasonid").parent().hide();
 	$("#leavedreasonid").parent().hide();
+	$("#firstlevelreasonid").parent().hide();
 	$("#podremarkid").parent().hide();
 	// $("#shouldfee").parent().hide();
 	$("#infactfee").parent().hide();
@@ -1272,7 +1293,7 @@ function bufentuihuoObj(podremarkid) {
 function zhiliuObj() {
 	gonggong();
 	$("#leavedreasonid").parent().show();
-
+	$("#firstlevelreasonid").parent().show();
 }
 
 function zhongzhuanObj() {
@@ -1322,10 +1343,10 @@ function signmanchange() {
 	}
 }
 
-// 监控配送状态变化 对显示字段做相应处理
-function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
-		ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid, showposandqita,
-		needdefault) {
+
+function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu,
+		ZhiLiuZiDongLingHuo, ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid,
+		showposandqita, needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
 	$("#infactfare").removeAttr('disabled');
 	init_deliverystate();
@@ -1454,7 +1475,7 @@ function click_podresultid(deliverystate,PeiSongChengGong, ShangMenTuiChengGong,
 	if(podresultid==7){
 		$("#infactfare").attr('disabled','true');
 		$("#infactfare").val(0);
-		
+
 	}
 }
 
@@ -1494,10 +1515,17 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == FenZhanZhiLiu || podresultid == ZhiLiuZiDongLingHuo) {// 分站滞留、滞留自动领货
-		if (isReasonRequired == 'yes' && !leavereasonid > 0) {
+		if (isReasonRequired == 'yes' && (firstlevelreasonid==0||leavereasonid==0)) {//!leavereasonid > 0||!firstlevelreasonid>0
 			alert("请选择滞留原因");
 			return false;
-		} else {
+			//&& (firstlevelreasonid==0||leavereasonid==0)
+		} else if(isReasonRequired != 'yes'){
+			if(firstlevelreasonid!=0&&leavereasonid==0){
+				alert("请选择滞留原因");
+				return false;
+			}
+		}
+		else {
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == DaiZhongZhuan) {// 分站滞留、滞留自动领货
@@ -3460,6 +3488,13 @@ function errorvedioplay(pname, data) {
 	newPlayWav(url);
 }
 
+function successvedioplay(pname, data) {
+	// $("#wavPlay", parent.document).attr("src",
+	// pname + "/wavPlay?wavPath=" + data.wavPath + "&a=" + Math.random());
+	var url = pname + "/images/waverror/success.wav";
+	newPlayWav(url);
+}
+
 function playGoodsTypeWav(contextPath, data) {
 	var goodsTypeWav = data.body.goodsTypeWav;
 	if (goodsTypeWav != "") {
@@ -4089,10 +4124,11 @@ function check_userbranch() {
 		alert("员工手机不能为空");
 		return false;
 	}
-	/*if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
-		alert("手机号码格式有误!");
-		return false;
-	}*/
+	/*
+	 * if ($("#usermobile").val().length != 11 ||
+	 * isMobileNumber($("#usermobile").val()) == false) { alert("手机号码格式有误!");
+	 * return false; }
+	 */
 	return true;
 }
 
@@ -4881,4 +4917,142 @@ function editoffenword(){
 	}else{
 		$('#selectapply').attr('hidden','true');
 	}
+}
+
+function SubmitHandleabnormalBatch(flag) {
+	$("#ishandle").val(flag);
+}
+function detail(key) {
+	$.ajax({
+		type : "POST",
+		url : $("#detail").val() + key,
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+		},
+		complete : function() {
+			editInit();// 初始化ajax弹出页面
+			viewBox();
+		}
+	});
+}
+function setFlag(url) {
+var replyDetail=$("#replyDetail").val();
+	$.ajax({
+		url : url, // 后台处理程序
+		type : "POST",// 数据发送方式
+		dataType : 'json',// 接受数据格式
+		data:{"replyDetail":replyDetail},
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				closeBox();
+				$("#WORK_AREA")[0].contentWindow.addSuccess(data);
+			}
+		}
+	});
+}
+
+
+function getfirstvalue(URL, expt_type) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "expt_type=" + expt_type,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#firstreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value='-1'>==一级滞留==</option>").appendTo("#firstreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value='" + json[j].reasonid + "'>" + json[j].reasoncontent + "</option>").appendTo("#firstreasonid");
+			}
+		}
+	});
+}
+
+
+function reasonByLevel(URL, expt_type){
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstreasonid=" + expt_type,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#reasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value='-1'>请选择异常原因</option>").appendTo("#reasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value='" + json[j].reasonid + "'>" + json[j].reasoncontent + "</option>").appendTo("#reasonid");
+			}
+		}
+	});
+}
+
+function whenhidden(){
+	$("#div_2").attr('hidden','true');
+	$("#divs").attr('hidden','true');
+	if($("#reasontype").val()==2)
+	{
+		$("#divs").removeAttr('hidden');
+		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
+			$("#div_2").removeAttr('hidden');
+		}
+	}
+} 
+
+function to_change(flag){
+	if($("#reasontype").val()==2)
+	{
+		$("#divs").removeAttr('hidden');
+			if(flag==1){
+				$("#div_2").attr('hidden','true');
+			}
+			else 
+			{
+			$("#div_2").removeAttr('hidden');
+			}
+	}else{
+		$("#div_2").attr('hidden','true');
+		}
+}
+
+function updaterelatelevel(URL, firstlevelreasonid) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstlevelreasonid=" + firstlevelreasonid,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#leavedreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#leavedreasonid");
+			}
+		}
+	});
+}
+
+function updaterelatelevel2(URL, firstlevelreasonid) {
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : "firstzhiliureason=" + firstlevelreasonid,// 参数
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#leavedreasonid").empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#leavedreasonid");// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#leavedreasonid");
+			}
+		}
+	});
+}
+function getfirstlevel(flag){
+	$("#first").attr('hidden',true); 
+	if(flag==2){
+		$("#first").attr('hidden',false);
+	}
+	
 }

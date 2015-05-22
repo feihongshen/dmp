@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
@@ -30,6 +31,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.Smtcount;
+import cn.explink.domain.User;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -39,12 +41,77 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class CwbDAO {
 	private Logger logger = LoggerFactory.getLogger(CwbDAO.class);
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = new ExplinkUserDetail();
+		try {
+			userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		} catch (Exception e) {
+			User u = new User();
+			u.setShowmobileflag(1);
+			u.setShowphoneflag(1);
+			u.setShownameflag(1);
+			return u;
+		}
+		return userDetail.getUser();
+
+	}
+
+	private User getUser() {
+		return CwbDAO.this.getSessionUser() == null ? new User() : CwbDAO.this.getSessionUser();
+	}
+
+	private void setValueByUser(ResultSet rs, CwbOrder cwbOrder) throws SQLException {
+		if (CwbDAO.this.getUser().getShownameflag() != 1) {
+			cwbOrder.setConsigneename("******");
+		} else {
+			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		}
+		if (CwbDAO.this.getUser().getShowphoneflag() != 1) {
+			cwbOrder.setConsigneephone("******");
+		} else {
+			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+		}
+		if (CwbDAO.this.getUser().getShowmobileflag() != 1) {
+			cwbOrder.setConsigneemobile("******");
+		} else {
+			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		}
+		cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+
+	}
+
+	private void setValueByUser(ResultSet rs, JSONObject obj) throws SQLException {
+		if (CwbDAO.this.getUser().getShownameflag() != 1) {
+			obj.put("consigneename", "******");
+		} else {
+			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		}
+		if (CwbDAO.this.getUser().getShowphoneflag() != 1) {
+			obj.put("consigneephone", "******");
+		} else {
+			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+		}
+		if (CwbDAO.this.getUser().getShowmobileflag() != 1) {
+			obj.put("consigneemobile", "******");
+		} else {
+			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		}
+		obj.put("consigneemobileOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		obj.put("consigneenameOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		obj.put("consigneephoneOfkf", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+	}
 
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 
@@ -83,10 +150,8 @@ public class CwbDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -98,7 +163,6 @@ public class CwbDAO {
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setShipperid(rs.getLong("shipperid"));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -154,9 +218,15 @@ public class CwbDAO {
 			cwbOrder.setChangereason(rs.getString("changereason"));
 			cwbOrder.setChangereasonid(rs.getLong("changereasonid"));
 			cwbOrder.setFirstchangereasonid(rs.getLong("firstchangereasonid"));
+			cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
+			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));
+			cwbOrder.setFnorgoffset(rs.getBigDecimal("fnorgoffset"));
+			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
 		}
+
 	}
 
 	private final class CwbPayMapper implements RowMapper<JSONObject> {
@@ -196,10 +266,10 @@ public class CwbDAO {
 			obj.put("customerid", rs.getLong("customerid"));
 			obj.put("shipcwb", StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			obj.put("consigneeno", StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+
+			CwbDAO.this.setValueByUser(rs, obj);
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("consigneepostcode", StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			obj.put("cwbremark", StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			obj.put("customercommand", StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			obj.put("transway", StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -211,7 +281,6 @@ public class CwbDAO {
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			obj.put("shipperid", rs.getLong("shipperid"));
 			obj.put("cwbordertypeid", rs.getInt("cwbordertypeid"));
-			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			obj.put("transcwb", StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			obj.put("destination", StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			obj.put("cwbdelivertypeid", StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -254,6 +323,7 @@ public class CwbDAO {
 			obj.put("pushtime", rs.getString("pushtime"));
 			return obj;
 		}
+
 	}
 
 	private final class CwbBackPayMapper implements RowMapper<JSONObject> {
@@ -293,10 +363,8 @@ public class CwbDAO {
 			obj.put("customerid", rs.getLong("customerid"));
 			obj.put("shipcwb", StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			obj.put("consigneeno", StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("consigneepostcode", StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			obj.put("consigneephone", StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			obj.put("cwbremark", StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			obj.put("customercommand", StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			obj.put("transway", StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -308,7 +376,6 @@ public class CwbDAO {
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			obj.put("shipperid", rs.getLong("shipperid"));
 			obj.put("cwbordertypeid", rs.getInt("cwbordertypeid"));
-			obj.put("consigneemobile", StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			obj.put("transcwb", StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			obj.put("destination", StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			obj.put("cwbdelivertypeid", StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -350,6 +417,7 @@ public class CwbDAO {
 			obj.put("receivedfee", rs.getBigDecimal("receivedfee"));
 			obj.put("deliverystate", rs.getInt("deliverystate"));
 			obj.put("deliverytime", rs.getString("deliverytime"));
+			CwbDAO.this.setValueByUser(rs, obj);
 			return obj;
 		}
 	}
@@ -378,17 +446,15 @@ public class CwbDAO {
 			cwbOrder.setBackcarnum(rs.getLong("backcarnum"));
 			cwbOrder.setCaramount(rs.getBigDecimal("caramount"));
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			cwbOrder.setPaybackfee(rs.getBigDecimal("paybackfee"));
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setPaywayid(rs.getLong("paywayid"));
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			return cwbOrder;
 		}
 
@@ -530,7 +596,11 @@ public class CwbDAO {
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrder cwbOrder = new CwbOrder();
 			cwbOrder.setOpscwbid(rs.getLong("opscwbid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+			if (CwbDAO.this.getUser().getShowmobileflag() == 1) {
+				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+			} else {
+				cwbOrder.setConsigneemobile("******");
+			}
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			return cwbOrder;
 		}
@@ -561,7 +631,11 @@ public class CwbDAO {
 			JSONObject obj = new JSONObject();
 			obj.put("deliveryid", rs.getLong("deliveryid"));
 			obj.put("customerid", rs.getLong("customerid"));
-			obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			if (CwbDAO.this.getUser().getShownameflag() != 1) {
+				obj.put("consigneename", "******");
+			} else {
+				obj.put("consigneename", StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			}
 			obj.put("consigneeaddress", StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			obj.put("receivablefee", rs.getBigDecimal("receivablefee"));
 			obj.put("cwb", StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
@@ -609,10 +683,8 @@ public class CwbDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -624,7 +696,6 @@ public class CwbDAO {
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setShipperid(rs.getLong("shipperid"));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -675,7 +746,7 @@ public class CwbDAO {
 
 			cwbOrder.setFankuitime(rs.getString("fankuitime"));
 			cwbOrder.setShenhetime(rs.getString("shenhetime"));
-
+			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			try {
 				if (rs.getString("chuzhantime") != null) {
 					cwbOrder.setChuzhantime(rs.getString("chuzhantime"));
@@ -716,7 +787,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的发货数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -740,7 +811,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的发货数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -760,7 +831,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的妥投数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -782,7 +853,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的拒收数据：包括拒收、上门退拒退、部分拒收
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -804,7 +875,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的滞留数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -825,7 +896,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的货物丢失数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -846,7 +917,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的无结果数据
-	 *
+	 * 
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -1052,7 +1123,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询当前以匹配的数
-	 *
+	 * 
 	 * @param customerid
 	 * @param branchid
 	 * @param beginemaildate
@@ -1131,7 +1202,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询存在的订单号.
-	 *
+	 * 
 	 * @param cwbs
 	 *            1,2,3.
 	 * @return 去重订单号.
@@ -1306,7 +1377,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 *
+	 * 
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1330,7 +1401,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 *
+	 * 
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1368,7 +1439,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息
-	 *
+	 * 
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -1466,7 +1537,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1484,7 +1555,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1503,7 +1574,7 @@ public class CwbDAO {
 
 	/**
 	 * 不分页 得到出库已出库数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param flowordertype
@@ -1519,7 +1590,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1534,7 +1605,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据列表
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1590,7 +1661,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供应商 未出库（所有）
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -1682,7 +1753,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1701,7 +1772,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1717,7 +1788,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1737,7 +1808,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1754,7 +1825,7 @@ public class CwbDAO {
 
 	/**
 	 * 已到货订单统计
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -1766,7 +1837,7 @@ public class CwbDAO {
 
 	/**
 	 * 已到货订单列表
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -1814,7 +1885,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取未入库的订单列表
-	 *
+	 * 
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -1844,7 +1915,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取中转站未入库的订单列表
-	 *
+	 * 
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -1940,6 +2011,16 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
 	}
 
+	public Smtcount getBackAndChangeRukubyBranchids(String branchids, long flowordertype) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_operation_time FORCE INDEX(OTime_nextbranchid_Idx) ";
+		sql += "WHERE nextbranchid in(" + branchids + ") and flowordertype=" + flowordertype + " ";
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper());
+	}
+
 	// 退货站已入库订单
 	public long getBackYiRukubyBranchid(long branchid) {
 		return this.jdbcTemplate.queryForLong("SELECT COUNT(1) FROM express_ops_cwb_detail WHERE currentbranchid=? and flowordertype=? and state=1 ", branchid,
@@ -1957,10 +2038,31 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 	}
 
+	public Smtcount getBackAndChangeYiRukubyBranchids(String branchids, long flowordertype) {
+		String sql = "SELECT COUNT(1) count,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_ops_operation_time FORCE INDEX(OTime_Branchid_Idx) ";
+		sql += " WHERE branchid in(" + branchids + ") and flowordertype=" + flowordertype + " ";
+
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper());
+	}
+
 	// 退货站已入库订单列表
 	public List<CwbOrder> getBackYiRukuListbyBranchid(long branchid, long page) {
 		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and flowordertype=? and state=1 limit ?,?", new CwbMapper(), branchid,
 				FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+
+	/**
+	 * 退货站已入库订单列表,按订单号查询
+	 * 
+	 * @param cwbs
+	 * @return
+	 */
+	public List<CwbOrder> getListbyCwbs(String cwbs) {
+		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE cwb in(" + cwbs + ") and state=1", new CwbMapper());
 	}
 
 	public List<CwbOrder> getBackYiRukuListbyBranchid(long branchid, long page, long cwbordertypeid) {
@@ -2034,7 +2136,7 @@ public class CwbDAO {
 
 	/**
 	 * 已领货 没有订单号
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param deliverid
 	 * @return
@@ -2195,7 +2297,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库（有分页）
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -2248,9 +2350,9 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, backreturnreason, backreturnreasonid, cwb);
 	}
 
-	public void saveCwbForLeavereason(String cwb, String leavedreason, long leavedreasonid) {
-		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=? where cwb=?";
-		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, cwb);
+	public void saveCwbForLeavereason(String cwb, String leavedreason, long leavedreasonid, int firstlevelreasonid) {
+		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=?, firstlevelid=? where cwb=?";
+		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, firstlevelreasonid, cwb);
 	}
 	
 	public void saveCwbForChangereason(String cwb, String changereason, long changereasonid,long firstchangereasonid) {
@@ -2268,7 +2370,7 @@ public class CwbDAO {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param emaildateid
 	 * @return String[] 0是单数 1是应收金额 2是应退金额
 	 */
@@ -2280,7 +2382,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得大于toDay时间的对应emailFinishFlag状态的branchid机构的customerid供货商的订单与金额的汇总
-	 *
+	 * 
 	 * @param emailFinishFlag
 	 *            对应EmailFinishFlagEnum
 	 * @param branchid
@@ -2750,7 +2852,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取相应条件对应的sql组合字符串
-	 *
+	 * 
 	 * @param sql
 	 * @param begindate
 	 * @param enddate
@@ -2888,7 +2990,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据小件员Id和Cwb查询订单详情
-	 *
+	 * 
 	 * @param deliverid
 	 * @param cwb
 	 * @return
@@ -2911,7 +3013,7 @@ public class CwbDAO {
 
 	/**
 	 * 撤销
-	 *
+	 * 
 	 * @param deliverid
 	 * @param cwb
 	 */
@@ -3012,7 +3114,7 @@ public class CwbDAO {
 	// ==============货款结算===============
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 *
+	 * 
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -3031,7 +3133,7 @@ public class CwbDAO {
 	// =====================库房日志统计 获取list=========begin===================
 	/**
 	 * 未入库 flowordertype = 1
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3046,7 +3148,7 @@ public class CwbDAO {
 
 	/**
 	 * 未入库 flowordertype = 1 不限制供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3060,7 +3162,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3074,7 +3176,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的 全部供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3086,7 +3188,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3101,7 +3203,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8 不限制供货商
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3115,7 +3217,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3128,7 +3230,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商的到错货 flowordertype =8
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3147,7 +3249,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出昨日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3163,7 +3265,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商 昨日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param customerid
 	 * @param startTime
@@ -3177,7 +3279,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3193,7 +3295,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3215,7 +3317,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3230,7 +3332,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日出库在途 flowordertype =6
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3244,7 +3346,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3257,7 +3359,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存 不限制供货商
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3270,7 +3372,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3282,7 +3384,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日库存
-	 *
+	 * 
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3294,7 +3396,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3310,7 +3412,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3347,7 +3449,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3362,7 +3464,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3376,7 +3478,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3391,7 +3493,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3406,7 +3508,7 @@ public class CwbDAO {
 	//
 	/**
 	 * 库房 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3425,7 +3527,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 出库已到站的list 不限制供货商
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3444,7 +3546,7 @@ public class CwbDAO {
 
 	/**
 	 * 站点 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3463,7 +3565,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出 站点 出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3483,7 +3585,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3503,7 +3605,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出所有供货商出库已到站的list
-	 *
+	 * 
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3947,7 +4049,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询订单
-	 *
+	 * 
 	 * @param branchid
 	 * @param flowordertype
 	 *            库房出库，站点到站，领货
@@ -3959,7 +4061,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询滞留的订单
-	 *
+	 * 
 	 * @param branchid
 	 * @param deliverystate
 	 *            滞留的状态 6
@@ -3993,7 +4095,7 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum flowordertype, DeliveryStateEnum deliveryState, long currentbranchid) {
-		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND flowordertype=? AND deliverystate=? AND state=1 ";
+		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND flowordertype=? AND deliverystate=? AND state=1 and cwbstate=2";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), currentbranchid, flowordertype.getValue(), deliveryState.getValue());
 	}
 
@@ -4180,7 +4282,7 @@ public class CwbDAO {
 
 	/**
 	 * 重置审核状态 修改订单表字段
-	 *
+	 * 
 	 * @param nextbranchid
 	 *            下一站 目前逻辑如此 改为对应货物所在站点的中转站id
 	 * @param flowordertype
@@ -4201,7 +4303,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改金额 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param receivablefee
@@ -4215,7 +4317,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单支付方式 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param newpaywayid
@@ -4227,7 +4329,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单类型 修改订单表字段
-	 *
+	 * 
 	 * @param opscwbid
 	 * @param newcwbordertypeid
 	 *            新的订单类型
@@ -4244,7 +4346,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到待返单出站的订单信息
-	 *
+	 * 
 	 * @param type
 	 * @param branchid
 	 * @param isnow
@@ -4309,7 +4411,7 @@ public class CwbDAO {
 	 * 返单待入库
 	 *
 	 * 得到待返单入库的订单信息
-	 *
+	 * 
 	 * @param type
 	 * @param tobranchid
 	 * @param isnow
@@ -4341,7 +4443,7 @@ public class CwbDAO {
 	
 	/**
 	 * 获得供货商拒收返库 待出库数量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4353,7 +4455,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 已出库数量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4364,7 +4466,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 待出库订单
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4375,7 +4477,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取 供货商拒收返库 已扫描
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4441,7 +4543,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于 入库 导出
-	 *
+	 * 
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4464,7 +4566,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库 导出 sql
-	 *
+	 * 
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4483,7 +4585,7 @@ public class CwbDAO {
 
 	/**
 	 * 未出库 导出 sql
-	 *
+	 * 
 	 * @param branchid
 	 * @param b
 	 * @param cwbstate
@@ -4505,7 +4607,7 @@ public class CwbDAO {
 
 	/**
 	 * 已出库 导出 sql
-	 *
+	 * 
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param value
@@ -4530,7 +4632,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库
-	 *
+	 * 
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -4551,7 +4653,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库 导出
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4563,7 +4665,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到退供货商 已出库 件数
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4584,7 +4686,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库 导出
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -4596,7 +4698,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转出站打印 添加时间选项
-	 *
+	 * 
 	 * @param page
 	 * @param startbranchid
 	 * @param nextbranchid
@@ -4618,6 +4720,11 @@ public class CwbDAO {
 	public void saveTranscwbByCwb(String transcwb, String cwb) {
 		String sql = "update express_ops_cwb_detail set transcwb=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, transcwb, cwb);
+	}
+
+	public void updateCwbRemark5(String cwb, String remark5) {
+		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, remark5, cwb);
 	}
 
 	public List<CwbOrder> getIntoCwbByCwbsPage(long page, String cwbs, String customers, long cwbordertypeid, String emaildatebegin, String emaildateend) {
@@ -4692,7 +4799,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库统计 发货库房 支持多选
-	 *
+	 * 
 	 * @param begindate
 	 * @param enddate
 	 * @param orderName
@@ -4756,7 +4863,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库 发货库房支持多选 导出
-	 *
+	 * 
 	 * @param page
 	 * @param begindate
 	 * @param enddate
@@ -4778,7 +4885,7 @@ public class CwbDAO {
 	// ==========================小件员领货查询====================================
 	/**
 	 * * 小件员领货查询List
-	 *
+	 * 
 	 * @param page
 	 * @param deliveryid
 	 * @param start
@@ -4827,7 +4934,7 @@ public class CwbDAO {
 
 	/**
 	 * 出库打印 按照站点分开
-	 *
+	 * 
 	 * @param cwbs
 	 * @param nextbranchid
 	 * @return
@@ -4843,7 +4950,7 @@ public class CwbDAO {
 
 	/**
 	 * 分站到货 已到货
-	 *
+	 * 
 	 * @param yidaohuo
 	 * @param page
 	 * @return
@@ -4856,7 +4963,7 @@ public class CwbDAO {
 
 	/**
 	 * 揽收 更新数据
-	 *
+	 * 
 	 * @param cwb
 	 * @param consigneename
 	 * @param consigneeaddress
@@ -4965,7 +5072,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据订单号 和 当前环节
-	 *
+	 * 
 	 * @param string
 	 * @param strings
 	 * @return
@@ -4983,7 +5090,7 @@ public class CwbDAO {
 
 	/**
 	 * 合单修改multi_shipcwb
-	 *
+	 * 
 	 */
 	public void appendTranscwb(String cwb, String transcwb) {
 		try {
@@ -5010,7 +5117,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息 remark1 remark2
-	 *
+	 * 
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -5021,7 +5128,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询客户单量
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -5034,7 +5141,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询 客户发货统计
-	 *
+	 * 
 	 * @param branchid
 	 * @return
 	 */
@@ -5111,7 +5218,8 @@ public class CwbDAO {
 	// }
 
 	public List<Map<String, Object>> getCwbByPrintCwbs(String cwbs) {
-		String sql = "SELECT customerid,COUNT(1) count,SUM(receivablefee) receivablefee " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN(" + cwbs + ") GROUP BY customerid";
+		String sql = "SELECT COUNT(1) count,SUM(receivablefee) receivablefee,sum(carrealweight) carrealweight,sum(sendcarnum) sendcarnum " + "FROM express_ops_cwb_detail WHERE state=1 and cwb IN("
+				+ cwbs + ") ";
 		return this.jdbcTemplate.queryForList(sql);
 	}
 
@@ -5128,12 +5236,46 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, nextbranchid);
 	}
 
+	public String getWeirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long nextbranchid) {
+		String sql = "select * from express_ops_cwb_detail where  flowordertype=" + flowordertype + " and nextbranchid=" + nextbranchid + " AND state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
+	}
+
+	public String getWeirukuToSQL(long cwbordertypeid, long flowordertype, String nextbranchids) {
+		String sql = "select de.* from express_ops_operation_time as ot left join express_ops_cwb_detail as de" + " on ot.cwb=de.cwb where  " + "ot.flowordertype=" + flowordertype
+				+ " and ot.nextbranchid in(" + nextbranchids + ") AND de.state=1 ";
+		if (cwbordertypeid != 0) {
+			sql += " and ot.cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
+	}
+
 	public List<String> getYirukuCwbs(long cwbordertypeid, long flowordertype, long currentbranchid) {
 		String sql = "select cwb from express_ops_cwb_detail where flowordertype=? and currentbranchid=? AND state=1";
 		if (cwbordertypeid != 0) {
 			sql += " and cwbordertypeid=" + cwbordertypeid;
 		}
 		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, currentbranchid);
+	}
+
+	public String getYirukuCwbsToSQL(long cwbordertypeid, long flowordertype, long currentbranchid) {
+		String sql = "select * from express_ops_cwb_detail where flowordertype=" + flowordertype + " " + "and currentbranchid=" + currentbranchid + " AND state=1";
+		if (cwbordertypeid != 0) {
+			sql += " and cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
+	}
+
+	public String getYirukuToSQL(long cwbordertypeid, long flowordertype, String currentbranchids) {
+		String sql = "select de.* from express_ops_operation_time as ot left join express_ops_cwb_detail as de" + " on ot.cwb=de.cwb where  ot.flowordertype=" + flowordertype + " "
+				+ "and ot.branchid  in(" + currentbranchids + ") AND de.state=1";
+		if (cwbordertypeid != 0) {
+			sql += " and ot.cwbordertypeid=" + cwbordertypeid;
+		}
+		return sql;
 	}
 
 	public List<SmtOrder> querySmtOrder(String sql) {
@@ -5151,8 +5293,16 @@ public class CwbDAO {
 			SmtOrder newOrder = new SmtOrder();
 			newOrder.setCwbId(rs.getLong("opscwbid"));
 			newOrder.setCwb(rs.getString("cwb"));
-			newOrder.setCustomerName(rs.getString("consigneename"));
-			newOrder.setPhone(this.getPhoneNumber(rs));
+			if (CwbDAO.this.getUser().getShowmobileflag() == 1) {
+				newOrder.setCustomerName(rs.getString("consigneename"));
+			} else {
+				newOrder.setCustomerName("******");
+			}
+			if (CwbDAO.this.getUser().getShowphoneflag() == 1) {
+				newOrder.setPhone(rs.getString("consigneephone"));
+			} else {
+				newOrder.setPhone("******");
+			}
 			newOrder.setAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
 			newOrder.setMatchBranch(rs.getString("excelbranch"));
@@ -5202,8 +5352,18 @@ public class CwbDAO {
 			newOrder.setReportOutAreaBranchId(rs.getLong("f.branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("f.userid"));
 			newOrder.setCwb(rs.getString("d.cwb"));
-			newOrder.setCustomerName(rs.getString("d.consigneename"));
-			newOrder.setCustomerPhone(rs.getString("d.consigneephone"));
+			if (CwbDAO.this.getUser().getShownameflag() == 1) {
+				newOrder.setCustomerName(rs.getString("d.consigneename"));
+			} else {
+				newOrder.setCustomerName("******");
+
+			}
+			if (CwbDAO.this.getUser().getShowphoneflag() == 1) {
+				newOrder.setCustomerPhone(rs.getString("d.consigneephone"));
+			} else {
+				newOrder.setCustomerPhone("******");
+
+			}
 			newOrder.setCustomerAddress(rs.getString("d.consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("d.shouldfare"));
 			newOrder.setMatchBranchId(rs.getLong("d.deliverybranchid"));
@@ -5229,8 +5389,16 @@ public class CwbDAO {
 			newOrder.setReportOutAreaBranchId(rs.getLong("branchid"));
 			newOrder.setReportOutAreaUserId(rs.getLong("userid"));
 			newOrder.setCwb(rs.getString("cwb"));
-			newOrder.setCustomerName(rs.getString("consigneename"));
-			newOrder.setCustomerPhone(this.getPhoneNumber(rs));
+			if (CwbDAO.this.getUser().getShownameflag() == 1) {
+				newOrder.setCustomerName(rs.getString("consigneename"));
+			} else {
+				newOrder.setCustomerName("******");
+			}
+			if (CwbDAO.this.getUser().getShowphoneflag() == 1) {
+				newOrder.setCustomerPhone(rs.getString("consigneephone"));
+			} else {
+				newOrder.setCustomerPhone("******");
+			}
 			newOrder.setCustomerAddress(rs.getString("consigneeaddress"));
 			newOrder.setReceivedFee(rs.getDouble("shouldfare"));
 			newOrder.setMatchBranchId(rs.getLong("deliverybranchid"));
@@ -5348,6 +5516,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql.toString(), newBranchId, newBranchId, cwb);
 	}
 
+
 	public int getCwbOrderType(String cwb) {
 		String sql = "select cwbordertypeid from express_ops_cwb_detail where cwb = ?";
 
@@ -5368,5 +5537,149 @@ public class CwbDAO {
 	public void updateCwbRemarkPaytype(String cwb, String remark5) {
 		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, remark5, cwb);
+	}
+
+	public Map<String, Object> getCwbIDsByBale(String baleid) {
+		String sql = "select count(cwb) as cwbnum,IFNULL(sum(sendcarnum)+sum(backcarnum),0) as transcwbnum from express_ops_cwb_detail where state=1 and packagecode = " + baleid;
+		return this.jdbcTemplate.queryForMap(sql);
+
+	}
+
+	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, String orderby, long customerid, long emaildateid, long asc) {
+
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1 and flowordertype<>" + FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+		if (sitetype == BranchEnum.ZhanDian.getValue()) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "' and state=1 ";
+		}
+		if (sitetype == BranchEnum.ZhongZhuan.getValue()) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1 and flowordertype=" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+		}
+		if (customerid > 0) {
+			sql += " and customerid=" + customerid;
+		}
+		if (emaildateid > 0) {
+			sql += " and emaildateid =" + emaildateid;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		System.out.println(sql);
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
+	}
+
+	public List<CwbOrder> getYiRukubyBranchidList(long branchid, long customerid, String orderby, long emaildateid, long asc) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype=" + FlowOrderTypeEnum.RuKu.getValue();
+		if (customerid > 0) {
+			sql += " and customerid =" + customerid;
+		}
+		if (emaildateid > 0) {
+			sql += " and emaildateid =" + emaildateid;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
+	}
+
+	public List<CwbOrder> getChukuForCwbOrderByBranchid(long currentbranchid, int cwbstate, String orderby, long nextbranchid, long asc) {
+		String sql = "";
+		if (nextbranchid > 0) {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + currentbranchid + " and nextbranchid=" + nextbranchid + "  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+					+ " and state=1 ";
+		} else {
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + currentbranchid + " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue() + " and state=1 ";
+		}
+		if (cwbstate > -1) {
+			sql += " and cwbstate=" + cwbstate;
+		}
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
+	public List<CwbOrder> getCwbByCwbsPage(String orderby, String cwbs, long asc) {
+		String sql = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
+		sql += " ORDER BY  " + orderby;
+		if ((asc % 2) == 0) {
+			sql += " ASC";
+		} else {
+			sql += " DESC";
+		}
+		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
+	/**
+	 * 添加中转的原因在主表中
+	 */
+	public void updateZhongzhuanReason(String cwb, long reasonid, String reasonContent) {
+		String sql = "update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
+		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
+	}
+
+	public List<CwbOrder> getMonitorLogByBranchid(String branchids, String customerids, String wheresql, long page) {
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " ") + "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		System.out.println("-- 生命周期监控查看明细:\n" + sql);
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
+		return list;
+	}
+
+	public long getMonitorLogByBranchid(String branchids, String customerids, String wheresql) {
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
+
+		System.out.println("-- 生命周期监控查看明细:\n" + sql);
+		return this.jdbcTemplate.queryForLong(sql.toString());
+	}
+
+	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid, long page, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 AND state=1  " + " limit "
+				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
+
+		return list;
+	}
+
+	public String getMonitorLogByTypeSql(String wheresql, String branchid, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( " + wheresql + " (flowordertype in(1,2)  and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 ) )AND state=1  " + "");
+
+		System.out.println(sql);
+
+		return sql.toString();
+	}
+
+	public long getMonitorLogByType(String wheresql, String branchid, String branchids) {
+
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 AND state=1  " + " ");
+
+		return this.jdbcTemplate.queryForLong(sql.toString());
+	}
+
+	// 更改一票多件时运单不足的补入情况
+	public void updateTranscwb(String cwb, String transcwbs) {
+		String[] str1 = transcwbs.split(",");
+		long sendcarnum = (long)str1.length;
+		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=? ,sendcarnum= "+sendcarnum+" where cwb=? and state = 1  ", transcwbs, cwb);
 	}
 }

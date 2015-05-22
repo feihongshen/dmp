@@ -81,6 +81,10 @@ function exportField(){
 		$("#searchForm1").attr("action","<%=request.getContextPath()%>/editcwb/toSearchCwb/1");
 		$("#searchForm1").submit();
 	}
+	
+	function editInit(){
+		
+	}
 </script>
 
 
@@ -136,11 +140,12 @@ function exportField(){
 											<td valign="middle" align="center"  width="5%"   align="center" bgcolor="#e7f4e3">收件人（修改）</td>
 											<td valign="middle"  align="center" width="8%"   bgcolor="#e7f4e3">手机（修改）</td>
 											<td valign="middle"  align="left"  bgcolor="#e7f4e3">地址（修改）</td>
-											<td valign="middle"  align="center" width="10%"  bgcolor="#e7f4e3">配送时间（修改）</td>
+											<!-- <td valign="middle"  align="center" width="10%"  bgcolor="#e7f4e3">配送时间（修改）</td> -->
 											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">电商要求（修改）</td>
 											<td valign="middle"  align="center"   width="15%"  bgcolor="#e7f4e3">备注（修改）</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改人</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改时间</td>
+											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">操作</td>
 									</tr>
 									<%for(SearcheditInfo sl:List){
 										String user="";
@@ -157,11 +162,12 @@ function exportField(){
 									<td   valign="middle" align="center"  ><%=sl.getNewconsigneename() %></td>
 									<td   valign="middle"  align="center" ><%=sl.getNewconsigneemobile() %></td>
 									<td   valign="middle"  align="left"   ><%=sl.getNewconsigneeaddress() %></td>
-									<td   valign="middle"  align="center" ><%=sl.getNewResendtime() %></td>
+									<%-- <td   valign="middle"  align="center" ><%=sl.getNewResendtime() %></td> --%>
 									<td   valign="middle"  align="center" ><%=sl.getNewcommand()%></td>
 									<td   valign="middle"  align="center" ><textarea ><%=sl.getNewremark()%></textarea></td>
 									<td   valign="middle"  align="center" ><%=user%></td>
 									<td   valign="middle"  align="center" ><%=sl.getCretime()%></td>
+									<td   valign="middle"  align="center" ><a href="javascript:edit_button('<%=sl.getCwb()%>');" id="cwbdetail" name="cwbdetail"  > 修改详情 </a> </td>
 									</tr>
 									<%} %>
 										
@@ -170,6 +176,8 @@ function exportField(){
 						</tr>
 					</tbody>
 				</table></div></div>
+				<br/>
+				<br/>
 				<%if(page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
@@ -199,5 +207,7 @@ function exportField(){
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 </script>
+<input type="hidden" id="edit" value="<%=request.getContextPath()%>/editcwb/findCwbDetail/" />
+
 </body>
 </html>

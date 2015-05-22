@@ -66,7 +66,7 @@ public class BaleController {
 	BaleService baleService;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -76,13 +76,14 @@ public class BaleController {
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody String create(Model model, @RequestParam(value = "baleno", required = true) String baleno) {
+	public @ResponseBody
+	String create(Model model, @RequestParam(value = "baleno", required = true) String baleno) {
 		String states = BaleStateEnum.SaoMiaoZhong.getValue() + "," + BaleStateEnum.WeiDaoZhan.getValue();
-		List<Bale> balelist = baleDAO.getBaleByBalenoAndBalestate(baleno, states);
+		List<Bale> balelist = this.baleDAO.getBaleByBalenoAndBalestate(baleno, states);
 		if (balelist.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"包已存在\"}";
 		} else {
-			baleDAO.create(baleno);
+			this.baleDAO.create(baleno);
 			return "{\"errorCode\":0,\"error\":\"创建成功\"}";
 		}
 	}
@@ -94,20 +95,20 @@ public class BaleController {
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		List<Bale> bList = new ArrayList<Bale>();
 		Page pageparm = new Page();
-		int isOpenFlag = jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("isAmazonOpen", isOpenFlag);
 		if (isshow != 0) {
-			bList = baleDAO.getBaleByChukuDate(chukubegindate, chukuenddate, page);
-			pageparm = new Page(baleDAO.getBaleByChukuDateCount(chukubegindate, chukuenddate), page, Page.ONE_PAGE_NUMBER);
+			bList = this.baleDAO.getBaleByChukuDate(chukubegindate, chukuenddate, page);
+			pageparm = new Page(this.baleDAO.getBaleByChukuDateCount(chukubegindate, chukuenddate), page, Page.ONE_PAGE_NUMBER);
 			Map<Long, Branch> branchMap = new HashMap<Long, Branch>();
-			for (Branch branch : branchDAO.getAllBranches()) {
+			for (Branch branch : this.branchDAO.getAllBranches()) {
 				branchMap.put(branch.getBranchid(), branch);
 			}
 			model.addAttribute("branchMap", branchMap);
 		}
 		model.addAttribute("orderlist", clist);
 		model.addAttribute("baleList", bList);
-		model.addAttribute("customerlist", customerDAO.getAllCustomers());
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
 		model.addAttribute("showLetfOrRight", showLetfOrRight);
@@ -117,19 +118,19 @@ public class BaleController {
 
 	@RequestMapping("/show/{baleid}/{page}")
 	public String show(Model model, @PathVariable(value = "baleid") long baleid, @PathVariable(value = "page") long page) {
-		List<CwbOrder> cwborderList = cwbDAO.getCwbOrderByBaleid(baleid, page);
-		long cwborderCount = cwbDAO.getCwbOrderByBaleidCount(baleid);
+		List<CwbOrder> cwborderList = this.cwbDAO.getCwbOrderByBaleid(baleid, page);
+		long cwborderCount = this.cwbDAO.getCwbOrderByBaleidCount(baleid);
 		model.addAttribute("cwborderList", cwborderList);
 		model.addAttribute("page_obj", new Page(cwborderCount, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 
 		Map<Long, Branch> branchMap = new HashMap<Long, Branch>();
-		for (Branch branch : branchDAO.getAllBranches()) {
+		for (Branch branch : this.branchDAO.getAllBranches()) {
 			branchMap.put(branch.getBranchid(), branch);
 		}
 		model.addAttribute("branchMap", branchMap);
-		model.addAttribute("customerMap", customerDAO.getAllCustomersToMap());
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 
 		model.addAttribute("baleid", baleid);
 
@@ -140,7 +141,7 @@ public class BaleController {
 	@RequestMapping("/exportExcel")
 	public void exportExcel(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "baleid", required = false, defaultValue = "0") long baleid,
 			@RequestParam(value = "page", required = false, defaultValue = "0") long page) {
-		baleService.exportExcelMethod(response, request, baleid, page);
+		this.baleService.exportExcelMethod(response, request, baleid, page);
 
 	}
 
@@ -148,7 +149,7 @@ public class BaleController {
 	public void exportExcelBale(Model model, HttpServletResponse response, HttpServletRequest request,
 			@RequestParam(value = "chukubegindate", required = false, defaultValue = "") String chukubegindate,
 			@RequestParam(value = "chukuenddate", required = false, defaultValue = "") String chukuenddate) {
-		baleService.baleExcel(request, response, chukubegindate, chukuenddate);
+		this.baleService.baleExcel(request, response, chukubegindate, chukuenddate);
 
 	}
 
@@ -159,21 +160,22 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baleaddcwbCheck/{cwb}/{baleno}")
-	public @ResponseBody ExplinkResponse baleaddcwbCheck(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
-			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid,
-			@RequestParam(value = "flag", required = true, defaultValue = "0") long flag, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+	public @ResponseBody
+	ExplinkResponse baleaddcwbCheck(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "flag", required = true, defaultValue = "0") long flag,
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
 			// 封包检查
 			if (flag == 1) {// 库房出库
-				baleService.baleaddcwbChukuCheck(getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 2) {// 退货出站
-				baleService.baleaddcwbTuiHuoCheck(getSessionUser(), baleno, cwb, confirmflag == 1, getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbTuiHuoCheck(this.getSessionUser(), baleno, cwb, confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 3) {// 中转出站
-				baleService.baleaddcwbzhongzhuanchuzhanCheck(getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbzhongzhuanchuzhanCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 4) {// 退供货商出库
-				baleService.baleaddcwbToCustomerCheck(getSessionUser(), baleno, cwb, getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbToCustomerCheck(this.getSessionUser(), baleno, cwb, this.getSessionUser().getBranchid(), branchid);
 			}
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
@@ -192,13 +194,14 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baleaddcwb/{cwb}/{baleno}")
-	public @ResponseBody ExplinkResponse baleaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
-			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+	public @ResponseBody
+	ExplinkResponse baleaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			baleService.baleaddcwb(getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = baleDAO.getBaleOneByBaleno(baleno.trim());
+			this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
 			long successCount = bale.getCwbcount();
 			obj.put("successCount", successCount);
 			obj.put("errorcode", "000000");
@@ -217,12 +220,13 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/fengbao/{baleno}")
-	public @ResponseBody ExplinkResponse fengbao(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "baleno") String baleno,
+	public @ResponseBody
+	ExplinkResponse fengbao(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "baleno") String baleno,
 			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+			this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			obj.put("errorcode", "000000");
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		} catch (CwbException e) {
@@ -242,7 +246,8 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/balechuku/{baleno}")
-	public @ResponseBody ExplinkResponse balechuku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
+	public @ResponseBody
+	ExplinkResponse balechuku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
 			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
 			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
@@ -252,7 +257,8 @@ public class BaleController {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
 			try {
-				baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
+				obj.put("errorcode", "000000");
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -263,33 +269,34 @@ public class BaleController {
 			// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
-				List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
-				if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 					long successCount = 0;
 					long errorCount = 0;
 					for (CwbOrder co : cwbOrderList) {
 						try {
 							// 订单出库
-							CwbOrder cwbOrder = cwbOrderService.outWarehous(getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false, true);
+							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false,
+									true);
 							successCount++;
 
 							// ====中转出站 正确的配送站点==========
-							if (deliverybranchid > 0 && branchid != deliverybranchid) {
-								Branch deliverybranch = branchDAO.getBranchByBranchid(deliverybranchid);
+							if ((deliverybranchid > 0) && (branchid != deliverybranchid)) {
+								Branch deliverybranch = this.branchDAO.getBranchByBranchid(deliverybranchid);
 								CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
-								if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()
-										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
-																																	// 都将匹配状态变更为修改
+								if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
+										|| (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+																																		// 都将匹配状态变更为修改
 									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
-								} else if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()
-										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+								} else if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
+										|| (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
 																																		// 或者是人工匹配的
 																																		// 都将匹配状态变更为人工修改
 									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 								}
-								cwbOrderService.updateDeliveryOutBranch(getSessionUser(), cwbOrder, deliverybranch, addressCodeEditType, branchid);
+								this.cwbOrderService.updateDeliveryOutBranch(this.getSessionUser(), cwbOrder, deliverybranch, addressCodeEditType, branchid);
 								obj.put("cwbdeliverybranchname", deliverybranch.getBranchname());
 								obj.put("cwbdeliverybranchnamewav",
 										request.getContextPath() + ServiceUtil.wavPath + (deliverybranch.getBranchwavfile() == null ? "" : deliverybranch.getBranchwavfile()));
@@ -311,8 +318,8 @@ public class BaleController {
 						}
 					}
 					if (errorCount > 0) {
-						List<Customer> customerList = customerDAO.getAllCustomers();
-						errorListView = baleService.getCwbOrderCustomerView(errorList, customerList);
+						List<Customer> customerList = this.customerDAO.getAllCustomers();
+						errorListView = this.baleService.getCwbOrderCustomerView(errorList, customerList);
 						obj.put("errorListView", errorListView);
 						obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
 						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -322,7 +329,7 @@ public class BaleController {
 					}
 					if (successCount > 0) {
 						// 更改包的状态
-						baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
 			}
@@ -433,28 +440,29 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baledaohuo/{baleno}/{cwb}")
-	public @ResponseBody ExplinkResponse baledaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno, @PathVariable("cwb") String cwb,
+	public @ResponseBody
+	ExplinkResponse baledaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno,
 			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = cwbDAO.getCwbByCwb(cwb);
-			if ("0".equals(baleno) || isbale == null) {
+			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if (iscwb != null && !baleno.equals(iscwb.getPackagecode())) {
+			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = cwbOrderService.substationGoods(getSessionUser(), cwb, cwb, driverid, requestbatchno, comment, "", true);
+					CwbOrder cwbOrder = this.cwbOrderService.substationGoods(this.getSessionUser(), cwb, cwb, driverid, requestbatchno, comment, "", true);
 					// 更改包的状态
-					baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -473,7 +481,8 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baletuihuochuzhan/{baleno}")
-	public @ResponseBody ExplinkResponse baletuihuochuzhan(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
+	public @ResponseBody
+	ExplinkResponse baletuihuochuzhan(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
 			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid) {
 		JSONObject obj = new JSONObject();
@@ -482,7 +491,7 @@ public class BaleController {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
 			try {
-				baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -493,16 +502,16 @@ public class BaleController {
 			// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
-				List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
-				if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 					long successCount = 0;
 					long errorCount = 0;
 					for (CwbOrder co : cwbOrderList) {
 						try {
 							// 订单出站
-							CwbOrder cwbOrder = cwbOrderService.outUntreadWarehous(getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, true);
+							CwbOrder cwbOrder = this.cwbOrderService.outUntreadWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, true);
 							successCount++;
 						} catch (CwbException e) {
 							errorCount++;
@@ -517,8 +526,8 @@ public class BaleController {
 						}
 					}
 					if (errorCount > 0) {
-						List<Customer> customerList = customerDAO.getAllCustomers();
-						errorListView = baleService.getCwbOrderCustomerView(errorList, customerList);
+						List<Customer> customerList = this.customerDAO.getAllCustomers();
+						errorListView = this.baleService.getCwbOrderCustomerView(errorList, customerList);
 						obj.put("errorListView", errorListView);
 						obj.put("errorinfo", "(按包出站)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
 						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -528,7 +537,7 @@ public class BaleController {
 					}
 					if (successCount > 0) {
 						// 更改包的状态
-						baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
 			}
@@ -543,28 +552,28 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baletuihuodaohuo/{baleno}/{cwb}")
-	public @ResponseBody ExplinkResponse baletuihuodaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
-			@PathVariable("cwb") String cwb, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
-			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+	public @ResponseBody
+	ExplinkResponse baletuihuodaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = cwbDAO.getCwbByCwb(cwb);
-			if ("0".equals(baleno) || isbale == null) {
+			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if (iscwb != null && !baleno.equals(iscwb.getPackagecode())) {
+			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = cwbOrderService.backIntoWarehous(getSessionUser(), cwb, cwb, driverid, 0, comment, true);
+					CwbOrder cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, cwb, driverid, 0, comment, true,0,0);
 					// 更改包的状态
-					baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -583,30 +592,30 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/balezhongzhuandaohuo/{baleno}/{cwb}")
-	public @ResponseBody ExplinkResponse balezhongzhuandaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
-			@PathVariable("cwb") String cwb, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
-			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+	public @ResponseBody
+	ExplinkResponse balezhongzhuandaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = cwbDAO.getCwbByCwb(cwb);
-			if ("0".equals(baleno) || isbale == null) {
+			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if (iscwb != null && !baleno.equals(iscwb.getPackagecode())) {
+			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = cwbOrderService.changeintoWarehous(getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
+					CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
 					// cwbOrder=cwborderService.intoWarehous(getSessionUser(),cwb,cwb,customerid,
 					// driverid, requestbatchno,comment,"");
 					// 更改包的状态
-					baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -619,7 +628,8 @@ public class BaleController {
 	}
 
 	@RequestMapping("/baletocustomerchuku/{baleno}")
-	public @ResponseBody ExplinkResponse baletocustomerchuku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
+	public @ResponseBody
+	ExplinkResponse baletocustomerchuku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno,
 			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -627,7 +637,7 @@ public class BaleController {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
 			try {
-				baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -638,16 +648,16 @@ public class BaleController {
 			// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
-				List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
-				if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 					long successCount = 0;
 					long errorCount = 0;
 					for (CwbOrder co : cwbOrderList) {
 						try {
 							// 订单出库
-							CwbOrder cwbOrder = cwbOrderService.backtocustom(getSessionUser(), co.getCwb(), co.getCwb(), 0, baleno, true);
+							CwbOrder cwbOrder = this.cwbOrderService.backtocustom(this.getSessionUser(), co.getCwb(), co.getCwb(), 0, baleno, true);
 							successCount++;
 						} catch (CwbException e) {
 							errorCount++;
@@ -656,8 +666,8 @@ public class BaleController {
 						}
 					}
 					if (errorCount > 0) {
-						List<Customer> customerList = customerDAO.getAllCustomers();
-						errorListView = baleService.getCwbOrderCustomerView(errorList, customerList);
+						List<Customer> customerList = this.customerDAO.getAllCustomers();
+						errorListView = this.baleService.getCwbOrderCustomerView(errorList, customerList);
 						obj.put("errorListView", errorListView);
 						obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
 						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -667,7 +677,7 @@ public class BaleController {
 					}
 					if (successCount > 0) {
 						// 更改包的状态
-						baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
 			}

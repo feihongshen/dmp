@@ -335,7 +335,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			if (mappingresult != null) {
 				List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
 
-				if (deliveryStationList.size() == 0) {
+				if ((deliveryStationList == null) || (deliveryStationList.size() == 0)) {
 					return null;
 				}
 				Set<Long> set = new HashSet<Long>();
@@ -350,7 +350,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				}
 			}
 		} catch (Exception e) {
-			this.logger.error("error while doing address match for vipshop");
+			this.logger.error("error while doing address match for vipshop", e);
 		}
 		return null;
 	}

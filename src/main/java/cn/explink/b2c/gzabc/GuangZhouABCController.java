@@ -37,16 +37,16 @@ public class GuangZhouABCController {
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
-		model.addAttribute("gzabcObject", gzabcService.getGuangZhougABC(key));
-		model.addAttribute("warehouselist", branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
+		model.addAttribute("gzabcObject", this.gzabcService.getGuangZhougABC(key));
+		model.addAttribute("warehouselist", this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
 		model.addAttribute("joint_num", key);
 		return "b2cdj/gzabc";
 	}
 
 	@RequestMapping("/save/{id}")
 	public @ResponseBody String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
-		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			gzabcService.edit(request, key);
+		if ((request.getParameter("password") != null) && "explink".equals(request.getParameter("password"))) {
+			this.gzabcService.edit(request, key);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
@@ -55,7 +55,7 @@ public class GuangZhouABCController {
 
 	@RequestMapping("/del/{state}/{id}")
 	public @ResponseBody String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
-		gzabcService.update(key, state);
+		this.gzabcService.update(key, state);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 
@@ -66,11 +66,11 @@ public class GuangZhouABCController {
 	public @ResponseBody String requestByGuangZhouABC(HttpServletRequest request, HttpServletResponse response) {
 		try {
 
-			int isOpenFlag = jointService.getStateForJoint(B2cEnum.GuangZhouABC.getKey());
+			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.GuangZhouABC.getKey());
 			if (isOpenFlag == 0) {
 				return "未开启0广州ABC0查询接口";
 			}
-			GuangZhouABC gzabc = gzabcService.getGuangZhougABC(B2cEnum.GuangZhouABC.getKey());
+			GuangZhouABC gzabc = this.gzabcService.getGuangZhougABC(B2cEnum.GuangZhouABC.getKey());
 
 			String sShippedCode = request.getParameter("sShippedCode"); // 标识
 			String logicdata = request.getParameter("logicdata"); // xml格式列
@@ -80,23 +80,23 @@ public class GuangZhouABCController {
 				logicdata = URLDecoder.decode(logicdata, "UTF-8");
 				checkdata = URLDecoder.decode(checkdata, "UTF-8");
 			} catch (Exception e) {
-				logger.error("解码异常sShippedCode=" + sShippedCode + ",logicdata=" + logicdata + ",checkdata=" + checkdata, e);
+				this.logger.error("解码异常sShippedCode=" + sShippedCode + ",logicdata=" + logicdata + ",checkdata=" + checkdata, e);
 
 			}
 
-			logger.info("广州ABC请求参数:sShippedCode={},logicdata={},checkdata=" + checkdata, sShippedCode, logicdata);
+			this.logger.info("广州ABC请求参数:sShippedCode={},logicdata={},checkdata=" + checkdata, sShippedCode, logicdata);
 
-			return gzabcService.orderDetailExportInterface(sShippedCode, logicdata, checkdata, gzabc);
+			return this.gzabcService.orderDetailExportInterface(sShippedCode, logicdata, checkdata, gzabc);
 		} catch (Exception e) {
-			logger.error("0广州ABC0处理业务逻辑异常！", e);
+			this.logger.error("0广州ABC0处理业务逻辑异常！", e);
 			return "处理业务逻辑异常";
 		}
 	}
 
 	@RequestMapping("/gzabc_timmer")
 	public @ResponseBody void ExcuteTimmerMethod_tmall(HttpServletRequest request, HttpServletResponse response) {
-		guangZhouABCInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.GuangZhouABC.getKey());
-		logger.info("执行了广州ABC查询临时表的定时器!");
+		this.guangZhouABCInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.GuangZhouABC.getKey());
+		this.logger.info("执行了广州ABC查询临时表的定时器!");
 	}
 
 }

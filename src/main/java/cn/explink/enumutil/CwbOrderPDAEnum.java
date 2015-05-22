@@ -29,7 +29,8 @@ public enum CwbOrderPDAEnum {
 			248, "200048", "异常操作，找不到退货站", "fail.wav"), SYS_SCAN_ERROR(31, "300001", "已欠费", "fail.wav"), MEI_YOU_FEN_HUO_KU_FANG(250, "200050", "没有分货库房", "fail.wav"), FEI_BEN_KU_FAN_HUO_WU(251,
 			"200051", "非本库房货物", "fail.wav"), BU_SHI_ZHE_GE_XIAO_JIAN_YUAN_DE_HUO(252, "200052", "不是这个小件员的货", "fail.wav"), WEI_GUI_BAN_BU_NENG_ZAI_LING(253, "200053", "未归班的订单不能再领", "fali.wav"), WU_FA_ZI_DONG_PAN_DUAN_XIA_YI_ZHAN(
 			254, "200054", "无法自动判断下一站", "fali.wav"), BAO_HAO_BU_CUN_ZAI(255, "200055", "包号不可以为0", "fali.wav"), BU_SHI_ZHE_GE_MU_DI_DI(256, "200056", "不是这个目的地的货", "fali.wav"), FEI_BEN_ZHAN_HUO(258,
-			"200058", "非本站货", "fail.wav"), Wei_Shua_Ka_Yuan_Yin(260, "200060", "请选择未刷卡原因", "fail.wav"), Feng_Bao(261, "200061", "封包异常", "fail.wav");
+			"200058", "非本站货", "fail.wav"), Wei_Shua_Ka_Yuan_Yin(260, "200060", "请选择未刷卡原因", "fail.wav"), Feng_Bao(261, "200061", "封包异常", "fail.wav"),
+			TUI_HUO_RU_KU(262, "200062", "退货", "return.wav"),ZHONG_ZHUAN_RU_KU(263, "200063", "中转", "change.wav");
 
 	private int value;
 	private String code;

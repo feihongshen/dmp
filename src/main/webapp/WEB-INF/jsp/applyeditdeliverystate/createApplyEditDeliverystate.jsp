@@ -57,12 +57,13 @@ function sub(id){
 		url:'<%=request.getContextPath()%>/applyeditdeliverystate/submitCreateApplyEditDeliverystate/'+id,
 		data:{editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
 			editreason:$("#editreason"+id).val()},
-		dataType:"html",
+		dataType:"json",
 		success : function(data) {
 			if(data.errorCode==0){
 				alert("问题件成功提交：1单");
+				parent.refreshState();
 			}else{
-				alert("问题件成功提交：1单");
+				alert(data.error);
 			}
 			searchForm.submit();
 		}

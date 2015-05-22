@@ -113,6 +113,8 @@
 
 		<intercept-url pattern="/expressSysMonitor/**" access="permitAll" />
 		<intercept-url pattern="/checkbranch/**" access="permitAll" />
+		<intercept-url pattern="/location/**" access="permitAll" />
+		<intercept-url pattern="/GoodsStatusNum/**" access="permitAll" />
 
 
 

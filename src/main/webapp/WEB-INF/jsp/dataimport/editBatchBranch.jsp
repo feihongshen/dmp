@@ -115,7 +115,9 @@ function showMsg(){
 			<li><a href="editBranch">修改匹配站</a></li>
 			<!-- <li><a href="editBranchonBranch" >匹配站按站</a></li> -->
 			<li><a href="#"  class="light" >批量匹配站</a></li>
-			
+			<li><a href="reproducttranscwb" >运单号生成</a></li>
+			<li><a href="addresslibrarymatching">手动匹配</a></li>
+			<li><font color="red">地址库已开启</font></li>
 		</ul>
 	</div>
 	<form name="editBranchForm" id="editBranchForm" method="POST" action="editBatchBranch"  >
@@ -136,7 +138,7 @@ function showMsg(){
 							onblur="if(this.value==''){this.value='输入站点名称或者站点编号'}"
 							onfocus="if(this.value=='输入站点名称或者站点编号'){this.value=''}" value="输入站点名称或者站点编号"  />
 							<input type="button"  class='input_button2' value="确认匹配"  onclick="selectForm();" id="selectButton"/>
-							<input style="width: 130px; height:20px; border:none; background-color: #ADEAEA ; cursor:pointer; padding:0; text-align:left;" type="button" id="btnval0" value="导出所有未匹配订单" onclick="exportField();"/><br/>
+							<!-- <input style="width: 130px; height:20px; border:none; background-color: #ADEAEA ; cursor:pointer; padding:0; text-align:left;" type="button" id="btnval0" value="导出所有未匹配订单" onclick="exportField();"/><br/> -->
 					<%if(error.length()>0 ){ %><br/><font color="red"><%=error %> </font><%} %>
 					<%if("1".equals(request.getParameter("isshow")) ){ %>已匹配 <font color="red"><%=request.getAttribute("count") %> </font>单<%} %>	
 					</td>

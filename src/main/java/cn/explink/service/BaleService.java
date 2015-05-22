@@ -833,7 +833,7 @@ public class BaleService {
 
 	private String getCwbs(long sign, String begindate, String enddate, long isauditTime, String[] nextbranchid, String[] startbranchid, long isaudit, String[] operationOrderResultTypes,
 			String[] dispatchbranchid, long deliverid, long flowordertype, String[] kufangid, String[] currentBranchid, long branchid1, String type, String[] branchid2s, String[] customerid,
-			long isnowdata) {
+			long isnowdata, int firstlevelid) {
 		String orderflowcwbs = "";
 		String customerids = this.getStrings(customerid);
 		if (sign == 1) {
@@ -848,9 +848,8 @@ public class BaleService {
 				}
 			}
 			operationOrderResultTypes[0] = DeliveryStateEnum.FenZhanZhiLiu.getValue() + "";
-			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, zhiliucheck, customerids);
-
+			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
+					zhiliucheck, customerids, firstlevelid);
 			if (orderFlowList.size() > 0) {
 
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowList);
@@ -878,9 +877,8 @@ public class BaleService {
 					jushouCheck = 0;
 				}
 			}
-			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, jushouCheck, customerids);
-
+			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
+					jushouCheck, customerids,firstlevelid);
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowList);
 			} else {
@@ -916,7 +914,7 @@ public class BaleService {
 						DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "" };
 			}
 			List<String> orderFlowLastList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, 1, customerids);
+					deliverid, 1, customerids, firstlevelid);
 			if (orderFlowLastList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowLastList);
 			} else {
@@ -1245,8 +1243,8 @@ public class BaleService {
 			if ("no".equalsIgnoreCase(isPeisongAllowtoZhongZhuan) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Peisong_Bu_YunXu_ZhongZhuan);
 			}
-			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
-			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
+			Branch ifBranch = branchDAO.getQueryBranchByBranchid(currentbranchid);
+			Branch nextBranch = branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
 			boolean aflag = false;
 			if ((ifBranch != null) && (ifBranch.getSitetype() == 2)) {
 				List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(currentbranchid, branchid, 2);

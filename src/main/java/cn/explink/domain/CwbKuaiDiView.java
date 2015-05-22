@@ -14,9 +14,12 @@ public class CwbKuaiDiView {
 	private long flowordertype; // 操作类型，具体对应枚举类FlowOrderTypeEnum
 	private String consigneeno = "";// 收件人编号
 	private String consigneename = "";// 收件人名称
+	private String consigneenamekf = "";// 收件人名称
 	private String consigneeaddress = "";// 收件人地址
 	private String consigneepostcode = "";// 收件人邮编
+	private String consigneephonekf = "";// 收件人电话
 	private String consigneephone = "";// 收件人电话
+	private String consigneemobilekf = "";// 收件人手机
 	private String consigneemobile = "";// 收件人手机
 	private long lanshoubranchid; // 揽收机构id
 	private String lanshoubranchname; // 揽收机构
@@ -533,5 +536,30 @@ public class CwbKuaiDiView {
 	public void setEdituserid(long edituserid) {
 		this.edituserid = edituserid;
 	}
+
+	public String getConsigneenamekf() {
+		return consigneenamekf;
+	}
+
+	public void setConsigneenamekf(String consigneenamekf) {
+		this.consigneenamekf = consigneenamekf;
+	}
+
+	public String getConsigneephonekf() {
+		return consigneephonekf;
+	}
+
+	public void setConsigneephonekf(String consigneephonekf) {
+		this.consigneephonekf = consigneephonekf;
+	}
+
+	public String getConsigneemobilekf() {
+		return consigneemobilekf;
+	}
+
+	public void setConsigneemobilekf(String consigneemobilekf) {
+		this.consigneemobilekf = consigneemobilekf;
+	}
+	
 
 }

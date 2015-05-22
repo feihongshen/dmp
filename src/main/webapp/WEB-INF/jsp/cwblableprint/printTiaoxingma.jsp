@@ -57,7 +57,7 @@ function CreatePrintPage(cwbs) {
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
 	for(var i=0;i<cwbs.toString().split(",").length;i++){
 		var cwb = cwbs.toString().split(",")[i];
-		LODOP.ADD_PRINT_BARCODE(2,2,"6cm","2cm","128Auto",cwb);
+		LODOP.ADD_PRINT_BARCODE(2,2,"5cm","3cm","128Auto",cwb);
 		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
 		LODOP.NewPage(); 
 	}
@@ -93,6 +93,7 @@ function nowprint(){
 	<a href="javascript:prn1_preview('<%=cwbs%>');">打印预览</a>
 	<a href="javascript:nowprint();">直接打印</a>
 	<a href="javascript:prn1_printA(<%=cwbs%>);">选择打印机</a>
+	<a href="javascript:history.go(-1);">返回</a>
 <%} %>
 </body>
 </html>

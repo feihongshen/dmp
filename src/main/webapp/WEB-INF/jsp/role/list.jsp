@@ -66,15 +66,17 @@ function editRoleAndMenuSuccess(data){
 
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 		    <tr class="font_1">
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">角色ID</td>
 				<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">角色</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">人数</td>
-				<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+				<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 			</tr>
 			 <% for(Role r : roleList){ %>
 			<tr>
+				<td width="10%" align="center" valign="middle"><%=r.getRoleid() %></td>
 				<td width="40%" align="center" valign="middle"><%=r.getRolename() %></td>
 				<td width="20%" align="center" valign="middle"><a href="<%=request.getContextPath() %>/user/list/1?roleid=<%=r.getRoleid() %>"><%=userAndCountMap.get(r.getRoleid())==null?0:userAndCountMap.get(r.getRoleid()) %></a></td>
-				<td width="40%" align="center" valign="middle" >
+				<td width="30%" align="center" valign="middle" >
 				[<a href="javascript:getEditRoleAndMenu(<%=r.getRoleid() %>);">设置权限</a>]　
 				<%if(r.getType()>0){ %>
 				[<a href="javascript:edit_button(<%=r.getRoleid() %>);">修改</a>]

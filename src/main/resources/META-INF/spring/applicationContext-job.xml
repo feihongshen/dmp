@@ -729,10 +729,6 @@
              <value>getHomegobj1_Task</value>
          </property>
      </bean>
-		<jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
-		<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
-			
-		</bean>
 	<bean id="scheduledTaskMonitorTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
 		<property name="targetBean" value="monitorService" />
 		<property name="targetMethod" value="monitorScheduledTasks" />

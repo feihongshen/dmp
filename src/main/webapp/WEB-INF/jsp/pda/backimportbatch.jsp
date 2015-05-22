@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
@@ -9,6 +10,8 @@ List<CwbOrder> weituihuorukuList = (List<CwbOrder>)request.getAttribute("weituih
 List<CwbOrder> yituihuorukuList = (List<CwbOrder>)request.getAttribute("yituihuorukuList");
 List<JSONObject> objList = request.getAttribute("objList")==null?null:(List<JSONObject>)request.getAttribute("objList");
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
+
+List<Reason> backreasonList = (List<Reason>)request.getAttribute("backreasonList");
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -183,7 +186,13 @@ function yiruku(){
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p><span>备注：</span>
-						<input type="text" class="inputtext_2" id="comment" name="comment" value="" maxlength="50" />
+						<!-- <input type="text" class="inputtext_2" id="comment" name="comment" value="" maxlength="50" /> -->
+					 <select id="comment" name="comment">
+							 <option value="">请选择</option>
+							 <%for(Reason r:backreasonList){ %>
+							 <option value="<%=r.getReasoncontent()%>"><%=r.getReasoncontent() %></option>
+							 <%} %>
+							 </select>
 					</p>
 					<p><span>订单号：</span>
 						<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>

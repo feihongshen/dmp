@@ -30,44 +30,48 @@ public class RoleDAO {
 	JdbcTemplate jdbcTemplate;
 
 	public List<Role> getRoles() {
-		return jdbcTemplate.query("select * from express_set_role_new ", new RoleRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_role_new ", new RoleRowMapper());
 	}
 
 	public void creRole(final Role role) {
-		jdbcTemplate.update("insert into express_set_role_new (rolename,type) " + "values(?,1)", role.getRolename());
+		this.jdbcTemplate.update("insert into express_set_role_new (rolename,type) " + "values(?,1)", role.getRolename());
 	}
 
 	public List<Role> getRolesByRolename(String rolename) {
-		return jdbcTemplate.query("select * from express_set_role_new where rolename=? ", new RoleRowMapper(), rolename);
+		return this.jdbcTemplate.query("select * from express_set_role_new where rolename=? ", new RoleRowMapper(), rolename);
 	}
 
 	public Role getRolesByRoleid(long roleid) {
-		return jdbcTemplate.queryForObject("select * from express_set_role_new where roleid=? ", new RoleRowMapper(), roleid);
+		return this.jdbcTemplate.queryForObject("select * from express_set_role_new where roleid=? ", new RoleRowMapper(), roleid);
 	}
 
 	public List<Long> getRoleAndMenuByRoleid(long roleid) {
-		return jdbcTemplate.queryForList("select menuid from express_set_role_menu_new where roleid=? ", Long.class, roleid);
+		return this.jdbcTemplate.queryForList("select menuid from express_set_role_menu_new where roleid=? ", Long.class, roleid);
 	}
 
 	public void saveRoleAndMenu(List<Long> menuids, long roleid) {
-		if (menuids != null && menuids.size() > 0) {
+		if ((menuids != null) && (menuids.size() > 0)) {
 			StringBuffer sql = new StringBuffer("insert into express_set_role_menu_new (roleid,menuid) values ");
 			for (Long menuid : menuids) {
 				sql.append("(").append(roleid).append(",").append(menuid).append("),");
 			}
-			jdbcTemplate.update(sql.substring(0, sql.length() - 1));
+			this.jdbcTemplate.update(sql.substring(0, sql.length() - 1));
 		}
 	}
 
 	public void delRoleAndMenu(long roleid) {
-		jdbcTemplate.update("delete from express_set_role_menu_new where roleid=?", roleid);
+		this.jdbcTemplate.update("delete from express_set_role_menu_new where roleid=?", roleid);
 	}
 
 	public void save(long roleid, String rolename) {
-		jdbcTemplate.update("update express_set_role_new set rolename=? where roleid=?", rolename, roleid);
+		this.jdbcTemplate.update("update express_set_role_new set rolename=? where roleid=?", rolename, roleid);
 	}
 
 	public void saveRoleIsDeliveryByRoleid(long roleid, int isdelivery) {
-		jdbcTemplate.update("update express_set_role_new set isdelivery=? where roleid=?", isdelivery, roleid);
+		this.jdbcTemplate.update("update express_set_role_new set isdelivery=? where roleid=?", isdelivery, roleid);
+	}
+
+	public List<Role> getRolesByIsdelivery() {
+		return this.jdbcTemplate.query("select * from express_set_role_new where isdelivery=1 ", new RoleRowMapper());
 	}
 }

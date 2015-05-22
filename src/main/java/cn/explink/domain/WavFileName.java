@@ -11,4 +11,8 @@ public class WavFileName {
 	public static String WCDH = "wcdh.wav";
 
 	public static String DCH = "dch.wav";
+	
+	public static String RETURN = "return.wav";
+	
+	public static String CHANGE = "change.wav";
 }

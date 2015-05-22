@@ -224,7 +224,7 @@ function checkFormat(){
 						</tr>
 						<tr>
 							<td align="left" bgcolor="#FFFFFF"><strong>*</strong>收&nbsp;&nbsp;件&nbsp;&nbsp;人：
-								<input type="text" name="consigneename" id="consigneename" value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneename()) %>" /></td>
+								<input type="text" name="consigneename" id="consigneename" value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneenamekf()) %>" /></td>
 								<td align="left" bgcolor="#FFFFFF">收&nbsp;件&nbsp;公&nbsp;司：
 								<input type="text" name="shoujianrencompany" id="shoujianrencompany"  value="<%=StringUtil.nullConvertToEmptyString(ckv.getShoujianrencompany()) %>"  /></td>
 								<td align="left" bgcolor="#FFFFFF">收件人区号&nbsp;：
@@ -242,9 +242,9 @@ function checkFormat(){
 						</tr>
 						<tr>
 							<td align="left" bgcolor="#FFFFFF">收件人座机&nbsp;：
-							<input type="text" name="consigneephone" id="consigneephone"  value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneephone()) %>" /></td>
+							<input type="text" name="consigneephone" id="consigneephone"  value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneephonekf()) %>" /></td>
 							<td align="left" bgcolor="#FFFFFF"><strong>*</strong>收件人手机&nbsp;：
-							<input type="text" name="consigneemobile" id="consigneemobile"  value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneemobile()) %>"  /></td>
+							<input type="text" name="consigneemobile" id="consigneemobile"  value="<%=StringUtil.nullConvertToEmptyString(ckv.getConsigneemobilekf()) %>"  /></td>
 							<td align="left" bgcolor="#FFFFFF">&nbsp;</td>
 							<td align="left" bgcolor="#FFFFFF">&nbsp;</td>
 						</tr>

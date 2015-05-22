@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.InvalidResultSetAccessException;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.AbnormalView;
@@ -77,6 +78,8 @@ public class ExportService {
 
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -270,7 +273,7 @@ public class ExportService {
 		cloumnName2[1] = "Customername";
 		cloumnName1[2] = "发货时间";
 		cloumnName2[2] = "Emaildate";
-		cloumnName1[3] = "当前状态";
+		cloumnName1[3] = "当时状态";
 		cloumnName2[3] = "FlowordertypeName";
 		cloumnName1[4] = "配送站点";
 		cloumnName2[4] = "Deliverybranchname";
@@ -278,8 +281,10 @@ public class ExportService {
 		cloumnName2[5] = "Creusername";
 		cloumnName1[6] = "问题件类型";
 		cloumnName2[6] = "Abnormaltype";
-		cloumnName1[7] = "问题件说明";
-		cloumnName2[7] = "Describe";
+		cloumnName1[7] = "问题件反馈时间";
+		cloumnName2[7] = "Credatetime";
+		cloumnName1[8] = "问题件说明";
+		cloumnName2[8] = "Describe";
 	}
 
 	// 审核页面导出
@@ -415,9 +420,17 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("customername")) {
 				a = views.get(k).getCustomername();
 			} else if (cloumnName3[i].equals("consigneename")) {
-				a = views.get(k).getConsigneename();
+				if (this.getSessionUser().getShownameflag() == 1) {
+					a = views.get(k).getConsigneename();
+				} else {
+					a = "******";
+				}
 			} else if (cloumnName3[i].equals("consigneemobile")) {
-				a = views.get(k).getConsigneemobile();
+				if (this.getSessionUser().getShowmobileflag() == 1) {
+					a = views.get(k).getConsigneemobile();
+				} else {
+					a = "******";
+				}
 			} else if (cloumnName3[i].equals("emaildate")) {
 				a = views.get(k).getEmaildate();
 			} else if (cloumnName3[i].equals("Createtime")) {
@@ -462,6 +475,8 @@ public class ExportService {
 				a = views.get(k).getCreuserName();
 			} else if (cloumnName3[i].equals("Abnormaltype")) {
 				a = views.get(k).getAbnormalType();
+			} else if (cloumnName3[i].equals("Credatetime")) {
+				a = views.get(k).getCredatetime();
 			} else if (cloumnName3[i].equals("Describe")) {
 				a = views.get(k).getDescribe();
 			}
@@ -548,7 +563,7 @@ public class ExportService {
 	 * rs.getObject("leavedreason")==null?"":rs.getString("leavedreason"); }else
 	 * if("losereason".equals(cloumname)){
 	 * a=rs.getObject("losereason")==null?"":rs.getString("losereason");
-	 *
+	 * 
 	 * }else if ("tuihuochuzhantime".equals(cloumname)) {
 	 * a=rs.getObject("tuihuochuzhantime"
 	 * )==null?"":rs.getString("tuihuochuzhantime"); }else if
@@ -561,7 +576,7 @@ public class ExportService {
 	 * if("weishuakareason".equals(cloumname)){
 	 * a=rs.getObject("weishuakareason")
 	 * ==null?"":rs.getString("weishuakareason");
-	 *
+	 * 
 	 * }else if("resendtime".equals(cloumname)){ a =
 	 * rs.getObject("resendtime")==null?"":rs.getString("resendtime"); }else
 	 * if("backreason".equals(cloumname)){ a =
@@ -622,7 +637,7 @@ public class ExportService {
 	 * catch (InvalidResultSetAccessException e) { //
 	 * System.out.println(cloumname); }
 	 * //System.out.println("pp:"+System.currentTimeMillis()); return a;
-	 *
+	 * 
 	 * }
 	 */
 
@@ -871,6 +886,7 @@ public class ExportService {
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = ds.getSign_man().length() == 0 ? mapRow.get("consigneename") : ds.getSign_man();
+
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
@@ -925,8 +941,14 @@ public class ExportService {
 				}
 				a = this.getRealflowordertype(bList, realbranchid, Long.parseLong(mapRow.get("flowordertype").toString()), nextbranchid);
 			} else if ("ispayup".equals(cloumname)) {
-				if ((cwbspayupidMap != null) && (cwbspayupidMap.size() > 0) && (cwbspayupidMap.get(mapRow.get("cwb").toString()) != null)) {
-					a = cwbspayupidMap.get(mapRow.get("cwb").toString());
+				/*
+				 * if ((cwbspayupidMap != null) && (cwbspayupidMap.size() > 0)
+				 * && (cwbspayupidMap.get(mapRow.get("cwb").toString()) !=
+				 * null)) { a =
+				 * cwbspayupidMap.get(mapRow.get("cwb").toString()); }
+				 */
+				if (Long.parseLong(mapRow.get("fnorgoffsetflag").toString()) == 1) {
+					a = "是";
 				} else {
 					a = "否";
 				}
@@ -938,6 +960,7 @@ public class ExportService {
 				}
 			} else {
 				a = mapRow.get(cloumname);
+				a = this.setAbyUser(a, cloumname);
 			}
 		} catch (Exception e) {
 			// System.out.println(cloumname);
@@ -945,6 +968,25 @@ public class ExportService {
 		// System.out.println("pp:"+System.currentTimeMillis());
 		return a;
 
+	}
+
+	private Object setAbyUser(Object a, String cloumname) {
+		if (cloumname.equals("consigneename")) {
+			if (this.getSessionUser().getShownameflag() != 1) {
+				a = "******";
+			}
+		}
+		if (cloumname.equals("consigneephone")) {
+			if (this.getSessionUser().getShowphoneflag() != 1) {
+				a = "******";
+			}
+		}
+		if (cloumname.equals("consigneemobile")) {
+			if (this.getSessionUser().getShowmobileflag() != 1) {
+				a = "******";
+			}
+		}
+		return a;
 	}
 
 	public Object setObjectB(String[] cloumnName3, CwbOrder co, TuihuoRecord tuihuo, int i, List<User> uList, Map<Long, Customer> cMap, List<Branch> bList, List<Common> commonList, DeliveryState ds,
@@ -1164,6 +1206,7 @@ public class ExportService {
 						&& ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (ds
 								.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()))) {
 					a = ds.getSign_man() == null ? "" : (ds.getSign_man().trim().length() == 0 ? co.getConsigneename() : ds.getSign_man());
+
 				}
 			} else if ("signintime".equals(cloumname)) {
 				a = "";
@@ -2005,7 +2048,7 @@ public class ExportService {
 
 	/**
 	 * 结算后付类型
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2033,7 +2076,7 @@ public class ExportService {
 
 	/**
 	 * 结算先付类型
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2073,22 +2116,22 @@ public class ExportService {
 		cloumnName2[6] = "oldconsigneeaddress";
 		cloumnName1[7] = "地址（修改）";
 		cloumnName2[7] = "newconsigneeaddress";
-		cloumnName1[8] = "修改前再次配送时间";
-		cloumnName2[8] = "oldResendtime";
-		cloumnName1[9] = "再次配送时间（修改）";
-		cloumnName2[9] = "newResendtime";
-		cloumnName1[10] = "修改前供货商需求";
-		cloumnName2[10] = "oldcommand";
-		cloumnName1[11] = "供货商需求（修改）";
-		cloumnName2[11] = "newcommand";
-		cloumnName1[12] = "修改时间";
-		cloumnName2[12] = "cretime";
-		cloumnName1[13] = "修改人";
-		cloumnName2[13] = "crename";
-		cloumnName1[14] = "修改前备注";
-		cloumnName2[14] = "oldremark";
-		cloumnName1[15] = "备注（修改）";
-		cloumnName2[15] = "newremark";
+		//cloumnName1[8] = "修改前再次配送时间";
+		//cloumnName2[8] = "oldResendtime";
+		//cloumnName1[9] = "再次配送时间（修改）";
+		//cloumnName2[9] = "newResendtime";
+		cloumnName1[8] = "修改前供货商需求";
+		cloumnName2[8] = "oldcommand";
+		cloumnName1[9] = "供货商需求（修改）";
+		cloumnName2[9] = "newcommand";
+		cloumnName1[10] = "修改时间";
+		cloumnName2[10] = "cretime";
+		cloumnName1[11] = "修改人";
+		cloumnName2[11] = "crename";
+		cloumnName1[12] = "修改前备注";
+		cloumnName2[12] = "oldremark";
+		cloumnName1[13] = "备注（修改）";
+		cloumnName2[13] = "newremark";
 	}
 
 	// 订单修改处理功能导出
@@ -2140,7 +2183,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算订单明细
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2172,7 +2215,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2210,7 +2253,7 @@ public class ExportService {
 
 	/**
 	 * 退货审核
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2336,7 +2379,7 @@ public class ExportService {
 
 	/**
 	 * 配送结果结算记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2409,7 +2452,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2428,7 +2471,7 @@ public class ExportService {
 
 	/**
 	 * 账户管理
-	 *
+	 * 
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2730,5 +2773,10 @@ public class ExportService {
 			e.printStackTrace();
 		}
 		return a;
+	}
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
 	}
 }

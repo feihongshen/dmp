@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,6 +84,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -167,13 +169,13 @@ public class CwbLablePrintController {
 	ComplaintDAO complaintDAO;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	/**
 	 * 标签打印功能列表
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param emaildateid
@@ -182,26 +184,26 @@ public class CwbLablePrintController {
 	@RequestMapping("/cwblableprint")
 	public String cwblableprint(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "emaildateid", required = true, defaultValue = "0") long emaildateid) {
-		List<Customer> customerlist = customerDAO.getAllIsAutoProductcwbCustomers();
+		List<Customer> customerlist = this.customerDAO.getAllIsAutoProductcwbCustomers();
 
-		String logo = systemInstallDAO.getSystemInstall("Logo") == null ? "XHM_LOGO.jpg" : systemInstallDAO.getSystemInstall("Logo").getValue();
+		String logo = this.systemInstallDAO.getSystemInstall("Logo") == null ? "XHM_LOGO.jpg" : this.systemInstallDAO.getSystemInstall("Logo").getValue();
 
 		String printtemplet = logo.split("_")[0].toLowerCase();
 
 		if (printtemplet.equals("hwhq")) {
-			List<Customer> saohuobangList = customerDAO.getCustomerByCustomernameCheck(B2cEnum.saohuobang.getText());
+			List<Customer> saohuobangList = this.customerDAO.getCustomerByCustomernameCheck(B2cEnum.saohuobang.getText());
 			customerlist.addAll(saohuobangList);
 		}
 		if (printtemplet.equals("xjdcb")) {
 			model.addAttribute("xjdcb", printtemplet);
 		}
 		model.addAttribute("customerList", customerlist);
-		model.addAttribute("branchList", branchDAO.getAllEffectBranches());
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		if ("dd".equals(printtemplet)) {
 			model.addAttribute("dd", printtemplet);
 		}
-		if (cwbs.length() > 0 || emaildateid != 0) {
+		if ((cwbs.length() > 0) || (emaildateid != 0)) {
 			if (cwbs.length() > 0) {
 				String quot = "'", quotAndComma = "',";
 				StringBuffer cwbstr = new StringBuffer();
@@ -211,10 +213,10 @@ public class CwbLablePrintController {
 					}
 					cwbstr = cwbstr.append(quot).append(cwbStr).append(quotAndComma);
 				}
-				clist = cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
+				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
 			}
 			if (emaildateid != 0) {
-				clist = cwbDAO.getCwbsByEmailDateId(emaildateid);
+				clist = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
 			}
 		}
 
@@ -224,7 +226,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 标签打印-打印列表中的订单
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param isprint
@@ -241,27 +243,27 @@ public class CwbLablePrintController {
 		if (cwbs.length() > 0) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 		}
-		List<CwbOrder> cwbList = cwbDAO.getCwbByCwbs(cwbs);
-		String logo = systemInstallDAO.getSystemInstall("Logo") == null ? "EXPLINK_LOGO.png" : systemInstallDAO.getSystemInstall("Logo").getValue();
+		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbs);
+		String logo = this.systemInstallDAO.getSystemInstall("Logo") == null ? "EXPLINK_LOGO.png" : this.systemInstallDAO.getSystemInstall("Logo").getValue();
 		if (moudle.length() > 0) {
 			logo = moudle;
 		}
 		String printtemplet = logo.split("_")[0].toLowerCase();
 		if (printtemplet.equals("hwhq")) {
-			return lableprintforhwhqsaohuobang(model, cwbs);
+			return this.lableprintforhwhqsaohuobang(model, cwbs);
 		}
 		model.addAttribute("logo", logo);
-		model.addAttribute("localbranchname", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()).getBranchname());
-		model.addAttribute("customerlist", customerDAO.getAllCustomers());
-		model.addAttribute("branchlist", branchDAO.getAllEffectBranches());
-		model.addAttribute("userlist", userDAO.getAllUser());
+		model.addAttribute("localbranchname", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getBranchname());
+		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
+		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("userlist", this.userDAO.getAllUser());
 
 		model.addAttribute("cwbList", cwbList);
 		return "cwblableprint/cwblableprint_" + printtemplet;
 	}
 
 	private String lableprintforhwhqsaohuobang(Model model, String cwbs) {
-		List<Saohuobanginfo> saolist = saohuobangDao.getSaohuobangOrderByCwbs(cwbs);
+		List<Saohuobanginfo> saolist = this.saohuobangDao.getSaohuobangOrderByCwbs(cwbs);
 
 		model.addAttribute("saolist", saolist);
 		return "cwblableprint/cwblableprint_hwhq";
@@ -269,7 +271,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 小标签打印功能
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param emaildateid
@@ -278,9 +280,9 @@ public class CwbLablePrintController {
 	@RequestMapping("/cwblittlelableprintlist")
 	public String cwblittlelableprintlist(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "emaildateid", required = true, defaultValue = "0") long emaildateid) {
-		model.addAttribute("customerList", customerDAO.getCustomersByQuanKai());
+		model.addAttribute("customerList", this.customerDAO.getCustomersByQuanKai());
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
-		if (cwbs.length() > 0 || emaildateid != 0) {
+		if ((cwbs.length() > 0) || (emaildateid != 0)) {
 			if (cwbs.length() > 0) {
 
 				String quot = "'", quotAndComma = "',";
@@ -290,13 +292,13 @@ public class CwbLablePrintController {
 						continue;
 					}
 
-					cwb = cwborderService.translateCwb(cwb);
+					cwb = this.cwborderService.translateCwb(cwb);
 					cwbstr = cwbstr.append(quot).append(cwb).append(quotAndComma);
 				}
-				clist = cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
+				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
 			}
 			if (emaildateid != 0) {
-				clist = cwbDAO.getCwbsByEmailDateId(emaildateid);
+				clist = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
 			}
 		}
 		model.addAttribute("clist", clist);
@@ -305,7 +307,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 小标签打印-打印列表中的订单
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param isprint
@@ -321,7 +323,7 @@ public class CwbLablePrintController {
 		if (cwbs.length() > 0) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 		}
-		List<CwbOrder> cwbList = cwbDAO.getCwbByCwbs(cwbs);
+		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbs);
 
 		model.addAttribute("cwbList", cwbList);
 		return "cwblableprint/cwblittlelableprint_xhm";
@@ -329,7 +331,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 条码打印功能
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param emaildateid
@@ -338,9 +340,9 @@ public class CwbLablePrintController {
 	@RequestMapping("/cwbbarcodeprintlist")
 	public String cwbbarcodeprintlist(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "emaildateid", required = true, defaultValue = "0") long emaildateid) {
-		model.addAttribute("customerList", customerDAO.getCustomersByQuanKai());
+		model.addAttribute("customerList", this.customerDAO.getCustomersByQuanKai());
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
-		if (cwbs.length() > 0 || emaildateid != 0) {
+		if ((cwbs.length() > 0) || (emaildateid != 0)) {
 			if (cwbs.length() > 0) {
 
 				String quot = "'", quotAndComma = "',";
@@ -350,13 +352,13 @@ public class CwbLablePrintController {
 						continue;
 					}
 
-					cwb = cwborderService.translateCwb(cwb);
+					cwb = this.cwborderService.translateCwb(cwb);
 					cwbstr = cwbstr.append(quot).append(cwb).append(quotAndComma);
 				}
-				clist = cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
+				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
 			}
 			if (emaildateid != 0) {
-				clist = cwbDAO.getCwbsByEmailDateId(emaildateid);
+				clist = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
 			}
 		}
 		model.addAttribute("clist", clist);
@@ -365,7 +367,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 条码打印-打印列表中的订单
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param isprint
@@ -381,7 +383,7 @@ public class CwbLablePrintController {
 		if (cwbs.length() > 0) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 		}
-		List<CwbOrder> cwbList = cwbDAO.getCwbByCwbs(cwbs);
+		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbs);
 
 		model.addAttribute("cwbList", cwbList);
 		return "cwblableprint/cwbbarcodeprint_xhm";
@@ -389,19 +391,19 @@ public class CwbLablePrintController {
 
 	/**
 	 * 根据供货商切换供货商对应的发货批次
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @return
 	 */
 	@RequestMapping("/updateEmaildateid")
 	public @ResponseBody List<EmailDate> updateEmaildateid(Model model, @RequestParam(value = "customerid", defaultValue = "0") long customerid) {
-		return emaildateDAO.getEmailDateByCustomerid(customerid);
+		return this.emaildateDAO.getEmailDateByCustomerid(customerid);
 	}
 
 	@ExceptionHandler(CwbException.class)
 	public @ResponseBody ExplinkResponse handleCwbException(CwbException ex, HttpServletRequest request) {
-		logger.error("系统异常", ex);
+		this.logger.error("系统异常", ex);
 		ExplinkResponse explinkResponse = new ExplinkResponse(ex.getError().getValue() + "", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -413,7 +415,7 @@ public class CwbLablePrintController {
 
 	@ExceptionHandler(Exception.class)
 	public @ResponseBody ExplinkResponse handleException(Exception ex, HttpServletRequest request) {
-		logger.error("系统异常", ex);
+		this.logger.error("系统异常", ex);
 		ExplinkResponse explinkResponse = new ExplinkResponse("000001", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -425,7 +427,7 @@ public class CwbLablePrintController {
 
 	/**
 	 * 入库、到货（明细）、领货（明细）功能的导出数据功能
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param request
@@ -439,7 +441,7 @@ public class CwbLablePrintController {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs("0");
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
 		cloumnName1 = new String[listSetExportField.size()];
 		cloumnName2 = new String[listSetExportField.size()];
 		cloumnName3 = new String[listSetExportField.size()];
@@ -457,31 +459,31 @@ public class CwbLablePrintController {
 		try {
 			// 查询出数据
 
-			final String sql = cwbDAO.getSQLExportKeFu(cwbs);
+			final String sql = this.cwbDAO.getSQLExportKeFu(cwbs);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = userDAO.getAllUser();
-					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = branchDAO.getAllBranches();
-					final List<Common> commonList = commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
-					List<Remark> remarkList = remarkDAO.getRemarkByCwbs(cwbs);
-					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = reasonDAO.getAllReason();
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+					final List<User> uList = CwbLablePrintController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = CwbLablePrintController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = CwbLablePrintController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = CwbLablePrintController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = CwbLablePrintController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = CwbLablePrintController.this.remarkDAO.getRemarkByCwbs(cwbs);
+					final Map<String, Map<String, String>> remarkMap = CwbLablePrintController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = CwbLablePrintController.this.reasonDAO.getAllReason();
+					CwbLablePrintController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
 
-							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
-							recordbatch.add(mapRow);
-							count++;
-							if (count % 100 == 0) {
-								writeBatch();
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
 							}
 
 						}
@@ -489,14 +491,14 @@ public class CwbLablePrintController {
 						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupMsp,
 								Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints((float) 15);
+							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupMsp,
-										complaintMap);
+								Object a = CwbLablePrintController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+										reasonList, cwbspayupMsp, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -510,34 +512,35 @@ public class CwbLablePrintController {
 							while (rs.next()) {
 								this.processRow(rs);
 							}
-							writeBatch();
+							this.writeBatch();
 							return null;
 						}
 
 						public void writeBatch() throws SQLException {
-							if (recordbatch.size() > 0) {
+							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : recordbatch) {
+								for (Map<String, Object> mapRow : this.recordbatch) {
 									cwbs.add(mapRow.get("cwb").toString());
 								}
-								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = getComplaintMap(cwbs);
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
 
-								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = recordbatch.size();
+								Map<String, Map<String, String>> orderflowList = CwbLablePrintController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
-									String cwb = recordbatch.get(i).get("cwb").toString();
-									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+											complaintMap);
 								}
-								recordbatch.clear();
+								this.recordbatch.clear();
 							}
 						}
 
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+							for (TuihuoRecord tuihuoRecord : CwbLablePrintController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
 								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
 							}
 							return map;
@@ -545,7 +548,7 @@ public class CwbLablePrintController {
 
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+							for (DeliveryState deliveryState : CwbLablePrintController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
 								map.put(deliveryState.getCwb(), deliveryState);
 							}
 							return map;
@@ -553,7 +556,7 @@ public class CwbLablePrintController {
 
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+							for (Complaint complaint : CwbLablePrintController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
 								complaintMap.put(complaint.getCwb(), complaint.getContent());
 							}
 							return complaintMap;
@@ -568,7 +571,7 @@ public class CwbLablePrintController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -581,16 +584,16 @@ public class CwbLablePrintController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 * 
+					 *
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 * 
+					 *
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 * 
+					 *
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -603,7 +606,7 @@ public class CwbLablePrintController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 * 
+					 *
 					 * }});
 					 */
 
@@ -618,37 +621,47 @@ public class CwbLablePrintController {
 
 	/**
 	 * 查询订单的配送结果
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
 	public DeliveryState getDeliveryByCwb(String cwb) {
-		List<DeliveryState> delvieryList = deliveryStateDAO.getDeliveryStateByCwb(cwb);
+		List<DeliveryState> delvieryList = this.deliveryStateDAO.getDeliveryStateByCwb(cwb);
 		return delvieryList.size() > 0 ? delvieryList.get(delvieryList.size() - 1) : new DeliveryState();
 	}
 
 	/**
 	 * 条形码打印
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/barcodeprint")
 	public String BarcodePrint(Model model, @RequestParam(value = "textfield", required = true, defaultValue = "0") String cwbs,
-			@RequestParam(value = "isshow", required = true, defaultValue = "0") long ishow) {
+			@RequestParam(value = "isshow", required = true, defaultValue = "0") long ishow, @RequestParam(value = "typeid", required = true, defaultValue = "cwb") String typeid) {
 		if (ishow == 1) {
 			List<String> list = new ArrayList<String>();
 			int right = 0;
 			int left = 0;
 			if (cwbs.length() > 0) {
 				for (String cwb : cwbs.split("\r\n")) {
+					if (right >= 1000) {
+						break;
+					}
 					left++;
-					if (cwb.trim().length() == 0 || cwb.trim().length() > 9) {
-						continue;
+					if (typeid.equals("cwb")) {
+						if ((cwb.trim().length() == 0) || (cwb.trim().length() > 9)) {
+							continue;
+						}
+					} else if (typeid.equals("baleno")) {
+						if ((cwb.trim().length() == 0) || (cwb.trim().length() > 21)) {
+							continue;
+						}
 					}
 					right++;
 					list.add(cwb);
 				}
 			}
+			model.addAttribute("typeid", typeid);
 			model.addAttribute("list", list);
 			model.addAttribute("right", right);
 			model.addAttribute("left", left);
@@ -661,27 +674,41 @@ public class CwbLablePrintController {
 	 */
 	@RequestMapping("/randomcodeprint")
 	public String RandomcodePrint(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "textfield", required = false, defaultValue = "0") final String num,
-			@RequestParam(value = "isshow", required = true, defaultValue = "0") long ishow) {
+			@RequestParam(value = "isshow", required = true, defaultValue = "0") long ishow, @RequestParam(value = "typeid", required = true, defaultValue = "cwb") String typeid) {
 		if (ishow > 0) {
 			List<String> slist = new ArrayList<String>();
-			if (!num.equals("") && num.trim().length() > 0) {
+			if (!num.equals("") && (num.trim().length() > 0)) {
 
 				for (int i = 0; i < Integer.valueOf(num.trim()); i++) {
-					long a = System.currentTimeMillis();
-					int cwb = (int) (Math.random() * 1000);
-					long ss = a + cwb;
-					String re = String.valueOf(ss).substring(5);
-					String cwbs = "Z" + String.valueOf(re);
-					if (!slist.contains(cwbs)) {
-						slist.add(cwbs);
-					} else {
-						String recwb = cwbs.replace("Z", "G");
-						slist.add(recwb);
+					if (Integer.valueOf(num.trim()) > 1000) {
+						break;
 					}
+					if (typeid.equals("cwb")) {
+						long a = System.currentTimeMillis();
+						int cwb = (int) (Math.random() * 1000);
+						long ss = a + cwb;
+						String re = String.valueOf(ss).substring(5);
+						String cwbs = "Z" + String.valueOf(re);
+						if (!slist.contains(cwbs)) {
+							slist.add(cwbs);
+						} else {
+							String recwb = cwbs.replace("Z", "G");
+							slist.add(recwb);
+						}
+					} else if (typeid.equals("baleno")) {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						slist.add(new Date().getTime() + "");
+					}
+
 				}
 			}
 			model.addAttribute("slist", slist);
 		}
+		model.addAttribute("typeid", typeid);
 		model.addAttribute("textfield", num);
 		return "cwblableprint/cwbrandomCode";
 	}
@@ -700,4 +727,27 @@ public class CwbLablePrintController {
 		return "cwblableprint/printTiaoxingma";
 	}
 
+	@RequestMapping("/printBranchcode")
+	public String printBranchcode(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "branchids", required = false, defaultValue = "") final String branchids) {
+		List<String> c = new ArrayList<String>();
+		String[] a = branchids.split(",");
+		for (String b : a) {
+			c.add(b);
+		}
+		model.addAttribute("branchids", c);
+		return "cwblableprint/printBranchcode";
+	}
+
+	@RequestMapping("/branchcodeprint/{page}")
+	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "branchname", required = false, defaultValue = "") String branchname,
+			@RequestParam(value = "branchaddress", required = false, defaultValue = "") String branchaddress, @RequestParam(value = "sitetype", required = false, defaultValue = "0") int sitetype,
+			@RequestParam(value = "pagesize", required = false, defaultValue = "10") int pagesize) {
+
+		model.addAttribute("branches", this.branchDAO.getBranchByPage(page, branchname, branchaddress, sitetype, pagesize));
+		model.addAttribute("page_obj", new Page(this.branchDAO.getBranchCount(branchname, branchaddress, sitetype, pagesize), page, pagesize));
+		model.addAttribute("page", page);
+		model.addAttribute("sitetype", sitetype);
+		model.addAttribute("pagesize", pagesize);
+		return "cwblableprint/branchcodeprint";
+	}
 }

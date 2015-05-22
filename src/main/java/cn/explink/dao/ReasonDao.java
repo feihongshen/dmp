@@ -76,7 +76,6 @@ public class ReasonDao {
 			return null;
 		}
 	}
-	
 	public List<Reason> getReasonByReasoncontentAndParentid(String reasoncontent,int parentid) {
 		try {
 			return jdbcTemplate.query("select * from express_set_reason where reasoncontent=? and parentid=?", new ReasonRowMapper(), reasoncontent,parentid);
@@ -100,7 +99,6 @@ public class ReasonDao {
 	public void saveReason(final Reason reason,String changealowflag) {
 		if(changealowflag==null){
 		jdbcTemplate.update("update express_set_reason set reasoncontent=? where reasonid=?", new PreparedStatementSetter() {
-
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, reason.getReasoncontent());
@@ -127,7 +125,6 @@ public class ReasonDao {
 	public void creReason(final Reason reason) {
 
 		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid,changealowflag) values(?,?,?,?,?)", new PreparedStatementSetter() {
-
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, reason.getReasoncontent());

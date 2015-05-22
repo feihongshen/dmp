@@ -14,10 +14,13 @@ AbnormalOrder abnormalOrder = (AbnormalOrder)request.getAttribute("abnormalOrder
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 Role role = (Role)request.getAttribute("role");
 String showabnomal = request.getAttribute("showabnomal").toString();
+long isfind = request.getAttribute("isfind")==null?0:Long.parseLong(request.getAttribute("isfind").toString());
 
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerList");
+
+HashMap<Long, String> branchMap = (HashMap<Long, String>)request.getAttribute("branchMap");
 
 List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.getAttribute("abnormalWriteBackList");
   
@@ -60,12 +63,22 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 								<td><div class="chat_listbox">
 									<div class="chat_listclose" onclick='$("#right_chatlist").hide();$("#chatlist_alertbox").width(600);'>></div>
 									<div class="chat_listtxt">
-									<%if(abnormalWriteBackList!=null&&abnormalWriteBackList.size()>0)for(AbnormalWriteBack aw : abnormalWriteBackList){ %>
+									<%-- <%if(abnormalWriteBackList!=null&&abnormalWriteBackList.size()>0)for(AbnormalWriteBack aw : abnormalWriteBackList){ %>
 									<%if(aw.getType()==AbnormalWriteBackEnum.ChuangJian.getValue()||aw.getType()==AbnormalWriteBackEnum.HuiFu.getValue()){ %>
 										<p><%if(userList!=null||userList.size()>0)for(User u : userList){if(abnormalOrder.getCreuserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %>&nbsp;&nbsp;<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
 									<%}else if(aw.getType()==AbnormalWriteBackEnum.ChuLi.getValue()){ %>
 										<p>客服-<%if(userList!=null||userList.size()>0)for(User u : userList){if(aw.getCreuserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %>&nbsp;&nbsp;<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
 									<%} %>
+									<%} %> --%>
+									<%if(abnormalWriteBackList!=null&&abnormalWriteBackList.size()>0)
+										for(AbnormalWriteBack aw : abnormalWriteBackList){ %>
+									
+										<p><%if(userList!=null||userList.size()>0)
+											for(User u : userList){
+												if(aw.getCreuserid()==u.getUserid())
+												{ out.print(branchMap.get(u.getBranchid())+"-"+u.getRealname());%><%}
+											} %>&nbsp;&nbsp;
+												<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
 									<%} %>
 									</div>
 								</div></td>
@@ -77,8 +90,26 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 			<input type="hidden" name="cwb" value="<%=cwborder.getCwb() %>">
 			<div align="center">
 			
+				<% if(isfind==1){
+					if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
+					else if(abnormalOrder.getIshandle()!=AbnormalOrderHandleEnum.yichuli.getValue()){
+				%>
+				<input type="hidden" value="1" name="isfind"/>
+				<input type="submit" value="回复" class="button">
+				<%}}
+				else{
+				 if(abnormalOrder.getIshandle()==AbnormalOrderHandleEnum.yichuli.getValue()){ } 
+				 else if(showabnomal.equals("1")) {%>
+				<input type="submit" value="处理中" class="button">
+				<input type="button" value="完成处理" class="button" onclick="yichuli1();">
+				<%} 
+				else if(showabnomal.equals("0")) {%>
+				<input type="submit" value="完成处理" class="button">
+				<!-- <input type="button" value="完成处理" class="button" onclick="yichuli1();"> -->
+				<%} 
+				else  { %>
 				<input type="submit" value="处理" class="button">
-				
+				<%}} %>
 			</div>
 		</form>
 		<form id="form2" action="<%=request.getContextPath()%>/abnormalOrder/SubmitOverabnormal/<%=abnormalOrder.getId() %>" method="post">

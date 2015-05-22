@@ -28,7 +28,14 @@ public enum ExceptionCwbErrorTypeEnum {
 	// Bale_ChongFu_Error(96,"重复封包"),
 	Bale_BU_SHI_ZHE_GE_MU_DI(96, "不是这个目的地的包，目的站：{0}"), Bale_Fei_Ben_Zhan(97, "非本站包"),
 
-	Peisong_Bu_YunXu_ZhongZhuan(98, "配送单不允许做中转");
+	Peisong_Bu_YunXu_ZhongZhuan(98, "配送单不允许做中转"),
+
+	Fei_ZhongZhuan_Tuihuo(99, "非待中转、待退货不能做此操作"),
+
+	GongHuoShang_Bufu(100, "请选择正确的供货商"),
+	WuShuJuYouHuoWuDanError(101,"无数据，有货无单"),
+	ShangWeiPiPeiZhanDian(102,"尚未匹配站点")
+	;
 
 	private int value;
 	private String text;

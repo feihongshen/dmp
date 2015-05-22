@@ -46,9 +46,11 @@ function exportField(flag){
 	
 	if(flag==1){
 		$("#type").val("weichuku");
+		$("#extype").val("wall");
 		$("#exportForBack").submit();
 	}else if(flag==2){
 		$("#type").val("yichuku");
+		$("#extype").val("yall");
 		$("#exportForBack").submit();
 	}else if(flag==3){
 		var cwbs = "";
@@ -172,6 +174,14 @@ function yichuku(){
 			<form action="<%=request.getContextPath()%>/PDA/cwbbacktocustomerBatch" method="post">
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
+					<p>
+						供货商：<select id="customerid" name="customerid">
+						<option value="-1">请选择供货商</option>
+						<%for(Customer customer:cList){ %>
+						<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
+						<%} %>
+						</select>
+						</p>
 					<p><span>订单号：</span>
 						<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>
 					</p>
@@ -201,7 +211,7 @@ function yichuku(){
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1);'/>
+					<input type ="button" id="btnval0" value="导出Exc" class="input_button1" onclick='exportField(1);'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -241,7 +251,7 @@ function yichuku(){
 					</table>
 				</li>
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(2);"/>
+					<input type ="button" id="btnval0" value="导出Ex" class="input_button1" onclick="exportField(2);"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -281,7 +291,7 @@ function yichuku(){
 				</li>
 				
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick="exportField(3);"/>
+					<input type ="button" id="btnval0" value="导出Exc" class="input_button1" onclick="exportField(3);"/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -326,6 +336,7 @@ function yichuku(){
 		</form>
  		<form action="<%=request.getContextPath() %>/PDA/exportExcleForBackToCustomer" id="exportForBack">
 	 		<input  type="hidden" name="type" value="" id="type"/>
+	 		<input  type="hidden" name="extype" value="" id="extype"/>
  		</form>
 	
 	

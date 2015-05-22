@@ -54,7 +54,9 @@ public class UserDAO {
 			user.setUseraddress(StringUtil.nullConvertToEmptyString(rs.getString("useraddress")));
 			user.setUserremark(StringUtil.nullConvertToEmptyString(rs.getString("userremark")));
 			user.setUsersalary(rs.getBigDecimal("usersalary"));
-			user.setShowphoneflag(StringUtil.nullConvertToEmptyString(rs.getString("showphoneflag")));
+			user.setShowphoneflag(rs.getLong("showphoneflag"));
+			user.setShownameflag(rs.getLong("shownameflag"));
+			user.setShowmobileflag(rs.getLong("showmobileflag"));
 			user.setUseremail(StringUtil.nullConvertToEmptyString(rs.getString("useremail")));
 			user.setUserwavfile(StringUtil.nullConvertToEmptyString(rs.getString("userwavfile")));
 			user.setRoleid(rs.getLong("roleid"));
@@ -206,60 +208,66 @@ public class UserDAO {
 
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
-				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?)", new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());
-				ps.setString(3, user.getRealname());
-				ps.setString(4, user.getIdcardno());
-				ps.setInt(5, user.getEmployeestatus());
-				ps.setLong(6, user.getBranchid());
-				ps.setString(7, user.getUserphone());
-				ps.setString(8, user.getUsermobile());
-				ps.setString(9, user.getUseraddress());
-				ps.setString(10, user.getUserremark());
-				ps.setBigDecimal(11, user.getUsersalary());
-				ps.setLong(12, user.getUsercustomerid());
-				ps.setString(13, user.getShowphoneflag());
-				ps.setString(14, user.getUseremail());
-				ps.setString(15, user.getUserwavfile());
-				ps.setLong(16, user.getRoleid());
-				ps.setInt(17, user.getIsImposedOutWarehouse());
+				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?)",
+				new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, user.getUsername());
+						ps.setString(2, user.getPassword());
+						ps.setString(3, user.getRealname());
+						ps.setString(4, user.getIdcardno());
+						ps.setInt(5, user.getEmployeestatus());
+						ps.setLong(6, user.getBranchid());
+						ps.setString(7, user.getUserphone());
+						ps.setString(8, user.getUsermobile());
+						ps.setString(9, user.getUseraddress());
+						ps.setString(10, user.getUserremark());
+						ps.setBigDecimal(11, user.getUsersalary());
+						ps.setLong(12, user.getUsercustomerid());
+						ps.setLong(13, user.getShowphoneflag());
+						ps.setString(14, user.getUseremail());
+						ps.setString(15, user.getUserwavfile());
+						ps.setLong(16, user.getRoleid());
+						ps.setInt(17, user.getIsImposedOutWarehouse());
+						ps.setLong(18, user.getShownameflag());
+						ps.setLong(19, user.getShowmobileflag());
 
-			}
+					}
 
-		});
+				});
 	}
 
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
 				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
-				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());
-				ps.setString(3, user.getRealname());
-				ps.setString(4, user.getIdcardno());
-				ps.setInt(5, user.getEmployeestatus());
-				ps.setLong(6, user.getBranchid());
-				ps.setString(7, user.getUserphone());
-				ps.setString(8, user.getUsermobile());
-				ps.setString(9, user.getUseraddress());
-				ps.setString(10, user.getUserremark());
-				ps.setBigDecimal(11, user.getUsersalary());
-				ps.setLong(12, user.getUsercustomerid());
-				ps.setString(13, user.getShowphoneflag());
-				ps.setString(14, user.getUseremail());
-				ps.setString(15, user.getUserwavfile());
-				ps.setLong(16, user.getRoleid());
-				ps.setInt(17, user.getIsImposedOutWarehouse());
-				ps.setLong(18, user.getUserid());
-			}
+				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,showmobileflag=?" + " where userid=? and userDeleteFlag=1 ",
+				new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, user.getUsername());
+						ps.setString(2, user.getPassword());
+						ps.setString(3, user.getRealname());
+						ps.setString(4, user.getIdcardno());
+						ps.setInt(5, user.getEmployeestatus());
+						ps.setLong(6, user.getBranchid());
+						ps.setString(7, user.getUserphone());
+						ps.setString(8, user.getUsermobile());
+						ps.setString(9, user.getUseraddress());
+						ps.setString(10, user.getUserremark());
+						ps.setBigDecimal(11, user.getUsersalary());
+						ps.setLong(12, user.getUsercustomerid());
+						ps.setLong(13, user.getShowphoneflag());
+						ps.setString(14, user.getUseremail());
+						ps.setString(15, user.getUserwavfile());
+						ps.setLong(16, user.getRoleid());
+						ps.setInt(17, user.getIsImposedOutWarehouse());
+						ps.setLong(18, user.getShownameflag());
+						ps.setLong(19, user.getShowmobileflag());
+						ps.setLong(20, user.getUserid());
+					}
 
-		});
+				});
 	}
 
 	public List<User> getUserByRole(int roleid) {

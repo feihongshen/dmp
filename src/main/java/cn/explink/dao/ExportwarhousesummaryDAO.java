@@ -7,15 +7,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Exportwarhousesummary;
+import cn.explink.domain.User;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class ExportwarhousesummaryDAO {
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -52,10 +58,8 @@ public class ExportwarhousesummaryDAO {
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
 			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
 			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
-			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
 			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
 			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
 			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
@@ -67,7 +71,6 @@ public class ExportwarhousesummaryDAO {
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
 			cwbOrder.setShipperid(rs.getLong("shipperid"));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(StringUtil.nullConvertToEmptyString(rs.getString("cwbdelivertypeid")));
@@ -116,8 +119,49 @@ public class ExportwarhousesummaryDAO {
 			cwbOrder.setLosereasonid(rs.getLong("losereasonid"));
 			cwbOrder.setShouldfare(rs.getBigDecimal("shouldfare"));
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
+			ExportwarhousesummaryDAO.this.setValueByUser(rs, cwbOrder);
 			return cwbOrder;
 		}
+	}
+
+	private void setValueByUser(ResultSet rs, CwbOrder cwbOrder) throws SQLException {
+		if (this.getUser().getShownameflag() != 1) {
+			cwbOrder.setConsigneename("******");
+		} else {
+			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		}
+		if (this.getUser().getShowphoneflag() != 1) {
+			cwbOrder.setConsigneephone("******");
+		} else {
+			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+		}
+		if (this.getUser().getShowmobileflag() != 1) {
+			cwbOrder.setConsigneemobile("******");
+		} else {
+			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		}
+		cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+		cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+		cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+	}
+
+	private User getUser() {
+		return this.getSessionUser() == null ? new User() : this.getSessionUser();
+	}
+
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = new ExplinkUserDetail();
+		try {
+			userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		} catch (Exception e) {
+			User u = new User();
+			u.setShowmobileflag(1);
+			u.setShowphoneflag(1);
+			u.setShownameflag(1);
+			return u;
+		}
+		return userDetail.getUser();
+
 	}
 
 	private final class BranchSum implements RowMapper<Exportwarhousesummary> {
@@ -155,7 +199,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 每个站点每天数据统计
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -166,7 +210,7 @@ public class ExportwarhousesummaryDAO {
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
 				+ " GROUP BY 1, 2 ";
 		try {
-			return jdbcTemplate.query(sql, new BranchSum());
+			return this.jdbcTemplate.query(sql, new BranchSum());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -174,7 +218,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 所有站点入库每天统计
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -185,7 +229,7 @@ public class ExportwarhousesummaryDAO {
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
 				+ " GROUP BY 1 ";
 		try {
-			return jdbcTemplate.query(sql, new BranchSum());
+			return this.jdbcTemplate.query(sql, new BranchSum());
 
 		} catch (Exception ee) {
 			return null;
@@ -194,7 +238,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 库房入库每天总计
-	 * 
+	 *
 	 * @param branchid
 	 * @param strtime
 	 * @param endtime
@@ -205,7 +249,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = "select SUBSTR(credate,1,10) as credate , branchid as nextbranchid ,COUNT(cwb) as branchsum" + " from express_ops_order_intowarhouse   " + " WHERE " + " branchid in (" + branchid
 				+ ") " + " and   flowordertype='4' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and   credate < '" + endtime + "'" + " GROUP BY 1 ";
 		try {
-			return jdbcTemplate.query(sql, new BranchSum());
+			return this.jdbcTemplate.query(sql, new BranchSum());
 
 		} catch (Exception ee) {
 			return null;
@@ -214,7 +258,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 库房入库总计
-	 * 
+	 *
 	 * @param branchid
 	 * @param strtime
 	 * @param endtime
@@ -224,7 +268,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = "select COUNT(cwb) as branchsum" + " from express_ops_order_intowarhouse   " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and   credate > '" + strtime + "'" + " and   credate < '" + endtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 
 		} catch (Exception ee) {
 			return 0;
@@ -233,7 +277,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 每个站点所有天数的合计
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -244,7 +288,7 @@ public class ExportwarhousesummaryDAO {
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
 				+ " GROUP BY 2 ";
 		try {
-			return jdbcTemplate.query(sql, new BranchSum());
+			return this.jdbcTemplate.query(sql, new BranchSum());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -252,7 +296,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 所有站点所有天数合计
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -262,7 +306,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select COUNT(cwb) as branchsum" + " from express_ops_warehouse_to_branch  " + " WHERE " + " startbranchid in (" + startbranchid + ") " + " and nextbranchid in (" + nextbranchid
 				+ ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -270,7 +314,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 库房每天入库订单
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -278,10 +322,10 @@ public class ExportwarhousesummaryDAO {
 	 */
 	public List<CwbOrder> getCwbsByeveryday(long page, String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
-				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -289,10 +333,10 @@ public class ExportwarhousesummaryDAO {
 
 	public List<CwbOrder> getCwbsByeverydayexcel(long page, String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
-				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -302,7 +346,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -310,7 +354,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 库房所有天数入库订单
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -318,11 +362,11 @@ public class ExportwarhousesummaryDAO {
 	 */
 	public List<CwbOrder> getCwbsByAlleveryday(long page, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
-				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -332,7 +376,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -340,7 +384,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 站点每天订单
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -348,10 +392,10 @@ public class ExportwarhousesummaryDAO {
 	 */
 	public List<CwbOrder> getCwbsByBrancheveryday(long page, String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
-				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -361,7 +405,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select Count(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -369,7 +413,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 每个站点所有天数订单
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -377,10 +421,10 @@ public class ExportwarhousesummaryDAO {
 	 */
 	public List<CwbOrder> getCwbsByBranchAllday(long page, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
-				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -390,7 +434,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -398,7 +442,7 @@ public class ExportwarhousesummaryDAO {
 
 	/**
 	 * 所有站点每天订单
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param strtime
 	 * @param endtime
@@ -406,10 +450,10 @@ public class ExportwarhousesummaryDAO {
 	 */
 	public List<CwbOrder> getCwbsByALLBrancheveryday(long page, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
-				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
-			return jdbcTemplate.query(sql, new Cwbs());
+			return this.jdbcTemplate.query(sql, new Cwbs());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -419,7 +463,7 @@ public class ExportwarhousesummaryDAO {
 		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
-			return jdbcTemplate.queryForInt(sql);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (Exception ee) {
 			return 0;
 		}
@@ -428,7 +472,7 @@ public class ExportwarhousesummaryDAO {
 	public List<CwbOrder> getCwbsDetail(String cwb) {
 		String sql = " select * " + " from express_ops_cwb_detail  " + " WHERE " + " cwb in (" + cwb + ") " + " and   state='1' ";
 		try {
-			return jdbcTemplate.query(sql, new CwbMapper());
+			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception ee) {
 			return null;
 		}
@@ -436,28 +480,28 @@ public class ExportwarhousesummaryDAO {
 
 	// 根据订单号失效
 	public void dataLoseByCwb(String cwb) {
-		jdbcTemplate.update("update express_ops_warehouse_to_branch set state=0  where state =1 and cwb=? ", cwb);
+		this.jdbcTemplate.update("update express_ops_warehouse_to_branch set state=0  where state =1 and cwb=? ", cwb);
 	}
 
 	// 根据订单号失效
 	public void LoseintowarhouseByCwb(String cwb) {
-		jdbcTemplate.update("update express_ops_order_intowarhouse set state=0  where state =1 and cwb=? ", cwb);
+		this.jdbcTemplate.update("update express_ops_order_intowarhouse set state=0  where state =1 and cwb=? ", cwb);
 	}
 
 	public Exportwarhousesummary getIntowarhouse(String cwb) {
 		String sql = " select *  from express_ops_order_intowarhouse   WHERE  cwb = '" + cwb + "' and   state=1 ";
 		try {
-			return jdbcTemplate.queryForObject(sql, new Warhouse());
+			return this.jdbcTemplate.queryForObject(sql, new Warhouse());
 		} catch (Exception ee) {
 			return null;
 		}
 	}
 
 	public void setIntowarhouse(String cwb, long branchid, String credate, Long userid, int flowordertype) {
-		jdbcTemplate.update("insert into express_ops_order_intowarhouse(cwb,branchid,credate,userid,flowordertype) " + " values(?,?,?,?,?)", cwb, branchid, credate, userid, flowordertype);
+		this.jdbcTemplate.update("insert into express_ops_order_intowarhouse(cwb,branchid,credate,userid,flowordertype) " + " values(?,?,?,?,?)", cwb, branchid, credate, userid, flowordertype);
 	}
 
 	public void updateIntowarhouse(String cwb, long branchid, String credate, Long userid, int flowordertype) {
-		jdbcTemplate.update("update  express_ops_order_intowarhouse set branchid=?,credate=?,userid=?,flowordertype=? where cwb=?", branchid, credate, userid, flowordertype, cwb);
+		this.jdbcTemplate.update("update  express_ops_order_intowarhouse set branchid=?,credate=?,userid=?,flowordertype=? where cwb=?", branchid, credate, userid, flowordertype, cwb);
 	}
 }

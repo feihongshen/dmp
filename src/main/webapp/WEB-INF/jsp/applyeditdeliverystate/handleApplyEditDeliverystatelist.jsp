@@ -18,6 +18,8 @@ List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliver
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
 Page page_obj = (Page)request.getAttribute("page_obj");
+Boolean isFinancial = Boolean.parseBoolean(request.getAttribute("isFinancial").toString());
+Boolean isService =  Boolean.parseBoolean(request.getAttribute("isService").toString());
   
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
   CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
@@ -103,6 +105,34 @@ function getThisBox(id){
 		}
 	});
 }
+function Audit(id,flag){
+	if(confirm("确认要审核吗   ?")){
+	$.ajax({
+		type: "POST",
+		url:$("#auditurl").val(),
+		data:{"id":id,"flag":flag},
+		dataType:"json",
+		success : function(data) {
+			if(data>0)
+				{
+				$("#searchForm").submit();
+				if(flag==1)
+				{
+				$("#auditButton1_"+id).val("已通过");
+				$("#auditButton2_"+id).remove();
+				}
+				else {
+					$("#auditButton2_"+id).val("未通过");
+					$("#auditButton1_"+id).remove();
+				}
+				$("#auditButton_"+id).attr("disabled","disabled");
+				$("#auditButton1_"+id).attr("disabled","disabled");
+				$("#auditButton2_"+id).attr("disabled","disabled");
+				}
+		}
+	});
+	}
+}
 
 
 function editSuccess(data){
@@ -164,6 +194,7 @@ function editInit(){
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 		<form action="1" method="post" id="searchForm">
+		<input type="hidden" name="isnow" value="1"/>
 			&nbsp;&nbsp;订单号：
 			<input type="text" name="cwb" id="cwb" value="" onKeyDown='if(event.keyCode==13){sub();}' class="input_text1" style="height:20px;">
 			&nbsp;&nbsp;申请时间：
@@ -179,12 +210,23 @@ function editInit(){
 					<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 					<%} %>
 				</select>
-			&nbsp;&nbsp;处理状态：
-				<select name="ishandle" id="ishandle" class="select1">
+
+				<%if(isService){%>
+				审核状态：
+				<select name="audit" id="audit">
+					<option value="-1">请选择</option>
+					<option value="0">未审核</option>
+					<option value="1">已通过</option>
+					<option value="2">未通过</option>
+				</select>
+			<%} else {%>
+			处理状态：
+				<select name="ishandle" id="ishandle">
 					<option value="-1">请选择</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
 					<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
 				</select>
+				<%} %>
 			<input type="button"  value="筛选" class="input_button2" onclick="sub();">
 		</form>
 	</div>
@@ -216,18 +258,41 @@ function editInit(){
 			<td align="center" valign="middle"><%for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
 			<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 			<td align="center" valign="middle"><%for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-			<td align="center" valign="middle"><%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
+			<td align="center" valign="middle">
+			<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
+									{ 
+											if(adse.getAudit()==0){out.print("未处理");}
+										else if(adse.getAudit()==1){out.print("审核已通过");}
+										else if(adse.getAudit()==2){out.print("审核未通过");}
+									}
+								else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
+									{ out.print("<font color='red'>已处理</font>");}
+									%>
+			</td>
 			<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 			<td align="center" valign="middle">
 			<%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %>
 			</td>
 			<td align="center" valign="middle"><%=adse.getEditreason() %></td>
 			<td align="center" valign="middle"><!-- <input type="button" name="button2" id="button2" value="修改"> -->
-			<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>
+			<%if(isService==false&&isFinancial==false){%>
+			<%}else if(isService)
+			{if(adse.getAudit()==0){
+			%>
+			<input type="button" name="auditButton" id="auditButton1_<%=adse.getId() %>" value='通过' onclick="Audit(<%=adse.getId()%>,1)" />
+			<input type="button" name="auditButton" id="auditButton2_<%=adse.getId() %>" value='不通过' onclick="Audit(<%=adse.getId()%>,2)" />
+			<%}else if(adse.getAudit()==1){%>
+				<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>"  value='已通过' disabled="disabled" />
+			<%}else if(adse.getAudit()==2){%>
+			<input type="button" name="auditButton" id="auditButton_<%=adse.getId() %>"  value='未通过' disabled="disabled" />
+			<%}
+			}
+			else{
+			if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>
 			<input type="button" name="button2" id="button2" value="修改" onclick="edit_button(<%=adse.getId()%>);" class="input_button2">
 			<%}else{ %>
 			<input type="button" name="button2" id="button2" value="已修改" >
-			<%} %>
+			<%}}%>
 		</tr>
 		<%} %>
 		</tbody>
@@ -264,6 +329,7 @@ $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#ishandle").val(<%=request.getParameter("ishandle")==null?-1:Long.parseLong(request.getParameter("ishandle"))%>);
 $("#applybranchid").val(<%=request.getParameter("applybranchid")==null?0:Long.parseLong(request.getParameter("applybranchid"))%>);
 </script>
+<input type="hidden" id="auditurl" value="<%=request.getContextPath()%>/applyeditdeliverystate/audit" />
 </body>
 </html>
 

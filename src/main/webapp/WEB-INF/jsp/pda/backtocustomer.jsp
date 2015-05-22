@@ -4,7 +4,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <%
-List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
+List<Customer> customerlist = (List<Customer>)request.getAttribute("customersList");
 List<CwbOrder> weitghsckList = (List<CwbOrder>)request.getAttribute("weitghsckList");
 List<CwbOrder> wpeisongList = (List<CwbOrder>)request.getAttribute("wpeisong");
 List<CwbOrder> wshangmenhuanList = (List<CwbOrder>)request.getAttribute("wshangmenhuan");
@@ -69,7 +69,7 @@ $(function(){
 	
 })
 function addAndRemoval(cwb,tab,isRemoval){
-	var trObj = $("#ViewList tr[id='TR"+cwb+"']");
+	var trObj = $("#ViewList tr[id='ATR"+cwb+"']");
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
@@ -97,14 +97,16 @@ function getcwbsdataForCustomer(){
 
 //退供应商出库
 function cwbbacktocustomer(scancwb,baleno){
+	var pname="<%=request.getContextPath()%>/PDA/cwbbacktocustomer/";
 	if(scancwb.length>0){
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
 			baleaddcwbCheck();
 		}else{//出库
 			$.ajax({
 				type: "POST",
-				url:"<%=request.getContextPath()%>/PDA/cwbbacktocustomer/"+scancwb+"?baleno="+baleno,
+				url:pname+scancwb+"?baleno="+baleno,
 				dataType:"json",
+				data:"customerid="+$("#customerid").val(),
 				success : function(data) {
 					$("#scancwb").val("");
 					if(data.statuscode=="000000"){
@@ -132,7 +134,7 @@ function cwbbacktocustomer(scancwb,baleno){
 							
 							$("#customername").html(data.customername);
 						}
-						//getcwbsdataForCustomer();
+						getcwbsdataForCustomer();
 						//将成功扫描的订单放到已入库明细中
 						//addAndRemoval(data.body.cwb,"successTable",true);
 					}else{
@@ -507,6 +509,14 @@ function chuku(){
 								onclick="hanCreate();" />
 						</p>
 						<p>
+						供货商：<select id="customerid" name="customerid">
+						<option value="-1">请选择供货商</option>
+						<%for(Customer customer:customerlist){ %>
+						<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
+						<%} %>
+						</select>
+						</p>
+						<p>
 							<span>订单号：</span> <input class="saomiao_inputtxt2" type="text" id="scancwb" name="scancwb"
 								value=""
 								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){cwbbacktocustomer($(this).val(),$('#baleno').val());}" />
@@ -570,7 +580,7 @@ function chuku(){
 										<table id="weituihuochukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%for(CwbOrder co : weitghsckList){ %>
-											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
@@ -727,6 +737,7 @@ function chuku(){
 
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
 					class="input_button1" onclick="exportField(3);" />
+
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -734,12 +745,13 @@ function chuku(){
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">类型</td>
+											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
-											<td width="200" align="center" bgcolor="#f1f1f1">地址</td>
-											<td align="center" bgcolor="#f1f1f1">异常原因</td>
+											<td align="center" bgcolor="#f1f1f1">地址</td>
 										</tr>
 									</table>
 									<div style="height: 160px; overflow-y: scroll">

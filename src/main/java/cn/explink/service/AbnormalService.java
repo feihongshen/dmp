@@ -52,6 +52,8 @@ public class AbnormalService {
 				view.setCustomerName(this.getCustomer(customers, a.getLong("customerid")));
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
+				view.setIshandle(a.getLong("ishandle"));
+				view.setCredatetime(a.getString("credatetime"));
 				views.add(view);
 			}
 		}
@@ -117,12 +119,12 @@ public class AbnormalService {
 	 * @param mapForAbnormalorder
 	 */
 	@Transactional
-	public void creAbnormalOrder(CwbOrder co, User user, long abnormaltypeid, String nowtime, Map<Long, JSONObject> mapForAbnormalorder, long action) {
+	public void creAbnormalOrder(CwbOrder co, User user, long abnormaltypeid, String nowtime, Map<Long, JSONObject> mapForAbnormalorder, long action, long handleBranch) {
 		// long abnormalorderid =
 		// abnormalOrderDAO.creAbnormalOrderLong(co.getOpscwbid(),
 		// co.getCustomerid(), "", user.getUserid(), user.getBranchid(),
 		// abnormaltypeid, nowtime);
-		long abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLong(co, "", user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime);
+		long abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLong(co, "", user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime, handleBranch);
 		this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), "", user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid, co.getCwb());
 		JSONObject json = new JSONObject();
 		json.put("abnormalorderid", abnormalorderid);

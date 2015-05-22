@@ -9,6 +9,8 @@ List<User> uList = (List<User>)request.getAttribute("userList");
 Switch ck_switch = (Switch) request.getAttribute("ck_switch");
 String RUKUPCandPDAaboutYJDPWAV = request.getAttribute("RUKUPCandPDAaboutYJDPWAV").toString();
 String isprintnew = request.getAttribute("isprintnew").toString();
+
+
 String wavPath=request.getContextPath()+"/images/wavnums/";
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -89,6 +91,8 @@ function initEmailDateUI(ed){
 		getcwbsquejiandataForCustomer('-1');
 		$("#scancwb").focus();
 		
+		
+		000
 		$("#updateswitch").click(function(){
 			var switchstate = "rkbq_02";
 			if($("#updateswitch").attr("checked")=="checked"){
@@ -236,14 +240,13 @@ function initEmailDateUI(ed){
 									} */
 									if($("#updateswitch").attr('checked')=='checked')
 									{
-									if (rk_switch == "rkbq_01") {
-										
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
-											}
-										
-									else if (rk_switch == "rkbq_03") {
-										$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
-									}
+										if (rk_switch == "rkbq_01") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_03") {
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
+										}else if (rk_switch == "rkbq_04") {						
+											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
+										}
 									}
 									<%-- if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
 										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
@@ -449,7 +452,11 @@ function initEmailDateUI(ed){
 					<div class="saomiao_left2">
 						<p>
 							<%
-								if (isprintnew.equals("yes")) {
+								if(isprintnew.equals("2")){ 
+							%>
+							<input type="checkbox" id="updateswitch" value="rkbq_04" name="updateswitch"/>打印入库标签
+							<%
+								} else if (isprintnew.equals("1")) {
 							%>
 							<input type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
 							<%

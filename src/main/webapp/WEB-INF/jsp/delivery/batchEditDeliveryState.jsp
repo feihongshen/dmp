@@ -14,14 +14,16 @@ List<JSONObject> objList = (List<JSONObject>)request.getAttribute("objList");
 
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
 List<Reason> firstchangereasonlist = (List<Reason>)request.getAttribute("firstchangereasonlist");
-
+List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
 List<User> deliverList = (List<User>)request.getAttribute("deliverList");
 
-
+List<Reason> firstlist = (List<Reason>)request.getAttribute("firstlist");
 List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
 List<Reason> weishuakareasonlist = (List<Reason>)request.getAttribute("weishuakareasonlist");
 
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
+long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
+
 long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
 long deliverystateid = request.getAttribute("deliverystateid")==null?0:(Long)request.getAttribute("deliverystateid");
@@ -92,13 +94,15 @@ $(function(){
 function changeTag(id){
 	if(id==<%=DeliveryStateEnum.JuShou.getValue()%>){
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		
 		$("#backreasonid").parent().show();
 		$("#deliverstateremark").parent().show();
 		$("#paytype").parent().hide();
-		
+		$("#losereasonid").parent().hide();
+
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
@@ -106,15 +110,18 @@ function changeTag(id){
 		$("#zhiliuremark").val("");
 		$("#firstchangereasonid").parent().hide();
 		$("#changereasonid").parent().hide();
+		$("#losereasonid").val(0);
 		$("#paytype").val(-1);
 	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
 		$("#leavedreasonid").parent().show();
+		$("#firstlevelreasonid").parent().show();
 		$("#resendtime").parent().show();
 		$("#zhiliuremark").parent().show();
 		$("#backreasonid").parent().hide();
 		$("#deliverstateremark").parent().hide();
 		$("#paytype").parent().hide();
-		
+		$("#losereasonid").parent().hide();
+
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
@@ -122,15 +129,18 @@ function changeTag(id){
 		$("#zhiliuremark").val("");
 		$("#firstchangereasonid").parent().hide();
 		$("#changereasonid").parent().hide();
+		$("#losereasonid").val(0);
 		$("#paytype").val(-1);
 	}else if(id==<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>){
 		$("#paytype").parent().show();
 		$("#backreasonid").parent().hide();
 		$("#deliverstateremark").parent().hide();
 		$("#leavedreasonid").parent().hide();
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
-		
+		$("#losereasonid").parent().hide();
+
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
@@ -138,6 +148,8 @@ function changeTag(id){
 		$("#zhiliuremark").val("");
 		$("#firstchangereasonid").parent().hide();
 		$("#changereasonid").parent().hide();
+		$("#losereasonid").val(0);
+
 		<%if(batchEditDeliveryStateisUseCash.equals("no")){ %>
 			$("#paytype").val(-1);
 		<%}%>
@@ -154,6 +166,22 @@ function changeTag(id){
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		$("#paytype").val(-1);
+	}else if(id==<%=DeliveryStateEnum.HuoWuDiuShi.getValue()%>){
+		$("#losereasonid").parent().show();
+		$("#losereasonid").val(0);
+		$("#leavedreasonid").parent().hide();
+		$("#resendtime").parent().hide();
+		$("#zhiliuremark").parent().hide();
+		$("#paytype").parent().hide();
+		$("#backreasonid").parent().hide();
+		$("#deliverstateremark").parent().hide();
+		$("#backreasonid").val(0);
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 		$("#paytype").val(-1);
@@ -190,7 +218,7 @@ function sub(){
 		if($(this).attr("checked")=="checked"){
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 				
-				if($("#leavedreasonid").val()==0){
+				if($("#firstlevelreasonid").val()==-1){
 					alert("请选择滞留原因");
 					return false;
 				}
@@ -225,6 +253,9 @@ function sub(){
 			
 			else if($(this).val()==<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>&&$("#paytype").val()==-1){
 				alert("请选择支付方式");
+				return false;
+			}else if($(this).val()==<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>&&$("#losereasonid").val()==0){
+				alert("请选择货物丢失原因");
 				return false;
 			}else{
 				$("#subForm").submit();
@@ -288,19 +319,33 @@ function resub(form){
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>);"/> <%=DeliveryStateEnum.FenZhanZhiLiu.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>);"/> <%=DeliveryStateEnum.PeiSongChengGong.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate1" value="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>);"/> <%=DeliveryStateEnum.DaiZhongZhuan.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>);"/> <%=DeliveryStateEnum.HuoWuDiuShi.getText() %>
 						</td>
 					</tr>
+					
 					<tr>
 					<td>&nbsp;&nbsp; 
+						
 						<em style="display:none">
-							滞留原因：
-							 <select name="leavedreasonid" id="leavedreasonid" class="select1">
-					        	<option value ="0">请选择</option>
-					        	<%for(Reason r : leavedlist){ %>
+							一级原因：
+							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
+					        	<option value ="-1">==请选择==</option>
+					        	<%if(firstlist!=null&&firstlist.size()>0)
+					        		for(Reason r : firstlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			           			<%} %>
 					        </select>
 						</em>
+						<em style="display:none">
+							滞留原因：
+							 <select name="leavedreasonid" id="leavedreasonid" class="select1">
+					        	<option value ="-1">==请选择==</option>
+					        	<%-- <%for(Reason r : leavedlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %> --%>
+					        </select>
+						</em>
+						
 						<em style="display:none">
 							再次配送时间：<input type ="text" name ="resendtime" id="resendtime" readonly="readonly"  value="<%=resendtime %>" class="input_text1"/>
 						</em>
@@ -356,8 +401,18 @@ function resub(form){
 						<em style="display:none">拒收备注输入内容：
 							<input type="text" name="deliverstateremark" class="input_text1" id="deliverstateremark" value ="<%=request.getParameter("deliverstateremark")==null?"":request.getParameter("deliverstateremark")%>" maxlength="50" />
 						</em>
+						<em style="display:none">
+							货物丢失原因：
+			       			 <select name="losereasonid" id="losereasonid">
+			        			<option value ="0">请选择</option>
+			        				<%for(Reason r : losereasonlist){ %>
+	           						<option value="<%=r.getReasonid()%>"  title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
+	           				<%} %>
+			      			  </select>
+						</em>
 						</td>
 					</tr>
+					
 					<tr>
 						<td valign="middle" >&nbsp;&nbsp;
 							订单号： <label for="textfield"></label> 
@@ -437,6 +492,7 @@ function resub(form){
 					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
 					<input type="hidden" name="paytype" value="<%=paytype%>" />
 					<input type="hidden" name="leavedreasonid" value="<%=leavedreasonid%>" />
+					<input type="hidden" name="losereasonid" value="<%=losereasonid%>" />
 					<input type="hidden" name="resendtime" value="<%=request.getParameter("resendtime") %>" />
 					<%if(objList!=null&&objList.size()>0) {%>
 					<input type="button" name="button2" id="button2" value="提交" class="button" onclick="resub();"/><%} %></td>

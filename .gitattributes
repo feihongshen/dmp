@@ -191,6 +191,18 @@ src/main/java/cn/explink/b2c/gzabc/GuangZhouABCController.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCService.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCTestController.java -text
+src/main/java/cn/explink/b2c/gztl/CwbColumnSetGztl.java -text
+src/main/java/cn/explink/b2c/gztl/GuangZhouTongLuInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/gztl/Gztl.java -text
+src/main/java/cn/explink/b2c/gztl/GztlController.java -text
+src/main/java/cn/explink/b2c/gztl/GztlService.java -text
+src/main/java/cn/explink/b2c/gztl/feedbackxmldto/InsertFeedbackOrderData.java -text
+src/main/java/cn/explink/b2c/gztl/feedbackxmldto/OrderFeedback.java -text
+src/main/java/cn/explink/b2c/gztl/xmldto/GztlXmlElement.java -text
+src/main/java/cn/explink/b2c/gztl/xmldto/Order.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedback.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedbackController.java -text
+src/main/java/cn/explink/b2c/gztlfeedback/GztlFeedbackService.java -text
 src/main/java/cn/explink/b2c/haoxgou/CwbColumnSetHXG.java -text
 src/main/java/cn/explink/b2c/haoxgou/DESUtil.java -text
 src/main/java/cn/explink/b2c/haoxgou/HXGInsertCwbDetailTimmer.java -text
@@ -652,6 +664,7 @@ src/main/java/cn/explink/controller/AdvancedQueryController.java -text
 src/main/java/cn/explink/controller/AppearWindowContrller.java -text
 src/main/java/cn/explink/controller/ApplyEditDeliverystateController.java -text
 src/main/java/cn/explink/controller/BackSummaryController.java -text
+src/main/java/cn/explink/controller/BackimportprintController.java -text
 src/main/java/cn/explink/controller/BaleController.java -text
 src/main/java/cn/explink/controller/BatchSelectCwbController.java -text
 src/main/java/cn/explink/controller/BranchController.java -text
@@ -704,6 +717,11 @@ src/main/java/cn/explink/controller/LogToDayByWareHouseController.java -text
 src/main/java/cn/explink/controller/LogToDayController.java -text
 src/main/java/cn/explink/controller/MatchExceptionController.java -text
 src/main/java/cn/explink/controller/MenuController.java -text
+src/main/java/cn/explink/controller/MonitorKucunDTO.java -text
+src/main/java/cn/explink/controller/MonitorKucunSim.java -text
+src/main/java/cn/explink/controller/MonitorLogController.java -text
+src/main/java/cn/explink/controller/MonitorLogDTO.java -text
+src/main/java/cn/explink/controller/MonitorLogSim.java -text
 src/main/java/cn/explink/controller/NotifyController.java -text
 src/main/java/cn/explink/controller/OMSInterfaceController.java -text
 src/main/java/cn/explink/controller/OperateSelectController.java -text
@@ -728,6 +746,8 @@ src/main/java/cn/explink/controller/PopupConfig.java -text
 src/main/java/cn/explink/controller/PosPayController.java -text
 src/main/java/cn/explink/controller/PrintCwbController.java -text
 src/main/java/cn/explink/controller/PrintTemplateController.java -text
+src/main/java/cn/explink/controller/PunishController.java -text
+src/main/java/cn/explink/controller/PunishTypeController.java -text
 src/main/java/cn/explink/controller/QuickSelectView.java -text
 src/main/java/cn/explink/controller/ReasonController.java -text
 src/main/java/cn/explink/controller/ResultCollectorController.java -text
@@ -754,6 +774,7 @@ src/main/java/cn/explink/controller/UserController.java -text
 src/main/java/cn/explink/controller/UserDTO.java -text
 src/main/java/cn/explink/controller/UserView.java -text
 src/main/java/cn/explink/controller/WarehouseGroupController.java -text
+src/main/java/cn/explink/controller/WarehouseGroupPrintDto.java -text
 src/main/java/cn/explink/controller/WarehouseGroup_detailController.java -text
 src/main/java/cn/explink/controller/WarehouseKeyController.java -text
 src/main/java/cn/explink/controller/WhareHouseToCommonController.java -text
@@ -801,6 +822,7 @@ src/main/java/cn/explink/dao/AppearWindowDao.java -text
 src/main/java/cn/explink/dao/ApplyEditDeliverystateDAO.java -text
 src/main/java/cn/explink/dao/AutomaticSetDAO.java -text
 src/main/java/cn/explink/dao/BackDetailDAO.java -text
+src/main/java/cn/explink/dao/BackIntoprintDAO.java -text
 src/main/java/cn/explink/dao/BackMiddleDAO.java -text
 src/main/java/cn/explink/dao/BackSummaryDAO.java -text
 src/main/java/cn/explink/dao/BaleCwbDao.java -text
@@ -854,12 +876,15 @@ src/main/java/cn/explink/dao/LogTodayDAO.java -text
 src/main/java/cn/explink/dao/LogTodayLogDAO.java -text
 src/main/java/cn/explink/dao/MenuDAO.java -text
 src/main/java/cn/explink/dao/MiddleAppearDao.java -text
+src/main/java/cn/explink/dao/MonitorDAO.java -text
+src/main/java/cn/explink/dao/MonitorKucunDAO.java -text
 src/main/java/cn/explink/dao/NoPiPeiCwbDetailDAO.java -text
 src/main/java/cn/explink/dao/NotifyDao.java -text
 src/main/java/cn/explink/dao/OperationDetailDAO.java -text
 src/main/java/cn/explink/dao/OperationRuleDao.java -text
 src/main/java/cn/explink/dao/OperationSetTimeDAO.java -text
 src/main/java/cn/explink/dao/OperationTimeDAO.java -text
+src/main/java/cn/explink/dao/OrderAddressReviseDao.java -text
 src/main/java/cn/explink/dao/OrderArriveTimeDAO.java -text
 src/main/java/cn/explink/dao/OrderBackCheckDAO.java -text
 src/main/java/cn/explink/dao/OrderDeliveryClientDAO.java -text
@@ -875,6 +900,8 @@ src/main/java/cn/explink/dao/PayUpDAO.java -text
 src/main/java/cn/explink/dao/PayWayDao.java -text
 src/main/java/cn/explink/dao/PosPayMoneyDAO.java -text
 src/main/java/cn/explink/dao/PrintcwbDetailDAO.java -text
+src/main/java/cn/explink/dao/PunishDAO.java -text
+src/main/java/cn/explink/dao/PunishTypeDAO.java -text
 src/main/java/cn/explink/dao/ReasonDao.java -text
 src/main/java/cn/explink/dao/RemarkDAO.java -text
 src/main/java/cn/explink/dao/ReturnCwbsDAO.java -text
@@ -942,6 +969,7 @@ src/main/java/cn/explink/domain/AutomaticSet.java -text
 src/main/java/cn/explink/domain/BackDetail.java -text
 src/main/java/cn/explink/domain/BackMiddle.java -text
 src/main/java/cn/explink/domain/BackSummary.java -text
+src/main/java/cn/explink/domain/Backintowarehouse_print.java -text
 src/main/java/cn/explink/domain/Bale.java -text
 src/main/java/cn/explink/domain/BaleCwb.java -text
 src/main/java/cn/explink/domain/BaleView.java -text
@@ -1010,6 +1038,7 @@ src/main/java/cn/explink/domain/OperationDetail.java -text
 src/main/java/cn/explink/domain/OperationRule.java -text
 src/main/java/cn/explink/domain/OperationSetTime.java -text
 src/main/java/cn/explink/domain/OperationTime.java -text
+src/main/java/cn/explink/domain/OrderAddressRevise.java -text
 src/main/java/cn/explink/domain/OrderArriveTime.java -text
 src/main/java/cn/explink/domain/OrderBackCheck.java -text
 src/main/java/cn/explink/domain/OrderBackCheckView.java -text
@@ -1035,6 +1064,8 @@ src/main/java/cn/explink/domain/PayWay.java -text
 src/main/java/cn/explink/domain/PrintStyle.java -text
 src/main/java/cn/explink/domain/PrintView.java -text
 src/main/java/cn/explink/domain/PrintcwbDetail.java -text
+src/main/java/cn/explink/domain/Punish.java -text
+src/main/java/cn/explink/domain/PunishType.java -text
 src/main/java/cn/explink/domain/Reason.java -text
 src/main/java/cn/explink/domain/Remark.java -text
 src/main/java/cn/explink/domain/ReturnCwbs.java -text
@@ -1114,6 +1145,7 @@ src/main/java/cn/explink/enumutil/AdjustWayEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEditDeliverystateIshandleEnum.java -text
 src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
+src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text
@@ -1160,6 +1192,8 @@ src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
 src/main/java/cn/explink/enumutil/PayMethodSwitchEnum.java -text
 src/main/java/cn/explink/enumutil/PaytypeEnum.java -text
 src/main/java/cn/explink/enumutil/PrintTemplateOpertatetypeEnum.java -text
+src/main/java/cn/explink/enumutil/PunishlevelEnum.java -text
+src/main/java/cn/explink/enumutil/PunishtimeEnum.java -text
 src/main/java/cn/explink/enumutil/ReachErrorFlagEnum.java -text
 src/main/java/cn/explink/enumutil/RealFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ReasonTypeEnum.java -text
@@ -1437,8 +1471,10 @@ src/main/java/cn/explink/service/LogToDayByWarehouseService.java -text
 src/main/java/cn/explink/service/LogToDayExportService.java -text
 src/main/java/cn/explink/service/LogToDayService.java -text
 src/main/java/cn/explink/service/MatchExceptionHandleService.java -text
+src/main/java/cn/explink/service/MonitorLogService.java -text
 src/main/java/cn/explink/service/MonitorService.java -text
 src/main/java/cn/explink/service/NotifyService.java -text
+src/main/java/cn/explink/service/OneToMoreService.java -text
 src/main/java/cn/explink/service/OperateSelectService.java -text
 src/main/java/cn/explink/service/OperationRuleService.java -text
 src/main/java/cn/explink/service/OrderArriveTimeService.java -text
@@ -1554,6 +1590,7 @@ src/main/java/cn/explink/util/pos/CertificateCoderUtil.java -text
 src/main/java/cn/explink/util/pos/DesUtils.java -text
 src/main/java/cn/explink/util/pos/RSACoder.java -text
 src/main/java/cn/explink/util/pos/mgw.cer -text
+src/main/java/cn/explink/vo/Information.java -text
 src/main/java/org/springframework/http/converter/StringHttpMessageConverter.java -text
 src/main/java/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.java -text
 src/main/java/org/springframework/security/web/authentication/Http403ForbiddenEntryPoint.java -text
@@ -1566,7 +1603,6 @@ src/main/java/org/tempuri/Wmgw.java -text
 src/main/java/org/tempuri/WmgwLocator.java -text
 src/main/java/org/tempuri/WmgwSoap.java -text
 src/main/java/org/tempuri/WmgwSoapStub.java -text
-src/main/resources/META-INF/aop.xml -text
 src/main/resources/META-INF/spring/applicationContext-cache.xml -text
 src/main/resources/META-INF/spring/applicationContext-jms.xml -text
 src/main/resources/META-INF/spring/applicationContext-job.xml -text
@@ -1587,6 +1623,7 @@ src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormalBatch.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowreplyabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/replyabnormallist.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/tofindabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/add.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/list.jsp -text
@@ -1660,6 +1697,8 @@ src/main/webapp/WEB-INF/jsp/b2cdj/gome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/getgome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/testgome.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglu.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglufeedback.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gzabc.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/happy.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/homegobj.jsp -text
@@ -1711,6 +1750,8 @@ src/main/webapp/WEB-INF/jsp/b2cdj/yihaodian.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yihaodianAddmatch.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yixun.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yonghui.jsp -text
+src/main/webapp/WEB-INF/jsp/backimportprint/list.jsp -text
+src/main/webapp/WEB-INF/jsp/backimportprint/print.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/bacthselectcwb/list.jsp -text
@@ -1747,6 +1788,7 @@ src/main/webapp/WEB-INF/jsp/common/showlist.jsp -text
 src/main/webapp/WEB-INF/jsp/common/showlist_branch.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/add.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/common_coordinateModel.jsp -text
+src/main/webapp/WEB-INF/jsp/complaint/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/selectlist.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/show/chaoshi.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/show/cuijiantousu.jsp -text
@@ -1782,6 +1824,7 @@ src/main/webapp/WEB-INF/jsp/cwbkuaidi/buludetail.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/editbulu.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/kuaidilist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbkuaidi/quickbuludetail.jsp -text
+src/main/webapp/WEB-INF/jsp/cwblableprint/branchcodeprint.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprint.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprint_xhm.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbbarcodeprintlist.jsp -text
@@ -1799,6 +1842,7 @@ src/main/webapp/WEB-INF/jsp/cwblableprint/cwblableprintlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwblittlelableprint_xhm.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwblittlelableprintlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/cwbrandomCode.jsp -text
+src/main/webapp/WEB-INF/jsp/cwblableprint/printBranchcode.jsp -text
 src/main/webapp/WEB-INF/jsp/cwblableprint/printTiaoxingma.jsp -text
 src/main/webapp/WEB-INF/jsp/cwborder/backinbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/cwborder/backinwarehouse.jsp -text
@@ -1835,6 +1879,7 @@ src/main/webapp/WEB-INF/jsp/cwbstatecontrol/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbstatecontrol/list.jsp -text
 src/main/webapp/WEB-INF/jsp/dashboard.jsp -text
 src/main/webapp/WEB-INF/jsp/dataAccessFailure.jsp -text
+src/main/webapp/WEB-INF/jsp/dataimport/addresslibrarymatching.jsp -text
 src/main/webapp/WEB-INF/jsp/dataimport/batchedit.jsp -text
 src/main/webapp/WEB-INF/jsp/dataimport/datalose.jsp -text
 src/main/webapp/WEB-INF/jsp/dataimport/edit.jsp -text
@@ -1895,6 +1940,7 @@ src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiJinE.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiJinEResult.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiZhiFuFangShi.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/XiuGaiZhiFuFangShiResult.jsp -text
+src/main/webapp/WEB-INF/jsp/editcwb/addressReviseDetail.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/chongzhiResult.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/editInfo.jsp -text
 src/main/webapp/WEB-INF/jsp/editcwb/list.jsp -text
@@ -1937,6 +1983,10 @@ src/main/webapp/WEB-INF/jsp/image.jsp -text
 src/main/webapp/WEB-INF/jsp/imageForOutside.jsp -text
 src/main/webapp/WEB-INF/jsp/index.jsp -text
 src/main/webapp/WEB-INF/jsp/index1.jsp -text
+src/main/webapp/WEB-INF/jsp/intowarehouseprint/list.jsp -text
+src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwb.jsp -text
+src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwbnew.jsp -text
+src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwbruku.jsp -text
 src/main/webapp/WEB-INF/jsp/joinlist/list.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipay/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipayapp/edit.jsp -text
@@ -2009,6 +2059,10 @@ src/main/webapp/WEB-INF/jsp/logtoday/warehouse/show.jsp -text
 src/main/webapp/WEB-INF/jsp/logtoday/warehouse/todaylog.jsp -text
 src/main/webapp/WEB-INF/jsp/manage.jsp -text
 src/main/webapp/WEB-INF/jsp/meh/matchexceptionhandle.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorcunhuo.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorcunhuoshow.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorlog.jsp -text
+src/main/webapp/WEB-INF/jsp/monitor/monitorlogshow.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/left.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/order.jsp -text
 src/main/webapp/WEB-INF/jsp/neworderquery/right.jsp -text
@@ -2054,6 +2108,7 @@ src/main/webapp/WEB-INF/jsp/payup/viewPayUp.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/add.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/payway/list.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/backandchangeimport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backbranchbackexport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backexport.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/backimport.jsp -text
@@ -2102,6 +2157,7 @@ src/main/webapp/WEB-INF/jsp/pda/kdkexportwarhousebatch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/kftokflist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/kufanglist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/lanshoudaohuoBatch.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/onetomore.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/quejianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
@@ -2110,6 +2166,16 @@ src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbnew.jsp -text
+src/main/webapp/WEB-INF/jsp/printcwbruku.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/add.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/edit.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/importPage.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/list.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/punishOfbranch.jsp -text
+src/main/webapp/WEB-INF/jsp/punish/state.jsp -text
+src/main/webapp/WEB-INF/jsp/punishType/add.jsp -text
+src/main/webapp/WEB-INF/jsp/punishType/edit.jsp -text
+src/main/webapp/WEB-INF/jsp/punishType/list.jsp -text
 src/main/webapp/WEB-INF/jsp/qiege.jsp -text
 src/main/webapp/WEB-INF/jsp/readWav.jsp -text
 src/main/webapp/WEB-INF/jsp/reason/add.jsp -text
@@ -2148,8 +2214,11 @@ src/main/webapp/WEB-INF/jsp/systeminstall/list.jsp -text
 src/main/webapp/WEB-INF/jsp/template/add.jsp -text
 src/main/webapp/WEB-INF/jsp/template/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/template/list.jsp -text
+src/main/webapp/WEB-INF/jsp/template/testanbaoprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testprinting_template.jsp -text
+src/main/webapp/WEB-INF/jsp/template/testtongluprinting_template.jsp -text
+src/main/webapp/WEB-INF/jsp/template/tuihuozhanruku_template.jsp -text
 src/main/webapp/WEB-INF/jsp/time_effective/timeeffective.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
@@ -2196,9 +2265,11 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/inbillprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inboxbillprinting_default.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inboxlist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/inlist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outanbaoprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbalelist_print.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outbillanbaoprinting_templatenew.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillhuizongprinting_templatenew.jsp -text
@@ -2209,8 +2280,11 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_templatenew.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_txd.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outbillprinting_yz.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outbilltongluprinting_history.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist2.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outlist.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/outtongluprintint_template.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_default.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_hmj.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_txd.jsp -text
@@ -5099,12 +5173,14 @@ src/main/webapp/images/uc_menubg3.png -text
 src/main/webapp/images/wangzhan.gif -text
 src/main/webapp/images/waverror/cfck.wav -text
 src/main/webapp/images/waverror/cfrk.wav -text
+src/main/webapp/images/waverror/change.wav -text
 src/main/webapp/images/waverror/dch.wav -text
 src/main/webapp/images/waverror/dj.wav -text
 src/main/webapp/images/waverror/djgp.wav -text
 src/main/webapp/images/waverror/fail.wav -text
 src/main/webapp/images/waverror/gj.wav -text
 src/main/webapp/images/waverror/gp.wav -text
+src/main/webapp/images/waverror/return.wav -text
 src/main/webapp/images/waverror/success.wav -text
 src/main/webapp/images/waverror/wcdh.wav -text
 src/main/webapp/images/waverror/ypdj.wav -text
@@ -5719,6 +5795,7 @@ src/main/webapp/js/multiSelcet/dropdown_hover.gif -text
 src/main/webapp/js/multiSelcet/jquery.bgiframe.min.js -text
 src/main/webapp/js/multiSelcet/jquery.multiSelect.css -text
 src/main/webapp/js/multiSelcet/jquery.multiSelect.js -text
+src/main/webapp/js/punish.js -text
 src/main/webapp/js/swfupload/XPButtonUploadText_61x22.png -text
 src/main/webapp/js/swfupload/swfupload.js -text
 src/main/webapp/js/swfupload/swfupload.queue.js -text

@@ -13,7 +13,7 @@ List<String> List = request.getAttribute("list")==null?null:(List<String>)reques
     	}
     }
     huizongcwbs = huizongcwb + huizongcwbs+"'";
-
+    String typeid=request.getAttribute("typeid")==null?"cwb": request.getAttribute("typeid").toString();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -113,6 +113,26 @@ function nowprint(){
 		prn1_print(<%=huizongcwbs%>);
 	}
 }
+function tip(val){
+	if(val.value=='cwb')
+		{
+		$("#tip").html("多个订单号用回车隔开,数量小于或等于1000（订单号不可大于9位）");		
+		}
+	if(val.value=='baleno')
+		{
+		$("#tip").html("多个包号用回车隔开,数量小于或等于1000（包号不可大于21位）");		
+		}
+}
+function load(val){
+	if(val=='cwb')
+		{
+		$("#tip").html("多个订单号用回车隔开,数量小于或等于1000（订单号不可大于9位）");		
+		}
+	if(val=='baleno')
+		{
+		$("#tip").html("多个包号用回车隔开,数量小于或等于1000（包号不可大于21位）");		
+		}
+}
 </script>
 <style type="text/css"id="style1">
 *{font-size:12px; margin:0; padding:0; line-height:24px}
@@ -124,13 +144,14 @@ function nowprint(){
 .border_t{border-top:1px solid #ccc}
 </style>
 
-<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
+<body style="background:#eef9ff" marginwidth="0" marginheight="0" onload="load('<%=typeid%>')">
 <div class="saomiao_box2">
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">手工生成订单号</a></li>
-				<li><a href="./randomcodeprint">随机生成订单号</a></li>
+				<li><a href="#" class="light">手工输入生成</a></li>
+				<li><a href="./randomcodeprint">随机生成</a></li>
+				<li><a href="./branchcodeprint/1">机构条形码打印</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -138,12 +159,13 @@ function nowprint(){
 			<tr>
 				<td><form action="<%=request.getContextPath() %>/cwbLablePrint/barcodeprint" method="post" id="formsubmit">
 						
-						订单号：
+						<input type="radio" name="typeid" <%if(typeid.equals("cwb")) {%> checked="checked"<%} %> value="cwb" onclick="tip(this);"/>订单号&nbsp;
+						<input type="radio" name="typeid" <%if(typeid.equals("baleno")) {%> checked="checked"<%} %> value="baleno" onclick="tip(this);"/>包	号<br>
 						<textarea name="textfield" cols="20"  id="textfield" class="kfsh_text"  style="vertical-align:middle"  rows="3" name="cwb"><%=textfield %></textarea>
 						<input type="hidden" value="1" name="isshow" id="isshow">
-						<input name="button" type="button" class="input_button2" id="button1" value="生成订单号"  onclick="sub();"/>
+						<input name="button" type="button" class="input_button2" id="button1" value="生成"  onclick="sub();"/>
 						<input type="button" value="打印" onclick='submitCwbPrint();' class="input_button2" >
-						多个订单用回车隔开，订单量小于或等于100（订单号不可大于9位）
+						<span id="tip"></span>
 						<!-- <input name="btnval" type="button" class="input_button2" id="button3" value="导出"  onclick="exportExcel();"/> -->
 					</form></td>
 				<td>&nbsp;</td>
@@ -153,13 +175,15 @@ function nowprint(){
 				<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="gd_table" >
 						<tr class="font_1">
 							<td width="60" align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
-							<td align="center" bgcolor="#e7f4e3">订单号</td>
+							<td align="center" bgcolor="#e7f4e3">序号</td>
+							<td align="center" bgcolor="#e7f4e3"><%if(typeid.equals("baleno")) {%>包号<%}else {%>订单号<%} %></td>
 							</tr>
-							<%if(List!=null&&List.size()>0){for(String s:List){ %>
+							<%if(List!=null&&List.size()>0){int i=1;for(String s:List){ %>
 						<tr>
 							<td align="center">
 							<input id="isprint" type="checkbox" value="<%=s %>" name="isprint"/>
 							</td>
+							<td align="center" ><%=i++ %></td>
 							<td align="center"><%=s %></td>
 							</tr>
 						<%} }%>

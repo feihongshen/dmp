@@ -20,6 +20,8 @@ List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerList");
 
+HashMap<Long, String> branchMap = (HashMap<Long, String>)request.getAttribute("branchMap");
+
 List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.getAttribute("abnormalWriteBackList");
   
 %>
@@ -61,12 +63,15 @@ List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.
 								<td><div class="chat_listbox">
 									<div class="chat_listclose" onclick='$("#right_chatlist").hide();$("#chatlist_alertbox").width(600);'>></div>
 									<div class="chat_listtxt">
-									<%if(abnormalWriteBackList!=null&&abnormalWriteBackList.size()>0)for(AbnormalWriteBack aw : abnormalWriteBackList){ %>
-									<%if(aw.getType()==AbnormalWriteBackEnum.ChuangJian.getValue()||aw.getType()==AbnormalWriteBackEnum.HuiFu.getValue()){ %>
-										<p><%if(userList!=null||userList.size()>0)for(User u : userList){if(abnormalOrder.getCreuserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %>&nbsp;&nbsp;<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
-									<%}else if(aw.getType()==AbnormalWriteBackEnum.ChuLi.getValue()){ %>
-										<p>客服-<%if(userList!=null||userList.size()>0)for(User u : userList){if(aw.getCreuserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %>&nbsp;&nbsp;<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
-									<%} %>
+									<%if(abnormalWriteBackList!=null&&abnormalWriteBackList.size()>0)
+										for(AbnormalWriteBack aw : abnormalWriteBackList){ %>
+									
+										<p><%if(userList!=null||userList.size()>0)
+											for(User u : userList){
+												if(aw.getCreuserid()==u.getUserid())
+												{ out.print(branchMap.get(u.getBranchid())+"-"+u.getRealname());%><%}
+											} %>&nbsp;&nbsp;
+												<%=aw.getCredatetime() %>：<%=aw.getDescribe() %></p>
 									<%} %>
 									</div>
 								</div></td>

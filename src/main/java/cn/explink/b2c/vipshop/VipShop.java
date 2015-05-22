@@ -22,7 +22,10 @@ public class VipShop {
 	private int isTuoYunDanFlag; // 是否开启托运单 模式，生成多个批次
 	private int cancelOrIntercept; // 0 开启取消， 1拦截
 	private int isOpenLefengflag; //下载配送单 是否只开启乐蜂下载 0关闭， 1开启    
-
+	private int resuseReasonFlag;  //拒收原因是否回传默认 0，  0回传， 1不回传
+	public int getResuseReasonFlag() {
+		return resuseReasonFlag;
+	}
 	public int getIsOpenLefengflag() {
 		return isOpenLefengflag;
 	}
@@ -37,6 +40,10 @@ public class VipShop {
 
 	public void setCancelOrIntercept(int cancelOrIntercept) {
 		this.cancelOrIntercept = cancelOrIntercept;
+	}
+
+	public void setResuseReasonFlag(int resuseReasonFlag) {
+		this.resuseReasonFlag = resuseReasonFlag;
 	}
 
 	private int isShangmentuiFlag; // 是否开启上门退业务 0 关闭，1开启

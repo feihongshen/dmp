@@ -74,12 +74,10 @@ public class ReasonController {
 			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent,
 			@RequestParam(value="changealowflag",defaultValue="0",required=false) String changealowflag
 			) {
-			
 		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
 		}
-		
 		Reason reason = new Reason();
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasonid(reasonid);
@@ -119,9 +117,7 @@ public class ReasonController {
 				reason.setWhichreason(2);
 			}
 		}
-
 		reasonDao.creReason(reason);
-
 		logger.info("operatorUser={},常用语管理->create", getSessionUser()
 				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"新建成功\"}";

@@ -86,7 +86,7 @@ public class ComplaintController {
 	private Logger logger = LoggerFactory.getLogger(ComplaintController.class);
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
@@ -100,12 +100,12 @@ public class ComplaintController {
 		List<ComplaintView> cViewlist = new ArrayList<ComplaintView>();
 		Page pageparm = new Page();
 		if (isshow != 0) {
-			clist = complaintService.getListByCwbsAndWhere(cwbs, type, auditType, starteTime, endTime, page);
-			pageparm = new Page(complaintService.getCountByCwbsAndWhere(cwbs, type, auditType, starteTime, endTime), page, Page.ONE_PAGE_NUMBER);
-			List<Customer> customerList = customerDAO.getAllCustomers();
-			List<User> userList = userDAO.getAllUser();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			cViewlist = complaintService.getComplaintView(clist, customerList, userList, branchList);
+			clist = this.complaintService.getListByCwbsAndWhere(cwbs, type, auditType, starteTime, endTime, page);
+			pageparm = new Page(this.complaintService.getCountByCwbsAndWhere(cwbs, type, auditType, starteTime, endTime), page, Page.ONE_PAGE_NUMBER);
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			List<User> userList = this.userDAO.getAllUser();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			cViewlist = this.complaintService.getComplaintView(clist, customerList, userList, branchList);
 		}
 		model.addAttribute("complaintlist", cViewlist);
 		model.addAttribute("page_obj", pageparm);
@@ -114,7 +114,8 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody String create(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody
+	String create(Model model, HttpServletRequest request, HttpServletResponse response) {
 		response.setContentType("text/plain; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		long id = request.getParameter("id") == null ? 0l : Long.parseLong(request.getParameter("id"));
@@ -130,15 +131,15 @@ public class ComplaintController {
 		if (type == ComplaintTypeEnum.CuijianTousu.getValue()) {// 催件投诉
 			String rukuTime = request.getParameter("rukuTime");
 			String emaildate = request.getParameter("emaildate");
-			if (rukuTime != null && !rukuTime.equals("")) {
+			if ((rukuTime != null) && !rukuTime.equals("")) {
 				Date ruku;
 				try {
-					ruku = df.parse(rukuTime);
+					ruku = this.df.parse(rukuTime);
 					if (ruku != null) {
 						Date nowdate = new Date();
 						long time = nowdate.getTime() - ruku.getTime();
 						int chaoshiTime = 12;
-						SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("rukuChaoshiTime");
+						SystemInstall siteDayLogTime = this.systemInstallDAO.getSystemInstallByName("rukuChaoshiTime");
 						if (siteDayLogTime != null) {
 							try {
 								chaoshiTime = Integer.parseInt(siteDayLogTime.getValue());
@@ -146,7 +147,7 @@ public class ComplaintController {
 								return "{\"errorCode\":0,\"error\":\"保存失败，系统设置的入库超时时间不是数字!\"}";
 							}
 						}
-						if (time / 1000 / 60 / 60 <= chaoshiTime) {// 不超过12小时
+						if ((time / 1000 / 60 / 60) <= chaoshiTime) {// 不超过12小时
 							return "{\"errorCode\":0,\"error\":\"保存失败，" + chaoshiTime + "小时内的订单不予受理投诉!\"}";
 						}
 					}
@@ -157,12 +158,12 @@ public class ComplaintController {
 			} else {
 				Date ruku;
 				try {
-					ruku = df.parse(emaildate);
+					ruku = this.df.parse(emaildate);
 					if (ruku != null) {
 						Date nowdate = new Date();
 						long time = nowdate.getTime() - ruku.getTime();
 						int chaoshiTime = 12;
-						SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("rukuChaoshiTime");
+						SystemInstall siteDayLogTime = this.systemInstallDAO.getSystemInstallByName("rukuChaoshiTime");
 						if (siteDayLogTime != null) {
 							try {
 								chaoshiTime = Integer.parseInt(siteDayLogTime.getValue());
@@ -170,7 +171,7 @@ public class ComplaintController {
 								return "{\"errorCode\":0,\"error\":\"保存失败，系统设置的入库超时时间不是数字!\"}";
 							}
 						}
-						if (time / 1000 / 60 / 60 <= chaoshiTime) {// 不超过12小时
+						if ((time / 1000 / 60 / 60) <= chaoshiTime) {// 不超过12小时
 							return "{\"errorCode\":0,\"error\":\"保存失败，" + chaoshiTime + "小时内的订单不予受理投诉!\"}";
 						}
 					}
@@ -181,28 +182,28 @@ public class ComplaintController {
 		}
 		Complaint complaint = null;
 		if (id > 0) {
-			complaint = complaintDao.getComplaintById(id);
+			complaint = this.complaintDao.getComplaintById(id);
 		} else {
-			List<Complaint> complaintList = complaintDao.getComplaintByCwbAndType(cwb, type);
-			if (complaintList != null && complaintList.size() > 0) {
+			List<Complaint> complaintList = this.complaintDao.getComplaintByCwbAndType(cwb, type);
+			if ((complaintList != null) && (complaintList.size() > 0)) {
 				complaint = complaintList.get(0);
 			}
 		}
 		if (smschack == 1) {// 发短信
-			User delivery = userDAO.getUserByUserid(deliveryid);
-			logger.info("投诉发送短信，小件员:{},手机号：{}", delivery.getRealname(), delivery.getUsermobile());
-			if (delivery.getUsermobile() == null || delivery.getUsermobile().equals("")) {
-				logger.info("投诉发送短信，小件员:{},手机号为空不能发短信");
+			User delivery = this.userDAO.getUserByUserid(deliveryid);
+			this.logger.info("投诉发送短信，小件员:{},手机号：{}", delivery.getRealname(), delivery.getUsermobile());
+			if ((delivery.getUsermobile() == null) || delivery.getUsermobile().equals("")) {
+				this.logger.info("投诉发送短信，小件员:{},手机号为空不能发短信");
 				sms = "小件员:" + delivery.getRealname() + ",手机号为空不能发短信";
 			} else {
 				try {
 					String smsMsg = "订单号：[" + cwb + "]" + content;
-					String smsResult = smsSendService.sendSms(delivery.getUsermobile(), smsMsg, 1, 0, delivery.getRealname(), getSessionUser().getUserid(), HttpUtil.getUserIp(request));
-					logger.info("投诉发送短信，小件员:{},短信发送结果：{}", delivery.getRealname(), smsResult);
+					String smsResult = this.smsSendService.sendSms(delivery.getUsermobile(), smsMsg, 1, 0, delivery.getRealname(), this.getSessionUser().getUserid(), HttpUtil.getUserIp(request));
+					this.logger.info("投诉发送短信，小件员:{},短信发送结果：{}", delivery.getRealname(), smsResult);
 					sms = "催件投诉短信发送结果：小件员[" + delivery.getRealname() + "]:" + smsResult + "";
 				} catch (UnsupportedEncodingException e) {
 					sms = "催件投诉短信发送 短信平台异常！";
-					logger.info("投诉发送短信，小件员:{},手机号：{} ，短信发送异常！", delivery.getRealname(), delivery.getUsermobile());
+					this.logger.info("投诉发送短信，小件员:{},手机号：{} ，短信发送异常！", delivery.getRealname(), delivery.getUsermobile());
 				}
 			}
 		}
@@ -212,11 +213,11 @@ public class ComplaintController {
 		complaint.setBranchid(branchid);
 		complaint.setDeliveryid(deliveryid);
 		complaint.setContent(content);
-		complaint.setCreateTime(df.format(new Date()));
-		complaint.setCreateUser(getSessionUser().getUserid());
+		complaint.setCreateTime(this.df.format(new Date()));
+		complaint.setCreateUser(this.getSessionUser().getUserid());
 		complaint.setServertreasonid(servertreasonid);
 		try {
-			complaintDao.saveComplaint(complaint);
+			this.complaintDao.saveComplaint(complaint);
 			return "{\"errorCode\":0,\"error\":\"保存成功!" + sms + "\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -225,22 +226,23 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/update")
-	public @ResponseBody String update(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody
+	String update(Model model, HttpServletRequest request, HttpServletResponse response) {
 		response.setContentType("text/plain; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		long id = request.getParameter("id") == null ? 0l : Long.parseLong(request.getParameter("id"));
 		long auditType = request.getParameter("auditType") == null ? 0l : Long.parseLong(request.getParameter("auditType"));
 		String auditRemark = request.getParameter("auditRemark");
 
-		Complaint complaint = complaintDao.getComplaintById(id);
+		Complaint complaint = this.complaintDao.getComplaintById(id);
 		if (complaint == null) {
 			return "{\"errorCode\":1,\"error\":\"保存失败，没有查到该投诉!\"}";
 		}
 		complaint.setAuditRemark(auditRemark);
-		complaint.setAuditTime(df.format(new Date()));
-		complaint.setAuditUser(getSessionUser().getUserid());
+		complaint.setAuditTime(this.df.format(new Date()));
+		complaint.setAuditUser(this.getSessionUser().getUserid());
 		complaint.setAuditType(auditType);
-		long result = complaintService.updateComplaint(complaint);
+		long result = this.complaintService.updateComplaint(complaint);
 		if (result == 1) {
 			return "{\"errorCode\":0,\"error\":\"保存成功!\"}";
 		} else {
@@ -250,24 +252,24 @@ public class ComplaintController {
 
 	@RequestMapping("/show/{id}")
 	public String show(Model model, @PathVariable("id") long id) {
-		Complaint complaint = complaintDao.getComplaintById(id);
+		Complaint complaint = this.complaintDao.getComplaintById(id);
 		ComplaintView complaintView = new ComplaintView();
 		complaintView.setCwb(complaint.getCwb());
-		CwbOrder order = cwbDAO.getCwbByCwb(complaint.getCwb());
+		CwbOrder order = this.cwbDAO.getCwbByCwb(complaint.getCwb());
 		if (order != null) {
-			Customer customer = customerDAO.getCustomerById(order.getCustomerid());
+			Customer customer = this.customerDAO.getCustomerById(order.getCustomerid());
 			if (order.getDeliverid() > 0) {
-				User dUser = userDAO.getUserByUserid(order.getDeliverid());
+				User dUser = this.userDAO.getUserByUserid(order.getDeliverid());
 				complaintView.setCwbdelivername(dUser.getRealname());// 订单本身的小件员
 			}
 			complaintView.setCustomername(customer.getCustomername());// 供货商
-			Date ruku = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
-			Date daohuosaomiao = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
-			daohuosaomiao = daohuosaomiao == null ? complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
+			Date ruku = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
+			Date daohuosaomiao = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
+			daohuosaomiao = daohuosaomiao == null ? this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
 					: daohuosaomiao;
-			complaintView.setInstoreroomtime(ruku != null ? df.format(ruku) : "");// 入库时间
-			complaintView.setInSitetime(daohuosaomiao != null ? df.format(daohuosaomiao) : "");// 到站时间
-			DeliveryState deliverystate = complaintService.getDeliveryByCwb(order.getCwb());
+			complaintView.setInstoreroomtime(ruku != null ? this.df.format(ruku) : "");// 入库时间
+			complaintView.setInSitetime(daohuosaomiao != null ? this.df.format(daohuosaomiao) : "");// 到站时间
+			DeliveryState deliverystate = this.complaintService.getDeliveryByCwb(order.getCwb());
 			if (deliverystate != null) {
 				complaintView.setDeliverystate(deliverystate.getDeliverystate());
 			}
@@ -275,9 +277,9 @@ public class ComplaintController {
 			complaintView.setConsigneename(order.getConsigneename());
 			complaintView.setOrderflowtype(order.getFlowordertype());
 		}
-		User cUser = userDAO.getUserByUserid(complaint.getDeliveryid());
+		User cUser = this.userDAO.getUserByUserid(complaint.getDeliveryid());
 		complaintView.setDelivername(cUser.getRealname());// 投诉小件员
-		Branch branch = branchDAO.getBranchByBranchid(complaint.getBranchid());
+		Branch branch = this.branchDAO.getBranchByBranchid(complaint.getBranchid());
 		complaintView.setBranchname(branch.getBranchname());// 投诉站点
 		complaintView.setId(complaint.getId());
 		complaintView.setType(complaint.getType());
@@ -287,13 +289,14 @@ public class ComplaintController {
 		complaintView.setCreateTime(complaint.getCreateTime());
 		complaintView.setBranchid(complaint.getBranchid());
 		complaintView.setDeliveryid(complaint.getDeliveryid());
+		complaintView.setReplyDetail(complaint.getReplyDetail());
 		model.addAttribute("complaintView", complaintView);
 		return "/complaint/whereshow";
 	}
 
 	@RequestMapping("/showbyType/{cwb}/{type}")
 	public String showbyType(Model model, @PathVariable("cwb") String cwb, @PathVariable("type") long type) {
-		CwbOrder order = cwbDAO.getCwbByCwb(cwb);
+		CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
 		CwbOrderView cwbOrderView = new CwbOrderView();
 		User dUser = null;
 		if (order != null) {
@@ -302,81 +305,81 @@ public class ComplaintController {
 			cwbOrderView.setCurrentbranchid(order.getCurrentbranchid());
 			cwbOrderView.setFlowordertype(order.getFlowordertype());
 			cwbOrderView.setEmaildate(order.getEmaildate());
-			Date ruku = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
-			Date daohuosaomiao = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
-			daohuosaomiao = daohuosaomiao == null ? complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
+			Date ruku = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
+			Date daohuosaomiao = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
+			daohuosaomiao = daohuosaomiao == null ? this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
 					: daohuosaomiao;
-			cwbOrderView.setInstoreroomtime(ruku != null ? df.format(ruku) : "");// 入库时间
-			cwbOrderView.setInSitetime(daohuosaomiao != null ? df.format(daohuosaomiao) : "");// 到站时间
-			Branch branch = branchDAO.getBranchByBranchid(order.getCurrentbranchid());
-			Customer customer = customerDAO.getCustomerById(order.getCustomerid());
+			cwbOrderView.setInstoreroomtime(ruku != null ? this.df.format(ruku) : "");// 入库时间
+			cwbOrderView.setInSitetime(daohuosaomiao != null ? this.df.format(daohuosaomiao) : "");// 到站时间
+			Branch branch = this.branchDAO.getBranchByBranchid(order.getCurrentbranchid());
+			Customer customer = this.customerDAO.getCustomerById(order.getCustomerid());
 			cwbOrderView.setCurrentbranchname(branch.getBranchname());// 当前所在机构名称
 			cwbOrderView.setCustomername(customer.getCustomername());// 供货商的名称
 			cwbOrderView.setConsigneemobile(order.getConsigneemobile());
 			cwbOrderView.setConsigneephone(order.getConsigneephone());
 			if (order.getDeliverid() > 0) {
-				dUser = userDAO.getUserByUserid(order.getDeliverid());
+				dUser = this.userDAO.getUserByUserid(order.getDeliverid());
 				if (branch.getBranchid() == 0) {
-					branch = branchDAO.getBranchByBranchid(dUser.getBranchid());
+					branch = this.branchDAO.getBranchByBranchid(dUser.getBranchid());
 					cwbOrderView.setCurrentbranchname(branch.getBranchname());// 当前所在机构名称
 					cwbOrderView.setCurrentbranchid(branch.getBranchid());
 				}
 
 				cwbOrderView.setDelivername(dUser.getRealname());// 小件员
-				List<User> nowUserList = userDAO.getAllUserbybranchid(dUser.getBranchid());
+				List<User> nowUserList = this.userDAO.getAllUserbybranchid(dUser.getBranchid());
 				model.addAttribute("userList", nowUserList);
 			}
 		}
 		Complaint complaint = null;
 		if (type == ComplaintTypeEnum.CuijianTousu.getValue()) {// 催件投诉
-			List<Complaint> list = complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.CuijianTousu.getValue());
+			List<Complaint> list = this.complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.CuijianTousu.getValue());
 			List<User> nowUserList = new ArrayList<User>();
 			if (dUser != null) {
-				nowUserList = userDAO.getAllUserbybranchid(dUser.getBranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(dUser.getBranchid());
 			} else {
-				nowUserList = userDAO.getAllUserbybranchid(order.getCurrentbranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(order.getCurrentbranchid());
 			}
-			if (list != null && list.size() > 0) {
+			if ((list != null) && (list.size() > 0)) {
 				complaint = list.get(0);
 			}
 			model.addAttribute("userList", nowUserList);
-			model.addAttribute("branchList", branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
+			model.addAttribute("branchList", this.branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
 			model.addAttribute("complaint", complaint);
 			model.addAttribute("cwbOrderView", cwbOrderView);
 			return "/complaint/show/cuijiantousu";
 		}
 		if (type == ComplaintTypeEnum.FuwuTousu.getValue()) {// 服务投诉
-			List<Complaint> list = complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.FuwuTousu.getValue());
+			List<Complaint> list = this.complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.FuwuTousu.getValue());
 			List<User> nowUserList = new ArrayList<User>();
 			if (dUser != null) {
-				nowUserList = userDAO.getAllUserbybranchid(dUser.getBranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(dUser.getBranchid());
 			} else {
-				nowUserList = userDAO.getAllUserbybranchid(order.getCurrentbranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(order.getCurrentbranchid());
 			}
-			if (list != null && list.size() > 0) {
+			if ((list != null) && (list.size() > 0)) {
 				complaint = list.get(0);
 			}
 			model.addAttribute("userList", nowUserList);
-			model.addAttribute("branchList", branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
+			model.addAttribute("branchList", this.branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
 			model.addAttribute("complaint", complaint);
 			model.addAttribute("cwbOrderView", cwbOrderView);
-			model.addAttribute("reasonList", reasonDao.getAllReasonByReasonType(ReasonTypeEnum.FuWuTouSuLeiXing.getValue()));
+			model.addAttribute("reasonList", this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.FuWuTouSuLeiXing.getValue()));
 			return "/complaint/show/fuwutousu";
 		}
 
 		if (type == ComplaintTypeEnum.KefuBeizhu.getValue()) {// 客服备注
-			List<Complaint> list = complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.KefuBeizhu.getValue());
+			List<Complaint> list = this.complaintDao.getComplaintByCwbAndType(cwb, ComplaintTypeEnum.KefuBeizhu.getValue());
 			List<User> nowUserList = new ArrayList<User>();
 			if (dUser != null) {
-				nowUserList = userDAO.getAllUserbybranchid(dUser.getBranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(dUser.getBranchid());
 			} else {
-				nowUserList = userDAO.getAllUserbybranchid(order.getCurrentbranchid());
+				nowUserList = this.userDAO.getAllUserbybranchid(order.getCurrentbranchid());
 			}
-			if (list != null && list.size() > 0) {
+			if ((list != null) && (list.size() > 0)) {
 				complaint = list.get(0);
 			}
 			model.addAttribute("userList", nowUserList);
-			model.addAttribute("branchList", branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
+			model.addAttribute("branchList", this.branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
 			model.addAttribute("complaint", complaint);
 			model.addAttribute("cwbOrderView", cwbOrderView);
 			return "/complaint/show/kefubeizhu";
@@ -385,7 +388,8 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/get/{cwb}/{type}")
-	public @ResponseBody JSONObject getObject(@PathVariable("cwb") String cwb, @PathVariable("type") long type) {
+	public @ResponseBody
+	JSONObject getObject(@PathVariable("cwb") String cwb, @PathVariable("type") long type) {
 		JSONObject obj = new JSONObject();
 		CwbOrderView cwbOrderView = new CwbOrderView();
 
@@ -394,26 +398,27 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/showByType/{id}")
-	public @ResponseBody JSONObject showByType(@PathVariable("id") long id) {
+	public @ResponseBody
+	JSONObject showByType(@PathVariable("id") long id) {
 		JSONObject obj = new JSONObject();
-		Complaint complaint = complaintDao.getComplaintById(id);
+		Complaint complaint = this.complaintDao.getComplaintById(id);
 		ComplaintView complaintView = new ComplaintView();
 		complaintView.setCwb(complaint.getCwb());
-		CwbOrder order = cwbDAO.getCwbByCwb(complaint.getCwb());
+		CwbOrder order = this.cwbDAO.getCwbByCwb(complaint.getCwb());
 		if (order != null) {
-			Customer customer = customerDAO.getCustomerById(order.getCustomerid());
+			Customer customer = this.customerDAO.getCustomerById(order.getCustomerid());
 			if (order.getDeliverid() > 0) {
-				User dUser = userDAO.getUserByUserid(order.getDeliverid());
+				User dUser = this.userDAO.getUserByUserid(order.getDeliverid());
 				complaintView.setCwbdelivername(dUser.getRealname());// 订单本身的小件员
 			}
 			complaintView.setCustomername(customer.getCustomername());// 供货商
-			Date ruku = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
-			Date daohuosaomiao = complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
-			daohuosaomiao = daohuosaomiao == null ? complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
+			Date ruku = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.RuKu.getValue()).getCredate();
+			Date daohuosaomiao = this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()).getCredate();
+			daohuosaomiao = daohuosaomiao == null ? this.complaintService.getOrderFlowByCwbAndType(order.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()).getCredate()
 					: daohuosaomiao;
-			complaintView.setInstoreroomtime(ruku != null ? df.format(ruku) : "");// 入库时间
-			complaintView.setInSitetime(daohuosaomiao != null ? df.format(daohuosaomiao) : "");// 到站时间
-			DeliveryState deliverystate = complaintService.getDeliveryByCwb(order.getCwb());
+			complaintView.setInstoreroomtime(ruku != null ? this.df.format(ruku) : "");// 入库时间
+			complaintView.setInSitetime(daohuosaomiao != null ? this.df.format(daohuosaomiao) : "");// 到站时间
+			DeliveryState deliverystate = this.complaintService.getDeliveryByCwb(order.getCwb());
 			if (deliverystate != null) {
 				complaintView.setDeliverystate(deliverystate.getDeliverystate());
 			}
@@ -421,9 +426,9 @@ public class ComplaintController {
 			complaintView.setConsigneename(order.getConsigneename());
 			complaintView.setOrderflowtype(order.getFlowordertype());
 		}
-		User cUser = userDAO.getUserByUserid(complaint.getDeliveryid());
+		User cUser = this.userDAO.getUserByUserid(complaint.getDeliveryid());
 		complaintView.setDelivername(cUser.getRealname());// 投诉小件员
-		Branch branch = branchDAO.getBranchByBranchid(complaint.getBranchid());
+		Branch branch = this.branchDAO.getBranchByBranchid(complaint.getBranchid());
 		complaintView.setBranchname(branch.getBranchname());// 投诉站点
 		complaintView.setId(complaint.getId());
 		complaintView.setType(complaint.getType());
@@ -438,8 +443,9 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/delete/{id}")
-	public @ResponseBody String delete(@PathVariable("id") long id) {
-		complaintDao.deleteComplaint(id);
+	public @ResponseBody
+	String delete(@PathVariable("id") long id) {
+		this.complaintDao.deleteComplaint(id);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 
@@ -449,7 +455,7 @@ public class ComplaintController {
 		String[] cloumnName1 = new String[20]; // 导出的列名
 		String[] cloumnName2 = new String[20]; // 导出的英文列名
 
-		exportService.SetCompitFields(cloumnName1, cloumnName2);
+		this.exportService.SetCompitFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		final HttpServletRequest request1 = request;
@@ -465,24 +471,24 @@ public class ComplaintController {
 			String endTime = request.getParameter("endTime1") == null ? "" : request.getParameter("endTime1").toString();
 
 			List<Complaint> clist = new ArrayList<Complaint>();
-			clist = complaintService.getListByCwbsAndWhereNoPage(cwbs, type, auditType, starteTime, endTime);
-			List<Customer> customerList = customerDAO.getAllCustomers();
-			final List<User> userList = userDAO.getAllUser();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			final List<ComplaintView> cViewlist = complaintService.getComplaintView(clist, customerList, userList, branchList);
+			clist = this.complaintService.getListByCwbsAndWhereNoPage(cwbs, type, auditType, starteTime, endTime);
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			final List<User> userList = this.userDAO.getAllUser();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			final List<ComplaintView> cViewlist = this.complaintService.getComplaintView(clist, customerList, userList, branchList);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < cViewlist.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName.length; i++) {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = exportService.setObjectB(cloumnName3, userList, request1, cViewlist, a, i, k);
+							a = ComplaintController.this.exportService.setObjectB(cloumnName3, userList, request1, cViewlist, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -496,46 +502,59 @@ public class ComplaintController {
 	}
 
 	@RequestMapping("/cuijiantousufozhanzhang/{page}")
-	// long type,long auditType,long branchid, String starteTime,String
-	// endTime,long page
 	public String cuijiantousuzhanzhang(@PathVariable("page") long page, Model model, @RequestParam(value = "auditType", required = false, defaultValue = "-1") long auditType,
 			@RequestParam(value = "startid", required = false, defaultValue = "") String starteTime, @RequestParam(value = "endid", required = false, defaultValue = "") String endTime,
-			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "complaintType", required = false, defaultValue = "0") long complaintType) {
 		List<User> nowUserList = new ArrayList<User>();
 		List<Complaint> list = new ArrayList<Complaint>();
-		if (starteTime.length() > 0 && endTime.length() > 0) {
-			long branchid = getSessionUser().getBranchid();
-			list = complaintDao.getComplaintForzhandian(cwb, ComplaintTypeEnum.CuijianTousu.getValue(), auditType, branchid, starteTime, endTime, page);
-			nowUserList = userDAO.getAllUserbybranchid(branchid);
-			model.addAttribute("page_obj", new Page(complaintDao.getComplaintCountForzhandian(cwb, ComplaintTypeEnum.CuijianTousu.getValue(), auditType, branchid, starteTime, endTime), page,
-					Page.ONE_PAGE_NUMBER));
+		if ((starteTime.length() > 0) && (endTime.length() > 0)) {
+			long branchid = this.getSessionUser().getBranchid();
+			list = this.complaintDao.getComplaintForzhandian(cwb, complaintType, auditType, branchid, starteTime, endTime, page);
+			nowUserList = this.userDAO.getAllUserbybranchid(branchid);
+			model.addAttribute("page_obj", new Page(this.complaintDao.getComplaintCountForzhandian(cwb, complaintType, auditType, branchid, starteTime, endTime), page, Page.ONE_PAGE_NUMBER));
 			model.addAttribute("startid", starteTime);
 			model.addAttribute("endid", endTime);
 		}
 
 		model.addAttribute("auditType", auditType);
+		model.addAttribute("complaintType", complaintType);
 		model.addAttribute("page", page);
 		model.addAttribute("nowUserList", nowUserList);
 		model.addAttribute("List", list);
-		model.addAttribute("branchList", branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
+		model.addAttribute("branchList", this.branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KuFang.getValue()));
 		return "/complaint/show/cuijiantousuzhandian";
 	}
 
 	@RequestMapping("/updateZD/{id}")
-	public @ResponseBody String updateZhandain(Model model, @PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody
+	String updateZhandain(Model model, @PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "replyDetail", required = false, defaultValue = "") String replyDetail) {
 		response.setContentType("text/plain; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		Complaint complaint = complaintDao.getComplaintById(id);
+		Complaint complaint = this.complaintDao.getComplaintById(id);
 		if (complaint == null) {
 			return "{\"errorCode\":1,\"error\":\"保存失败，没有查到该投诉!\"}";
 		}
 		String time = DateTimeUtil.getNowTime();
 
-		long result = complaintDao.updateComplaintCountForzhandian(0, time, getSessionUser().getUserid(), id);
+		long result = this.complaintDao.updateComplaintCountForzhandian(0, time, this.getSessionUser().getUserid(), id, replyDetail);
 		if (result == 1) {
 			return "{\"errorCode\":0,\"error\":\"保存成功!\"}";
 		} else {
 			return "{\"errorCode\":1,\"error\":\"保存失败!\"}";
 		}
+	}
+
+	@RequestMapping("/detail/{id}")
+	public String edit(Model model, @PathVariable("id") int id) throws Exception {
+		List<Branch> branchlist = this.branchDAO.getAllBranches();
+		List<User> userList = this.userDAO.getAllUser();
+		Complaint complaint = this.complaintDao.getComplaintById(id);
+		List<Customer> customers = this.customerDAO.getAllCustomers();
+		model.addAttribute("customers", customers);
+		model.addAttribute("branchlist", branchlist);
+		model.addAttribute("userList", userList);
+		model.addAttribute("complaint", complaint);
+		return "/complaint/detail";
 	}
 }

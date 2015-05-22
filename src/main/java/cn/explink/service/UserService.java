@@ -92,7 +92,9 @@ public class UserService {
 		user.setIdcardno(StringUtil.nullConvertToEmptyString(request.getParameter("idcardno")));
 		user.setEmployeestatus(Integer.parseInt(request.getParameter("employeestatus")));
 		user.setUsermobile(StringUtil.nullConvertToEmptyString(request.getParameter("usermobile")));
-		user.setShowphoneflag(StringUtil.nullConvertToEmptyString(request.getParameter("showphoneflag")));
+		user.setShowphoneflag(request.getParameter("consigneephone") == null ? 0 : 1);
+		user.setShownameflag(request.getParameter("consigneename") == null ? 0 : 1);
+		user.setShowmobileflag(request.getParameter("consigneemobile") == null ? 0 : 1);
 		user.setUseremail(StringUtil.nullConvertToEmptyString(request.getParameter("useremail")));
 		user.setUserwavfile(StringUtil.nullConvertToEmptyString(request.getParameter("userwavfile")));
 		user.setRoleid(roleid);
@@ -104,7 +106,7 @@ public class UserService {
 
 	/**
 	 * 调账 修改小件员帐户
-	 * 
+	 *
 	 * @param deliverid
 	 *            小件员id
 	 * @param deliverpayupamount
@@ -143,7 +145,7 @@ public class UserService {
 
 	/**
 	 * 调账 修改小件员帐户
-	 * 
+	 *
 	 * @param deliverid
 	 *            小件员id
 	 * @param deliverpayupamount

@@ -25,6 +25,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderBackCheckDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -62,6 +63,8 @@ public class OrderBackCheckController {
 	BranchDAO branchDAO;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -81,6 +84,12 @@ public class OrderBackCheckController {
 			@RequestParam(value = "searchType", defaultValue = "0", required = false) String searchType) {
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		String branchids = "";
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		model.addAttribute("amazonIsOpen", isOpenFlag);
+		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
+		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
+		String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
+		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
 		// 如果为选择站点则匹配用户权限
 		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
@@ -115,8 +124,6 @@ public class OrderBackCheckController {
 			List<OrderBackCheck> orderbackList = this.orderBackCheckService.getOrderBackCheckList(list, customerList, userList);
 			model.addAttribute("orderbackList", orderbackList);
 		}
-
-		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("amazonIsOpen", isOpenFlag);
 		return "auditorderstate/toTuiHuoCheck";
 	}

@@ -15,7 +15,7 @@ public class AbnormalOrder {
 	private long deliverybranchid;
 	private String emaildata;
 	private String cwb;
-
+	private long handleBranch;
 	public long getId() {
 		return this.id;
 	}
@@ -96,6 +96,7 @@ public class AbnormalOrder {
 		this.isnow = isnow;
 	}
 
+
 	public long getFlowordertype() {
 		return this.flowordertype;
 	}
@@ -126,6 +127,14 @@ public class AbnormalOrder {
 
 	public void setCwb(String cwb) {
 		this.cwb = cwb;
+	}
+
+	public long getHandleBranch() {
+		return this.handleBranch;
+	}
+
+	public void setHandleBranch(long handleBranch) {
+		this.handleBranch = handleBranch;
 	}
 
 }

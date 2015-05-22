@@ -35,6 +35,7 @@ public class ComplaintDAO {
 			complaint.setId(rs.getLong("id"));
 			complaint.setType(rs.getLong("type"));
 			complaint.setServertreasonid(rs.getLong("servertreasonid"));
+			complaint.setReplyDetail(rs.getString("replyDetail"));
 			return complaint;
 		}
 	}
@@ -44,7 +45,7 @@ public class ComplaintDAO {
 
 	public Complaint getComplaintById(long id) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_complaint where id=? ", new ComplaintMapper(), id);
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_complaint where id=? ", new ComplaintMapper(), id);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -61,18 +62,18 @@ public class ComplaintDAO {
 	 */
 	public long getComplaintCount(long type, long auditType, String starteTime, String endTime) {
 		String sql = "select count(1) from express_ops_complaint where ";
-		if (type > -1 && auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+		if ((type > -1) && (auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and auditType=? and createTime>=? and createTime<=? ";
-			return jdbcTemplate.queryForLong(sql, type, auditType, starteTime, endTime);
-		} else if (type > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.queryForLong(sql, type, auditType, starteTime, endTime);
+		} else if ((type > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and createTime>=? and createTime<=? ";
-			return jdbcTemplate.queryForLong(sql, type, starteTime, endTime);
-		} else if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.queryForLong(sql, type, starteTime, endTime);
+		} else if ((auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " auditType=? and createTime>=? and createTime<=?  ";
-			return jdbcTemplate.queryForLong(sql, auditType, starteTime, endTime);
+			return this.jdbcTemplate.queryForLong(sql, auditType, starteTime, endTime);
 		} else {
 			sql += " createTime>=? and createTime<=? ";
-			return jdbcTemplate.queryForLong(sql, starteTime, endTime);
+			return this.jdbcTemplate.queryForLong(sql, starteTime, endTime);
 		}
 	}
 
@@ -88,47 +89,47 @@ public class ComplaintDAO {
 	 */
 	public List<Complaint> getComplaintByWhere(long type, long auditType, String starteTime, String endTime, long page) {
 		String sql = "select * from express_ops_complaint where ";
-		if (type > -1 && auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+		if ((type > -1) && (auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and auditType=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
 			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, auditType, starteTime, endTime);
-		} else if (type > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), type, auditType, starteTime, endTime);
+		} else if ((type > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
 			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, starteTime, endTime);
-		} else if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), type, starteTime, endTime);
+		} else if ((auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " auditType=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
 			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), auditType, starteTime, endTime);
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), auditType, starteTime, endTime);
 		} else {
 			sql += " createTime>=? and createTime<=? ORDER BY createTime DESC ";
 			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), starteTime, endTime);
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), starteTime, endTime);
 		}
 	}
 
 	public List<Complaint> getComplaintByWhereNoPage(long type, long auditType, String starteTime, String endTime) {
 		String sql = "select * from express_ops_complaint where ";
-		if (type > -1 && auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+		if ((type > -1) && (auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and auditType=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, auditType, starteTime, endTime);
-		} else if (type > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), type, auditType, starteTime, endTime);
+		} else if ((type > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " type=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, starteTime, endTime);
-		} else if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), type, starteTime, endTime);
+		} else if ((auditType > -1) && (starteTime.length() > 0) && (endTime.length() > 0)) {
 			sql += " auditType=? and createTime>=? and createTime<=? ORDER BY createTime DESC ";
-			return jdbcTemplate.query(sql, new ComplaintMapper(), auditType, starteTime, endTime);
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), auditType, starteTime, endTime);
 		} else {
 			sql += " createTime>=? and createTime<=? ORDER BY createTime DESC ";
-			return jdbcTemplate.query(sql, new ComplaintMapper(), starteTime, endTime);
+			return this.jdbcTemplate.query(sql, new ComplaintMapper(), starteTime, endTime);
 		}
 	}
 
@@ -140,17 +141,17 @@ public class ComplaintDAO {
 	 */
 	public List<Complaint> getComplaintByCwb(String cwb) {
 		String sql = "select * from express_ops_complaint where cwb=?";
-		return jdbcTemplate.query(sql, new ComplaintMapper(), cwb);
+		return this.jdbcTemplate.query(sql, new ComplaintMapper(), cwb);
 	}
 
 	public List<Complaint> getComplaintByCwbAndType(String cwb, long type) {
 		String sql = "select * from express_ops_complaint where cwb=? and type=? order by createTime desc";
-		return jdbcTemplate.query(sql, new ComplaintMapper(), cwb, type);
+		return this.jdbcTemplate.query(sql, new ComplaintMapper(), cwb, type);
 	}
 
 	public void saveComplaint(final Complaint complaint) {
-		jdbcTemplate.update("insert into " + "express_ops_complaint(cwb,type,branchid,deliveryid," + "auditType,content,auditRemark,createTime," + "auditTime,createUser,auditUser,servertreasonid) "
-				+ "values(?,?,?,?,?,?,?,?,?,?," + "?,?)", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("insert into " + "express_ops_complaint(cwb,type,branchid,deliveryid," + "auditType,content,auditRemark,createTime,"
+				+ "auditTime,createUser,auditUser,servertreasonid) " + "values(?,?,?,?,?,?,?,?,?,?," + "?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				// TODO Auto-generated method stub
@@ -172,7 +173,7 @@ public class ComplaintDAO {
 	}
 
 	public void updateComplaint(final Complaint complaint) {
-		jdbcTemplate.update("update " + "express_ops_complaint set cwb=?,type=?,branchid=?,deliveryid=?," + "auditType=?,content=?,auditRemark=?,createTime=?,"
+		this.jdbcTemplate.update("update " + "express_ops_complaint set cwb=?,type=?,branchid=?,deliveryid=?," + "auditType=?,content=?,auditRemark=?,createTime=?,"
 				+ "auditTime=?,createUser=?,auditUser=?,servertreasonid=? where id=?", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -197,7 +198,7 @@ public class ComplaintDAO {
 	}
 
 	public void updateComplaintById(final Complaint complaint) {
-		jdbcTemplate.update("update express_ops_complaint set auditType=?,auditRemark=?,auditTime=?,auditUser=? where id=?", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("update express_ops_complaint set auditType=?,auditRemark=?,auditTime=?,auditUser=? where id=?", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setLong(1, complaint.getAuditType());
@@ -211,7 +212,7 @@ public class ComplaintDAO {
 
 	public void deleteComplaint(long id) {
 		String sql = "delete from express_ops_complaint where id=?";
-		jdbcTemplate.update(sql, id);
+		this.jdbcTemplate.update(sql, id);
 	}
 
 	/**
@@ -224,23 +225,21 @@ public class ComplaintDAO {
 	 * @return
 	 */
 	public long getComplaintCountForzhandian(String cwb, long type, long auditType, long branchid, String starteTime, String endTime) {
-		String sql = "select count(1) from express_ops_complaint where ";
+		String sql = "select count(1) from express_ops_complaint where 1=1";
 		if (cwb.length() > 0) {
-			sql += "cwb='" + cwb + "' and";
+			sql += " and cwb='" + cwb + "'";
 		}
-		if (type > -1 && auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " type=? and auditType=? and createTime>=? and createTime<=? and branchid=?";
-			return jdbcTemplate.queryForLong(sql, type, auditType, starteTime, endTime, branchid);
-		} else if (type > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " type=? and createTime>=? and createTime<=? and branchid=?";
-			return jdbcTemplate.queryForLong(sql, type, starteTime, endTime, branchid);
-		} else if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " auditType=? and createTime>=? and createTime<=? and branchid=? ";
-			return jdbcTemplate.queryForLong(sql, auditType, starteTime, endTime, branchid);
-		} else {
-			sql += " createTime>=? and createTime<=? and branchid=? ";
-			return jdbcTemplate.queryForLong(sql, starteTime, endTime, branchid);
+		if (auditType > -1) {
+			sql += " and auditType=" + auditType;
 		}
+		if (branchid > -1) {
+			sql += " and branchid=" + branchid;
+		}
+		if ((starteTime.length() > 0) && (endTime.length() > 0)) {
+
+			sql += " and createTime>='" + starteTime + "' and createTime<=  '" + endTime + "'";
+		}
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	/**
@@ -254,41 +253,30 @@ public class ComplaintDAO {
 	 * @return
 	 */
 	public List<Complaint> getComplaintForzhandian(String cwb, long type, long auditType, long branchid, String starteTime, String endTime, long page) {
-		String sql = "select * from express_ops_complaint where ";
+		String sql = "select * from express_ops_complaint where 1=1";
 		if (cwb.length() > 0) {
-			sql += "cwb='" + cwb + "' and";
+			sql += " and cwb='" + cwb + "'";
 		}
-		if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " type=? and auditType=? and branchid=? and createTime>=? and createTime<=?  ";
-			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, auditType, branchid, starteTime, endTime);
-		} else if (type > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " type=?  and branchid=? and createTime>=?  and createTime<=? ";
-			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), type, branchid, starteTime, endTime);
-		} else if (auditType > -1 && starteTime.length() > 0 && endTime.length() > 0) {
-			sql += " auditType=? and createTime>=?  and createTime<=? and branchid=?";
-			if (page > 0) {
-				sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), auditType, starteTime, endTime, branchid);
-		} else {
-			sql += " createTime>=? and createTime<=?  ";
-			if (page > 0) {
-				sql += "and branchid=? ORDER BY createTime DESC limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-			}
-			return jdbcTemplate.query(sql, new ComplaintMapper(), starteTime, endTime, branchid);
+		if (auditType > -1) {
+			sql += " and auditType=" + auditType;
 		}
+		if (branchid > -1) {
+			sql += " and branchid=" + branchid;
+		}
+		if ((starteTime.length() > 0) && (endTime.length() > 0)) {
+
+			sql += " and createTime>='" + starteTime + "' and createTime<=  '" + endTime + "'";
+		}
+		sql += " ORDER BY createTime DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+
+		return this.jdbcTemplate.query(sql, new ComplaintMapper());
+
 	}
 
-	public long updateComplaintCountForzhandian(long type, String auditTime, long auditUser, long id) {
+	public long updateComplaintCountForzhandian(long type, String auditTime, long auditUser, long id, String replyDetail) {
 		try {
-			String sql = "update express_ops_complaint set audittype=?,auditTime='" + auditTime + "' ,auditUser=" + auditUser + " where id=?";
-			jdbcTemplate.update(sql, type, id);
+			String sql = "update express_ops_complaint set audittype=?,replyDetail=?,auditTime='" + auditTime + "' ,auditUser=" + auditUser + " where id=?";
+			this.jdbcTemplate.update(sql, type, replyDetail, id);
 			return 1;
 
 		} catch (Exception e) {
@@ -305,6 +293,6 @@ public class ComplaintDAO {
 			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		}
 		stringBuilder.append(")");
-		return jdbcTemplate.query(stringBuilder.toString(), new ComplaintMapper());
+		return this.jdbcTemplate.query(stringBuilder.toString(), new ComplaintMapper());
 	}
 }

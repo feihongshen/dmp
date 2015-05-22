@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,6 +17,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -24,15 +28,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.SmtOrderContainer;
 import cn.explink.domain.User;
+import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.ExplinkException;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.SmtService;
 import cn.explink.util.ExcelUtils;
@@ -40,6 +50,7 @@ import cn.explink.util.ExcelUtils;
 @Controller
 @RequestMapping("/smt")
 public class SmtController {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private static final String TODAY_OUT_AREA_FN = "今日超区.xlsx";
 
@@ -68,6 +79,11 @@ public class SmtController {
 
 	@Autowired
 	private SmtService smtService = null;
+
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
+
+	private ObjectMapper om = new ObjectMapper();
 
 	private enum OrderTypeEnum {
 		Normal("normal"), Transfer("transfer"), All("all");
@@ -152,12 +168,13 @@ public class SmtController {
 	}
 
 	@RequestMapping("/smtorderoutarea")
-	public @ResponseBody JSONObject smtOrderOutArea(HttpServletRequest request) {
+	public @ResponseBody
+	JSONObject smtOrderOutArea(HttpServletRequest request) {
 		String[] cwbs = this.getCwbs(request).split(",");
 		long curBranchId = this.getCurrentBranchId();
 		long curUserId = this.getCurrentUserId();
-
 		return this.getSmtService().smtOrderOutArea(cwbs, curBranchId, curUserId);
+
 	}
 
 	@SuppressWarnings("unused")
@@ -171,7 +188,8 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querysmtorder")
-	public @ResponseBody SmtOrderContainer querySmtOrder(HttpServletRequest request) {
+	public @ResponseBody
+	SmtOrderContainer querySmtOrder(HttpServletRequest request) {
 		OrderTypeEnum dataType = this.getDataType(request);
 		OptTimeTypeEnum timeType = this.getTimeType(request);
 		int page = this.getQueryPage(request);
@@ -181,7 +199,8 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querytodayoutareaorder")
-	public @ResponseBody SmtOrderContainer queryTodayOutAreaOrder() {
+	public @ResponseBody
+	SmtOrderContainer queryTodayOutAreaOrder() {
 		return this.queryTodayOutAreaOrder(1);
 	}
 

@@ -431,8 +431,8 @@ $(function(){
 								<td width="80" align="center"><%=order.getTranscwb()%></td>
 								<td width="80" align="center"><%=CwbOrderTypeIdEnum.getByValue(order.getCwbordertypeid()).getText() %></td>
 								<td width="120" align="center"><%=order.getEmaildate() %></td>
-								<td width="80" align="center"><%=order.getConsigneename() %></td>
-								<td width="80" align="center"><%=order.getConsigneemobile() %></td>
+								<td width="80" align="center"><%=order.getConsigneenameOfkf() %></td>
+								<td width="80" align="center"><%=order.getConsigneemobileOfkf() %></td>
 								<td align="center">
 									<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
 										审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
@@ -449,8 +449,8 @@ $(function(){
 									<td width="80" align="center"><%=order.getPackagecode()%></td>
 									<td width="80" align="center"><%=customerMap.get(order.getCustomerid())==null?"":customerMap.get(order.getCustomerid()).getCustomername() %></td>
 									<td width="120" align="center"><%=order.getEmaildate() %></td>
-									<td width="80" align="center"><%=order.getConsigneename() %></td>
-									<td width="80" align="center"><%=order.getConsigneemobile() %></td>
+									<td width="80" align="center"><%=order.getConsigneenameOfkf() %></td>
+									<td width="80" align="center"><%=order.getConsigneemobileOfkf() %></td>
 									<td align="center">
 										<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
 											审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}

@@ -227,6 +227,7 @@ public class OMSInterfaceController {
 		us.put("realname", u.getRealname());
 		us.put("roleid", u.getRoleid());
 		us.put("showphoneflag", u.getShowphoneflag());
+		us.put("shownameflag",u.getShownameflag());
 		us.put("userDeleteFlag", u.getUserDeleteFlag());
 		us.put("useraddress", u.getUseraddress());
 		us.put("usercustomerid", u.getUsercustomerid());
@@ -239,6 +240,7 @@ public class OMSInterfaceController {
 		us.put("usersalary", u.getUsersalary());
 		us.put("userwavfile", u.getUserwavfile());
 		us.put("deliverManCode", u.getDeliverManCode());
+		us.put("showmobileflag", u.getShowmobileflag());
 		jsonArray.add(us);
 
 		return jsonArray.toString();
@@ -845,7 +847,19 @@ public class OMSInterfaceController {
 				orderDto.setCwbprovince(cwbOrder.getCwbprovince());
 				orderDto.setCwbcity(cwbOrder.getCwbcity());
 				orderDto.setCwbcounty(cwbOrder.getCwbcounty());
-
+				orderDto.setRemark1(cwbOrder.getRemark1());
+				orderDto.setRemark2(cwbOrder.getRemark2());//广州通路对接需要的发货时间（限广州通路）
+				
+				orderDto.setRemark4(cwbOrder.getRemark4());//供货商名称（广州通路）
+				orderDto.setPaybackfee(cwbOrder.getPaybackfee());//应退款（广州通路）
+				orderDto.setReceivablefee(cwbOrder.getReceivablefee());//应收款（广州通路）
+				orderDto.setConsigneemobile(cwbOrder.getConsigneemobile());
+				orderDto.setConsigneephone(cwbOrder.getConsigneephone());//广州通路接口中我把电话或手机都放在了这个字段中
+				orderDto.setCustomerid(cwbOrder.getCustomerid());
+				//发货时间？？
+				orderDto.setConsigneenameOfkf(cwbOrder.getConsigneenameOfkf());
+				orderDto.setConsigneemobileOfkf(cwbOrder.getConsigneemobileOfkf());
+				orderDto.setConsigneephoneOfkf(cwbOrder.getConsigneephoneOfkf());
 				orderDtoList.add(orderDto);
 			} catch (Exception e) {
 				logger.error("环形对接-根据订单号获取订单详细信息发生错误" + cwbOrder.getCwb(), e);
@@ -922,7 +936,24 @@ public class OMSInterfaceController {
 		int code = Integer.parseInt(s);
 		return JSONObject.fromObject(commonExptDao.getExpMatchListByKeyEditAndName(code, customerid)).toString();
 	}
-
+	/**
+	 * 广州通路需要添加的
+	 * @param extpt_code
+	 * @param customerid
+	 * @return
+	 */
+	@RequestMapping("/getReasonidJointByB2cGztl/{customerid}")
+	public @ResponseBody String getReasonid(
+			@PathVariable("customerid") String customerid,
+			@RequestParam(value = "code", required = false, defaultValue = "") String extpt_code) {
+		try {
+			 return JSONObject.fromObject(commonExptDao.getExceptReason(extpt_code, customerid)).toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	@RequestMapping("/getCommonByCommonnumber/{commonnumber}")
 	public @ResponseBody String UpdateRemarkbycwb(@PathVariable("commonnumber") String commonnumber) {
 		return JSONObject.fromObject(commonDAO.getCommonByCommonnumber(commonnumber)).toString();

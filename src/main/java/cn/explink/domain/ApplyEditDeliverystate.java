@@ -30,9 +30,10 @@ public class ApplyEditDeliverystate {
 	private String editdetail;// 修改后的详情（JSON）（封装deliverystate表中的信息）
 
 	private long state;// 是否已向客服申请 1已申请 0，未申请
+	private long audit;// 有代收款的订单 客服是否已经审核 1已经审核,0,未审核
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -40,7 +41,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getDeliverystateid() {
-		return deliverystateid;
+		return this.deliverystateid;
 	}
 
 	public void setDeliverystateid(long deliverystateid) {
@@ -48,7 +49,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getPayupid() {
-		return payupid;
+		return this.payupid;
 	}
 
 	public void setPayupid(long payupid) {
@@ -56,7 +57,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getOpscwbid() {
-		return opscwbid;
+		return this.opscwbid;
 	}
 
 	public void setOpscwbid(long opscwbid) {
@@ -64,7 +65,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public void setCwb(String cwb) {
@@ -72,7 +73,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public int getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
 
 	public void setCwbordertypeid(int cwbordertypeid) {
@@ -80,7 +81,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getNowdeliverystate() {
-		return nowdeliverystate;
+		return this.nowdeliverystate;
 	}
 
 	public void setNowdeliverystate(long nowdeliverystate) {
@@ -88,7 +89,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public BigDecimal getNopos() {
-		return nopos;
+		return this.nopos;
 	}
 
 	public void setNopos(BigDecimal nopos) {
@@ -96,7 +97,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public BigDecimal getPos() {
-		return pos;
+		return this.pos;
 	}
 
 	public void setPos(BigDecimal pos) {
@@ -104,7 +105,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getEditnowdeliverystate() {
-		return editnowdeliverystate;
+		return this.editnowdeliverystate;
 	}
 
 	public void setEditnowdeliverystate(long editnowdeliverystate) {
@@ -112,7 +113,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public BigDecimal getEditnopos() {
-		return editnopos;
+		return this.editnopos;
 	}
 
 	public void setEditnopos(BigDecimal editnopos) {
@@ -120,7 +121,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public BigDecimal getEditpos() {
-		return editpos;
+		return this.editpos;
 	}
 
 	public void setEditpos(BigDecimal editpos) {
@@ -128,7 +129,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getEditreason() {
-		return editreason;
+		return this.editreason;
 	}
 
 	public void setEditreason(String editreason) {
@@ -136,7 +137,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getDeliverpodtime() {
-		return deliverpodtime;
+		return this.deliverpodtime;
 	}
 
 	public void setDeliverpodtime(String deliverpodtime) {
@@ -144,7 +145,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getDeliverid() {
-		return deliverid;
+		return this.deliverid;
 	}
 
 	public void setDeliverid(long deliverid) {
@@ -152,7 +153,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getApplyuserid() {
-		return applyuserid;
+		return this.applyuserid;
 	}
 
 	public void setApplyuserid(long applyuserid) {
@@ -160,7 +161,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getApplybranchid() {
-		return applybranchid;
+		return this.applybranchid;
 	}
 
 	public void setApplybranchid(long applybranchid) {
@@ -168,7 +169,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getApplytime() {
-		return applytime;
+		return this.applytime;
 	}
 
 	public void setApplytime(String applytime) {
@@ -176,7 +177,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getEdituserid() {
-		return edituserid;
+		return this.edituserid;
 	}
 
 	public void setEdituserid(long edituserid) {
@@ -184,7 +185,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getEdittime() {
-		return edittime;
+		return this.edittime;
 	}
 
 	public void setEdittime(String edittime) {
@@ -192,7 +193,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getIssendcustomer() {
-		return issendcustomer;
+		return this.issendcustomer;
 	}
 
 	public void setIssendcustomer(long issendcustomer) {
@@ -200,7 +201,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getIsauditpayup() {
-		return isauditpayup;
+		return this.isauditpayup;
 	}
 
 	public void setIsauditpayup(long isauditpayup) {
@@ -208,7 +209,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public String getEditdetail() {
-		return editdetail;
+		return this.editdetail;
 	}
 
 	public void setEditdetail(String editdetail) {
@@ -216,7 +217,7 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getIshandle() {
-		return ishandle;
+		return this.ishandle;
 	}
 
 	public void setIshandle(long ishandle) {
@@ -224,11 +225,19 @@ public class ApplyEditDeliverystate {
 	}
 
 	public long getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(long state) {
 		this.state = state;
+	}
+
+	public long getAudit() {
+		return this.audit;
+	}
+
+	public void setAudit(long audit) {
+		this.audit = audit;
 	}
 
 }

@@ -147,6 +147,7 @@ public class DeliveryController {
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private ObjectReader dmpOrderFlowMapper = this.objectMapper.reader(CwbOrder.class);
+	
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -233,6 +234,16 @@ public class DeliveryController {
 		return "delivery/auditView";
 	}
 
+	@RequestMapping("/levelreason")
+	public @ResponseBody String levelreason( @RequestParam(value = "firstlevelreasonid", defaultValue = "0", required = false) long firstlevelreasonid){
+
+		if (firstlevelreasonid > 0) {
+			List<Reason> leveltwolist = this.reasonDao.getAllSecondLevelReason(firstlevelreasonid);
+			return JSONArray.fromObject(leveltwolist).toString();
+		} else {
+			return "[]";
+		}
+	}
 	/**
 	 * 封装前台需要的map
 	 *
@@ -593,8 +604,8 @@ public class DeliveryController {
 			@RequestParam(value = "deliverstateremark", required = false, defaultValue = "") String deliverstateremark, @RequestParam("weishuakareasonid") long weishuakareasonid,
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
-			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid
-			) {
+			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
 
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
 		try {
@@ -602,7 +613,7 @@ public class DeliveryController {
 			cwb = this.cwborderService.translateCwb(cwb);
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("deliverid", deliveryid);
+			parameters.put("deliverid", deliveryid);//小件员
 			parameters.put("podresultid", podresultid);
 			parameters.put("backreasonid", backreasonid);
 			parameters.put("leavedreasonid", leavedreasonid);
@@ -628,17 +639,23 @@ public class DeliveryController {
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 
+			
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 			
-			//操作之前判断是否修改了支付方式
-			Map<String, Object> preParams = this.cwborderService.checkIsModifyPayMethod(parameters,paywayParams);
-			
-			if((Boolean)preParams.get("flag")){
-				Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
-				Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("newPayWayId"));
-				adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
-				orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
+			try {
+				//操作之前判断是否修改了支付方式
+				Map<String, Object> preParams = this.cwborderService.checkIsModifyPayMethod(parameters,paywayParams);
+				
+				if((Boolean)preParams.get("flag")){
+					Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
+					Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("newPayWayId"));
+					adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
+					orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
+				}
+			} catch (Exception e) {
+				logger.error("财务处理异常cwb="+cwb,e);
 			}
+			
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
@@ -659,7 +676,7 @@ public class DeliveryController {
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 		List<Reason> changereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
-
+		List<Reason> levelreasonlist = this.reasonDao.add();
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -702,6 +719,7 @@ public class DeliveryController {
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		model.addAttribute("levelreasonlist", levelreasonlist);
 		model.addAttribute("podremarkreasonlist", podremarkreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("losereasonlist", losereasonlist);
@@ -715,7 +733,7 @@ public class DeliveryController {
 	}
 
 	/**
-	 * 配送订单批量反馈功能
+	 *	
 	 *
 	 * @param model
 	 * @param request
@@ -735,11 +753,15 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = false, value = "firstchangereasonid") long firstchangereasonid,
 			@RequestParam(defaultValue = "0", required = false, value = "changereasonid") long changereasonid,
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
+			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
-			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> firstlist = this.reasonDao.add();
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 		List<Reason> firstchangereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 
@@ -765,6 +787,7 @@ public class DeliveryController {
 					parameters.put("podresultid", deliverystate);
 					parameters.put("backreasonid", backreasonid);
 					parameters.put("leavedreasonid", leavedreasonid);
+					parameters.put("firstlevelreasonid", firstlevelreasonid);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
@@ -781,7 +804,8 @@ public class DeliveryController {
 					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("firstchangereasonid", firstchangereasonid);
 					parameters.put("changereasonid", changereasonid);
-
+					parameters.put("losereasonid", losereasonid);
+					parameters.put("fankuileixing", "PEISONG");//添加的
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
@@ -817,16 +841,19 @@ public class DeliveryController {
 		}
 
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
-
+		model.addAttribute("losereasonlist", losereasonlist);
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("backreasonid", backreasonid);
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("paytype", paytype);
 		model.addAttribute("objList", objList);
+		
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
+		model.addAttribute("losereasonid", losereasonid);
 		model.addAttribute("backreasonlist", backreasonlist);
+		model.addAttribute("firstlist",firstlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("firstchangereasonlist", firstchangereasonlist);
 		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
@@ -857,11 +884,20 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/batchEditSMHDeliveryState")
 	public String batchEditSMHDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype) {
+			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,	@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
+			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
-
 		List<JSONObject> objList = new ArrayList<JSONObject>();
+		List<Reason> firstlist = this.reasonDao.add();
 
 		long successcount = 0;
 		if (cwbs.split("\r\n").length < 501) {
@@ -877,12 +913,12 @@ public class DeliveryController {
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("podresultid", deliverystate);
-					parameters.put("backreasonid", 0l);
-					parameters.put("leavedreasonid", 0l);
+					parameters.put("backreasonid", backreasonid);
+					parameters.put("leavedreasonid", leavedreasonid);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
 					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 					parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -890,9 +926,11 @@ public class DeliveryController {
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
 					parameters.put("paywayid", paytype);
-					parameters.put("resendtime", "");
-					parameters.put("zhiliuremark", "");
-
+					parameters.put("resendtime", resendtime);
+					parameters.put("zhiliuremark", zhiliuremark);
+					parameters.put("deliverstateremark", deliverstateremark);
+					parameters.put("losereasonid", losereasonid);
+					parameters.put("fankuileixing", "SHANGMENHUAN");//添加的
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
@@ -935,7 +973,17 @@ public class DeliveryController {
 		model.addAttribute("paytype", paytype);
 		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
 		model.addAttribute("pl_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
-
+		model.addAttribute("losereasonlist", losereasonlist);
+		model.addAttribute("backreasonid", backreasonid);
+		model.addAttribute("leavedreasonid", leavedreasonid);
+		model.addAttribute("losereasonid", losereasonid);
+		model.addAttribute("backreasonlist", backreasonlist);
+		model.addAttribute("firstlist",firstlist);
+		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
+		model.addAttribute("deliverstateremark", deliverstateremark);
+		model.addAttribute("batchEditDeliveryStateisUseCash",
+				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
 		return "delivery/batchEditSMHDeliveryState";
 	}
 
@@ -954,10 +1002,23 @@ public class DeliveryController {
 	 * @return
 	 */
 	@RequestMapping("/batchEditSMTDeliveryState")
-	public String batchEditSMTDeliveryState(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+	public String batchEditSMTDeliveryState(Model model, HttpServletRequest request, 
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
-			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid) {
+			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
+			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime,
+			@RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
+		List<Reason> firstlist = this.reasonDao.add();
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+		//以上为添加的
+		
+		
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
@@ -981,9 +1042,12 @@ public class DeliveryController {
 				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
+					parameters.put("deliverstateremark", deliverstateremark);
+					parameters.put("losereasonid", losereasonid);
+					//以上为添加的
 					parameters.put("podresultid", deliverystate);
 					parameters.put("backreasonid", backreasonid);
-					parameters.put("leavedreasonid", 0l);
+					parameters.put("leavedreasonid", leavedreasonid);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
@@ -994,8 +1058,10 @@ public class DeliveryController {
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
-					parameters.put("resendtime", "");
-					parameters.put("zhiliuremark", "");
+					parameters.put("resendtime", resendtime);
+					parameters.put("zhiliuremark", zhiliuremark);
+					parameters.put("fankuileixing", "SHANGMENTUI");//添加的
+
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
 					}
@@ -1036,6 +1102,13 @@ public class DeliveryController {
 				objList.add(obj);
 			}
 		}
+		
+		model.addAttribute("losereasonlist", losereasonlist);
+		model.addAttribute("leavedreasonid", leavedreasonid);
+		model.addAttribute("losereasonid", losereasonid);
+		model.addAttribute("firstlist", firstlist);
+		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		//以上为添加的
 		model.addAttribute("backreasonid", backreasonid);
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("successcount", successcount);
@@ -1067,11 +1140,14 @@ public class DeliveryController {
 	public String rebatchEditDeliveryState(Model model, @RequestParam(value = "cwbdetails", required = true, defaultValue = "") String cwbdetails,
 			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "losereasonid") long losereasonid,
 			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
-			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, 
+			@RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 
 		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
@@ -1098,10 +1174,11 @@ public class DeliveryController {
 					parameters.put("podresultid", deliverystate);
 					parameters.put("backreasonid", backreasonid);
 					parameters.put("leavedreasonid", leavedreasonid);
+					parameters.put("losereasonid", losereasonid);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
 					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 					parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -1112,7 +1189,7 @@ public class DeliveryController {
 					parameters.put("weishuakareasonid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? cwb_reasonid[1].replaceAll("w", "") : "0"));
 					parameters.put("resendtime", resendtime);
 					parameters.put("deliverstateremark", deliverstateremark);
-
+					parameters.put("fankuileixing", "PEISONG");//添加的
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
@@ -1169,12 +1246,14 @@ public class DeliveryController {
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("backreasonid", backreasonid);
 		model.addAttribute("leavedreasonid", leavedreasonid);
+		model.addAttribute("losereasonid", losereasonid);
 		model.addAttribute("paytype", paytype);
 		model.addAttribute("objList", objList);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
 		model.addAttribute("backreasonlist", backreasonlist);
+		model.addAttribute("losereasonlist", losereasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("deliverstateremark", deliverstateremark);
@@ -1196,7 +1275,20 @@ public class DeliveryController {
 	@RequestMapping("/rebatchEditSMHDeliveryState")
 	public String rebatchEditSMHDeliveryState(Model model, @RequestParam(value = "cwbdetails", required = true, defaultValue = "") String cwbdetails,
 			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
-			@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid) {
+			@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime,
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark
+			) {
+		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+
+		//上面为添加的
+		
+		
 
 		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
@@ -1222,11 +1314,13 @@ public class DeliveryController {
 					parameters.put("deliverid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? "0" : cwb_reasonid[1]));
 					parameters.put("podresultid", deliverystate);
 					parameters.put("backreasonid", backreasonid);
-					parameters.put("leavedreasonid", 0l);
+					parameters.put("leavedreasonid", leavedreasonid);
+					parameters.put("losereasonid", losereasonid);
+					parameters.put("resendtime", resendtime);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", "");
+					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
 					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 					parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -1235,6 +1329,7 @@ public class DeliveryController {
 					parameters.put("isbatch", true);
 					parameters.put("paywayid", paytype);
 					parameters.put("weishuakareasonid", 0l);
+					parameters.put("fankuileixing", "SHANGMENHUAN");//添加的
 
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
@@ -1289,6 +1384,17 @@ public class DeliveryController {
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
+		//下面为增加的
+		model.addAttribute("backreasonid", backreasonid);
+		model.addAttribute("leavedreasonid", leavedreasonid);
+		model.addAttribute("losereasonid", losereasonid);
+		model.addAttribute("backreasonlist", backreasonlist);
+		model.addAttribute("losereasonlist", losereasonlist);
+		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
+		model.addAttribute("deliverstateremark", deliverstateremark);
+		model.addAttribute("batchEditDeliveryStateisUseCash",
+				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
 		return "delivery/batchEditSMHDeliveryState";
 	}
 
@@ -1307,7 +1413,15 @@ public class DeliveryController {
 	public String rebatchEditSMTDeliveryState(Model model, @RequestParam(value = "cwbdetails", required = true, defaultValue = "") String cwbdetails,
 			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid,
-			@RequestParam(defaultValue = "", required = true, value = "deliverstateremark") String deliverstateremark) {
+			@RequestParam(defaultValue = "", required = true, value = "deliverstateremark") String deliverstateremark,
+			@RequestParam(defaultValue = "0", required = true, value = "losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime
+			) {
+		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
+		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
+		//上面为添加的
 		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
@@ -1333,7 +1447,9 @@ public class DeliveryController {
 					parameters.put("deliverid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? "0" : cwb_reasonid[1]));
 					parameters.put("podresultid", deliverystate);
 					parameters.put("backreasonid", backreasonid);
-					parameters.put("leavedreasonid", 0l);
+					parameters.put("leavedreasonid", leavedreasonid);
+					parameters.put("losereasonid", losereasonid);
+					parameters.put("resendtime", resendtime);
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
@@ -1345,6 +1461,7 @@ public class DeliveryController {
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
 					parameters.put("weishuakareasonid", 0l);
+					parameters.put("fankuileixing", "SHANGMENTUI");//添加的
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
 					}
@@ -1357,7 +1474,6 @@ public class DeliveryController {
 					}
 					
 					logger.info("上门退订单再次批量反馈cwb={},infactfare={},shouldfare="+cwbOrder.getShouldfare(),scancwb,parameters.get("infactfare"));
-					
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
@@ -1404,7 +1520,15 @@ public class DeliveryController {
 			objList.add(obj);
 		}
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-
+		
+		model.addAttribute("leavedreasonid", leavedreasonid);
+		model.addAttribute("losereasonid", losereasonid);
+		model.addAttribute("losereasonlist", losereasonlist);
+		model.addAttribute("leavedreasonlist", leavedreasonlist);
+		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
+		//上面为添加的
+		
+		
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("backreasonid", backreasonid);

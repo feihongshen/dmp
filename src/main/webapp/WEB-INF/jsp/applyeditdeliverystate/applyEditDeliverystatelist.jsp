@@ -178,7 +178,17 @@ function sub(){
 								<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
 								<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 								<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %><font color="red">已处理</font><%} %></td>
+								<td width="100" align="center" valign="middle">
+								<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
+									{ 
+											if(adse.getAudit()==0){out.print("未处理");}
+										else if(adse.getAudit()==1){out.print("审核已通过");}
+										else if(adse.getAudit()==2){out.print("审核未通过");}
+									}
+								else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
+									{ out.print("<font color='red'>已处理</font>");}
+									%>
+								</td>
 								<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getEdituserid()==u.getUserid()){ %><font color="red"><%=u.getRealname() %></font><%}} %></td>
 								<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 							</tr>
