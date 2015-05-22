@@ -200,4 +200,3 @@ INSERT INTO `dmp40_function` VALUES ('903045', '2', '上门退时效设置', '90
 INSERT INTO `dmp40_function` VALUES ('903050', '2', '上门退揽收汇总', '903050', 'overdueexmo/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('9040', '1', '小件员查询', '9040', '', '90');
 INSERT INTO `dmp40_function` VALUES ('904020', '2', '小件员工作量统计', '904020', 'deliverycash/list?', '9040');
-INSERT INTO `dmp40_function` VALUES ('502030', '2', '条码打印', '502030', 'cwbLablePrint/barcodeprint?', '5020');

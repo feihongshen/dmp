@@ -571,7 +571,7 @@ public class AbnormalOrderController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AbnormalOrderController.this.exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
+							a = exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -633,34 +633,6 @@ public class AbnormalOrderController {
 		}
 		return str;
 	}
-
-	@RequestMapping("/SubmitHandleabnormalBatch")
-	public @ResponseBody String SubmitHandleabnormalBatch(@RequestParam(value = "ids", defaultValue = "", required = false) String ids,
-			@RequestParam(value = "describe", defaultValue = "", required = false) String describe) {
-		try {
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			Date date = new Date();
-			String nowtime = df.format(date);
-			String[] arrayIds = ids.split(",");
-
-			for (int i = 0; i < arrayIds.length; i++) {
-				int id = Integer.parseInt(arrayIds[i]);
-				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-				this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.yichuli.getValue(), nowtime);
-				this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
-						ab.getAbnormaltypeid(), ab.getCwb());
-				/*
-				 * String json = "订单：" + ab.getCwb() + "已处理";
-				 * this.appearWindowDao.creWindowTime(json, "4",
-				 * ab.getCreuserid(), "1");
-				 */
-			}
-			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
-		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
-		}
-	}
-	
 
 	@RequestMapping("/tofindabnormal/{page}")
 	public String tofindabnormal(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
@@ -768,7 +740,7 @@ public class AbnormalOrderController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AbnormalOrderController.this.exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
+							a = exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}

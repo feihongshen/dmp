@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!--
+	AspectJ load-time weaving config file to install common Spring aspects.
+-->
+<aspectj>
+
+	<!--
+	<weaver options="-showWeaveInfo"/>
+	-->
+
+	<aspects>
+		<aspect name="cn.explink.aspect.CwbOperationValidateAspect"/>
+		<aspect name="cn.explink.aspect.CwbTranslateAspect"/>
+		<aspect name="cn.explink.aspect.OperationRecord"/>
+		<aspect name="cn.explink.aspect.OperationRecordMore"/>
+		<aspect name="cn.explink.aspect.SmtOptTimeAspect"/>
+		
+	</aspects>
+
+</aspectj>
