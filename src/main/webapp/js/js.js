@@ -1345,7 +1345,7 @@ function signmanchange() {
 
 
 function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu,
-		ZhiLiuZiDongLingHuo, ShangMenJuTui, HuoWuDiuShi, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid,
+		ZhiLiuZiDongLingHuo, ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, backreasonid, leavedreasonid, podremarkid, newpaywayid, weishuakareasonid, losereasonid,
 		showposandqita, needdefault) {
 	var podresultid = parseInt($("#podresultid").val());
 	$("#infactfare").removeAttr('disabled');
