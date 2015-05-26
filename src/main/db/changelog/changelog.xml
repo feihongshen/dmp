@@ -6341,5 +6341,13 @@ CREATE TABLE
 			ADD INDEX `handleBranch_idx` (`handleBranch`) ;
 		</sql>
 	</changeSet>
+	
+	<changeSet id="zhangpengkai-2015-05-26" author="zhangpengkai">
+		<sql>
+			INSERT INTO `express_set_role_menu_new`(`roleid`,`menuid`)VALUES('0','20'); 
+			INSERT INTO `EXPRESs_SET_role_menu_new`(`roleid`,`menuid`)VALUES('0','2020'); 
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
  
