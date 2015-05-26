@@ -3249,6 +3249,31 @@
 				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>GZTL_PJ</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.43:3306/dmp_pj?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data2/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data2/wav/</wavPath>
+				<filePath>/home/apps/data2/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>GZTL_PJ</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+			</properties>
+		</profile>
 	</profiles>
 
 </project>
