@@ -30,6 +30,7 @@ public class AbnormalWriteBackDAO {
 			abnormalWriteBack.setAbnormalorderid(rs.getLong("abnormalorderid"));
 			abnormalWriteBack.setAbnormalordertype(rs.getLong("abnormalordertype"));
 			abnormalWriteBack.setCwb(rs.getString("cwb"));
+			abnormalWriteBack.setFileposition(rs.getString("fileposition"));
 			return abnormalWriteBack;
 		}
 	}
@@ -37,9 +38,9 @@ public class AbnormalWriteBackDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb) {
-		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`) values(?,?,?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb);
+	public void creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb,String name) {
+		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`,`fileposition`) values(?,?,?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb,name);
 	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByWhere(String begindate, String enddate, long ishandle, long abnormaltypeid, long creuserid) {

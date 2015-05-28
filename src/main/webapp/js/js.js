@@ -5056,3 +5056,28 @@ function getfirstlevel(flag){
 	}
 	
 }
+
+function selectbranchUsers(){
+	$.ajax({
+		url:$("#getbranchusers").val(),
+		type:"POST",
+		data:"dutybranchid="+$("#dutybranchid").val(),
+	dataType:'json',
+	success:function (json){
+		$("#dutyname").empty();
+		$("<option value ='0'>==请选择机构责任人==</option>").appendTo("#dutyname");// 添加下拉框的option
+		for (var j = 0; j < json.length; j++) {
+			$("<option value=' "+ json[j].userid +" '>" + json[j].realname + "</option>").appendTo("#dutyname");
+		}
+	}
+	});
+}
+var addupoadfileid=1;
+
+function addupoadfile(){
+	document.getElementById("uploadfile").innerHTML+='<div id="div_'+addupoadfileid+'"><input  name="file" type="file"  /><input type="button" value="删除"  onclick="uploadfiledel('+addupoadfileid+')"/></div>';  
+	addupoadfileid= addupoadfileid + 1;  
+}
+function uploadfiledel(o){
+    document.getElementById("uploadfile").removeChild(document.getElementById("div_"+o));  
+}

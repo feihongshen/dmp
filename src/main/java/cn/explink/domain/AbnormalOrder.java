@@ -16,6 +16,89 @@ public class AbnormalOrder {
 	private String emaildata;
 	private String cwb;
 	private long handleBranch;
+	private String fileposition;//上传文件所在名称
+	private String questionno;//创建问题件时自动创建的问题件号
+	private String cwbordertypeid;//创建的问题件的订单号的类型
+	private String dealresult;//处理结果（1，问题成立 2.问题不成立）
+	private long dutybrachid;//责任机构
+	private String dutypersoname;//责任人
+	private long isfine;//是否罚款（1，未罚款 2.已罚款）
+	private long losebackid;//该问题件是不是丢失返回的，是的话为丢失返回表里面的主键id
+	private String resultdealcontent;//结案处理说明内容
+	
+	
+	public String getQuestionno() {
+		return questionno;
+	}
+
+	public void setQuestionno(String questionno) {
+		this.questionno = questionno;
+	}
+
+	public String getCwbordertypeid() {
+		return cwbordertypeid;
+	}
+
+	public void setCwbordertypeid(String cwbordertypeid) {
+		this.cwbordertypeid = cwbordertypeid;
+	}
+
+	public String getDealresult() {
+		return dealresult;
+	}
+
+	public void setDealresult(String dealresult) {
+		this.dealresult = dealresult;
+	}
+
+	public long getDutybrachid() {
+		return dutybrachid;
+	}
+
+	public void setDutybrachid(long dutybrachid) {
+		this.dutybrachid = dutybrachid;
+	}
+
+	public String getDutypersoname() {
+		return dutypersoname;
+	}
+
+	public void setDutypersoname(String dutypersoname) {
+		this.dutypersoname = dutypersoname;
+	}
+
+	public long getIsfine() {
+		return isfine;
+	}
+
+	public void setIsfine(long isfine) {
+		this.isfine = isfine;
+	}
+
+	public long getLosebackid() {
+		return losebackid;
+	}
+
+	public void setLosebackid(long losebackid) {
+		this.losebackid = losebackid;
+	}
+
+	public String getResultdealcontent() {
+		return resultdealcontent;
+	}
+
+	public void setResultdealcontent(String resultdealcontent) {
+		this.resultdealcontent = resultdealcontent;
+	}
+
+	public String getFileposition() {
+		return fileposition;
+	}
+
+	public void setFileposition(String fileposition) {
+		this.fileposition = fileposition;
+	}
+
 	public long getId() {
 		return this.id;
 	}

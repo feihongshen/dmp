@@ -15,6 +15,9 @@ public class ResourceBundleUtil {
 	public static final String WAVPATH = rbint.getString("wavPath");
 	// 上传文件路径
 	public static final String FILEPATH = rbint.getString("filePath");
+	
+	//异常件证据存放地址
+	public static final String EXCEPTPATH=rbint.getString("excepturl");
 
 	public static final String LOGOSWITCH = rbint.getString("logoswitch");
 

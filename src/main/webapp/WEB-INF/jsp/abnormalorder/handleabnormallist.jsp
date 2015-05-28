@@ -23,7 +23,7 @@ Object cwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
   String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
   String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
 
-  String showabnomal = request.getAttribute("showabnomal").toString();
+  String showabnomal = request.getAttribute("showabnomal")==null?"":request.getAttribute("showabnomal").toString();
   String ishandle = request.getAttribute("ishandle").toString();
   long customerid = Long.parseLong(request.getAttribute("customerid").toString());
   List<Customer> customerlist=(List<Customer>)request.getAttribute("customerlist");
@@ -103,10 +103,16 @@ $(function() {
 });
 
 
-function getThisBoxList(id){
+function getThisBoxList(id,flag){
+	var URL="";
+	if(flag==0){
+		URL=$("#handle"+id).val()+"&isfind=0";
+	}else if(flag==1){
+		URL=$("#handle"+id).val()+"&isfind=1";
+	}
 	$.ajax({
 		type: "POST",
-		url:$("#handle"+id).val(),
+		url:URL,
 		dataType:"html",
 		success : function(data) {
 			$("#alert_box",parent.document).html(data);
@@ -194,6 +200,12 @@ function checkstate(){
 		$("#strtime").hide();
 		$("#endtime").hide();
 		$("#chuli").html("创建时间：");
+	}else if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>){
+		$("#chuangjianstrtime").hide();
+		$("#chuangjianendtime").hide();
+		$("#strtime").show();
+		$("#endtime").show();
+		$("#chuli").html("处理时间：");
 	}else{
 		$("#chuangjianstrtime").hide();
 		$("#chuangjianendtime").hide();
@@ -240,6 +252,39 @@ function stateBatch(state)
 	});
 	}
 	}
+function reviseQuestionError(state)
+{
+	
+	var ids="";
+	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+		id=$(this).val();
+		if($.trim(id).length!=0){
+		ids+=id+",";
+		}
+		});
+	if(ids.length==0){
+		alert("请选择！");
+		return false;
+	}
+	if($("#ishandlehhh").val()!=2){
+		alert("当前所选订单的订单状态不是创建状态！！不允许修改！");
+		return;
+	}
+	if(ids.indexOf(",")>0){
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/abnormalOrder/revisequestionstate",
+		data:{"ids":ids.substring(0, ids.length-1)},
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+			
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+	}
+	}
 
 </script>
 </head>
@@ -250,9 +295,15 @@ function stateBatch(state)
 			<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 				<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<p>订单号：
-									<textarea id="cwb" class="kfsh_text" rows="3" name="cwb" ><%=cwb%></textarea>
-								&nbsp;机构名称：
+								<table width="100%"  style="font-size: 12px;">
+								<tr>
+								<td align="left" >
+								订单号：
+									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb%></textarea>
+								</td>
+								
+								<td align="left">
+								&nbsp;创建机构：
 									<label for="select2"></label>
 									<select name="branchid" id="branchid" class="select1">
 										<option value="0">请选择</option>
@@ -260,68 +311,117 @@ function stateBatch(state)
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
 									</select>
-									供货商:<select name ="customerid" id ="customerid"  style="width: 120px;">
+								<br>
+								<br>
+									客户名称 ： <select name ="customerid" id ="customerid"  style="width: 120px;"  class="select1">
 									<option value="-1">请选择</option>
 		          						<%for(Customer c : customerlist){ %>
 		      					     <option value ="<%=c.getCustomerid() %>"  <%if(c.getCustomerid()==customerid){%>  selected="selected"<%}%>><%=c.getCustomername() %></option>
 		         						 <%} %>
 		      						  </select>
+		      						</td>
+		      						<td>
 									<label for="select3"></label>
+									问题件类型：
 									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 										<option value="0">请选择问题件类型</option>
 										<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
 										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>
 										<%} %>
 									</select>
-									&nbsp;处理结果：
-									<label for="select4"></label>
+									<br><br>
+										&nbsp;责 任 机构：
+									<label for="select2"></label>
+									<select name="branchid" id="branchid" class="select1">
+										<option value="0">请选择责任机构</option>
+										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
+											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
+										<%}} %>
+									</select>
+									</td>
+										<td>
+									<label for="select3"></label>
+									处理状态：
 									<select name="ishandle" id="ishandle" onchange="checkstate()" class="select1">
-										<!-- <option value="-1">全部</option> -->
 										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
-										<%if(showabnomal.equals("1")){%>
 										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
-										<%} %>
-										<%if(!showabnomal.equals("1")){%>
-										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
-										<%} %>
 									</select>
-									<br/>
-									<br/>
+									<br><br>
+										丢失返回 ：
+									<label for="select2"></label>
+									<select name="losebackisornot" id="losebackisornot" class="select1">
+										<option value="0">请选择是否丢失</option>
+										</select>
+									</td>
+									<td>
+								处理结果：
+									<label for="select4"></label>
+									<select name="dealresult" id="dealresult"  class="select1">
+										<option value="0">请选择处理结果</option> 
+										<option value="1">问题成立</option>
+										<option value="2">问题不成立</option>
+									</select>
+									<br><br>
 									<strong id="chuli"></strong>
 									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
 									<input type ="text" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>" class="input_text1" style="height:20px;"/>
-									<strong id="chuli" >处理时间：</strong>
+<%-- 									<strong id="chuli" >处理时间：</strong>
 									<input type ="text"  style="width: 120px;" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
-									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>
+									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>  --%>
 									<strong id="chulidown">到</strong>
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"/>
 									<input type="hidden" name="isshow" value="1"/>
-									<input type="button"  onclick="check()" value="查询" class="input_button2">
+									</td>
+									</tr>
+									<tr>
+									<td align="left">
+									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
+									<input type="reset"    value="重置" class="input_button2">
+									</td>
+									<td>
+									<input type="button" onclick="" value="结案处理"  class="input_button2"/>
 									<input type ="button" value="批量处理" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="stateBatch();"/>
+									</td>
+									<td>
+									<input type="hidden" id="ishandlehhh" name="ishandlehhh" value="<%=ishandle%>"/>
+									<input type="button" onclick="reviseQuestionError();" value="修改"  class="input_button2"/>
+									</td>
+									<td></td>
+									<td>
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(views.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
-									<%if(views != null && views.size()>0){ %>
+									</td>
+								<%-- 	<%if(views != null && views.size()>0){ %>
 										<input type ="button" value="批量处理" class="input_button2"  onclick="stateBatch();"/>
 										<input type ="button" id="btnval" value="导出" class="input_button1" onclick="exportField();"/>
-									<%} %>
-								</p>
+									<%} %> --%>
+									
+								</tr>
+								
+								</table>
 							</form>
 				</div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 					<tbody>
 						<tr class="font_1" height="30" >
 							<td width="30"  align="center" valign="middle" bgcolor="#f3f3f3"><a style="cursor: pointer;" onclick="isgetallcheck();">全选</a></td>
+							<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">问题件单号</td>
 							<td width="120" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
+							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 							<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当时状态</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单操作状态</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">创建机构</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">创建人</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件反馈时间</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">创建时间</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件说明</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理结果</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">责任机构</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">是否扣罚</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">丢失找回</td>
+							
 							<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
 						</tr>
 					</tbody>
@@ -338,8 +438,10 @@ function stateBatch(state)
 						<input id="id" type="checkbox" value="<%=view.getId()%>"  name="id"/>
 						<%} %>
 						</td>
+						<td width="120" align="center" valign="middle"><%=view.getQuestionno() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getCwb() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getCustomerName() %></td>
+						<td width="120" align="center" valign="middle"><%=view.getCwborderType() %></td>
 						<td width="120" align="center" valign="middle"><%=view.getEmaildate() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getFlowordertype() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getBranchName()  %></td>
@@ -347,12 +449,16 @@ function stateBatch(state)
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCredatetime() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getDealResultContent() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getDutybranchname() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getIsfinecontent() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getLosebackContent() %></td>
 						<td width="80" align="center" valign="middle">
 						<%if(!ishandle.equals(AbnormalOrderHandleEnum.yichuli.getValue()+"")){ %>
-						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
+						<input type="button" name="" id="" value="处理" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>','0');"/></td>
 						<%}else{
 							%>
-						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>');"/></td>
+						<input type="button" name="" id="" value="查看" class="input_button2" onclick="getThisBoxList('<%=view.getId() %>','1');"/></td>
 							
 						<%} %>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />

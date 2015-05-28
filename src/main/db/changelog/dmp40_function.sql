@@ -125,8 +125,8 @@ INSERT INTO `dmp40_function` VALUES ('6025', '1', '订单修改', '6025', '', '6
 INSERT INTO `dmp40_function` VALUES ('602530', '2', '订单修改申请', '602530', '${csUrl}cs/csOrderModifyApplyIndex.action?', '6025');
 INSERT INTO `dmp40_function` VALUES ('602540', '2', '签收信息修改', '602540', '${csUrl}cs/csSignInReFeedBackIndex.action?', '6025');
 INSERT INTO `dmp40_function` VALUES ('602550', '2', '订单修改审核', '602550', '${csUrl}cs/csOrderModifyDealIndex.action?', '6025');
-INSERT INTO `dmp40_function` VALUES ('6030', '1', '问题件处理', '6030', '', '60');
-INSERT INTO `dmp40_function` VALUES ('603010', '2', '问题件创建', '603010', '${csUrl}cs/csProblemOrderCreate.action?', '6030');
+INSERT INTO `dmp40_function` VALUES ('6030', '1', '问题件处理', '6030', '${csUrl}abnormalOrder/toHandleabnormal/1?', '60');
+INSERT INTO `dmp40_function` VALUES ('603010', '2', '问题件创建', '603010', '${csUrl}abnormalOrder/toCreateabnormalPage?', '6030');
 INSERT INTO `dmp40_function` VALUES ('603020', '2', '问题件查询处理', '603020', '${csUrl}cs/csProblemOrderDeal.action?', '6030');
 INSERT INTO `dmp40_function` VALUES ('6040', '1', '赔付扣罚', '6040', '', '60');
 INSERT INTO `dmp40_function` VALUES ('604010', '2', '对外赔付', '604010', '${csUrl}cs/csCompensation.action?', '6040');
@@ -200,3 +200,5 @@ INSERT INTO `dmp40_function` VALUES ('903045', '2', '上门退时效设置', '90
 INSERT INTO `dmp40_function` VALUES ('903050', '2', '上门退揽收汇总', '903050', 'overdueexmo/1?', '9030');
 INSERT INTO `dmp40_function` VALUES ('9040', '1', '小件员查询', '9040', '', '90');
 INSERT INTO `dmp40_function` VALUES ('904020', '2', '小件员工作量统计', '904020', 'deliverycash/list?', '9040');
+INSERT INTO `dmp40_function`  VALUES ('1041','1', '问题件类型设置', '1040', 'abnormalType/list/1?', '10');
+

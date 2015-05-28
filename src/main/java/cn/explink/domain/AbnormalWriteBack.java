@@ -10,6 +10,16 @@ public class AbnormalWriteBack {
 	private long abnormalorderid;
 	private long abnormalordertype;
 	private String cwb;
+	private String fileposition;
+	
+
+	public String getFileposition() {
+		return fileposition;
+	}
+
+	public void setFileposition(String fileposition) {
+		this.fileposition = fileposition;
+	}
 
 	public long getAbnormalorderid() {
 		return this.abnormalorderid;

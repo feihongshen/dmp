@@ -32,6 +32,10 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
@@ -43,7 +47,7 @@ $(function(){
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
 	
-})
+});
 function sub(){
 	var datavalue = "[";
 	var noMsg = 0;
@@ -85,6 +89,16 @@ function sub(){
 	});
 	
 }
+function createabnormalData(){
+	var flag=true;
+	if($("#cwb").val()==""||$("#cwb").val()=="查询多个订单用回车隔开"){
+		alert("订单号不能为空！！");
+		flag=false;
+	}
+	return flag;
+	
+
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -100,8 +114,17 @@ function sub(){
 				<div style="position:relative; z-index:0; " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="<%=request.getContextPath() %>/abnormalOrder/toCreateabnormal" method="post" id="searchForm">
-								<p>问题类型：
+							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreateabnormal;jsessionid=<%=session.getId() %>" method="post" onsubmit="return createabnormalData();" enctype="multipart/form-data">
+							<div class="menucontant">
+							<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" align="left">
+							<tr>
+							<td>
+							
+								订    单    号*：
+								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
+								</td>
+								<td>
+								&nbsp;&nbsp;问题类型：
 									<label for="select2"></label>
 									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
 										<option value="0">请选择</option>
@@ -109,8 +132,10 @@ function sub(){
 											<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>20){%><%=at.getName().substring(0,19)%><%}else{ %><%=at.getName() %><%} %></option>
 										<%} %>
 									</select>
-								&nbsp;&nbsp;订单号：
-								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
+									
+									</td>
+									<td>
+									<p>
 								<%
 								if(iszhandian){ %>
 								处理部门:<select name="handleBranch" id="handleBranch" <%if(!iszhandian){ %> disabled="disabled" <%} %>>
@@ -119,8 +144,25 @@ function sub(){
 								<option value="<%=BranchEnum.KeFu.getValue()%>"><%=BranchEnum.KeFu.getText()%></option>
 								</select>
 								<%} %>
-									<input type="submit" value="创建" class="input_button2">
 								</p>
+								</td>
+								
+								</tr>
+								<tr>
+								<td >
+								问题件说明:<textarea id="abnormalinfo" name="abnormalinfo" ></textarea><br>
+								</td>
+								<td align="left">
+								上传附件:<input type="file" name="file"/>
+								</td>
+								<td>
+								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
+								</td>
+								
+								</tr>
+								
+								</table>
+								</div>	
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
@@ -137,6 +179,10 @@ function sub(){
 							</tbody>
 						</table>
 					</div>
+					<br>
+					<br>
+					<br>
+					<br>
 					<div style="height:100px"></div>
 					<div style="height:400px;overflow-y:scroll">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">

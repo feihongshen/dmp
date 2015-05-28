@@ -176,7 +176,7 @@ function tip(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="../toCreateabnormal">创建问题件</a></li>
+				<li><a href="../toCreateabnormalPage">创建问题件</a></li>
 				<li><a href="#"  class="light">问题件查询</a></li>
 			</ul>
 		</div>

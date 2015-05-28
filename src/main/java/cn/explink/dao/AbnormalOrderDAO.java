@@ -68,6 +68,16 @@ public class AbnormalOrderDAO {
 			obj.put("emaildate", rs.getString("emaildate"));
 			obj.put("flowordertype", rs.getLong("flowordertype"));
 			obj.put("deliverybranchid", rs.getLong("deliverybranchid"));
+			obj.put("fileposition", rs.getString("fileposition"));
+			obj.put("dealresult", rs.getString("dealresult"));
+			obj.put("losebackid", rs.getString("losebackid"));
+			obj.put("cwbordertypeid", rs.getLong("cwbordertypeid"));
+			obj.put("flowordertype", rs.getLong("flowordertype"));
+			obj.put("dutybrachid", rs.getLong("dutybrachid"));
+			obj.put("isfine", rs.getLong("isfine"));
+			obj.put("resultdealcontent", rs.getShort("resultdealcontent"));
+			obj.put("questionno", rs.getString("questionno"));
+			
 			return obj;
 		}
 	}
@@ -177,9 +187,9 @@ public class AbnormalOrderDAO {
 		return key.getKey().longValue();
 	}
 
-	public long creAbnormalOrderLong(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch) {
+	public long creAbnormalOrderLong(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch,final String name,final String questionNo) {
 		this.saveAbnormalOrderByOpscwb(co.getCwb());
-		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`,`fileposition`,`questionno`,`cwbordertypeid`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -199,6 +209,9 @@ public class AbnormalOrderDAO {
 				ps.setLong(11, co.getDeliverybranchid());
 				ps.setString(12, co.getCwb());
 				ps.setLong(13, handleBranch);
+				ps.setString(14, name);
+				ps.setString(15,questionNo);
+				ps.setLong(16, co.getCwbordertypeid());
 				return ps;
 			}
 		}, key);
@@ -315,8 +328,12 @@ public class AbnormalOrderDAO {
 
 	}
 
-	public void saveAbnormalOrderForIshandle(long id, long ishandle, String handletime) {
-		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=?  where `id`=? ";
+	public void saveAbnormalOrderForIshandle(long id, long ishandle, String handletime,String fileposition) {
+		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=?,`fileposition`=? where `id`=? ";
+		this.jdbcTemplate.update(sql, ishandle, handletime, fileposition,id);
+	}
+	public void saveAbnormalOrderForIshandleAdd(long id, long ishandle, String handletime) {
+		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=? where `id`=? ";
 		this.jdbcTemplate.update(sql, ishandle, handletime, id);
 	}
 
@@ -361,8 +378,8 @@ public class AbnormalOrderDAO {
 
 
 	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle,
-			long customerid, long handleBranch) {
-		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
+			long customerid, long handleBranch,long dealresult,long losebackisornot) {
+		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' and isnow=1";
 		if (cwbs.length() > 0) {
 			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
@@ -372,11 +389,17 @@ public class AbnormalOrderDAO {
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > -1) {
+		if (ishandle > 0) {
 			sql += " AND `ishandle`=" + ishandle;
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
+		}
+		if (dealresult>0) {
+			sql+=" AND `dealresult`="+dealresult;
+		}
+		if (losebackisornot>0) {
+			sql+=" AND `losebackid`="+losebackisornot;
 		}
 		sql += " AND `handleBranch` =" + handleBranch;
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -386,7 +409,7 @@ public class AbnormalOrderDAO {
 
 
 	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle, long customerid,
-			long handleBranch) {
+			long handleBranch,long dealresult,long losebackisornot) {
 		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
 		if (cwbs.length() > 0) {
 			sql += " AND `cwb` IN(" + cwbs + ")";
@@ -397,18 +420,24 @@ public class AbnormalOrderDAO {
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > -1) {
+		if (ishandle > 0) {
 			sql += " AND `ishandle`=" + ishandle;
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
+		}
+		if (dealresult>0) {
+			sql+="  AND `dealresult`="+dealresult;
+		}
+		if (losebackisornot>0) {
+			sql+="   AND `losebackid`="+losebackisornot;
 		}
 		sql += " AND `handleBranch` =" + handleBranch;
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public int getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate, String enddate,
-			long customerid, long handleBranch) {
+			long customerid, long handleBranch,long dealresult,long losebackisornot) {
 		// String opscwbidsql =
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
@@ -424,11 +453,17 @@ public class AbnormalOrderDAO {
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > -1) {
+		if (ishandle > 0) {
 			sql += " AND `ishandle`=" + ishandle;
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
+		}
+		if (dealresult>0) {
+			sql+=" AND `dealresult`="+dealresult;
+		}
+		if (losebackisornot>0) {
+			sql+=" AND `losebackid`="+losebackisornot;
 		}
 		sql += " AND `handleBranch` = " + handleBranch;
 		// sql +=" AND ao.isnow=1 ";
@@ -436,12 +471,12 @@ public class AbnormalOrderDAO {
 	}
 
 	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(long page, String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate,
-			String enddate, long customerid, long handleBranch) {
+			String enddate, long customerid, long handleBranch,long dealresult,long losebackisornot) {
 		// String opscwbidsql =
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
 		// + "' ";
-		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' ";
+		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' and isnow=1";
 		if (cwb.length() > 0) {
 			sql += " AND `cwb` IN(" + cwb + ")";
 		}
@@ -451,12 +486,19 @@ public class AbnormalOrderDAO {
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > -1) {
+		if (ishandle > 0) {
 			sql += " AND `ishandle`=" + ishandle;
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
 		}
+		if(dealresult>0){
+			sql+="  AND `dealresult`="+dealresult;
+		}
+		if (losebackisornot>0) {
+			sql+="  AND `losebackid`="+losebackisornot;
+		}
+		
 		sql += " AND `handleBranch` =" + handleBranch;
 		// sql +=" AND ao.isnow=1 ";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;

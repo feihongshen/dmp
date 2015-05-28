@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import cn.explink.dao.AbnormalOrderDAO;
 import cn.explink.dao.AbnormalTypeDAO;
@@ -51,6 +52,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AbnormalService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -109,9 +111,20 @@ public class AbnormalOrderController {
 	 * @return
 	 */
 	@RequestMapping("/toCreateabnormal")
-	public String toCreateabnormal(Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+	public  String toCreateabnormal(
+			HttpServletRequest request,HttpServletResponse response,
+			Model model,
+			@RequestParam("file") CommonsMultipartFile[] files,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "handleBranch", defaultValue = "5", required = false) long handleBranch,
+			@RequestParam(value = "abnormalinfo", defaultValue = "", required = false) String abnormalinfo,
 			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
+		String questionNo="Q"+System.currentTimeMillis();
+		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		if (branch!=null) {
+			handleBranch=branch.getSitetype();
+		}
+		String name=abnormalService.getExceptname(request);
 		String quot = "'", quotAndComma = "',";
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		Map<Long, JSONObject> mapForAbnormalorder = new HashMap<Long, JSONObject>();
@@ -119,7 +132,6 @@ public class AbnormalOrderController {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String nowtime = df.format(date);
-
 			List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
 			StringBuffer cwbs = new StringBuffer();
 			for (String cwbStr : cwb.split("\r\n")) {
@@ -134,7 +146,7 @@ public class AbnormalOrderController {
 					if (ab != null) {
 						action = AbnormalWriteBackEnum.XiuGai.getValue();
 					}
-					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch);
+					this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch,name,abnormalinfo,questionNo);
 				}
 			}
 			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
@@ -144,6 +156,25 @@ public class AbnormalOrderController {
 			model.addAttribute("customerList", this.customerDAO.getAllCustomers());
 
 		}
+		boolean iszhandian = false;
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			iszhandian = true;
+		}
+		model.addAttribute("iszhandian", iszhandian);
+
+		return "/abnormalorder/createabnormal";
+	}
+	/**
+	 * 进入创建问题件页面
+	 * 
+	 * @param model
+	 * @param cwb
+	 * @param abnormaltypeid
+	 * @return
+	 */
+	@RequestMapping("/toCreateabnormalPage")
+	public  String toCreateabnormalPage(Model model) {
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		boolean iszhandian = false;
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
@@ -195,7 +226,7 @@ public class AbnormalOrderController {
 						// 改成修改 abnormalenum 添加新的类型
 
 						this.abnormalWriteBackDAO.creAbnormalOrder(Long.parseLong(cwb_id[0]), cwb_id[1], this.getSessionUser().getUserid(), AbnormalWriteBackEnum.XiuGai.getValue(), nowtime,
-								Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]), cwb_id[3]);
+								Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]), cwb_id[3],"");
 						AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderByOId(Long.parseLong(cwb_id[2].split("_")[1]));
 						CwbOrder co = this.cwbDAO.getCwbOrderByOpscwbid(Long.parseLong(cwb_id[0]));
 						List<User> kefurole = this.userDAO.getUserByRole(1);
@@ -237,7 +268,12 @@ public class AbnormalOrderController {
 			@RequestParam(value = "ishandle", required = false, defaultValue = "-1") long ishandle, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
 			@RequestParam(value = "chuangjianbegindate", required = false, defaultValue = "") String chuangjianbegindate,
-			@RequestParam(value = "chuangjianenddate", required = false, defaultValue = "") String chuangjianenddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+			@RequestParam(value = "chuangjianenddate", required = false, defaultValue = "") String chuangjianenddate,
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@RequestParam(value = "dealresult", required = false, defaultValue = "0") long dealresult,
+			@RequestParam(value = "losebackisornot", required = false, defaultValue = "0") long losebackisornot
+
+			) {
 		String quot = "'", quotAndComma = "',";
 		StringBuffer cwbs1 = new StringBuffer();
 		if (cwb.length() > 0) {
@@ -273,9 +309,9 @@ public class AbnormalOrderController {
 				}
 
 				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate, customerid,
-						handleBranch);
+						handleBranch,dealresult,losebackisornot);
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, branchid, abnormaltypeid, ishandle, begindate, enddate,
-						customerid, handleBranch);
+						customerid, handleBranch,dealresult,losebackisornot);
 
 			} else {
 				if (chuangjianbegindate.length() == 0) {
@@ -290,8 +326,8 @@ public class AbnormalOrderController {
 				// abnormaltypeid, ishandle,begindate,enddate);
 
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeofpage(page, chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid,
-						handleBranch);
-				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid, handleBranch);
+						handleBranch,dealresult,losebackisornot);
+				count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, branchid, abnormaltypeid, ishandle, customerid, handleBranch,dealresult,losebackisornot);
 
 			}
 		}
@@ -361,9 +397,17 @@ public class AbnormalOrderController {
 
 	@RequestMapping("/SubmitHandleabnormal/{id}")
 	public @ResponseBody
-	String SubmitHandleabnormal(@PathVariable("id") long id, @RequestParam(value = "describe", defaultValue = "", required = false) String describe,
-			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "isfind", defaultValue = "0", required = false) long isfind) {
+	String SubmitHandleabnormal(@PathVariable("id") long id, 
+			HttpServletRequest request,HttpServletResponse response,
+			@RequestParam("file") CommonsMultipartFile[] files,
+			@RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, 
+			@RequestParam(value = "isfind", defaultValue = "0", required = false) long isfind
+	
+		
+	) {
 		try {
+			String filepath=this.getFilepath(id, request);
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String nowtime = df.format(date);
@@ -372,10 +416,10 @@ public class AbnormalOrderController {
 			if (isfind == 1) {
 				ishandle = ab.getIshandle();
 			}
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime,filepath);
 			
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
-					ab.getAbnormaltypeid(), cwb);
+					ab.getAbnormaltypeid(), cwb,filepath);
 			/*
 			 * String json = "订单：" + cwb + "已处理";
 			 * this.appearWindowDao.creWindowTime(json, "4", ab.getCreuserid(),
@@ -429,7 +473,7 @@ public class AbnormalOrderController {
 			AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderById(id);
 			this.abnormalOrderDAO.saveAbnormalOrderForNohandle(id, AbnormalOrderHandleEnum.WeiChuLi.getValue());
 			this.abnormalWriteBackDAO.creAbnormalOrder(abnormalOrder.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.HuiFu.getValue(), nowtime,
-					abnormalOrder.getId(), abnormalOrder.getAbnormaltypeid(), cwb);
+					abnormalOrder.getId(), abnormalOrder.getAbnormaltypeid(), cwb,"");
 			/*
 			 * String json = "订单：" + cwb + "待处理"; List<User> kefurole =
 			 * this.userDAO.getUserByRole(1); if (abnormalOrder != null) { for
@@ -585,16 +629,19 @@ public class AbnormalOrderController {
 
 	@RequestMapping("/SubmitOverabnormal/{id}")
 	public @ResponseBody
-	String SubmitOverabnormal(@PathVariable("id") long id, @RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
+	String SubmitOverabnormal(@PathVariable("id") long id, 
+			HttpServletRequest request,
+			@RequestParam(value = "describe2", defaultValue = "", required = false) String describe2,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb) {
 		try {
+			String filepath=this.getFilepath(id, request);
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.yichuli.getValue(), nowtime);
+			this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, AbnormalOrderHandleEnum.yichuli.getValue(), nowtime,filepath);
 			this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe2, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
-					ab.getAbnormaltypeid(), cwb);
+					ab.getAbnormaltypeid(), cwb,filepath);
 			/*
 			 * String json = "订单：" + cwb + "已处理";
 			 * this.appearWindowDao.creWindowTime(json, "4", ab.getCreuserid(),
@@ -604,6 +651,15 @@ public class AbnormalOrderController {
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
 		}
+	}
+	public String getFilepath(long id,HttpServletRequest request){
+		String filepath="";
+		AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderById(id);
+		String name=abnormalService.getExceptname(request);
+		if (abnormalOrder.getFileposition()!=""&&!(abnormalOrder.getFileposition().isEmpty())) {
+			filepath=abnormalOrder.getFileposition()+","+name;
+		}
+		return filepath;
 	}
 
 	public String getStrings(List<String> strArr) {
@@ -674,6 +730,7 @@ public class AbnormalOrderController {
 		String showabnomal = system == null ? "0" : system.getValue();
 		model.addAttribute("showabnomal", showabnomal);
 		model.addAttribute("user", this.getSessionUser());
+		model.addAttribute("ids",ids);
 		model.addAttribute("role", this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid()));
 		return "/abnormalorder/nowhandleabnormalBatch";
 	}
@@ -681,7 +738,10 @@ public class AbnormalOrderController {
 	@RequestMapping("/SubmitHandleabnormalBatch")
 	public @ResponseBody
 	String SubmitHandleabnormalBatch(@RequestParam(value = "ids", defaultValue = "", required = false) String ids,
-			@RequestParam(value = "describe", defaultValue = "", required = false) String describe, @RequestParam(value = "ishandle", defaultValue = "3", required = false) long ishandle) {
+			@RequestParam(value = "describe", defaultValue = "", required = false) String describe,
+			@RequestParam(value = "ishandle", defaultValue = "3", required = false) long ishandle
+			
+			) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
@@ -691,9 +751,9 @@ public class AbnormalOrderController {
 			for (int i = 0; i < arrayIds.length; i++) {
 				int id = Integer.parseInt(arrayIds[i]);
 				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-				this.abnormalOrderDAO.saveAbnormalOrderForIshandle(id, ishandle, nowtime);
+				this.abnormalOrderDAO.saveAbnormalOrderForIshandleAdd(id, ishandle, nowtime);
 				this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
-						ab.getAbnormaltypeid(), ab.getCwb());
+						ab.getAbnormaltypeid(), ab.getCwb(),"");
 				/*
 				 * String json = "订单：" + ab.getCwb() + "已处理";
 				 * this.appearWindowDao.creWindowTime(json, "4",
@@ -749,6 +809,55 @@ public class AbnormalOrderController {
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	@RequestMapping("/getbranchusers")
+	public @ResponseBody String getbranchusers(HttpServletRequest request){
+		String dutybranchid=request.getParameter("dutybranchid");
+		List<User> branchusers=userDAO.getAllUserbybranchid(Integer.parseInt(dutybranchid));
+		String returndataString="";
+		try {
+			returndataString=JacksonMapper.getInstance().writeValueAsString(branchusers);
+		} catch (Exception e) {
+			this.logger.info("AbnormalOrderController类中804行branchusers解析成json出错");
+		}
+		return returndataString;
+	}
+	@RequestMapping("/revisequestionstate")
+	public String revisequestionstate(Model model, @RequestParam(value = "ids", required = false, defaultValue = "") String ids){
+		SystemInstall system = this.systemInstallDAO.getSystemInstall("showabnomal");
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
+		String showabnomal = system == null ? "0" : system.getValue();
+		model.addAttribute("showabnomal", showabnomal);
+		model.addAttribute("user", this.getSessionUser());
+		model.addAttribute("ids",ids);
+		model.addAttribute("role", this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid()));
+		return "/abnormalorder/revisequestionstate";
+	}
+	//修改创建过的问题件
+	@RequestMapping("/SubmitReviseQuestion")
+	public @ResponseBody String submitReviseQuestion(HttpServletRequest request,@RequestParam(value = "ids", defaultValue = "", required = false) String ids,
+			@RequestParam(value = "describe", defaultValue = "", required = false) String describe, @RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid){
+		try {
+			String filepath=this.abnormalService.getExceptname(request);
+			User user=this.getSessionUser();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);
+			long action=AbnormalWriteBackEnum.XiuGai.getValue();
+			String[] arrayIds = ids.split(",");
+			for (int i = 0; i < arrayIds.length; i++) {
+				int id = Integer.parseInt(arrayIds[i]);
+				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
+				String filepathsum=(ab.getFileposition()==null?"":ab.getFileposition())+filepath;
+				CwbOrder co=this.cwbDAO.getCwbByCwbLock(ab.getCwb());
+				abnormalOrderDAO.saveAbnormalOrderByid(id, abnormaltypeid, describe);
+				this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, ab.getId(), abnormaltypeid, co.getCwb(),filepathsum);
+				
+			}
+			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
 		}
 	}
 }

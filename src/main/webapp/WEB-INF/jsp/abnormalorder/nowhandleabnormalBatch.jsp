@@ -10,8 +10,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 
-String ids = request.getAttribute("ids").toString();
-
+String ids = request.getAttribute("ids")==null?"":request.getAttribute("ids").toString();
 %>
 <div id="box_bg" ></div>
 <div id="box_contant" >
@@ -21,13 +20,14 @@ String ids = request.getAttribute("ids").toString();
 		<form method="post" id="form1" onSubmit="if(check_describe()){submitSaveFormAndCloseBox(this);}return false;" action="<%=request.getContextPath()%>/abnormalOrder/SubmitHandleabnormalBatch">
 			<table width="600" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox" class="table_2">
 						<tr class="font_1">
-							<td colspan="2" align="left" valign="middle">处理内容：</td>
+							<td colspan="2" align="left" valign="middle">处理内容*：</td>
 							<td><textarea name="describe" id="describe" cols="80%" rows="4" id="textfield"></textarea></td>
 						</tr>
 					</table>
 			<div align="center">
 			<input type="hidden" id="ids" name="ids" value="<%=ids%>"/>
 				<input type="submit" value="处理" class="button">
+				<input type="reset" value="取消" class="button">
 				</div>
 		</form>
 	</div>
