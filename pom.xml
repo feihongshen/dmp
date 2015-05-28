@@ -648,6 +648,7 @@
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
 				<wavPath>D:\file\wav\</wavPath>
 				<filePath>D:\file\moule\</filePath>
+				<excepturl>D:\file\exceptionfile\</excepturl>
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logotxd>2</logotxd>
