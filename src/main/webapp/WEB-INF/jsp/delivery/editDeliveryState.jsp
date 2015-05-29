@@ -15,9 +15,8 @@
 <%
 DeliveryStateView deliverystate =request.getAttribute("deliverystate")==null?new DeliveryStateView(): (DeliveryStateView)request.getAttribute("deliverystate");
 List<Reason> backlist = (List<Reason>)request.getAttribute("backreasonlist");
-List<Reason> levellist = (List<Reason>)request.getAttribute("levelreasonlist");
-List<Reason> leveltwolist = (List<Reason>)request.getAttribute("leveltwolist");
-//List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
+
+List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
 Long deliveryStateType=(Long)session.getAttribute("deliveryStateType"); 
 List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist");
 
@@ -169,11 +168,15 @@ if(parseInt($("#isOpenFlag").val())!=0){
 	           	</li>
 	           		
 	           	<li><span>一级原因：</span>
-			        <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
+			        <select name="firstlevelreasonid" id="firstlevelreasonid"  onchange="getSecondReasonByFirstreasonid('<%=request.getContextPath()%>/reason/getSecondreason','leavedreasonid',this.value)"  >
 			        	<option value ="0">==请选择==</option>
 			        	<%
-			        	if(levellist!=null&&levellist.size()>0){
-			        	for(Reason r :levellist){%>
+			        	if(leavedlist!=null&&leavedlist.size()>0){
+			        	for(Reason r :leavedlist){
+			        		if(r.getWhichreason()!=1){
+			        			continue;
+			        		}
+			        	%>
 			        		<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			        	<%}}%>
 			        </select>
@@ -189,11 +192,15 @@ if(parseInt($("#isOpenFlag").val())!=0){
 		        </li>
 		        
 	        	<li><span>一级原因：</span>
-			        <select name="firstchangereasonid" id="firstchangereasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)" >
+			        <select name="firstchangereasonid" id="firstchangereasonid" onchange="getSecondReasonByFirstreasonid('<%=request.getContextPath()%>/reason/getSecondreason','changereasonid',this.value)" >
 			        	<option value ="0">==请选择==</option>
 			        	<%
 			        	if(changereasonlist!=null&&changereasonlist.size()>0){
-			        	for(Reason r :changereasonlist){%>
+			        	for(Reason r :changereasonlist){
+			        		if(r.getWhichreason()!=1){
+			        			continue;
+			        		}
+			        	%>
 			        		<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			        	<%}}%>
 			        </select>

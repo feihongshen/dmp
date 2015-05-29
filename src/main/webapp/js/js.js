@@ -4838,43 +4838,9 @@ function validate(id){
 
 	}
 
-function whenhidden(){
-	$("#div_2").attr('hidden','true');
-	$("#divs").attr('hidden','true');
-	
-	$("#div_changealowflag").attr('hidden');
-	if($("#reasontype").val()==1)
-	{
-		$("#divs").removeAttr('hidden');
-		$("#div_changealowflag").removeAttr('hidden');
-		
-		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
-			$("#div_2").removeAttr('hidden');
-			$("#div_changealowflag").attr('hidden');
-		}
-	}
-} 
 
-function to_change(flag){
-	if($("#reasontype").val()==1)
-	{
-	
-		$("#divs").removeAttr('hidden');
-		if(flag==1){
-			$("#div_2").attr('hidden','true');
-			$("#div_changealowflag").removeAttr('hidden');
-		}
-		else 
-		{
-			$("#div_2").removeAttr('hidden');
-			$("#div_changealowflag").attr('hidden','true');
-		}
-	}else{
-		$("#div_2").attr('hidden','true');
-		
-		
-	}
-}
+
+
 
 
 
@@ -4991,8 +4957,10 @@ function reasonByLevel(URL, expt_type){
 }
 
 function whenhidden(){
+	
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
+	$("#div_changealowflag").attr('hidden','true');
 	if($("#reasontype").val()==2)
 	{
 		$("#divs").removeAttr('hidden');
@@ -5000,9 +4968,27 @@ function whenhidden(){
 			$("#div_2").removeAttr('hidden');
 		}
 	}
+	
+	if($("#reasontype").val()==1)
+	{
+		$("#divs").removeAttr('hidden');
+		$("#div_changealowflag").removeAttr('hidden');
+		
+		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
+			$("#div_2").removeAttr('hidden');
+			$("#div_changealowflag").attr('hidden');
+		}
+	}
+	
 } 
 
+
+
+
 function to_change(flag){
+	$("#div_changealowflag").attr('hidden','true');
+	$("#div_2").attr('hidden','true');
+	
 	if($("#reasontype").val()==2)
 	{
 		$("#divs").removeAttr('hidden');
@@ -5011,12 +4997,28 @@ function to_change(flag){
 			}
 			else 
 			{
-			$("#div_2").removeAttr('hidden');
+				$("#div_2").removeAttr('hidden');
 			}
-	}else{
-		$("#div_2").attr('hidden','true');
+	}
+	if($("#reasontype").val()==1)
+	{
+	
+		$("#divs").removeAttr('hidden');
+		if(flag==1){
+			$("#div_2").attr('hidden','true');
+			$("#div_changealowflag").removeAttr('hidden');
 		}
+		else 
+		{
+			$("#div_2").removeAttr('hidden');
+			$("#div_changealowflag").attr('hidden','true');
+		}
+	}
+	
 }
+
+
+
 
 function updaterelatelevel(URL, firstlevelreasonid) {
 	$.ajax({
@@ -5057,6 +5059,51 @@ function getfirstlevel(flag){
 	
 }
 
+function getReasonByFirstReason(URL,targetid,requestValue) {
+	var reasontypes=$("#reasontype").val();
+	
+	
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : {
+			reasontype : reasontypes
+		},
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#"+targetid).empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#"+targetid);// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#"+targetid);
+			}
+		}
+	});
+}
+
+
+function getSecondReasonByFirstreasonid(URL,targetid,firstreasonid) {
+	
+	$.ajax({
+		url : URL, // 后台处理程序
+		type : "POST",// 数据发送方式
+		data : {
+			firstreasonid : firstreasonid
+		},
+		dataType : 'json',// 接受数据格式
+		success : function(json) {
+			$("#"+targetid).empty();// 清空下拉框//$("#select").html('');
+			$("<option value ='0'>==请选择==</option>").appendTo("#"+targetid);// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].reasonid +" '>" + json[j].reasoncontent + "</option>").appendTo("#"+targetid);
+			}
+		}
+	});
+}
+
+
+
+
+
 function selectbranchUsers(){
 	$.ajax({
 		url:$("#getbranchusers").val(),
@@ -5081,3 +5128,4 @@ function addupoadfile(){
 function uploadfiledel(o){
     document.getElementById("uploadfile").removeChild(document.getElementById("div_"+o));  
 }
+

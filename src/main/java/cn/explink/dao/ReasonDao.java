@@ -96,16 +96,7 @@ public class ReasonDao {
 	}
 
 	@CacheEvict(value = "reasonCache", key = "#reason.reasonid")
-	public void saveReason(final Reason reason,String changealowflag) {
-		if(changealowflag==null){
-		jdbcTemplate.update("update express_set_reason set reasoncontent=? where reasonid=?", new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setString(1, reason.getReasoncontent());
-				ps.setLong(2, reason.getReasonid());
-			}
-		});
-		}else{
+	public void saveReason(final Reason reason) {
 			
 			jdbcTemplate.update("update express_set_reason set reasoncontent=?,changealowflag=? where reasonid=?", new PreparedStatementSetter() {
 
@@ -117,9 +108,7 @@ public class ReasonDao {
 					
 				}
 			});
-			
-		}
-
+		
 	}
 
 	public void creReason(final Reason reason) {
@@ -177,9 +166,16 @@ public class ReasonDao {
 		return list;
 	}
 	
+	//查出所有的一级原因
+		public List<Reason> getFirstReasonByType(long reasontype){
+			String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=?";
+			List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),reasontype);
+			return list;
+		}
+		
 	//查出所有的二级原因
-	public List<Reason> getAllSecondLevelReason(long firstlevelreasonid){
-		String sql = "SELECT * FROM express_set_reason where parentid="+firstlevelreasonid;
+	public List<Reason> getAllSecondLevelReason(long firstreasonid){
+		String sql = "SELECT * FROM express_set_reason where parentid="+firstreasonid;
 		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
 		return list;
 	}

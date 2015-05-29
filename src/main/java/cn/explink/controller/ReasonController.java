@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONArray;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,22 +74,32 @@ public class ReasonController {
 			HttpServletRequest request,
 			@PathVariable("id") long reasonid,
 			@RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent,
-			@RequestParam(value="changealowflag",defaultValue="0",required=false) String changealowflag
+			@RequestParam(value="changealowflag",defaultValue="0",required=false) int changealowflag
 			) {
 		List<Reason> list = reasonDao.getReasonByReasoncontent(reasoncontent);
 		if (list.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
+			if(validateReason(changealowflag, list)){
+				return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
+			}
+			
 		}
 		Reason reason = new Reason();
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasonid(reasonid);
-		
-		int changealowflag1 =Integer.parseInt(changealowflag);
-		reason.setChangealowflag(changealowflag1);
-		reasonDao.saveReason(reason,changealowflag);
+		reason.setChangealowflag(changealowflag);
+		reasonDao.saveReason(reason);
 		logger.info("operatorUser={},常用语管理->save", getSessionUser()
 				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+	}
+
+	private Boolean validateReason(int changealowflag, List<Reason> list) {
+		for(Reason r:list){
+			if(r.getChangealowflag()==changealowflag){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@RequestMapping("/create")
@@ -102,25 +114,54 @@ public class ReasonController {
 			@RequestParam(value = "changealowflag", defaultValue = "0", required = false) int changealowflag) {
 
 		List<Reason> list = reasonDao.getReasonByReasoncontentAndParentid(reasoncontent,parentid);
-		if (list.size() > 0&& reasontype == list.get(0).getReasontype()) {
-			return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
+		if (list.size() > 0) {
+			if(validateReasonType(reasontype, list)){
+				return "{\"errorCode\":1,\"error\":\"该文字已存在\"}";
+			}
+			
 		}
 		Reason reason = new Reason();
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasontype(reasontype);
-		reason.setWhichreason(0);
+		reason.setWhichreason(whichreason);
 		reason.setChangealowflag(changealowflag);
-		if (reasontype == 1) {
-			reason.setWhichreason(1);
-			if (whichreason == 2) {
-				reason.setParentid(parentid);
-				reason.setWhichreason(2);
-			}
-		}
+		reason.setParentid(parentid);
+	
 		reasonDao.creReason(reason);
 		logger.info("operatorUser={},常用语管理->create", getSessionUser()
 				.getUsername());
 		return "{\"errorCode\":0,\"error\":\"新建成功\"}";
 	}
 
+	private Boolean validateReasonType(long reasontype, List<Reason> list) {
+		for(Reason r:list){
+			if(r.getReasontype()==reasontype){
+				return true;
+			}
+		}
+		return false;
+	}
+	@RequestMapping("/getfirstreason")
+	public @ResponseBody String getfirstreason( @RequestParam(value = "reasontype", defaultValue = "0", required = false) long reasontype){
+
+		if (reasontype > 0) {
+			List<Reason> leveltwolist = this.reasonDao.getFirstReasonByType(reasontype);
+			return JSONArray.fromObject(leveltwolist).toString();
+		} else {
+			return "[]";
+		}
+	}
+	
+	@RequestMapping("/getSecondreason")
+	public @ResponseBody String getSecondreason( @RequestParam(value = "firstreasonid", defaultValue = "0", required = false) long firstreasonid){
+
+		if (firstreasonid > 0) {
+			List<Reason> leveltwolist = this.reasonDao.getAllSecondLevelReason(firstreasonid);
+			return JSONArray.fromObject(leveltwolist).toString();
+		} else {
+			return "[]";
+		}
+	}
+	
+	
 }

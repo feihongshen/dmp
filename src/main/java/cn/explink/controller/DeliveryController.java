@@ -636,6 +636,7 @@ public class DeliveryController {
 			parameters.put("losereasonid", losereasonid);
 			parameters.put("deliverytime_now", deliverytime);
 			parameters.put("infactfare", infactfare);
+			parameters.put("firstlevelreasonid", firstlevelreasonid);
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 
@@ -676,7 +677,7 @@ public class DeliveryController {
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 		List<Reason> changereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
-		List<Reason> levelreasonlist = this.reasonDao.add();
+//		List<Reason> levelreasonlist = this.reasonDao.add();
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -719,7 +720,6 @@ public class DeliveryController {
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
-		model.addAttribute("levelreasonlist", levelreasonlist);
 		model.addAttribute("podremarkreasonlist", podremarkreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		model.addAttribute("losereasonlist", losereasonlist);

@@ -18,7 +18,7 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 		<div id="box_form">
 				<ul>
 					<li><span>类型：</span> 
-					<select name ="reasontype" id="reasontype" class="select1" onchange="whenhidden()">
+					<select name ="reasontype" id="reasontype" class="select1" onchange="whenhidden(),getReasonByFirstReason('<%=request.getContextPath()%>/reason/getfirstreason','parentid',0)">
 				       <option value ="0">请选择</option>
 		               <%for(ReasonTypeEnum ry : ReasonTypeEnum.values()){ %>
 		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>
@@ -27,7 +27,7 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 		              <div hidden="true" id="divs">
 		           <li><span id=which style="margin-left: 50px" align="left">
 			           <input type="radio" name="whichreason" id="radio1" checked="checked" onclick="to_change(1)" value='1'>一级
-			           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2)" value='2'>二级 
+			           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2),getReasonByFirstReason('<%=request.getContextPath()%>/reason/getfirstreason','parentid',0)" value='2'>二级 
 		           </span></li>
 		           
 		          
@@ -42,9 +42,6 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 			           <li><span>一级原因：</span> 
 						<select name ="parentid" id="parentid" >
 					       <option value ="0">请选择</option>
-			               <%for(Reason rs :rslist){ %>
-			               <option value ="<%=rs.getReasonid()%>"><%=rs.getReasoncontent() %></option>
-			               <%} %>
 			           </select>*</li>
 		           </div>		
 		              

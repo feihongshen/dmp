@@ -112,6 +112,7 @@ import cn.explink.domain.BranchRoute;
 import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbApplyZhongZhuan;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -2635,13 +2636,9 @@ public class CwbOrderService {
 		if (iszhongzhuanout) {
 			// 中转出站操作根据系统设置，是否只有审核的订单才可以中转出站
 			
-			long firstchangereasonid =  co.getFirstchangereasonid(); //一级滞留原因
-			Reason reason = reasonDAO.getReasonByReasonid(firstchangereasonid);
-			int changealowflag = reason.getChangealowflag();
-			if(changealowflag != 0 || co.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()
-					||co.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){
-				String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
-				if (isUseAuditZhongZhuan.equals("yes") && (this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(co.getCwb()) == 0)) {
+			int changealowflag = getChangealowflagById(co);
+			if(changealowflag ==1 && co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+				if (cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(co.getCwb()) == 0){
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error);
 				}
 			}
@@ -2652,12 +2649,12 @@ public class CwbOrderService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FeiBenZhanDianDingDanBuYunXuZhongZhuanChuZhan);
 			}
 
-			// 配送单是否允许做中转 yes 允许做中转， no不允许
-			String isPeisongAllowtoZhongZhuan = this.systemInstallDAO.getSystemInstall("isPeisongAllowtoZhongZhuan") == null ? "yes" : this.systemInstallDAO.getSystemInstall(
-					"isPeisongAllowtoZhongZhuan").getValue();
-			if ("no".equalsIgnoreCase(isPeisongAllowtoZhongZhuan) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Peisong_Bu_YunXu_ZhongZhuan);
-			}
+//			// 配送单是否允许做中转 yes 允许做中转， no不允许   2015.05.27此控制要取消。
+//			String isPeisongAllowtoZhongZhuan = this.systemInstallDAO.getSystemInstall("isPeisongAllowtoZhongZhuan") == null ? "yes" : this.systemInstallDAO.getSystemInstall(
+//					"isPeisongAllowtoZhongZhuan").getValue();
+//			if ("no".equalsIgnoreCase(isPeisongAllowtoZhongZhuan) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) {
+//				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Peisong_Bu_YunXu_ZhongZhuan);
+//			}
 
 			Branch sesionBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 			if ((sesionBranch.getSitetype() == BranchEnum.ZhanDian.getValue()) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) { // 如果当前站是中转站，并且cwbstate=中转
@@ -2902,6 +2899,19 @@ public class CwbOrderService {
 			}
 
 		}
+	}
+
+	/**
+	 * 通过中转一级原因查询是否需中转
+	 * @param co
+	 * @return
+	 */
+	private int getChangealowflagById(CwbOrder co) {
+		long firstchangereasonid =  co.getFirstchangereasonid(); //一级滞留原因
+		Reason reason = reasonDAO.getReasonByReasonid(firstchangereasonid);
+		
+		int changealowflag =reason==null?0:reason.getChangealowflag();
+		return changealowflag;
 	}
 
 	public CwbOrder kdkoutWarehous(User user, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
@@ -3822,6 +3832,12 @@ public class CwbOrderService {
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
 		}
+		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue() )) {
+			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
+			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid,firstchangereasonid);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+			
+		}
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
@@ -4319,6 +4335,8 @@ public class CwbOrderService {
 		// String accountCwbs="";
 		StringBuffer accountCwbs = new StringBuffer();
 
+		List<Branch> zhongzhuanbranchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(user.getUserid(), BranchEnum.ZhongZhuan.getValue() + "");
+		
 		for (String cwb : cwbs) {
 			cwb = cwb.replaceAll("'", "");
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -4391,6 +4409,28 @@ public class CwbOrderService {
 					this.accountCwbFareDetailDAO.saveAccountCwbFareDetailByCwb(accountCwbFareDetail);
 				}
 			}
+			
+			/**
+			 * 归班审核自动插入申请表记录
+			 */
+			int changealowflag = getChangealowflagById(co);
+			if(changealowflag==1){// 要中转申请，就自动插入一条数据
+				
+				CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
+				cwbApplyZhongZhuan.setApplybranchid(user.getBranchid());
+				cwbApplyZhongZhuan.setApplytime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+				cwbApplyZhongZhuan.setApplyzhongzhuanbranchid(zhongzhuanbranchList==null||zhongzhuanbranchList.size()==0?0:zhongzhuanbranchList.get(0).getBranchid());
+				cwbApplyZhongZhuan.setApplyuserid(user.getUserid());
+				cwbApplyZhongZhuan.setCustomerid(co.getCustomerid());
+				cwbApplyZhongZhuan.setCwbordertypeid(co.getCwbordertypeid());
+				cwbApplyZhongZhuan.setPaybackfee(co.getPaybackfee());
+				cwbApplyZhongZhuan.setReceivablefee(co.getReceivablefee());
+				cwbApplyZhongZhuan.setCwb(co.getCwb());
+				cwbApplyZhongZhuan.setApplyzhongzhuanremark("申请中转");
+
+				this.cwbApplyZhongZhuanDAO.creAndUpdateCwbApplyZhongZhuan(cwbApplyZhongZhuan);
+			}
+			
 
 		}
 
