@@ -6082,9 +6082,40 @@ CREATE TABLE
 		<sql>
 	INSERT INTO `express_set_system_install`(`name`,`value`,`chinesename`) 
 	VALUES ('showabnomal','0','问题件是否开启处理中状态{0=关闭,1=开启}');
-
+	</sql>
+	</changeSet>
+		<changeSet id="wukong-2015-04-25" author="wukong">
+		<sql>
+          INSERT INTO `dmp40_function` (`ID`,`functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES(501075,2,'返单出库','501075','returnCwbs/returnCwbsoutwarhouse?','5010');
 		</sql>
 	</changeSet>
+	<changeSet id="jikunlong-2015-05-05-1" author="jikunlong">
+		<sql>
+		CREATE TABLE `encodingsetting_customer_mapping` (
+			  `poscodeid` int(4) NOT NULL AUTO_INCREMENT,
+			  `customerid` int(11) DEFAULT NULL,
+			  `customercode` varchar(50) DEFAULT NULL,
+			  `remark` varchar(500) DEFAULT NULL,
+			  KEY `poscodeid` (`poscodeid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8; 	
+		</sql>
+	</changeSet>
+	
+	<changeSet id="wangzhiyong-2015-05-08-1" author="wangzhiyong">
+		<sql>
+	create table `delivery_stations` (
+	`d_ID` int (12) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	`NAME` varchar (60) COLLATE utf8_bin NOT NULL,
+	`COORDINATE` varchar (20000) COLLATE utf8_bin DEFAULT NULL,
+	`MAPCENTER_LNG` Decimal (52) DEFAULT NULL,
+	`MAPCENTER_LAT` Decimal (52) DEFAULT NULL,
+	`ADDRESS` VARCHAR(1000) DEFAULT NULL,
+	`typeid` int (10) DEFAULT 0,
+	`branch_id` int (10) DEFAULT 0
+	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	
 	
 	<changeSet id="wangyonghe-2014-12-31-1" author="wangyonghe">
 		<sql>

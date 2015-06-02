@@ -141,6 +141,13 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		Map<String, String> retMap = new HashMap<String, String>();
 		// 放入map
 
+		String consigneeaddress="";
+		if(tlmposRespNote.getCwbOrder() !=null){
+			consigneeaddress = tlmposRespNote.getCwbOrder().getConsigneename();
+			if(consigneeaddress.contains("|")){
+				consigneeaddress = consigneeaddress.replace("|", "");
+			}
+		}
 		String remark = this.getRemarkByPaytype(tlmposRespNote, tlmpos);
 		
 		String consigneeaddress="";

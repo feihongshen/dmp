@@ -205,6 +205,11 @@ public class UserDAO {
 		}
 		return sql;
 	}
+	
+	public List<User> findDeliveryManinfoBybranchid(int branchid){
+		String sql="select * from express_set_user where branchid=?";
+		return this.jdbcTemplate.query(sql,new UserRowMapper(),branchid);
+	}
 
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
@@ -465,6 +470,7 @@ public class UserDAO {
 		return username;
 
 	}
+
 
 	public Map<Long, String> getAllDeliverMap() {
 		String sql = "select userid , realname from express_set_user where roleid in (2 , 4)";

@@ -6082,9 +6082,40 @@ CREATE TABLE
 		<sql>
 	INSERT INTO `express_set_system_install`(`name`,`value`,`chinesename`) 
 	VALUES ('showabnomal','0','问题件是否开启处理中状态{0=关闭,1=开启}');
-
+	</sql>
+	</changeSet>
+		<changeSet id="wukong-2015-04-25" author="wukong">
+		<sql>
+          INSERT INTO `dmp40_function` (`ID`,`functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES(501075,2,'返单出库','501075','returnCwbs/returnCwbsoutwarhouse?','5010');
 		</sql>
 	</changeSet>
+	<changeSet id="jikunlong-2015-05-05-1" author="jikunlong">
+		<sql>
+		CREATE TABLE `encodingsetting_customer_mapping` (
+			  `poscodeid` int(4) NOT NULL AUTO_INCREMENT,
+			  `customerid` int(11) DEFAULT NULL,
+			  `customercode` varchar(50) DEFAULT NULL,
+			  `remark` varchar(500) DEFAULT NULL,
+			  KEY `poscodeid` (`poscodeid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8; 	
+		</sql>
+	</changeSet>
+	
+	<changeSet id="wangzhiyong-2015-05-08-1" author="wangzhiyong">
+		<sql>
+	create table `delivery_stations` (
+	`d_ID` int (12) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	`NAME` varchar (60) COLLATE utf8_bin NOT NULL,
+	`COORDINATE` varchar (20000) COLLATE utf8_bin DEFAULT NULL,
+	`MAPCENTER_LNG` Decimal (52) DEFAULT NULL,
+	`MAPCENTER_LAT` Decimal (52) DEFAULT NULL,
+	`ADDRESS` VARCHAR(1000) DEFAULT NULL,
+	`typeid` int (10) DEFAULT 0,
+	`branch_id` int (10) DEFAULT 0
+	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	
 	
 	<changeSet id="wangyonghe-2014-12-31-1" author="wangyonghe">
 		<sql>
@@ -6339,6 +6370,29 @@ CREATE TABLE
 			ALTER TABLE `express_ops_abnormal_order`
 			ADD COLUMN `handleBranch`  int(10) NULL DEFAULT 0 COMMENT '处理部门' AFTER `isnow`,
 			ADD INDEX `handleBranch_idx` (`handleBranch`) ;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="zhangpengkai-2015-05-26" author="zhangpengkai">
+		<sql>
+			INSERT INTO `express_set_role_menu_new`(`roleid`,`menuid`)VALUES('0','20'); 
+			INSERT INTO `EXPRESs_SET_role_menu_new`(`roleid`,`menuid`)VALUES('0','2020'); 
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-05-25-1" author="wukong">
+		<sql>
+		INSERT INTO express_set_system_install (`name`, `value`, `chinesename`) VALUES ('ypdjpathtong', '2', '一票多件操作流程件数限制:一票多件全部流程不对件数限制:(2),缺件扫描下站，站点能扫描入库，但不能领货,但不能操作退货甲方:(1),正常每个环节都会对件数验证限制:(0)');
+		INSERT INTO `express_set_menu_info_new` (`menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES('返单出库','returnCwbs/returnCwbsoutwarhouse','3','kf37','303','images/fdrk.png',NULL);
+		ALTER TABLE `express_ops_abnormal_write_back` ADD COLUMN `fileposition` VARCHAR(100) NULL DEFAULT '' AFTER `abnormalordertype`;
+		ALTER TABLE `express_ops_abnormal_order` ADD COLUMN `fileposition` VARCHAR(100) NULL DEFAULT '' AFTER `handleBranch`;
+		ALTER TABLE `express_ops_abnormal_order` ADD COLUMN `questionno` VARCHAR(100) NULL DEFAULT '' AFTER `fileposition`,
+		ADD COLUMN `cwbordertypeid` VARCHAR(11) COLLATE utf8_bin DEFAULT '-1' AFTER `questionno`,
+		ADD COLUMN `dealresult` INT(20) DEFAULT '0' AFTER `cwbordertypeid`,
+		ADD COLUMN `dutybrachid`  INT(10) DEFAULT '0' AFTER `dealresult`,
+		ADD COLUMN `dutypersoname` VARCHAR(200) NULL DEFAULT '' AFTER `dutybrachid`,
+		ADD COLUMN `isfine`  INT(10) DEFAULT '0' AFTER `dutypersoname`,
+		ADD COLUMN `losebackid` INT(10) DEFAULT '0' AFTER `isfine`,
+		ADD COLUMN `resultdealcontent` VARCHAR(200) NULL DEFAULT '' AFTER `losebackid`;
 		</sql>
 	</changeSet>
 </databaseChangeLog>

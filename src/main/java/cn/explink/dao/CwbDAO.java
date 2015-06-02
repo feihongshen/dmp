@@ -4401,9 +4401,8 @@ public class CwbDAO {
 		if (customerid > 0) {
 			sb.append(" and rc.customerid=" + customerid);
 		}
-		if (type != ReturnCwbsTypeEnum.FanDanRuKu.getValue()) {
 			sb.append(" AND rc.`isnow`='0' ");
-		}
+
 		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, tobranchid);
 	}
 	
@@ -4438,7 +4437,46 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, tobranchid);
 	}*/
-	
+	/**
+	 * 返单出库与待返单出库
+	 * @param type
+	 * @param tobranchid
+	 * @param nowtime
+	 * @param timetype
+	 * @param starttime
+	 * @param endtime
+	 * @param customerid
+	 * @param flag
+	 * @return
+	 */
+	public List<CwbOrder> getFandanchukuOrDaiFanDanchukuList(long type, long branchid, String nowtime, long timetype, String starttime, String endtime, long customerid,boolean flag){
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT cd.*,ds.deliverytime as fankuitime,ds.auditingtime as shenhetime,rc.createtime as chuzhantime FROM ops_returncwbs rc,express_ops_cwb_detail cd,express_ops_delivery_state ds WHERE rc.`cwb`=cd.`cwb` AND rc.cwb=ds.cwb"
+				+ " AND rc.`type`=? AND rc.`branchid`=? AND cd.`state`=1 ");
+		if (flag) {
+			if ((timetype == 1) && !"".equals(starttime) && !"".equals(endtime)) {// 发货时间
+				sb.append(" and cd.emaildate>='" + starttime + " 00:00:00' and cd.emaildate<='" + endtime + " 59:59:59' ");
+			} else if ((timetype == 2) && !"".equals(starttime) && !"".equals(endtime)) {// 反馈时间
+				sb.append(" and ds.deliverytime>='" + starttime + " 00:00:00' and ds.deliverytime<='" + endtime + " 59:59:59' ");
+			} else if ((timetype == 3) && !"".equals(starttime) && !"".equals(endtime)) {// 审核时间
+				sb.append(" and ds.auditingtime>='" + starttime + " 00:00:00' and ds.auditingtime<='" + endtime + " 59:59:59' ");
+			} else if ((timetype == 4) && !"".equals(starttime) && !"".equals(endtime)) {// 入库时间
+				sb.append(" and rc.createtime>='" + starttime + " 00:00:00' and rc.createtime<='" + endtime + " 59:59:59' ");
+			} else {// 今天待出库时间
+				sb.append(" and rc.createtime>='" + nowtime + "' ");
+			}
+			if (customerid > 0) {
+				sb.append(" and rc.customerid=" + customerid);
+			}
+		}else {
+			sb.append(" and rc.createtime>='" + nowtime + "' ");
+		}
+		if (type!=ReturnCwbsTypeEnum.FanDanChuKu.getValue()) {
+			sb.append(" AND rc.`isnow`='0' ");
+		}
+
+		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, branchid);
+	}
 	
 	
 	/**
@@ -5681,5 +5719,14 @@ public class CwbDAO {
 		String[] str1 = transcwbs.split(",");
 		long sendcarnum = (long)str1.length;
 		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=? ,sendcarnum= "+sendcarnum+" where cwb=? and state = 1  ", transcwbs, cwb);
+	}
+	/**
+	 * 根据小件员id查询其所配送的cwb信息
+	 */
+	
+	public List<CwbOrder> findcwbinfoBydeliveryId(int deliverid){
+		String sql="select * from express_ops_cwb_detail where deliverid=?";
+		
+		return this.jdbcTemplate.query(sql, new CwbMapper(),deliverid);
 	}
 }

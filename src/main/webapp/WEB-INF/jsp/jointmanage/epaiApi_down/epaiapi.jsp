@@ -95,6 +95,8 @@ function addInit() {
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
 				<li><a href="#" class="light">系统环形对接</a></li>
+				<li><a
+					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
 			</ul>
 		</div>
 		<div class="right_box">

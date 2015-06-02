@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.explink.core_down.EpaiApiDAO;
+import cn.explink.b2c.tools.encodingSetting.EncodingSettingDAO;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
 import cn.explink.b2c.tools.power.JointPowerDAO;
 import cn.explink.dao.BranchDAO;
@@ -46,6 +47,9 @@ public class JointController {
 	CommonDAO commonDAO;
 	@Autowired
 	JobUtil jobUtil;
+	
+	@Autowired
+	EncodingSettingDAO encodingSettingDAO;
 
 	@RequestMapping("/init")
 	public @ResponseBody String initTaskTimmer(Model model) {
@@ -121,6 +125,16 @@ public class JointController {
 		model.addAttribute("page_obj", pageM);
 		model.addAttribute("page", page);
 		return "jointmanage/poscodemapp";
+	}
+	
+	@RequestMapping("/encodingsetting/{page}")
+	public String encodingsetting(@PathVariable("page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid, Model model) {
+		model.addAttribute("encodingsetlist", encodingSettingDAO.getEncodingSettingList(customerid, page));
+		model.addAttribute("customerlist", customerDAO.getAllCustomers());
+		Page pageM = new Page(encodingSettingDAO.getEncodingSettingCount(customerid), page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page_obj", pageM);
+		model.addAttribute("page", page);
+		return "jointmanage/encodingsetting";
 	}
 
 	@RequestMapping("/epaiApi/{page}")

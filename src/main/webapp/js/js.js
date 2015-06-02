@@ -3846,9 +3846,39 @@ function check_exptreason(obj) {
 		alert("请填入异常码描述!");
 		return false;
 	}
+	if($("#customerid").val()==""){
+		layer.tips('供货商不能为空!', '#customerid',{
+			time :2,
+			more:true
+		});
+		return;
+	}
+	if($("#customercode").val()==""){
+		layer.tips('供货商编码不能为空!', '#customercode',{
+			time :2,
+			more:true
+		});
+		return;
+	}
 
 	return true;
 }
+
+function check_exptreasonn(obj) {
+	
+	if($("#customerid").val()=="-1"){
+		alert('供货商不能为空!');
+		return false;
+	}
+	if($("#customercode").val()==""){
+		alert('供货商编码不能为空!');
+		return false;
+	}
+
+	return true;
+}
+
+
 
 // 异常码配对显示 非空校验
 function check_exptCodeMatch() {
@@ -4062,6 +4092,37 @@ function getAddBox() {
 		}
 	});
 }
+
+/**
+ * 
+ * 
+ * 
+ */
+$(function() {
+	$("#add_buttonn").click(function() {
+		getAddBox1();
+
+	});
+
+});
+function getAddBox1() {
+	$.ajax({
+		type : "POST",
+		url : $("#add").val(),
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面
+			viewBox();
+		}
+	});
+}
+
+
 
 function checkbeizhu() {
 	if ($("#comment", parent.document).val().length == 0) {
@@ -4826,7 +4887,7 @@ function doWavAudio(wavPath){
 	audioElement.play();
 }
 
-//电商对接验证
+//验证
 function validate(id){
 	  var reg = new RegExp("^[0-9]*$");
 	  var obj = document.getElementById(id);

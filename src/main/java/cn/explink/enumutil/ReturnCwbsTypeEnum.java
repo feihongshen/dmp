@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum ReturnCwbsTypeEnum {
-	DaiFanDanChuZhan(0, "待返单出站"), FanDanRuKu(1, "返单入库"), FanDanChuZhan(2, "返单出站");
+	DaiFanDanChuZhan(0, "待返单出站"), FanDanRuKu(1, "返单入库"), FanDanChuZhan(2, "返单出站"),FanDanChuKu(3,"返单出库");
 
 	private int value;
 	private String text;
