@@ -150,7 +150,6 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		}
 		String remark = this.getRemarkByPaytype(tlmposRespNote, tlmpos);
 		
-		String consigneeaddress="";
 		if(tlmposRespNote.getCwbOrder() !=null){
 			consigneeaddress = tlmposRespNote.getCwbOrder().getConsigneename();
 			if(consigneeaddress.contains("|")){
