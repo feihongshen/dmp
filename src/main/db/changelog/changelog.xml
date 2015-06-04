@@ -6135,27 +6135,6 @@ INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0
 		</sql>
 	</changeSet>
 	
-
-	<changeSet id="wangzhiyong-2015-05-06-1" author="wangzhiyong">
-		<sql>
-			CREATE TABLE `cs_consignee_info` (
-			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
-			  `name` varchar(64) DEFAULT NULL,
-			  `sex` int(2) DEFAULT NULL,
-			  `phone_one` varchar(20) DEFAULT NULL,
-			  `phone_two` varchar(20) DEFAULT NULL,
-			  `mail_box` varchar(64) DEFAULT NULL,
-			  `province` varchar(64) DEFAULT NULL,
-			  `city` varchar(64) DEFAULT NULL,
-			  `consignee_type` int(8) DEFAULT NULL,
-			  `contact_last_time` varchar(50) DEFAULT '',
-			  `contact_num` int(8) DEFAULT NULL,
-			  `remark` varchar(200) DEFAULT NULL,
-			  PRIMARY KEY (`id`)
-	) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
-		</sql>
-	</changeSet>
-
 	<changeSet id="wangyonghe-2014-12-31-1" author="wangyonghe">
 		<sql>
 	update express_set_menu_info_new  set menuname='预制条码打印' where menuurl like '%cwbLablePrint/barcodeprint%'
