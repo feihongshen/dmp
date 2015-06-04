@@ -1,12 +1,15 @@
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.domain.OrderBackCheck,cn.explink.enumutil.FlowOrderTypeEnum,cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@page import="cn.explink.domain.*"%>
+<%@page import="cn.explink.enumutil.*"%>
+<%@page import="cn.explink.domain.OrderBackCheck"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%
-	List<CwbOrder> cwblist = request.getAttribute("cwbList")==null?null:(List<CwbOrder>)request.getAttribute("cwbList");
-	Map<Long,Customer> mapcustomerlist = request.getAttribute("mapcustomerlist")==null?null:(Map<Long,Customer>)request.getAttribute("mapcustomerlist");
+	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
+	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
+	List<CwbOrder> cwblist = (List<CwbOrder>)request.getAttribute("cwbList");
+	Map<Long,Customer> mapcustomerlist = (Map<Long,Customer>)request.getAttribute("mapcustomerlist");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -18,6 +21,13 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 //提交审核按钮
 function sub(){
@@ -82,27 +92,33 @@ function submitCwb(){
 	$("#searchType").val("0");
 	$("#searchForm").submit();
 }
+
+$(function() {
+	$("#strtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#endtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+		timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
+});
+
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div>
 		<div class="kfsh_tabbtn">
-			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou">退货再投审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">退货出站审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan" class="light">中转出站审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang">退客户出库审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">客户收退货确认</a></li>
-				 <%if(request.getAttribute("isUseAuditTuiHuo") != null && "yes".equals(request.getAttribute("isUseAuditTuiHuo").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoTuiHuolist/1">审核为退货</a></li>
-				<%} %> 
-				<%if(request.getAttribute("isUseAuditZhongZhuan") != null && "yes".equals(request.getAttribute("isUseAuditZhongZhuan").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoZhongZhuanlist/1">审核为中转</a></li>
-				<%} %>
-				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">审核为允许退货出站</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan"  class="light">审核为中转件</a></li>
-			</ul>
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
@@ -112,23 +128,62 @@ function submitCwb(){
 									<%
 							if(cwblist!=null&&!cwblist.isEmpty()){%><span>
 								</span> <%} %>订单号：
-								<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+								订单类型:
+								<select name ="cwbtypeid" id ="cwbtypeid">
+									<option  value ="0">全部</option>
+										<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+										<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+										<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+								</select>
+								客户名称:
+								<select name ="customerid" id ="customerid">
+									<option  value ="0">全部</option>
+									<%if(customerList!=null){ %>
+										<%for(Customer cus:customerList){ %>
+										<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
+										<%} %>
+									<%} %>
+								</select>
+								配送站点:
+								<select name ="branchid" id ="branchid">
+									<option  value ="0">全部</option>
+									<%if(branchList!=null){ %>
+										<%for(Branch br:branchList){ %>
+										<option value ="<%=br.getBranchid()%>"><%=br.getBranchname()%></option>
+										<%} }%>
+								</select>
+								审核状态:
+								<select name ="auditstate" id ="auditstate">
+									<option  value ="0">全部</option>
+										<option value ="1">待审核</option>
+										<option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>">已<%=FlowOrderTypeEnum.YiShenHe.getText()%></option>
+								</select>
+								归班反馈时间:
+									<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
+								到
+									<input type ="text" name ="enddate" id="endtime"  value="" class="input_text1" style="height:20px;"/>
+								<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
 								<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
+								<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
+								<input type="button" onclick="sub()" value="审核通过" class="input_button2">&nbsp;&nbsp;
+								<input type="button" onclick="submitCwb()" value="审核不通过" class="input_button2">&nbsp;&nbsp;
+								<%if(cwblist!=null&&!cwblist.isEmpty()){%><span>
+									<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+								</span> <%} %>
+								
 							</form>
 						</div>
-						<%
-							if(cwblist!=null&&!cwblist.isEmpty()){%>
 								<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
-									<td width="10%" align="center" valign="middle" bgcolor="#E7F4E3">收件人手机</td>
-									<td width="20%" valign="middle" bgcolor="#E7F4E3">收件地址</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">匹配站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">到站时间</td>
 								</tr>
 							</tbody>
 						</table>
@@ -136,27 +191,24 @@ function submitCwb(){
 					<div style="height:100px"></div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
-							<%for(CwbOrder cwb :cwblist){
-								
-								%>
+							<%-- <%for(CwbOrder cwb :cwblist){%> --%>
 								<tr>
 									<td  width="40" align="center" valign="middle">
-										<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%=cwb.getOpscwbid()%>"/>
+										<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%-- <%=cwb.getOpscwbid()%> --%>"/>
 									</td>
-									<td width="10%" align="center" valign="middle"><%=cwb.getCwb() %></td>
-									<td width="10%" align="center" valign="middle"><%=mapcustomerlist.get(cwb.getCustomerid()).getCustomername() %></td>
-									<td width="10%" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getByValue(Integer.valueOf(cwb.getCwbordertypeid())).getText()%></td>
-									<td width="10%" align="center" valign="middle"><%=CwbStateEnum.getByValue((int)cwb.getCwbstate()).getText()%></td>
-									<td width="10%" align="center" valign="middle"><%=cwb.getConsigneename() %></td>
-									<td width="10%" align="center" valign="middle"><%=cwb.getConsigneemobile() %></td>
-									<td width="20%" valign="middle"><%=cwb.getConsigneeaddress() %></td>
+									<td width="100" align="center" valign="middle"><%-- <%=cwb.getCwb() %> --%></td>
+									<td width="100" align="center" valign="middle"><%-- <%=mapcustomerlist.get(cwb.getCustomerid()).getCustomername() %> --%></td>
+									<td width="100" align="center" valign="middle"><%-- <%=CwbOrderTypeIdEnum.getByValue(Integer.valueOf(cwb.getCwbordertypeid())).getText()%> --%></td>
+									<td width="100" align="center" valign="middle"><%-- <%=CwbStateEnum.getByValue((int)cwb.getCwbstate()).getText()%> --%></td>
+									<td width="100" align="center" valign="middle"><%-- <%=cwb.getConsigneename() %> --%></td>
+									<td width="100" align="center" valign="middle"><%-- <%=cwb.getConsigneemobile() %> --%></td>
 								</tr>
-							<%} %>
+							<%-- <%} %> --%>
 							</tbody>
 						</table>
 				</div>
 				<div style="height:40px"></div>
-				<div class="iframe_bottom" >
+				<%-- <div class="iframe_bottom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tbody>
 							<tr height="38" >
@@ -164,7 +216,7 @@ function submitCwb(){
 							</tr>
 						</tbody>
 					</table>
-				</div><%} %>
+				</div><%} %> --%>
 		</div>
 	</div>
 </div>

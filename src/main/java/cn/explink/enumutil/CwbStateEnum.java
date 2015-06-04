@@ -21,12 +21,14 @@ public enum CwbStateEnum {
 		return text;
 	}
 
-	public static CwbStateEnum getByValue(int value) {
-		for (CwbStateEnum ct : CwbStateEnum.values()) {
-			if (ct.getValue() == value) {
-				return ct;
+
+	
+	public static CwbStateEnum getByValue(long value) {
+		for (CwbStateEnum cc : CwbStateEnum.values()) {
+			if (value == cc.getValue()) {
+				return cc;
 			}
 		}
-		throw new ExplinkException(ExceptionCwbErrorTypeEnum.Invalid_Cwb_State);
+		throw new ExplinkException(ExceptionCwbErrorTypeEnum.PEi_SONG_LEI_XING_WEI_ZHAO_DAO, value);
 	}
 }

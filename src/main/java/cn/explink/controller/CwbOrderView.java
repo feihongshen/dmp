@@ -241,6 +241,17 @@ public class CwbOrderView {
 	private String applyzhongzhuanhandleremark;// 中转申请审核备注
 	private String applyzhongzhuanhandleusername;// 中转申请审核人
 	private String applyzhongzhuanhandletime;// 中转申请审核时间
+	
+	//新加显示字段2015-5-27
+	private String cwbordertypename;//订单类型名
+	
+	public String getCwbordertypename() {
+		return cwbordertypename;
+	}
+
+	public void setCwbordertypename(String cwbordertypename) {
+		this.cwbordertypename = cwbordertypename;
+	}
 
 	public String getMulti_shipcwb() {
 		return this.multi_shipcwb == null ? "" : this.multi_shipcwb;

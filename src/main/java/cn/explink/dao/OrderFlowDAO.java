@@ -1188,5 +1188,19 @@ public class OrderFlowDAO {
 		String sql = "delete from express_ops_order_flow where cwb = ? ";
 		this.jdbcTemplate.update(sql, cwb);
 	}
+	
+	public List<OrderFlow> getRuKuTimeByCwb(String cwb) {
+		
+		String sql = "select * from express_ops_order_flow where cwb = ? and flowordertype=4";
+		List<OrderFlow> lof=this.jdbcTemplate.query(sql,new OrderFlowRowMapper(),cwb);
+		return lof;
+	}
 
+	//根据归班反馈时间查询订单
+	public List<OrderFlow> getOrderByCredate(int flowordertype, String begindate,String enddate){
+		String sql = "select * from express_ops_order_flow where flowordertype=? and credate>=? and credate<=?";
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(),flowordertype,begindate,enddate);
+	}
+		
+	
 }

@@ -303,4 +303,12 @@ public class CustomerDAO {
 		}
 		return para.substring(0, para.length() - 1);
 	}
+	
+	public Customer findcustomername(long customerid){
+		String sql="select * from express_set_customer_info where customerid=?";
+		
+		return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),customerid);
+	}
+	
+	
 }

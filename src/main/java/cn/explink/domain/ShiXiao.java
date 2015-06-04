@@ -13,6 +13,33 @@ public class ShiXiao {
 	private long userid;// 操作人
 	private String cretime;// 操作时间
 	private long customerid;// 供货商id
+	private long shixiaoreasonid;//失效原因id
+	private long cwbstate;//订单状态
+	private String emaildate;//发货批次时间
+
+	public String getEmaildate() {
+		return emaildate;
+	}
+
+	public void setEmaildate(String emaildate) {
+		this.emaildate = emaildate;
+	}
+
+	public long getShixiaoreasonid() {
+		return shixiaoreasonid;
+	}
+
+	public void setShixiaoreasonid(long shixiaoreasonid) {
+		this.shixiaoreasonid = shixiaoreasonid;
+	}
+
+	public long getCwbstate() {
+		return cwbstate;
+	}
+
+	public void setCwbstate(long cwbstate) {
+		this.cwbstate = cwbstate;
+	}
 
 	public long getCustomerid() {
 		return customerid;

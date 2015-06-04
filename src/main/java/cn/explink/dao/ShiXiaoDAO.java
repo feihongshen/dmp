@@ -31,7 +31,10 @@ public class ShiXiaoDAO {
 			shiXiao.setOpscwbid(rs.getLong("opscwbid"));
 			shiXiao.setStartbranchid(rs.getLong("startbranchid"));
 			shiXiao.setUserid(rs.getLong("userid"));
-
+			shiXiao.setShixiaoreasonid(rs.getLong("shixiaoreasonid"));
+			shiXiao.setCwbstate(rs.getLong("cwbstate"));
+			shiXiao.setEmaildate(rs.getString("emaildate"));
+			
 			return shiXiao;
 		}
 	}
@@ -39,10 +42,10 @@ public class ShiXiaoDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public List<ShiXiao> getShiXiaoByCwbsAndCretime(long page, String cwbs, String begindate, String enddate) {
-		String sql = "select * from edit_shixiao ";
-		if (cwbs.length() > 0 || begindate.length() > 0 || enddate.length() > 0) {
-			sql += " where ";
+	public List<ShiXiao> getShiXiaoByCwbsAndCretime(long page, String cwbs, String begindate, String enddate,String customerids,long cwbstate,long flowordertype,long userid) {
+		String sql = "select * from edit_shixiao where 1=1";
+	
+			
 			StringBuffer str = new StringBuffer();
 
 			if (begindate.length() > 0) {
@@ -54,20 +57,29 @@ public class ShiXiaoDAO {
 			if (cwbs.length() > 0) {
 				str.append(" and cwb in(" + cwbs + ")");
 			}
-			sql += str.substring(4, str.length());
-		}
+			if (customerids.length()>0) {
+				str.append(" and customerid IN("+customerids+")");
+			}
+			if (cwbstate!=-1) {
+				str.append(" and cwbstate='"+cwbstate+"'");
+			}
+			if (flowordertype!=-1) {
+				str.append(" and flowordertype='"+flowordertype+"'");
+			}
+			if (userid>0) {
+				str.append(" and  userid='"+userid+"' ");
+			}
+			sql += str+" order by emaildate Desc ";
+		
 		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 
 		return jdbcTemplate.query(sql, new ShiXiaoRowMapper());
 	}
 
-	public long getShiXiaoByCwbsAndCretimeCount(String cwbs, String begindate, String enddate) {
-		String sql = "select count(1) from edit_shixiao ";
+	public long getShiXiaoByCwbsAndCretimeCount(String cwbs, String begindate, String enddate,String customerids,long cwbstate,long flowordertype,long userid) {
+		String sql = "select count(1) from edit_shixiao where 1=1";
 
-		if (cwbs.length() > 0 || begindate.length() > 0 || enddate.length() > 0) {
-			sql += " where ";
 			StringBuffer str = new StringBuffer();
-
 			if (begindate.length() > 0) {
 				str.append(" and cretime >= '" + begindate + "' ");
 			}
@@ -77,16 +89,30 @@ public class ShiXiaoDAO {
 			if (cwbs.length() > 0) {
 				str.append(" and cwb in(" + cwbs + ")");
 			}
-			sql += str.substring(4, str.length());
-		}
-
+			if (customerids.length()>0) {
+				str.append(" and customerid IN("+customerids+")");
+			}
+			if (cwbstate!=-1) {
+				str.append(" and cwbstate='"+cwbstate+"'");
+			}
+			if (flowordertype!=-1) {
+				str.append(" and flowordertype='"+flowordertype+"'");
+			}
+			if (userid>0) {
+				str.append("  and userid='"+userid+"' ");
+			}
 		return jdbcTemplate.queryForLong(sql);
 	}
 
 	public void creAbnormalOrder(long opscwbid, String cretime, long currentbranchid, long customerid, String cwb, long deliverybranchid, long flowordertype, long nextbranchid, long startbranchid,
 			long userid) {
-		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`) values(?,?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`) values(?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(sql, opscwbid, cretime, currentbranchid, customerid, cwb, deliverybranchid, flowordertype, nextbranchid, startbranchid, userid);
+	}
+	public void creAbnormalOrdernew(long opscwbid, String cretime, long currentbranchid, long customerid, String cwb, long deliverybranchid, long flowordertype, long nextbranchid, long startbranchid,
+			long userid,long loseeffectid,long cwbstate,String emaildate) {
+		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql, opscwbid, cretime, currentbranchid, customerid, cwb, deliverybranchid, flowordertype, nextbranchid, startbranchid, userid,loseeffectid,cwbstate,emaildate);
 	}
 
 }

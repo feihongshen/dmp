@@ -179,5 +179,17 @@ public class ReasonDao {
 		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
 		return list;
 	}
+	public List<Reason> getSecondLevelReason(long rid){
+		String sql = "SELECT * FROM express_set_reason where whichreason=2 and parentid=?";
+		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),rid);
+		return list;
+	}
+	
+	//查出所有的一级原因
+	public List<Reason> addWO(){
+		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=12";
+		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+		return list;
+	}
 	
 }

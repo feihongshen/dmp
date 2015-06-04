@@ -3,7 +3,7 @@ package cn.explink.enumutil;
 import cn.explink.exception.ExplinkException;
 
 public enum ComplaintTypeEnum {
-	CuijianTousu(1, "催件投诉"), FuwuTousu(2, "服务投诉"), KefuBeizhu(3, "客服备注");
+	CuijianTousu(1, "催件投诉"), FuwuTousu(2, "服务投诉"), KefuBeizhu(3, "客服备注"),DingDanChaXun(4,"订单查询");
 
 	private long value;
 	private String text;

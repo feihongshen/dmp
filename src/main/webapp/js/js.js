@@ -4084,7 +4084,7 @@ function getAddBox() {
 		success : function(data) {
 			// alert(data);
 			$("#alert_box", parent.document).html(data);
-
+			
 		},
 		complete : function() {
 			addInit();// 初始化某些ajax弹出页面
@@ -5030,7 +5030,7 @@ function whenhidden(){
 		}
 	}
 	
-	if($("#reasontype").val()==1)
+	if($("#reasontype").val()==1||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
 		$("#div_changealowflag").removeAttr('hidden');
@@ -5061,7 +5061,8 @@ function to_change(flag){
 				$("#div_2").removeAttr('hidden');
 			}
 	}
-	if($("#reasontype").val()==1)
+	
+	if($("#reasontype").val()==1||$("#reasontype").val()==13)
 	{
 	
 		$("#divs").removeAttr('hidden');
@@ -5180,6 +5181,7 @@ function selectbranchUsers(){
 	}
 	});
 }
+
 var addupoadfileid=1;
 
 function addupoadfile(){
@@ -5189,4 +5191,109 @@ function addupoadfile(){
 function uploadfiledel(o){
     document.getElementById("uploadfile").removeChild(document.getElementById("div_"+o));  
 }
+
+
+
+function btnswd(ev){
+	var r=$('#cls').val(ev);
+	if(r!=null){
+
+	$.ajax({
+				type:'POST',
+				data:$('#WorkOrderQueryForm').serialize(),
+				url:$('#WorkOrderQueryForm').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					alert(data.error);
+				}
+	});
+	
+	}
+	
+	closeBox();
+}
+
+function btnccwo(csv){
+	$('#cwo').val(csv);
+	$.ajax({
+				type:'POST',
+				data:$('#ComplainWorkOrderF').serialize(),
+				url:$('#ComplainWorkOrderF').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					
+					alert(data.error);
+					
+				}
+	});
+	closeBox();
+	}
+
+function btnupdate(csv){
+	$('#cwo').val(csv);
+	$.ajax({
+				type:'POST',
+				data:$('#UpdateComplainWorkOrderF').serialize(),
+				url:$('#UpdateComplainWorkOrderF').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					if (data.errorCode == 0) {					
+					/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+						closeBox();*/
+						alert(data.error);
+						}
+					}
+				});
+	closeBox();
+	woNum="";
+	}
+	
+
+
+var woNum;
+function getGoonacceptWO(valWo){	
+/*	alert(valWo);*/
+/*	//获取工单号公共方法	
+*/	woNum=valWo;
+}
+
+
+
+ function getAddBoxx2() {
+$.ajax({
+	type : "POST",
+	data:"workorder="+woNum,
+	url : $("#GoOnacceptWo").val(),
+	dataType : "html",
+	success : function(data) {
+		// alert(data);
+		$("#alert_box", parent.document).html(data);
+		
+	},
+	complete : function() {
+		addInit();// 初始化某些ajax弹出页面			
+		viewBox();
+	}
+});
+}
+ 
+ function addcaller(){
+	 $.ajax({
+			type : "POST",
+			data:$('#addcallerForm').serialize(),
+			url : $("#addcallerForm").attr('action'),
+			dataType : "json",
+			success : function(data) {
+				if(data.errorCode==0){
+						alert(data.error);
+						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+						closeBox();
+					}
+				}
+				
+			});
+	 
+ }
+
 

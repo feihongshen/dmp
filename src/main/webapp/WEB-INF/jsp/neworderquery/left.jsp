@@ -16,6 +16,7 @@
   Map<Long,Customer> customerMap = request.getAttribute("customerMap")==null?new HashMap<Long,Customer>():(Map<Long,Customer>)request.getAttribute("customerMap");
   Map<String,String> cwbBaleMap = request.getAttribute("cwbBaleMap")==null?new HashMap<String,String>():(Map<String,String>)request.getAttribute("cwbBaleMap");
   Page page_obj = (Page)request.getAttribute("page_obj");
+  String nowtime=request.getAttribute("currentime").toString();
   
   Map<Long,Branch> branchMap = request.getAttribute("branchMap")==null?new HashMap<Long,Branch>():(Map<Long,Branch>)request.getAttribute("branchMap");
   
@@ -23,6 +24,7 @@
   
   String chukubegindate = request.getParameter("chukubegindate")==null?"":request.getParameter("chukubegindate");
   String chukuenddate = request.getParameter("chukuenddate")==null?"":request.getParameter("chukuenddate");
+  String cwbs=request.getAttribute("cwbs").toString();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -70,6 +72,7 @@ $(function() {
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	}); 
+	 CopyAll();
 });
 
 function Days(){     
@@ -114,7 +117,7 @@ $(document).ready(function() {
 	    $("#showLetfOrRight3").val(1);
 	    $("#showLetfOrRight4").val(1);
 	    $("#showLetfOrRight5").val(1);
-	    $("#cwbs").val($("#cwbsText").val());
+		$("#cwbs").val($("#cwbsText").val());
 	   	$("#searchForm1").submit();
 	    
 	});
@@ -264,6 +267,51 @@ $(function(){
 	});
 	
 });
+
+	function copyToClipBoard(){
+       /*  var clipBoardContent="";
+        clipBoardContent+=$("#cwbsText").val();
+        if(window.clipboardData){
+                window.clipboardData.clearData();
+                window.clipboardData.setData("Text", clipBoardContent);
+        }else if(navigator.userAgent.indexOf("Opera") != -1){
+                window.location = clipBoardContent;
+        }else if (window.netscape){
+                try{
+                        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                }catch (e){
+                        alert("您的当前浏览器设置已关闭此功能！请按以下步骤开启此功能！\n新开一个浏览器，在浏览器地址栏输入'about:config'并回车。\n然后找到'signed.applets.codebase_principal_support'项，双击后设置为'true'。\n声明：本功能不会危极您计算机或数据的安全！");
+                }
+                var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+                if (!clip) return;
+                var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+                if (!trans) return;
+                trans.addDataFlavor('text/unicode');
+                var str = new Object();
+                var len = new Object();
+                var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+                var copytext = clipBoardContent;
+                str.data = copytext;
+                trans.setTransferData("text/unicode",str,copytext.length*2);
+                var clipid = Components.interfaces.nsIClipboard;
+                if (!clip) return false;
+                clip.setData(trans,null,clipid.kGlobalClipboard);
+        }
+        alert("已成功复制！");
+        return true; */
+      /*   var c=$("#cwbsText").val();
+        c.createRange().execCommand("Copy") ; */
+        
+        
+}
+	function CopyAll()
+	{//onmouseover="CopyAll();"
+		var c=$("#cwbsText");
+				c.focus(); //得到文本框焦点
+				c.select(); //全选文本框
+	}
+
+
 </script>
 </head>
 
@@ -286,7 +334,7 @@ $(function(){
 				<li <%if(request.getAttribute("showLetfOrRight") != null && (!request.getAttribute("showLetfOrRight").toString().equals("1"))){ %>style="display:none"<%} %>>
 					<div style="padding:5px; border:1px solid #8EC5E6">
 					<form action="<%=request.getContextPath()%>/order/left/1" method="post" id="searchForm1">
-						<textarea  cols="20" rows="2" id="cwbsText"></textarea>
+						<textarea  cols="20" rows="2" id="cwbsText" ><%=cwbs %></textarea>
 						<input type="hidden" id="cwbs" name="cwbs" value="<%=request.getParameter("cwbs")==null?"":request.getParameter("cwbs") %>" />
 						<input type="hidden" id="isshow" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight1" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
@@ -316,7 +364,7 @@ $(function(){
 					<form action="<%=request.getContextPath()%>/order/left/1" method="post" id="searchForm2">
 						
 						发货时间：
-						<input type ="text" name ="begindate" id="strtime"  value="<%=begindate %>"/>(默认查询该时间为起点的10天之内的数据) 
+						<input type ="text" name ="begindate" id="strtime"  value="<%=nowtime %>"/>(默认查询该时间为起点的10天之内的数据) 
 						<br/>
 						客户：
 						<select name ="customerid" id ="customerid">
@@ -335,6 +383,7 @@ $(function(){
 						<input name="consigneeaddress" type="text" style="width:210px"  value="<%=request.getParameter("consigneeaddress")==null?"":request.getParameter("consigneeaddress") %>"/>
 						<input type="hidden" id="isshow2" name="isshow" value="<%=request.getParameter("isshow")==null?"0":request.getParameter("isshow") %>" />
 						<input type="hidden" id="showLetfOrRight2" name="showLetfOrRight" value="<%=request.getParameter("showLetfOrRight")==null?"1":request.getParameter("showLetfOrRight") %>" />
+						<input type="hidden" id="ischangetime" name="ischangetime" value="1"/>
 						<input type="button" name="button" id="find2" value="查询" class="input_button2"/>
 						</form>
 					</div>

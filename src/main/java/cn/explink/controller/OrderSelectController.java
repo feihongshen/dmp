@@ -2194,7 +2194,9 @@ public class OrderSelectController {
 			@RequestParam(value = "consigneemobile", required = false, defaultValue = "") String consigneemobile,
 			@RequestParam(value = "consigneeaddress", required = false, defaultValue = "") String consigneeaddress, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb,
-			@RequestParam(value = "showLetfOrRight", required = false, defaultValue = "1") long showLetfOrRight) {
+			@RequestParam(value = "showLetfOrRight", required = false, defaultValue = "1") long showLetfOrRight,
+			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime
+			) {
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		Page pageparm = new Page();
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
@@ -2206,11 +2208,18 @@ public class OrderSelectController {
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
 					Page.ONE_PAGE_NUMBER);
 		}
+		if (ischangetime==0) {
+			model.addAttribute("currentime",DateTimeUtil.getNowTime());
+		}else {
+			model.addAttribute("currentime",begindate);
+
+		}
 		model.addAttribute("orderlist", clist);
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
 		model.addAttribute("showLetfOrRight", showLetfOrRight);
+		model.addAttribute("cwbs",cwbs);
 		return "/neworderquery/left";
 
 	}

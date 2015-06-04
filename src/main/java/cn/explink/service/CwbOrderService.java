@@ -4014,7 +4014,7 @@ public class CwbOrderService {
 				|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) {
 			// 拒收修改订单为配送状态
 			if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
-				// 品信退货是否需要审核开关
+				/*// 品信退货是否需要审核开关
 				String tuihuocheck = this.systemInstallDAO.getSystemInstallByName("tuihuocheck") == null ? "no" : this.systemInstallDAO.getSystemInstallByName("tuihuocheck").getValue();
 				if ("yes".equals(tuihuocheck)) {
 					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
@@ -4024,37 +4024,37 @@ public class CwbOrderService {
 					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 0, DeliveryStateEnum.JuShou.getValue());
 					this.orderBackCheckDAO.createOrderBackCheck(o);
 					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
+				} else {*/
+				if (chechFlag) {
+					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+					// 获取订单信息
+					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+					// 退货审核表插入一条订单数据
+					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 0, DeliveryStateEnum.JuShou.getValue());
+					this.orderBackCheckDAO.createOrderBackCheck(o);
+					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 				} else {
-					if (chechFlag) {
-						this.updateCwbState(cwb, CwbStateEnum.PeiShong);
-						// 获取订单信息
-						CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-						// 退货审核表插入一条订单数据
-						OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 0, DeliveryStateEnum.JuShou.getValue());
-						this.orderBackCheckDAO.createOrderBackCheck(o);
-						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
-					} else {
-						List<Branch> bList = new ArrayList<Branch>();
-						for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
-							bList.add(this.branchDAO.getBranchByBranchid(i));
-						}
-						Branch tuihuoNextBranch = null;
-						for (Branch b : bList) {// 获得当前站点的退货站
-							if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
-								tuihuoNextBranch = b;
-							}
-						}
-						if (tuihuoNextBranch == null) {
-							tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
-							this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
-						} else {
-							// 更改下一站为退货站
-							this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
-						}
-						this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
-						this.logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
+					List<Branch> bList = new ArrayList<Branch>();
+					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
+					Branch tuihuoNextBranch = null;
+					for (Branch b : bList) {// 获得当前站点的退货站
+						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+							tuihuoNextBranch = b;
+						}
+					}
+					if (tuihuoNextBranch == null) {
+						tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
+					} else {
+						// 更改下一站为退货站
+						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
+					}
+					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					this.logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
 				}
+				
 			} else {
 				this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 			}
@@ -4328,7 +4328,7 @@ public class CwbOrderService {
 			gcaId = this.gotoClassAuditingDAO.creGotoClassAuditing(okTime, subAmount, subAmountPos, user.getUserid(), user.getBranchid(), deliverealuser);
 		}
 
-		this.logger.info("开始更新归班记录订单,id:{},cwbs:", gcaId, subTrStr);
+		this.logger.info("开始更新归班记录订单,id:{},cwbs:{}", gcaId, subTrStr);
 		BigDecimal amount = BigDecimal.ZERO;
 		BigDecimal amount_pos = BigDecimal.ZERO;
 		String[] cwbs = subTrStr.split(",");
@@ -6235,5 +6235,29 @@ public class CwbOrderService {
 		map.put("newPayWayId", newpaywayid);
 		return map;
 	}
+	
+	public List<String> getList(String[] strArr) {
+		List<String> strList = new ArrayList<String>();
+		if (strArr != null && strArr.length > 0) {
+			for (String str : strArr) {
+				strList.add(str);
+			}
+		}
+		return strList;
+	}
+	public String getStrings(String[] strArr) {
+		String strs = "";
+		if (strArr.length > 0) {
+			for (String str : strArr) {
+				strs += str + ",";
+			}
+		}
 
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
+
+	
 }

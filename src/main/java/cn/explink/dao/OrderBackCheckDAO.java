@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.OrderBackCheck;
 
 @Component
@@ -124,4 +123,21 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
+	
+	
+	//退货出站根据条件查询
+	public List<OrderBackCheck> getCwborderss(int cwbordertypeid,long customerid,long branchid) {
+		String sql = "SELECT * from ops_order_back_check  where cwbordertypeid in(1,3) and cwbstate=4";
+		StringBuffer sb = new StringBuffer();
+		if (branchid!= 0) {
+			sb.append(" and branchid="+branchid);
+		}else if(customerid!= 0){
+			sb.append(" and customerid="+customerid);
+		}else if(cwbordertypeid!=0){
+			sb.append(" and cwbordertypeid="+cwbordertypeid);
+		}
+		sql+=sb.toString();
+		return this.jdbcTemplate.query(sql,new OrderBackCheckRowMapper());
+	}
+	
 }

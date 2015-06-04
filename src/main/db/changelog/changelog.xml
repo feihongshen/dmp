@@ -6115,8 +6115,47 @@ CREATE TABLE
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-05-18-1" author="wangyonghe">
+		<sql>
+INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '20');
+INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '2020');
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-05-19-1" author="wukong">
+		<sql>
+		ALTER TABLE `edit_shixiao` ADD COLUMN `shixiaoreasonid` INT(11) DEFAULT 0 NULL AFTER `customerid`; 
+		ALTER TABLE `edit_shixiao` ADD COLUMN `cwbstate` INT(11) NOT NULL AFTER `shixiaoreasonid`; 
+		ALTER TABLE `edit_shixiao` ADD COLUMN `emaildate` VARCHAR(50) COLLATE utf8_bin DEFAULT NULL AFTER `cwbstate`; 
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-05-22-1" author="wukong">
+		<sql>
+		INSERT INTO `express_set_system_install`(`name`,`value`,`chinesename`) VALUES ( 'daohuoiseffect','1','入库是否可以做失效:关闭:0,开启:1');  
+
+		</sql>
+	</changeSet>
 	
-	
+
+	<changeSet id="wangzhiyong-2015-05-06-1" author="wangzhiyong">
+		<sql>
+			CREATE TABLE `cs_consignee_info` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `name` varchar(64) DEFAULT NULL,
+			  `sex` int(2) DEFAULT NULL,
+			  `phone_one` varchar(20) DEFAULT NULL,
+			  `phone_two` varchar(20) DEFAULT NULL,
+			  `mail_box` varchar(64) DEFAULT NULL,
+			  `province` varchar(64) DEFAULT NULL,
+			  `city` varchar(64) DEFAULT NULL,
+			  `consignee_type` int(8) DEFAULT NULL,
+			  `contact_last_time` varchar(50) DEFAULT '',
+			  `contact_num` int(8) DEFAULT NULL,
+			  `remark` varchar(200) DEFAULT NULL,
+			  PRIMARY KEY (`id`)
+	) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+
 	<changeSet id="wangyonghe-2014-12-31-1" author="wangyonghe">
 		<sql>
 	update express_set_menu_info_new  set menuname='预制条码打印' where menuurl like '%cwbLablePrint/barcodeprint%'
@@ -6259,13 +6298,41 @@ CREATE TABLE
 			update `express_ops_operation_time` as op ,`express_ops_cwb_detail` as de set op.`receivablefee` =de.`receivablefee` , op.`paybackfee` =de.`paybackfee` where op.cwb=de.cwb and de.state=1 ; 
 		</sql>
 	</changeSet>
-	<changeSet id="lansheng-2015-03-17-1" author="lansheng">
+	<changeSet id="wangzhiyong-2015-05-06-1" author="wangzhiyong">
 		<sql>
-			update `express_ops_operation_time` as op ,`express_ops_cwb_detail` as de set op.`receivablefee` =de.`receivablefee` , op.`paybackfee` =de.`paybackfee` where op.cwb=de.cwb and de.state=1 ; 
+	CREATE TABLE `cs_complaint_accept` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `consignee_id` bigint(11) DEFAULT NULL,
+	  `accept_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+	  `order_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+	  `cod_org_id` bigint(11) DEFAULT NULL,
+	  `complaint_user` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+	  `complaint_type` int(8) DEFAULT NULL,
+	  `complaint_one_level` int(8) DEFAULT NULL,
+	  `complaint_two_level` int(8) DEFAULT NULL,
+	  `content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+	  `begin_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+	  `end_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+	  `handle_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+	  `handle_user` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+	  `complaint_result` int(8) DEFAULT NULL,
+	  `is_complaint` int(8) DEFAULT NULL,
+	  `complaint_state` int(8) DEFAULT NULL,
+	  `complaint_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+	  `complaint_content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+	  `handle_content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+	  `complaint_end_time` bigint(11) DEFAULT NULL,
+	  `remaind_num` int(8) DEFAULT NULL,
+	  `cwbstate` bigint(20) DEFAULT NULL,
+	  `flowordertype` bigint(20) DEFAULT NULL,
+	  `currentbrannch` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+	  `accpet_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+	  `phone_one` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+	  `province` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+	  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
-
-
 
 	<changeSet id="mali-2015-03-18-1" author="mali">
 		<sql>
@@ -6289,12 +6356,6 @@ CREATE TABLE
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `firstlevelid` INT(11) DEFAULT '0' ; 
 		</sql>
 	</changeSet>
-	<changeSet id="liuxiao-2015-03-28-1" author="liuxiao">
-		<sql>
-			ALTER TABLE `express_ops_delivery_state` ADD COLUMN `firstlevelid` INT(11) DEFAULT '0' ; 
-		</sql>
-	</changeSet>
-	
 	<changeSet id="wangyonghe-2015-03-25-1" author="wangyonghe">
 		<sql>
 		INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `menuno`, `parentno`, `menuimage`, `adminshowflag`) VALUES ( '站点扣罚查询', 'punish/punishOfbranch/1', '3', 'zg12', '290', 'images/gbsh.png', NULL);

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -38,6 +39,8 @@ public class OrderBackCheckService {
 	BranchDAO branchDAO;
 	@Autowired
 	CwbDAO cwbDAO;
+	@Autowired
+	List<CwbTranslator> cwbTranslators;
 
 	public List<OrderBackCheck> getOrderBackCheckList(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<User> userList) {
 		List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
@@ -113,4 +116,14 @@ public class OrderBackCheckService {
 		return orderBackCheck;
 	}
 
+	public String translateCwb(String cwb) {
+		for (CwbTranslator cwbTranslator : this.cwbTranslators) {
+			String translateCwb = cwbTranslator.translate(cwb);
+			if (StringUtils.hasLength(translateCwb)) {
+				cwb = translateCwb;
+			}
+		}
+		return cwb;
+	}
+	
 }

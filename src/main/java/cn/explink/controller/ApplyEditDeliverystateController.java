@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +30,27 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
+import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.ApplyEditDeliverystate;
+import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
+import cn.explink.domain.Exportmould;
 import cn.explink.domain.Reason;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
+import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
+import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
@@ -85,6 +95,13 @@ public class ApplyEditDeliverystateController {
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
 	EditCwbService editCwbService;
+	@Autowired
+	ZhiFuApplyDao zhiFuApplyDao;
+	@Autowired
+	CustomerDAO customerDao;
+	@Autowired
+	ExportmouldDAO exportmouldDAO;
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -228,7 +245,250 @@ public class ApplyEditDeliverystateController {
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
 	}
+	
+	/**
+	 * 重置反馈
+	 */
+	@RequestMapping("/resetFeedback")
+	public String resetFeedback(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(value = "type", required = false, defaultValue = "0") int type) {
+		String[] cwbArray = cwbs.trim().split("\r\n");
+		String s = "'";
+		String s1 = "',";
+		StringBuffer cwbsSqlBuffer = new StringBuffer();
+		for (String cwb : cwbArray) {
+			if (cwb.trim().length() == 0) {
+				continue;
+			}
+			if (cwb.length() > 0) {
+				cwbsSqlBuffer = cwbsSqlBuffer.append(s).append(cwb).append(s1);
+			}
+		}
+		if (cwbsSqlBuffer.length() == 0) {
+			return "applyeditdeliverystate/resetFeedback";
+		}
+		// 整理sql要读取的cwb end
+		model.addAttribute("cwbArray", cwbArray);
+		String cwbsSql = cwbsSqlBuffer.substring(0, cwbsSqlBuffer.length() - 1);
+		List<CwbOrder> cwbList = cwbDAO.getCwbByCwbs(cwbsSql);
+		Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
 
+		// 做重置审核状态更改的操作 start
+		if (type == EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue()) {
+			List<CwbOrder> allowCwb = new ArrayList<CwbOrder>();// 允许更改订单
+			List<CwbOrder> prohibitedCwb = new ArrayList<CwbOrder>(); // 禁止更改的订单
+			for (CwbOrder co : cwbList) {
+
+				// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
+				if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+					// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
+					DeliveryState ds = deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
+					if (co.getInfactfare().compareTo(BigDecimal.ZERO) > 0 && (accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0) {
+						// 暂借对象中的备注1字段输出一些提示语
+						co.setRemark1("当前订单运费已交款，不可重置审核状态");
+						prohibitedCwb.add(co);
+					} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
+						allowCwb.add(co);
+					} else {
+						// 暂借对象中的备注1字段输出一些提示语
+						co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
+						prohibitedCwb.add(co);
+					}
+				} else {
+					// 暂借对象中的备注1字段输出一些提示语
+					co.setRemark1("当前订单状态为[" + FlowOrderTypeEnum.getText(co.getFlowordertype()).getText() + "],不允许重置审核状态");
+					prohibitedCwb.add(co);
+				}
+
+			}
+			model.addAttribute("allowCwb", allowCwb);
+			model.addAttribute("prohibitedCwb", prohibitedCwb);
+			return "editcwb/ChongZhiShenHe";
+			// 做重置审核状态更改的操作 end
+		} else if (type == EditCwbTypeEnum.XiuGaiJinE.getValue()) {// 修改订单金额更改操作
+																	// Start
+			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
+			for (CwbOrder co : cwbList) {
+				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
+				cods.setCwbOrder(co);
+				cods.setDeliveryState(deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
+				// 存储订单表记录和反馈表记录，用于前端判断
+				allowCods.add(cods);
+			}
+			model.addAttribute("allowCods", allowCods);
+			return "editcwb/XiuGaiJinE";
+			// 修改订单金额更改操作 end
+		} else if (type == EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue()) {// 修改订单支付方式更改操作
+																			// Start
+			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
+			List<CwbOrderWithDeliveryState> prohibitedCods = new ArrayList<CwbOrderWithDeliveryState>();
+			for (CwbOrder co : cwbList) {
+				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
+				cods.setCwbOrder(co);
+				cods.setDeliveryState(deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
+				// 存储订单表记录和反馈表记录，用于前端判断 如果代收金额
+				if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0) {
+					prohibitedCods.add(cods);
+				} else {
+					allowCods.add(cods);
+				}
+			}
+			model.addAttribute("allowCods", allowCods);
+			model.addAttribute("prohibitedCods", prohibitedCods);
+			return "editcwb/XiuGaiZhiFuFangShi";
+			// 修改订单支付方式更改操作 end
+		} else if (type == EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue()) {// 修改订单类型更改操作
+																				// Start
+			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
+			List<CwbOrderWithDeliveryState> prohibitedCods = new ArrayList<CwbOrderWithDeliveryState>();
+			for (CwbOrder co : cwbList) {
+				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
+				cods.setCwbOrder(co);
+				cods.setDeliveryState(deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
+				// 已经归班的订单不能修改订单类型，必须充值审核状态才能修改
+				if (cods.getDeliveryState() != null && cods.getDeliveryState().getGcaid() > 0) {
+					cods.setError("已审核的订单不允许修改订单类型，若要修改，请重置审核状态后再试");
+					prohibitedCods.add(cods);
+				} else if (cods.getDeliveryState() != null && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()
+						&& cods.getDeliveryState().getInfactfare().compareTo(BigDecimal.ZERO) > 0) {
+					cods.setError("上门退有应收运费的订单不允许修改订单类型");
+					prohibitedCods.add(cods);
+				} else {
+					allowCods.add(cods);
+				}
+			}
+			model.addAttribute("allowCods", allowCods);
+			model.addAttribute("prohibitedCods", prohibitedCods);
+			return "editcwb/XiuGaiDingDanLeiXing";
+			// 修改订单订单类型更改操作 end
+		}
+
+		return "applyeditdeliverystate/resetFeedback";
+	}
+	/**
+	 * 重置反馈列表
+	 */
+	@RequestMapping("/resetFeedbackList")
+	public String resetFeedbackList(){
+
+		return "applyeditdeliverystate/resetFeedbackList";
+	}
+	/**
+	 * 支付信息修改审核
+	 */
+	@SuppressWarnings("unused")
+	@RequestMapping("/paywayInfoModifyCheck")
+	public String paywayInfoModifyCheck(Model model,HttpServletRequest request,
+			@RequestParam(value = "exportmould", defaultValue = "", required = true) String exportmould,
+			@RequestParam(value = "cwb", defaultValue = "", required = true) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = true) int cwbtypeid,
+			@RequestParam(value = "applypeople", defaultValue = "0", required = true) long applypeople,
+			@RequestParam(value = "applytype", defaultValue = "0", required = true) int applytype,
+			@RequestParam(value = "userid", defaultValue = "0", required = true) int userid,
+			@RequestParam(value = "shenhestate", defaultValue = "0", required = true) int shenhestate,
+			@RequestParam(value = "shenheresult", defaultValue = "0", required = true) int shenheresult
+			) {
+		List<ZhiFuApplyView> zflist = zhiFuApplyDao.getAllZFAVBycwbs();
+		List<User> uslist = userDAO.getAllUser();
+		Map<Long,String> userMap = new HashMap<Long, String>();
+		for(ZhiFuApplyView zf:zflist){
+			for(User us:uslist){
+				if(us.getUserid()==zf.getUserid()){
+					userMap.put(us.getUserid(), us.getUsername());
+				}
+			}
+		}
+		model.addAttribute("applytype",applytype);
+		model.addAttribute("userMap", userMap);
+		List<Customer> customerList = customerDao.getAllCustomers();
+		Map<Long, String> customermap = new HashMap<Long, String>();
+		for(Customer cus:customerList){
+			customermap.put(cus.getCustomerid(),cus.getCustomername());
+		}
+		model.addAttribute("customermap",customermap);
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		Map<Long, String> bramap = new HashMap<Long, String>();
+		for(Branch bra : branchList){
+			bramap.put(bra.getBranchid(), bra.getBranchname());
+		}
+		model.addAttribute("bramap",bramap);
+		
+		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		model.addAttribute("exportmouldlist", exportmouldlist);
+		model.addAttribute("customerList", customerList);
+		model.addAttribute("branchList", branchList);
+		List<ZhiFuApplyView> zhifulist = null;
+		if (cwbs.length() > 0) {
+			StringBuffer sb = new StringBuffer("");
+			for (String cwbStr : cwbs.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				sb.append("'"+cwbStr+"',");
+			}
+			zhifulist = zhiFuApplyDao.getZFAVBycwbs(sb.toString().substring(0,sb.lastIndexOf(",")));
+			//request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
+			model.addAttribute("zhifulist", zhifulist);
+		}else if(cwbs==null||"".equals(cwbs.trim())){
+			zhifulist = zhiFuApplyDao.getapplycwbs(cwbtypeid,applytype,userid,shenhestate,shenheresult);
+			model.addAttribute("zhifulist", zhifulist);
+		}
+		return "applyeditdeliverystate/paywayInfoModifyCheck";
+	}
+	
+	/**
+	 * 支付信息修改确认
+	 */
+	@RequestMapping("/paywayInfoModifyConfirm")
+	public String paywayInfoModifyConfirm(Model model,HttpServletRequest request,
+		@RequestParam(value = "exportmould", defaultValue = "", required = true) String exportmould,
+		@RequestParam(value = "cwb", defaultValue = "", required = true) String cwbs,
+		@RequestParam(value = "cwbtypeid", defaultValue = "0", required = true) int cwbtypeid,
+		@RequestParam(value = "applypeople", defaultValue = "0", required = true) long applypeople,
+		@RequestParam(value = "applytype", defaultValue = "0", required = true) int applytype,
+		@RequestParam(value = "userid", defaultValue = "0", required = true) int userid,
+		@RequestParam(value = "shenhestate", defaultValue = "0", required = true) int shenhestate,
+		@RequestParam(value = "shenheresult", defaultValue = "0", required = true) int shenheresult
+			) {
+		List<ZhiFuApplyView> zflist = zhiFuApplyDao.getAllZFAVBycwbs();
+		List<User> uslist = userDAO.getAllUser();
+		Map<Long, String> usermap = new HashMap<Long, String>();
+		for(ZhiFuApplyView zf:zflist){
+			for(User us:uslist){
+				if(us.getUserid()==zf.getUserid()){
+					usermap.put(us.getUserid(),us.getUsername());
+				}
+			}
+		}
+		model.addAttribute("usermap", usermap);
+		
+		List<Customer> customerList = customerDao.getAllCustomers();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		model.addAttribute("exportmouldlist", exportmouldlist);
+		model.addAttribute("customerList", customerList);
+		model.addAttribute("branchList", branchList);
+		List<ZhiFuApplyView> zhifulist = null;
+		if (cwbs.length() > 0) {
+			StringBuffer sb = new StringBuffer("");
+			for (String cwbStr : cwbs.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				
+				sb.append("'"+cwbStr+"',");
+			}
+			zhifulist = zhiFuApplyDao.getZFAVBycwbss(sb.toString().substring(0,sb.lastIndexOf(",")));
+			//request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
+			model.addAttribute("zhifulist", zhifulist);
+		}else if(cwbs==null||"".equals(cwbs.trim())){
+			zhifulist = zhiFuApplyDao.getapplycwbss(cwbtypeid,applytype,userid,shenhestate,shenheresult);
+			model.addAttribute("zhifulist", zhifulist);
+		}
+
+
+		return "applyeditdeliverystate/paywayInfoModifyConfirm";
+	}
+	
 	/**
 	 * 客服看到的修改订单配送结果的功能
 	 * 

@@ -126,9 +126,9 @@ function sub(){
 			<ul>
 				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
 				<li><a href="#" class="light">历史申请记录</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
+				<%-- <li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
 				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
+				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li> --%>
 			</ul>
 		</div>
 		<div class="tabbox">

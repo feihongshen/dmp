@@ -34,7 +34,7 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 		           </div>
 		            <div hidden="true" id="div_changealowflag">
 			            <li><span id="changealowflag" style="margin-left: 50px;" align="left">
-				           <input type="checkbox" id="checkbox1" name="changealowflag"  value='1'>中转是否要申请 
+				           <input type="checkbox" id="checkbox1" name="changealowflag"  value='1'>中转是否要审核 
 			           	   </span>
 			           </li>
 		           </div>

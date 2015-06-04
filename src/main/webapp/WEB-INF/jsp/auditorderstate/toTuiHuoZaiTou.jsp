@@ -1,3 +1,4 @@
+<%@page import="cn.explink.controller.pda.BranchListBodyPdaResponse"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -7,12 +8,16 @@
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+/* String starttime=request.getParameter("begindate")==null?DateTimeUtil.getNowDate()+" 00:00:00":request.getParameter("begindate");
+String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowDate()+" 23:59:59":request.getParameter("enddate"); */
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
-
+Map<Long,String> mapbranch = (Map<Long,String>)request.getAttribute("mapbranch");
+Map<Long,String> mapcustomer = (Map<Long,String>)request.getAttribute("mapcustomer");
+Map<Long,String> mapcwbordertype = (Map<Long,String>)request.getAttribute("mapcwbordertype");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -25,10 +30,16 @@ List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+
+
 <script type="text/javascript">
-
 $(function(){
-
 	
 	$("table#gd_table tr:odd").css("backgroundColor","#f9fcfd");
 	$("table#gd_table tr:odd").hover(function(){
@@ -110,67 +121,102 @@ function exportField(){
 	}
 }
 
+$(function() {
+	$("#strtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#endtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+		timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
+});
+
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div>
 		<div class="kfsh_tabbtn">
-			<ul>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiHuoZaiTou" class="light">退货再投审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">退货出站审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan">中转出站审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShang">退客户出库审核</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toTuiGongHuoShangSuccess">客户收退货确认</a></li>
-				<%if(request.getAttribute("amazonIsOpen") != null && "1".equals(request.getAttribute("amazonIsOpen").toString())){ %>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toBaoGuoWeiDao">亚马逊订单处理</a></li><%} %>
-				 <%if(request.getAttribute("isUseAuditTuiHuo") != null && "yes".equals(request.getAttribute("isUseAuditTuiHuo").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoTuiHuolist/1">审核为退货</a></li>
-				<%} %> 
-				<%if(request.getAttribute("isUseAuditZhongZhuan") != null && "yes".equals(request.getAttribute("isUseAuditZhongZhuan").toString())){ %>
-					<li><a href="<%=request.getContextPath() %>/cwbapply/kefuuserapplytoZhongZhuanlist/1">审核为中转</a></li>
-				<%} %>
-				<li><a href="<%=request.getContextPath() %>/orderBackCheck/toTuiHuoCheck">审核为允许退货出站</a></li>
-				<li><a href="<%=request.getContextPath() %>/cwborder/toChangeZhongZhuan">审核为中转件</a></li>
-			</ul>
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 ">
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="./toTuiHuoZaiTou" method="POST" id="searchForm">
-								<%if(cwbList!=null){  %> <span>
+								<span>
 								<select name ="exportmould" id ="exportmould">
 									<option  value ="0">导出模板</option>
 									<%for(Exportmould e:exportmouldlist){%>
 										<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 									<%} %>
 								</select>
-								<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span><%} %> 订单号：
+								</span>  订单号：
 								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+								订单类型:
+								<select name ="cwbtypeid" id ="cwbtypeid">
+									<option  value ="0">全部</option>
+										<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+										<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+										<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+								</select>
+								客户名称:
+								<select name ="customerid" id ="customerid">
+									<option  value ="0">全部</option>
+									<%if(customerList!=null){ %>
+										<%for(Customer cus:customerList){ %>
+										<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
+										<%} %>
+									<%} %>
+								</select>
+								配送站点:
+								<select name ="branchid" id ="branchid">
+									<option  value ="0">全部</option>
+									 <%if(branchList!=null && branchList.size()>0) {%>
+										<%for(Branch branch:branchList){ %>
+										<option value ="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
+										<%} }%>
+								</select>
+								退货入库时间:
+									<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
+								到
+									<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
 								
-								<input type="submit" value="确定" class="input_button2">
+								<input type="submit" value="查询" class="input_button2">&nbsp;&nbsp;
+								<input type="submit" value="重置" class="input_button2">&nbsp;&nbsp;
+								<%if(cwbList!=null&&!cwbList.isEmpty()){%><span>
+									<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+								</span> <%} %>
+								<input type="submit" name="button" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
 							</form>
-							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
-								<input type="hidden" name="exportmould2" id="exportmould2" />
-							</form>
-						</div><%if(cwbList!=null){ %>
+						<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
+							<input type="hidden" name="exportmould2" id="exportmould2"  class="input_button2" />
+						</form>
+						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="60" align="center" valign="middle" bgcolor="#f3f3f3">选择</td>
-									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">入库时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">拒收时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
-									<td align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
-									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人地址</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退货库入库时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 								</tr>
 							</tbody>
-						</table><%} %>
+						</table>
 					</div>
 					<div style="height:100px"></div>
 					<from action="./auditTuiHuoZaiTou" method="post" id="SubFrom" >
@@ -184,14 +230,15 @@ function exportField(){
 										!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue())){
 									out.print("no");
 								} %>"	>
-									<td width="60" align="center" valign="middle" bgcolor="#f3f3f3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %>checked="checked"<%} %>></td>
-									<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getCustomername()%></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getInstoreroomtime() %></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getJushoutime() %></td>
-									<td width="100" align="center" valign="middle"><%for(Branch b:branchList){if(cwb.getCurrentbranchid()==b.getBranchid()){out.print(b.getBranchname());} } %></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getConsigneename() %></td>
-									<td align="left" valign="middle"><%=cwb.getConsigneeaddress() %></td>
+									<td width="40" align="center" valign="middle" bgcolor="#f3f3f3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %>checked="checked"<%} %>></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapbranch.get(cwb.getTuihuoid()) %></td>
 									
 									<td width="200" align="center" valign="middle">
 									<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>
@@ -209,7 +256,8 @@ function exportField(){
 						</table>
 					</from>
 				</div>
-				<div style="height:40px"></div><%if(cwbList!=null){ %>
+				<div style="height:40px"></div>
+				<%if(cwbList!=null){ %>
 				<div class="iframe_bottom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" id="gd_table2">
 						<tbody>
@@ -218,7 +266,7 @@ function exportField(){
 							</tr>
 						</tbody>
 					</table>
-				</div><%} %>
+				</div><%} %> 
 		</div>
 	</div>
 </div>

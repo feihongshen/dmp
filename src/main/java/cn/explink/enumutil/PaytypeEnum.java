@@ -28,4 +28,13 @@ public enum PaytypeEnum {
 		}
 		return PaytypeEnum.Qita;
 	}
+	public static String getTextByValue(int value) {
+		for (PaytypeEnum paytypeEnum : PaytypeEnum.values()) {
+			if (value == paytypeEnum.getValue()) {
+				return paytypeEnum.getText();
+			}
+		}
+		return "";
+	}
+	
 }

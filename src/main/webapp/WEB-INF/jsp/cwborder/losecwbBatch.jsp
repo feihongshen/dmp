@@ -11,6 +11,8 @@
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<JSONObject> cwbList = (List<JSONObject>)request.getAttribute("cwbList");
 long successCount = request.getAttribute("successCount")==null?0:(Long)request.getAttribute("successCount");
+long failCount= request.getAttribute("failCount")==null?0:(Long)request.getAttribute("failCount");
+List<Reason> shixiaoReasons=(List<Reason>)request.getAttribute("shixiaoreasons");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -48,7 +50,31 @@ function exportField(){
 		alert("没有做查询操作，不能导出！");
 	}
 }
+function checkloseeffect(){
+	var flag=false;
+	console.info($("#cwbs").val().split("\n").length);
+	console.info($.trim($("#cwbs").val())=="");
+	if($.trim($("#cwbs").val())==""||$("#cwbs").val()=="每次输入的订单不超过100个"){
+		$("#msg").html("*请输入订单号！(订单号不能为空噢）");
+		return flag;
+	}
+	if($("#cwbs").val().split("\n").length>100){
+		$("#msg").html("*亲，每次操作的订单数量不能超过100个！");
+		return flag;
+	}
+	if($("#loseeffect").val()!=-1){
+		flag=true;
+	}else{
+		$("#msg").show();
+		$("#msg").html("*请选择失效原因(未选择失效原因不允许失效）");
+	}
 
+	return flag;
+}
+
+function clearMsg(){
+	$("#msg").html("");
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -64,13 +90,27 @@ function exportField(){
 			<div style="position:relative; z-index:0 " >
 				<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 					<div class="kfsh_search">
-						<form action="<%=request.getContextPath() %>/cwborder/losecwbBatch" method="POST" id="searchForm">
-							订单号：
-							<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs"></textarea>
-							<input type="submit" value="确定" class="input_button2">
-							<%if(successCount>0){ %>成功<%=successCount%>单<%} %>
+						<form action="<%=request.getContextPath() %>/cwborder/losecwbBatch" method="POST" id="searchForm" onsubmit="return checkloseeffect();">
+							
+							订单号*：
+							<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" style="color:#CCCCCC;" onfocus="javascript:this.style.color='#000000';if(this.value=='每次输入的订单不超过100个')this.value='';" onblur="javascript:if(this.value==''){this.value='每次输入的订单不超过100个';this.style.color='#CCCCCC';}">每次输入的订单不超过100个</textarea>
+							&nbsp;&nbsp;失效原因*：
+							<select id="loseeffect" name="loseeffect">
+							<option value="-1">请选择失效原因</option>
+							<%if(shixiaoReasons!=null){ %>
+								<%for(Reason reason:shixiaoReasons){ %>
+								<option value="<%=reason.getReasonid() %>"><%=reason.getReasoncontent() %></option>
+									<%} %>
+									<% }%>
+									</select>
+									&nbsp;&nbsp;<input type="submit" value="确定"  class="input_button2" >&nbsp;&nbsp;&nbsp;<input type="reset" value="清空" onclick="clearMsg();" class="input_button2" >
+									<div  style="height:1px;color: red;">
+									<p id="msg" name="msg" ></p>
+									</div>
+									<br>
+									<%if(cwbList.size()>0) {%>共 <%=cwbList.size() %>单,失效成功<%=successCount%>单,失败<%=failCount %>单。<%} %>
 						</form>
-					</div><%if(cwbList!=null&&cwbList.size()>0){ %>
+					</div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 						<tbody>
 							<tr class="font_1" height="30" >
@@ -84,10 +124,12 @@ function exportField(){
 						</tbody>
 					</table>
 				</div>
+				<%if(cwbList!=null&&cwbList.size()>0){ %>
 				<div style="height:100px"></div>
+				<br><br>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 					<tbody>
-					<%for(JSONObject obj:cwbList){
+				<%for(JSONObject obj:cwbList){
 							if("000000".equals(obj.getString("errorcode"))){
 								continue;
 							}

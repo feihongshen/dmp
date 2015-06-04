@@ -95,9 +95,6 @@ function editInit(){
 	<div>
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
 				<li><a href="#" class="light">订单信息修改</a></li>
 				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
 			</ul>
@@ -119,8 +116,8 @@ function editInit(){
 										</td>
 									</tr>
 								</table>
-								<%if(List!=null&&List.size()>0){
-									%>
+								<%-- <%if(List!=null&&List.size()>0){
+									%> --%>
 								<form action="<%=request.getContextPath()%>/editcwb/updateCwbInfo/" method="post" id="searchForm2">
 								<table width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" >
 										<tr class="font_1">
@@ -134,6 +131,7 @@ function editInit(){
 											<td bgcolor="#e7f4e3">备注</td>
 											<td bgcolor="#e7f4e3">操作</td>
 									</tr>
+									<%if(List!=null&&List.size()>0){%>
 									<%for(CwbOrder c:List){ %>
 										<tr>
 											<td width="120px"  align="center" valign="middle" height="19" ><%=c.getCwb() %>
@@ -169,7 +167,8 @@ function editInit(){
 											</td>
 											
 										</tr><%} %>
-								</table></form><%} %>
+										<%} %>
+								</table></form>
 								</td>
 						</tr>
 					</tbody>

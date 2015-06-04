@@ -180,13 +180,9 @@ function checkuser(type){
 <div class="saomiao_box2"> 
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/start" method = "post">
 		<div class="kfsh_tabbtn">
-			<ul>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">历史申请记录</a></li>
-				<li><a href="#" class="light">重置反馈状态</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li>
-			</ul>
+			<%-- <ul>
+				<li><a href="<%=request.getContextPath()%>/editcwb/start" class="light">支付信息修改申请</a></li>
+			</ul> --%>
 		</div>
 <table>
 	<tr>
@@ -201,8 +197,8 @@ function checkuser(type){
 			<input type="text" id="username" name="username" class="input_text1" style="height:20px;"/> 
 			<input type="hidden" id="userid" name="requestUser" value="0" />
 			</div> 
-			<br/><br/><br/><br/>
- 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue() %>)" value="重置审核状态" /> <br/><br/><br/>
+			</br></br></br></br>
+ 			<%-- <input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue() %>)" value="重置审核状态" /> <br/><br/><br/> --%>
  			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiJinE.getValue() %>)" value="修改订单金额" /> <br/><br/><br/>
  			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue() %>)" value="修改订单支付方式" /><br/><br/><br/>
  			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue() %>)" value="修改订单类型" />

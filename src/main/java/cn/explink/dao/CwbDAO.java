@@ -27,7 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
+import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.Smtcount;
@@ -768,6 +770,8 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+
 
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
@@ -3845,6 +3849,10 @@ public class CwbDAO {
 	public List<CwbOrder> getAllCwbOrderByCwb(String cwb) {
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
 	}
+	
+	public CwbOrder getOneCwbOrderByCwb(String cwb) {
+		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where cwb =?", new CwbSmalMaper(), cwb);
+	}
 
 	public List<CwbOrder> getCwbOrderForOperationtimeout(long page, long outTime, String flowordertype, long branchid, long deliverystate, long nextbranchid) {
 		String sql = "SELECT * FROM express_ops_cwb_detail cd RIGHT JOIN express_ops_operation_time ot ON cd.cwb=ot.cwb" + " WHERE ot.credate<? AND ot.flowordertype in(" + flowordertype
@@ -5729,4 +5737,64 @@ public class CwbDAO {
 		
 		return this.jdbcTemplate.query(sql, new CwbMapper(),deliverid);
 	}
+	
+	
+	
+	public List<CwbOrder> SelectDetalForm(String phone){
+			List<CwbOrder> lc=null;
+			String sql="select * from express_ops_cwb_detail where consigneemobile=? ";
+			lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
+		
+		return lc;
+	}	
+	
+	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc){
+		String sql="select * from express_ops_cwb_detail where consigneemobile=? or cwb=? or emaildate=? or consigneename=?";
+	
+	return 	this.jdbcTemplate.query(sql, new CwbMapper(),coc.getConsigneemobile(),coc.getCwb(),coc.getEmaildate(),coc.getConsigneename());
+
+	}	
+	
+	public CwbOrder createQueryWo(int opscwbid){
+		String sql="select * from express_ops_cwb_detail where opscwbid=?";
+		return this.jdbcTemplate.queryForObject(sql,new CwbMapper(),opscwbid);	
+	}
+	
+	private final class CsComplaintAcceptRowMapper implements RowMapper<CsComplaintAccept>{
+
+		@Override
+		public CsComplaintAccept mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			CsComplaintAccept c= new CsComplaintAccept();
+			c.setAcceptNo(rs.getString("accept_no"));
+			c.setAcceptTime(rs.getString("accpet_time"));
+			c.setComplaintState(rs.getInt("complaint_state"));
+			c.setOrderNo(rs.getString("order_no"));
+			c.setContent(rs.getString("content"));
+			c.setComplaintType(rs.getInt("complaint_type"));
+			return c;
+		}
+		
+	}
+	
+	public List<CwbOrder> SelectDetalForm1(String phone){
+		List<CwbOrder> lc=null;
+		String sql="select * from express_ops_cwb_detail d,cs_complaint_accept a where consigneemobile=? a.order_no=d.cwb";
+		lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
+	
+	return lc;
 }
+	//待领货状态
+	public void updateFlowordertypeByIds(String opscwbids, CwbStateEnum cwbstate) {
+		String sql = "update express_ops_cwb_detail set cwbstate=? where opscwbid in (" + opscwbids + ") and state=1";
+		this.jdbcTemplate.update(sql, cwbstate.getValue());
+	}
+	/**
+	 * 查询批量订单
+	 */
+	public List<CwbOrder> getcwborderList(String cwbs){
+		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+	
+}	

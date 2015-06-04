@@ -125,8 +125,15 @@ public class ReasonController {
 		reason.setReasontype(reasontype);
 		reason.setWhichreason(whichreason);
 		reason.setChangealowflag(changealowflag);
-		reason.setParentid(parentid);
-	
+
+		if (reasontype == 1||reasontype == 12) {
+			reason.setWhichreason(1);
+			if (whichreason == 2) {
+				reason.setParentid(parentid);
+				reason.setWhichreason(2);
+			}
+		}
+
 		reasonDao.creReason(reason);
 		logger.info("operatorUser={},常用语管理->create", getSessionUser()
 				.getUsername());

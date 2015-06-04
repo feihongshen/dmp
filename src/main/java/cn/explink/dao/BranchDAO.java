@@ -920,4 +920,10 @@ public class BranchDAO {
 		}
 		return this.jdbcTemplate.queryForInt(sql);
 	}
+	
+	public Branch getbranchname(long l){
+		String sql="select * from express_set_branch where branchid=?";
+		return this.jdbcTemplate.queryForObject(sql, new BranchRowMapper(),l);
+	}
+	
 }
