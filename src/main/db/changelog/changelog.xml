@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -6395,5 +6395,10 @@ CREATE TABLE
 		ADD COLUMN `resultdealcontent` VARCHAR(200) NULL DEFAULT '' AFTER `losebackid`;
 		</sql>
 	</changeSet>
+<changeSet id="mali-2015-06-04-01" author="mali">
+        	<sql>
+        	ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `customerbillimportflag` INT(4) DEFAULT 0 NULL ;
+        	</sql> 
+        </changeSet>
 </databaseChangeLog>
  
