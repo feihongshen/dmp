@@ -41,7 +41,8 @@ $(function(){
 	});
 	
 })
-function sub(id){
+//处理第一次修改时的状态
+function sub1(id){
 	
 	if($("#editnowdeliverystate"+id).val()==-1){
 		alert("请选择要更改的配送结果！");
@@ -70,6 +71,32 @@ function sub(id){
 	});
 	
 }
+//处理之前已经修改过之后产生新状态
+function sub2(cwbstr,id){
+	
+	$.ajax({
+		type: "POST",
+		url:'<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystateAgin',
+		data:{cwbss:cwbstr,
+			  editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
+			  editreason:$("#editreason"+id).val()
+		     },
+		dataType:"html",
+		success : function(data) {
+			if(data.errorCode==0){
+				alert("问题件成功提交：1单");
+			}else{
+				alert("问题件成功提交：1单");
+			}
+			//searchForm.submit();
+		}
+	});
+	
+}
+
+
+
+
 
 function  search(){
 	if($("#cwb").val()=='查询多个订单用回车隔开' || $("#cwb").val()=='' ){
@@ -115,7 +142,7 @@ function  search(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<!-- <td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td> -->
 									<td width="170" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
@@ -138,7 +165,7 @@ function  search(){
 									<td width="100" align="center" valign="middle"><%for(User u : userList){if(cwb.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
 									<td width="100" align="center" valign="middle"><%if(aeds.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
 									<td width="100" align="center" valign="middle"><%for(User u : userList){if(aeds.getEdituserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-									<td align="center" valign="middle">
+									<%-- <td align="center" valign="middle">
 										<select name="editnowdeliverystate<%=aeds.getId() %>" id="editnowdeliverystate<%=aeds.getId() %>">
 											<option value ="-1">==请选择==</option>
 						                   <%if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()){%>
@@ -158,13 +185,13 @@ function  search(){
 						                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
 						                   <%} %>
 										</select>
-								</td>
+								</td> --%>
 								<td width="170" align="center" valign="middle"><input name="editreason<%=aeds.getId() %>" id="editreason<%=aeds.getId() %>" type="text" value="<%=aeds.getEditreason()%>"></td>
 									<td width="80" align="center" valign="middle">
 										<%if(aeds.getEditnowdeliverystate()==0){ %>
-										<input name="提交" type="button" class="input_button2" onclick="sub(<%=aeds.getId() %>);" value="提交">
-										<%}else{ %>
-										<input type="button"  value="已提交">
+										<input name="提交" type="button" class="input_button2" onclick="sub1(<%=aeds.getId() %>);" value="提交">
+										<%}else if(aeds.getNowdeliverystate()==1){ %>
+										<input type="button"  value="已提交" onclick="sub2('<%=aeds.getCwb() %>',<%=aeds.getId() %>);">
 										<%} %>
 									</td>
 							</tr>

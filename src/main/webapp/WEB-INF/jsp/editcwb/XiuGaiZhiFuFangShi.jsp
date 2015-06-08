@@ -90,7 +90,7 @@ a{
  	<%} %>
 	<tr>
 		<td colspan="10" align="center">
- 			<input type="submit"  class="buttonnew" value="确认修改支付方式" /><input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
+ 			<input type="submit"  class="buttonnew" value="修改订单支付方式申请" /><input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
 		</td>
  	</tr>
 </table>

@@ -28,7 +28,6 @@ public enum ExceptionCwbErrorTypeEnum {
 	// Bale_ChongFu_Error(96,"重复封包"),
 	Bale_BU_SHI_ZHE_GE_MU_DI(96, "不是这个目的地的包，目的站：{0}"), Bale_Fei_Ben_Zhan(97, "非本站包"),
 
-
 	Peisong_Bu_YunXu_ZhongZhuan(98, "配送单不允许做中转"),
 	FeiDaorushujuandrukunotallowshixiao(99,"非导入数据或入库订单不允许失效"),
 	FeiDaorushujunotallowshixiao(100,"非导入数据不允许失效"),GongDanZhuangTaiWeiZhaoDao(101,"工单状态未找到"),

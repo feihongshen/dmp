@@ -1189,11 +1189,15 @@ public class OrderFlowDAO {
 		this.jdbcTemplate.update(sql, cwb);
 	}
 	
-	public List<OrderFlow> getRuKuTimeByCwb(String cwb) {
+	public OrderFlow getRuKuTimeByCwb(String cwb) {
 		
-		String sql = "select * from express_ops_order_flow where cwb = ? and flowordertype=4";
+		String sql = "select * from express_ops_order_flow where cwb = ? and flowordertype="+4;
+		OrderFlow lf=null;
 		List<OrderFlow> lof=this.jdbcTemplate.query(sql,new OrderFlowRowMapper(),cwb);
-		return lof;
+		if(lof.size()>0&&lof!=null){
+			lf=lof.get(0);
+		}
+		return lf;
 	}
 
 	//根据归班反馈时间查询订单

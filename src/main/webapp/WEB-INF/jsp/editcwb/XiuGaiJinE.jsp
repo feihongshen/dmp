@@ -243,7 +243,7 @@ function sub(){
  	<%}} %>
 	<tr>
 		<td colspan="10" align="center">
- 			<input type="button" class="buttonnew" onclick="sub()"  value="确认修改订单金额" />　<input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
+ 			<input type="button" class="buttonnew" onclick="sub()"  value="修改订单金额申请" />　<input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
 		</td>
  			 
  	</tr>

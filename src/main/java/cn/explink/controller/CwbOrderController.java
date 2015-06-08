@@ -1041,7 +1041,6 @@ public class CwbOrderController {
 				}
 			}
 			request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
-
 			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
 			List<User> userList = userDAO.getAllUser();
 			List<Reason> reasonList = reasonDAO.getAllReason();
@@ -1244,7 +1243,7 @@ public class CwbOrderController {
 		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
 		String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
 		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
-		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		List<Branch> branchList = branchDAO.getAllEffectBranches();
 		List<Customer> customerList = customerDao.getAllCustomers();
 		model.addAttribute("branchList", branchList);
@@ -1277,26 +1276,28 @@ public class CwbOrderController {
 			covlist = getCwbOrderView(scancwblist, cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList);
 		}else if(cwb==null||("".equals(cwb.trim()))){
 			List<OrderFlow> oflist = orderFlowDAO.getOrderByCredate(FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(),begindate,enddate);
-			String cwbs = "";
-			for(OrderFlow of:oflist){
-				cwbs+="'"+of.getCwb()+"',";
-			}
-			List<CwbOrder> colist = cwbDao.getcwborderList(cwbs.substring(0,cwbs.lastIndexOf(",")));
-			Map<Long, String> map = new HashMap<Long, String>();
-			for(Customer co:customerList){
-				map.put(co.getCustomerid(), co.getCustomername());
-			}
-			CwbOrderView cov = new CwbOrderView();
-			for(OrderFlow odf:oflist){
-				for(CwbOrder co:colist){
-					if(odf.equals(co)){
-						cov.setCwb(co.getCwb());
-						cov.setCwbordertypename(getEnumtextByEnumvalue(co.getCwbordertypeid()));
-						cov.setCustomername(map.get(co.getCustomerid()));
-						cov.setCaramount(co.getCaramount());
-						cov.setEmaildate(co.getEmaildate());
-						cov.setTuigonghuoshangchukutime(String.valueOf(odf.getCredate()));
-						covlist.add(cov);
+			if(oflist!=null&&oflist.size()>0){
+				String cwbs = "";
+				for(OrderFlow of:oflist){
+					cwbs+="'"+of.getCwb()+"',";
+				}
+				List<CwbOrder> colist = cwbDao.getcwborderList(cwbs.substring(0,cwbs.lastIndexOf(",")));
+				Map<Long, String> map = new HashMap<Long, String>();
+				for(Customer co:customerList){
+					map.put(co.getCustomerid(), co.getCustomername());
+				}
+				CwbOrderView cov = new CwbOrderView();
+				for(OrderFlow odf:oflist){
+					for(CwbOrder co:colist){
+						if(odf.equals(co)){
+							cov.setCwb(co.getCwb());
+							cov.setCwbordertypename(getEnumtextByEnumvalue(co.getCwbordertypeid()));
+							cov.setCustomername(map.get(co.getCustomerid()));
+							cov.setCaramount(co.getCaramount());
+							cov.setEmaildate(co.getEmaildate());
+							cov.setTuigonghuoshangchukutime(String.valueOf(odf.getCredate()));
+							covlist.add(cov);
+						}
 					}
 				}
 			}
@@ -1525,6 +1526,9 @@ public class CwbOrderController {
 
 		return "auditorderstate/toEnd";
 	}
+	
+
+	
 
 	/**
 	 * 审为退供货商
@@ -1751,7 +1755,7 @@ public class CwbOrderController {
 	@RequestMapping("/losecwbBatch")
 	public String losecwbBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value="loseeffect",required=false,defaultValue="-1")long loseeffect) {
-		List<Customer> cList = this.customerDao.getAllCustomers();// 获取供货商列表
+		List<Customer> cList = customerDao.getAllCustomers();// 获取供货商列表
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		long successCount = 0;
 		long failCount=0;
@@ -1784,7 +1788,14 @@ public class CwbOrderController {
 
 					}
 				}
+			/*	if (orderFlowDAO.getOrderFlowByCwbAndFlowordertype(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), cwb).size() > 0) {
+					throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.Fen_Zhan_Dao_Huo_Ding_Dan_Bu_Yun_Xu_Shi_Xiao);
+>>>>>>> .merge-right.r13846
+<<<<<<< .working
+				}
 			
+=======
+				}*/
 				cwbDao.dataLoseByCwb(cwb);
 				exportwarhousesummaryDAO.dataLoseByCwb(cwb);
 				exportwarhousesummaryDAO.LoseintowarhouseByCwb(cwb);
@@ -1885,6 +1896,7 @@ public class CwbOrderController {
 			customerids=cwborderService.getStrings(customerid);
 			shixiaoList = shiXiaoDAO.getShiXiaoByCwbsAndCretime(page, lastcwbs, begindate, enddate,customerids,cwbstate,flowordertype,userid);
 			pageparm = new Page(shiXiaoDAO.getShiXiaoByCwbsAndCretimeCount(lastcwbs, begindate, enddate,customerids,cwbstate,flowordertype,userid), page, Page.ONE_PAGE_NUMBER);
+		
 		}
 		//if (begindate.length() > 0 || enddate.length() > 0 || cwbs.length() > 0) {}
 		List<String> customeridlist=cwborderService.getList(customerid);
@@ -2496,9 +2508,6 @@ public class CwbOrderController {
 			cwblist = cwbDao.getCwbByCwbs(cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "--");
 
 			model.addAttribute("cwbList", cwblist);
-			model.addAttribute("mapcustomerlist", mapcustomerlist);
-
-			
 		}
 
 		return "auditorderstate/toChangeZhongZhuan";

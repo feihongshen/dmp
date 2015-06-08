@@ -52,6 +52,9 @@ public class ApplyEditDeliverystateDAO {
 			applyEditDeliverystate.setState(rs.getLong("state"));
 			applyEditDeliverystate.setAudit(rs.getLong("audit"));
 
+			applyEditDeliverystate.setCwbstate(rs.getLong("cwbstate"));
+			applyEditDeliverystate.setShenhestate(rs.getInt("shenhestate"));
+			
 			return applyEditDeliverystate;
 		}
 	}
@@ -66,7 +69,7 @@ public class ApplyEditDeliverystateDAO {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_applyeditdeliverystate (deliverystateid,opscwbid,cwb,"
-						+ "cwbordertypeid,nowdeliverystate,nopos,pos,deliverid,applyuserid,applybranchid,applytime) " + "values(?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+						+ "cwbordertypeid,nowdeliverystate,nopos,pos,deliverid,applyuserid,applybranchid,applytime,cwbstate,shenhestate) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setLong(1, aeds.getDeliverystateid());
 				ps.setLong(2, aeds.getOpscwbid());
 				ps.setString(3, aeds.getCwb());
@@ -78,6 +81,40 @@ public class ApplyEditDeliverystateDAO {
 				ps.setLong(9, aeds.getApplyuserid());
 				ps.setLong(10, aeds.getApplybranchid());
 				ps.setString(11, aeds.getApplytime());
+				
+				ps.setLong(12, aeds.getCwbstate());
+				ps.setInt(13, aeds.getShenhestate());
+				return ps;
+			}
+		}, key);
+		aeds.setId(key.getKey().longValue());
+		return key.getKey().longValue();
+	}
+	//在多次申请对一条数据的修改后产生新的数据
+	public long creApplyEditDeliverystateNew(final ApplyEditDeliverystate aeds) {
+		KeyHolder key = new GeneratedKeyHolder();
+		jdbcTemplate.update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement("insert into express_ops_applyeditdeliverystate (deliverystateid,opscwbid,cwb,"
+						+ "cwbordertypeid,nowdeliverystate,nopos,pos,deliverid,applyuserid,applybranchid,applytime,editreason,state,cwbstate,shenhestate) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+				ps.setLong(1, aeds.getDeliverystateid());
+				ps.setLong(2, aeds.getOpscwbid());
+				ps.setString(3, aeds.getCwb());
+				ps.setLong(4, aeds.getCwbordertypeid());
+				ps.setLong(5, aeds.getNowdeliverystate());
+				ps.setBigDecimal(6, aeds.getNopos());
+				ps.setBigDecimal(7, aeds.getPos());
+				ps.setLong(8, aeds.getDeliverid());
+				ps.setLong(9, aeds.getApplyuserid());
+				ps.setLong(10, aeds.getApplybranchid());
+				ps.setString(11, aeds.getApplytime());
+				//ps.setLong(12, aeds.getEditnowdeliverystate());
+				ps.setString(12, aeds.getEditreason());
+				ps.setLong(13, aeds.getState());
+				
+				ps.setLong(14, aeds.getCwbstate());
+				ps.setInt(15, aeds.getShenhestate());
 				return ps;
 			}
 		}, key);
@@ -104,6 +141,17 @@ public class ApplyEditDeliverystateDAO {
 	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByCwb(String cwb, long ishandle) {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb =? and ishandle=? ";
 		return this.jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb, ishandle);
+	}
+	//查询未进行申请的数据
+	public List<ApplyEditDeliverystate> getHavenotApplyEditDeliverystateByCwb(String cwb, long ishandle) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb =? and ishandle=? and state=0";
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb, ishandle);
+	}
+	
+	//拿到已经修改过的申请数据
+	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByCwb(String cwb) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb =? and state=1 ";
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), cwb);
 	}
 
 	public List<ApplyEditDeliverystate> getApplyEditDeliverystateByWherePage(long page, String begindate, String enddate, long applybranchid, long ishandle, String cwb, boolean isFinancial, long audit) {
@@ -189,4 +237,50 @@ public class ApplyEditDeliverystateDAO {
 		String sql = "update express_ops_applyeditdeliverystate set audit=" + flag + ",edituserid=" + userid + " where id =" + id;
 		return this.jdbcTemplate.update(sql);
 	}
+	//根据批量订单查询
+	public List<ApplyEditDeliverystate> getApplyEditBycwbs(String cwbs){
+		String sql = "select * from express_ops_applyeditdeliverystate where cwb in("+cwbs+")";
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(),cwbs );
+	}
+	
+	//根据条件查询获取信息
+	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByOthers(int cwbordertypeid,long cwbresult,long isdo,long cwbstate,long feedbackbranch) {
+		String sql = "select * from express_ops_applyeditdeliverysate where state=1";
+		StringBuffer sb = new StringBuffer();
+		if(cwbordertypeid>0){
+			sb.append("and cwbordertypeid="+cwbordertypeid);
+		}
+		if(cwbresult>0){
+			sb.append("and nowdeliverystate="+cwbresult);
+		}
+		if(isdo>0){
+			sb.append("and ishandle="+isdo);
+		}
+		if(cwbstate>0){
+			sb.append("and cwbstate="+cwbstate);
+		}
+		if(feedbackbranch>0){
+			sb.append("and applybranchid="+feedbackbranch);
+		}
+		
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+	}
+	//审核为通过
+	public void updateShenheStatePass(String cwb) {
+		// TODO Auto-generated method stub
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3 where cwb=? ";
+		this.jdbcTemplate.update(sql,cwb);
+	}
+	//审核为不通过
+	public void updateShenheStateNoPass(String cwb) {
+		// TODO Auto-generated method stub
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=2 where cwb=? ";
+		this.jdbcTemplate.update(sql,cwb);
+	}
+	//根据订单查询单条信息
+	public ApplyEditDeliverystate getApplyED(String cwb){
+		String sql = "select * from express_ops_applyeditdeliverystate where cwb=?";
+		return jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper());
+	}
+	
 }

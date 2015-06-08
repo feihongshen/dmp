@@ -3846,12 +3846,16 @@ public class CwbDAO {
 
 	}
 
-	public List<CwbOrder> getAllCwbOrderByCwb(String cwb) {
+	public List<CwbOrder> getAllCwbOrderByCwb(String cwb) {/*state=1*/
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
 	}
 	
+	/*public CwbOrder getAllCwbOrderByCwb1(String cwb) {state=1
+		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
+	}*/
+	
 	public CwbOrder getOneCwbOrderByCwb(String cwb) {
-		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where cwb =?", new CwbSmalMaper(), cwb);
+		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where state=1 and cwb ='"+ cwb+"'", new CwbMapper());
 	}
 
 	public List<CwbOrder> getCwbOrderForOperationtimeout(long page, long outTime, String flowordertype, long branchid, long deliverystate, long nextbranchid) {
@@ -5783,6 +5787,7 @@ public class CwbDAO {
 		lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
 	
 	return lc;
+
 }
 	//待领货状态
 	public void updateFlowordertypeByIds(String opscwbids, CwbStateEnum cwbstate) {

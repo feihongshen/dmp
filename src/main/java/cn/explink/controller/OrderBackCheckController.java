@@ -238,6 +238,7 @@ public class OrderBackCheckController {
 			model.addAttribute("orderbackList", orderbackList);
 			model.addAttribute("customerList", customerList);
 		}
+<<<<<<< .working
 		*/
 		/*int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("amazonIsOpen", isOpenFlag);*/

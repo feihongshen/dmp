@@ -37,7 +37,6 @@ Map<Long,String> mapcwbordertype = (Map<Long,String>)request.getAttribute("mapcw
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 
-
 <script type="text/javascript">
 $(function(){
 	
@@ -160,8 +159,66 @@ $(function() {
 										<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 									<%} %>
 								</select>
-								</span>  订单号：
-								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+								</span>  
+								<table>
+									<tr>
+										<td rowspan="2">
+											订单号：
+											<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+										</td>
+										<td>
+											订单类型:
+											<select name ="cwbtypeid" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+													<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+													<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+													<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+											</select>
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											客户名称:
+											<select name ="customerid" id ="customerid">
+												<option  value ="0">全部</option>
+												<%if(customerList!=null){ %>
+													<%for(Customer cus:customerList){ %>
+													<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
+													<%} %>
+												<%} %>
+											</select>
+										</td>
+										<td>
+											配送站点:
+											<select name ="branchid" id ="branchid">
+												<option  value ="0">全部</option>
+												 <%if(branchList!=null && branchList.size()>0) {%>
+													<%for(Branch branch:branchList){ %>
+													<option value ="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
+													<%} }%>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											退货入库时间:
+												<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
+											到
+												<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
+										</td>
+									</tr>
+								</table>
+								<table>
+									<tr>
+										<td width="20%">
+											<input type="submit" value="查询" class="input_button2">&nbsp;&nbsp;
+											<input type="submit" value="重置" class="input_button2">&nbsp;&nbsp;
+										</td>
+										<td width="20%">
+											<input type="submit" name="button" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
+											<%if(cwbList!=null&&!cwbList.isEmpty()){%><span>
+												<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+											</span> <%} %>
+										</td>
+									</tr>
+								</table>
 								订单类型:
 								<select name ="cwbtypeid" id ="cwbtypeid">
 									<option  value ="0">全部</option>
@@ -191,12 +248,6 @@ $(function() {
 								到
 									<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
 								
-								<input type="submit" value="查询" class="input_button2">&nbsp;&nbsp;
-								<input type="submit" value="重置" class="input_button2">&nbsp;&nbsp;
-								<%if(cwbList!=null&&!cwbList.isEmpty()){%><span>
-									<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-								</span> <%} %>
-								<input type="submit" name="button" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
 							</form>
 						<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 							<input type="hidden" name="exportmould2" id="exportmould2"  class="input_button2" />
@@ -218,55 +269,27 @@ $(function() {
 							</tbody>
 						</table>
 					</div>
-					<div style="height:100px"></div>
+					<div style="height:135px"></div>
 					<from action="./auditTuiHuoZaiTou" method="post" id="SubFrom" >
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 							<tbody>
-								<%
-								if(cwbList!=null) 
-							for(CwbOrderView cwb :cwbList){ %>
-								<tr height="30" cwbFlowordertype="<%=cwb.getFlowordertype() %>"  cwbstate="<%
-								if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()&&
-										!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue())){
-									out.print("no");
-								} %>"	>
-									<td width="40" align="center" valign="middle" bgcolor="#f3f3f3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %>checked="checked"<%} %>></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapbranch.get(cwb.getTuihuoid()) %></td>
-									
-									<td width="200" align="center" valign="middle">
-									<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>
-											<%=cwb.getCwbremark() %>
-									<input type="hidden" id="<%=cwb.getCwb() %>_cwbremark" name="<%=cwb.getCwb() %>_cwbremark" value="<%=cwb.getCwb() %>_s_0"/>
-									<%}else{ %>
-									<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
-									<option value="">请选择退货再投原因</option>
-									<%for(Reason r :reasonList) {%><option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option><%} %>
-										</select>
-									<%} %>
-									</td>
-								</tr>
-							<%} %>
+								<%if(cwbList!=null){ 
+									for(CwbOrderView cwb :cwbList){ %>
+									<tr height="30">
+										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %>checked="checked"<%} %>></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapbranch.get(cwb.getTuihuoid()) %></td>
+									</tr>
+								<%} }%>
 						</table>
 					</from>
 				</div>
-				<div style="height:40px"></div>
-				<%if(cwbList!=null){ %>
-				<div class="iframe_bottom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" id="gd_table2">
-						<tbody>
-							<tr height="30" >
-								<td align="center" valign="middle" bgcolor="#f3f3f3"><input type="submit" name="button" id="button" value="退货再投" class="input_button1" onclick="sub()"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div><%} %> 
 		</div>
 	</div>
 </div>

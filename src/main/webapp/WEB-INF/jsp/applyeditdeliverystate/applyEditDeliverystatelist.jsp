@@ -126,9 +126,6 @@ function sub(){
 			<ul>
 				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >订单修改申请</a></li>
 				<li><a href="#" class="light">历史申请记录</a></li>
-				<%-- <li><a href="<%=request.getContextPath()%>/editcwb/start">重置反馈状态</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/editCwbInfo">订单信息修改</a></li>
-				<li><a href="<%=request.getContextPath()%>/editcwb/toSearchCwb/1">订单修改查询</a></li> --%>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -140,7 +137,7 @@ function sub(){
 								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
 									到
 									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
-								处理状态：
+								处理状态:
 								<select name="ishandle" id="ishandle" class="select1">
 									<option value="-1">请选择</option>
 									<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
@@ -160,13 +157,12 @@ function sub(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td align="center" valign="middle" bgcolor="#eef6ff">申请修改原因</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<div style="height:76px"></div>
-					
+					<div style="height:70px"></div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
 						<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
@@ -190,7 +186,7 @@ function sub(){
 									%>
 								</td>
 								<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getEdituserid()==u.getUserid()){ %><font color="red"><%=u.getRealname() %></font><%}} %></td>
-								<td align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getEditnowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
+								<td align="center" valign="middle"><%=adse.getEditreason() %></td>
 							</tr>
 						<%} %>
 					</table>

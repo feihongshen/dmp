@@ -310,5 +310,4 @@ public class CustomerDAO {
 		return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),customerid);
 	}
 	
-	
 }

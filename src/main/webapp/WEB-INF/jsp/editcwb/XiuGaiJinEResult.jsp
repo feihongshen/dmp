@@ -39,11 +39,8 @@ List<String> errorList = request.getAttribute("errorList")==null?new ArrayList<S
  			 
  	</tr>
 	<tr class="font_1" height="30" style="background-color: rgb(243, 243, 243); ">
-		<td>无法重置的订单号
- 		</td>
- 		<td>
- 			当前所在环节 
- 		</td>
+		<td>无法重置的订单号</td>
+ 		<td>当前所在环节 </td>
  		<td>异常信息</td>
  	</tr>
  	<%if(errorList.size()>0){  for(String error :errorList){ %>

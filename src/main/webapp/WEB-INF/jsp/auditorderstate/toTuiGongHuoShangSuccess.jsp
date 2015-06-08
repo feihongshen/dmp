@@ -154,42 +154,74 @@ function exportField(){
 											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
 										<%} %>
 								</select>
-								</span><%} %> 订单号：
-								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
-								订单类型:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
-								</select>
-								客户名称:
-								<select name ="customerid" id ="customerid">
-									<option  value ="0">全部</option>
-									<%if(customerList!=null){ %>
-										<%for(Customer cus:customerList){ %>
-										<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
-										<%} %>
-									<%} %>
-								</select>
-								审核状态:
-								<select name ="auditstate" id ="auditstate">
-									<option  value ="0">全部</option>
-										<option value = "1">待审核</option>
-										<option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>">已<%=FlowOrderTypeEnum.YiShenHe.getText() %></option>
-								</select>
-								退客户出库时间:
-								<input type ="text" name ="begindate" id="strtime"  value=""/>
-								到
-								<input type ="text" name ="enddate" id="endtime"  value=""/>
-								<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
-								<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="退客户成功" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="拒收退货" class="input_button2">&nbsp;&nbsp;
-								<%if(cwbList!=null&&!cwbList.isEmpty()){ %>
-								<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-								<%} %>
+								</span><%} %> 
+								<table>
+									<tr>
+										<td rowspan="2">
+											订单号：
+											<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											订单类型:
+											<select name ="cwbtypeid" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+													<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+													<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+													<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											客户名称:
+											<select name ="customerid" id ="customerid">
+												<option  value ="0">全部</option>
+												<%if(customerList!=null){ %>
+													<%for(Customer cus:customerList){ %>
+													<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
+													<%} %>
+												<%} %>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&nbsp;&nbsp;
+											审核状态:
+											<select name ="auditstate" id ="auditstate">
+												<option  value ="0">全部</option>
+													<option value = "1">待审核</option>
+													<option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>">已<%=FlowOrderTypeEnum.YiShenHe.getText() %></option>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											退客户出库时间:
+											<input type ="text" name ="begindate" id="strtime"  value=""/>
+											到
+											<input type ="text" name ="enddate" id="endtime"  value=""/>
+										</td>
+										<td>
+										</td>
+									</tr>
+								</table>
+								<table>
+									<tr>
+										<td width="20%">
+											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
+											<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
+										</td>
+										<td width="20%">
+											<input type="button" onclick="" value="退客户成功" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="" value="拒收退货" class="input_button2">&nbsp;&nbsp;
+											<%if(cwbList!=null&&!cwbList.isEmpty()){ %>
+											<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+											<%} %>
+										</td>
+									</tr>
+									
+								</table>
 							</form>
 							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 								<input type="hidden" name="exportmould2" id="exportmould2" />

@@ -5030,6 +5030,7 @@ function whenhidden(){
 		}
 	}
 	
+	$("#div_changealowflag").attr('hidden');
 	if($("#reasontype").val()==1||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
@@ -5047,10 +5048,7 @@ function whenhidden(){
 
 
 function to_change(flag){
-	$("#div_changealowflag").attr('hidden','true');
-	$("#div_2").attr('hidden','true');
-	
-	if($("#reasontype").val()==2)
+	if($("#reasontype").val()==1||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
 			if(flag==1){
@@ -5297,3 +5295,158 @@ $.ajax({
  }
 
 
+
+function btnswd(ev){
+	$('#cls').val(ev);
+	alert(ev);
+	$.ajax({
+				type:'POST',
+				data:$('#WorkOrderQueryForm').serialize(),
+				url:$('#WorkOrderQueryForm').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					alert(data.error);
+				}
+	});
+	closeBox();
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
+}
+
+function getSV(v){
+	$('#stateNum').val(v);
+}
+function btnccwo(Val){
+	if($('#stateNum').val()==$('#bcl').val()){
+		$('#cwo').val($('#yjs').val());	
+			
+	}else{
+		$('#cwo').val(Val);	
+		
+	}
+	
+	$.ajax({
+				type:'POST',
+				data:$('#ComplainWorkOrderF').serialize(),
+				url:$('#ComplainWorkOrderF').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					
+					alert(data.error);
+					
+				}
+	});
+	closeBox();
+	$('#cwo').val('');	
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
+	
+	}
+
+
+
+function btnupdate(csv){
+	$('#cwo').val(csv);
+	$.ajax({
+				type:'POST',
+				data:$('#UpdateComplainWorkOrderF').serialize(),
+				url:$('#UpdateComplainWorkOrderF').attr('action'),
+				dataType:'json',				
+				success:function(data){
+					if (data.errorCode == 0) {					
+					/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+						closeBox();*/
+						alert(data.error);
+						}
+					}
+				});
+	closeBox();
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
+	}
+	
+ function getAddBoxx2(valWo) {
+	 
+$.ajax({
+	type : "POST",
+	data:"workorder="+valWo,
+	url : $("#GoOnacceptWo").val(),
+	dataType : "html",
+	success : function(data) {
+		// alert(data);
+		$("#alert_box", parent.document).html(data);
+		
+	},
+	complete : function() {
+		addInit();// 初始化某些ajax弹出页面			
+		viewBox();
+	}
+});
+}
+ 
+ function addcaller(){
+	 if($('#skhfl').val()==-1){
+		 alert('请选择客户分类');
+		 return false;
+	 }
+	 $.ajax({
+			type : "POST",
+			data:$('#addcallerForm').serialize(),
+			url : $("#addcallerForm").attr('action'),
+			dataType : "json",
+			success : function(data) {
+				if(data.errorCode==0){
+						alert(data.error);
+						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+						closeBox();
+					}
+				}
+				
+			});
+	 
+ }
+ 
+ function editcaller(){
+	 if($('#skhfl1').val()==-1){
+		 alert('请选择客户分类');
+		 return false;
+	 }
+	 $.ajax({
+			type : "POST",
+			data:$('#editcallerForm').serialize(),
+			url : $("#editcallerForm").attr('action'),
+			dataType : "json",
+			success : function(data) {
+				if(data.errorCode==0){
+						alert(data.error);
+						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+						closeBox();
+					}
+				}
+				
+			});
+	 
+ }
+ 
+function AlreadyVerify(AVV){
+	$('#AlreadyVerifycomplaintState').val(AVV);
+	$.ajax({
+		type:'POST',
+		data:$('#ChangeComplaintStateF').serialize(),
+		url:$('#ChangeComplaintStateF').attr('action'),
+		dataType:'json',				
+		success:function(data){
+			if (data.errorCode == 0) {					
+			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();*/
+				alert(data.error);
+				$('#AlreadyVerifycomplaintState').val("");
+				}
+			}
+		});
+	closeBox();
+	$('#AlreadyVerifycomplaintState').val("");
+}
+	

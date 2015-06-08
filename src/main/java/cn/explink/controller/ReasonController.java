@@ -125,8 +125,7 @@ public class ReasonController {
 		reason.setReasontype(reasontype);
 		reason.setWhichreason(whichreason);
 		reason.setChangealowflag(changealowflag);
-
-		if (reasontype == 1||reasontype == 12) {
+		if (reasontype == 1||reasontype == 13) {
 			reason.setWhichreason(1);
 			if (whichreason == 2) {
 				reason.setParentid(parentid);
