@@ -413,8 +413,8 @@ public class WorkOrderController {
 			String cwb=lcs.getOrderNo();  //获取订单号
 			List<CwbOrder> lco=cwbdao.getAllCwbOrderByCwb(cwb);
 			String conMobile=lco.get(0).getConsigneemobile();
-			List<OrderFlow> lof=orderflowdao.getRuKuTimeByCwb(cwb);			
-			Date createTime=lof.get(0).getCredate();
+//			List<OrderFlow> lof=orderflowdao.getRuKuTimeByCwb(cwb);			
+			Date createTime=orderflowdao.getRuKuTimeByCwb(cwb).getCredate();
 			SimpleDateFormat dateformat1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String RuKuTime=dateformat1.format(createTime); //获取入库时间
 			List<Reason> lr=reasondao.addWO();
