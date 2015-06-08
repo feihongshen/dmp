@@ -19,7 +19,7 @@ public class ZhiFuApplyView {
 	private int applystate;//审核所处的状态
 	private int applyresult; //审核结果
 	private int userid; 
-	private String feeremark;
+	private String feewaytyperemark;
 	
 	public int getApplyid() {
 		return applyid;
@@ -34,11 +34,11 @@ public class ZhiFuApplyView {
 		this.applyway = applyway;
 	}
 	
-	public String getFeeremark() {
-		return feeremark;
+	public String getFeewaytyperemark() {
+		return feewaytyperemark;
 	}
-	public void setFeeremark(String feeremark) {
-		this.feeremark = feeremark;
+	public void setFeewaytyperemark(String feewaytyperemark) {
+		this.feewaytyperemark = feewaytyperemark;
 	}
 	public int getUserid() {
 		return userid;
@@ -118,6 +118,8 @@ public class ZhiFuApplyView {
 	public void setApplystate(int applystate) {
 		this.applystate = applystate;
 	}
+	
+	
 	
 	
 	

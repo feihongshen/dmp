@@ -3,13 +3,16 @@ package cn.explink.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 import net.sf.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.util.StringUtil;
 
@@ -35,7 +38,7 @@ public class ZhiFuApplyDao {
 			zfav.setApplystate(rs.getInt("applystate"));
 			zfav.setApplyresult(rs.getInt("applyresult"));
 			zfav.setUserid(rs.getInt("userid"));
-			zfav.setFeeremark(rs.getString("feeremark"));
+//			zfav.setFeewaytyperemark(rs.getString("feeremark"));
 			return zfav;
 		}
 	}
@@ -61,7 +64,7 @@ public class ZhiFuApplyDao {
 			obj.put("applystate", rs.getInt("applystate"));
 			obj.put("applyresult", rs.getInt("applyresult"));
 			obj.put("userid", rs.getInt("userid"));
-			obj.put("feeremark", rs.getString("feeremark"));
+//			obj.put("feeremark", rs.getString("feeremark"));
 			return obj;
 		}
 	}
@@ -92,7 +95,7 @@ public class ZhiFuApplyDao {
 				zav.getApplystate(),
 				zav.getApplyresult(),
 				zav.getUserid(),
-				zav.getFeeremark());
+				zav.getFeewaytyperemark());
 	}
 	
 	public List<ZhiFuApplyView> getAllZFAVBycwbs(){
@@ -107,35 +110,40 @@ public class ZhiFuApplyDao {
 	}
 	//查询已审核支付信息数据
 	public List<ZhiFuApplyView> getZFAVBycwbss(String cwbs){
-		String sql = "select * from express_ops_zhifu_apply where cwb in(?) and applystate=2";
+		String sql = "select * from express_ops_zhifu_apply where cwb in(?) and applystate=3 and applyresult=0";
 		return jdbcTemplate.query(sql,new ZhiFuApplyMapper(),cwbs);
 	}
 
 	//在 审核~确认 页面通过条件查询
 	public List<ZhiFuApplyView> getapplycwbs(int cwbtypeid, int applytype,int userid, int shenhestate,
 			int shenheresult) {
-		String sql = "select * from express_ops_zhifu_apply where applyid>=0 ";
+		String sql = "";
 		StringBuffer sb = new StringBuffer("");
-		if(cwbtypeid>0){
-			sb.append("and cwbordertypeid="+cwbtypeid);
-		}
-		if(applytype>0){
-			if(applytype==1){
-				sb.append("and applyreceivablefee<>0.00 ");
-			}else if(applytype==2){
-				sb.append("and applypaywayid<>0 ");
-			}else if(applytype==3){
-				sb.append("and applycwbordertypeid=<>0 ");
+		if(cwbtypeid==0&&applytype==0&&userid==0&&shenhestate==0){
+			sql = "select * from express_ops_zhifu_apply where applystate=1 ";
+		}else{
+			sql = "select * from express_ops_zhifu_apply where applyid>=0 ";
+			if(cwbtypeid>0){
+				sb.append("and cwbordertypeid="+cwbtypeid);
 			}
-		}
-		if(userid>0){
-			sb.append("and userid="+userid);
-		}
-		if(shenhestate>0){
-			sb.append("and applystate="+shenhestate);
-		}
-		if(shenheresult>0){
-			sb.append("and applyresult="+shenheresult);
+			if(applytype>0){
+				if(applytype==1){
+					sb.append("and applyreceivablefee<>0.00 ");
+				}else if(applytype==2){
+					sb.append("and applypaywayid<>0 ");
+				}else if(applytype==3){
+					sb.append("and applycwbordertypeid=<>0 ");
+				}
+			}
+			if(userid>0){
+				sb.append("and userid="+userid);
+			}
+			if(shenhestate>0){
+				sb.append("and applystate="+shenhestate);
+			}
+			if(shenheresult>0){
+				sb.append("and applyresult="+shenheresult);
+			}
 		}
 		
 		return jdbcTemplate.query(sql+=sb, new ZhiFuApplyMapper());
@@ -143,33 +151,77 @@ public class ZhiFuApplyDao {
 	
 	//在 审核~确认 页面通过条件查询
 	public List<ZhiFuApplyView> getapplycwbss(int cwbtypeid, int applytype,int userid,int applystate,int shenheresult) {
-		String sql = "select * from express_ops_zhifu_apply where applystate=2 ";
-		StringBuffer sb = new StringBuffer("");
-		if(cwbtypeid>0){
-			sb.append("and cwbordertypeid="+cwbtypeid);
-		}
-		if(applytype>0){
-			if(applytype==1){
-				sb.append("and applyreceivablefee<>0.00 ");
-			}else if(applytype==2){
-				sb.append("and applypaywayid<>0 ");
-			}else if(applytype==3){
-				sb.append("and applycwbordertypeid=<>0 ");
+		String sql = "";
+		if(cwbtypeid==0&&applytype==0&&userid==0&&applystate==0&&shenheresult==0){
+			sql = "select * from express_ops_zhifu_apply where applystate=3 and applyresult=0";
+		}else{
+			sql = "select * from express_ops_zhifu_apply where applystate=3 ";
+			StringBuffer sb = new StringBuffer("");
+			if(cwbtypeid>0){
+				sb.append("and cwbordertypeid="+cwbtypeid);
 			}
-		}
-		if(userid>0){
-			sb.append("and userid="+userid);
-		}
-		/*if(shenhestate>0){
+			if(applytype>0){
+				if(applytype==1){
+					sb.append("and applyreceivablefee<>0.00 ");
+				}else if(applytype==2){
+					sb.append("and applypaywayid<>0 ");
+				}else if(applytype==3){
+					sb.append("and applycwbordertypeid=<>0 ");
+				}
+			}
+			if(userid>0){
+				sb.append("and userid="+userid);
+			}
+			/*if(shenhestate>0){
 			sb.append("and applystate=? ");
 		}*/
-		if(shenheresult>0){
-			sb.append("and applyresult="+shenheresult);
+			if(shenheresult>0){
+				sb.append("and applyresult="+shenheresult);
+			}
+			sql = sql+sb;
 		}
 		
-		return jdbcTemplate.query(sql+=sb, new ZhiFuApplyMapper());
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
 
+	public List<ZhiFuApplyView> getZAVByAppid(String applyids){
+		String sql = "select * from express_ops_zhifu_apply where applyid in("+applyids+")";
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper(), applyids );
+	}
 	
+	//审核通过
+	public void updateStatePassByCwb(int applyid) {
+		String sql = "update express_ops_zhifu_apply set applystate=3  where applyid=? ";
+		this.jdbcTemplate.update(sql, applyid);
+
+	}
+	//确认通过
+	public void updateStateConfirmPassByCwb(String cwb) {
+		String sql = "update express_ops_zhifu_apply set applyresult=2  where cwb=? ";
+		this.jdbcTemplate.update(sql, cwb);
+
+	}
+	//审核为不通过
+	public void updateStateNopassByCwb(int applyid) {
+		String sql = "update express_ops_zhifu_apply set applystate=2  where applyid=? ";
+		this.jdbcTemplate.update(sql, applyid);
+
+	}
+	//确认不通过
+	public void updateStateConfirmNopassByCwb(int applyid) {
+		String sql = "update express_ops_zhifu_apply set applyresult=1  where applyid=? ";
+		this.jdbcTemplate.update(sql, applyid);
+
+	}
+	//通过applyid查到对应数据
+	public ZhiFuApplyView getZhiFuViewByApplyid(String applyid){
+		String sql = "select * from express_ops_zhifu_apply where applyid=?";
+		return jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyid );
+	}
+
+	public void updateApplyResult(int applyid) {
+		String sql = "update express_ops_zhifu_apply set applyresult=2 where applyid=?";
+		jdbcTemplate.update(sql,applyid);
+	}
 	
 }
