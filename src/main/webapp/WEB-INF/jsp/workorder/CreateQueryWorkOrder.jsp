@@ -39,14 +39,18 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 					<tr><td>查询内容:<textarea style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"></textarea></td></tr>
 													
 				</table>
-				<input type="hidden"  name="complaintState" id="cls">
+				<input type="hidden"  name="complaintState" id="cls" value="">
 				<input type="hidden"  name="phoneOne" value="<%=a.getPhoneOne()%>">
 				<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
 				
 			
 			</form>	
 			
-			 <div align="center"><button class="button">发送催件短信</button><button class="button" id="btnnn" onclick="btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button><button class="button" onclick="btnswd('<%=ComplaintStateEnum.YiJieAn.getValue()%>')" id="btnnnnn">结案</button><button class="button" onclick="closeBox()">取消</button></div>
+				 <div align="center"><button class="button">发送催件短信</button>
+						 <button class="button" id="btnnn" onclick="btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
+						 <button class="button" onclick="btnswd('<%=ComplaintStateEnum.YiJieShu.getValue()%>')" id="btnnnnn">结案</button>
+						 <button class="button" onclick="closeBox()">取消</button>
+				 </div>
 		</div>
 		
 	</div>

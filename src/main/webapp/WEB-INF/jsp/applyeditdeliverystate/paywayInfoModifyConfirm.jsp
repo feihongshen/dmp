@@ -7,10 +7,10 @@
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
-Map<Long,String> costomermap = (Map<Long,String>)request.getAttribute("costomermap");
-Map<Long,String> bramap = (Map<Long,String>)request.getAttribute("bramap");
+Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
+Map<Long,String> userMap = (Map<Long,String>)request.getAttribute("userMap");
 List<ZhiFuApplyView> zhifulist = (List<ZhiFuApplyView>)request.getAttribute("zhifulist");
-Map<Long,String> usermap = (Map<Long,String>)request.getAttribute("usermap");
+Map<Long,String> braMap = (Map<Long,String>)request.getAttribute("braMap");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -98,7 +98,7 @@ function check(){
 	}
 }
 
-function sub(){
+/* function sub(){
 	var datavalue = "[";
 	
 	if($('input[name="ischeck"]:checked').size()>0){
@@ -124,18 +124,77 @@ function sub(){
 	});
 	}
 	
+} */
+function applypass(){
+	var datavalue = "";
+	
+	if($('input[name="checkbox"]:checked').size()>0){
+		$('input[name="checkbox"]:checked').each(function(index){
+			$(this).attr("checked",false);
+			datavalue = datavalue +$(this).val()+",";
+		});
+	}
+	if(datavalue.length==0){
+		alert("请选择当前要处理订单！");
+	}
+	if(datavalue.length>1){
+		datavalue= datavalue.substring(0, datavalue.length-1);
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyConfirmpass",
+			data:{applyids:datavalue},
+			dataType:"json",
+			success:function(data) {    
+		        if(data.msg =="true1" ){    
+		           alert("修改金额确认通过！");    
+		           window.location.reload();    
+		        }else if(data.msg =="true2" ){
+		        	alert("修改支付方式确认通过！");    
+		        	window.location.reload();    
+		        }else if(data.msg =="true3" ){
+		        	alert("修改订单类型确认通过！");    
+		        	window.location.reload();    
+		        }else{    
+		           alert("未完成确认出现异常！");   
+	        }    
+	     }
+	 });
+	}
 }
 
-<%-- function exportField(){
-	if(<%=cwbList!=null&&cwbList.size()!=0%>){
-		$("#exportmould2").val($("#exportmould").val());
-		$("#btnval").attr("disabled","disabled"); 
-	 	$("#btnval").val("请稍后……");
-		$("#searchForm2").submit();	
-	}else{
-		alert("没有做查询操作，不能导出！");
+function applynopass(){
+	var datavalue = "";
+	
+	if($('input[name="checkbox"]:checked').size()>0){
+		$('input[name="checkbox"]:checked').each(function(index){
+			$(this).attr("checked",false);
+			datavalue = datavalue+$(this).val()+",";
+		});
 	}
-} --%>
+	if(datavalue.length>1){
+		datavalue= datavalue.substring(0, datavalue.length-1);
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyConfirmnopass",
+			data:{applyids:datavalue},
+			dataType:"json",
+			success:function(data) {    
+		        if(data.msg =="true1" ){    
+		           alert("修改金额未确认通过！");    
+		           window.location.reload();    
+		        }else if(data.msg =="true2" ){
+		        	alert("修改支付方式未确认通过！");    
+		        	window.location.reload();    
+		        }else if(data.msg =="true3" ){
+		        	alert("修改订单类型未确认通过！");    
+		        	window.location.reload();    
+		        }else{    
+		           alert("未完成确认出现异常！");   
+	        }    
+	     }
+	 });
+	}
+}
 
 </script>
 </HEAD>
@@ -148,7 +207,7 @@ function sub(){
 				<div style="position:relative; z-index:0 " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="./paywayInfoModifyConfirm" method="post" id="searchForm">
+							<form action="./paywayInfoModifyCheck" method="post" id="searchForm">
 								<span>
 								<select name ="exportmould" id ="exportmould">
 										<option  value ="0">导出模板</option>
@@ -157,54 +216,83 @@ function sub(){
 										<%} %>
 									</select>
 									<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span> 
-								订单号：
-								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
-								订单类型:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue() %>"><%=CwbOrderTypeIdEnum.Peisong.getText() %></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText() %></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText() %></option>
-								</select>
-								申请人:
-								<select name ="applypeople" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-									<%Set<Long> s = usermap.keySet(); %>
-										<%for(Long l:s){%>
-											<option value ="<%=l%>"><%=usermap.get(l)%></option>
-											
-										<%}%>
-								</select>
-								申请类型:
-								<select name ="applytype" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value ="<%=ApplyEnum.dingdanjinE.getValue()%>"><%=ApplyEnum.dingdanjinE.getText() %></option>
-										<option value ="<%=ApplyEnum.zhifufangshi.getValue()%>"><%=ApplyEnum.zhifufangshi.getText() %></option>
-										<option value ="<%=ApplyEnum.dingdanleixing.getValue()%>"><%=ApplyEnum.dingdanleixing.getText() %></option>
-								</select>
-								审核状态:
-								<select name ="shenhestate" id ="shenhestate">
-									<option  value ="0">全部</option>
-										<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
-										<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
-								</select>
-								审核结果:
-								<select name ="shenheresult" id ="customerid">
-									<option  value ="0">全部</option>
-									<option value ="<%=ShenHeResultEnum.shenhebutongguo.getValue() %>"><%=ShenHeResultEnum.shenhebutongguo.getText() %></option>
-									<option value ="<%=ShenHeResultEnum.shenhetongguo.getValue() %>"><%=ShenHeResultEnum.shenhetongguo.getText() %></option>
-								</select>
-								<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="审核通过" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="审核不通过" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="" value="导出" class="input_button2">
+								</span>
+								<table>
+									<tr>
+										<td rowspan="2">
+											订单号：
+											<textarea name="cwb"  rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+										</td>
+										<td>
+											订单类型:
+											<select name ="cwbtypeid" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue() %>"><%=CwbOrderTypeIdEnum.Peisong.getText() %></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText() %></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText() %></option>
+											</select>
+										</td>
+										<td>
+											申请人:
+											<select name ="applypeople" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+													<% Set<Long> s=userMap.keySet();%>
+													<%for(Long u:s){ %>
+													<option value ="<%=u %>"><%=userMap.get(u) %></option>
+													<%} %>
+											</select>
+										</td>
+										<td>
+											申请类型:
+											<select name ="applytype" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+													<option value ="<%=ApplyEnum.dingdanjinE.getValue()%>"><%=ApplyEnum.dingdanjinE.getText() %></option>
+													<option value ="<%=ApplyEnum.zhifufangshi.getValue()%>"><%=ApplyEnum.zhifufangshi.getText() %></option>
+													<option value ="<%=ApplyEnum.dingdanleixing.getValue()%>"><%=ApplyEnum.dingdanleixing.getText() %></option>
+											</select>
+										</td>
+									</tr>	
+									<tr>
+										<td>
+											确认状态:
+											<select name ="shenhestate" id ="shenhestate">
+												<option  value ="0">全部</option>
+													<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
+													<option value ="<%=ApplyStateEnum.shenhebutongguo.getValue() %>"><%=ApplyStateEnum.shenhebutongguo.getText() %></option>
+													<option value ="<%=ApplyStateEnum.shenhetongguo.getValue()%>"><%=ApplyStateEnum.shenhetongguo.getText() %></option>
+											</select>
+										</td>
+										<td>
+											确认结果:
+											<select name ="shenheresult" id ="customerid">
+												<option  value ="0">全部</option>
+												<option value ="<%=ShenHeResultEnum.shenhebutongguo.getValue() %>"><%=ShenHeResultEnum.shenhebutongguo.getText() %></option>
+												<option value ="<%=ShenHeResultEnum.shenhetongguo.getValue() %>"><%=ShenHeResultEnum.shenhetongguo.getText() %></option>
+											</select>
+										</td>
+									</tr>
+								</table>
+								<table>
+									<tr>
+										<td width="20%">
+											<input type="button" value="查询" onclick="serchsubmit();" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
+										</td>
+										<td width="20%">
+											<input type="button" onclick="applypass()" id="pass" value="确认通过" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="applynopass()" id="nopass" value="确认不通过" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="" value="导出" class="input_button2">
+										</td>
+									</tr>
+								</table>
+							</form>
+							<form action="" id="shenhesubmit" method="post">
+								<input hidden="hidden" id="hiddencwbs" value="" />
 							</form>
 							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 								<input type="hidden" name="exportmould2" id="exportmould2" />
 							</form>
-						</div><%-- <%if(cwbList!=null){ %> --%>
+						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -219,49 +307,34 @@ function sub(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
 								</tr>
 							</tbody>
-						</table><%-- <%} %> --%>
+						</table>
 					</div>
-					<div style="height:100px"></div>
-					<from action="./paywayInfoModifyCheck" method="post" id="SubFrom" >
+					<div style="height:135px"></div>
+					<from action="" method="post" id="SubFrom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
 							<%
 							if(zhifulist!=null){
-								for(ZhiFuApplyView zav :zhifulist){ %>
-									<tr <%-- height="30" cwbFlowordertype="<%=cwb.getFlowordertype() %>"  cwbstate="<%
-									if(cwb.getFlowordertype()!=FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&
-											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue())){
-										out.print("no");
-									} %>"	 --%>>
-									<td  width="40" align="center" valign="middle">
-											<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%=zav.getApplyid()%>"/>
-										</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=costomermap.get(zav.getCustomerid()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyEnum.getTextByValue(zav.getApplyway()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=CwbOrderTypeIdEnum.getTextByValue(zav.getCwbordertypeid()) %>/<%=CwbOrderTypeIdEnum.getTextByValue(zav.getApplycwbordertypeid()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getReceivablefee() %>/<%=zav.getApplyreceivablefee() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=PaytypeEnum.getTextByValue(zav.getPaywayid()) %>/<%=PaytypeEnum.getTextByValue(zav.getApplypaywayid()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyStateEnum.getTextByValue(zav.getApplystate()) %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=bramap.get(zav.getBranchid()) %></td>
+								for(ZhiFuApplyView zav :zhifulist){ 
+									%>
+									<tr height="30" >
+										<td  width="40" align="center" valign="middle">
+												<input type="checkbox"  name="checkbox" id="checkbox" value="<%=zav.getApplyid()%>"/>
+											</td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav==null?"":zav.getCwb() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=customerMap==null?"":customerMap.get(zav.getCustomerid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyEnum.getTextByValue(zav.getApplyway()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=CwbOrderTypeIdEnum.getTextByValue(zav.getCwbordertypeid()) %>/<%=CwbOrderTypeIdEnum.getTextByValue(zav.getApplycwbordertypeid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav==null?"":zav.getReceivablefee() %>/<%=zav==null?"":zav.getApplyreceivablefee() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=PaytypeEnum.getTextByValue(zav.getPaywayid()) %>/<%=PaytypeEnum.getTextByValue(zav.getApplypaywayid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyStateEnum.getTextByValue(zav.getApplystate()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=braMap==null?"":braMap.get(zav.getBranchid()) %></td>
 									</tr>
-							<%} }%>
+								<%} }%>
 						</tbody>
 					</table>
 					</from>
 				</div>
-				
-				<div style="height:40px"></div>
-				<%-- <%if(cwbList!=null){ %>
-				<div class="iframe_bottom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" id="gd_table2">
-						<tbody>
-							<tr height="30" >
-								<td align="center" valign="middle" bgcolor="#f3f3f3"><input type="submit" name="button" id="button" value="提交" class="input_button1" onclick="sub();"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div><%} %> --%>
 		</div>
 	</div>
 </div>

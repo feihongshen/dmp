@@ -2,7 +2,9 @@ package cn.explink.enumutil;
 
 public enum ApplyStateEnum {
 	daishenhe(1,"待审核"),
-	yishenhe(2,"已审核");
+	shenhebutongguo(2,"审核不通过"),
+	shenhetongguo(3,"审核通过");
+	
 	
 	private int value;
 	private String text;

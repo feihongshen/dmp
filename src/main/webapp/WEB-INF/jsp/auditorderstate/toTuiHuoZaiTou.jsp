@@ -219,34 +219,6 @@ $(function() {
 										</td>
 									</tr>
 								</table>
-								订单类型:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
-										<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
-								</select>
-								客户名称:
-								<select name ="customerid" id ="customerid">
-									<option  value ="0">全部</option>
-									<%if(customerList!=null){ %>
-										<%for(Customer cus:customerList){ %>
-										<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
-										<%} %>
-									<%} %>
-								</select>
-								配送站点:
-								<select name ="branchid" id ="branchid">
-									<option  value ="0">全部</option>
-									 <%if(branchList!=null && branchList.size()>0) {%>
-										<%for(Branch branch:branchList){ %>
-										<option value ="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
-										<%} }%>
-								</select>
-								退货入库时间:
-									<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
-								到
-									<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
 								
 							</form>
 						<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
@@ -290,6 +262,17 @@ $(function() {
 						</table>
 					</from>
 				</div>
+				<%-- <div style="height:40px"></div>
+				<%if(cwbList!=null){ %>
+				<div class="iframe_bottom" >
+					<table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" id="gd_table2">
+						<tbody>
+							<tr height="30" >
+								<td align="center" valign="middle" bgcolor="#f3f3f3"><input type="submit" name="button" id="button" value="退货再投" class="input_button1" onclick="sub()"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div><%} %>  --%>
 		</div>
 	</div>
 </div>

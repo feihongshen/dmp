@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +33,8 @@ import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.ComplaintStateEnum;
+import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
@@ -52,7 +55,7 @@ public class WorkOrderController {
 	@Autowired
 	private BranchDAO branchdao;
 	@Autowired
-	private CustomerDAO cd;
+	private CustomerDAO customerDAO;
 	@Autowired
 	private WorkOrderDAO workorderdao;
 	@Autowired
@@ -83,20 +86,36 @@ public class WorkOrderController {
 
 	
 	@RequestMapping("/CallerArchivalRepository")
-	public String CallerArchivalRepository(Model model){
-		List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo();
-		model.addAttribute("ccilist", ccilist);
-		
-		
+	public String CallerArchivalRepository(){
+
 		return "workorder/CallerArchivalRepository";
 	}
-	
-	@RequestMapping("/EditEditMaintain")
-	public String EditEditMaintain(Model model,@RequestParam(value="phoneone",defaultValue="",required=true) String phone) throws Exception{
-		CsConsigneeInfo ccf=workorderdao.queryByPhoneNum(phone);
-		
-		return "workorder/EditMaintain";
+	@RequestMapping("/QueryCallerInfo")
+	public String QueryCallerInfo(Model model,CsConsigneeInfo cci){
+		System.out.println(cci.getName()+" "+cci.getPhoneonOne()+" "+cci.getConsigneeType());
+		if(cci!=null){
+			List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType());
+			model.addAttribute("ccilist", ccilist);
+		}
+			return "workorder/CallerArchivalRepository";
 	}
+	
+	@RequestMapping("/EditEditMaintain/{id}")
+	public String EditEditMaintain(Model model,@PathVariable(value="id") int id) throws Exception{
+		System.out.println(id);
+		CsConsigneeInfo ccf=workorderdao.queryById(id);
+		model.addAttribute("ccf", ccf);
+		
+		return "workorder/EditMaintain";		
+	}
+	
+	@RequestMapping("/editCallerArchival")
+	@ResponseBody
+	public String editCallerArchival(CsConsigneeInfo ccf){
+		workorderdao.editAllCsConsigneeInfo(ccf);
+		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+	}
+	
 	@RequestMapping("/addCallerArchival")
 	@ResponseBody
 	public String addCallerArchival(CsConsigneeInfo ccf){
@@ -119,7 +138,7 @@ public class WorkOrderController {
 	@RequestMapping("/CreateQueryWorkOrder")
 	public String CreateQueryWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid){
 		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
-		CwbOrder cl=cwbdao.createQueryWo(opscwbid);
+		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept cca = new CsComplaintAccept();
 			cca.setPhoneOne(cl.getConsigneemobile());
 			cca.setProvence(cl.getConsigneeaddress());
@@ -141,14 +160,15 @@ public class WorkOrderController {
 	@RequestMapping("/CreateComplainWorkOrder")
 	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid){
 		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
-		CwbOrder cl=cwbdao.createQueryWo(opscwbid);
+		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept ca = new CsComplaintAccept();
-			ca.setProvence(cl.getConsigneeaddress());
+			ca.setProvence(cl.getCwbprovince());
 			ca.setPhoneOne(cl.getConsigneemobile());
 			ca.setAcceptNo(transcwb); //存入工单
 			ca.setOrderNo(cl.getCwb());//存入订单
 			ca.setCwbstate(cl.getCwbstate());//存入订单状态
 			ca.setFlowordertype(cl.getFlowordertype());//存入订单操作状态
+			ca.setCustomerid(cl.getCustomerid());
 			Branch b=branchdao.getbranchname(cl.getCurrentbranchid());//存入站点信息
 			if(b!=null){
 			ca.setCurrentBranch(b.getBranchname());
@@ -179,8 +199,14 @@ public class WorkOrderController {
 	public String OrgVerify(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();		
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());		
+		String nowtime =DateTimeUtil.getNowTime();
+		String uname=getSessionUser().getUsername();
+		cca.setHandleUser(uname);
+		cca.setHeshiTime(nowtime);
+		List<Branch> lb=branchdao.getAllBranches();	
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
@@ -188,11 +214,17 @@ public class WorkOrderController {
 		return "workorder/OrgVerify";
 	}
 	@RequestMapping("/CustomerServiceAdjudicate")
-	public String CustomerServiceAdjudicate(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{     //客服结案
-		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
+	public String CustomerServiceAdjudicate(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) {     //客服结案
+		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);		
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();		
+		String nowtime =DateTimeUtil.getNowTime();
+		String uname=getSessionUser().getUsername();
+		cca.setHandleUser(uname);
+		cca.setJieanTime(nowtime);
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
+		List<Branch> lb=branchdao.getAllBranches();	
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
@@ -200,11 +232,18 @@ public class WorkOrderController {
 		return "workorder/CustomerServiceAdjudicate";
 	}
 	@RequestMapping("/OrgAppeal")
-	public String OrgAppeal(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
+	public String OrgAppeal(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo){
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());
+		
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
+		String nowtime =DateTimeUtil.getNowTime();
+		String uname=getSessionUser().getUsername();
+		cca.setHandleUser(uname);
+		cca.setComplaintTime(nowtime);
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);   
 		model.addAttribute("cci", cci);
@@ -213,11 +252,17 @@ public class WorkOrderController {
 		return "workorder/OrgAppeal";
 	}
 	@RequestMapping("/AdjudicateRetrial")
-	public String AdjudicateRetrial(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
+	public String AdjudicateRetrial(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo){
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
+		String nowtime =DateTimeUtil.getNowTime();
+		String uname=getSessionUser().getUsername();
+		cca.setHandleUser(uname);
+		cca.setJieanchongshenTime(nowtime);
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);   
 		model.addAttribute("cci", cci);
@@ -228,19 +273,18 @@ public class WorkOrderController {
 	//添加客服收件人数据
 	@RequestMapping("/addCsConsigneeInfo")
 	public String add(CsConsigneeInfo cci){
-		
+		if(cci!=null){
 		workorderservice.addcsconsigneeInfo(cci);
+		}
 		return "workorder/CustomerServicesAcceptWorkOrder";	
 	}
 	
 	@RequestMapping("/selectByPhoneNum")
 	@ResponseBody
-	public CsConsigneeInfo selectByPhoneNum(HttpServletRequest req) throws Exception{
-		String phone=req.getParameter("phoneonOne");
-		CsConsigneeInfo cci=null;
-		if(workorderservice.querycciByPhoneNum(phone)!=null){
-			cci=workorderservice.querycciByPhoneNum(phone);
-		}
+	public CsConsigneeInfo selectByPhoneNum(HttpServletRequest req){
+		String phone=req.getParameter("phoneonOne");		
+		CsConsigneeInfo cci=workorderservice.querycciByPhoneNum(phone);
+		
 		return cci;		
 	}
 	
@@ -248,19 +292,20 @@ public class WorkOrderController {
 	@ResponseBody
 	public  List<CwbOrderAndCustomname> SelectdetalForm(HttpServletRequest req){
 		String phone=req.getParameter("phoneonOne");
-		List<CwbOrder> cwborderlist=workorderservice.SelectCwbdetalForm(phone);
+		List<CwbOrder> cwborderlist=workorderservice.SelectCwbdetalForm(phone)==null?null:workorderservice.SelectCwbdetalForm(phone);
 		List<CwbOrderAndCustomname> lc= new ArrayList<CwbOrderAndCustomname>();
 		for(CwbOrder c:cwborderlist){
 			CwbOrderAndCustomname co = new CwbOrderAndCustomname();
 				co.setId(c.getOpscwbid());
 				co.setCwb(c.getCwb());
-				co.setTranscwb(c.getTranscwb());
-				co.setCustomername(cd.findcustomername(c.getCustomerid()).getCustomername());
+				co.setTranscwb(c.getTranscwb());//
+				co.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername());//express_set_customer_info
 				co.setEmaildate(c.getEmaildate());
 				co.setConsigneename(c.getConsigneename());
 				co.setConsigneeaddress(c.getConsigneeaddress());
 				co.setConsigneemobile(c.getConsigneemobile());
 				co.setCwbstate(CwbStateEnum.getByValue(c.getCwbstate()).getText());
+				co.setCustomerid(c.getCustomerid());
 				lc.add(co);				
 		}		
 				
@@ -272,9 +317,8 @@ public class WorkOrderController {
 	public List<CwbOrderAndCustomname> selectDetalFormByCondition(CwbOrderAndCustomname coc,Model model){
 	
 		String cwb1 = cos.translateCwb(coc.getCwb());
-		System.out.println(cwb1);
 		coc.setCwb(cwb1);
-		List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc);
+		List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc)==null?null:cwbdao.SelectDetalFormByCondition(coc);
 	
 		List<CwbOrderAndCustomname> lco= new ArrayList<CwbOrderAndCustomname>();
 		//System.out.println(lc.get(0).getCwb());
@@ -283,7 +327,7 @@ public class WorkOrderController {
 				co.setId((c.getOpscwbid()));
 				co.setCwb(c.getCwb());
 				co.setTranscwb(c.getTranscwb());
-				co.setCustomername(cd.findcustomername(c.getCustomerid()).getCustomername());
+				co.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername());
 				co.setEmaildate(c.getEmaildate());
 				co.setConsigneename(c.getConsigneename());
 				co.setConsigneeaddress(c.getConsigneeaddress());
@@ -291,35 +335,11 @@ public class WorkOrderController {
 				co.setCwbstate(CwbStateEnum.getByValue(c.getCwbstate()).getText());
 				lco.add(co);				
 		}
-		//model.addAttribute("lco", lco);
+		
 		return lco;
 	}
 	
-/*	@RequestMapping("/createqueryWo")
-	@ResponseBody
-	public CsComplaintAccept createqueryWo(@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbidHttpServletRequest req){
-		String trcwb=req.getParameter("cwb");
-		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
-		CwbOrder cl=cwbdao.createQueryWo(opscwbid);
-		CsComplaintAccept cca = new CsComplaintAccept();
-			cca.setAcceptNo(transcwb);
-			cca.setOrderNo(cl.getCwb());
-			cca.setCwbstate(CwbStateEnum.getByValue((int) cl.getCwbstate()).getText());
-			cca.setFlowordertype(CwbFlowOrderTypeEnum.getText(cl.getFlowordertype()).getText());
-			Branch b=branchdao.getbranchname(cl.getCurrentbranchid());
-			if(b!=null){
-			cca.setCurrentBranch(b.getBranchname());
-			}else{
-			cca.setCurrentBranch("");	
-			}
-		System.out.println(cca.getAcceptNo());
-		System.out.println(cca.getOrderNo());
-		System.out.println(cca.getCwbstate());
-		System.out.println(cca.getFlowordertype());
-		System.out.println(cca.getCurrentBranch());
-			
-			return cca;		
-	}*/
+
 	
 	@RequestMapping("/saveWorkOrderQueryF")
 	@ResponseBody
@@ -327,9 +347,12 @@ public class WorkOrderController {
 		//System.out.println(cca.getComplaintState());
 		String accepttime=DateTimeUtil.formatDate(new Date());
 		cca.setAcceptTime(accepttime);		
+		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
+		cca.setCustomerid(co.getCustomerid());
 		workorderdao.savequeryworkorderForm(cca);
 	
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
+		
 	}
 	
 	@RequestMapping("/saveComplainWorkOrderF")
@@ -338,6 +361,8 @@ public class WorkOrderController {
 		//System.out.println(cca.getComplaintState());
 		String accepttime=DateTimeUtil.formatDate(new Date());
 		cca.setAcceptTime(accepttime);
+		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
+		cca.setCustomerid(co.getCustomerid());
 		workorderdao.saveComplainWorkOrderF(cca);
 	
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -357,13 +382,13 @@ public class WorkOrderController {
 
 	@RequestMapping("/findGoOnAcceptWO")  //通过手机号查询工单
 	@ResponseBody
-	public List<CsComplaintAccept> findGoOnAcceptWO(Model model,HttpServletRequest req){
+	public List<CsComplaintAcceptVO> findGoOnAcceptWO(Model model,HttpServletRequest req){
 		String phone=req.getParameter("phoneonOne");
 		//System.out.println(phone+"~~");
 		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWO(phone);
-		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
+		List<CsComplaintAcceptVO> lc=new ArrayList<CsComplaintAcceptVO>();
 		for(CsComplaintAccept c:lcs){
-			CsComplaintAccept ca = new CsComplaintAccept();
+			CsComplaintAcceptVO ca = new CsComplaintAcceptVO();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
 			ca.setPhoneOne(c.getPhoneOne());
@@ -372,6 +397,8 @@ public class WorkOrderController {
 			ca.setContent(c.getContent());
 			ca.setComplaintState(c.getComplaintState());
 			ca.setProvence(c.getProvence());
+			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
 			lc.add(ca);
 		}
 		
@@ -379,23 +406,26 @@ public class WorkOrderController {
 
 	}
 	
-	@RequestMapping("/findGoOnAcceptWOByCWB")  //通过手机号查询工单
+	@RequestMapping("/findGoOnAcceptWOByCWB") 
 	@ResponseBody
-	public List<CsComplaintAccept> findGoOnAcceptWOByCWB(Model model,HttpServletRequest req){
+	public List<CsComplaintAcceptVO> findGoOnAcceptWOByCWB(Model model,HttpServletRequest req){
 		String cwb=req.getParameter("cwb");
-		//System.out.println(cwb+"~~");
 		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWB(cwb);
-		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
+		List<CsComplaintAcceptVO> lc=new ArrayList<CsComplaintAcceptVO>();
 		for(CsComplaintAccept c:lcs){
-			CsComplaintAccept ca = new CsComplaintAccept();
+			CsComplaintAcceptVO ca = new CsComplaintAcceptVO();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
 			ca.setPhoneOne(c.getPhoneOne());
+		/*	ca.setCity(cwbdao.getCwbByCwb(c.getOrderNo()).getCwbprovince());*/
+			ca.setProvence(c.getProvence());
 			ca.setAcceptTime(c.getAcceptTime());
 			ca.setComplaintType(c.getComplaintType());
-			ca.setContent(c.getContent());
 			ca.setComplaintState(c.getComplaintState());
-			ca.setProvence(c.getProvence()/*workorderdao.queryprovinceByphone(cwb).get(workorderdao.queryprovinceByphone(cwb).size()-1).getProvince()*/);
+			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			ca.setContent(c.getContent());
+			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			
 			lc.add(ca);
 		}
 		
@@ -407,16 +437,19 @@ public class WorkOrderController {
 	public String GoOnacceptWo(HttpServletRequest req,Model model){
 		String workorder=req.getParameter("workorder");
 		CsComplaintAccept lcs=null;
+		String RuKuTime=null;
 		if(workorder!=null){
 			lcs=workorderdao.findGoOnacceptWOByWorkOrder(workorder);	
 		}
 			String cwb=lcs.getOrderNo();  //获取订单号
-			List<CwbOrder> lco=cwbdao.getAllCwbOrderByCwb(cwb);
-			String conMobile=lco.get(0).getConsigneemobile();
-//			List<OrderFlow> lof=orderflowdao.getRuKuTimeByCwb(cwb);			
-			Date createTime=orderflowdao.getRuKuTimeByCwb(cwb).getCredate();
+			CwbOrder lco=cwbdao.getOneCwbOrderByCwb(cwb);
+			String conMobile=lco.getConsigneemobile();
+			OrderFlow lof=orderflowdao.getRuKuTimeByCwb(cwb)==null?null:orderflowdao.getRuKuTimeByCwb(cwb);	
+			if(lof!=null){
+			Date createTime=lof.getCredate();
 			SimpleDateFormat dateformat1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String RuKuTime=dateformat1.format(createTime); //获取入库时间
+			RuKuTime=dateformat1.format(createTime); //获取入库时间
+			}
 			List<Reason> lr=reasondao.addWO();
 			List<Reason> lrs=null;
 			for(Reason r:lr){
@@ -428,7 +461,7 @@ public class WorkOrderController {
 			model.addAttribute("lrs", lrs);
 			model.addAttribute("lcs",lcs );
 			model.addAttribute("conMobile",conMobile );
-			model.addAttribute("RuKuTime",RuKuTime );
+			model.addAttribute("RuKuTime",RuKuTime);
 			model.addAttribute("lb", lb);
 			
 			return "workorder/CreateGoOnAcceptWorkOrder";			
@@ -450,18 +483,20 @@ public class WorkOrderController {
 	@RequestMapping("/WorkOrderManageQuery")
 	public String WorkOrderManageQuery(HttpServletRequest req,Model model,CsComplaintAcceptVO cv) throws Exception{
 	
-		String cwb[]=cv.getOrderNo().split("\r\n");
+		String cwb[]=cv.getOrderNo().trim().split("\r\n");
 		StringBuffer sb = new StringBuffer();
 		for(String str:cwb){
 			sb=sb.append("'"+str+"',");
 		}
-		String ncwbs=new String();
-		 ncwbs=sb.substring(0, sb.length()-1);		
+		String ncwbs=sb.substring(0, sb.length()-1);		
 	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv);
 		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
-		List<CsConsigneeInfo> consigneeinfolist=null;
-		Map<String,List<CsConsigneeInfo>> maplist=new HashMap<String,List<CsConsigneeInfo>>();
+		/*List<CsConsigneeInfo> consigneeinfolist=null;*/
+	
+	
+		Map<String,String> connameList=new HashMap<String, String>();
+		Map<Long,String> customerList=new HashMap<Long, String>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAccept ca = new CsComplaintAccept();
 			ca.setAcceptNo(c.getAcceptNo());
@@ -473,31 +508,39 @@ public class WorkOrderController {
 			ca.setComplaintTwoLevel(c.getComplaintTwoLevel());
 			ca.setComplaintResult(c.getComplaintResult());
 			ca.setAcceptTime(c.getAcceptTime());
-			ca.setPhoneOne(c.getPhoneOne());			
+			ca.setPhoneOne(c.getPhoneOne());	
+			ca.setCustomerid(c.getCustomerid());
 			lc.add(ca);
-			consigneeinfolist=workorderdao.queryByPhoneone(c.getPhoneOne());
-			maplist.put(c.getPhoneOne(), consigneeinfolist);
+			
+			
+			String cname=workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName();
+			connameList.put(c.getPhoneOne(), cname);
+			String customerName=customerDAO.findcustomername(c.getCustomerid()).getCustomername();
+			customerList.put(c.getCustomerid(),customerName);
+			
+			 
+	
 			
 	}
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
 		String username=getSessionUser().getUsername();
 		List<Branch> lb=branchdao.getAllBranches();
-		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		List<Reason> lr=reasondao.addWO();
 		List<Reason> lrs=null;
 		for(Reason r:lr){
 			 lrs=reasondao.getSecondLevelReason(r.getReasonid());
 		}
 		
-		model.addAttribute("lr", lr);
-		model.addAttribute("lrs", lrs);
-		model.addAttribute("lcsa", lcsa);
-		model.addAttribute("lb", lb); 
-		model.addAttribute("lc", lc);
-		model.addAttribute("username", username);
-		model.addAttribute("maplist", maplist);
-		model.addAttribute("co", co);	
+		model.addAttribute("customernameList", customerList);
+		model.addAttribute("lr", lr==null?null:lr);
+		model.addAttribute("lrs", lrs==null?null:lrs);
 	
+		model.addAttribute("lb", lb==null?null:lb); 
+		model.addAttribute("lc", lc==null?null:lc);
+		model.addAttribute("username", username==null?null:username);
+		model.addAttribute("connameList", connameList);
+		model.addAttribute("co", co==null?null:co);
+		
 		return "workorder/WorkOrderQueryManage";		
 	}
 	@RequestMapping("/WorkOrderQueryManage")
@@ -516,6 +559,14 @@ public class WorkOrderController {
 		model.addAttribute("lb", lb);
 		
 		return "workorder/WorkOrderQueryManage";
+	}
+	
+	@RequestMapping("/ChangeComplaintState")
+	@ResponseBody
+	public String ChangeComplaintState(CsComplaintAccept cca){
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"工单处理成功\"}";
 	}
 	
 }

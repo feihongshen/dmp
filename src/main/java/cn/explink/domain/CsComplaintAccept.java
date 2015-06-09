@@ -56,14 +56,68 @@ public class CsComplaintAccept {
 			private String acceptTime; //受理时间
 			private String provence;
 			private String phoneOne;
+			private String remark;
+			private String heshiTime;
+			private String jieanTime;
+		
+			private long customerid;
+			private String jieanremark;
+			private String shensuremark;
+			private String jieanchongshenremark;
+			private String jieanchongshenTime;
 			
 			
+		
+			public String getJieanTime() {
+				return jieanTime;
+			}
+			public String getJieanchongshenTime() {
+				return jieanchongshenTime;
+			}
+			public void setJieanchongshenTime(String jieanchongshenTime) {
+				this.jieanchongshenTime = jieanchongshenTime;
+			}
+			public void setJieanTime(String jieanTime) {
+				this.jieanTime = jieanTime;
+			}	
 			
 			
-			
-			
-			
-			
+			public String getJieanchongshenremark() {
+				return jieanchongshenremark;
+			}
+			public void setJieanchongshenremark(String jieanchongshenremark) {
+				this.jieanchongshenremark = jieanchongshenremark;
+			}
+			public String getShensuremark() {
+				return shensuremark;
+			}
+			public void setShensuremark(String shensuremark) {
+				this.shensuremark = shensuremark;
+			}
+			public String getJieanremark() {
+				return jieanremark;
+			}
+			public void setJieanremark(String jieanremark) {
+				this.jieanremark = jieanremark;
+			}
+			public long getCustomerid() {
+				return customerid;
+			}
+			public void setCustomerid(long customerid) {
+				this.customerid = customerid;
+			}
+			public String getHeshiTime() {
+				return heshiTime;
+			}
+			public void setHeshiTime(String heshiTime) {
+				this.heshiTime = heshiTime;
+			}
+			public String getRemark() {
+				return remark;
+			}
+			public void setRemark(String remark) {
+				this.remark = remark;
+			}
 			public String getProvence() {
 				return provence;
 			}

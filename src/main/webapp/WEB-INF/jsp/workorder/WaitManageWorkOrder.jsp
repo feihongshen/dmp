@@ -24,13 +24,15 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+
+
 $(function(){
 $("table#refreshWO tr").click(function(){
-	$(this).css("backgroundColor","violet");
+	$(this).css("backgroundColor","yellow");
 	$(this).siblings().css("backgroundColor","#ffffff");
 	});
 $("#goonacceptinmanage").click(function(){
-	getAddBoxx2();
+	getAddBoxx2($('#WaitAcceptNo').val());
 });
 	
 });
@@ -45,53 +47,54 @@ function addInit(){
 	
 }
 
+function saveAcceptNoV(NoV){
+	$('#WaitAcceptNo').val(NoV);
+	 getGoonacceptWO($('#WaitAcceptNo').val());
+	
+}
+
 
 </script>
 </head>
 <body>
-	 <!-- onclick="ctrlQJBL()" -->
 	<div>
-		<button id="goonacceptinmanage">继续受理</button>
+			<button id="goonacceptinmanage" class="input_button2">继续受理</button>
 		<form action="<%=request.getContextPath()%>/workorder/refreshwo">
-			<input value="<%=ComplaintStateEnum.DaiChuLi.getValue()%>" name="complaintState" type="hidden">
-			<input type="submit" value="刷新表单" />
+			<input class="input_text1" value="<%=ComplaintStateEnum.DaiChuLi.getValue()%>" name="complaintState" type="hidden">
+			<input type="submit" value="刷新表单" class="input_button2"/>
 		</form>
-		<!-- <button id="btwo">刷新表单</button> -->
-	
+		<hr>
 		</br>
-		</br>
+		<hr>
 		<div>
-		<table width="100%" border="1" id="refreshWO">
-			<tr>
-				<th>工单号</th>
-				<th>订单号</th>
-				<th>来电号码</th>				
-				<th>归属地</th>
-				<th>受理时间</th>
-				<th>工单类型</th>				
-				<th>受理内容</th>				
-				<th>工单状态</th>			
-			</tr>
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="refreshWO">
+				<tr class="font_1">
+					<th>工单号</th>
+					<th>订单号</th>
+					<th>来电号码</th>				
+					<th>归属地</th>
+					<th>受理时间</th>
+					<th>工单类型</th>				
+					<th>受理内容</th>				
+					<th>工单状态</th>			
+				</tr>
 			<%if(l!=null){ %>
 			<%for(CsComplaintAccept c:l){ %>
-			<tr onclick="getGoonacceptWO('<%=c.getAcceptNo()%>')">
-				<td><%=c.getAcceptNo() %></td>
-				<td><%=c.getOrderNo() %></td>
-				<td><%=c.getPhoneOne() %></td>
-				<td><%=c.getProvence() %></td>
-				<td><%=c.getAcceptTime() %></td>
-				<td><%=ComplaintTypeEnum.getByValue(c.getComplaintType()).getText()%></td>
-				<td><%=c.getContent() %></td>
-				<%for(CwbStateEnum cc:CwbStateEnum.values()){%>
-							<%if(cc.getValue()==c.getCwbstate()){%>
-								<td><%=cc.getText() %></td>	
-					
-				<% }}%>				
-			</tr>
+				<tr onclick="saveAcceptNoV('<%=c.getAcceptNo()%>')">
+					<td><%=c.getAcceptNo() %></td>
+					<td><%=c.getOrderNo() %></td>
+					<td><%=c.getPhoneOne() %></td>
+					<td><%=c.getProvence() %></td>
+					<td><%=c.getAcceptTime() %></td>
+					<td><%=ComplaintTypeEnum.getByValue(c.getComplaintType()).getText()%></td>
+					<td><%=c.getContent() %></td>				
+					<td><%=ComplaintStateEnum.DaiChuLi.getText()%></td>				
+				</tr>
 			<%}} %>
 		</table>
 		</div>
 	</div>
-	<input type="hidden" id="GoOnacceptWo" value="<%=request.getContextPath()%>/workorder/GoOnacceptWo"/>
+			<input type="hidden" id="GoOnacceptWo" value="<%=request.getContextPath()%>/workorder/GoOnacceptWo"/>
+			<input type="hidden" id="WaitAcceptNo" value=""/>
 </body>
 </html>

@@ -19,7 +19,7 @@ List<Branch> b =(List<Branch>)request.getAttribute("lb");
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>创建供货商</h1>		
+		<h1><div id="close_box" onclick="closeBox()"></div>继续受理工单</h1>		
 		<div id="box_form">
 			<form action="<%=request.getContextPath()%>/workorder/updateComplainWorkOrderF" id="UpdateComplainWorkOrderF">
 				<table>

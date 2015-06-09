@@ -129,6 +129,7 @@ $(function() {
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="./toTuiHuoCheck" method="POST" id="searchForm">
+
 							<table>
 								<tr>
 									<td rowspan="2">
@@ -213,7 +214,6 @@ $(function() {
 									</td>
 								</tr>
 							</table>
-							</form>
 						</div>
 							
 								<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">

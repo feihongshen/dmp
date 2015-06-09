@@ -28,9 +28,16 @@ public class CwbOrderAndCustomname {
 	private String consigneemobile;
 	/*long cwbstate;*/
 	String cwbstate;
+	private long customerid;
 	
 	
 	
+	public long getCustomerid() {
+		return customerid;
+	}
+	public void setCustomerid(long customerid) {
+		this.customerid = customerid;
+	}
 	public long getId() {
 		return id;
 	}

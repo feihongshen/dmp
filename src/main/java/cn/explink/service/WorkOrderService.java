@@ -9,7 +9,6 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.WorkOrderDAO;
 import cn.explink.domain.CsConsigneeInfo;
 import cn.explink.domain.CwbOrder;
-import cn.explink.domain.CwbOrderAndCustomname;
 
 @Service
 public class WorkOrderService {
@@ -19,18 +18,19 @@ public class WorkOrderService {
 	private CwbDAO cwbdao;
 	
 	public void addcsconsigneeInfo(CsConsigneeInfo cci) {
-
+		if(cci!=null)
 				workorderdao.save(cci);
 		
 	}
 
-	public CsConsigneeInfo querycciByPhoneNum(String phoneonOne) throws Exception {
-		// TODO Auto-generated method stub
+	public CsConsigneeInfo querycciByPhoneNum(String phoneonOne){
+		
 		return workorderdao.queryByPhoneNum(phoneonOne);
 	}
 
 	public List<CwbOrder> SelectCwbdetalForm(String phone) {
-		return cwbdao.SelectDetalForm(phone);		
+		List<CwbOrder> lc=cwbdao.SelectDetalForm(phone)==null?null:cwbdao.SelectDetalForm(phone);
+		return lc;		
 	}
 
 }

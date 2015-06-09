@@ -1033,7 +1033,6 @@ src/main/java/cn/explink/domain/ExceptionCwb.java -text
 src/main/java/cn/explink/domain/Exportmould.java -text
 src/main/java/cn/explink/domain/Exportwarhousesummary.java -text
 src/main/java/cn/explink/domain/ExpressSysMonitor.java -text
-src/main/java/cn/explink/domain/FeeRemark.java -text
 src/main/java/cn/explink/domain/FeeWayTypeRemark.java -text
 src/main/java/cn/explink/domain/FinanceAudit.java -text
 src/main/java/cn/explink/domain/FinanceDeliverPayupDetail.java -text

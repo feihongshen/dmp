@@ -5,7 +5,7 @@ import cn.explink.exception.ExplinkException;
 public enum ComplaintResultEnum {
 	ChengLi(0,"成立"),
 	BuChengLi(1,"不成立"),
-	WeiChuLi(2,"未处理");
+	WeiChuLi(2,"待定");
 	
 	private Integer value;
 	private String text;

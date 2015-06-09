@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%
-		List<CsConsigneeInfo> ccilist=(List<CsConsigneeInfo>)request.getAttribute("ccilist");
+		List<CsConsigneeInfo> ccilist=(List<CsConsigneeInfo>)request.getAttribute("ccilist")==null?null:(List<CsConsigneeInfo>)request.getAttribute("ccilist");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//Dth HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dth">
 <html>
@@ -20,6 +20,10 @@ function getPhoneonOne(phone,id){
 	$('#callerphoneid').val(id);
 }
 function addInit(){
+	
+}
+
+function editInit(){
 	
 }
 $(function(){
@@ -55,48 +59,55 @@ $(function(){
 			});
 	});
 });
+
+
+
 </script>
 </head>
 <body>
-		<div>
-			<table width="100%">
+	<div>	
+		<form action="<%=request.getContextPath()%>/workorder/QueryCallerInfo">
+			<table>
 				<tr>
-					<th>姓名:<input type="text"></th>
-					<th>电话:<input type="text"></th>
-					<th>
-						公司:<select>
-								<option>请选择公司</option>
+					<td>姓名:<input type="text" name="name" /></td>
+					<td>电话:<input type="text" name="phoneonOne"/></td>				
+					<td>
+						客户:<select name="consigneeType" id="svc" class="select1">
+								<option value="-1">请选择</option>
+								<option value="1">VIP客户</option>
+								<option value="0">普通客户</option>
 							</select>
-					</th>
-					<th>
-						客户:<select>
-								<option>请选择客户</option>
-							</select>
-					</th>
+					</td>
 				</tr>
 				<tr>
-					<td><button>查询</button></td>
-					<td><button>重置</button></td>
-					<td><button id="add_button">新增</button></td>
-					<td><button id="edit_but">修改</button></td>
-					<td><button id="remove_button">删除</button></td>
-					<td><button>导出</button></td>
+					<td>
+						<input type="submit" value="查询" class="input_button2"/>
+						<input type="reset" value="重置" class="input_button2"/>
+					</td>
+				</tr>	
+				</table>				
+		</form>
+			<table>
+				<tr>
+					<td><button id="add_button" class="input_button2">新增</button></td>
+					<td><button id="edit_but" class="input_button2">修改</button></td>
+					<td><button id="remove_button" class="input_button2">删除</button></td>
+					<td><button class="input_button2">导出</button></td>
 				</tr>
 			</table>
 			<hr>
-			<table width="100%" border="1" id="callertb">
-				<tr>
-					<th>姓名</th>
-					<th>性别</th>
-					<th>电话1</th>
-					<th>电话2</th>
-					<th>邮箱</th>
-					<th>省份</th>
-					<th>城市</th>
-					<th>公司</th>
-					<th>客户分类</th>
-					<th>最后联系时间</th>
-					<th>联系次数</th>
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="callertb">
+				<tr class="font_1">
+					<th bgcolor="#eef6ff">姓名</th>
+					<th bgcolor="#eef6ff">性别</th>
+					<th bgcolor="#eef6ff">电话1</th>
+					<th bgcolor="#eef6ff">电话2</th>
+					<th bgcolor="#eef6ff">邮箱</th>
+					<th bgcolor="#eef6ff">省份</th>
+					<th bgcolor="#eef6ff">城市</th>
+					<th bgcolor="#eef6ff">客户分类</th>
+					<th bgcolor="#eef6ff">最后联系时间</th>
+					<th bgcolor="#eef6ff">联系次数</th>
 				</tr>
 				<%if(ccilist!=null){ %>
 				<%for(CsConsigneeInfo ccf:ccilist){ %>
@@ -108,8 +119,11 @@ $(function(){
 					<td><%=ccf.getMailBox() %></td>				
 					<td><%=ccf.getProvince() %></td>
 					<td><%=ccf.getCity() %></td>
-					<td><%-- <%= %> --%></td>
-					<td><%-- <%= %> --%></td>
+					<%if(ccf.getConsigneeType()==1){ %>
+					<td><label>VIP客户</label></td>
+					<%}else if(ccf.getConsigneeType()==0){ %>
+					<td><label>普通客户</label></td>
+					<%} %>
 					<td><%=ccf.getContactLastTime() %></td>
 					<td><%=ccf.getContactNum() %></td>				
 				</tr>
@@ -117,7 +131,7 @@ $(function(){
 			</table>
 		</div>
 <input type="hidden" id="add" value="<%=request.getContextPath()%>/workorder/NewAddMaintain"/>
-<input type="hidden" id="edit" value="<%=request.getContextPath()%>/workorder/EditEditMaintain"/>
+<input type="hidden" id="edit" value="<%=request.getContextPath()%>/workorder/EditEditMaintain/"/>
 <input type="hidden" id="callerphone" value=""/>
 <input type="hidden" id="callerphoneid" value=""/>
 </body>

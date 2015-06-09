@@ -19,7 +19,7 @@ function dataInit(){
 	$.each(jsonArray,function(ind,ele){
 		var dataTrStr = "";
 		dataTrStr = "<tr onclick='gettrValue("+ele.id+")' id='eleid'>" +
-				"<td>"+ele.cwb+"</td>" +
+				"<td><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.cwb+"' target='_Blank'>"+ele.cwb+"</a></td>" +
 				"<td>"+ele.transcwb+"</td>" +
 				"<td>"+ele.customername+"</td>" +
 				"<td>"+ele.emaildate+"</td>" +

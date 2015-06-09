@@ -5346,9 +5346,8 @@ function filedownloadwithquestionfile(){
 
 
 function btnswd(ev){
-	var r=$('#cls').val(ev);
-	if(r!=null){
-
+	$('#cls').val(ev);
+	alert(ev);
 	$.ajax({
 				type:'POST',
 				data:$('#WorkOrderQueryForm').serialize(),
@@ -5358,14 +5357,23 @@ function btnswd(ev){
 					alert(data.error);
 				}
 	});
-	
-	}
-	
 	closeBox();
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
 }
 
-function btnccwo(csv){
-	$('#cwo').val(csv);
+function getSV(v){
+	$('#stateNum').val(v);
+}
+function btnccwo(Val){
+	if($('#stateNum').val()==$('#bcl').val()){
+		$('#cwo').val($('#yjs').val());	
+			
+	}else{
+		$('#cwo').val(Val);	
+		
+	}
+	
 	$.ajax({
 				type:'POST',
 				data:$('#ComplainWorkOrderF').serialize(),
@@ -5378,7 +5386,13 @@ function btnccwo(csv){
 				}
 	});
 	closeBox();
+	$('#cwo').val('');	
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
+	
 	}
+
+
 
 function btnupdate(csv){
 	$('#cwo').val(csv);
@@ -5396,24 +5410,15 @@ function btnupdate(csv){
 					}
 				});
 	closeBox();
-	woNum="";
+	$('#WaitAcceptNo').val("");
+	$('#GV').val('');
 	}
 	
-
-
-var woNum;
-function getGoonacceptWO(valWo){	
-/*	alert(valWo);*/
-/*	//获取工单号公共方法	
-*/	woNum=valWo;
-}
-
-
-
- function getAddBoxx2() {
+ function getAddBoxx2(valWo) {
+	 
 $.ajax({
 	type : "POST",
-	data:"workorder="+woNum,
+	data:"workorder="+valWo,
 	url : $("#GoOnacceptWo").val(),
 	dataType : "html",
 	success : function(data) {
@@ -5429,6 +5434,10 @@ $.ajax({
 }
  
  function addcaller(){
+	 if($('#skhfl').val()==-1){
+		 alert('请选择客户分类');
+		 return false;
+	 }
 	 $.ajax({
 			type : "POST",
 			data:$('#addcallerForm').serialize(),
@@ -5446,7 +5455,50 @@ $.ajax({
 			});
 	 
  }
+ 
+ function editcaller(){
+	 if($('#skhfl1').val()==-1){
+		 alert('请选择客户分类');
+		 return false;
+	 }
+	 $.ajax({
+			type : "POST",
+			data:$('#editcallerForm').serialize(),
+			url : $("#editcallerForm").attr('action'),
+			dataType : "json",
+			success : function(data) {
+				if(data.errorCode==0){
+						alert(data.error);
+						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 
+						closeBox();
+					}
+				}
+				
+			});
+	 
+ }
+ 
+function AlreadyVerify(AVV){
+	$('#AlreadyVerifycomplaintState').val(AVV);
+	$.ajax({
+		type:'POST',
+		data:$('#ChangeComplaintStateF').serialize(),
+		url:$('#ChangeComplaintStateF').attr('action'),
+		dataType:'json',				
+		success:function(data){
+			if (data.errorCode == 0) {					
+			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();*/
+				alert(data.error);
+				$('#AlreadyVerifycomplaintState').val("");
+				}
+			}
+		});
+	closeBox();
+	$('#AlreadyVerifycomplaintState').val("");
+}
+	
 
 
 function btnswd(ev){
@@ -5496,6 +5548,7 @@ function btnccwo(Val){
 	
 	}
 
+<<<<<<< .working
 
 
 function btnupdate(csv){

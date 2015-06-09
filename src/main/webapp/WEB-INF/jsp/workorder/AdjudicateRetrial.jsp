@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
 <%@page import="cn.explink.domain.CsComplaintAccept"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
@@ -10,98 +10,107 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
+
 <%
-CsComplaintAccept cca=(CsComplaintAccept)request.getAttribute("cca");
+CsComplaintAccept cca=(CsComplaintAccept)request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
 CwbOrder co=(CwbOrder)request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
-CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci");
-List<Branch> lb = (List<Branch>)request.getAttribute("lb");
+CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
+List<Branch> lb = (List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+String oneleave=request.getAttribute("OneLevel")==null?null:(String)request.getAttribute("OneLevel");
+String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getAttribute("TwoLevel");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>结案重审</h1>		
-		<div id="box_form">
-			<form action="">
-				<table>
-					<tr>
-					<td>工单号:<%=cca.getAcceptNo() %></td>
-					<td>工单状态:<%=ComplaintStateEnum.getByValue(cca.getComplaintState()).getText() %></td>
-					<td>订单号:<%=cca.getOrderNo() %></td>
-					</tr>
-					<tr>
-					<td>受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %></td>
-					<td>一级类型:<%=cca.getComplaintOneLevel() %></td>
-					<td>二级类型:<%=cca.getComplaintTwoLevel() %></td>
-					</tr>
-					<tr>
-					<%for(Branch l:lb){ %>
-					<%if(l.getBranchid()==cca.getCodOrgId()){ %>
-					<td>被投诉机构:<%=l.getBranchname() %></td>
-					<%} %>
-					<td>被投诉人:<%= cca.getComplaintUser()%></td>
-					</tr>
-					<tr>
-					<td>订单操作状态:<%=FlowOrderTypeEnum.getText(co.getFlowordertype())%></td>
-					<td>当前机构:<%=cca.getCurrentBranch() %></td>
-					<td>客户名称:<%=co.getConsigneename() %></td>
-					</tr>
-					<tr>
-					<td>来电人姓名:<%=cci.getName() %></td>
-					<td>来电号码:<%=cci.getPhoneonOne() %></td>
-					<td>收件人手机:<%=co.getConsigneemobile() %></td>
-					</tr>
-					<tr>
-					<td>投诉内容:<%=cca.getContent() %></td>
-					</tr>
-					<tr>
-					<td>受理时间:<%=cca.getAcceptTime() %></td>
-					</tr>
-					<tr>
-					<td><span>核实内容:</span></td>
-					</tr>
-					<tr>
-					<td><span>核实时间:</span>
-					<span>核实人:</span>
-					<span>附件</span>
-					</td>
-					</tr>
-					<tr>
-					<td><span>处理结果:</span>
-						<select class="select1">
-							<option>成立</option>
-						</select>
-					</td>
-					</tr>
-					<tr>
-					<td><span>结案备注:</span></td>
-					</tr>
-					<tr>
-					<td><span>申诉内容:</span></td>
-					</tr>
-					<tr>
-					<td><span>申诉时间:</span></td>
-					<td><span>申诉人:</span></td>
-					</tr>
-					<tr>
-					<td><span>结案重审*:</span>
-						<select class="select1">
-							<option>成立</option>
-							<option>不成立</option>
-						</select>
-					</td>
-					</tr>
+			
+			<form action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" id="ChangeComplaintStateF">	
+				<div id="box_form">
+					<ul>
+					<li>
+					工单号:<%=cca.getAcceptNo() %>
+					工单状态:<%=ComplaintStateEnum.getByValue(cca.getComplaintState()).getText() %>
+					订单号:<%=cca.getOrderNo() %>
+					</li>
+					<li>
+						受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %>
+						一级类型:<%=oneleave%>
+						二级类型:<%=twoleave%>
+					</li>
+					<li>
+						<span>被投诉机构:</span>
+						<%for(Branch b:lb){ %>
+						<%if(b.getBranchid()==cca.getCodOrgId()) {%>
+								<%=b.getBranchname() %>
+						<%} }%>
+						
+						<span>被投诉人:</span><%= cca.getComplaintUser()%>
+					</li>
+					<li>
+						<span>订单操作状态:</span><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%>
+						<span>当前机构:</span><%=cca.getCurrentBranch() %>
+						<span>客户名称:</span><%=co.getConsigneename() %>
+					</li>
+					<li>
+						<span>来电人姓名:</span><%=cci.getName() %>
+						<span>来电号码:</span><%=cci.getPhoneonOne() %>
+						<span>收件人手机:</span><%=co.getConsigneemobile() %>
+					</li>
+					<li>
+						<span>投诉内容:</span><%=cca.getContent()%>
+					</li>
+					<li>
+						<span>受理时间:</span><%=cca.getAcceptTime() %>
+					</li>
+					<li>
+						<span>核实内容:</span><%=cca.getRemark() %>
+					</li>
+					<li>
+						<span>核实时间:</span><%=cca.getHeshiTime() %>
+						<span>核实人:</span><%=cca.getHandleUser() %>
+						<span>附件</span>
+					</li>
 					
-				</table>
-	<hr>			
+					<li>
+							<span>处理结果:</span>
+							<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>	
+					</li>
+						<li>
+								<span>结案备注:</span><%=cca.getJieanremark() %>
+						</li>
+						<li>
+								<span>申诉内容:</span><%=cca.getShensuremark() %>
+						</li>
+						<li>
+								<span>申诉时间:</span><%=cca.getComplaintTime() %>
+								<span>申诉人:</span><%=cca.getHandleUser() %>
+						</li>
+						<li>
+								<span>结案重审*:</span>
+									<select class="select1" name="complaintResult">
+										<option value="<%=ComplaintResultEnum.ChengLi.getValue() %>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
+										<option value="<%=ComplaintResultEnum.BuChengLi.getValue() %>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>
+										<option value="<%=ComplaintResultEnum.WeiChuLi.getValue() %>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
+									</select>
+								
+						</li>
+				
+<hr>			
 				<div>					
-				<span>结案重审备注</span>				
-				<textarea style="width: 60%;height: 118px;margin-left: 60px"></textarea>																	
-				</div>
-			</form>			
-		</div>
-		 <div align="center"><input type="submit" value="结案重审" class="button"
-		 <div align="center"><input type="submit" value="取消" class="button" onclick="closeBox()"/></div>
+					<span>结案重审备注:</span>				
+					<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark"></textarea>
+					<input type="hidden" name="complaintState" id="AlreadyVerifycomplaintState" />
+					<input type="hidden" value="<%=cca.getId()%>" name="id" />
+					<input type="hidden" value="<%=cca.getHandleUser()%>" name="handleUser" />
+					<input type="hidden" value="<%=cca.getJieanchongshenTime()%>" name="jieanchongshenTime" />																				
+				</div> 	
+			</div> 	
+		</form>				
+		
+				<div align="center"><font color="red"><input type="button" value="结案重审" class="button" onclick="AlreadyVerify('<%=ComplaintStateEnum.YiJieShu.getValue()%>')"/></font>
+			 						<input type="button" value="取消" class="button" onclick="closeBox()"/>
+			 	</div>
 	</div>
 </div>
 <div id="box_yy"></div>

@@ -1,18 +1,16 @@
-<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.StringUtil"%>
-<%@page import="cn.explink.domain.Branch"%>
-<%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.*"%>
-<%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.controller.CwbOrderView"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 
+List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
+Map<Long,String> branchMap = (Map<Long,String>)request.getAttribute("branchMap");
+List<ApplyEditDeliverystate> applyeditlist = (List<ApplyEditDeliverystate>)request.getAttribute("applyeditlist");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -25,20 +23,16 @@ List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exp
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
-<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 
 $(function(){
-
-	
 	$("table#gd_table tr:odd").css("backgroundColor","#f9fcfd");
 	$("table#gd_table tr:odd").hover(function(){
 		$(this).css("backgroundColor","#fff9ed");									  
@@ -139,70 +133,186 @@ function exportField(){
 	}
 }
 
+$("#serchcwb").click(function(){
+	alert("sssss");
+	$.ajax({
+		type:"post",		
+		url:"<%=request.getContextPath()%>/applyeditdeliverystate/resetFeedbackList",
+		data:{cwb:$("#cwb").val(),
+			cwbtypeid:$("#cwbtypeid").val(),
+			cwbresultid:$("#cwbresultid").val(),
+			isdo:$("#isdo").val(),
+			cwbstate:$("#cwbstate").val(),
+			feedbackbranchid:$("#feedbackbranchid").val(),
+			begindate:$("#begindate").val(),
+			enddate:$("#enddate").val()
+		},
+		datatype:"html",
+		success:function(data){
+			alert("查询完成！");
+			searchForm.submit();
+		}
+	});
+} );
+
+//重置反馈通过
+function resetfeedbackPass(){
+	var cwbdata = "";
+	if($('input[name="checkbox"]:checked').size>0){
+		$('input[name="checkbox"]:checked').each(function(index){
+		})
+	}
+	if(cwbdata.length>0){
+		$.ajax({
+			type:"post",
+			url:"<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass",
+			data:{cwbdata:cwbdata},
+			datatype:"html",
+			success:function(data){
+				alert("对选中列表审核为通过！");
+			}
+		});
+	}
+}
+
+//重置反馈不通过
+function resetfeedbackNoPass(){
+	var cwbdata = "";
+	if($('input[name="checkbox"]:checked').size>0){
+		$('input[name="checkbox"]:checked').each(function(index){
+		})
+	}
+	if(cwbdata.length>0){
+		$.ajax({
+			type:"post",
+			url:"<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass",
+			data:{cwbdata:cwbdata},
+			datatype:"html",
+			success:function(data){
+				alert("对选中列表进行审核为不通过！");
+			}
+		});
+	}
+}
+
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5;overflow: hidden;"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
-		<%-- 	<ul>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/resetFeedbackList">重置反馈列表</a></li>
-			</ul> --%>
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="./toTuiGongHuoShangSuccess" method="post" id="searchForm">
+							<form action="<%=request.getContextPath()%>/applyeditdeliverystate/resetFeedbackList" method="post" id="searchForm">
 								<%if(cwbList!=null){ %><span>
 								<select name ="exportmould" id ="exportmould">
-										<option  value ="0">导出模板</option>
-										<%for(Exportmould e:exportmouldlist){%>
-											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-										<%} %>
-									</select>
+									<option  value ="0">导出模板</option>
+									<%for(Exportmould e:exportmouldlist){%>
+									<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
+									<%} %>
+								</select>
 									<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span><%} %> 订单号：
-								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
-								订单类型:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value =""></option>
-								</select>
-								配送结果:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value =""></option>
-								</select>
-								审核状态:
-								<select name ="shenhestate" id ="shenhestate">
-									<option  value ="0">全部</option>
-										<option value =""></option>
-								</select>
-								订单状态:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value =""></option>
-								</select>
-								反馈站点:
-								<select name ="cwbtypeid" id ="cwbtypeid">
-									<option  value ="0">全部</option>
-										<option value =""></option>
-								</select>
-								操作时间:
-									<input type ="text" name ="begindate" id="strtime"  value=""/>
-								到
-									<input type ="text" name ="enddate" id="endtime"  value=""/>
-								<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
-								<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="submitAll()" value="重置" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="submitAll()" value="重置审核" class="input_button2">&nbsp;&nbsp;
-								<input type="button" onclick="submitAll()" value="导出" class="input_button2">
+								</span><%} %> 
+								<table >
+									<tr>
+										<td rowspan="3">
+											订单号：
+											<textarea name="cwb" rows="3" cols="20" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+										</td>
+										<td >
+											&nbsp;&nbsp;
+											订单状态:
+											<select name ="cwbstate" id ="cwbstate">
+												<option value ="0">全部</option>
+												<option value ="<%=CwbStateEnum.PeiShong.getValue()%>"><%=CwbStateEnum.PeiShong.getText() %></option>
+												<option value ="<%=CwbStateEnum.TuiHuo.getValue()%>"><%=CwbStateEnum.TuiHuo.getText() %></option>
+												<option value ="<%=CwbStateEnum.DiuShi.getValue()%>"><%=CwbStateEnum.DiuShi.getText() %></option>
+												<option value ="<%=CwbStateEnum.WuXiaoShuJu.getValue()%>"><%=CwbStateEnum.WuXiaoShuJu.getText() %></option>
+												<option value ="<%=CwbStateEnum.TuiGongYingShang.getValue()%>"><%=CwbStateEnum.TuiGongYingShang.getText() %></option>
+												<option value ="<%=CwbStateEnum.ZhongZhuan.getValue()%>"><%=CwbStateEnum.ZhongZhuan.getText() %></option>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											配送结果:
+											<select name ="cwbresultid" id ="cwbresultid">
+												<option  value ="0">全部</option>
+												<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>"><%=DeliveryStateEnum.PeiSongChengGong.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>"><%=DeliveryStateEnum.ShangMenTuiChengGong.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>"><%=DeliveryStateEnum.ShangMenHuanChengGong.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.JuShou.getValue()%>"><%=DeliveryStateEnum.JuShou.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue()%>"><%=DeliveryStateEnum.BuFenTuiHuo.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>"><%=DeliveryStateEnum.FenZhanZhiLiu.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue()%>"><%=DeliveryStateEnum.ShangMenJuTui.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue()%>"><%=DeliveryStateEnum.HuoWuDiuShi.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()%>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText()%></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>"><%=DeliveryStateEnum.DaiZhongZhuan.getText()%></option>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											审核状态:
+											<select name ="isdo" id ="isdo">
+												<option  value ="0">全部</option>
+												<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
+												<option value ="<%=ApplyStateEnum.shenhebutongguo.getValue() %>"><%=ApplyStateEnum.shenhebutongguo.getText() %></option>
+												<option value ="<%=ApplyStateEnum.shenhetongguo.getValue()%>"><%=ApplyStateEnum.shenhetongguo.getText() %></option>
+											</select>
+										</td>
+									</tr>
+									<tr></tr>
+									<tr>
+										<td>
+											&nbsp;&nbsp;
+											订单类型:
+											<select name ="cwbtypeid" id ="cwbtypeid">
+												<option  value ="0">全部</option>
+												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue() %>"><%=CwbOrderTypeIdEnum.Peisong.getText() %></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText() %></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText() %></option>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											反馈站点:
+											<select name ="feedbackbranchid" id =""feedbackbranchid"">
+												<option  value ="0">全部</option>
+												<%for(Branch br:branchList){ %>
+													<option value ="<%=br.getBranchid() %>"><%=br.getBranchname() %></option>
+												<%} %>
+											</select>
+										</td>
+										<td>
+											&nbsp;&nbsp;
+											操作时间:
+											<input type ="text" name ="begindate" id="strtime"  value=""/>到<input type ="text" name ="enddate" id="endtime"  value=""/>
+											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
+										</td>
+									</tr>
+								</table>
+								<table>
+									<tr>
+										<td width="20%" align="left">
+											<input type="button"  value="查询" class="input_button2" id="serchcwb" />&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="button" onclick="submitAll()" value="重置" class="input_button2" />&nbsp;&nbsp;&nbsp;&nbsp;
+										</td>
+										<td width="40%" align="center">
+											<input type="button" onclick="resetfeedbackPass()" value="审核通过" class="input_button2">&nbsp;&nbsp;&nbsp;&nbsp;
+											<input type="button" onclick="resetfeedbackNoPass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;&nbsp;&nbsp;
+										</td>
+										<td  width="40" align="right">
+											<input type="button" onclick="submitAll()" value="导出" class="input_button2">
+										</td>
+									</tr>
+								</table>
 							</form>
 							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 								<input type="hidden" name="exportmould2" id="exportmould2" />
 							</form>
-						</div><%-- <%if(cwbList!=null){ %> --%>
+						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -220,36 +330,33 @@ function exportField(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
 								</tr>
 							</tbody>
-						</table><%-- <%} %> --%>
+						</table>
 					</div>
 					<div style="height:100px"></div>
 					<from action="./auditTuiGongHuoShangSuccess" method="post" id="SubFrom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
 							<%
-							if(cwbList!=null)
-							for(CwbOrderView cwb :cwbList){ %>
-								<tr height="30" cwbFlowordertype="<%=cwb.getFlowordertype() %>"  cwbstate="<%
-								if(cwb.getFlowordertype()!=FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&
-										!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue())){
-									out.print("no");
-								} %>"	>
-								<td  width="40" align="center" valign="middle">
-										<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%-- <%=cwb.getOpscwbid()%> --%>"/>
-									</td>
-								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+							if(applyeditlist!=null){
+								for(ApplyEditDeliverystate aed :applyeditlist){ %>
+									<tr height="30">
+									<td  width="40" align="center" valign="middle">
+											<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%=aed.getOpscwbid()%>" checked="checked"/>
+										</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwb() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwbordertypeid() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getEditnowdeliverystate() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwbstate() %></td>
+									<!--TODO 结算状态 -->
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-							</tr>
-							<%} %>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getApplybranchid() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getApplyuserid() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getApplytime() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getEdituserid() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getEdittime() %></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyStateEnum.getTextByValue(aed.getShenhestate()) %></td>
+								</tr>
+								<%} }%>
 						</tbody>
 					</table>
 					</from>

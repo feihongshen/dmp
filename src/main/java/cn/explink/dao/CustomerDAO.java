@@ -305,9 +305,16 @@ public class CustomerDAO {
 	}
 	
 	public Customer findcustomername(long customerid){
-		String sql="select * from express_set_customer_info where customerid=?";
+		try {
+			String sql="select * from express_set_customer_info where customerid=? limit 1";
+			
+			return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),customerid);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
 		
-		return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),customerid);
+		
 	}
 	
 }

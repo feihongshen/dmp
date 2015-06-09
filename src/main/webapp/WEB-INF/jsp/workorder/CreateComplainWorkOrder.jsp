@@ -18,18 +18,13 @@ List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>创建供货商</h1>		
+		<h1><div id="close_box" onclick="closeBox()"></div>创建投诉工单</h1>		
 		<div id="box_form">
 			<form action="<%=request.getContextPath()%>/workorder/saveComplainWorkOrderF" id="ComplainWorkOrderF">
 				<table>
 					<tr>
-						<td>
-						受理类型:
-						<select name="complaintType">
-						<%for(ComplaintTypeEnum c:ComplaintTypeEnum.values()){ %>
-							<option value="<%=c.getValue() %>"><%=c.getText() %></option>
-							<%} %>
-						</select>													
+						<td>受理类型:<span style="color:orange;">催件投诉</span>
+						<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>">
 						</td>
 						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
 						<td>订单号:<%=a.getOrderNo() %><input type="hidden" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
@@ -83,7 +78,7 @@ List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
 				</tr>		
 							<td>
 							<span>处理结果:</span>
-							<select class="select1" name="complaintResult">
+							<select class="select1" name="complaintResult" id="acceptresultC" onblur="getSV(this.value)">
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								
@@ -97,7 +92,7 @@ List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
 					</td>
 					
 				</table>
-							<input type="hidden"  name="complaintState" id="cwo" value="">
+							<input type="hidden"  name="complaintState" id="cwo"/>
 							<input type="hidden"  name="phoneOne" value="<%=a.getPhoneOne()%>">
 							<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
 				</form>					
@@ -105,8 +100,12 @@ List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
 			<button class="button">发送催件短信</button>
 			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
 			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')">待机构核实</button>
-			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.YiJieAn.getValue()%>')">结案</button>
+			<button class="button" onclick="btnccwo()">结案</button>
 			<button class="button" onclick="closeBox()">取消</button>
+			<input type="hidden" id="stateNum">
+			<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yja">
+			<input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="yjs">
+			<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="bcl">
 	</div>
 </div>
 

@@ -11,13 +11,15 @@
 <%@page import="cn.explink.domain.CwbOrder"%>
 
  <% 
-	List<Reason> r = (List<Reason>)request.getAttribute("lr");
-	List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
+	List<Reason> r = (List<Reason>)request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
+	List<Reason> rs = (List<Reason>)request.getAttribute("lrs")==null?null: (List<Reason>)request.getAttribute("lrs");
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
-	List<Branch> b =(List<Branch>)request.getAttribute("lb");
-	 String uname=(String)request.getAttribute("username"); 
-	Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist");
-	List<CwbOrder> co=(List<CwbOrder>)request.getAttribute("co"); 
+	List<Branch> b =(List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+	 String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username"); 
+	/* Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist")==null?null:(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist"); */
+	Map<String,String> connameList=(Map<String,String>)request.getAttribute("connameList");
+	List<CwbOrder> co=(List<CwbOrder>)request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
+	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -27,31 +29,85 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
 
 $(function() {
+	
+	$("#beginRangeTime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
+	$("#endRangeTime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
 	$("#add_OrgVerify").click(function() {
+		if($('#FormV').val()==""){
+			alert('请选择一条记录');
+			return false;
+		}else if($('#ComStateV').val()!=$('#DaiHeShi').val()){
+			alert('本条数据状态不是待核实状态不能核实');
+			return false;
+		}
 		getAddBoxx01();
 
 	});
 	$("#add_CUSA").click(function() {
+		if($('#FormV').val()==""){
+			alert('请选择一条记录');
+			return false;
+		}else if($('#ComStateV').val()==$('#JieAnChongShenZhong').val()||$('#ComStateV').val()==$('#YiJieShu').val()||$('#ComStateV').val()==$('#YiJieAn').val()){
+			alert('本条数据状态不能结案');
+			return false;
+		}
+	
 		getAddBox2();
 
 	});
 	$("#add_OrgAppeal").click(function() {
+		if($('#FormV').val()==""){
+			alert('请选择一条记录');
+			return false;
+		}else if($('#ComStateV').val()!=$('#YiJieAn').val()){
+			alert('本条数据状态未结案不能申诉');
+			return false;
+		}
 		getAddBox3();
 
 	});
 	$("#add_AdjudicateRetrial").click(function() {
+		if($('#FormV').val()==""){
+			alert('请选择一条记录');
+			return false;
+		}else if($('#ComStateV').val()!=$('#JieAnChongShenZhong').val()){
+			alert('本条数据状态不能结案重审');
+			return false;
+		}
+		
 		getAddBox4();
 
 	});
 	
 	$("table#waitacceptDg tr").click(function(){
-		$(this).css("backgroundColor","blue");
+		$(this).css("backgroundColor","yellow");
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 
@@ -75,6 +131,11 @@ function getAddBoxx01() {
 	});
 }
 function getAddBox2() {
+	if($('#FormV').val()==""){
+		
+		alert('请选择一条记录');
+		return false;
+	}
 	$.ajax({
 		type : "POST",
 		data:'acceptNo='+$('#FormV').val(),
@@ -92,6 +153,10 @@ function getAddBox2() {
 	});
 }
 function getAddBox3() {
+	if($('#FormV').val()==""){
+		alert('请选择一条记录');
+		return false;
+	}
 	$.ajax({
 		type : "POST",
 		data:'acceptNo='+$('#FormV').val(),
@@ -117,7 +182,6 @@ function getAddBox4() {
 		success : function(data) {
 			// alert(data);
 			$("#alert_box", parent.document).html(data);
-
 		},
 		complete : function() {
 			addInit();// 初始化某些ajax弹出页面
@@ -129,8 +193,23 @@ function addInit(){
 	
 }
 
-function getFomeV(v){
-	$('#FormV').val(v);
+function getFomeV(v,l){
+	$('#FormV').val("");
+	$('#FormV').val(v);	
+	
+	$('#ComStateV').val("");
+	$('#ComStateV').val(l);
+}
+
+function testCwbsIfNull(){
+	if($('#orderNo').val()==""){
+		alert('请输入至少一个订单号');
+		return;
+	}
+	if($("#beginRangeTime").val()>$("#endRangeTime").val()){
+		alert("开始时间不能大于结束时间");
+		return;
+	}
 }
 
 </script>
@@ -140,13 +219,13 @@ function getFomeV(v){
 <div>		
 	<div style="margin-left: 10px;margin-top: 20px">
 		<table style="float: left">				
-			<form action="<%=request.getContextPath()%>/workorder/WorkOrderManageQuery">
+			<form action="<%=request.getContextPath()%>/workorder/WorkOrderManageQuery" onsubmit="return testCwbsIfNull()">
 				<tr>
 					<td>
-						订/运单号:<textarea rows="3" cols="16" name="orderNo"></textarea>
+						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"></textarea>
 					</td>		
 					<td>
-				工单类型:<select name="complaintType">				
+				工单类型:<select name="complaintType" class="select1">				
 							<option value="-1">全部</option>
 							<%for(ComplaintTypeEnum c:ComplaintTypeEnum.values()){ %>		
 							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
@@ -155,7 +234,7 @@ function getFomeV(v){
 						
 					</td>
 					<td>
-				工单状态:<select name="complaintState">				
+				工单状态:<select name="complaintState" class="select1">				
 							<option value="-1">全部</option>
 							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	
 							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
@@ -198,97 +277,109 @@ function getFomeV(v){
 									</select>
 					</td>						
 					<td>
-				是否扣罚:		<select>
+				是否扣罚:		<select class="select1">
 							<option>全部</option>
 							</select>
 					</td>			
 					<td>
-				受理人:		<select>
+				受理人:		<select class="select1">
 							<option>全部</option>
 							</select>
 					</td>
 				</tr>
 				<tr>			
 					<td>
-					工单受理时间:<input type="text" name="beginRangeTime"/>——<input type="text" name="endRangeTime"/>
+					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
 					</td>
 
 				
 					<td>
-						<input type="submit" value="查询"><input type="reset" value="重置"/>
+						<input type="submit" value="查询" class="input_button2">
+						<input type="reset" value="重置" class="input_button2"/>
 					</td>
 				</tr>
 				
 			</form>	
 			<tr>
 				<td>
-					<button id="add_CUSA">客服结案</button>
-					<button id="add_AdjudicateRetrial">结案重审</button>
-					<button id="add_OrgVerify">机构核实</button><button id="add_OrgAppeal">机构申诉</button>
-					<button>导出</button>
+					<button id="add_CUSA" class="input_button2">客服结案</button>
+					<button id="add_AdjudicateRetrial" class="input_button2">结案重审</button>
+					<button id="add_OrgVerify" class="input_button2">机构核实</button>
+					<button id="add_OrgAppeal" class="input_button2">机构申诉</button>
+					<button class="input_button2">导出</button>
 				</td>
 			</tr>
 		</table>		
-		</div>	
 	</div>	
-	<div>
-		<table border="1" width="100%" id="waitacceptDg">
-			<tr>
-				<th>工单号</th>
-				<th>订单号</th>
-				<th>工单类型</th>
-				<th>工单状态</th>
-				<th>来电人姓名</th>
-				<th>来电号码</th>
-				<th>被投诉机构</th>
-				<th>工单受理人</th>
-				<th>受理时间</th>
-				<th>投诉一级分类</th>
-				<th>投诉二级分类</th>
-				<th>投诉处理结果</th>
-				<th>是否扣罚</th>
-				<th>客户名称</th>	
-				<th>催件次数</th>			
+		<br>
+		<table  width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="waitacceptDg">
+			<tr class="font_1">
+				<th bgcolor="#eef6ff">工单号</th>
+				<th bgcolor="#eef6ff">订单号</th>
+				<th bgcolor="#eef6ff">工单类型</th>
+				<th bgcolor="#eef6ff">工单状态</th>
+				<th bgcolor="#eef6ff">来电人姓名</th>
+				<th bgcolor="#eef6ff">来电号码</th>
+				<th bgcolor="#eef6ff">被投诉机构</th>
+				<th bgcolor="#eef6ff">工单受理人</th>
+				<th bgcolor="#eef6ff">受理时间</th>
+				<th bgcolor="#eef6ff">投诉一级分类</th>
+				<th bgcolor="#eef6ff">投诉二级分类</th>
+				<th bgcolor="#eef6ff">投诉处理结果</th>
+				<th bgcolor="#eef6ff">是否扣罚</th>
+				<th bgcolor="#eef6ff">客户名称</th>	
+				<th bgcolor="#eef6ff">催件次数</th>			
 			</tr>
 		<%if(a!=null){ %>
 			<%for(CsComplaintAccept c:a){ %>
-			<tr onclick="getFomeV('<%=c.getAcceptNo() %>')">
+			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>')">
 				<td><%=c.getAcceptNo() %></td>
 				<td><%=c.getOrderNo() %></td>
 				<td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td>
-				<td><%=CwbStateEnum.getByValue((long)c.getComplaintState()).getText() %></td>
-				<%
-				List<CsConsigneeInfo> csConsigneeList= maplist.get(c.getPhoneOne());
-				if(csConsigneeList!=null||csConsigneeList.size()!=0){
-					for(CsConsigneeInfo cc:csConsigneeList){ %>
-					<td><%=cc.getName()==null?null:cc.getName()%></td>
-					<%} 
-					
-				}%>
+				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
+				<td><%=connameList.get(c.getPhoneOne())%>
+				</td>				
 				<td><%=c.getPhoneOne() %></td>
-				<%for(Branch br:b){ %>
-					<%if(br.getBranchid()==c.getCodOrgId()){ %>
-						<td><%=br.getBranchname()%></td>
-				<%} }%>
-				<td><%=uname%></td>
-				<td><%=c.getAcceptTime() %></td>
-				<td><%=c.getComplaintOneLevel() %></td>
-				<td><%=c.getComplaintTwoLevel() %></td>
-				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td>
-				<td></td>
-				 <%for(CwbOrder cod:co){ %>
-		
-				<td><%=cod.getConsigneename()%></td>
-				<%} %> 
-				<td></td>
-			-
-
-				
-			</tr>
+				<td><%for(Branch br:b){ %>
+					<%if(br.getBranchid()==c.getCodOrgId()){ %>  <!-- 被投诉机构 -->
+						<%=br.getBranchname()%>
+					<%} }%>
+				<td><%=uname%></td>					<!--受理人  -->
+				<td><%=c.getAcceptTime() %></td>    <!--受理时间  -->
+				<td><%for(Reason rsn:r){ %>
+								<%if(rsn.getReasonid()==c.getComplaintOneLevel()){ %>  <!-- 一级原因 -->
+									<%=rsn.getReasoncontent()==null?"":rsn.getReasoncontent()%>
+								<%} }%>
+				</td>
+				<td><%for(Reason rsn1:rs){ %>
+						<%if(rsn1.getReasonid()==c.getComplaintTwoLevel()){ %> 	
+							<%=rsn1.getReasoncontent()==null?"":rsn1.getReasoncontent() %><!--二级原因  -->
+						<%} }%>
+				</td>
+				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
+				<td>
+					<label>是</label>					
+				</td>
+				<td><%=customernameList.get(c.getCustomerid())%> 
+				</td>	
+				<td>
+					<label>催件次数</label>
+				</td>
+		</tr>
 			<%} }%>
 		</table>
 	</div>	
-	<input type="hidden" id="FormV" value=""/>
+
+<!-- 	DaiChuLi(0, "待处理"),  YiJieAn(1, "已结案"),DaiHeShi(2,"待核实"),YiHeShi(3,"已核实"),
+	YiJieShu(4,"已结束"),JieAnChongShenZhong(5,"结案重审中"); -->
+	<input type="hidden" id="DaiChuLi" value="<%=ComplaintStateEnum.DaiChuLi.getValue()%>"/>
+	<input type="hidden" id="YiJieAn" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>"/>
+	<input type="hidden" id="DaiHeShi" value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"/>
+	<input type="hidden" id="YiHeShi" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"/>
+	<input type="hidden" id="YiJieShu" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
+	<input type="hidden" id="JieAnChongShenZhong" value="<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>"/>
+	<input type="hidden" id="FormV"/>
+	<input type="hidden" id="ComStateV"/>
 	<input type="hidden" id="add_OrgVerifyV" value="<%=request.getContextPath()%>/workorder/OrgVerify"/>
 	<input type="hidden" id="add_CSA" value="<%=request.getContextPath()%>/workorder/CustomerServiceAdjudicate">	
 </body>

@@ -33,7 +33,7 @@ public class CsComplaintAcceptVO {
 			private String orderNo;		//订单号
 			private int codOrgId;		//被投诉机构
 			private String ComplaintUser;	//被投诉人
-			private String complaintType;		//被投诉类型
+			private int complaintType;		//被投诉类型
 			private int complaintOneLevel;	//一级分类
 			private int complaintTwoLevel;	//二级分类
 			private String content;		//投诉人内容
@@ -43,7 +43,7 @@ public class CsComplaintAcceptVO {
 			private String handleUser;	 //处理人
 			private int complaintResult; //处理结果
 			private int isComplaint;  //有无申诉 0有1无
-			private String complaintState; //工单状态
+			private int complaintState; //工单状态
 			private String complaintTime;
 			private String complaintContent;
 			private String handleContent;
@@ -58,8 +58,30 @@ public class CsComplaintAcceptVO {
 			private String phoneOne;
 			private String  beginRangeTime;
 			private String endRangeTime;
+			private String showComplaintStateName;
+			private String showcomplaintTypeName;
+			private String city;
 			
 			
+			public String getCity() {
+				return city;
+			}
+			public void setCity(String city) {
+				this.city = city;
+			}
+			public String getShowComplaintStateName() {
+				return showComplaintStateName;
+			}
+			public void setShowComplaintStateName(String showComplaintStateName) {
+				this.showComplaintStateName = showComplaintStateName;
+			}
+		
+			public String getShowcomplaintTypeName() {
+				return showcomplaintTypeName;
+			}
+			public void setShowcomplaintTypeName(String showcomplaintTypeName) {
+				this.showcomplaintTypeName = showcomplaintTypeName;
+			}
 			public String getBeginRangeTime() {
 				return beginRangeTime;
 			}
@@ -108,14 +130,20 @@ public class CsComplaintAcceptVO {
 			public void setComplaintUser(String complaintUser) {
 				ComplaintUser = complaintUser;
 			}
-			public String getComplaintType() {
+		/*	public String getComplaintType() {
 				return complaintType;
 			}
 			public void setComplaintType(String complaintType) {
 				this.complaintType = complaintType;
-			}
+			}*/
 			public int getComplaintOneLevel() {
 				return complaintOneLevel;
+			}
+			public int getComplaintType() {
+				return complaintType;
+			}
+			public void setComplaintType(int complaintType) {
+				this.complaintType = complaintType;
 			}
 			public void setComplaintOneLevel(int complaintOneLevel) {
 				this.complaintOneLevel = complaintOneLevel;
@@ -168,10 +196,11 @@ public class CsComplaintAcceptVO {
 			public void setIsComplaint(int isComplaint) {
 				this.isComplaint = isComplaint;
 			}
-			public String getComplaintState() {
+			
+			public int getComplaintState() {
 				return complaintState;
 			}
-			public void setComplaintState(String complaintState) {
+			public void setComplaintState(int complaintState) {
 				this.complaintState = complaintState;
 			}
 			public String getComplaintTime() {

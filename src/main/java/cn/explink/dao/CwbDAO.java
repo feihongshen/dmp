@@ -5759,12 +5759,9 @@ public class CwbDAO {
 
 	}	
 	
-	public CwbOrder createQueryWo(int opscwbid){
-		String sql="select * from express_ops_cwb_detail where opscwbid=?";
-		return this.jdbcTemplate.queryForObject(sql,new CwbMapper(),opscwbid);	
-	}
 	
-	private final class CsComplaintAcceptRowMapper implements RowMapper<CsComplaintAccept>{
+	
+/*	private final class CsComplaintAcceptRowMapper implements RowMapper<CsComplaintAccept>{
 
 		@Override
 		public CsComplaintAccept mapRow(ResultSet rs, int rowNum)
@@ -5779,12 +5776,12 @@ public class CwbDAO {
 			return c;
 		}
 		
-	}
+	}*/
 	
 	public List<CwbOrder> SelectDetalForm1(String phone){
-		List<CwbOrder> lc=null;
-		String sql="select * from express_ops_cwb_detail d,cs_complaint_accept a where consigneemobile=? a.order_no=d.cwb";
-		lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
+		 
+		String sql="select * from express_ops_cwb_detail where consigneemobile=?";/*d,cs_complaint_accept a  a.order_no=d.cwb*/
+		List<CwbOrder> lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
 	
 	return lc;
 

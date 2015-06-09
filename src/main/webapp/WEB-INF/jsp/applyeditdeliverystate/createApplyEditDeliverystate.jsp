@@ -93,6 +93,28 @@ function sub2(cwbstr,id){
 	});
 	
 }
+//处理之前已经修改过之后产生新状态
+function sub2(cwbstr,id){
+	
+	$.ajax({
+		type: "POST",
+		url:'<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystateAgin',
+		data:{cwbss:cwbstr,
+			  editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
+			  editreason:$("#editreason"+id).val()
+		     },
+		dataType:"html",
+		success : function(data) {
+			if(data.errorCode==0){
+				alert("问题件成功提交：1单");
+			}else{
+				alert("问题件成功提交：1单");
+			}
+			//searchForm.submit();
+		}
+	});
+	
+}
 
 
 
