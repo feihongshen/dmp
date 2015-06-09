@@ -5548,8 +5548,6 @@ function btnccwo(Val){
 	
 	}
 
-<<<<<<< .working
-
 
 function btnupdate(csv){
 	$('#cwo').val(csv);
