@@ -38,7 +38,7 @@ public class ZhiFuApplyDao {
 			zfav.setApplystate(rs.getInt("applystate"));
 			zfav.setApplyresult(rs.getInt("applyresult"));
 			zfav.setUserid(rs.getInt("userid"));
-//			zfav.setFeewaytyperemark(rs.getString("feeremark"));
+			zfav.setFeewaytyperemark(rs.getString("feeremark"));
 			return zfav;
 		}
 	}
@@ -64,7 +64,7 @@ public class ZhiFuApplyDao {
 			obj.put("applystate", rs.getInt("applystate"));
 			obj.put("applyresult", rs.getInt("applyresult"));
 			obj.put("userid", rs.getInt("userid"));
-//			obj.put("feeremark", rs.getString("feeremark"));
+			obj.put("feeremark", rs.getString("feeremark"));
 			return obj;
 		}
 	}
