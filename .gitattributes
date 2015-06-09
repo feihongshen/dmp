@@ -2197,6 +2197,7 @@ src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/list.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbnew.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbruku.jsp -text
