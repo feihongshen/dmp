@@ -11,6 +11,7 @@
 <%
 
 String ids = request.getAttribute("ids")==null?"":request.getAttribute("ids").toString();
+
 %>
 <div id="box_bg" ></div>
 <div id="box_contant" >

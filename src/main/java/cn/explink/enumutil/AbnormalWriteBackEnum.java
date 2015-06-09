@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum AbnormalWriteBackEnum {
-	ChuangJian(1, "创建"), ChuLi(2, "处理"), HuiFu(3, "回复"), XiuGai(4, "修改");
+	ChuangJian(1, "创建"), ChuLi(2, "处理"), HuiFu(3, "回复"), XiuGai(4, "修改"),JieAN(5,"结案");
 
 	private int value;
 	private String text;

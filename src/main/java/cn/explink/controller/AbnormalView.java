@@ -28,15 +28,56 @@ public class AbnormalView {
 	private String dealResultContent;//处理结果问题成立或者不成立
 	private long dutybrachid;//责任机构
 	private String dutybranchname;//责任机构名
-	private String dutypersoname;//责任人
+	private long dutypersonid;//责任人
+	private String dutyperson;//责任人姓名
 	private String  isfinecontent;//是否罚款（1，未罚款 2.已罚款）
 	private long losebackid;//该问题件是不是丢失返回的，是的话为丢失返回表里面的主键id
 	private String losebackContent;//丢失件是否找回
 	private String resultdealcontent;//结案处理说明内容
-	
-	
-	
-	
+	private String isfindInfo;//问题件是否已经找回0对应未找回 1对应找回
+	private String lastdutybranch;//最终审判人
+	private String lastdutyuser;//最后审判机构
+	private long creuserid;//创建人的id
+	public long getCreuserid() {
+		return creuserid;
+	}
+
+	public void setCreuserid(long creuserid) {
+		this.creuserid = creuserid;
+	}
+
+	public String getDutyperson() {
+		return dutyperson;
+	}
+
+	public void setDutyperson(String dutyperson) {
+		this.dutyperson = dutyperson;
+	}
+
+	public String getLastdutybranch() {
+		return lastdutybranch;
+	}
+
+	public void setLastdutybranch(String lastdutybranch) {
+		this.lastdutybranch = lastdutybranch;
+	}
+
+	public String getLastdutyuser() {
+		return lastdutyuser;
+	}
+
+	public void setLastdutyuser(String lastdutyuser) {
+		this.lastdutyuser = lastdutyuser;
+	}
+
+	public String getIsfindInfo() {
+		return isfindInfo;
+	}
+
+	public void setIsfindInfo(String isfindInfo) {
+		this.isfindInfo = isfindInfo;
+	}
+
 	public String getDealResultContent() {
 		return dealResultContent;
 	}
@@ -104,14 +145,16 @@ public class AbnormalView {
 		this.dutybrachid = dutybrachid;
 	}
 
-	public String getDutypersoname() {
-		return dutypersoname;
+
+
+
+	public long getDutypersonid() {
+		return dutypersonid;
 	}
 
-	public void setDutypersoname(String dutypersoname) {
-		this.dutypersoname = dutypersoname;
+	public void setDutypersonid(long dutypersonid) {
+		this.dutypersonid = dutypersonid;
 	}
-
 
 	public long getLosebackid() {
 		return losebackid;

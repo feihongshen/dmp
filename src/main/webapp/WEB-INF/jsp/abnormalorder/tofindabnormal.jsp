@@ -194,9 +194,9 @@ function tip(){
 									<label for="select4"></label>
 									<select name="ishandle" id="ishandle" onchange="checkstate()">
 										<!-- <option value="-1">全部</option> -->
-										<option value="<%=AbnormalOrderHandleEnum.WeiChuLi.getValue()%>"><%=AbnormalOrderHandleEnum.WeiChuLi.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.weichuli.getValue()%>"><%=AbnormalOrderHandleEnum.weichuli.getText() %></option>
 										<%if(showabnomal.equals("1")){%>
-										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.daichuli.getValue()%>"><%=AbnormalOrderHandleEnum.daichuli.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
 										<%} %>
 										<%if(!showabnomal.equals("1")){%>
@@ -241,7 +241,7 @@ function tip(){
 							<tr height="30">
 								<td width="150" align="center" valign="middle"><%=abnormalOrder.getCwb() %></td>
 								<td width="100" align="center" valign="middle"><%if(customerlist!=null)for(Customer c : customerlist){if(abnormalOrder.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
-								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildata() %></td>
+								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildate() %></td>
 								<td width="110" align="center" valign="middle"><%for(FlowOrderTypeEnum f:FlowOrderTypeEnum.values()){if(f.getValue()==abnormalOrder.getFlowordertype()){out.print(f.getText());}}%></td>
 								<td width="110" align="center" valign="middle"><%for(Branch b:branchList){if(b.getBranchid()==abnormalOrder.getBranchid()){out.print(b.getBranchname());}}%></td>
 								<td width="100" align="center" valign="middle"><%for(User user:userList){if(user.getUserid()==abnormalOrder.getCreuserid()){out.print(user.getRealname());}}%></td>

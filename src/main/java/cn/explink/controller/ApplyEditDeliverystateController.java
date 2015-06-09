@@ -844,14 +844,14 @@ public class ApplyEditDeliverystateController {
 
 		return "applyeditdeliverystate/resetFeedback";
 	}
-	/**
+/*	*//**
 	 * 重置反馈列表
-	 */
+	 *//*
 	@RequestMapping("/resetFeedbackList")
 	public String resetFeedbackList(){
 
 		return "applyeditdeliverystate/resetFeedbackList";
-	}
+	}*/
 	/**
 	 * 支付信息修改审核
 	 */

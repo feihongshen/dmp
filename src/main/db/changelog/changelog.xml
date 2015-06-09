@@ -6455,16 +6455,56 @@ INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0
 		ADD COLUMN `cwbordertypeid` VARCHAR(11) COLLATE utf8_bin DEFAULT '-1' AFTER `questionno`,
 		ADD COLUMN `dealresult` INT(20) DEFAULT '0' AFTER `cwbordertypeid`,
 		ADD COLUMN `dutybrachid`  INT(10) DEFAULT '0' AFTER `dealresult`,
-		ADD COLUMN `dutypersoname` VARCHAR(200) NULL DEFAULT '' AFTER `dutybrachid`,
+		ADD COLUMN `dutypersonid` INT(10) DEFAULT '0' AFTER `dutybrachid`,
 		ADD COLUMN `isfine`  INT(10) DEFAULT '0' AFTER `dutypersoname`,
 		ADD COLUMN `losebackid` INT(10) DEFAULT '0' AFTER `isfine`,
 		ADD COLUMN `resultdealcontent` VARCHAR(200) NULL DEFAULT '' AFTER `losebackid`;
 		</sql>
 	</changeSet>
+	<changeSet id="wukong-2015-06-01-2" author="wukong">
+		<sql>
+	CREATE TABLE `express_ops_lose_back` (
+			`id` BIGINT (20)NOT NULL AUTO_INCREMENT,
+			`cwb` VARCHAR (300)	COLLATE utf8_bin DEFAULT NULL,
+			`customerid` INT(11) DEFAULT NULL,
+			`cwbordertypeid` INT(4) DEFAULT '-1',
+			`flowordertype` INT(11) DEFAULT NULL,
+			`callbackbranchid`  INT(10) DEFAULT '0',
+			`createtime` VARCHAR(50) COLLATE utf8_bin DEFAULT NULL,
+			`creuserid` INT(11) DEFAULT '0',
+			`questionno` VARCHAR(100) NULL DEFAULT '',
+			`describeinfo` VARCHAR(500) DEFAULT '',
+			`filepath` VARCHAR(500) DEFAULT '',
+	 		 PRIMARY KEY  (`id`)
+			)ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-06-02-1" author="wukong">
+		<sql>
+		 ALTER TABLE `express_ops_lose_back` ADD COLUMN `state`  INT(10) DEFAULT '0' ;
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-06-03-2" author="wukong">
+		<sql>
+		 ALTER TABLE `express_ops_abnormal_order` ADD COLUMN `isfind`  INT(10) DEFAULT '0' ;
+		</sql>
+	</changeSet>
+	<changeSet id="wukong-2015-06-04-2" author="wukong">
+		<sql>
+ 		 ALTER TABLE `express_ops_abnormal_order`  ADD COLUMN `lastdutybranchid`  INT(10) DEFAULT '0' ,
+         ADD COLUMN `lastdutyuserid` INT(10) DEFAULT '0';
+         ALTER TABLE `express_ops_abnormal_order`
+		 DROP COLUMN dutypersoname;	
+		 ALTER TABLE `express_ops_abnormal_order`
+		 ADD COLUMN `dutypersonid` INT(10) DEFAULT '0' AFTER `dutybrachid`;		
+        </sql>
+	</changeSet>
+
 <changeSet id="mali-2015-06-04-01" author="mali">
         	<sql>
         	ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `customerbillimportflag` INT(4) DEFAULT 0 NULL ;
         	</sql> 
         </changeSet>
+
 </databaseChangeLog>
  

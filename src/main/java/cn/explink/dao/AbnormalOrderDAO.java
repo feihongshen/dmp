@@ -16,9 +16,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.b2c.lefeng.result;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
+import cn.explink.enumutil.AbnormalOrderHandleEnum;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -35,15 +38,28 @@ public class AbnormalOrderDAO {
 			abnormalOrder.setCredatetime(rs.getString("credatetime"));
 			abnormalOrder.setAbnormaltypeid(rs.getLong("abnormaltypeid"));
 			abnormalOrder.setOpscwbid(rs.getLong("opscwbid"));
-			abnormalOrder.setCustomerid(rs.getLong("customerid"));
 			abnormalOrder.setIshandle(rs.getLong("ishandle"));
 			abnormalOrder.setBranchid(rs.getLong("branchid"));
 			abnormalOrder.setIsnow(rs.getLong("isnow"));
 			abnormalOrder.setCwb(rs.getString("cwb"));
 			abnormalOrder.setCustomerid(rs.getLong("customerid"));
-			abnormalOrder.setEmaildata(rs.getString("emaildate"));
+			abnormalOrder.setEmaildate(rs.getString("emaildate"));
 			abnormalOrder.setFlowordertype(rs.getLong("flowordertype"));
 			abnormalOrder.setDeliverybranchid(rs.getLong("deliverybranchid"));
+			abnormalOrder.setDutypersonid(rs.getLong("dutypersonid"));
+			abnormalOrder.setLosebackid(rs.getLong("losebackid"));
+			abnormalOrder.setDealresult(rs.getString("dealresult"));
+			abnormalOrder.setCwbordertypeid(rs.getString("cwbordertypeid"));
+			abnormalOrder.setResultdealcontent(rs.getString("resultdealcontent"));
+			abnormalOrder.setFileposition(rs.getString("fileposition"));
+			abnormalOrder.setIsfind(rs.getLong("isfind"));
+			abnormalOrder.setDutybrachid(rs.getLong("dutybrachid"));
+			abnormalOrder.setHandleBranch(rs.getLong("handleBranch"));
+			abnormalOrder.setQuestionno(rs.getString("questionno"));
+			abnormalOrder.setIsfine(rs.getLong("isfine"));
+			abnormalOrder.setLastdutybranchid(rs.getLong("lastdutybranchid"));
+			abnormalOrder.setLastdutyuserid(rs.getLong("lastdutyuserid"));
+			
 			return abnormalOrder;
 		}
 	}
@@ -52,14 +68,12 @@ public class AbnormalOrderDAO {
 		@Override
 		public JSONObject mapRow(ResultSet rs, int rowNum) throws SQLException {
 			JSONObject obj = new JSONObject();
-
 			obj.put("id", rs.getLong("id"));
 			obj.put("describe", rs.getString("describe"));
 			obj.put("creuserid", rs.getLong("creuserid"));
 			obj.put("credatetime", rs.getString("credatetime"));
 			obj.put("abnormaltypeid", rs.getLong("abnormaltypeid"));
 			obj.put("opscwbid", rs.getLong("opscwbid"));
-			obj.put("customerid", rs.getLong("customerid"));
 			obj.put("ishandle", rs.getLong("ishandle"));
 			obj.put("branchid", rs.getLong("branchid"));
 			obj.put("isnow", rs.getLong("isnow"));
@@ -68,16 +82,19 @@ public class AbnormalOrderDAO {
 			obj.put("emaildate", rs.getString("emaildate"));
 			obj.put("flowordertype", rs.getLong("flowordertype"));
 			obj.put("deliverybranchid", rs.getLong("deliverybranchid"));
-			obj.put("fileposition", rs.getString("fileposition"));
+			obj.put("fileposition", rs.getString("fileposition")==null?"":rs.getString("fileposition"));
 			obj.put("dealresult", rs.getString("dealresult"));
 			obj.put("losebackid", rs.getString("losebackid"));
 			obj.put("cwbordertypeid", rs.getLong("cwbordertypeid"));
-			obj.put("flowordertype", rs.getLong("flowordertype"));
 			obj.put("dutybrachid", rs.getLong("dutybrachid"));
 			obj.put("isfine", rs.getLong("isfine"));
 			obj.put("resultdealcontent", rs.getShort("resultdealcontent"));
 			obj.put("questionno", rs.getString("questionno"));
-			
+			obj.put("dutypersonid", rs.getLong("dutypersonid"));
+			obj.put("handleBranch", rs.getLong("handleBranch"));
+			obj.put("isfind", rs.getLong("isfind"));
+			obj.put("lastdutybranchid", rs.getLong("lastdutybranchid"));
+			obj.put("lastdutyuserid", rs.getLong("lastdutyuserid"));
 			return obj;
 		}
 	}
@@ -117,9 +134,26 @@ public class AbnormalOrderDAO {
 	 * abnormaltypeid+" and `isnow`=1 "; return jdbcTemplate.queryForList(sql,
 	 * String.class); }
 	 */
-	public void saveAbnormalOrderByid(long id, long abnormaltypeid, String describe) {
-		String sql = "update express_ops_abnormal_order set `abnormaltypeid`=?,`describe`=? where `id`=?";
-		this.jdbcTemplate.update(sql, abnormaltypeid, describe, id);
+	
+	//修改带文件的已创建的问题件
+	public void saveAbnormalOrderByid(long id, long abnormaltypeid, String describe,long ishandle,String filepathsum,String nowtime) {
+		String sql = "update express_ops_abnormal_order set `abnormaltypeid`=?,`describe`=?,`ishandle`=?,`fileposition`=?,`handletime`=? where `id`=?";
+		this.jdbcTemplate.update(sql, abnormaltypeid, describe,ishandle,filepathsum,nowtime,id);
+	}
+	//修改不带文件的已创建的问题件
+	public void saveAbnormalOrderByidAdd(long id, long abnormaltypeid, String describe,long ishandle,String nowtime) {
+		String sql = "update express_ops_abnormal_order set `abnormaltypeid`=?,`describe`=?,`ishandle`=?,`handletime`=? where `id`=?";
+		this.jdbcTemplate.update(sql, abnormaltypeid, describe,ishandle,nowtime,id);
+	}
+	//结案修改信息
+	public void saveAbnormalOrderResultByid(long id, long dealresult, String filepathsum,long ishandle,String resultdealcontent,String nowtime) {
+		try {
+			String sql = "update express_ops_abnormal_order set `dealresult`=?,`fileposition`=?,`ishandle`=?,`resultdealcontent`=?,`handletime`=? where `id`=?";
+			this.jdbcTemplate.update(sql, dealresult,filepathsum,ishandle,resultdealcontent,nowtime,id);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void saveAbnormalOrderByOpscwbid(long opscwbid) {
@@ -212,6 +246,38 @@ public class AbnormalOrderDAO {
 				ps.setString(14, name);
 				ps.setString(15,questionNo);
 				ps.setLong(16, co.getCwbordertypeid());
+				return ps;
+			}
+		}, key);
+		return key.getKey().longValue();
+	}
+	public long creAbnormalOrderLongAdd(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch,final String name,final String questionNo,final long isfind,final long ishandle) {
+		this.saveAbnormalOrderByOpscwb(co.getCwb());
+		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`,`fileposition`,`questionno`,`cwbordertypeid`,`isfind`,`ishandle`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		KeyHolder key = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement(sql, new String[] { "id" });
+				ps.setLong(1, co.getOpscwbid());
+				ps.setLong(2, co.getCustomerid());
+				ps.setString(3, describe);
+				ps.setLong(4, creuserid);
+				ps.setLong(5, branchid);
+				ps.setLong(6, abnormaltypeid);
+				ps.setString(7, credatetime);
+				ps.setLong(8, 1);
+				ps.setString(9, co.getEmaildate());
+				ps.setLong(10, co.getFlowordertype());
+				ps.setLong(11, co.getDeliverybranchid());
+				ps.setString(12, co.getCwb());
+				ps.setLong(13, handleBranch);
+				ps.setString(14, name);
+				ps.setString(15,questionNo);
+				ps.setLong(16, co.getCwbordertypeid());
+				ps.setLong(17, isfind);
+				ps.setLong(18, ishandle);
 				return ps;
 			}
 		}, key);
@@ -328,6 +394,10 @@ public class AbnormalOrderDAO {
 
 	}
 
+	public void saveAbnormalOrderForIshandleAdd(long id, long ishandle, String handletime,String fileposition,long dutyname,long dutybranchid) {
+		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=?,`fileposition`=?,`dutybrachid`=?,`dutypersonid`=? where `id`=? ";
+		this.jdbcTemplate.update(sql, ishandle, handletime, fileposition,dutybranchid,dutyname,id);
+	}
 	public void saveAbnormalOrderForIshandle(long id, long ishandle, String handletime,String fileposition) {
 		String sql = "update express_ops_abnormal_order set `ishandle`=? ,`handletime`=?,`fileposition`=? where `id`=? ";
 		this.jdbcTemplate.update(sql, ishandle, handletime, fileposition,id);
@@ -375,22 +445,114 @@ public class AbnormalOrderDAO {
 		}
 		return ab;
 	}
+	/**
+	 * 根据cwb 得到
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public AbnormalOrder getAbnormalOrderByOCwb(String cwb) {
+		String sql = "select * from express_ops_abnormal_order where cwb=? ";
+		AbnormalOrder ab = new AbnormalOrder();
+		try {
+			ab = this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), cwb);
+		} catch (Exception e) {
+			ab = null;
+		}
+		return ab;
+	}
 
 
-	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle,
-			long customerid, long handleBranch,long dealresult,long losebackisornot) {
+	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle,
+			long customerid, long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
 		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' and isnow=1";
+		boolean iskefu=false;
+		if (handleBranch==BranchEnum.KeFu.getValue()) {
+			iskefu=true;
+		}
+		//判断是不是客服的时候
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
+			if (findscope!=0) {
+				sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+			}
+		}
 		if (cwbs.length() > 0) {
 			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
-		if (branchid > 0) {
-			sql += " AND `branchid`=" + branchid;
+		//判断是不是客服以及是不是当前机构
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			if ((createbranchid!=currentbranchid&&dutybranchid!=currentbranchid)||(createbranchid==0&&dutybranchid!=currentbranchid)||(createbranchid!=currentbranchid&&dutybranchid==0)) {
+				if ((createbranchid==0&&dutybranchid==0)||(createbranchid==currentbranchid&&dutybranchid==currentbranchid)) {
+					
+				}else {
+					//创建查询不到数据的条件
+					createbranchid=0;
+					sql+="  AND `branchid`="+createbranchid;
+				}
+				
+			}
+		}
+		if (createbranchid > 0) {
+			sql += " AND `branchid`=" + createbranchid;
+		}
+		if (dutybranchid > 0) {
+			sql += " AND `dutybrachid`=" + dutybranchid;
 		}
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > 0) {
-			sql += " AND `ishandle`=" + ishandle;
+		if (ishandle==1) {
+			String ishandledata=AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue();
+			sql += " AND `ishandle` IN('"+ishandledata+"')";
+		}
+		if (ishandle==7) {
+			if (iskefu) {
+				String ishandledata=AbnormalOrderHandleEnum.kefuchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+			}else  {
+				String ishandledata=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata1=AbnormalOrderHandleEnum.zerenfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata2=ishandledata+","+ishandledata1;
+				//创建方与责任方待处理查询条件限制
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata2+"')";
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
+				}else {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+
+				}
+				
+			} 
+		}
+		if (ishandle==6) {
+			//问题件是否成立的条件的判断
+			if (dealresult>0) {
+				sql+=" AND `dealresult`="+dealresult;
+			}
+			if (iskefu) {
+				sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.kefuchuli.getValue();
+			}else {
+				//创建方与责任方处理
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+				}else {
+					sql+="  AND (`ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" OR `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue()+")";
+
+				}
+			
+			}
+		}
+		if (ishandle==AbnormalOrderHandleEnum.jieanchuli.getValue()) {
+			sql+="   AND `ishandle`="+AbnormalOrderHandleEnum.jieanchuli.getValue();
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
@@ -398,30 +560,105 @@ public class AbnormalOrderDAO {
 		if (dealresult>0) {
 			sql+=" AND `dealresult`="+dealresult;
 		}
-		if (losebackisornot>0) {
+		if (losebackisornot>-1) {
 			sql+=" AND `losebackid`="+losebackisornot;
 		}
-		sql += " AND `handleBranch` =" + handleBranch;
-		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-
+		//sql += " AND `handleBranch` =" + handleBranch;
+		if (page!=-6) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		}
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
 
 
-	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long branchid, long abnormaltypeid, long ishandle, long customerid,
-			long handleBranch,long dealresult,long losebackisornot) {
+	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle, long customerid,
+			long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
 		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
+		//查询到与自身有关的，自己可以是负责人或者是创建人
+		boolean iskefu=false;
+		if (handleBranch==BranchEnum.KeFu.getValue()) {
+			iskefu=true;
+		}
+		//判断是不是客服的时候
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
+			if (findscope!=0) {
+					sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+			}
+		}
 		if (cwbs.length() > 0) {
 			sql += " AND `cwb` IN(" + cwbs + ")";
 		}
-		if (branchid > 0) {
-			sql += " AND `branchid`=" + branchid;
+		
+		//判断是不是客服以及是不是当前机构
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			if ((createbranchid!=currentbranchid&&dutybranchid!=currentbranchid)||(createbranchid==0&&dutybranchid!=currentbranchid)||(createbranchid!=currentbranchid&&dutybranchid==0)) {
+				if ((createbranchid==0&&dutybranchid==0)||(createbranchid==currentbranchid&&dutybranchid==currentbranchid)) {
+					
+				}else {
+					//创建查询不到数据的条件
+					createbranchid=0;
+					sql+="  AND `branchid`="+createbranchid;
+				}
+				
+			}
+		}
+		if (createbranchid > 0) {
+			sql += " AND `branchid`=" + createbranchid;
+		}
+		if (dutybranchid > 0) {
+			sql += " AND `dutybrachid`=" + dutybranchid;
 		}
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > 0) {
-			sql += " AND `ishandle`=" + ishandle;
+		if (ishandle==1) {
+			String ishandledata=AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue();
+			sql += " AND `ishandle` IN('"+ishandledata+"')";
+		}
+		if (ishandle==7) {
+			if (iskefu) {
+				String ishandledata=AbnormalOrderHandleEnum.kefuchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+			}else  {
+				String ishandledata=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata1=AbnormalOrderHandleEnum.zerenfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata2=ishandledata+","+ishandledata1;
+				//创建方与责任方待处理查询条件限制
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata2+"')";
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
+				}else {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+
+				}
+				
+			} 
+		}
+		if (ishandle==6) {
+			if (iskefu) {
+				sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.kefuchuli.getValue();
+			}else {
+				//创建方与责任方处理
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+				}else {
+					sql+="  AND (`ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" OR `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue()+")";
+
+				}
+			
+			}
+		}
+		if (ishandle==AbnormalOrderHandleEnum.jieanchuli.getValue()) {
+			sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.jieanchuli.getValue();
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
@@ -432,29 +669,101 @@ public class AbnormalOrderDAO {
 		if (losebackisornot>0) {
 			sql+="   AND `losebackid`="+losebackisornot;
 		}
-		sql += " AND `handleBranch` =" + handleBranch;
+		//站点类型
+		//sql += " AND `handleBranch` =" + handleBranch;
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	public int getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate, String enddate,
-			long customerid, long handleBranch,long dealresult,long losebackisornot) {
+	public int getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(String cwb, long createbranchid, long abnormaltypeid, long ishandle, String begindate, String enddate,
+			long customerid, long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
 		// String opscwbidsql =
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
 		// + "' ";
 		String sql = "SELECT count(1) FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' ";
-
+		boolean iskefu=false;
+		if (handleBranch==BranchEnum.KeFu.getValue()) {
+			iskefu=true;
+		}
+		//判断是不是客服的时候
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
+			if (findscope!=0) {
+				sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+			}
+		}
 		if (cwb.length() > 0) {
 			sql += " AND `cwb` IN(" + cwb + ")";
 		}
-		if (branchid > 0) {
-			sql += " AND `branchid`=" + branchid;
+		//判断是不是客服以及是不是当前机构
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			if ((createbranchid!=currentbranchid&&dutybranchid!=currentbranchid)||(createbranchid==0&&dutybranchid!=currentbranchid)||(createbranchid!=currentbranchid&&dutybranchid==0)) {
+				if ((createbranchid==0&&dutybranchid==0)||(createbranchid==currentbranchid&&dutybranchid==currentbranchid)) {
+					
+				}else {
+					//创建查询不到数据的条件
+					createbranchid=0;
+					sql+="  AND `branchid`="+createbranchid;
+				}
+				
+			}
+		}
+		if (createbranchid > 0) {
+			sql += " AND `branchid`=" + createbranchid;
+		}
+		if (dutybranchid > 0) {
+			sql += " AND `dutybrachid`=" + dutybranchid;
 		}
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > 0) {
-			sql += " AND `ishandle`=" + ishandle;
+		if (ishandle==1) {
+			String ishandledata=AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue();
+			sql += " AND `ishandle` IN('"+ishandledata+"')";
+		}
+		if (ishandle==7) {
+			if (iskefu) {
+				String ishandledata=AbnormalOrderHandleEnum.kefuchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+			}else  {
+				String ishandledata=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata1=AbnormalOrderHandleEnum.zerenfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata2=ishandledata+","+ishandledata1;
+				//创建方与责任方待处理查询条件限制
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata2+"')";
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
+				}else {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+
+				}
+				
+			} 
+		}
+		if (ishandle==6) {
+			if (iskefu) {
+				sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.kefuchuli.getValue();
+			}else {
+				//创建方与责任方处理
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+				}else {
+					sql+="  AND (`ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" OR `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue()+")";
+
+				}
+			
+			}
+		}
+		if (ishandle==AbnormalOrderHandleEnum.jieanchuli.getValue()) {
+			sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.jieanchuli.getValue();
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
@@ -462,32 +771,116 @@ public class AbnormalOrderDAO {
 		if (dealresult>0) {
 			sql+=" AND `dealresult`="+dealresult;
 		}
-		if (losebackisornot>0) {
+		if (losebackisornot>-1) {
 			sql+=" AND `losebackid`="+losebackisornot;
 		}
-		sql += " AND `handleBranch` = " + handleBranch;
+		//站点类型暂时不做任何限制
+		/*sql += " AND `handleBranch` = " + handleBranch;*/
 		// sql +=" AND ao.isnow=1 ";
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(long page, String cwb, long branchid, long abnormaltypeid, long ishandle, String begindate,
-			String enddate, long customerid, long handleBranch,long dealresult,long losebackisornot) {
+	public List<JSONObject> getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(long page, String cwb, long createbranchid, long abnormaltypeid, long ishandle, String begindate,
+			String enddate, long customerid, long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
 		// String opscwbidsql =
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
 		// + "' ";
 		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' and isnow=1";
+		
+		boolean iskefu=false;
+		if (handleBranch==BranchEnum.KeFu.getValue()) {
+			iskefu=true;
+		}
+		//判断是不是客服的时候
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
+			if (findscope!=0) {
+				if (dutybranchid==currentbranchid&&(createbranchid==currentbranchid)) {
+					sql += " AND `creuserid`="+userid;
+					sql+=" AND `dutypersonid`="+userid;
+				}else if (currentbranchid==createbranchid) {
+					sql += " AND `creuserid`="+userid;
+				}else if(currentbranchid==dutybranchid){
+					sql+=" AND `dutypersonid`="+userid;
+				}else {
+					sql += " AND (`creuserid`="+userid+" OR `dutypersonid`="+userid+")";
+				}
+			}
+		}
 		if (cwb.length() > 0) {
 			sql += " AND `cwb` IN(" + cwb + ")";
 		}
-		if (branchid > 0) {
-			sql += " AND `branchid`=" + branchid;
+		//判断是不是客服以及是不是当前机构
+		if (handleBranch!=BranchEnum.KeFu.getValue()) {
+			if ((createbranchid!=currentbranchid&&dutybranchid!=currentbranchid)||(createbranchid==0&&dutybranchid!=currentbranchid)||(createbranchid!=currentbranchid&&dutybranchid==0)) {
+				if ((createbranchid==0&&dutybranchid==0)||(createbranchid==currentbranchid&&dutybranchid==currentbranchid)) {
+					
+				}else {
+					//创建查询不到数据的条件
+					createbranchid=0;
+					sql+="  AND `branchid`="+createbranchid;
+				}
+				
+			}
+		}
+	
+		if (createbranchid > 0) {
+			sql += " AND `branchid`=" +createbranchid ;
+		}
+		if (dutybranchid > 0) {
+			sql += " AND `dutybrachid`=" + dutybranchid;
 		}
 		if (abnormaltypeid > 0) {
 			sql += " AND `abnormaltypeid`=" + abnormaltypeid;
 		}
-		if (ishandle > 0) {
-			sql += " AND `ishandle`=" + ishandle;
+		if (ishandle==1) {
+			String ishandledata=AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue();
+			sql += " AND `ishandle` IN('"+ishandledata+"')";
+		}
+		if (ishandle==7) {
+			if (iskefu) {
+				String ishandledata=AbnormalOrderHandleEnum.kefuchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+			}else  {
+				String ishandledata=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata1=AbnormalOrderHandleEnum.zerenfangchuli.getValue()+"','"+AbnormalOrderHandleEnum.xiugai.getValue()+"','"+AbnormalOrderHandleEnum.weichuli.getValue()+"','"+AbnormalOrderHandleEnum.jieanchuli.getValue();
+				String ishandledata2=ishandledata+","+ishandledata1;
+				//创建方与责任方待处理查询条件限制
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata2+"')";
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata+"')";
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
+				}else {
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+
+				}
+				
+			} 
+		}
+		if (ishandle==6) {
+			if (iskefu) {
+				sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.kefuchuli.getValue();
+			}else {
+				//创建方与责任方处理
+				if (currentbranchid==createbranchid&&currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+
+				}else if (currentbranchid==createbranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
+				}else if (currentbranchid==dutybranchid) {
+					sql+="  AND `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue();
+				}else {
+					sql+="  AND (`ishandle`="+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()+" OR `ishandle`="+AbnormalOrderHandleEnum.zerenfangchuli.getValue()+")";
+
+				}
+			
+			}
+		}
+		if (ishandle==AbnormalOrderHandleEnum.jieanchuli.getValue()) {
+			sql+=" AND `ishandle`="+AbnormalOrderHandleEnum.jieanchuli.getValue();
 		}
 		if (customerid > -1) {
 			sql += " AND `customerid`=" + customerid;
@@ -499,10 +892,11 @@ public class AbnormalOrderDAO {
 			sql+="  AND `losebackid`="+losebackisornot;
 		}
 		
-		sql += " AND `handleBranch` =" + handleBranch;
+		//sql += " AND `handleBranch` =" + handleBranch;
 		// sql +=" AND ao.isnow=1 ";
-		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
+		if (page!=-6) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		}		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
 
 	public void deleteAbnormalOrderbycwb(String cwb) {
@@ -564,4 +958,11 @@ public class AbnormalOrderDAO {
 		}
 		return this.jdbcTemplate.query(sql, new AbnormalOrderJsonRowMapper());
 	}
+	//创建问题件时，如果丢失件里面有该问题件单号，修改isfind（是否找到）字段，1为找到，0为未找到
+	public long updateMisspieceState(long isfind,String cwb){
+		String sql="update  express_ops_abnormal_order set isfind=? where cwb=?";
+		return this.jdbcTemplate.update(sql, isfind,cwb);
+	}
+	
+	
 }

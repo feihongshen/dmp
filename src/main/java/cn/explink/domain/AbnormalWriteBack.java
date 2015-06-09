@@ -11,7 +11,26 @@ public class AbnormalWriteBack {
 	private long abnormalordertype;
 	private String cwb;
 	private String fileposition;
+	private long lastdutybranchid;//最终审判机构
+	private long lastdutyuserid;//最终审判的责任人 
 	
+	
+
+	public long getLastdutybranchid() {
+		return lastdutybranchid;
+	}
+
+	public void setLastdutybranchid(long lastdutybranchid) {
+		this.lastdutybranchid = lastdutybranchid;
+	}
+
+	public long getLastdutyuserid() {
+		return lastdutyuserid;
+	}
+
+	public void setLastdutyuserid(long lastdutyuserid) {
+		this.lastdutyuserid = lastdutyuserid;
+	}
 
 	public String getFileposition() {
 		return fileposition;

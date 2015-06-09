@@ -42,6 +42,7 @@ import cn.explink.domain.CwbKuaiDiView;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
+import cn.explink.domain.MissPieceView;
 import cn.explink.domain.NewForExportJson;
 import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.PayUp;
@@ -286,6 +287,27 @@ public class ExportService {
 		cloumnName1[8] = "问题件说明";
 		cloumnName2[8] = "Describe";
 	}
+	// 丢失件导出view
+	public void SetMisspieceFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "供货商";
+		cloumnName2[1] = "Customername";
+		cloumnName1[2] = "订单类型";
+		cloumnName2[2] = "Ordertype";
+		cloumnName1[3] = "当时状态";
+		cloumnName2[3] = "FlowordertypeName";
+		cloumnName1[4] = "找回机构";
+		cloumnName2[4] = "Callbackbranchname";
+		cloumnName1[5] = "创建时间";
+		cloumnName2[5] = "Createtime";
+		cloumnName1[6] = "创建人";
+		cloumnName2[6] = "Creusername";
+		cloumnName1[7] = "问题件号";
+		cloumnName2[7] = "Questionno";
+		cloumnName1[8] = "丢失件说明";
+		cloumnName2[8] = "Describe";
+	}
 
 	// 审核页面导出
 	public void SetAuditFields(String[] cloumnName1, String[] cloumnName2) {
@@ -477,6 +499,33 @@ public class ExportService {
 				a = views.get(k).getAbnormalType();
 			} else if (cloumnName3[i].equals("Credatetime")) {
 				a = views.get(k).getCredatetime();
+			} else if (cloumnName3[i].equals("Describe")) {
+				a = views.get(k).getDescribe();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
+	// 丢失件处理功能导出
+	public Object setMissPieceObject(String[] cloumnName3, List<MissPieceView> views, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("Cwb")) {
+				a = views.get(k).getCwb();
+			} else if (cloumnName3[i].equals("Customername")) {
+				a = views.get(k).getCustomername();
+			} else if (cloumnName3[i].equals("Ordertype")) {
+				a = views.get(k).getOrdertype();
+			} else if (cloumnName3[i].equals("FlowordertypeName")) {
+				a = views.get(k).getFlowordertypeName();
+			} else if (cloumnName3[i].equals("Callbackbranchname")) {
+				a = views.get(k).getCallbackbranchname();
+			} else if (cloumnName3[i].equals("Createtime")) {
+				a = views.get(k).getCreatetime();
+			} else if (cloumnName3[i].equals("Creusername")) {
+				a = views.get(k).getCreusername();
+			} else if (cloumnName3[i].equals("Questionno")) {
+				a = views.get(k).getQuestionno();
 			} else if (cloumnName3[i].equals("Describe")) {
 				a = views.get(k).getDescribe();
 			}

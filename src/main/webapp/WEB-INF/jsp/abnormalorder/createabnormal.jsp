@@ -36,6 +36,8 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/ajaxfileupload.js"></script>
+
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
@@ -99,6 +101,42 @@ function createabnormalData(){
 	
 
 }
+function ajaxFileUpload()  
+{  
+  /*   //设置加载图标的显示  
+    $('#loading').show();  
+    uploadProcessTimer = window.setInterval(getFileUploadProcess, 20);  
+ */
+ 	var dataInit = {};
+ 	dataInit['cwb'] = $('#cwb').val();
+ 	dataInit['abnormaltypeid'] = $("#abnormaltypeid").val();
+ 	dataInit['abnormalinfo'] = $("#abnormalinfo").val();
+    $.ajaxFileUpload  
+    ({  
+        url:$("#searchForm").attr("action"),  
+        async: false, 
+        secureuri:false,  
+        fileElementId:['file'],  
+        dataType: 'json',  
+        data:dataInit,  
+        success: function (data)
+        {  
+        	alert(data.error);
+         /*    if(data.errorCode==0){
+            	$("#showMessage").html(data.error);
+            }else{
+              $("#showMessage1").html(data.error);
+            } */
+            
+        },  
+        error: function (data, status, e)  
+        {  
+            alert("上传发生异常,创建丢失件失败");  
+        }  
+    });  
+
+    return false;  
+}  
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -114,14 +152,14 @@ function createabnormalData(){
 				<div style="position:relative; z-index:0; " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreateabnormal;jsessionid=<%=session.getId() %>" method="post" onsubmit="return createabnormalData();" enctype="multipart/form-data">
+							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreateabnormalAdd" method="post" onsubmit="if(createabnormalData())ajaxFileUpload();return false;" enctype="multipart/form-data">
 							<div class="menucontant">
 							<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" align="left">
 							<tr>
 							<td>
 							
 								订    单    号*：
-								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
+								<textarea id="cwb" name="cwb"  onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" class="kfsh_text">查询多个订单用回车隔开</textarea>
 								</td>
 								<td>
 								&nbsp;&nbsp;问题类型：
@@ -135,16 +173,14 @@ function createabnormalData(){
 									
 									</td>
 									<td>
-									<p>
-								<%
-								if(iszhandian){ %>
-								处理部门:<select name="handleBranch" id="handleBranch" <%if(!iszhandian){ %> disabled="disabled" <%} %>>
-								<option value="<%=BranchEnum.KeFu.getValue()%>">请选择</option>
+							<%-- 		<p>
+								
+								处理部门:<select name="handleBranch" id="handleBranch" class="select1" <%if(!iszhandian){ %> disabled="disabled" <%} %>>
+								<option value="<%=BranchEnum.KeFu.getValue()%>">请选择(限站点操作)</option>
 								<option value="<%=BranchEnum.KuFang.getValue()%>"><%=BranchEnum.KuFang.getText()%></option>
 								<option value="<%=BranchEnum.KeFu.getValue()%>"><%=BranchEnum.KeFu.getText()%></option>
 								</select>
-								<%} %>
-								</p>
+								</p> --%>
 								</td>
 								
 								</tr>
@@ -153,7 +189,7 @@ function createabnormalData(){
 								问题件说明:<textarea id="abnormalinfo" name="abnormalinfo" ></textarea><br>
 								</td>
 								<td align="left">
-								上传附件:<input type="file" name="file"/>
+								上传附件:<input type="file" name="file" id="file"/>
 								</td>
 								<td>
 								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
@@ -165,7 +201,7 @@ function createabnormalData(){
 								</div>	
 							</form>
 						</div>
-						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" style="display: none;">
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>

@@ -716,6 +716,7 @@ src/main/java/cn/explink/controller/ExpressSysMonitorController.java -text
 src/main/java/cn/explink/controller/FindLocationController.java -text
 src/main/java/cn/explink/controller/GoodsStatusNumController.java -text
 src/main/java/cn/explink/controller/GotoClassAndDeliveryDTO.java -text
+src/main/java/cn/explink/controller/InPunishController.java -text
 src/main/java/cn/explink/controller/JmsCenterController.java -text
 src/main/java/cn/explink/controller/JoinListController.java -text
 src/main/java/cn/explink/controller/LogToDayByTuihuoSiteController.java -text
@@ -885,6 +886,7 @@ src/main/java/cn/explink/dao/LogTodayDAO.java -text
 src/main/java/cn/explink/dao/LogTodayLogDAO.java -text
 src/main/java/cn/explink/dao/MenuDAO.java -text
 src/main/java/cn/explink/dao/MiddleAppearDao.java -text
+src/main/java/cn/explink/dao/MissPieceDao.java -text
 src/main/java/cn/explink/dao/MonitorDAO.java -text
 src/main/java/cn/explink/dao/MonitorKucunDAO.java -text
 src/main/java/cn/explink/dao/NoPiPeiCwbDetailDAO.java -text
@@ -1049,6 +1051,8 @@ src/main/java/cn/explink/domain/JsonContext.java -text
 src/main/java/cn/explink/domain/MatchExceptionOrder.java -text
 src/main/java/cn/explink/domain/Menu.java -text
 src/main/java/cn/explink/domain/MiddleAppear.java -text
+src/main/java/cn/explink/domain/MissPiece.java -text
+src/main/java/cn/explink/domain/MissPieceView.java -text
 src/main/java/cn/explink/domain/NewForExportJson.java -text
 src/main/java/cn/explink/domain/NoPiPeiCwbDetail.java -text
 src/main/java/cn/explink/domain/Notify.java -text
@@ -1644,12 +1648,18 @@ src/main/webapp/META-INF/MANIFEST.MF -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/abnormaldataMove.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/createabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/handleabnormallist.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/losebackcreate.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/losebackcwboutdetail.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/losebackdetail.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormalBatch.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/nowhandleabnormalnew.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/nowreplyabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/replyabnormallist.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/resultdatadeallast.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/revisequestionstate.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/tofindabnormal.jsp -text
+src/main/webapp/WEB-INF/jsp/abnormalorder/update.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/add.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormaltype/list.jsp -text
@@ -2013,6 +2023,7 @@ src/main/webapp/WEB-INF/jsp/image.jsp -text
 src/main/webapp/WEB-INF/jsp/imageForOutside.jsp -text
 src/main/webapp/WEB-INF/jsp/index.jsp -text
 src/main/webapp/WEB-INF/jsp/index1.jsp -text
+src/main/webapp/WEB-INF/jsp/inpunish/inpunishsumdetail.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/list.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwbnew.jsp -text
@@ -5413,6 +5424,7 @@ src/main/webapp/js/Validform/plugin/swfupload/swfuploadv2.2.js -text
 src/main/webapp/js/Validform/plugin/swfupload/thanks.php -text
 src/main/webapp/js/Validform/plugin/swfupload/upload.php -text
 src/main/webapp/js/address/getZAddress.js -text
+src/main/webapp/js/ajaxfileupload.js -text
 src/main/webapp/js/branchLog.js -text
 src/main/webapp/js/branchLogAll.js -text
 src/main/webapp/js/dragdrop-min.js -text
@@ -5736,6 +5748,7 @@ src/main/webapp/js/install_lodop64.exe -text
 src/main/webapp/js/jq-plugin/jquery.form.js -text
 src/main/webapp/js/jquery-1.7.1.min.js -text
 src/main/webapp/js/jquery-1.8.0.min.js -text
+src/main/webapp/js/jquery-form.js -text
 src/main/webapp/js/jquery-ui-1.8.18.custom.min.js -text
 src/main/webapp/js/jquery-ui-timepicker-addon.js -text
 src/main/webapp/js/jquery.swfupload.js -text

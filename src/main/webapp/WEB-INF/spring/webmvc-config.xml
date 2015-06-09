@@ -48,6 +48,7 @@
 
 	<mvc:view-controller path="/user/update" />
 	<mvc:view-controller path="/branch/update" />
+	<mvc:view-controller path="/abnormalorder/update" />
 	<mvc:view-controller path="/customer/update" />
 	<mvc:view-controller path="/setexportcwb" />
 	<mvc:view-controller path="/wavPlay" />

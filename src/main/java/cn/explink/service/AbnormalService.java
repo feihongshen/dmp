@@ -24,10 +24,13 @@ import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.AbnormalWriteBackDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalType;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MissPiece;
+import cn.explink.domain.MissPieceView;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -59,6 +62,7 @@ public class AbnormalService {
 				view.setAbnormalType(this.getAbnormalType(atlist, a.getLong("abnormaltypeid")));
 				view.setBranchName(this.getBranchName(branchs, a.getLong("branchid")));
 				view.setCreuserName(this.getCreName(users, a.getLong("creuserid")));
+				view.setCreuserid(a.getLong("creuserid"));
 				view.setCwb(a.getString("cwb"));
 				view.setCustomerName(this.getCustomer(customers, a.getLong("customerid")));
 				view.setDescribe(a.getString("describe"));
@@ -68,16 +72,25 @@ public class AbnormalService {
 				view.setFileposition(a.getString("fileposition"));
 				view.setDealResultContent(this.getDealResult(a.getLong("dealresult")));
 				view.setCwborderType(this.getCwbOrderType(a.getString("cwbordertypeid")));
-				view.setDutybrachid(a.getLong("dutybrachid"));
 				view.setIsfinecontent(this.getIsFine(a.getLong("isfine")));
 				view.setDutybranchname(this.getBranchName(branchs, a.getLong("dutybrachid")));
 				view.setQuestionno(a.getString("questionno"));
-				//缺少一个是否丢失找回
-				view.setLosebackContent("");
+				view.setLosebackContent(this.checkfindOrnot(a.getLong("losebackid")));
+				view.setDutyperson(this.getCreName(users, a.getLong("dutypersonid")));
+				view.setIsfindInfo(this.checkfindOrnot(a.getLong("isfind")));
+				view.setLastdutybranch(this.getBranchName(branchs, a.getLong("lastdutybranchid")));
+				view.setLastdutyuser(this.getCreName(users, a.getLong("lastdutyuserid")));
 				views.add(view);
 			}
 		}
 		return views;
+	}
+	public String checkfindOrnot(long losebackid){
+		if (losebackid==0) {
+			return "未找回";
+		}else {
+			return "已找回";
+		}
 	}
 	public String getDealResult(long dealResultContent){
 		String dealresultContent="";
@@ -165,13 +178,14 @@ public class AbnormalService {
 	 * @param mapForAbnormalorder
 	 */
 	@Transactional
-	public void creAbnormalOrder(CwbOrder co, User user, long abnormaltypeid, String nowtime, Map<Long, JSONObject> mapForAbnormalorder, long action, long handleBranch,String name,String abnormalinfo,String questionNo) {
+	public void creAbnormalOrder(CwbOrder co, User user, long abnormaltypeid, String nowtime, Map<Long, JSONObject> mapForAbnormalorder, long action, long handleBranch,String name,String abnormalinfo,String questionNo,long isfind,long ishandle) {
 		// long abnormalorderid =
 		// abnormalOrderDAO.creAbnormalOrderLong(co.getOpscwbid(),
 		// co.getCustomerid(), "", user.getUserid(), user.getBranchid(),
 		// abnormaltypeid, nowtime);
-		long abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLong(co, abnormalinfo, user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime, handleBranch,name,questionNo);
-		this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), abnormalinfo, user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid, co.getCwb(),name);
+		long abnormalorderid=0;
+		abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLongAdd(co, abnormalinfo, user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime, handleBranch,name,questionNo,isfind,ishandle);
+		this.abnormalWriteBackDAO.creAbnormalOrderAdd(co.getOpscwbid(), abnormalinfo, user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid, co.getCwb(),name);
 		JSONObject json = new JSONObject();
 		json.put("abnormalorderid", abnormalorderid);
 		json.put("abnormalordertype", abnormaltypeid);
@@ -184,8 +198,12 @@ public class AbnormalService {
 			if ((file != null) && !file.isEmpty()) {
 				String filePath = ResourceBundleUtil.EXCEPTPATH;
 				name=file.getOriginalFilename();
-				String suffix=name.substring(name.indexOf("."));
-				 name = System.currentTimeMillis() + suffix;
+				if (name.indexOf(".")!=-1) {
+					String suffix=name.substring(name.indexOf("."));
+					 name = System.currentTimeMillis() + suffix;
+				}else {
+					 name = System.currentTimeMillis()+"";
+				}
 				ServiceUtil.uploadWavFile(file, filePath, name);
 			}
 		} catch (Exception e) {
@@ -213,6 +231,34 @@ public class AbnormalService {
 		}
         return name;
 	}
-	
+	//结案处理修改两张表的信息
+	public void reviseAbnormalAndwritebackLast(AbnormalOrder co,String describe,long dealresult,long dutybranchid,long dutyname,String filepathsum,long action,User user,String nowtime,String filepath,long ishandle){
+		//,dutybranchid,dutyname
+		abnormalOrderDAO.saveAbnormalOrderResultByid(co.getId(), dealresult,filepathsum,ishandle,describe,nowtime);
+		//long dutybranchid,long dutyusernameid,
+		abnormalWriteBackDAO.creAbnormalOrderAdd(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, co.getId(), co.getAbnormaltypeid(), co.getCwb(), filepath);
+	}
+	//构建丢失件导出数据
+	public List<MissPieceView> setMissPieceView(List<MissPiece> missPieces,List<Branch> branchs,List<User> users,List<Customer> customers){
+		List<MissPieceView> missPieceViews=new ArrayList<MissPieceView>();
+		if (missPieces.size()>0&&missPieces!=null) {
+			for(MissPiece missPiece:missPieces){
+				MissPieceView missPieceView=new MissPieceView();
+				missPieceView.setCwb(missPiece.getCwb());
+				missPieceView.setCreatetime(missPiece.getCreatetime());
+				missPieceView.setDescribe(missPiece.getDescribeinfo());
+				missPieceView.setQuestionno(missPiece.getQuestionno());
+				missPieceView.setCallbackbranchname(this.getBranchName(branchs, missPiece.getCallbackbranchid()));
+				missPieceView.setCreusername(this.getCreName(users, missPiece.getCreuserid()));
+				missPieceView.setCustomername(this.getCustomer(customers, missPiece.getCustomerid()));
+				missPieceView.setFlowordertypeName(this.getFloworderType(missPiece.getFlowordertype()));
+				missPieceView.setOrdertype(this.getCwbOrderType(String.valueOf(missPiece.getCwbordertypeid())));
+				missPieceViews.add(missPieceView);
+			}
+			return missPieceViews;
+		}else {
+			return null;
+		}
+	}
 
-}
+   }

@@ -386,10 +386,10 @@ function resultdatadeal(id)
 								</td>
 								
 								<td align="left">
-								&nbsp;创建机构：
+								&nbsp;责任机构：
 									<label for="select2"></label>
 									<select name="createbranchid" id="createbranchid" class="select1">
-										<option value="0">请选择</option>
+										<option value="0">请选择责任机构</option>
 										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>

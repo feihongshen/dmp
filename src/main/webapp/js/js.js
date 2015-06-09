@@ -3484,7 +3484,7 @@ function allCheck(pname) {
 function errorvedioplay(pname, data) {
 	// $("#wavPlay", parent.document).attr("src",
 	// pname + "/wavPlay?wavPath=" + data.wavPath + "&a=" + Math.random());
-	var url = pname + "/images/waverror/fail.wav"
+	var url = pname + "/images/waverror/fail.wav";
 	newPlayWav(url);
 }
 
@@ -4153,7 +4153,30 @@ function check_name() {
 }
 
 function check_describe() {
+	console.info($("#describe").val());
 	if ($("#describe").val().length == 0) {
+		alert("请填写处理内容");
+		return false;
+	}
+	return true;
+}
+
+function check_describeAdd() {
+	console.info($("#describe").val());
+	if ($("#describe").val().length == 0||$("#describe").val()=='最多100个字') {
+		alert("请填写处理内容");
+		return false;
+	}
+	return true;
+}
+//处理问题件弹出框时的判断
+function check_describeAndDutyInfo() {
+	if($("#dutybranchid").val()==0||$("#dutyname").val()==0){
+		alert("请选择责任机构与责任人！！");
+		return false;
+	}
+	console.info($("#describe").val());
+	if ($("#describe").val().length == 0||$("#describe").val()=='最多100个字') {
 		alert("请填写处理内容");
 		return false;
 	}
@@ -5174,7 +5197,7 @@ function selectbranchUsers(){
 		$("#dutyname").empty();
 		$("<option value ='0'>==请选择机构责任人==</option>").appendTo("#dutyname");// 添加下拉框的option
 		for (var j = 0; j < json.length; j++) {
-			$("<option value=' "+ json[j].userid +" '>" + json[j].realname + "</option>").appendTo("#dutyname");
+			$("<option value=' "+ json[j].userid +" '>"+json[j].realname+"</option>").appendTo("#dutyname");
 		}
 	}
 	});
@@ -5188,6 +5211,136 @@ function addupoadfile(){
 }
 function uploadfiledel(o){
     document.getElementById("uploadfile").removeChild(document.getElementById("div_"+o));  
+}
+
+//上传文件初始化上传组件
+function uploadFormInitAdd(form, contextPath) {
+	$('#swfupload-control').swfupload({
+		upload_url : $("#" + form, parent.document).attr("action"),
+		file_size_limit : "10240",
+		file_types : "*.img;*.txt",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : contextPath + "/js/swfupload/swfupload.swf",
+		button_image_url : contextPath + "/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#upbutton")[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#wavText").val(file.name);
+		$("#wavText").attr("selectedUploadFile", true);
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+		/*
+		 * 进度条 var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+		 * $("#progressbar").progressbar({ value : percent });
+		 * $("#progressstatus").text(percent);
+		 */
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+		// $("#wavText").val("");
+		/*if (dataObj.errorCode == 0) {
+			alert("处理成功");
+		}*/
+		// setTimeout(queryProgress, 10);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+}
+//问题件处理提交
+function submitAbnormalHH(form) {
+
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "abnormalOrder/SubmitHandleabnormalwithNofile");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitAbnormalLoad();
+}
+//问题件处理与修改的时候
+function submitAbnormalLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid', $("#dutybranchid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutyname', $("#dutyname", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwb', $("#cwb", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'isfind', $("#isfind", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+//问题件结案处理
+function submitAbnormalLast(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "abnormalOrder/submitHandleabnormalResult");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitAbnormalLastLoad();
+}
+//问题件结案处理
+function submitAbnormalLastLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dealresult', $("#dealresult", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid', $("#dutybranchid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutyname', $("#dutyname", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwb', $("#cwb", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+//修改创建的问题件
+function reviseAbnormalCreateData(form){
+	
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "abnormalOrder/SubmitReviseQuestion");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitReviseAbnormalCreate();
+}
+function submitReviseAbnormalCreate(){
+	$('#swfupload-control').swfupload('addPostParam', 'abnormaltypeid', $("#abnormaltypeid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'ids', $("#ids", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+//处理结案操作弹出框的判断
+function check_dealJieanResulet() {
+	if($("#dealresult").val()==0){
+		alert("请选择问题件处理结果！！");
+		return false;
+	}
+	console.info($("#describe").val());
+	if ($("#dutybranchid").val() == 0||$("#dutyname").val()==0) {
+		alert("请选择最终审判的机构与机构当事人！！");
+		return false;
+	}
+	return true;
+}
+//问题件下载
+function filedownloadwithquestionfile(){
+	if($("#filepathsumsize").val()<=1){
+		alert("没有更多的附件能下载！！");
+	}
+	$("#morefiles").show();
+	$("#morefilebutton").hide();
 }
 
 
@@ -5450,3 +5603,4 @@ function AlreadyVerify(AVV){
 	$('#AlreadyVerifycomplaintState').val("");
 }
 	
+

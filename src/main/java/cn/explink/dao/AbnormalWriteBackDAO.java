@@ -42,6 +42,11 @@ public class AbnormalWriteBackDAO {
 		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`,`fileposition`) values(?,?,?,?,?,?,?,?,?)";
 		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb,name);
 	}
+	
+	public void creAbnormalOrderAdd(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb,String name) {
+		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`,`fileposition`) values(?,?,?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb,name);
+	}
 
 	public List<AbnormalWriteBack> getAbnormalOrderByWhere(String begindate, String enddate, long ishandle, long abnormaltypeid, long creuserid) {
 		String sql = "select * from express_ops_abnormal_write_back where `creuserid`=? ";
@@ -140,5 +145,10 @@ public class AbnormalWriteBackDAO {
 			this.jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
 		}
+	}
+	//判断是否已经结案
+	public List<AbnormalWriteBack> getAbnormalWriteBackisjiean(String cwb){
+		String sql="select * from express_ops_abnormal_write_back where cwb=?  and type=?";
+		return this.jdbcTemplate.query(sql, new AbnormalWriteBackRowMapper(),cwb,5);
 	}
 }

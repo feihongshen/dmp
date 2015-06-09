@@ -13,7 +13,7 @@ public class AbnormalOrder {
 	private long isnow;
 	private long flowordertype;
 	private long deliverybranchid;
-	private String emaildata;
+	private String emaildate;
 	private String cwb;
 	private long handleBranch;
 	private String fileposition;//上传文件所在名称
@@ -21,12 +21,37 @@ public class AbnormalOrder {
 	private String cwbordertypeid;//创建的问题件的订单号的类型
 	private String dealresult;//处理结果（1，问题成立 2.问题不成立）
 	private long dutybrachid;//责任机构
-	private String dutypersoname;//责任人
+	private long dutypersonid;//责任人id
 	private long isfine;//是否罚款（1，未罚款 2.已罚款）
 	private long losebackid;//该问题件是不是丢失返回的，是的话为丢失返回表里面的主键id
 	private String resultdealcontent;//结案处理说明内容
-	
-	
+	private long isfind;//是否已经找回的字段，创建问题件的时候为0 未找回 ，在丢失找回表里面出现的话为1
+	private long lastdutybranchid;//最终审判机构
+	private long lastdutyuserid;//最终审判人
+	public long getLastdutybranchid() {
+		return lastdutybranchid;
+	}
+
+	public void setLastdutybranchid(long lastdutybranchid) {
+		this.lastdutybranchid = lastdutybranchid;
+	}
+
+	public long getLastdutyuserid() {
+		return lastdutyuserid;
+	}
+
+	public void setLastdutyuserid(long lastdutyuserid) {
+		this.lastdutyuserid = lastdutyuserid;
+	}
+
+	public long getIsfind() {
+		return isfind;
+	}
+
+	public void setIsfind(long isfind) {
+		this.isfind = isfind;
+	}
+
 	public String getQuestionno() {
 		return questionno;
 	}
@@ -59,12 +84,14 @@ public class AbnormalOrder {
 		this.dutybrachid = dutybrachid;
 	}
 
-	public String getDutypersoname() {
-		return dutypersoname;
+
+
+	public long getDutypersonid() {
+		return dutypersonid;
 	}
 
-	public void setDutypersoname(String dutypersoname) {
-		this.dutypersoname = dutypersoname;
+	public void setDutypersonid(long dutypersonid) {
+		this.dutypersonid = dutypersonid;
 	}
 
 	public long getIsfine() {
@@ -196,12 +223,14 @@ public class AbnormalOrder {
 		this.deliverybranchid = deliverybranchid;
 	}
 
-	public String getEmaildata() {
-		return this.emaildata;
+	
+
+	public String getEmaildate() {
+		return emaildate;
 	}
 
-	public void setEmaildata(String emaildata) {
-		this.emaildata = emaildata;
+	public void setEmaildate(String emaildate) {
+		this.emaildate = emaildate;
 	}
 
 	public String getCwb() {
