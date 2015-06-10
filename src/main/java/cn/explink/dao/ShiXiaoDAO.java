@@ -111,7 +111,7 @@ public class ShiXiaoDAO {
 	}
 	public void creAbnormalOrdernew(long opscwbid, String cretime, long currentbranchid, long customerid, String cwb, long deliverybranchid, long flowordertype, long nextbranchid, long startbranchid,
 			long userid,long loseeffectid,long cwbstate,String emaildate) {
-		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`,`cwbstate`,`emaildate`) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(sql, opscwbid, cretime, currentbranchid, customerid, cwb, deliverybranchid, flowordertype, nextbranchid, startbranchid, userid,loseeffectid,cwbstate,emaildate);
 	}
 
