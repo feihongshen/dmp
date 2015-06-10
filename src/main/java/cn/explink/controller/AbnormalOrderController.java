@@ -1213,11 +1213,15 @@ public class AbnormalOrderController {
 			branchMap.put(b.getBranchid(), b.getBranchname());
 		}
 		String branchdutyuser="";
-
+		String branchname="";
 		if (abnormalOrder.getDutypersonid()!=0) {
 			branchdutyuser=userDAO.getAllUserByid(abnormalOrder.getDutypersonid()).getRealname();
+			if(abnormalOrder.getDutybrachid()!=0){
+				branchname=branchMap.get(abnormalOrder.getDutybrachid());
+			}
 		}
 		model.addAttribute("branchdutyuser",branchdutyuser);
+		model.addAttribute("branchname",branchname);
 		model.addAttribute("branchid",abnormalOrder.getDutybrachid());
 		model.addAttribute("branchList", branchlList);
 		model.addAttribute("branchMap", branchMap);

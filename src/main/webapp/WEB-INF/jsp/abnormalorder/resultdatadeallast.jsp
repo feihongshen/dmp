@@ -24,6 +24,7 @@ HashMap<Long, String> branchMap = (HashMap<Long, String>)request.getAttribute("b
 List<AbnormalWriteBack> abnormalWriteBackList= (List<AbnormalWriteBack>)request.getAttribute("abnormalWriteBackList");
 String url=request.getContextPath()+"/abnormalOrder/getbranchusers";
 String branchdutyuser=request.getAttribute("branchdutyuser")==null?"":request.getAttribute("branchdutyuser").toString();
+String branchname=request.getAttribute("branchname")==null?"":request.getAttribute("branchname").toString();
 String filepathsum=request.getAttribute("filepathsum").toString();
 %>
 
@@ -66,7 +67,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						责任机构初判：<strong><%=branchMap.get(branchid)==null?"":branchMap.get(branchid) %></strong>
+						责任机构初判：<strong><%=branchname%></strong>
 						&nbsp;&nbsp;
 						责任人初判:<strong><%=branchdutyuser %></strong>
 						</td></tr>
