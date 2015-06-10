@@ -62,19 +62,23 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<span>受理时间:</span><%=cca.getAcceptTime() %>
+						<span>受理人:</span><%=cca.getHandleUser() %>
 					</li>
 					<li>
 						<span>核实内容:</span><%=cca.getRemark() %>
 					</li>
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
-						<span>核实人:</span><%=cca.getHandleUser() %>
+						<span>核实人:</span><%=cca.getHeshiUser() %>
 						<span>附件</span>
 					</li>
 					
 					<li>
 							<span>处理结果:</span>
-							<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>	
+							<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>
+							<span>结案人:</span><%=cca.getJieanUser() %>
+							<span>结案时间:</span><%=cca.getJieanTime()%>
+								
 					</li>
 						<li>
 								<span>结案备注:</span><%=cca.getJieanremark() %>
@@ -84,7 +88,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						</li>
 						<li>
 								<span>申诉时间:</span><%=cca.getComplaintTime() %>
-								<span>申诉人:</span><%=cca.getHandleUser() %>
+								<span>申诉人:</span><%=cca.getShensuUser() %>
 						</li>
 						<li>
 								<span>结案重审*:</span>
@@ -102,7 +106,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark"></textarea>
 					<input type="hidden" name="complaintState" id="AlreadyVerifycomplaintState" />
 					<input type="hidden" value="<%=cca.getId()%>" name="id" />
-					<input type="hidden" value="<%=cca.getHandleUser()%>" name="handleUser" />
+					<input type="hidden" value="<%=cca.getChongshenUser()%>" name="chongshenUser" />
 					<input type="hidden" value="<%=cca.getJieanchongshenTime()%>" name="jieanchongshenTime" />																				
 				</div> 	
 			</div> 	

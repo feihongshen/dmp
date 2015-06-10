@@ -277,12 +277,14 @@ function testCwbsIfNull(){
 									</select>
 					</td>						
 					<td>
-				是否扣罚:		<select class="select1">
-							<option>全部</option>
+				是否扣罚:		<select class="select1" name="ifpunish">
+							<option value="-1">全部</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
 							</select>
 					</td>			
 					<td>
-				受理人:		<select class="select1">
+				受理人:		<select class="select1" name="handleUser">
 							<option>全部</option>
 							</select>
 					</td>
@@ -306,7 +308,7 @@ function testCwbsIfNull(){
 					<button id="add_AdjudicateRetrial" class="input_button2">结案重审</button>
 					<button id="add_OrgVerify" class="input_button2">机构核实</button>
 					<button id="add_OrgAppeal" class="input_button2">机构申诉</button>
-					<button class="input_button2">导出</button>
+					<button class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo">导出</button>
 				</td>
 			</tr>
 		</table>		
@@ -333,7 +335,11 @@ function testCwbsIfNull(){
 		<%if(a!=null){ %>
 			<%for(CsComplaintAccept c:a){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>')">
+				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()) {%>
+				<td><a href="<%=request.getContextPath()%>/workorder/WorkorderDetail/<%=c.getAcceptNo() %>" target='_Blank'><%=c.getAcceptNo() %></a></td>
+				<%}else{ %>
 				<td><%=c.getAcceptNo() %></td>
+				<%} %>
 				<td><%=c.getOrderNo() %></td>
 				<td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td>
 				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
@@ -382,5 +388,42 @@ function testCwbsIfNull(){
 	<input type="hidden" id="ComStateV"/>
 	<input type="hidden" id="add_OrgVerifyV" value="<%=request.getContextPath()%>/workorder/OrgVerify"/>
 	<input type="hidden" id="add_CSA" value="<%=request.getContextPath()%>/workorder/CustomerServiceAdjudicate">	
+	
+	
+	
+	<form action="<%=request.getContextPath()%>/workorder/exportWorkOrderExcle" id="WorkorderInfo">
+		<input type="hidden" value="<%=request.getParameter("complaintType") %>"/>
+		<input type="hidden" value="<%=request.getParameter("orderNo") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintState") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintOneLevel") %>"/>
+		<input type="hidden" value="<%=request.getParameter("codOrgId") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintResult") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel") %>"/>
+		<input type="hidden" value="<%=request.getParameter("beginRangeTime") %>"/>
+		<input type="hidden" value="<%=request.getParameter("endRangeTime") %>"/>
+		<input type="hidden" value="<%=request.getParameter("handleUser") %>"/>
+		<input type="hidden" value="<%=request.getParameter("ifpunish") %>"/>	
+	</form>
+	
+	<script type="text/javascript">
+	<%-- function exportWorkOrderInFoExcle(){
+		if(<%=ccilist != null && ccilist.size()>0 %>){
+		 	$("#exInfo").val("请稍后……");
+		 	$("#WorkorderInfo").submit();
+		}else{
+			alert("没有做查询操作，不能导出！");
+		};
+		
+	}	
+	
+	 --%>
+	</script>
+	
+	
+	
+	
+	
+	
+	
 </body>
 </html>

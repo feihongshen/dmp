@@ -35,6 +35,7 @@ import cn.explink.domain.BackSummary;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchTodayLog;
 import cn.explink.domain.Common;
+import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbDiuShiView;
@@ -83,6 +84,67 @@ public class ExportService {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	public void setcsconsigneeinfo(String[] cloumnName1, String[] cloumnName2){
+		cloumnName1[0] = "姓名";
+		cloumnName2[0] = "name";
+		cloumnName1[1] = "性别";
+		cloumnName2[1] = "sex";
+		cloumnName1[2] = "电话1";
+		cloumnName2[2] = "phoneonOne";
+		cloumnName1[3] = "电话2";
+		cloumnName2[3] = "phoneonTwo";
+		cloumnName1[4] = "邮箱";
+		cloumnName2[4] = "mailBox";
+		cloumnName1[5] = "省份";
+		cloumnName2[5] = "province";
+		cloumnName1[6] = "城市";
+		cloumnName2[6] = "city";
+		cloumnName1[7] = "客户分类";
+		cloumnName2[7] = "consigneeType";
+		cloumnName1[8] = "最后联系时间";
+		cloumnName2[8] = "contactLastTime";
+		cloumnName1[9] = "联系次数";
+		cloumnName2[9] = "contactNum";
+	
+	}
+	
+	//工单信息工单号	订单号
+	/*工单类型	工单状态	
+	来电人姓名	来电号码	
+	被投诉机构	工单受理人	
+	受理时间	投诉一级分类	
+	投诉二级分类	投诉处理结果	
+	是否扣罚	客户名称	催件次数*/
+	public void setCsComplaintAccept(String[] cloumnName1, String[] cloumnName2){
+		cloumnName1[0] = "工单类型";
+		cloumnName2[0] = "name";
+		cloumnName1[1] = "工单状态";
+		cloumnName2[1] = "sex";
+		cloumnName1[2] = "来电人姓名";
+		cloumnName2[2] = "phoneonOne";
+		cloumnName1[3] = "来电号码";
+		cloumnName2[3] = "phoneonTwo";
+		cloumnName1[4] = "被投诉机构";
+		cloumnName2[4] = "mailBox";
+		cloumnName1[5] = "工单受理人";
+		cloumnName2[5] = "province";
+		cloumnName1[6] = "受理时间";
+		cloumnName2[6] = "city";
+		cloumnName1[7] = "投诉一级分类";
+		cloumnName2[7] = "consigneeType";
+		cloumnName1[8] = "投诉二级分类";
+		cloumnName2[8] = "contactLastTime";
+		cloumnName1[9] = "投诉处理结果";
+		cloumnName2[9] = "contactNum";
+		cloumnName1[10] = "是否扣罚";
+		cloumnName2[10] = "contactNum";
+		cloumnName1[11] = "客户名称";
+		cloumnName2[11] = "contactNum";
+		cloumnName1[12] = "催件次数";
+		cloumnName2[12] = "contactNum";
+	
+	}
 
 	public void SetPosPayFields(String[] cloumnName1, String[] cloumnName2, String[] cloumnName3) {
 
@@ -528,6 +590,37 @@ public class ExportService {
 				a = views.get(k).getQuestionno();
 			} else if (cloumnName3[i].equals("Describe")) {
 				a = views.get(k).getDescribe();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
+	
+	public Object setCSInfoObject(String[] cloumnName3, List<CsConsigneeInfoVO> ccilist, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("name")) {
+				a = ccilist.get(k).getName();
+			} else if (cloumnName3[i].equals("sex")) {
+				a = ccilist.get(k).getSex();
+			} else if (cloumnName3[i].equals("phoneonOne")) {
+				a = ccilist.get(k).getPhoneonOne();
+			} else if (cloumnName3[i].equals("phoneonTwo")) {
+				a = ccilist.get(k).getPhoneonTwo();
+			} else if (cloumnName3[i].equals("mailBox")) {
+				a = ccilist.get(k).getMailBox();
+			} else if (cloumnName3[i].equals("province")) {
+				a = ccilist.get(k).getProvince();
+			} else if (cloumnName3[i].equals("city")) {
+				a = ccilist.get(k).getCity();
+			} else if (cloumnName3[i].equals("consigneeType")) {
+				a = ccilist.get(k).getConsigneeType();
+			}
+			else if (cloumnName3[i].equals("contactLastTime")) {
+				a = ccilist.get(k).getContactLastTime();
+			}
+			else if (cloumnName3[i].equals("contactNum")) {
+				a = ccilist.get(k).getContactNum();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

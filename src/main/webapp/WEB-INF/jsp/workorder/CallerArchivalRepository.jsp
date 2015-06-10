@@ -69,8 +69,8 @@ $(function(){
 		<form action="<%=request.getContextPath()%>/workorder/QueryCallerInfo">
 			<table>
 				<tr>
-					<td>姓名:<input type="text" name="name" /></td>
-					<td>电话:<input type="text" name="phoneonOne"/></td>				
+					<td>姓名:<input type="text" name="name" id="name"/></td>
+					<td>电话:<input type="text" name="phoneonOne" id="phoneonOne"/></td>				
 					<td>
 						客户:<select name="consigneeType" id="svc" class="select1">
 								<option value="-1">请选择</option>
@@ -92,7 +92,7 @@ $(function(){
 					<td><button id="add_button" class="input_button2">新增</button></td>
 					<td><button id="edit_but" class="input_button2">修改</button></td>
 					<td><button id="remove_button" class="input_button2">删除</button></td>
-					<td><button class="input_button2">导出</button></td>
+					<td><button class="input_button2" onclick="exportInFoExcle()" id="exinfo">导出</button></td>
 				</tr>
 			</table>
 			<hr>
@@ -113,7 +113,11 @@ $(function(){
 				<%for(CsConsigneeInfo ccf:ccilist){ %>
 				<tr onclick="getPhoneonOne('<%=ccf.getPhoneonOne() %>','<%=ccf.getId()%>')">
 					<td><%=ccf.getName() %></td>
-					<td><%=ccf.getSex() %></td>
+					<%if(ccf.getSex()==1){ %>
+					<td>男</td>
+					<%}else{%>
+					<td>女</td>
+					<%} %>
 					<td><%=ccf.getPhoneonOne() %></td>
 					<td><%=ccf.getPhoneonTwo() %></td>
 					<td><%=ccf.getMailBox() %></td>				
@@ -134,5 +138,36 @@ $(function(){
 <input type="hidden" id="edit" value="<%=request.getContextPath()%>/workorder/EditEditMaintain/"/>
 <input type="hidden" id="callerphone" value=""/>
 <input type="hidden" id="callerphoneid" value=""/>
+
+	<form action="<%=request.getContextPath()%>/workorder/exportExcle" id="CallerInfoForm">
+		<input type="hidden" name="name" value="<%=request.getParameter("name")==null?"":request.getParameter("name")%>">
+		<input type="hidden" name="phoneonOne" value="<%=request.getParameter("phoneonOne")==null?"":request.getParameter("phoneonOne")%>">
+		<input type="hidden" name="consigneeType" value="<%=request.getParameter("consigneeType")==null?"0":request.getParameter("consigneeType")%>">	
+	</form>
+	
+	<script type="text/javascript">
+		
+	function exportInFoExcle(){
+		if(<%=ccilist != null && ccilist.size()>0 %>){
+		 	$("#exinfo").val("请稍后……");
+		 	$("#CallerInfoForm").submit();
+		}else{
+			alert("没有做查询操作，不能导出！");
+		};
+		
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	</script>
+	
+	
 </body>
 </html>

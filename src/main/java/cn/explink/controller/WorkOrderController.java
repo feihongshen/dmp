@@ -8,7 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -28,6 +33,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
+import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
@@ -38,8 +44,10 @@ import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.ExportService;
 import cn.explink.service.WorkOrderService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.ExcelUtils;
 /**
  * 
  * @author wangzhiyong
@@ -66,6 +74,8 @@ public class WorkOrderController {
 	private CwbDAO cwbdao;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	ExportService es;
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
@@ -92,7 +102,6 @@ public class WorkOrderController {
 	}
 	@RequestMapping("/QueryCallerInfo")
 	public String QueryCallerInfo(Model model,CsConsigneeInfo cci){
-		System.out.println(cci.getName()+" "+cci.getPhoneonOne()+" "+cci.getConsigneeType());
 		if(cci!=null){
 			List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType());
 			model.addAttribute("ccilist", ccilist);
@@ -198,11 +207,12 @@ public class WorkOrderController {
 	@RequestMapping("/OrgVerify")
 	public String OrgVerify(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
+		System.out.println(acceptNo+"`~11`");
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());		
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getUsername();
-		cca.setHandleUser(uname);
+		String uname=getSessionUser().getRealname();
+		cca.setHeshiUser(uname);
 		cca.setHeshiTime(nowtime);
 		List<Branch> lb=branchdao.getAllBranches();	
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
@@ -218,8 +228,8 @@ public class WorkOrderController {
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);		
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getUsername();
-		cca.setHandleUser(uname);
+		String uname=getSessionUser().getRealname();
+		cca.setJieanUser(uname);
 		cca.setJieanTime(nowtime);
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();	
@@ -239,8 +249,8 @@ public class WorkOrderController {
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getUsername();
-		cca.setHandleUser(uname);
+		String uname=getSessionUser().getRealname();
+		cca.setShensuUser(uname);
 		cca.setComplaintTime(nowtime);
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
@@ -258,8 +268,8 @@ public class WorkOrderController {
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getUsername();
-		cca.setHandleUser(uname);
+		String uname=getSessionUser().getRealname();
+		cca.setChongshenUser(uname);
 		cca.setJieanchongshenTime(nowtime);
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
@@ -492,9 +502,6 @@ public class WorkOrderController {
 	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv);
 		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
-		/*List<CsConsigneeInfo> consigneeinfolist=null;*/
-	
-	
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
 		for(CsComplaintAccept c:lcs){
@@ -523,7 +530,7 @@ public class WorkOrderController {
 			
 	}
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
-		String username=getSessionUser().getUsername();
+		String username=getSessionUser().getRealname();
 		List<Branch> lb=branchdao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<Reason> lrs=null;
@@ -569,4 +576,115 @@ public class WorkOrderController {
 		return "{\"errorCode\":0,\"error\":\"工单处理成功\"}";
 	}
 	
+	@RequestMapping("/WorkorderDetail/{acceptNo}")
+	public String Workorderdetail(Model model,@PathVariable(value="acceptNo") String acceptNo){
+		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
+		System.out.println(acceptNo);
+		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
+		List<Branch> lb=branchdao.getAllBranches();
+		String nowtime =DateTimeUtil.getNowTime();
+		String uname=getSessionUser().getRealname();
+		cca.setHandleUser(uname);
+		cca.setJieanchongshenTime(nowtime);
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		
+		model.addAttribute("lb", lb);   
+		model.addAttribute("cci", cci);
+		model.addAttribute("cca", cca);		//存入工单信息
+		model.addAttribute("co", co);    //存入订单信息表
+		return "workorder/WorkorderDetails";
+	}
+	
+	
+	@RequestMapping("/exportExcle")
+	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request) {
+
+		String[] cloumnName1 = new String[10]; // 导出的列名
+		String[] cloumnName2 = new String[10]; // 导出的英文列名
+		
+		es.setcsconsigneeinfo(cloumnName1,cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "来电人信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Csconsigneeinfo_" + df.format(new Date()) + ".xlsx"; // 文件名
+		try {
+		String name=request.getParameter("name");
+		String phone=request.getParameter("phoneonOne");
+		String consigneeType =request.getParameter("consigneeType");
+		int  consigneeTypeValue=Integer.valueOf(consigneeType);
+		 List<CsConsigneeInfo> ccilist1=workorderdao.queryAllCsConsigneeInfo(name,phone,consigneeTypeValue);
+	final List<CsConsigneeInfoVO> ccilist=new ArrayList<CsConsigneeInfoVO>();
+		for(CsConsigneeInfo c:ccilist1){
+			CsConsigneeInfoVO cv = new CsConsigneeInfoVO();
+			cv.setName(c.getName());
+			cv.setSex(c.getSex()==1?"男":"女");
+			cv.setPhoneonOne(c.getPhoneonOne());
+			cv.setPhoneonTwo(c.getPhoneonTwo());
+			cv.setMailBox(c.getMailBox());
+			cv.setProvince(c.getProvince());
+			cv.setCity(c.getCity());
+			cv.setConsigneeType(c.getConsigneeType()==0?"普通客户":"VIP客户");
+			cv.setContactLastTime(c.getContactLastTime());
+			cv.setContactNum(c.getContactNum());
+			ccilist.add(cv);
+			
+		}
+		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+			@Override
+			public void fillData(Sheet sheet, CellStyle style) {
+				for (int k = 0; k < ccilist.size(); k++) {
+					Row row = sheet.createRow(k + 1);
+					row.setHeightInPoints(15);
+					for (int i = 0; i < cloumnName.length; i++) {
+						Cell cell = row.createCell((short) i);
+						cell.setCellStyle(style);
+						Object a = null;
+						// 给导出excel赋值
+						a = es.setCSInfoObject(cloumnName3,ccilist,a, i, k);
+						cell.setCellValue(a == null ? "" : a.toString());
+					}
+				}
+			}
+		};
+		
+		excelUtil.excel(response, cloumnName, sheetName, fileName);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+		
+		
+	}
+	
+	@RequestMapping("/exportWorkOrderExcle")
+	public void exportWorkOrderExcle(Model model, HttpServletResponse response, HttpServletRequest request,CsComplaintAccept cca) {
+
+		String[] cloumnName1 = new String[10]; // 导出的列名
+		String[] cloumnName2 = new String[10]; // 导出的英文列名
+		es.setCsComplaintAccept(cloumnName1,cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "工单信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "CsComplaintAccept_" + df.format(new Date()) + ".xlsx"; // 文件名
+		
+		/*String complaintType = request.getParameter("complaintType")==null?"-1":request.getParameter("complaintType");
+		String orderNo = request.getParameter("orderNo")==null?"":request.getParameter("orderNo");
+		String complaintState = request.getParameter("complaintState")==null?"-1":request.getParameter("complaintState");
+		String complaintOneLevel = request.getParameter("complaintOneLevel")==null?"-1":request.getParameter("complaintOneLevel");
+		String codOrgId = request.getParameter("codOrgId")==null?"-1":request.getParameter("codOrgId");
+		String complaintResult = request.getParameter("complaintResult")==null?"-1":request.getParameter("complaintResult");
+		String complaintTwoLevel = request.getParameter("complaintTwoLevel")==null?"-1":request.getParameter("complaintTwoLevel");
+		String beginRangeTime = request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime");
+		String endRangeTime = request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime");
+		String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
+		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");	*/
+
+		
+		
+		
+		
+	}	
 }

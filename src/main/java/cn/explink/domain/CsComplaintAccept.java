@@ -65,9 +65,47 @@ public class CsComplaintAccept {
 			private String shensuremark;
 			private String jieanchongshenremark;
 			private String jieanchongshenTime;
+			private int ifpunish;
+			private String heshiUser;
+			private String jieanUser;
+			private String shensuUser;
+			private String chongshenUser;
+			
+			
+			
 			
 			
 		
+			public String getHeshiUser() {
+				return heshiUser;
+			}
+			public void setHeshiUser(String heshiUser) {
+				this.heshiUser = heshiUser;
+			}
+			public String getJieanUser() {
+				return jieanUser;
+			}
+			public void setJieanUser(String jieanUser) {
+				this.jieanUser = jieanUser;
+			}
+			public String getShensuUser() {
+				return shensuUser;
+			}
+			public void setShensuUser(String shensuUser) {
+				this.shensuUser = shensuUser;
+			}
+			public String getChongshenUser() {
+				return chongshenUser;
+			}
+			public void setChongshenUser(String chongshenUser) {
+				this.chongshenUser = chongshenUser;
+			}
+			public int getIfpunish() {
+				return ifpunish;
+			}
+			public void setIfpunish(int ifpunish) {
+				this.ifpunish = ifpunish;
+			}
 			public String getJieanTime() {
 				return jieanTime;
 			}

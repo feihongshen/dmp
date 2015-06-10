@@ -25,9 +25,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.Branch;
-import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
@@ -220,8 +218,8 @@ public class CwbDAO {
 			cwbOrder.setChangereason(rs.getString("changereason"));
 			cwbOrder.setChangereasonid(rs.getLong("changereasonid"));
 			cwbOrder.setFirstchangereasonid(rs.getLong("firstchangereasonid"));
-			cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
-			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));
+			/*cwbOrder.setZhongzhuanreasonid(rs.getLong("zhongzhuanreasonid"));
+			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));*/
 			cwbOrder.setFnorgoffset(rs.getBigDecimal("fnorgoffset"));
 			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
@@ -5676,7 +5674,7 @@ public class CwbDAO {
 	 * 添加中转的原因在主表中
 	 */
 	public void updateZhongzhuanReason(String cwb, long reasonid, String reasonContent) {
-		String sql = "update express_ops_cwb_detail set zhongzhuanreasonid=? ,zhongzhuanreason=?  where cwb=?";
+		String sql = "update express_ops_cwb_detail set changereasonid=? ,changereason=?  where cwb=?";
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 

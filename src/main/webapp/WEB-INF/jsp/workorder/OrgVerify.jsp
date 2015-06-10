@@ -11,12 +11,12 @@
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%
-CsComplaintAccept cca=(CsComplaintAccept)request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
-CwbOrder co=(CwbOrder)request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
-CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
-List<Branch> lb = (List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
-String oneleave=request.getAttribute("OneLevel")==null?null:(String)request.getAttribute("OneLevel");
-String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getAttribute("TwoLevel");
+CsComplaintAccept cca=request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
+CwbOrder co=request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
+CsConsigneeInfo cci=request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
+List<Branch> lb =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+String oneleave=request.getAttribute("OneLevel")==""?null:(String)request.getAttribute("OneLevel");
+String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAttribute("TwoLevel");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -52,8 +52,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<span>客户名称:</span><%=co.getConsigneename() %>
 					</li>
 					<li>
-						<span>来电人姓名:</span><%=cci.getName() %>
-						<span>来电号码:</span><%=cci.getPhoneonOne() %>
+						<span>来电人姓名:</span><%=cci.getName()==null?"":cci.getName() %>
+						<span>来电号码:</span><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%>
 						<span>收件人手机:</span><%=co.getConsigneemobile() %>
 					</li>
 					<li>
@@ -69,7 +69,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<input type="hidden" value="" name="complaintState" id="AlreadyVerifycomplaintState">
 						<input type="hidden" value="<%=cca.getId()%>" name="id">
 						<input type="hidden" value="<%=cca.getHeshiTime()%>" name="heshiTime">
-						<input type="hidden" value="<%=cca.getHandleUser()%>" name="handleUser">
+						<input type="hidden" value="<%=cca.getHeshiUser()%>" name="heshiUser">
 			</div>
 		</form>			
 			

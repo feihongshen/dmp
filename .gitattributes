@@ -998,6 +998,7 @@ src/main/java/cn/explink/domain/ComplaintsView.java -text
 src/main/java/cn/explink/domain/CsComplaintAccept.java -text
 src/main/java/cn/explink/domain/CsComplaintAcceptVO.java -text
 src/main/java/cn/explink/domain/CsConsigneeInfo.java -text
+src/main/java/cn/explink/domain/CsConsigneeInfoVO.java -text
 src/main/java/cn/explink/domain/CustomWareHouse.java -text
 src/main/java/cn/explink/domain/Customer.java -text
 src/main/java/cn/explink/domain/CwbALLStateControl.java -text
@@ -2361,6 +2362,7 @@ src/main/webapp/WEB-INF/jsp/workorder/OrgAppeal.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/OrgVerify.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/WaitManageWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/WorkOrderQueryManage.jsp -text
+src/main/webapp/WEB-INF/jsp/workorder/WorkorderDetails.jsp -text
 src/main/webapp/WEB-INF/jsp/xiazai/test.jsp -text
 src/main/webapp/WEB-INF/jsp/xiazai/test1.jsp -text
 src/main/webapp/WEB-INF/spring/webmvc-config.xml -text

@@ -165,11 +165,15 @@ public class WorkOrderDAO {
 			c.setCustomerid(rs.getLong("customerid"));
 			c.setHandleUser(rs.getString("handle_user"));			
 			c.setShensuremark(rs.getString("shensu_remark"));
-			c.setJieanremark(rs.getString("jieanchongshen_remark"));
+			c.setJieanchongshenremark(rs.getString("jieanchongshen_remark"));
 			c.setJieanTime(rs.getString("jiean_time"));
 			c.setComplaintTime(rs.getString("complaint_time"));
 			c.setJieanremark(rs.getString("jiean_remark"));
 			c.setJieanchongshenTime(rs.getString("jieanchongshen_time"));
+			c.setHeshiUser(rs.getString("heshi_user"));
+			c.setJieanUser(rs.getString("jiean_user"));
+			c.setShensuUser(rs.getString("shensu_user"));
+			c.setChongshenUser(rs.getString("chongshen_user"));
 			
 			return c;
 		}
@@ -277,10 +281,22 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 			sb.append(" heshi_time='"+cca.getHeshiTime()+"',");
 		}
 		if(cca.getJieanchongshenTime()!=null&&cca.getJieanchongshenTime().length()>0){
-			sb.append(" jieanchongshen_time='"+cca.getJieanchongshenTime()+"'");
+			sb.append(" jieanchongshen_time='"+cca.getJieanchongshenTime()+"',");
 		}
 		if(cca.getHandleUser()!=null&&cca.getHandleUser().length()>0){
 			sb.append(" handle_user='"+cca.getHandleUser()+"'");
+		}
+		if(cca.getHeshiUser()!=null&&cca.getHeshiUser().length()>0){
+			sb.append(" heshi_user='"+cca.getHeshiUser()+"'");
+		}
+		if(cca.getJieanUser()!=null&&cca.getJieanUser().length()>0){
+			sb.append(" jiean_user='"+cca.getJieanUser()+"'");
+		}
+		if(cca.getShensuUser()!=null&&cca.getShensuUser().length()>0){
+			sb.append(" shensu_user='"+cca.getShensuUser()+"'");
+		}
+		if(cca.getChongshenUser()!=null&&cca.getChongshenUser().length()>0){
+			sb.append(" chongshen_user='"+cca.getChongshenUser()+"'");
 		}
 		if(cca.getId()>=0){
 			sb.append(" where id="+cca.getId());

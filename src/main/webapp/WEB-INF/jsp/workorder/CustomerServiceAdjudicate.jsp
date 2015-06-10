@@ -70,7 +70,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
-						<span>核实人:</span><%=cca.getHandleUser() %>
+						<span>核实人:</span><%=cca.getHeshiUser()%>
 						<span>附件</span>
 					</li>
 					<li>
@@ -91,7 +91,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 				<input type="hidden" value="" name="complaintState" id="AlreadyVerifycomplaintState" />
 				<input type="hidden" value="<%=cca.getId()%>" name="id" />
 				<input type="hidden" value="<%=cca.getJieanTime()%>" name="jieanTime">
-				<input type="hidden" value="<%=cca.getHandleUser()%>" name="handleUser">
+				<input type="hidden" value="<%=cca.getJieanUser()%>" name="jieanUser">
 				</ul>
 				
 			</div>
