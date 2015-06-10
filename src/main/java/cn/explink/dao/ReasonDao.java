@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Reason;
+import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -187,8 +188,9 @@ public class ReasonDao {
 	
 	//查出所有的一级原因
 	public List<Reason> addWO(){
-		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=12";
-		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+		int reasonGongdantousu=ReasonTypeEnum.GongDanTouSuYuanYin.getValue();
+		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype="+reasonGongdantousu;
+		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
 		return list;
 	}
 	

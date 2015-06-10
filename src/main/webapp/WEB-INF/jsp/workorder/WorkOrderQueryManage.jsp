@@ -17,7 +17,7 @@
 	List<Branch> b =(List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
 	 String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username"); 
 	/* Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist")==null?null:(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist"); */
-	Map<String,String> connameList=(Map<String,String>)request.getAttribute("connameList");
+	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
 	List<CwbOrder> co=(List<CwbOrder>)request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
 %> 
@@ -392,17 +392,17 @@ function testCwbsIfNull(){
 	
 	
 	<form action="<%=request.getContextPath()%>/workorder/exportWorkOrderExcle" id="WorkorderInfo">
-		<input type="hidden" value="<%=request.getParameter("complaintType") %>"/>
-		<input type="hidden" value="<%=request.getParameter("orderNo") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintState") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintOneLevel") %>"/>
-		<input type="hidden" value="<%=request.getParameter("codOrgId") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintResult") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel") %>"/>
-		<input type="hidden" value="<%=request.getParameter("beginRangeTime") %>"/>
-		<input type="hidden" value="<%=request.getParameter("endRangeTime") %>"/>
-		<input type="hidden" value="<%=request.getParameter("handleUser") %>"/>
-		<input type="hidden" value="<%=request.getParameter("ifpunish") %>"/>	
+		<input type="hidden" value="<%=request.getParameter("complaintType")==null?"":request.getParameter("complaintType") %>"/>
+		<input type="hidden" value="<%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintState")==null?"":request.getParameter("complaintState") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintOneLevel")==null?"":request.getParameter("complaintOneLevel") %>"/>
+		<input type="hidden" value="<%=request.getParameter("codOrgId")==null?"":request.getParameter("codOrgId") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintResult")==null?"":request.getParameter("complaintResult") %>"/>
+		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel")==null?"":request.getParameter("complaintTwoLevel") %>"/>
+		<input type="hidden" value="<%=request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime") %>"/>
+		<input type="hidden" value="<%=request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime") %>"/>
+		<input type="hidden" value="<%=request.getParameter("handleUser")==null?"":request.getParameter("handleUser") %>"/>
+		<input type="hidden" value="<%=request.getParameter("ifpunish")==null?"":request.getParameter("ifpunish") %>"/>	
 	</form>
 	
 	<script type="text/javascript">

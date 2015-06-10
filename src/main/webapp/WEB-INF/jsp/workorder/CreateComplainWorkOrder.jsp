@@ -9,10 +9,10 @@
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
 <% 
-CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("ca");
-List<Branch> b =(List<Branch>)request.getAttribute("lb");
-List<Reason> r = (List<Reason>)request.getAttribute("lr");
-List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
+CsComplaintAccept a= request.getAttribute("ca")==null?null:(CsComplaintAccept)request.getAttribute("ca");
+List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
+List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.getAttribute("lrs");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
