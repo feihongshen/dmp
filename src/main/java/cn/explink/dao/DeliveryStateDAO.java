@@ -22,7 +22,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -1458,4 +1457,11 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.queryForObject(sql, new DeliveryStateRowMapper(), cwb);
 	}
 
+	public List<DeliveryState> getDeliverystates(String cwbs){
+		String sql = "select * from express_ops_delivery_state where deliverystate=4 and cwb in(?)";
+		
+		return jdbcTemplate.query(sql, new DeliveryStateRowMapper(),cwbs);
+	}
+	
+	
 }

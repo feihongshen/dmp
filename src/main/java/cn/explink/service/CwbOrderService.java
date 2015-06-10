@@ -4008,23 +4008,12 @@ public class CwbOrderService {
 		this.orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
 		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
 		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
-		// logger.info("退货审核：系统删除退货审核订单{}", new Object[] {cwb});
-		// }
+		
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 				|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) {
 			// 拒收修改订单为配送状态
 			if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
-				/*// 品信退货是否需要审核开关
-				String tuihuocheck = this.systemInstallDAO.getSystemInstallByName("tuihuocheck") == null ? "no" : this.systemInstallDAO.getSystemInstallByName("tuihuocheck").getValue();
-				if ("yes".equals(tuihuocheck)) {
-					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
-					// 获取订单信息
-					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-					// 退货审核表插入一条订单数据
-					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 0, DeliveryStateEnum.JuShou.getValue());
-					this.orderBackCheckDAO.createOrderBackCheck(o);
-					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
-				} else {*/
+				//chechFlag (退货是否需要审核的标识 0：否 ,1：是)
 				if (chechFlag) {
 					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
 					// 获取订单信息

@@ -255,19 +255,18 @@ function applynopass(){
 									<tr>
 										<td>
 											确认状态:
-											<select name ="shenhestate" id ="shenhestate">
+											<select name ="confirmstate" id ="confirmstate">
 												<option  value ="0">全部</option>
-													<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
-													<option value ="<%=ApplyStateEnum.shenhebutongguo.getValue() %>"><%=ApplyStateEnum.shenhebutongguo.getText() %></option>
-													<option value ="<%=ApplyStateEnum.shenhetongguo.getValue()%>"><%=ApplyStateEnum.shenhetongguo.getText() %></option>
+													<option value ="<%=ConfirmStateEnum.daiqueren.getValue() %>"><%=ConfirmStateEnum.daiqueren.getText() %></option>
+													<option value ="<%=ConfirmStateEnum.yiqueren.getValue() %>"><%=ConfirmStateEnum.yiqueren.getText() %></option>
 											</select>
 										</td>
 										<td>
 											确认结果:
-											<select name ="shenheresult" id ="customerid">
+											<select name ="confirmresult" id ="confirmresult">
 												<option  value ="0">全部</option>
-												<option value ="<%=ShenHeResultEnum.shenhebutongguo.getValue() %>"><%=ShenHeResultEnum.shenhebutongguo.getText() %></option>
-												<option value ="<%=ShenHeResultEnum.shenhetongguo.getValue() %>"><%=ShenHeResultEnum.shenhetongguo.getText() %></option>
+												<option value ="<%=ConfirmResultEnum.querenbutongguo.getValue() %>"><%=ConfirmResultEnum.querenbutongguo.getText() %></option>
+												<option value ="<%=ConfirmResultEnum.querentongguo.getValue() %>"><%=ConfirmResultEnum.querentongguo.getText() %></option>
 											</select>
 										</td>
 									</tr>

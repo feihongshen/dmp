@@ -1181,6 +1181,8 @@ src/main/java/cn/explink/enumutil/ComplaintAuditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintResultEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintStateEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintTypeEnum.java -text
+src/main/java/cn/explink/enumutil/ConfirmResultEnum.java -text
+src/main/java/cn/explink/enumutil/ConfirmStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text
@@ -1231,6 +1233,7 @@ src/main/java/cn/explink/enumutil/SmsSendManageEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailStocktypeEnum.java -text
 src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
+src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
 src/main/java/cn/explink/enumutil/switchs/SwitchEnum.java -text

@@ -18,9 +18,23 @@ public class ZhiFuApplyView {
 	private int applyway;
 	private int applystate;//审核所处的状态
 	private int applyresult; //审核结果
+	private int confirmstate;//确认状态
+	private int confirmresult;//确认结果
 	private int userid; 
 	private String feewaytyperemark;
 	
+	public int getConfirmstate() {
+		return confirmstate;
+	}
+	public void setConfirmstate(int confirmstate) {
+		this.confirmstate = confirmstate;
+	}
+	public int getConfirmresult() {
+		return confirmresult;
+	}
+	public void setConfirmresult(int confirmresult) {
+		this.confirmresult = confirmresult;
+	}
 	public int getApplyid() {
 		return applyid;
 	}
@@ -118,8 +132,6 @@ public class ZhiFuApplyView {
 	public void setApplystate(int applystate) {
 		this.applystate = applystate;
 	}
-	
-	
 	
 	
 	

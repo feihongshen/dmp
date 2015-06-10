@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,6 +102,8 @@ public class OrderBackCheckController {
 	ExportmouldDAO exportmouldDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -109,37 +112,35 @@ public class OrderBackCheckController {
 
 	/**
 	 * 审核为允许退货出站
-	 * 
+	 * (废弃)
 	 * @param model
 	 * @param request
 	 * @param cwb
 	 * @return
-	 */
+	 *//*
 	@RequestMapping("/toTuiHuoCheck")
 	public String toTuiHuoCheck(Model model, HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
-			@RequestParam(value = "searchType", defaultValue = "0", required = false) String searchType,
-			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) String cwbtypeid,
-			@RequestParam(value = "customerid", defaultValue = "0", required = false) String customerid,
-			@RequestParam(value = "branchid", defaultValue = "0", required = false) String branchid,
-			@RequestParam(value = "auditstate", defaultValue = "0", required = false) String auditstate,
-			@RequestParam(value = "shenheresult", defaultValue = "0", required = false) String shenheresult,
-			@RequestParam(value = "begindate", defaultValue = "0", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "0", required = false) String enddate
+			@RequestParam(value = "searchType", defaultValue = "", required = false) String searchType,
+			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
+			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
+			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
+			@RequestParam(value = "auditstate", defaultValue = "", required = false) String auditstate,
+			@RequestParam(value = "shenheresult", defaultValue = "", required = false) String shenheresult,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
 			) {
 		
 		String quot = "'", quotAndComma = "',";
-		List<String> scancwblist = new ArrayList<String>();
-		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
+		List<String> scancwblist1 = new ArrayList<String>();
+		List<CwbOrder> cwborderlist1 = new ArrayList<CwbOrder>();
 		
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		Map<Long, String> map = new HashMap<Long, String>();
 		for(Branch branch:branchList){
 			map.put(branch.getBranchid(), branch.getBranchname());
 		}
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
-		model.addAttribute("customerList", customerList);
-		model.addAttribute("branchList", branchList);
+		
 		StringBuffer cwbs = new StringBuffer("");
 		if (cwb.length() > 0) {
 			for (String cwbStr : cwb.split("\r\n")) {
@@ -158,12 +159,6 @@ public class OrderBackCheckController {
 		}
 		
 		String branchids = "";
-		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
-		model.addAttribute("amazonIsOpen", isOpenFlag);
-		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
-		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
-		String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
-		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
 		// 如果为选择站点则匹配用户权限
 		if ((branchList != null) && !branchList.isEmpty()) {
 			for (Branch listb : branchList) {
@@ -177,7 +172,7 @@ public class OrderBackCheckController {
 		List<OrderFlow> orderflowlist = orderFlowDAO.getOrderByCredate(FlowOrderTypeEnum.YiFanKui.getValue(),begindate,enddate);
 		List<CwbOrderView> covlist = new ArrayList<CwbOrderView>();
 		List<OrderBackCheck> orderbackList = new ArrayList<OrderBackCheck>();
-		CwbOrderView cov = new CwbOrderView();
+		
 		// 根据订单号查询
 		if (!"".equals(cwb.trim()) && "0".equals(searchType)) {
 			List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
@@ -199,6 +194,7 @@ public class OrderBackCheckController {
 			for(OrderBackCheck obc:orderbackList){
 				for(OrderFlow of:orderflowlist){
 					if(obc.getCwb().equals(of.getCwb())){
+						CwbOrderView cov = new CwbOrderView();
 						cov.setScancwb(String.valueOf(obc.getId()));
 						cov.setCwb(of.getCwb());
 						cov.setCwbordertypename(obc.getCwbordertypename());
@@ -215,6 +211,7 @@ public class OrderBackCheckController {
 			for(OrderBackCheck obc:orderbackList){
 				for(OrderFlow of:orderflowlist){
 					if(obc.getCwb().equals(of.getCwb())){
+						CwbOrderView cov = new CwbOrderView();
 						cov.setScancwb(String.valueOf(obc.getId()));
 						cov.setCwb(of.getCwb());
 						cov.setCwbordertypename(obc.getCwbordertypename());
@@ -229,7 +226,7 @@ public class OrderBackCheckController {
 		//model.addAttribute("orderbackList", orderbackList);
 		model.addAttribute("covlist",covlist);
 		
-		/*// 查询全部
+		// 查询全部
 		if ("1".equals(searchType)) {
 			List<OrderBackCheck> list = this.orderBackCheckDAO.getOrderBackCheckListByBranch(branchids);
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -238,14 +235,68 @@ public class OrderBackCheckController {
 			model.addAttribute("orderbackList", orderbackList);
 			model.addAttribute("customerList", customerList);
 		}
-<<<<<<< .working
-		*/
-		/*int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
-		model.addAttribute("amazonIsOpen", isOpenFlag);*/
+		
+		
+		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
+		model.addAttribute("amazonIsOpen", isOpenFlag);
+		
+		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("customerList", customerList);
+		model.addAttribute("branchList", branchList);
+		return "auditorderstate/toTuiHuoCheck";
+	}*/
 
+	
+	/**
+	 * 审核为允许退货出站
+	 * @param model
+	 * @param request
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/toTuiHuoCheck")
+	public String toTuiHuoCheck(Model model, HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "searchType", defaultValue = "", required = false) String searchType,
+			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
+			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
+			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
+			@RequestParam(value = "auditstate", defaultValue = "", required = false) String auditstate,
+			@RequestParam(value = "shenheresult", defaultValue = "", required = false) String shenheresult,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			) {
+		
+		List<Customer> customerlist = this.customerDAO.getAllCustomers();
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<DeliveryState> listDelivery = null;
+		if(!"".equals(cwb.trim())){
+			StringBuffer sb = new StringBuffer();
+			String[] str = cwb.split("\r\n");
+			for(String s:str){
+				sb.append("'").append(s).append("',");
+			}
+			if(sb.length()>0){
+				listDelivery = deliveryStateDAO.getDeliverystates(sb.substring(0,sb.length()-1));
+			}
+		}/*else{
+			if(cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&auditstate.equals("")&&shenheresult.equals("")&&begindate.equals("")&&enddate.equals("")){
+				return "auditorderstate/toTuiHuoCheck";
+			}else{
+				
+			}
+		}*/
+		
+		
+		
+		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("customerList", customerlist);
+		model.addAttribute("branchList", branchList);
 		return "auditorderstate/toTuiHuoCheck";
 	}
-
+	
+	
+	
+	
 	/**
 	 * 提交审核
 	 * 

@@ -37,6 +37,8 @@ public class ZhiFuApplyDao {
 			zfav.setApplyway(rs.getInt("applyway"));
 			zfav.setApplystate(rs.getInt("applystate"));
 			zfav.setApplyresult(rs.getInt("applyresult"));
+			zfav.setConfirmstate(rs.getInt("confirmstate"));
+			zfav.setConfirmresult(rs.getInt("confirmresult"));
 			zfav.setUserid(rs.getInt("userid"));
 			zfav.setFeewaytyperemark(rs.getString("feeremark"));
 			return zfav;
@@ -63,6 +65,8 @@ public class ZhiFuApplyDao {
 			obj.put("applyway", rs.getInt("applyway"));
 			obj.put("applystate", rs.getInt("applystate"));
 			obj.put("applyresult", rs.getInt("applyresult"));
+			obj.put("confirmstate", rs.getInt("confirmstate"));
+			obj.put("confirmresult", rs.getInt("confirmresult"));
 			obj.put("userid", rs.getInt("userid"));
 			obj.put("feeremark", rs.getString("feeremark"));
 			return obj;
@@ -110,7 +114,7 @@ public class ZhiFuApplyDao {
 	}
 	//查询已审核支付信息数据
 	public List<ZhiFuApplyView> getZFAVBycwbss(String cwbs){
-		String sql = "select * from express_ops_zhifu_apply where cwb in(?) and applystate=3 and applyresult=0";
+		String sql = "select * from express_ops_zhifu_apply where cwb in(?) and applyresult=2 and confirmresult=0";
 		return jdbcTemplate.query(sql,new ZhiFuApplyMapper(),cwbs);
 	}
 
@@ -150,12 +154,12 @@ public class ZhiFuApplyDao {
 	}
 	
 	//在 审核~确认 页面通过条件查询
-	public List<ZhiFuApplyView> getapplycwbss(int cwbtypeid, int applytype,int userid,int applystate,int shenheresult) {
+	public List<ZhiFuApplyView> getapplycwbss(int cwbtypeid, int applytype,int userid,int confirmstate,int confirmresult) {
 		String sql = "";
-		if(cwbtypeid==0&&applytype==0&&userid==0&&applystate==0&&shenheresult==0){
-			sql = "select * from express_ops_zhifu_apply where applystate=3 and applyresult=0";
+		if(cwbtypeid==0&&applytype==0&&userid==0&&confirmstate==0&&confirmresult==0){
+			sql = "select * from express_ops_zhifu_apply where applyresult=2 and confirmresult=0";
 		}else{
-			sql = "select * from express_ops_zhifu_apply where applystate=3 ";
+			sql = "select * from express_ops_zhifu_apply where applyresult=2 ";
 			StringBuffer sb = new StringBuffer("");
 			if(cwbtypeid>0){
 				sb.append("and cwbordertypeid="+cwbtypeid);
@@ -172,11 +176,11 @@ public class ZhiFuApplyDao {
 			if(userid>0){
 				sb.append("and userid="+userid);
 			}
-			/*if(shenhestate>0){
-			sb.append("and applystate=? ");
-		}*/
-			if(shenheresult>0){
-				sb.append("and applyresult="+shenheresult);
+			if(confirmstate>0){
+			sb.append("and confirmstate="+confirmstate);
+			}
+			if(confirmresult>0){
+				sb.append("and confirmresult="+confirmresult);
 			}
 			sql = sql+sb;
 		}
@@ -191,25 +195,24 @@ public class ZhiFuApplyDao {
 	
 	//审核通过
 	public void updateStatePassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applystate=3  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set applyresult=2  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
-
-	}
-	//确认通过
-	public void updateStateConfirmPassByCwb(String cwb) {
-		String sql = "update express_ops_zhifu_apply set applyresult=2  where cwb=? ";
-		this.jdbcTemplate.update(sql, cwb);
 
 	}
 	//审核为不通过
 	public void updateStateNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applystate=2  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set applyresult=1  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
-
+	}
+	
+	//确认通过
+	public void updateStateConfirmPassByCwb(int applyid) {
+		String sql = "update express_ops_zhifu_apply set confirmresult=2  where applyid=? ";
+		this.jdbcTemplate.update(sql, applyid);
 	}
 	//确认不通过
 	public void updateStateConfirmNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applyresult=1  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set confirmresult=1  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
 
 	}
@@ -219,9 +222,4 @@ public class ZhiFuApplyDao {
 		return jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyid );
 	}
 
-	public void updateApplyResult(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applyresult=2 where applyid=?";
-		jdbcTemplate.update(sql,applyid);
-	}
-	
 }

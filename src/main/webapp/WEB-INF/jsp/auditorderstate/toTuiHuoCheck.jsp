@@ -1,16 +1,13 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@page import="cn.explink.domain.Branch"%>
-<%@page import="cn.explink.domain.Customer"%>
+<%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.controller.CwbOrderView"%>
-<%@page import="cn.explink.domain.OrderBackCheck"%>
 <%@page import="cn.explink.enumutil.*"%>
-<%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%
 	List<OrderBackCheck> orderbackList = (List<OrderBackCheck>)request.getAttribute("orderbackList");
 	List<CwbOrderView> covlist = (List<CwbOrderView>)request.getAttribute("covlist");
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
-	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
+	List<Customer> customerlist = (List<Customer>)request.getAttribute("customerList");
 	//List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 	List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 %>
@@ -173,8 +170,8 @@ $(function() {
 										审核状态:
 										<select name ="auditstate" id ="auditstate">
 											<option  value ="0">全部</option>
-												<option value = "1">待审核</option>
-												<option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>">已<%=FlowOrderTypeEnum.YiShenHe.getText() %></option>
+												<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
+												<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 										</select>
 									</td>
 									<td>
@@ -182,8 +179,9 @@ $(function() {
 										审核结果:
 										<select name ="shenheresult" id ="shenheresult">
 											<option  value ="0">全部</option>
-											<option value ="">确认退货</option>
-											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>">站点滞留</option>
+											<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
+											<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
+											<option value ="<%=TuihuoResultEnum.zhandianmaidan.getValue() %>" ><%=TuihuoResultEnum.zhandianmaidan.getText() %></option>
 										</select>
 										&nbsp;&nbsp;
 										归班反馈时间:

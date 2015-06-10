@@ -237,6 +237,7 @@ $(function() {
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退货库入库时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
 								</tr>
 							</tbody>
 						</table>
@@ -248,7 +249,7 @@ $(function() {
 								<%if(cwbList!=null){ 
 									for(CwbOrderView cwb :cwbList){ %>
 									<tr height="30">
-										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %>checked="checked"<%} %>></td>
+										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>
@@ -257,6 +258,17 @@ $(function() {
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapbranch.get(cwb.getTuihuoid()) %></td>
+										<td width="200" align="center" valign="middle">
+										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>
+												<%=cwb.getCwbremark() %>
+										<input type="hidden" id="<%=cwb.getCwb() %>_cwbremark" name="<%=cwb.getCwb() %>_cwbremark" value="<%=cwb.getCwb() %>_s_0"/>
+										<%}else{ %>
+										<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
+										<option value="">请选择退货再投原因</option>
+										<%for(Reason r :reasonList) {%><option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option><%} %>
+											</select>
+										<%} %>
+										</td>
 									</tr>
 								<%} }%>
 						</table>

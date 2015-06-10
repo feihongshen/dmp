@@ -124,22 +124,29 @@ public class TuihuoRecordDAO {
 		return jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
-	public List<TuihuoRecord> getTuihuoRecordByTuihuozhanruku(String begindate, String enddate, String branchids, String customerids, String cwbordertypeids) {
-		String sql = "SELECT * from ops_tuihuorecord  where tuihuozhanrukutime >= ? and tuihuozhanrukutime <= ? ";
-		if (branchids.length() > 0 || customerids.length() > 0 || cwbordertypeids.length() > 0) {
+	public List<TuihuoRecord> getTuihuoRecordByTuihuozhanruku(String begindate, String enddate, String branchid, String customerid, String cwbordertypeid) {
+		String sql = "";
+		if (begindate.length()>0||enddate.length()>0||branchid.length() > 0 || customerid.length() > 0 || cwbordertypeid.length() > 0) {
 			StringBuffer w = new StringBuffer();
-			if (branchids.length() > 0) {
-				w.append(" and branchid in(" + branchids + ")");
+			sql = "SELECT * from ops_tuihuorecord  where id<>0";
+			if(begindate.length()>0){
+				w.append(" and tuihuozhanrukutime>="+begindate);
 			}
-			if (customerids.length() > 0) {
-				w.append(" and customerid in(" + customerids + ")");
+			if(enddate.length()>0){
+				w.append(" and tuihuozhanrukutime <="+enddate);
 			}
-			if (cwbordertypeids.length() > 0) {
-				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
+			if (branchid.length() > 0) {
+				w.append(" and branchid="+branchid);
+			}
+			if (customerid.length() > 0) {
+				w.append(" and customerid="+customerid);
+			}
+			if (cwbordertypeid.length() > 0) {
+				w.append(" and cwbordertypeid="+cwbordertypeid);
 			}
 			sql += w.toString();
 		}
-		return jdbcTemplate.query(sql, new TuihuoRecordMapper(), begindate, enddate);
+		return jdbcTemplate.query(sql, new TuihuoRecordMapper());
 	}
 
 	public long getCountTuihuoRecordByTuihuozhanruku(String begindate, String enddate, String branchids, String customerids, String cwbordertypeids) {
