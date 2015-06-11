@@ -4176,6 +4176,9 @@ function check_describeAndDutyInfo() {
 		return false;
 	}
 	console.info($("#describe").val());
+	if($("#describe").val().length>100){
+		alert("处理内容过长，请合理输入！！");
+	}
 	if ($("#describe").val().length == 0||$("#describe").val()=='最多100个字') {
 		alert("请填写处理内容");
 		return false;
@@ -5327,6 +5330,10 @@ function check_dealJieanResulet() {
 		alert("请选择问题件处理结果！！");
 		return false;
 	}
+	if($("#describe").val().length>100){
+		alert("结案处理说明过长！！");
+		return false;
+	}
 	console.info($("#describe").val());
 	if ($("#dutybranchid").val() == 0||$("#dutyname").val()==0) {
 		alert("请选择最终审判的机构与机构当事人！！");
@@ -5343,8 +5350,48 @@ function filedownloadwithquestionfile(){
 	$("#morefilebutton").hide();
 }
 
+//根据订单创建对内扣罚单的时候的校验
+function check_createbycwb(){
+	if($("#cwb").val()==""){
+		alert("请输入订单号！！");
+		return false;
+	}else if($("#punishbigsort").val()==0){
+		alert("请选择扣罚大类！！");
+		return false;
+	}else if($("#punishsmallsort").val()==0){
+		alert("请选择扣罚小类！！");
+		return false;
+	}else if($("#punishdescribe").val()==""){
+		alert("请输入扣罚说明！！");
+		return false;
+	}
+	return true;
+}
+//根据订单号创建对内扣罚单
+function submitPunishCreateBycwb(form){
+	console.info("hhh");
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "inpunish/createbycwbwithoutfile");
+		submitCreateForm(form);
+		return;
+	}
 
-
+	$("#update")[0].contentWindow.submitPunishInsideByCwb();
+}
+function submitPunishInsideByCwb(){
+	$('#swfupload-control').swfupload('addPostParam', 'cwb', $("#cwb", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbstate', $("#cwbstate", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbprice', $("#cwbprice", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort', $("#punishbigsort", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort', $("#punishsmallsort", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid', $("#dutybranchid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutyname', $("#dutyname", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishprice', $("#punishprice", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishdescribe', $("#punishdescribe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishinsidetype', $("#punishinsidetype", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
 function btnswd(ev){
 	$('#cls').val(ev);
 	alert(ev);
