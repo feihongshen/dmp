@@ -38,7 +38,7 @@ http://cxf.apache.org/schemas/jaxws.xsd
 
 	<context:spring-configured />
 
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true" /> -->
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${drivers}" />
