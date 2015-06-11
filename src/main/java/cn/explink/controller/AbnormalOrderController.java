@@ -211,6 +211,9 @@ public class AbnormalOrderController {
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "abnormalinfo", defaultValue = "", required = false) String abnormalinfo,
 			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid) {
+		if (abnormalinfo.equals("最多输入100个字")) {
+			abnormalinfo="";
+		}
 		Map<String, String> errorCwbs=new HashMap<String, String>();
 		/*	//查看订单号是否存在，如果不存在不允许后进行创建问题件
 		CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
@@ -1331,6 +1334,9 @@ public class AbnormalOrderController {
 			@RequestParam("file") CommonsMultipartFile[] files
 
 			){
+		if (abnormalinfo.equals("最多输入100个字")) {
+			abnormalinfo="";
+		}
 		String questionNo="";
 		String filepath=this.abnormalService.getExceptname(request);
 		String[] cwbStrings=cwbs.split("\r\n");

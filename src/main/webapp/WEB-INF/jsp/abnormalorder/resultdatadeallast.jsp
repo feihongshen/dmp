@@ -150,7 +150,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 			<iframe name='post_frame' id="post_frame" style="display:none;" mce_style="display:none;"></iframe> 
 			<div align="center">
 			<input type="submit" value="处理" class="button" >
-			<input type="reset"   value="取消" class="button">
+			<input type="button"  onclick="closeBox()"   value="取消" class="button">
 			</div>
 		</form>
 		

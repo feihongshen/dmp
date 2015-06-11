@@ -39,7 +39,7 @@ public class MissPieceDao {
 	JdbcTemplate jdbcTemplate;
 	//根据条件查询丢失(分页)
 	public List<MissPiece>  findMissPieces(long page,String cwbs,long customerid,long cwbordertypeid,long callbackbranchid,String begindate,String enddate){
-		String sql="select * from express_ops_lose_back where 1=1 ";
+		String sql="select * from express_ops_lose_back where 1=1 and state=1 ";
 		if (cwbs.length()>0) {
 			sql+=" and cwb IN('"+cwbs+"')";
 		}
@@ -84,7 +84,7 @@ public class MissPieceDao {
 	//向表里面插入数据
 	public void insertintoMissPiece(final String cwb,final long callbackbranchid,final String describe,final String filepath,final String questionno,final String createtime,final long customerid,final long cwbtypeid,final long flowordertype,final long userid
 ){
-		String sql="insert into express_ops_lose_back(cwb,callbackbranchid,describeinfo,filepath,questionno,createtime,customerid,cwbordertypeid,flowordertype,creuserid) values(?,?,?,?,?,?,?,?,?,?)";
+		String sql="insert into express_ops_lose_back(cwb,callbackbranchid,describeinfo,filepath,questionno,createtime,customerid,cwbordertypeid,flowordertype,creuserid,state) values(?,?,?,?,?,?,?,?,?,?,?)";
 		try {
 			this.jdbcTemplate.update(sql,new PreparedStatementSetter() {
 				
@@ -100,6 +100,7 @@ public class MissPieceDao {
 					ps.setLong(8,cwbtypeid );
 					ps.setLong(9,flowordertype );
 					ps.setLong(10,userid );
+					ps.setLong(11, 1);
 				}
 			});
 		} catch (Exception e) {

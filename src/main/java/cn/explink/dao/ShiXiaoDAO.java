@@ -101,6 +101,7 @@ public class ShiXiaoDAO {
 			if (userid>0) {
 				str.append("  and userid='"+userid+"' ");
 			}
+			sql += str.toString()+"";
 		return jdbcTemplate.queryForLong(sql);
 	}
 

@@ -77,6 +77,7 @@ public class AbnormalService {
 				view.setQuestionno(a.getString("questionno"));
 				view.setLosebackContent(this.checkfindOrnot(a.getLong("losebackid")));
 				view.setDutyperson(this.getCreName(users, a.getLong("dutypersonid")));
+				view.setDutypersonid(a.getLong("dutypersonid"));
 				view.setIsfindInfo(this.checkfindOrnot(a.getLong("isfind")));
 				view.setLastdutybranch(this.getBranchName(branchs, a.getLong("lastdutybranchid")));
 				view.setLastdutyuser(this.getCreName(users, a.getLong("lastdutyuserid")));

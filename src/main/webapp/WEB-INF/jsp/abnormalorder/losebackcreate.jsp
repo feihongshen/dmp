@@ -43,6 +43,11 @@ function createabnormalData(){
 		alert("订单号不能为空！！");
 		flag=false;
 	}
+	console.info($("#abnormalinfo").val().length);
+	if($("#abnormalinfo").val().length>100){
+		alert("丢失件说明过长，请适当填写！！");
+		flag=false;
+	}
 	return flag;
 	
 
@@ -69,8 +74,12 @@ function ajaxFileUpload()
         {  
             if(data.errorCode==0){
             	$("#showMessage").html(data.error);
+            	
             }else{
               $("#showMessage1").html(data.error);
+              $("#abnormalinfo").val("最多输入100个字");
+          	$("#callbackbranchid").val(0);
+          	$("#cwb").val("查询多个订单用回车隔开");
             }
             
         },  
@@ -113,7 +122,7 @@ function ajaxFileUpload()
 								</tr>
 								<tr>
 								<td >
-								找 回说 明：<textarea id="abnormalinfo" name="abnormalinfo" ></textarea><br>
+								找 回说 明：<textarea id="abnormalinfo" name="abnormalinfo" onblur="if(this.value==''){this.value='最多输入100个字'}" onfocus="if(this.value=='最多输入100个字'){this.value=''}">最多输入100个字</textarea><br>
 								</td>
 								<td align="left">
 								上传附件:<input type="file" name="file" id="file"/>

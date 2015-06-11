@@ -106,8 +106,11 @@ function getThisBoxList(id,flag){
 	var URL="";
 	if(flag==0){
 		URL=$("#handle"+id).val()+"&isfind=0";
+		console.info($("#dutyuseridhhh"+id).val());
+		console.info($("#userid").val());
+		console.info($("#dutyuseridhhh"+id).val()!=$("#userid").val());
 		if($("#sitetype").val()!=5){
-			if($("#useridhhh"+id).val()!=$("#userid").val()){
+			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				alert("对不起，您不是该问题件的创建方与责任方不允许操作！！");
 				return;
 			}
@@ -244,7 +247,7 @@ function stateBatch(state)
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($("#sitetype").val()!=5){
-			if($("#useridhhh"+id).val()!=$("#userid").val()){
+			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				num=num+1;
 			}
 		}
@@ -285,7 +288,7 @@ function reviseQuestionError(state)
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($("#sitetype").val()!=5){
-			if($("#useridhhh"+id).val()!=$("#userid").val()){
+			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				num=num+1;
 			}
 		}
@@ -558,6 +561,7 @@ function resultdatadeal(id)
 						<%} %>
 						<input type="hidden" id="handle<%=view.getId() %>" value="<%=request.getContextPath()%>/abnormalOrder/getabnormalOrder/<%=view.getId() %>?type=1" />
 						<input type="hidden" id="useridhhh<%=view.getId() %>"  value="<%=view.getCreuserid() %>"/>
+						<input type="hidden" id="dutyuseridhhh<%=view.getId() %>"  value="<%=view.getDutypersonid() %>"/>
 						<input type="hidden" id="handlehhh<%=view.getId() %>"  value="<%=view.getIshandle() %>"/>
 					</tr>
 					<%} %>

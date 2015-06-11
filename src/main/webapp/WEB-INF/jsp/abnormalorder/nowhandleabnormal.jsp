@@ -166,7 +166,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 				<%} 
 				else if(showabnomal.equals("0")) {%> --%>
 				<input type="submit" value="完成处理" class="button">
-				<input type="reset"   value="取消" class="button">
+				<input type="button" onclick="closeBox()"   value="取消" class="button">
 				<!-- <input type="button" value="完成处理" class="button" onclick="yichuli1();"> -->
 				<%-- <%} 
 				else  { %>

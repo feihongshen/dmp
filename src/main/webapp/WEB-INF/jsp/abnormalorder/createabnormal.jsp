@@ -93,6 +93,11 @@ function sub(){
 }
 function createabnormalData(){
 	var flag=true;
+	console.info($("#abnormalinfo").val().length);
+	if($("#abnormalinfo").val().length>100){
+		alert("问题件说明过长，请适当填写！！");
+		flag=false;
+	}
 	if($("#cwb").val()==""||$("#cwb").val()=="查询多个订单用回车隔开"){
 		alert("订单号不能为空！！");
 		flag=false;
@@ -127,6 +132,9 @@ function ajaxFileUpload()
             }else{
               $("#showMessage1").html(data.error);
             } */
+            $("#cwb").val("查询多个订单用回车隔开");
+            $("#abnormaltypeid").val(0);
+            $("#abnormalinfo").val("最多输入100个字");
             
         },  
         error: function (data, status, e)  
@@ -145,8 +153,8 @@ function ajaxFileUpload()
 		<div class="kfsh_tabbtn">
 			<ul>
 				<li><a href="#" class="light">创建问题件</a></li>
-				<li><a href="./tofindabnormal/1" class="light">问题件查询</a></li>
-			</ul>
+<!-- 				<li><a href="./tofindabnormal/1" class="light">问题件查询</a></li>
+ -->			</ul>
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0; " >
@@ -186,7 +194,7 @@ function ajaxFileUpload()
 								</tr>
 								<tr>
 								<td >
-								问题件说明:<textarea id="abnormalinfo" name="abnormalinfo" ></textarea><br>
+								问题件说明:<textarea id="abnormalinfo" name="abnormalinfo" onblur="if(this.value==''){this.value='最多输入100个字'}" onfocus="if(this.value=='最多输入100个字'){this.value=''}">最多输入100个字</textarea><br>
 								</td>
 								<td align="left">
 								上传附件:<input type="file" name="file" id="file"/>

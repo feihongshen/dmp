@@ -88,7 +88,7 @@ public class AbnormalOrderDAO {
 			obj.put("cwbordertypeid", rs.getLong("cwbordertypeid"));
 			obj.put("dutybrachid", rs.getLong("dutybrachid"));
 			obj.put("isfine", rs.getLong("isfine"));
-			obj.put("resultdealcontent", rs.getShort("resultdealcontent"));
+			obj.put("resultdealcontent", rs.getString("resultdealcontent"));
 			obj.put("questionno", rs.getString("questionno"));
 			obj.put("dutypersonid", rs.getLong("dutypersonid"));
 			obj.put("handleBranch", rs.getLong("handleBranch"));
@@ -561,7 +561,7 @@ public class AbnormalOrderDAO {
 			sql+=" AND `dealresult`="+dealresult;
 		}
 		if (losebackisornot>-1) {
-			sql+=" AND `losebackid`="+losebackisornot;
+			sql+=" AND `isfind`="+losebackisornot;
 		}
 		//sql += " AND `handleBranch` =" + handleBranch;
 		if (page!=-6) {
@@ -667,7 +667,7 @@ public class AbnormalOrderDAO {
 			sql+="  AND `dealresult`="+dealresult;
 		}
 		if (losebackisornot>0) {
-			sql+="   AND `losebackid`="+losebackisornot;
+			sql+="   AND `isfind`="+losebackisornot;
 		}
 		//站点类型
 		//sql += " AND `handleBranch` =" + handleBranch;
@@ -772,7 +772,7 @@ public class AbnormalOrderDAO {
 			sql+=" AND `dealresult`="+dealresult;
 		}
 		if (losebackisornot>-1) {
-			sql+=" AND `losebackid`="+losebackisornot;
+			sql+=" AND `isfind`="+losebackisornot;
 		}
 		//站点类型暂时不做任何限制
 		/*sql += " AND `handleBranch` = " + handleBranch;*/
@@ -889,7 +889,7 @@ public class AbnormalOrderDAO {
 			sql+="  AND `dealresult`="+dealresult;
 		}
 		if (losebackisornot>0) {
-			sql+="  AND `losebackid`="+losebackisornot;
+			sql+="  AND `isfind`="+losebackisornot;
 		}
 		
 		//sql += " AND `handleBranch` =" + handleBranch;

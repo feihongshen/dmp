@@ -28,7 +28,7 @@ String ids = request.getAttribute("ids")==null?"":request.getAttribute("ids").to
 			<div align="center">
 			<input type="hidden" id="ids" name="ids" value="<%=ids%>"/>
 				<input type="submit" value="处理" class="button">
-				<input type="reset" value="取消" class="button">
+				<input type="button" onclick="closeBox()" value="取消" class="button">
 				</div>
 		</form>
 	</div>

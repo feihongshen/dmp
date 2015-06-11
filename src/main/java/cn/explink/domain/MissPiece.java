@@ -12,7 +12,7 @@ public class MissPiece {
 	private long callbackbranchid;//找回机构
 	private String describeinfo;//描述
 	private String filepath;//上传的文件路径
-	private String state;//是否有效
+	private String state;//是否有效1.有效。0.无效
 	
 	public String getState() {
 		return state;

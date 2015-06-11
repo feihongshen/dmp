@@ -48,7 +48,7 @@ List<AbnormalType> abnormalTypeList = (List<AbnormalType>)request.getAttribute("
 			<div align="center">
 			<input type="hidden" id="ids" name="ids" value="<%=ids%>"/>
 				<input type="submit" value="修改问题件" class="button">
-				<input type="reset" value="取消" class="button">
+				<input type="button" onclick="closeBox()" value="取消" class="button">
 				</div>
 		</form>
 	</div>
