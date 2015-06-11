@@ -207,8 +207,8 @@ function clearMsg(){
 							</tr>
 							</table>
 						
-							<input type="hidden" id="isnow" name="isnow" value=""/>
-							<input type="button" value="确定" class="input_button2" onclick="checkParam();">&nbsp;<input type="button" value="重置 "  onclick="clearMsg();" class="input_button2" />
+							<input type="hidden" id="isnow" name="isnow" value="1"/>
+							<input type="button" value="查询" class="input_button2" onclick="checkParam();">&nbsp;<input type="button" value="重置 "  onclick="clearMsg();" class="input_button2" />
 						</form>
 					</div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
