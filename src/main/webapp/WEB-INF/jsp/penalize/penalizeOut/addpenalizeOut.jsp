@@ -54,7 +54,7 @@
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付说明<span style="color: red">*</span>：</td>
-            <td colspan="5"><textarea id="penalizeOutContent" name="penalizeOutContent" style="width: 100%;resize: none;" >最多100字</textarea></td>
+            <td colspan="5"><textarea  onfocus="if(this.value=='最多100字'){ this.value=''}" onblur="if(this.value==''){ this.value='最多100字'}"  id="penalizeOutContent" name="penalizeOutContent" style="width: 100%;resize: none;" >最多100字</textarea></td>
            </tr>
            <tr>
            <td colspan="6" align="right">

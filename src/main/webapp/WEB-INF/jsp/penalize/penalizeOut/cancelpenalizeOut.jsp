@@ -10,31 +10,31 @@
             <legend>
                 	撤销
             </legend>
-            <form action="" method="post">
+            <form onSubmit="submitCreateForm(this);return false;" action="${pageContext.request.contextPath}/penalizeOut/cancelpenalizeOutData"  method="post">
             <table style="width: 100%;">
             <tr>
             <td nowrap="nowrap" align="right">订单号<span style="color: red">*</span>：</td>
-            <td ><input id="cwb" name="cwb" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="cwb" name="cwb" value="${penalizeOut.cwb}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">订单状态：</td>
-            <td ><input id="flowordertype" name="flowordertype" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="flowordertype" value="${flowordertypeText}" readonly="readonly" name="flowordertype" type="text" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">客户名称：</td>
-            <td ><input id="customerid" name="customerid" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="customerid" name="customerid" value="${customername}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
             <td nowrap="nowrap" align="right">订单金额：</td>
-            <td ><input id="receivablefee" name="receivablefee" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="receivablefee" name="receivablefee" value="${penalizeOut.receivablefee}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">赔付大类<span style="color: red">*</span>：</td>
-            <td ><input id="penalizeOutbig" name="penalizeOutbig" style="width: 100%;border-style:none"/></td>
+            <td ><input id="penalizeOutbig"  name="penalizeOutbig" value="${penalizeOutbigStr}" readonly="readonly" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">赔付小类：</td>
-            <td ><input id="penalizeOutsmall" name="penalizeOutsamll" style="width: 100%;border-style:none"/></td>
+            <td ><input id="penalizeOutsmall" name="penalizeOutsamll" value="${penalizeOutsmallStr}" readonly="readonly" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
             <td nowrap="nowrap" align="right">赔付金额<span style="color: red">*</span>：</td>
-            <td colspan="5"><input id="penalizeOutfee" name="penalizeOutfee" type="text" style="width: 24.5%;border-style:none"/></td>
+            <td colspan="5"><input id="penalizeOutfee" name="penalizeOutfee"  value="${penalizeOut.penalizeOutfee}" readonly="readonly" type="text" style="width: 24.5%;border-style:none"/></td>
             </tr>
             <tr>
-            <td nowrap="nowrap" align="right">赔付说明<span style="color: red">*</span>：</td>
-            <td colspan="5"><textarea id="penalizeOutContent" name="penalizeOutContent" style="width: 100%;resize: none;" >最多100字</textarea></td>
+            <td nowrap="nowrap" align="right">撤销说明<span style="color: red">*</span>：</td>
+            <td colspan="5"><textarea  onfocus="if(this.value=='最多100字'){ this.value=''}" onblur="if(this.value==''){ this.value='最多100字'}"  id="cancelContent" name="cancelContent" style="width: 100%;resize: none;" >${penalizeOut.cancelContent==''?'最多100字':penalizeOut.cancelContent }</textarea></td>
            </tr>
            <tr>
            <td colspan="6" align="right">
@@ -42,6 +42,7 @@
            </td>
            </tr>
             </table>
+            <input type="hidden" name="penalizeOutId" value="${penalizeOut.penalizeOutId }"/>
             </form>
         </fieldset>
 	

@@ -10,28 +10,34 @@
             <legend>
                 	生成对内扣罚单
             </legend>
-            <form action="" method="post">
+            <form onSubmit="submitCreateForm(this);return false;" action="${pageContext.request.contextPath}/penalizeOut/addpenalizeInData"  method="post">
             <table style="width: 100%;">
             <tr>
             <td align="right" nowrap="nowrap">订单号：</td>
-            <td ><input id="cwb" name="cwb" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="cwb" type="text" value="${penalizeOut.cwb }" readonly="readonly" style="width: 100%;border-style:none"/></td>
             <td align="right" nowrap="nowrap">赔付大类：</td>
-            <td ><input id="penalizeOutbig" name="penalizeOutbig" style="width: 100%;border-style:none"/></td>
+            <td >
+            <input id="penalizeOutbigstr"  type="text"  readonly="readonly"  value="${penalizeOutbigStr}" style="width: 100%;border-style:none"/>
+            </td>
             <td align="right" nowrap="nowrap">赔付小类：</td>
-            <td ><input id="penalizeOutsmall" name="penalizeOutsamll" style="width: 100%;border-style:none"/></td>
+            <td >
+            <input id="penalizeOutsmallstr" type="text" readonly="readonly" value="${penalizeOutsmallStr}"" style="width: 100%;border-style:none"/>
+            </td>
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">订单状态：</td>
-            <td ><input id="flowordertype" name="flowordertype" type="text" style="width: 100%;border-style:none"/></td>
+            <td >
+            <input id="flowordertype" type="text" readonly="readonly" value="${flowordertypeText}" type="text" style="width: 100%;border-style:none"/>
+            </td>
             <td align="right" nowrap="nowrap">订单金额：</td>
-            <td ><input id="receivablefee" name="receivablefee" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="receivablefee" readonly="readonly"  value="${penalizeOut.receivablefee}" type="text" style="width: 100%;border-style:none"/></td>
         	<td align="right" nowrap="nowrap">赔付金额：</td>
-            <td ><input id="penalizeOutfee" name="penalizeOutfee" type="text" style="width: 24.5%;border-style:none"/></td>
+            <td ><input id="penalizeOutfee" readonly="readonly"  value="${penalizeOut.penalizeOutfee}" type="text" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">责任机构<span style="color: red">*</span>：</td>
             <td >
-            <select id="branchid" name="branchid" style="width: 100%;">
+            <select id="dutybranchid" name="dutybranchid" style="width: 100%;">
             <option value="0">请选择</option>
             <c:forEach items="${branchList}" var="branch">
             <option value="${branch.branchid }">${branch.branchname }</option>
@@ -39,18 +45,19 @@
             </select>
             </td>
             <td align="right" nowrap="nowrap">责任人：</td>
-            <td > <input type="text" style="width: 100%;"/></td>
+            <td > <input type="text" style="width: 100%;" name="dutypersonname"/></td>
            	</tr>
           	<tr>
            	<td align="right" nowrap="nowrap">扣罚金额<span style="color: red">*</span>：</td>
-            <td ><input  type="text" style="width: 100%;"/></td>
+            <td ><input  type="text" name="punishInsideprice" style="width: 100%;"/></td>
           	</tr>
             <tr>
             <td align="right" nowrap="nowrap">扣罚说明：</td>
-            <td colspan="5"><textarea  style="width: 100%;resize: none;" >最多100字</textarea></td>
+            <td colspan="5"><textarea name="punishdescribe" style="width: 100%;resize: none;" onfocus="if(this.value=='最多100字'){ this.value=''}" onblur="if(this.value==''){ this.value='最多100字'}" >最多100字</textarea></td>
            </tr>
            <tr>
            <td colspan="6" align="right">
+            <input type="hidden" name="penalizeOutId" value="${penalizeOut.penalizeOutId }"/>
          <input type="submit" class="input_button2" value="提交"/> <input class="input_button2" type="button" value="取消" onclick="closeBox()"/>
            </td>
            </tr>
@@ -61,4 +68,4 @@
 	</div>
 </div>
 <div id="box_yy"></div>
-<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}/penalizeOut/add" />
+<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />

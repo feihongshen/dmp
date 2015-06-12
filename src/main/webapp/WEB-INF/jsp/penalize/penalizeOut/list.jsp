@@ -44,16 +44,24 @@ $(function() {
 		getAddBox();
 	});
 	$("#addpenalizeIn").click(function() {
-		$("#add").val('${pageContext.request.contextPath}/penalizeOut/addpenalizeIn');
+		$("#add").val('${pageContext.request.contextPath}/penalizeOut/addpenalizeIn/'+$('input:radio:checked').val());
 		getAddBox();
 	});
 	$("#cancelpenalizeOut").click(function() {
-		$("#add").val('${pageContext.request.contextPath}/penalizeOut/cancelpenalizeOut');
+		$("#add").val('${pageContext.request.contextPath}/penalizeOut/cancelpenalizeOut/'+$('input:radio:checked').val());
 		getAddBox();
 	});
 
 	
 });
+function checkRdio()
+{
+	var list= $('input:radio:checked').val();
+    if(list!=null){
+    	$("#cancelpenalizeOut").removeAttr('disabled');
+        $("#addpenalizeIn").removeAttr('disabled');
+    }
+}
 function addInit(){
 	//无处理
 }
@@ -83,9 +91,7 @@ $.ajax({
 		}
 	}});
 }
-function sub(){
-	
-}
+
 function check(){
 	var len=$.trim($("#cwbs").val()).length;
  	if(len>0)
@@ -135,6 +141,9 @@ function Days(){
 	}        
 	return true;
 }
+function exportExcel(){
+	$("#exportExcel").submit();
+}
 </script>
 </head>
 
@@ -150,7 +159,7 @@ function Days(){
 <td width="7%" align="right">客户名称： </td>
 <td width="13%" >
 <select style="width: 100%" name="customerid" id="customerid">
-<option  value="0">全部</option>
+<option  value="0">请选择</option>
 		  <c:forEach items="${customerList}" var="cus">
              <option value="${cus.customerid}" ${cus.customerid==customerid?'selected=selected':'' }>${cus.customername}</option>
        </c:forEach>
@@ -206,13 +215,17 @@ function Days(){
 </tr>
 <tr>
 <td><input type="button" class="input_button2" id="addpenalizeOut" value="创建"/> </td>
-<td><input type="button" class="input_button2" value="导入"/> <input class="input_button2" type="button" value="生成扣罚单" id="addpenalizeIn"/> </td>
-<td><input type="button" class="input_button2" id="cancelpenalizeOut" value="撤销"/></td>
+<td><input type="button" class="input_button2" value="导入"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
+<td><input type="button" class="input_button2" disabled="disabled" id="cancelpenalizeOut" value="撤销"/></td>
 <td> </td>
 <td> </td>
 <td> </td>
 <td> </td>
-<td colspan="2"> <input class="input_button2" type="button" onclick="check()" value="查询"/><input class="input_button2" type="button" value="重置"/><input class="input_button2" type="button"  ${page_obj.total>0?'':'disabled="disabled"' } value="导出"/>  </td>
+<td colspan="2"> 
+<input class="input_button2" type="button" onclick="check()" value="查询"/>
+<input class="input_button2" type="button" onclick="javascript:window.location.href='${pageContext.request.contextPath}/penalizeOut/list/1'" value="重置" />
+<input class="input_button2" type="button" onclick="exportExcel()"  ${page_obj.total>0?'':'disabled="disabled"' } value="导出"/>  
+</td>
 </tr>
  </table>
 	<input name="isnow" value="1" type="hidden"/>
@@ -225,7 +238,7 @@ function Days(){
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
-	<td height="30px"  valign="middle"><input type="checkbox"/> </td>
+	<td height="30px"  valign="middle"> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 订单号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 客户名称 </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 订单状态</td>
@@ -241,7 +254,7 @@ function Days(){
 	</tr>
 	<c:forEach items="${penalizeOutList}" var="out">
 	<tr>
-	<td height="30px"  valign="middle"><input type="checkbox"/> </td>
+	<td height="30px"  valign="middle"><input type="radio" name="penalizeOutId" onclick="checkRdio()" id="penalizeOutId" value="${out.penalizeOutId}"/> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> ${out.cwb}</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 
 	<c:forEach items="${customerList}" var="customer">
@@ -324,6 +337,16 @@ function Days(){
 	</table>
 	</div>
 	</c:if>
+	<form action="${pageContext.request.contextPath}/penalizeOut/exportExcel" method="post" id="exportExcel">
+	<input type="hidden" name="cwbs" value="${cwbstr}"/>
+	<input type="hidden" name="cutomeird" value="${customerid }"/>
+	<input type="hidden" name="flowordertype" value="${flowordertype }"/>
+	<input type="hidden" name="penalizeOutbig" value="${penalizeOutbig }"/>
+	<input type="hidden" name="penalizeOutsmall" value="${penalizeOutsmall }"/>
+	<input type="hidden" name="penalizeState" value="${penalizeState }"/>
+	<input type="hidden" name="starttime" value="${starttime}"/>
+	<input type="hidden" name="endtime" value="${endtime}"/>
+	 </form>
 </body>
 </html>
 
