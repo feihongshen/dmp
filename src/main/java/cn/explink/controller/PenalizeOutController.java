@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -20,17 +22,22 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PenalizeOutDAO;
 import cn.explink.dao.PenalizeTypeDAO;
+import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeOut;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
+import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.PenalizeOutService;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
 @Controller
@@ -51,6 +58,10 @@ public class PenalizeOutController {
 	PenalizeTypeDAO penalizeTypeDAO;
 	@Autowired
 	PenalizeOutDAO penalizeOutDAO;
+	@Autowired
+	PunishInsideDao punishInsideDao;
+	@Autowired
+	PenalizeOutService penalizeOutService;
 
 	//private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private User getSessionUser() {
@@ -127,15 +138,84 @@ public class PenalizeOutController {
 		model.addAttribute("penalizesmallList", penalizesmallList);
 		return "/penalize/penalizeOut/addpenalizeOut";
 	}
-	@RequestMapping("/cancelpenalizeOut")
-	public String cancelpenalizeOut(Model model) throws Exception {
-
+	@RequestMapping("/cancelpenalizeOut/{id}")
+	public String cancelpenalizeOut(@PathVariable("id") int penalizeOutId ,Model model) throws Exception {
+		PenalizeOut penalizeOut=this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
+		List<Customer>  customerList= this.customerDAO.getAllCustomers();
+		List<PenalizeType> penalizeTypeList=this.penalizeTypeDAO.getAllPenalizeType();
+		String penalizeOutbigStr="";
+		String penalizeOutsmallStr="";
+		String customername="";
+		String flowordertypeText="";
+		for (PenalizeType pType : penalizeTypeList) {
+			if (pType.getId() == penalizeOut.getPenalizeOutbig()) {
+				penalizeOutbigStr = pType.getText();
+			}
+			if (pType.getId() == penalizeOut.getPenalizeOutsmall()) {
+				penalizeOutsmallStr = pType.getText();
+			}
+		}
+		for(Customer cus:customerList)
+		{
+			if(cus.getCustomerid()==penalizeOut.getCustomerid())
+			{
+				customername=cus.getCustomername();
+			}
+		}
+		for(FlowOrderTypeEnum flow:FlowOrderTypeEnum.values())
+		{
+			if(flow.getValue()==penalizeOut.getFlowordertype())
+			{
+				flowordertypeText=flow.getText();
+			}
+		}
+		model.addAttribute("penalizeOutbigStr",penalizeOutbigStr);
+		model.addAttribute("penalizeOutsmallStr", penalizeOutsmallStr);
+		model.addAttribute("customername", customername);
+		model.addAttribute("flowordertypeText", flowordertypeText);
+		model.addAttribute("penalizeOut", penalizeOut);
 		return "/penalize/penalizeOut/cancelpenalizeOut";
 	}
-	@RequestMapping("/addpenalizeIn")
-	public String addpenalizeIn(Model model) throws Exception {
+	@RequestMapping("/addpenalizeIn/{id}")
+	public String addpenalizeIn(@PathVariable("id") int penalizeOutId ,Model model) throws Exception {
 		List<Branch> branchList=this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue()+","+BranchEnum.KeFu.getValue());
+		PenalizeOut penalizeOut=this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
+		List<Customer>  customerList= this.customerDAO.getAllCustomers();
+		List<PenalizeType> penalizeTypeList=this.penalizeTypeDAO.getAllPenalizeType();
+		String penalizeOutbigStr="";
+		String penalizeOutsmallStr="";
+		String customername="";
+		String flowordertypeText="";
+		for (PenalizeType pType : penalizeTypeList) {
+			if (pType.getId() == penalizeOut.getPenalizeOutbig()) {
+				penalizeOutbigStr = pType.getText();
+			}
+			if (pType.getId() == penalizeOut.getPenalizeOutsmall()) {
+				penalizeOutsmallStr = pType.getText();
+			}
+		}
+		for(Customer cus:customerList)
+		{
+			if(cus.getCustomerid()==penalizeOut.getCustomerid())
+			{
+				customername=cus.getCustomername();
+			}
+		}
+		for(FlowOrderTypeEnum flow:FlowOrderTypeEnum.values())
+		{
+			if(flow.getValue()==penalizeOut.getFlowordertype())
+			{
+				flowordertypeText=flow.getText();
+			}
+		}
+		model.addAttribute("penalizeOutbigStr",penalizeOutbigStr);
+		model.addAttribute("penalizeOutsmallStr", penalizeOutsmallStr);
+		model.addAttribute("customername", customername);
+		model.addAttribute("flowordertypeText", flowordertypeText);
+		model.addAttribute("penalizeOut", penalizeOut);
 		model.addAttribute("branchList", branchList);
+
+
 		return "/penalize/penalizeOut/addpenalizeIn";
 	}
 	@RequestMapping("/initaddpenalizeOut")
@@ -193,4 +273,82 @@ public class PenalizeOutController {
 		}
 		return "";
 	}
+	@RequestMapping("/addpenalizeInData")
+	public @ResponseBody String  addpenalizeInData(
+			@RequestParam(value = "penalizeOutId", required = false, defaultValue = "0") int penalizeOutId,
+			@RequestParam(value = "dutybranchid", required = false, defaultValue = "") int dutybranchid,
+			@RequestParam(value = "punishdescribe", required = false, defaultValue = "") String punishdescribe,
+			@RequestParam(value = "punishInsideprice", required = false, defaultValue = "0") BigDecimal punishInsideprice,
+			@RequestParam(value = "dutypersonname", required = false, defaultValue = "0") String dutypersonname,
+			 Model model) throws Exception {
+		PenalizeOut out=this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
+		if (out != null) {
+			User user=null;
+			PenalizeInside penalizeInside=new PenalizeInside();
+			if((dutypersonname!=null)&&(dutypersonname.trim().length()>0)) {
+				user=this.userDAO.getUsersByRealnameAndBranchid(dutypersonname.trim(), dutybranchid);
+				if(user!=null){
+					penalizeInside.setDutypersonid(user.getUserid());
+				}
+				else{
+					return "{\"errorCode\":1,\"error\":\"创建对内扣罚失败！责任人不存在,或已离职\"}";
+				}
+			}
+			penalizeInside.setCwb(out.getCwb());
+			penalizeInside.setCreateBySource(1);
+			penalizeInside.setSourceNo(out.getCwb());
+			penalizeInside.setDutybranchid(dutybranchid);
+			penalizeInside.setCwbstate(out.getFlowordertype());
+			penalizeInside.setCwbPrice(out.getReceivablefee());
+			penalizeInside.setPunishInsideprice(punishInsideprice);
+			penalizeInside.setPunishbigsort(out.getPenalizeOutbig());
+			penalizeInside.setPunishsmallsort(out.getPenalizeOutsmall());
+			penalizeInside.setCreateuserid(this.getSessionUser().getUsercustomerid());
+			penalizeInside.setPunishdescribe(punishdescribe);
+			penalizeInside.setPunishcwbstate(PunishInsideStateEnum.chuangjian.getValue());
+			penalizeInside.setCreDate(DateTimeUtil.getNowTime());
+			try {
+			List<PenalizeInside> sInsideList=this.punishInsideDao.getPenalizeInsideIsNull(out.getCwb(), dutybranchid, out.getPenalizeOutsmall());
+				if ((sInsideList != null)&&(sInsideList.size()>0)) {
+					return "{\"errorCode\":1,\"error\":\"对内扣罚创建失败！ 对内扣罚已经创建\"}";
+				} else {
+
+					this.punishInsideDao.createPunishInside(penalizeInside);
+					return "{\"errorCode\":0,\"error\":\"创建对内扣罚成功！\"}";
+				}
+			} catch (Exception e) {
+				return "{\"errorCode\":1,\"error\":\"创建对内扣罚失败！\"}";
+			}
+		}
+
+		 return "{\"errorCode\":1,\"error\":\"创建对内扣罚失败！\"}";
+	}
+	@RequestMapping("/cancelpenalizeOutData")
+	public @ResponseBody String  cancelpenalizeOutData(
+			@RequestParam(value = "cancelContent", required = false, defaultValue = "") String cancelContent,
+			@RequestParam(value = "penalizeOutId", required = false, defaultValue = "0") int penalizeOutId,
+			Model model) throws Exception {
+		if(penalizeOutId>0){
+			int  couns=this.penalizeOutDAO.cancelpenalizeOutDataById(penalizeOutId,PenalizeSateEnum.Cancel.getValue(),cancelContent);
+			if(couns>0)
+			{
+				return "{\"errorCode\":0,\"error\":\"撤销对外赔付成功！\"}";
+			}
+		}
+		return "{\"errorCode\":1,\"error\":\"撤销对外赔付失败！\"}";
+	}
+	@RequestMapping("/exportExcel")
+	public void exportExcle(HttpServletResponse response,
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+			@RequestParam(value = "penalizeOutbig", required = false, defaultValue = "0") int penalizeOutbig,
+			@RequestParam(value = "penalizeOutsmall", required = false, defaultValue = "0") int penalizeOutsmall,
+			@RequestParam(value = "penalizeState", required = false, defaultValue = "0") int penalizeState,
+			@RequestParam(value = "flowordertype", required = false, defaultValue = "0") long flowordertype,
+			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime,
+			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+
+		this.penalizeOutService.exportExcels(response, cwbs, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, flowordertype, starttime, endtime);
+	}
+
 }

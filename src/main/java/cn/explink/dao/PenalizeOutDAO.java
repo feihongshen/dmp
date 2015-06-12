@@ -46,10 +46,10 @@ public class PenalizeOutDAO {
 			out.setPenalizeOutfee(rs.getBigDecimal("penalizeOutfee"));
 			out.setPenalizeOutbig(rs.getInt("penalizeOutbig"));
 			out.setPenalizeOutsmall(rs.getInt("penalizeOutsmall"));
-			out.setPenalizeOutContent(rs.getString("penalizeOutContent"));
+			out.setPenalizeOutContent(StringUtil.nullConvertToEmptyString(rs.getString("penalizeOutContent")));
 			out.setCanceluser(rs.getInt("canceluser"));
 			out.setCanceldate(this.getTime(rs.getString("canceldate")));
-			out.setCancelContent(rs.getString("cancelContent"));
+			out.setCancelContent(StringUtil.nullConvertToEmptyString(rs.getString("cancelContent")));
 			out.setCreateruser(rs.getInt("createruser"));
 			out.setCreaterdate(this.getTime(rs.getString("createrdate")));
 			out.setPenalizeOutstate(rs.getInt("penalizeOutstate"));
@@ -161,6 +161,18 @@ public class PenalizeOutDAO {
 			return null;
 		}
 	}
+	/**
+	 * @param penalizeOutId
+	 * @return
+	 */
+	public PenalizeOut getPenalizeOutByPenalizeOutId(int penalizeOutId) {
+		try {
+			String sql = "select * from express_ops_penalizeOut_detail where penalizeOutId =?  and state=1 limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(),penalizeOutId);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public String creConditions(String cwbs, long flowordertype, long customerid, int penalizeOutbig, int penalizeOutsmall, int penalizeState, String starttime, String endtime) {
 		String sql = "";
@@ -187,4 +199,22 @@ public class PenalizeOutDAO {
 		}
 		return sql;
 	}
+
+	/**
+	 * @param penalizeOutId
+	 * @param cancelContent
+	 */
+	public int cancelpenalizeOutDataById(int penalizeOutId,int penalizeOutState, String cancelContent) {
+		try{
+			String  sql=" update express_ops_penalizeOut_detail set cancelContent=?,penalizeOutState=? where penalizeOutId=? ";
+			return this.jdbcTemplate.update(sql,cancelContent,penalizeOutState,penalizeOutId);
+		}
+	catch(Exception e)
+	{
+		return 0;
+	}
+
+	}
+
+
 }

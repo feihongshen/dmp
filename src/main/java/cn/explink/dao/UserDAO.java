@@ -116,6 +116,7 @@ public class UserDAO {
 			return new User();
 		}
 	}
+
 	public User getUserByidAdd(long userid) {
 		try {
 			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where userid=?", new UserRowMapper(), userid);
@@ -212,10 +213,10 @@ public class UserDAO {
 		}
 		return sql;
 	}
-	
-	public List<User> findDeliveryManinfoBybranchid(int branchid){
-		String sql="select * from express_set_user where branchid=?";
-		return this.jdbcTemplate.query(sql,new UserRowMapper(),branchid);
+
+	public List<User> findDeliveryManinfoBybranchid(int branchid) {
+		String sql = "select * from express_set_user where branchid=?";
+		return this.jdbcTemplate.query(sql, new UserRowMapper(), branchid);
 	}
 
 	public void creUser(final User user) {
@@ -478,7 +479,6 @@ public class UserDAO {
 
 	}
 
-
 	public Map<Long, String> getAllDeliverMap() {
 		String sql = "select userid , realname from express_set_user where roleid in (2 , 4)";
 		final Map<Long, String> deliverMap = new HashMap<Long, String>();
@@ -503,7 +503,7 @@ public class UserDAO {
 
 	/**
 	 * 修改用户编码
-	 * 
+	 *
 	 * @param user
 	 */
 	@CacheEvict(value = "userCache", key = "#userid")
@@ -514,7 +514,7 @@ public class UserDAO {
 
 	/**
 	 * 获得用户信息，并锁住用户表的行
-	 * 
+	 *
 	 * @param userid
 	 * @return
 	 */
@@ -524,7 +524,7 @@ public class UserDAO {
 
 	/**
 	 * 修改小件员帐户余额
-	 * 
+	 *
 	 * @param userid
 	 * @param deliverAccount
 	 * @param deliverPosAccount
@@ -537,7 +537,7 @@ public class UserDAO {
 
 	/**
 	 * 小件员帐户列表
-	 * 
+	 *
 	 * @param page
 	 * @param branchid
 	 * @param realname
@@ -574,7 +574,7 @@ public class UserDAO {
 
 	/**
 	 * 小件员帐户列表
-	 * 
+	 *
 	 * @param page
 	 * @param branchid
 	 * @param realname
@@ -636,7 +636,7 @@ public class UserDAO {
 
 	/**
 	 * 存储 用户的最近登录信息
-	 * 
+	 *
 	 * @param user
 	 */
 
@@ -647,7 +647,7 @@ public class UserDAO {
 
 	/**
 	 * 根据userids 得到所有用户
-	 * 
+	 *
 	 * @param useridsStr
 	 * @return
 	 */
@@ -657,7 +657,7 @@ public class UserDAO {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sosString
 	 * @param branchid
 	 * @param roleid
@@ -698,7 +698,7 @@ public class UserDAO {
 
 	/**
 	 * 用于分页
-	 * 
+	 *
 	 * @param sosString
 	 * @param branchid
 	 * @param roleid
@@ -713,7 +713,7 @@ public class UserDAO {
 
 	/**
 	 * 根据用户的状态 查询 工作 离职 休假
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -723,7 +723,7 @@ public class UserDAO {
 
 	/**
 	 * 通讯录 导出
-	 * 
+	 *
 	 * @param sosString
 	 * @param branchid
 	 * @param roleid
@@ -738,7 +738,7 @@ public class UserDAO {
 
 	/**
 	 * 得到全部 user
-	 * 
+	 *
 	 * @return
 	 */
 	public List<User> getUserForALL() {
@@ -860,5 +860,19 @@ public class UserDAO {
 	public List<User> getUsersByUsernameToUpper(String username) {
 		List<User> userList = this.jdbcTemplate.query("SELECT * from express_set_user where  UPPER(username)=? and userDeleteFlag=1", new UserRowMapper(), username.toUpperCase());
 		return userList;
+	}
+
+	/**
+	 * @param dutypersonname
+	 * @param dutybranchid
+	 * @return
+	 */
+	public User getUsersByRealnameAndBranchid(String dutypersonname, int dutybranchid) {
+		try {
+			String sql = "SELECT * from express_set_user where realname=? and branchid=? and userDeleteFlag=1 limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), dutypersonname, dutybranchid);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

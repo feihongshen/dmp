@@ -40,7 +40,7 @@ public class PunishInsideDao {
 			penalizeInside.setSourceNo(rs.getString("sourceNo"));;
 			return penalizeInside;
 		}
-		
+
 	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -66,7 +66,7 @@ public class PunishInsideDao {
 				ps.setLong(14, penalizeInside.getPunishcwbstate());
 				ps.setString(15, penalizeInside.getPunishdescribe());
 				ps.setString(16, penalizeInside.getFileposition());
-				
+
 			}
 		});
 	}
@@ -109,6 +109,22 @@ public class PunishInsideDao {
 			sql += " ORDER BY creDate DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
 		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
-		
+
+	}
+	public List<PenalizeInside> getPenalizeInsideIsNull(String cwb,long dutybranchid,long punishsmallsort){
+		String sql="select * from express_ops_punishInside_detail where 1=1";
+		if (cwb.length()>0) {
+			sql+=" And cwb ='"+cwb+"'";
+		}
+
+		if (dutybranchid>0) {
+			sql+=" And dutybranchid="+dutybranchid;
+		}
+
+		if (punishsmallsort>0) {
+			sql+=" And punishsmallsort="+punishsmallsort;
+		}
+		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
+
 	}
 }

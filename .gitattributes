@@ -1526,6 +1526,7 @@ src/main/java/cn/explink/service/OrderPartGoodsReturnService.java -text
 src/main/java/cn/explink/service/OrgBillAdjustmentRecordService.java -text
 src/main/java/cn/explink/service/ParameterDetailService.java -text
 src/main/java/cn/explink/service/PayUpService.java -text
+src/main/java/cn/explink/service/PenalizeOutService.java -text
 src/main/java/cn/explink/service/PosPayMoneyService.java -text
 src/main/java/cn/explink/service/ResultCollector.java -text
 src/main/java/cn/explink/service/ResultCollectorManager.java -text

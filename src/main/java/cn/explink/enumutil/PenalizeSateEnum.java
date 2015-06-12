@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public enum PenalizeSateEnum {
 	Successful(1, "赔付成立"),
-	Cancel(2, "赔付成立");
+	Cancel(2, "赔付撤销");
 	private int value;
 	private String text;
 	static Map<Integer, PenalizeSateEnum> bigMap=new HashMap<Integer, PenalizeSateEnum>();

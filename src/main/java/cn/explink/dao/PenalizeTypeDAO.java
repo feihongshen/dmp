@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeType;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 /**
  * @author Administrator
@@ -37,7 +38,7 @@ public class PenalizeTypeDAO {
 		public PenalizeType mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PenalizeType type = new PenalizeType();
 			type.setId(rs.getInt("id"));
-			type.setText(rs.getString("text"));
+			type.setText(StringUtil.nullConvertToEmptyString(rs.getString("text")));
 			type.setType(rs.getInt("type"));
 			type.setParent(rs.getInt("parent"));
 			type.setState(rs.getInt("state"));
@@ -167,6 +168,18 @@ public class PenalizeTypeDAO {
 		String sql = "select * from express_set_penalizeType where text=? and id<>? limit 1 ";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PenalizeTypeRowMapper(), text, id);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public List<PenalizeType> getAllPenalizeType() {
+		String sql = "select * from express_set_penalizeType where  state=1 ";
+		try {
+			return this.jdbcTemplate.query(sql, new PenalizeTypeRowMapper());
 		} catch (Exception e) {
 			return null;
 		}
