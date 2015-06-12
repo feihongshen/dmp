@@ -61,8 +61,15 @@ public class CsComplaintAcceptVO {
 			private String showComplaintStateName;
 			private String showcomplaintTypeName;
 			private String city;
+			private int cuijianNum;
 			
 			
+			public int getCuijianNum() {
+				return cuijianNum;
+			}
+			public void setCuijianNum(int cuijianNum) {
+				this.cuijianNum = cuijianNum;
+			}
 			public String getCity() {
 				return city;
 			}

@@ -22,9 +22,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>客服结案</h1>		
+		<h1><div id="close_box" onclick="closeBox()"></div>客服结案</h1>		<%-- action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" --%>
 	
-			<form action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" id="ChangeComplaintStateF">
+			<form  id="CustomerServiceChangeComplaintStateF" enctype="multipart/form-data" method="post"  action="<%=request.getContextPath()%>/workorder/JieAnChangeComplaintStateFile;jsessionid=<%=session.getId()%>" onsubmit="if(jieanremarkV()){submitJieAn(this);} return false;">
 				<div id="box_form">
 				<ul>
 					<li>
@@ -71,11 +71,11 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
 						<span>核实人:</span><%=cca.getHeshiUser()%>
-						<span>附件</span>
+						<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件</a></span>
 					</li>
 					<li>
 							<span>处理结果:</span>
-							<select class="select1" name="complaintResult">
+							<select class="select1" name="complaintResult" id="acceptresult" onblur="decideV()">
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								
@@ -83,23 +83,30 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 							<label>备注*:</label>									
-								<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanremark"></textarea>																	
+								<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanremark" id="jieanremark"></textarea>																	
 					</li>
 					<li>
 					
-					</li>
-				<input type="hidden" value="" name="complaintState" id="AlreadyVerifycomplaintState" />
-				<input type="hidden" value="<%=cca.getId()%>" name="id" />
-				<input type="hidden" value="<%=cca.getJieanTime()%>" name="jieanTime">
-				<input type="hidden" value="<%=cca.getJieanUser()%>" name="jieanUser">
+				</li>
+						<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" name="complaintState" id="complaintState" />
+						<input type="hidden" value="<%=cca.getId()%>" name="id" id="id"/>
+						<%-- <input type="hidden" value="<%=cca.getJieanTime()%>" name="jieanTime">
+						<input type="hidden" value="<%=cca.getJieanUser()%>" name="jieanUser"> --%>
 				</ul>
+				 <table>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 <iframe id="update" name="update" src="workorder/update?fromAction=CustomerServiceChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
+					 </iframe> </td></tr>
+					 </table>
 				
 			</div>
-			</form>			
+						
 				<div align="center">
-						<input type="button" value="结案" class="button" onclick="AlreadyVerify('<%=ComplaintStateEnum.YiJieAn.getValue()%>')"/>
-						<input type="button" value="取消" class="button" onclick="closeBox()"/>
-				</div>			 
+						<input type="submit" value="结案" class="button" <%-- onclick="AlreadyVerifyJieAn('<%=ComplaintStateEnum.YiJieAn.getValue()%>')" --%>/>						
+				</div>		
+				<input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="acceptresultV">	
+				<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="acceptresultVl"> 
 	</div>
+		</form>
 </div>
 <div id="box_yy"></div>

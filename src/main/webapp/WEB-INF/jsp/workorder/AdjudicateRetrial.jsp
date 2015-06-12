@@ -25,7 +25,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>结案重审</h1>		
 			
-			<form action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" id="ChangeComplaintStateF">	
+			<form id="JieAnChongShenChangeComplaintStateF" enctype="multipart/form-data" method="post" onsubmit="if(JieAnChongShen())submitJieAnChongShen(this);return false;" action="<%=request.getContextPath()%>/workorder/JieAnChongShenChangeComplaintStateFile;jsessionid=<%=session.getId()%>" >	
 				<div id="box_form">
 					<ul>
 					<li>
@@ -103,18 +103,24 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 <hr>			
 				<div>					
 					<span>结案重审备注:</span>				
-					<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark"></textarea>
-					<input type="hidden" name="complaintState" id="AlreadyVerifycomplaintState" />
-					<input type="hidden" value="<%=cca.getId()%>" name="id" />
-					<input type="hidden" value="<%=cca.getChongshenUser()%>" name="chongshenUser" />
-					<input type="hidden" value="<%=cca.getJieanchongshenTime()%>" name="jieanchongshenTime" />																				
+					<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark" id="jieanchongshenremark"></textarea>
+					<input type="hidden" name="complaintState" id="complaintState" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
+					<input type="hidden" value="<%=cca.getId()%>" name="id" id="id"/>
+																								
 				</div> 	
+				
+					<table>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传文件：</span>
+					 <iframe id="update" name="update" src="workorder/update?fromAction=JieAnChongShenChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
+					 </iframe> </td></tr>
+					 </table>
 			</div> 	
-		</form>				
+					
 		
-				<div align="center"><font color="red"><input type="button" value="结案重审" class="button" onclick="AlreadyVerify('<%=ComplaintStateEnum.YiJieShu.getValue()%>')"/></font>
-			 						<input type="button" value="取消" class="button" onclick="closeBox()"/>
+				<div align="center"><font color="red"><input type="submit" value="结案重审" class="button" <%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.YiJieShu.getValue()%>')" --%>/></font>
+			 					
 			 	</div>
-	</div>
+		</div>
+	</form>	
 </div>
 <div id="box_yy"></div>

@@ -24,7 +24,7 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>机构核实</h1>		
 		
-			<form action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" id="ChangeComplaintStateF">
+			<form enctype="multipart/form-data" id="ChangeComplaintStateF" name="ChangeComplaintStateF" onsubmit="if(heshiremarkV()){submitHeShi(this);} return false;"  method="post"  action="<%=request.getContextPath()%>/workorder/HeshiChangeComplaintStateFile;jsessionid=<%=session.getId()%>">
 			<div id="box_form">
 				<ul>
 					<li>
@@ -64,19 +64,27 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					</li>
 					<li>
 						核实内容*:				
-						<textarea style="width: 60%;height: 118px;margin-left: 60px" name="remark"></textarea>																	
+						<textarea style="width: 60%;height: 118px;margin-left: 60px" name="remark" id="remark"></textarea>																	
 					</li>
-						<input type="hidden" value="" name="complaintState" id="AlreadyVerifycomplaintState">
-						<input type="hidden" value="<%=cca.getId()%>" name="id">
-						<input type="hidden" value="<%=cca.getHeshiTime()%>" name="heshiTime">
-						<input type="hidden" value="<%=cca.getHeshiUser()%>" name="heshiUser">
+						<input type="hidden" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>" name="complaintState" id="complaintState">
+						<input type="hidden" value="<%=cca.getId()%>" name="id" id="id">
+						
+						<%-- <input type="hidden" value="<%=cca.getHeshiTime()%>" name="heshiTime">
+						<input type="hidden" value="<%=cca.getHeshiUser()%>" name="heshiUser"> --%>
+					   
+					 </ul> 
+					 <table>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 <iframe id="update" name="update" src="workorder/update?fromAction=ChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
+					 </iframe> </td></tr>
+					 </table>
 			</div>
-		</form>			
-			
-				<div align="center">
-				 	<input type="button" value="核实提交" class="button" onclick="AlreadyVerify('<%=ComplaintStateEnum.YiHeShi.getValue()%>')"/>
-				 	<input type="button" value="取消" class="button" onclick="closeBox()"/>
-				 </div>	 
-	</div>			
+					<div align="center" >
+				 	<input type="submit" value="核实提交" class="button" <%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.YiHeShi.getValue()%>')" --%>/>
+				 <!-- 	<input type="button" value="取消" class="button" onclick="closeBox()"/> -->
+				 </div>	 	
+		</div>	
+		
+	</form>	
 </div>
 <div id="box_yy"></div>

@@ -23,7 +23,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>机构申诉</h1>				
-			<form action="<%=request.getContextPath()%>/workorder/ChangeComplaintState" id="ChangeComplaintStateF">
+			<form id="ShenSuChangeComplaintStateF" enctype="multipart/form-data" method="post" onsubmit="if(IfShenSu())submitShenSu(this);return false;" action="<%=request.getContextPath()%>/workorder/ShenSuChangeComplaintStateFile;jsessionid=<%=session.getId()%>" >
 				<div id="box_form">
 			<ul>
 					<li>
@@ -85,19 +85,26 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<label>申诉内容*:</label>					
-						<textarea style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark"></textarea>																	
+						<textarea style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark" id="shensuremark"></textarea>																	
 					</li>
-				<input type="hidden" value="" name="complaintState" id="AlreadyVerifycomplaintState">
-				<input type="hidden" value="<%=cca.getId()%>" name="id">
-				<input type="hidden" value="<%=cca.getComplaintTime()%>" name="complaintTime">
-				<input type="hidden" value="<%=cca.getShensuUser()%>" name="shensuUser">
+					
+				<input type="hidden" value="<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>" name="complaintState" id="complaintState">
+				<input type="hidden" value="<%=cca.getId()%>" name="id" id="id">
+				<%-- <input type="hidden" value="<%=cca.getComplaintTime()%>" name="complaintTime">
+				<input type="hidden" value="<%=cca.getShensuUser()%>" name="shensuUser"> --%>
 			</div>	
-		</form>			
+			 		<table>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 <iframe id="update" name="update" src="workorder/update?fromAction=ShenSuChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
+					 </iframe> </td></tr>
+					 </table>
+				
 		
 				 <div align="center">
-						 <input type="button" value="申诉" class="button" onclick="AlreadyVerify('<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>')"/>
-						<input type="button" value="取消" class="button" onclick="closeBox()"/>
-				</div>
-	</div>
+						 <input type="submit" value="申诉" class="button" <%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>')" --%>/>
+						
+					</div>
+		</div>
+	</form>	
 </div>
 <div id="box_yy"></div>

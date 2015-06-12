@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
+import cn.explink.util.Page;
 
 @Repository
 public class WorkOrderDAO {
@@ -58,8 +59,9 @@ public class WorkOrderDAO {
 		jt.update(sql,cci.getPhoneonOne(),cci.getPhoneonTwo(),cci.getConsigneeType(),cci.getSex(),cci.getProvince(),cci.getCity(),cci.getName(),cci.getContactLastTime(),cci.getContactNum(),cci.getMailBox(),cci.getRemark(),cci.getId());
 	}
 	
-	public void editCsConsigneeInfo(String phone){
-		
+	public List<CsConsigneeInfo> queryListCsConsigneeInfo(String phone){
+		String sql="select * from cs_consignee_info where phone_one=?";
+		return jt.query(sql, new WorkOrderRowMapper(),phone);
 		
 	}
 	
@@ -83,7 +85,7 @@ public class WorkOrderDAO {
 		CsConsigneeInfo	cf=this.jt.queryForObject(sql,new WorkOrderRowMapper(),id);
 			return cf;							
 	}
-	public List<CsConsigneeInfo> queryAllCsConsigneeInfo(String name,String phone,int type){
+	public List<CsConsigneeInfo> queryAllCsConsigneeInfo(long page ,String name,String phone,int type){
 		String sql="select * from cs_consignee_info where id>"+0;
 		StringBuilder sb = new StringBuilder();
 		if(type>=0){
@@ -94,10 +96,44 @@ public class WorkOrderDAO {
 		}
 		if(phone!=null&&phone.length()>0){			
 				sb.append(" and phone_one='"+phone+"'");
-		}
+		}		
 		sql+=sb.toString();
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		System.out.println(sql);
 			return jt.query(sql, new WorkOrderRowMapper());
+	}
+	
+	public List<CsConsigneeInfo> queryAllCsConsigneeInfo1(String name,String phone,int type){
+		String sql="select * from cs_consignee_info where id>"+0;
+		StringBuilder sb = new StringBuilder();
+		if(type>=0){
+			sb.append(" and consignee_type="+type);
+		}
+		if(name!=null&&name.length()>0){			
+			sb.append(" and name='"+name+"'");
+		}
+		if(phone!=null&&phone.length()>0){			
+				sb.append(" and phone_one='"+phone+"'");
+		}		
+		sql+=sb.toString();
+			return jt.query(sql, new WorkOrderRowMapper());
+	}
+	
+	public long getCsConsigneeInfocount(String name,String phone,int type){
+		String sql="select count(*) from cs_consignee_info where id>"+0;
+		StringBuilder sb = new StringBuilder();
+		if(type>=0){
+			sb.append(" and consignee_type="+type);
+		}
+		if(name!=null&&name.length()>0){			
+			sb.append(" and name='"+name+"'");
+		}
+		if(phone!=null&&phone.length()>0){			
+				sb.append(" and phone_one='"+phone+"'");
+		}		
+		sql+=sb.toString();
+		return jt.queryForLong(sql);
+		
 	}
 	public CsConsigneeInfo queryByPhoneone(String phoneonOne){
 		CsConsigneeInfo cf =null;
@@ -115,13 +151,13 @@ public class WorkOrderDAO {
 
 	
 	public void savequeryworkorderForm(CsComplaintAccept c){
-		String sql="insert into cs_complaint_accept(complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,querycontent,complaint_state,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jt.update(sql,c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getQueryContent(),c.getComplaintState(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
+		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,querycontent,complaint_state,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getQueryContent(),c.getComplaintState(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
 	}
 	
 	public void saveComplainWorkOrderF(CsComplaintAccept c){
-		String sql="insert into cs_complaint_accept(complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jt.update(sql,c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
+		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
 	}
 	
 	
@@ -174,6 +210,13 @@ public class WorkOrderDAO {
 			c.setJieanUser(rs.getString("jiean_user"));
 			c.setShensuUser(rs.getString("shensu_user"));
 			c.setChongshenUser(rs.getString("chongshen_user"));
+			c.setIfpunish(rs.getInt("if_punish"));
+			c.setCuijianNum(rs.getInt("cuijian_num"));
+			c.setDownloadchongshenpath(rs.getString("downloadchongshenpath"));
+			c.setDownloadheshipath(rs.getString("downloadheshipath"));
+			c.setDownloadjieanpath(rs.getString("downloadjieanpath"));
+			c.setDownloadshensupath(rs.getString("downloadshensupath"));
+			
 			
 			return c;
 		}
@@ -213,7 +256,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		if(cv.getComplaintTwoLevel()>0){
 			sb.append(" and complaint_two_level="+cv.getComplaintTwoLevel());	
 				}
-		if(cv.getAcceptTime()!=null&&cv.getAcceptTime().length()>0){
+		if(cv.getBeginRangeTime()!=null&&cv.getBeginRangeTime().length()>0&&cv.getEndRangeTime()!=null&&cv.getEndRangeTime().length()>0){
 			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
 		}
 		
@@ -245,11 +288,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 	return this.jt.query(sql,new CsComplaintAcceptRowMapper());
 	}
 	
-/*	public void ChangecomplaintState1(CsComplaintAccept cca){
-		String sql="update cs_complaint_accept set complaint_time=?,jiean_time=?,jieanchongshen_remark=?,shensu_remark=?,jiean_remark=?,remark=?,complaint_state=?,complaint_result=?,heshi_time=?,handle_user=? where id=?";
-		this.jt.update(sql,cca.getComplaintTime(),cca.getJieanTime(),cca.getJieanchongshenremark(),cca.getShensuremark(),cca.getJieanremark(),cca.getRemark(),cca.getComplaintState(),cca.getComplaintResult(),cca.getHeshiTime(),cca.getHandleUser(),cca.getId());
-	}*/
-	
+
 	public void ChangecomplaintState(CsComplaintAccept cca){
 		String sql="update cs_complaint_accept set";
 		StringBuilder sb = new StringBuilder();
@@ -283,6 +322,18 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		if(cca.getJieanchongshenTime()!=null&&cca.getJieanchongshenTime().length()>0){
 			sb.append(" jieanchongshen_time='"+cca.getJieanchongshenTime()+"',");
 		}
+		if(cca.getDownloadchongshenpath()!=null&&cca.getDownloadchongshenpath().length()>0){
+			sb.append(" downloadchongshenpath='"+cca.getDownloadchongshenpath()+"',");
+		}
+		if(cca.getDownloadheshipath()!=null&&cca.getDownloadheshipath().length()>0){
+			sb.append(" downloadheshipath='"+cca.getDownloadheshipath()+"',");
+		}
+		if(cca.getDownloadshensupath()!=null&&cca.getDownloadshensupath().length()>0){
+			sb.append(" downloadshensupath='"+cca.getDownloadshensupath()+"',");
+		}
+		if(cca.getDownloadjieanpath()!=null&&cca.getDownloadjieanpath().length()>0){
+			sb.append(" downloadjieanpath='"+cca.getDownloadjieanpath()+"',");
+		}
 		if(cca.getHandleUser()!=null&&cca.getHandleUser().length()>0){
 			sb.append(" handle_user='"+cca.getHandleUser()+"'");
 		}
@@ -302,7 +353,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 			sb.append(" where id="+cca.getId());
 		}
 		sql+=sb.toString();
-		System.out.println(sql);
+		
 		this.jt.update(sql);
 	}
 	

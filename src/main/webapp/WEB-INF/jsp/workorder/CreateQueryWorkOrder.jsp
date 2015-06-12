@@ -46,7 +46,7 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 			
 			</form>	
 			
-				 <div align="center"><button class="button">发送催件短信</button>
+				 <div align="center"><!-- <button class="button">发送催件短信</button> -->
 						 <button class="button" id="btnnn" onclick="btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
 						 <button class="button" onclick="btnswd('<%=ComplaintStateEnum.YiJieShu.getValue()%>')" id="btnnnnn">结案</button>
 						 <button class="button" onclick="closeBox()">取消</button>

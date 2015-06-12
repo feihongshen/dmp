@@ -97,7 +97,7 @@ List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.g
 							<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
 				</form>					
 			</div>
-			<button class="button">发送催件短信</button>
+			<div align="center">
 			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
 			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')">待机构核实</button>
 			<button class="button" onclick="btnccwo()">结案</button>
@@ -106,6 +106,7 @@ List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.g
 			<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yja">
 			<input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="yjs">
 			<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="bcl">
+			</div>
 	</div>
 </div>
 

@@ -70,12 +70,49 @@ public class CsComplaintAccept {
 			private String jieanUser;
 			private String shensuUser;
 			private String chongshenUser;
+			private int cuijianNum;
+
+			private String downloadheshipath;
+			public String getDownloadheshipath() {
+				return downloadheshipath;
+			}
+			public void setDownloadheshipath(String downloadheshipath) {
+				this.downloadheshipath = downloadheshipath;
+			}
+			public String getDownloadjieanpath() {
+				return downloadjieanpath;
+			}
+			public void setDownloadjieanpath(String downloadjieanpath) {
+				this.downloadjieanpath = downloadjieanpath;
+			}
+			public String getDownloadchongshenpath() {
+				return downloadchongshenpath;
+			}
+			public void setDownloadchongshenpath(String downloadchongshenpath) {
+				this.downloadchongshenpath = downloadchongshenpath;
+			}
+			public String getDownloadshensupath() {
+				return downloadshensupath;
+			}
+			public void setDownloadshensupath(String downloadshensupath) {
+				this.downloadshensupath = downloadshensupath;
+			}
+			private String downloadjieanpath;
+			private String downloadchongshenpath;
+			private String downloadshensupath;
 			
 			
 			
 			
 			
 		
+			
+			public int getCuijianNum() {
+				return cuijianNum;
+			}
+			public void setCuijianNum(int cuijianNum) {
+				this.cuijianNum = cuijianNum;
+			}
 			public String getHeshiUser() {
 				return heshiUser;
 			}

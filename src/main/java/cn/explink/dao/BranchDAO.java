@@ -934,8 +934,15 @@ public class BranchDAO {
 	}
 	
 	public Branch getbranchname(long l){
-		String sql="select * from express_set_branch where branchid=?";
-		return this.jdbcTemplate.queryForObject(sql, new BranchRowMapper(),l);
+		Branch b;
+		try {
+			String sql="select * from express_set_branch where branchid=?";
+			b = this.jdbcTemplate.queryForObject(sql, new BranchRowMapper(),l);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		return b;
 	}
 	
 

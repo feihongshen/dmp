@@ -1,7 +1,9 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
+<%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
 <%
-		List<CsConsigneeInfo> ccilist=(List<CsConsigneeInfo>)request.getAttribute("ccilist")==null?null:(List<CsConsigneeInfo>)request.getAttribute("ccilist");
+		List<CsConsigneeInfo> ccilist=request.getAttribute("ccilist")==null?null:(List<CsConsigneeInfo>)request.getAttribute("ccilist");
+		Page page_obj =request.getAttribute("page_obj")==null?null:(Page)request.getAttribute("page_obj");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//Dth HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dth">
 <html>
@@ -27,6 +29,9 @@ function editInit(){
 	
 }
 $(function(){
+	
+	
+	
 	$('#edit_but').click(function(){
 				
 		edit_button($('#callerphoneid').val());
@@ -47,7 +52,7 @@ $(function(){
 				success:function(data){
 					if(data.errorCode==0){
 						alert(data.error);
-						window.location.href='<%=request.getContextPath()%>/workorder/CallerArchivalRepository';
+						window.location.href='<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1';
 					}
 					
 					
@@ -65,28 +70,29 @@ $(function(){
 </script>
 </head>
 <body>
-	<div>	
-		<form action="<%=request.getContextPath()%>/workorder/QueryCallerInfo">
+	<div>	<%-- <%=request.getContextPath()%>/workorder/QueryCallerInfo/ --%>
+		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" id=PageFromW><%-- action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" --%>
 			<table>
 				<tr>
 					<td>姓名:<input type="text" name="name" id="name"/></td>
 					<td>电话:<input type="text" name="phoneonOne" id="phoneonOne"/></td>				
 					<td>
-						客户:<select name="consigneeType" id="svc" class="select1">
+						客户:<select name="consigneeType" id="svc" class="select1" >
 								<option value="-1">请选择</option>
-								<option value="1">VIP客户</option>
-								<option value="0">普通客户</option>
+								<option value="1">普通客户</option>
+								<option value="2">VIP客户</option>								
 							</select>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<input type="submit" value="查询" class="input_button2"/>
+						<input type="submit" value="查询" class="input_button2" onclick="$('#PageFromW').attr('action',1);return true;"/>
 						<input type="reset" value="重置" class="input_button2"/>
 					</td>
 				</tr>	
 				</table>				
 		</form>
+		
 			<table>
 				<tr>
 					<td><button id="add_button" class="input_button2">新增</button></td>
@@ -123,9 +129,9 @@ $(function(){
 					<td><%=ccf.getMailBox() %></td>				
 					<td><%=ccf.getProvince() %></td>
 					<td><%=ccf.getCity() %></td>
-					<%if(ccf.getConsigneeType()==1){ %>
+					<%if(ccf.getConsigneeType()==2){ %>
 					<td><label>VIP客户</label></td>
-					<%}else if(ccf.getConsigneeType()==0){ %>
+					<%}else if(ccf.getConsigneeType()==1){ %>
 					<td><label>普通客户</label></td>
 					<%} %>
 					<td><%=ccf.getContactLastTime() %></td>
@@ -142,7 +148,7 @@ $(function(){
 	<form action="<%=request.getContextPath()%>/workorder/exportExcle" id="CallerInfoForm">
 		<input type="hidden" name="name" value="<%=request.getParameter("name")==null?"":request.getParameter("name")%>">
 		<input type="hidden" name="phoneonOne" value="<%=request.getParameter("phoneonOne")==null?"":request.getParameter("phoneonOne")%>">
-		<input type="hidden" name="consigneeType" value="<%=request.getParameter("consigneeType")==null?"0":request.getParameter("consigneeType")%>">	
+		<input type="hidden" name="consigneeType" value="<%=request.getParameter("consigneeType")==null?"-1":request.getParameter("consigneeType")%>">	
 	</form>
 	
 	<script type="text/javascript">
@@ -156,17 +162,27 @@ $(function(){
 		};
 		
 	}	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	$("#selectPg").val(<%=request.getAttribute("page") %>);
 	</script>
+	
+	
+	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
+	<tr>
+		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+			<a href="javascript:$('#PageFromW').attr('action','1');$('#PageFromW').submit();" >第一页</a>　
+			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#PageFromW').submit();">上一页</a>　
+			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#PageFromW').submit();" >下一页</a>　
+			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#PageFromW').submit();" >最后一页</a>
+			　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+					id="selectPg"
+					onchange="$('#PageFromW').attr('action',$(this).val());$('#PageFromW').submit()">
+					<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+					<option value="<%=i %>"><%=i %></option>
+					<% } %>
+				</select>页
+			</td>
+		</tr>
+	</table>
 	
 	
 </body>

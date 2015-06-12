@@ -1,5 +1,11 @@
 package cn.explink.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -31,6 +38,7 @@ import cn.explink.dao.ReasonDao;
 import cn.explink.dao.WorkOrderDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
+import cn.explink.domain.CsComplaintAcceptExportVO;
 import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
 import cn.explink.domain.CsConsigneeInfoVO;
@@ -39,6 +47,7 @@ import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.ComplaintResultEnum;
 import cn.explink.enumutil.ComplaintStateEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -48,6 +57,9 @@ import cn.explink.service.ExportService;
 import cn.explink.service.WorkOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.Page;
+import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.StringUtil;
 /**
  * 
  * @author wangzhiyong
@@ -77,9 +89,9 @@ public class WorkOrderController {
 	@Autowired
 	ExportService es;
 	
+
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy
-				.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 	
@@ -95,19 +107,28 @@ public class WorkOrderController {
 	}
 
 	
-	@RequestMapping("/CallerArchivalRepository")
-	public String CallerArchivalRepository(){
-
+	@RequestMapping("/CallerArchivalRepository/{page}")
+	public String CallerArchivalRepository(Model model,CsConsigneeInfo cci,@PathVariable(value="page") long page){
+		
+			/*List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType());*/
+			model.addAttribute("page", page);
+			System.out.println(cci.getConsigneeType());
+			/*if(cci.getName()!=null&&cci.getName().length()>0||cci.getPhoneonOne()!=null&&cci.getPhoneonOne().length()>0||cci.getConsigneeType()>=0){*/
+			model.addAttribute("page_obj", new Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()), page, Page.ONE_PAGE_NUMBER));			
+			model.addAttribute("ccilist", workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
+			/*}*/
 		return "workorder/CallerArchivalRepository";
 	}
-	@RequestMapping("/QueryCallerInfo")
-	public String QueryCallerInfo(Model model,CsConsigneeInfo cci){
+	/*@RequestMapping("/QueryCallerInfo/{page}")
+	public String QueryCallerInfo(Model model,CsConsigneeInfo cci,@PathVariable(value="page") long page){
 		if(cci!=null){
-			List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType());
+			List<CsConsigneeInfo> ccilist=workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType());
+			model.addAttribute("page_obj", new Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()), page, Page.ONE_PAGE_NUMBER));
+			model.addAttribute("page", page);
 			model.addAttribute("ccilist", ccilist);
 		}
 			return "workorder/CallerArchivalRepository";
-	}
+	}*/
 	
 	@RequestMapping("/EditEditMaintain/{id}")
 	public String EditEditMaintain(Model model,@PathVariable(value="id") int id) throws Exception{
@@ -161,6 +182,8 @@ public class WorkOrderController {
 			}else{
 			cca.setCurrentBranch("");	
 			}
+			
+		
 		model.addAttribute("cca", cca);
 
 		return "workorder/CreateQueryWorkOrder";
@@ -178,6 +201,7 @@ public class WorkOrderController {
 			ca.setCwbstate(cl.getCwbstate());//存入订单状态
 			ca.setFlowordertype(cl.getFlowordertype());//存入订单操作状态
 			ca.setCustomerid(cl.getCustomerid());
+			System.out.println(cl.getCurrentbranchid());
 			Branch b=branchdao.getbranchname(cl.getCurrentbranchid());//存入站点信息
 			if(b!=null){
 			ca.setCurrentBranch(b.getBranchname());
@@ -283,9 +307,13 @@ public class WorkOrderController {
 	//添加客服收件人数据
 	@RequestMapping("/addCsConsigneeInfo")
 	public String add(CsConsigneeInfo cci){
-		if(cci!=null){
-		workorderservice.addcsconsigneeInfo(cci);
+		List<CsConsigneeInfo> cs=workorderdao.queryListCsConsigneeInfo(cci.getPhoneonOne());
+		
+		if(cs.size()<=1){
+			workorderservice.addcsconsigneeInfo(cci);
 		}
+			
+		
 		return "workorder/CustomerServicesAcceptWorkOrder";	
 	}
 	
@@ -359,6 +387,8 @@ public class WorkOrderController {
 		cca.setAcceptTime(accepttime);		
 		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
 		cca.setCustomerid(co.getCustomerid());
+		String username=getSessionUser().getRealname();
+		cca.setHandleUser(username);
 		workorderdao.savequeryworkorderForm(cca);
 	
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -373,6 +403,8 @@ public class WorkOrderController {
 		cca.setAcceptTime(accepttime);
 		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
 		cca.setCustomerid(co.getCustomerid());
+		String username=getSessionUser().getRealname();
+		cca.setHandleUser(username);
 		workorderdao.saveComplainWorkOrderF(cca);
 	
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -499,8 +531,7 @@ public class WorkOrderController {
 			sb=sb.append("'"+str+"',");
 		}
 		String ncwbs=sb.substring(0, sb.length()-1);		
-	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv);
-		
+	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv);		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
@@ -517,20 +548,15 @@ public class WorkOrderController {
 			ca.setAcceptTime(c.getAcceptTime());
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomerid(c.getCustomerid());
-			lc.add(ca);
-			
-			
+			ca.setHandleUser(c.getHandleUser());
+			lc.add(ca);			
 			String cname=workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName();
 			connameList.put(c.getPhoneOne(), cname);
 			String customerName=customerDAO.findcustomername(c.getCustomerid()).getCustomername();
-			customerList.put(c.getCustomerid(),customerName);
-			
-			 
-	
-			
+			customerList.put(c.getCustomerid(),customerName);			
 	}
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
-		String username=getSessionUser().getRealname();
+		/*String username=getSessionUser().getRealname();*/
 		List<Branch> lb=branchdao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<Reason> lrs=null;
@@ -544,7 +570,7 @@ public class WorkOrderController {
 	
 		model.addAttribute("lb", lb==null?null:lb); 
 		model.addAttribute("lc", lc==null?null:lc);
-		model.addAttribute("username", username==null?null:username);
+		/*model.addAttribute("username", username==null?null:username);*/
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("co", co==null?null:co);
 		
@@ -575,6 +601,46 @@ public class WorkOrderController {
 		
 		return "{\"errorCode\":0,\"error\":\"工单处理成功\"}";
 	}
+	
+	@RequestMapping("/HeshiChangeComplaintStateFile")
+	@ResponseBody
+	public String HeshiChangeComplaintStateFile(HttpServletRequest req,@RequestParam(value = "Filedata", required = false) MultipartFile file){
+		String heshiremark=StringUtil.nullConvertToEmptyString(req.getParameter("remark"));
+		String vid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String AlreadyVerifycomplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String downloadname=workorderservice.loadexceptfile(file);
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setDownloadheshipath(downloadname);
+		cca.setRemark(heshiremark);
+		cca.setId(Integer.valueOf(vid));
+		//添加个字段保存文件名字
+		
+		cca.setComplaintState(Integer.valueOf(AlreadyVerifycomplaintState));
+		User user=this.getSessionUser();
+		cca.setHeshiUser(user.getRealname());
+		cca.setHeshiTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"核实成功\"}";	
+	}
+	@RequestMapping("/HeshiChangeComplaintState")
+	@ResponseBody
+	public String HeshiChangeComplaintState(HttpServletRequest req){
+		String heshiremark=StringUtil.nullConvertToEmptyString(req.getParameter("remark"));
+		String vid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String AlreadyVerifycomplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setRemark(heshiremark);
+		cca.setId(Integer.valueOf(vid));
+		cca.setComplaintState(Integer.valueOf(AlreadyVerifycomplaintState));
+		cca.setHeshiUser(getSessionUser().getRealname());
+		cca.setHeshiTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"核实成功\"}";	
+	}
+	
+	
 	
 	@RequestMapping("/WorkorderDetail/{acceptNo}")
 	public String Workorderdetail(Model model,@PathVariable(value="acceptNo") String acceptNo){
@@ -615,7 +681,7 @@ public class WorkOrderController {
 		String phone=request.getParameter("phoneonOne");
 		String consigneeType =request.getParameter("consigneeType");
 		int  consigneeTypeValue=Integer.valueOf(consigneeType);
-		 List<CsConsigneeInfo> ccilist1=workorderdao.queryAllCsConsigneeInfo(name,phone,consigneeTypeValue);
+		 List<CsConsigneeInfo> ccilist1=workorderdao.queryAllCsConsigneeInfo1(name,phone,consigneeTypeValue);
 	final List<CsConsigneeInfoVO> ccilist=new ArrayList<CsConsigneeInfoVO>();
 		for(CsConsigneeInfo c:ccilist1){
 			CsConsigneeInfoVO cv = new CsConsigneeInfoVO();
@@ -626,7 +692,7 @@ public class WorkOrderController {
 			cv.setMailBox(c.getMailBox());
 			cv.setProvince(c.getProvince());
 			cv.setCity(c.getCity());
-			cv.setConsigneeType(c.getConsigneeType()==0?"普通客户":"VIP客户");
+			cv.setConsigneeType(c.getConsigneeType()==1?"普通客户":"VIP客户");
 			cv.setContactLastTime(c.getContactLastTime());
 			cv.setContactNum(c.getContactNum());
 			ccilist.add(cv);
@@ -661,16 +727,17 @@ public class WorkOrderController {
 	@RequestMapping("/exportWorkOrderExcle")
 	public void exportWorkOrderExcle(Model model, HttpServletResponse response, HttpServletRequest request,CsComplaintAccept cca) {
 
-		String[] cloumnName1 = new String[10]; // 导出的列名
-		String[] cloumnName2 = new String[10]; // 导出的英文列名
-		es.setCsComplaintAccept(cloumnName1,cloumnName2);
+		String[] cloumnName1 = new String[15]; // 导出的列名
+		String[] cloumnName2 = new String[15]; // 导出的英文列名
+		es.setCsComplaintAcceptVO(cloumnName1,cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		String sheetName = "工单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "CsComplaintAccept_" + df.format(new Date()) + ".xlsx"; // 文件名
-		
-		/*String complaintType = request.getParameter("complaintType")==null?"-1":request.getParameter("complaintType");
+	 try{	
+		String cwbs=request.getParameter("orderNo");
+		String complaintType = request.getParameter("complaintType")==null?"-1":request.getParameter("complaintType");
 		String orderNo = request.getParameter("orderNo")==null?"":request.getParameter("orderNo");
 		String complaintState = request.getParameter("complaintState")==null?"-1":request.getParameter("complaintState");
 		String complaintOneLevel = request.getParameter("complaintOneLevel")==null?"-1":request.getParameter("complaintOneLevel");
@@ -679,12 +746,232 @@ public class WorkOrderController {
 		String complaintTwoLevel = request.getParameter("complaintTwoLevel")==null?"-1":request.getParameter("complaintTwoLevel");
 		String beginRangeTime = request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime");
 		String endRangeTime = request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime");
-		String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
-		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");	*/
-
+		/*String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
+		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");*/
+		CsComplaintAcceptVO cc = new CsComplaintAcceptVO();
+		cc.setComplaintType(Integer.valueOf(complaintType));
+		cc.setOrderNo(orderNo);
+		cc.setComplaintState(Integer.valueOf(complaintState));
+		cc.setComplaintOneLevel(Integer.valueOf(complaintOneLevel));
+		cc.setCodOrgId(Integer.valueOf(codOrgId));
+		cc.setComplaintResult(Integer.valueOf(complaintResult));
+		cc.setComplaintTwoLevel(Integer.valueOf(complaintTwoLevel));
+		cc.setBeginTime(beginRangeTime);
+		cc.setEndTime(endRangeTime);
 		
+		/**
+		 * 下面是查询
+		 */
+		String cwb[]=cwbs.trim().split("\r\n");
+		StringBuffer sb = new StringBuffer();
+		for(String str:cwb){
+			sb=sb.append("'"+str+"',");
+		}
+		String ncwbs=sb.substring(0, sb.length()-1);		
+	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cc);		
+	System.out.println(lcs.get(0).getComplaintOneLevel());
+	final List<CsComplaintAcceptExportVO> lc=new ArrayList<CsComplaintAcceptExportVO>();
+		for(CsComplaintAccept c:lcs){
+			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();
+			ca.setAcceptNo(c.getAcceptNo());
+			ca.setOrderNo(c.getOrderNo());
+			ca.setComplaintType(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			ca.setCodOrgId(branchdao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
+			if(c.getComplaintOneLevel()!=0){
+			ca.setComplaintOneLevel(reasondao.getReasonByReasonid(c.getComplaintOneLevel()).getReasoncontent());
+			}else{
+				ca.setComplaintOneLevel("");
+			}
+			
+			if(c.getComplaintTwoLevel()!=0){
+				ca.setComplaintTwoLevel(reasondao.getReasonByReasonid(c.getComplaintTwoLevel()).getReasoncontent());
+			}else{
+				ca.setComplaintTwoLevel("");
+			}			
+			ca.setComplaintResult(ComplaintResultEnum.getByValue(c.getComplaintResult()).getText());
+			ca.setAcceptTime(c.getAcceptTime());
+			ca.setPhoneOne(c.getPhoneOne());	
+			ca.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername()==null?"":customerDAO.findcustomername(c.getCustomerid()).getCustomername());
+			ca.setName(workorderdao.queryByPhoneone(c.getPhoneOne()).getName());
+			ca.setIfpunish(1);
+			ca.setCuijianNum(10);
+			ca.setHandleUser(c.getHandleUser());
+			lc.add(ca);				
+		}
 		
+		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+			@Override
+			public void fillData(Sheet sheet, CellStyle style) {
+				for (int k = 0; k < lc.size(); k++) {
+					Row row = sheet.createRow(k + 1);
+					row.setHeightInPoints(15);
+					for (int i = 0; i < cloumnName.length; i++) {
+						Cell cell = row.createCell((short) i);
+						cell.setCellStyle(style);
+						Object a = null;
+						// 给导出excel赋值
+						a = es.setCsComplaintAcceptExportVO(cloumnName3,lc,a, i, k);
+						cell.setCellValue(a == null ? "" : a.toString());
+					}
+				}
+			}
+		};
 		
+		excelUtil.excel(response, cloumnName, sheetName, fileName);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
 		
 	}	
+	
+	
+	
+	@RequestMapping("/JieAnChangeComplaintStateFile")
+	@ResponseBody
+	public String JieAnChangeComplaintStateFile(HttpServletRequest req,
+		@RequestParam(value = "Filedata", required = false) MultipartFile file){		
+		String jieanremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String JieAnChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String downloadname=workorderservice.loadexceptfile(file);
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setDownloadjieanpath(downloadname);
+		cca.setJieanremark(jieanremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
+		cca.setJieanUser(getSessionUser().getRealname());
+		cca.setJieanTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"结案处理成功\"}";	
+	}
+	@RequestMapping("/JieAnChangeComplaintState")
+	@ResponseBody
+	public String JieAnChangeComplaintState(HttpServletRequest req){
+		String jieanremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String JieAnChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setJieanremark(jieanremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
+		cca.setJieanUser(getSessionUser().getRealname());
+		cca.setJieanTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"结案处理成功\"}";
+	}
+	
+	
+	@RequestMapping("/ShenSuChangeComplaintStateFile")
+	@ResponseBody
+	public String ShenSuChangeComplaintStateFile(HttpServletRequest req,
+		@RequestParam(value = "Filedata", required = false) MultipartFile file){		
+		String shensuremark=StringUtil.nullConvertToEmptyString(req.getParameter("shensuremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String shensuChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String downloadname=workorderservice.loadexceptfile(file);
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setDownloadshensupath(downloadname);
+		cca.setShensuremark(shensuremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
+		cca.setShensuUser(getSessionUser().getRealname());
+		cca.setComplaintTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"申诉处理成功\"}";	
+	}
+	@RequestMapping("/ShenSuChangeComplaintState")
+	@ResponseBody
+	public String ShenSuChangeComplaintState(HttpServletRequest req){
+		String shensuremark=StringUtil.nullConvertToEmptyString(req.getParameter("shensuremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String shensuChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setShensuremark(shensuremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
+		cca.setShensuUser(getSessionUser().getRealname());
+		cca.setComplaintTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"申诉处理成功\"}";	
+	}
+	
+	@RequestMapping("/JieAnChongShenChangeComplaintStateFile")
+	@ResponseBody
+	public String JieAnChongShenChangeComplaintStateFile(HttpServletRequest req,
+		@RequestParam(value = "Filedata", required = false) MultipartFile file){		
+		String jieanchongshenremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanchongshenremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String JieAnChongShenChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String downloadname=workorderservice.loadexceptfile(file);
+		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setDownloadchongshenpath(downloadname);
+		cca.setJieanchongshenremark(jieanchongshenremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(JieAnChongShenChangeComplaintState));
+		cca.setChongshenUser(getSessionUser().getRealname());
+		cca.setJieanchongshenTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"结案重审处理成功\"}";	
+	}
+	@RequestMapping("/JieAnChongShenChangeComplaintState")
+	@ResponseBody
+	public String JieAnChongShenChangeComplaintState(HttpServletRequest req){
+		String jieanchongshenremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanchongshenremark"));
+		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
+		String JieAnChongShenChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		CsComplaintAccept cca = new CsComplaintAccept();
+		
+		cca.setJieanchongshenremark(jieanchongshenremark);
+		cca.setId(Integer.valueOf(jid));
+		cca.setComplaintState(Integer.valueOf(JieAnChongShenChangeComplaintState));
+		cca.setChongshenUser(getSessionUser().getRealname());
+		cca.setJieanchongshenTime(DateTimeUtil.getNowTime());
+		workorderdao.ChangecomplaintState(cca);
+		
+		return "{\"errorCode\":0,\"error\":\"结案重审处理成功\"}";	
+	}
+	@RequestMapping("/download")
+	public void filedownload(HttpServletRequest request,HttpServletResponse response){
+		try {
+			String filePath=request.getParameter("filepathurl");
+			String filePathaddress=ResourceBundleUtil.EXCEPTPATH+filePath;
+			File file=new File(filePathaddress);
+			 
+ 
+			// 取得文件名。
+			String filename = file.getName();
+			// 以流的形式下载文件。
+			InputStream fis = new BufferedInputStream(new FileInputStream(filePathaddress));
+			byte[] buffer = new byte[fis.available()];
+			fis.read(buffer);
+			fis.close();
+			// 清空response
+			response.reset();
+			// 设置response的Header
+			response.setContentType("application/ms-excel");
+			response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+			response.addHeader("Content-Length", "" + file.length());
+			OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+			toClient.write(buffer);
+			toClient.flush();
+			toClient.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+	}
+
+	
+	
+	
+	
+	
+	
 }

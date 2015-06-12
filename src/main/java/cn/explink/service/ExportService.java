@@ -35,6 +35,7 @@ import cn.explink.domain.BackSummary;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchTodayLog;
 import cn.explink.domain.Common;
+import cn.explink.domain.CsComplaintAcceptExportVO;
 import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
@@ -116,33 +117,38 @@ public class ExportService {
 	受理时间	投诉一级分类	
 	投诉二级分类	投诉处理结果	
 	是否扣罚	客户名称	催件次数*/
-	public void setCsComplaintAccept(String[] cloumnName1, String[] cloumnName2){
-		cloumnName1[0] = "工单类型";
-		cloumnName2[0] = "name";
-		cloumnName1[1] = "工单状态";
-		cloumnName2[1] = "sex";
-		cloumnName1[2] = "来电人姓名";
-		cloumnName2[2] = "phoneonOne";
-		cloumnName1[3] = "来电号码";
-		cloumnName2[3] = "phoneonTwo";
-		cloumnName1[4] = "被投诉机构";
-		cloumnName2[4] = "mailBox";
-		cloumnName1[5] = "工单受理人";
-		cloumnName2[5] = "province";
-		cloumnName1[6] = "受理时间";
-		cloumnName2[6] = "city";
-		cloumnName1[7] = "投诉一级分类";
-		cloumnName2[7] = "consigneeType";
-		cloumnName1[8] = "投诉二级分类";
-		cloumnName2[8] = "contactLastTime";
-		cloumnName1[9] = "投诉处理结果";
-		cloumnName2[9] = "contactNum";
-		cloumnName1[10] = "是否扣罚";
-		cloumnName2[10] = "contactNum";
-		cloumnName1[11] = "客户名称";
-		cloumnName2[11] = "contactNum";
-		cloumnName1[12] = "催件次数";
-		cloumnName2[12] = "contactNum";
+
+	public void setCsComplaintAcceptVO(String[] cloumnName1, String[] cloumnName2){
+		cloumnName1[0] = "工单号";
+		cloumnName2[0] = "acceptNo";
+		cloumnName1[1] = "订单号";
+		cloumnName2[1] = "orderNo";
+		cloumnName1[2] = "工单类型";
+		cloumnName2[2] = "complaintType";
+		cloumnName1[3] = "工单状态";
+		cloumnName2[3] = "complaintState";
+		cloumnName1[4] = "来电人姓名";
+		cloumnName2[4] = "name";
+		cloumnName1[5] = "来电号码";
+		cloumnName2[5] = "phoneOne";
+		cloumnName1[6] = "被投诉机构";
+		cloumnName2[6] = "codOrgId";
+		cloumnName1[7] = "工单受理人";
+		cloumnName2[7] = "handleUser";
+		cloumnName1[8] = "受理时间";
+		cloumnName2[8] = "acceptTime";
+		cloumnName1[9] = "投诉一级分类";
+		cloumnName2[9] = "complaintOneLevel";
+		cloumnName1[10] = "投诉二级分类";
+		cloumnName2[10] = "complaintTwoLevel";
+		cloumnName1[11] = "投诉处理结果";
+		cloumnName2[11] = "complaintResult";
+		cloumnName1[12] = "是否扣罚";
+		cloumnName2[12] = "ifpunish";
+		cloumnName1[13] = "客户名称";
+		cloumnName2[13] = "customername";
+		cloumnName1[14] = "催件次数";
+		cloumnName2[14] = "cuijianNum";
 	
 	}
 
@@ -621,6 +627,52 @@ public class ExportService {
 			}
 			else if (cloumnName3[i].equals("contactNum")) {
 				a = ccilist.get(k).getContactNum();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
+
+	public Object setCsComplaintAcceptExportVO(String[] cloumnName3, List<CsComplaintAcceptExportVO> lc, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("acceptNo")) {
+				a = lc.get(k).getAcceptNo();
+			} else if (cloumnName3[i].equals("orderNo")) {
+				a = lc.get(k).getOrderNo();
+			} else if (cloumnName3[i].equals("complaintType")) {
+				a = lc.get(k).getComplaintType();
+			} else if (cloumnName3[i].equals("complaintState")) {
+				a = lc.get(k).getComplaintState();
+			} else if (cloumnName3[i].equals("name")) {
+				a = lc.get(k).getName();
+			} else if (cloumnName3[i].equals("phoneOne")) {
+				a = lc.get(k).getPhoneOne();
+			} else if (cloumnName3[i].equals("codOrgId")) {
+				a = lc.get(k).getCodOrgId();
+			} else if (cloumnName3[i].equals("handleUser")) {
+				a = lc.get(k).getHandleUser();
+			}
+			else if (cloumnName3[i].equals("acceptTime")) {
+				a = lc.get(k).getAcceptTime();
+			}
+			else if (cloumnName3[i].equals("complaintOneLevel")) {
+				a = lc.get(k).getComplaintOneLevel();
+			}
+			else if (cloumnName3[i].equals("complaintTwoLevel")) {
+				a = lc.get(k).getComplaintTwoLevel();
+			}
+			else if (cloumnName3[i].equals("complaintResult")) {
+				a = lc.get(k).getComplaintResult();
+			}
+			else if (cloumnName3[i].equals("ifpunish")) {
+				a = lc.get(k).getIfpunish();
+			}
+			else if (cloumnName3[i].equals("customername")) {
+				a = lc.get(k).getCustomername();
+			}
+			else if (cloumnName3[i].equals("cuijianNum")) {
+				a = lc.get(k).getCuijianNum();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -15,7 +15,7 @@
 	List<Reason> rs = (List<Reason>)request.getAttribute("lrs")==null?null: (List<Reason>)request.getAttribute("lrs");
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
 	List<Branch> b =(List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
-	 String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username"); 
+	/*  String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username");  */
 	/* Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist")==null?null:(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist"); */
 	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
 	List<CwbOrder> co=(List<CwbOrder>)request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
@@ -334,7 +334,8 @@ function testCwbsIfNull(){
 			</tr>
 		<%if(a!=null){ %>
 			<%for(CsComplaintAccept c:a){ %>
-			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>')">
+			<%if(c.getComplaintState()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
+			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>')" id="getFomeV">
 				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()) {%>
 				<td><a href="<%=request.getContextPath()%>/workorder/WorkorderDetail/<%=c.getAcceptNo() %>" target='_Blank'><%=c.getAcceptNo() %></a></td>
 				<%}else{ %>
@@ -350,7 +351,7 @@ function testCwbsIfNull(){
 					<%if(br.getBranchid()==c.getCodOrgId()){ %>  <!-- 被投诉机构 -->
 						<%=br.getBranchname()%>
 					<%} }%>
-				<td><%=uname%></td>					<!--受理人  -->
+				<td><%=c.getHandleUser()%></td>					<!--受理人  -->
 				<td><%=c.getAcceptTime() %></td>    <!--受理时间  -->
 				<td><%for(Reason rsn:r){ %>
 								<%if(rsn.getReasonid()==c.getComplaintOneLevel()){ %>  <!-- 一级原因 -->
@@ -372,7 +373,7 @@ function testCwbsIfNull(){
 					<label>催件次数</label>
 				</td>
 		</tr>
-			<%} }%>
+			<%} }}%>
 		</table>
 	</div>	
 
@@ -392,22 +393,23 @@ function testCwbsIfNull(){
 	
 	
 	<form action="<%=request.getContextPath()%>/workorder/exportWorkOrderExcle" id="WorkorderInfo">
-		<input type="hidden" value="<%=request.getParameter("complaintType")==null?"":request.getParameter("complaintType") %>"/>
-		<input type="hidden" value="<%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintState")==null?"":request.getParameter("complaintState") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintOneLevel")==null?"":request.getParameter("complaintOneLevel") %>"/>
-		<input type="hidden" value="<%=request.getParameter("codOrgId")==null?"":request.getParameter("codOrgId") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintResult")==null?"":request.getParameter("complaintResult") %>"/>
-		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel")==null?"":request.getParameter("complaintTwoLevel") %>"/>
-		<input type="hidden" value="<%=request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime") %>"/>
-		<input type="hidden" value="<%=request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime") %>"/>
-		<input type="hidden" value="<%=request.getParameter("handleUser")==null?"":request.getParameter("handleUser") %>"/>
-		<input type="hidden" value="<%=request.getParameter("ifpunish")==null?"":request.getParameter("ifpunish") %>"/>	
+		<input type="hidden" value="<%=request.getParameter("complaintType")%>" name="complaintType"/>
+		<input type="hidden" value="<%=request.getParameter("orderNo")%>" name="orderNo"/>
+		<input type="hidden" value="<%=request.getParameter("complaintState") %>" name="complaintState"/>
+		<input type="hidden" value="<%=request.getParameter("complaintOneLevel") %>" name="complaintOneLevel"/>
+		<input type="hidden" value="<%=request.getParameter("codOrgId")%>" name="codOrgId"/>
+		<input type="hidden" value="<%=request.getParameter("complaintResult") %>" name="complaintResult"/>
+		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel") %>" name="complaintTwoLevel"/>
+		<input type="hidden" value="<%=request.getParameter("beginRangeTime")%>" name="beginRangeTime"/>
+		<input type="hidden" value="<%=request.getParameter("endRangeTime") %>" name="endRangeTime"/>
+		<input type="hidden" value="<%=request.getParameter("handleUser") %>" name="handleUser"/>
+		<input type="hidden" value="<%=request.getParameter("ifpunish")%>" name="ifpunish"/>	
+		<input type="hidden" value="<%=request.getParameter("orderNo")%>" name="orderNo"/>
 	</form>
 	
 	<script type="text/javascript">
-	<%-- function exportWorkOrderInFoExcle(){
-		if(<%=ccilist != null && ccilist.size()>0 %>){
+	function exportWorkOrderInFoExcle(){
+		if(<%=a != null && a.size()>0 %>){
 		 	$("#exInfo").val("请稍后……");
 		 	$("#WorkorderInfo").submit();
 		}else{
@@ -416,7 +418,7 @@ function testCwbsIfNull(){
 		
 	}	
 	
-	 --%>
+	
 	</script>
 	
 	

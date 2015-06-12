@@ -5554,22 +5554,22 @@ $.ajax({
  
 function AlreadyVerify(AVV){
 	$('#AlreadyVerifycomplaintState').val(AVV);
-	$.ajax({
+	/*$.ajax({
 		type:'POST',
 		data:$('#ChangeComplaintStateF').serialize(),
 		url:$('#ChangeComplaintStateF').attr('action'),
 		dataType:'json',				
 		success:function(data){
 			if (data.errorCode == 0) {					
-			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-				closeBox();*/
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();
 				alert(data.error);
 				$('#AlreadyVerifycomplaintState').val("");
 				}
 			}
 		});
 	closeBox();
-	$('#AlreadyVerifycomplaintState').val("");
+	$('#AlreadyVerifycomplaintState').val("");*/
 }
 	
 
@@ -5726,7 +5726,140 @@ function AlreadyVerify(AVV){
 	closeBox();
 	$('#AlreadyVerifycomplaintState').val("");
 }
+
+function AlreadyVerifyJieAn(AVV){
+	if($('#acceptresult').val()!=""&&$('#acceptresult').val()==$('#acceptresultVl').val()){
+		$('#AlreadyVerifycomplaintState').val($('#acceptresultV').val())
+	}else{
+	$('#AlreadyVerifycomplaintState').val(AVV);
+	}
+	$.ajax({
+		type:'POST',
+		data:$('#ChangeComplaintStateF').serialize(),
+		url:$('#ChangeComplaintStateF').attr('action'),
+		dataType:'json',				
+		success:function(data){
+			if (data.errorCode == 0) {					
+			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();*/
+				alert(data.error);
+				$('#AlreadyVerifycomplaintState').val("");
+				}
+			}
+		});
+	closeBox();
+	$('#AlreadyVerifycomplaintState').val("");
+}
 	
+function heshiremarkV(){
+	console.info("hahah");
+	if($('#remark').val()==""){
+		return false;
+	}	
+	return true;
+}
+
+function submitHeShi(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "workorder/HeshiChangeComplaintState");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitsubmitHeShiLoad();
+}
+//问题件结案处理
+function submitsubmitHeShiLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'remark', $("#remark", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+
+function jieanremarkV(){
+	if($('#jieanremark').val()==""){
+		return false;
+	}	
+	return true;
+}
+
+function submitJieAn(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "workorder/JieAnChangeComplaintState");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitJieAnLoad();
+}
+//结案处理
+function submitJieAnLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'jieanremark', $("#jieanremark", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+
+
+function decideV(){
+	if($('#acceptresult').val()==$('#acceptresultVl').val()){
+		$('#complaintState').val($('#acceptresultV').val())
+	}
+}
+
+function IfShenSu(){
+	if($('#shensuremark').val()==""){
+		return false;
+	}	
+	return true;
+}
+
+function submitShenSu(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "workorder/ShenSuChangeComplaintState");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitsubmitShenSuLoad();
+}
+//结案处理
+function submitsubmitShenSuLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'shensuremark', $("#shensuremark", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
+
+function JieAnChongShen(){
+	if($('#jieanchongshenremark').val()==""){
+		return false;
+	}	
+	return true;
+	
+}
+
+
+function submitJieAnChongShen(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "workorder/JieAnChongShenChangeComplaintState");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitJieAnChongShenLoad();
+}
+//结案处理
+function submitJieAnChongShenLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'jieanchongshenremark', $("#jieanchongshenremark", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
 
 function penalizeType()
 {  	if($("#type").val()=='1')

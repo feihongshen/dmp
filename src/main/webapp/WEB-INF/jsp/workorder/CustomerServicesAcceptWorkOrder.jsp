@@ -26,6 +26,7 @@ function getGoonacceptWO(GV,GS){
 
 	$('#GV').val(GV);
 	$('#GS').val(GS);
+	
 }
 
 function gettrValue(cwbId){
@@ -387,8 +388,9 @@ function verifyphoneonOne(){                   //电话号码验证是否为空�
 					</td>
 					<td>客户分类:
 					<select name="consigneeType" id="consigneeType" class="select1">
-						<option value="0" id="op0">普通客户</option>
-						<option value="1" id="op1">VIP客户</option>						
+						<option value="-1">选择客户分类</option>
+						<option value="1" id="op0">普通客户</option>
+						<option value="2" id="op1">VIP客户</option>						
 					</select>
 					</td>				
 					<td>性别:

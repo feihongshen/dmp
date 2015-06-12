@@ -5735,7 +5735,7 @@ public class CwbDAO {
 	 */
 	
 	public List<CwbOrder> findcwbinfoBydeliveryId(int deliverid){
-		String sql="select * from express_ops_cwb_detail where deliverid=?";
+		String sql="select * from express_ops_cwb_detail where state=1 and  deliverid=?";
 		
 		return this.jdbcTemplate.query(sql, new CwbMapper(),deliverid);
 	}
@@ -5743,15 +5743,15 @@ public class CwbDAO {
 	
 	
 	public List<CwbOrder> SelectDetalForm(String phone){
-			List<CwbOrder> lc=null;
-			String sql="select * from express_ops_cwb_detail where consigneemobile=? ";
-			lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
+			
+			String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? order by emaildate desc limit 10";
+			
 		
-		return lc;
+		return this.jdbcTemplate.query(sql, new CwbMapper(),phone);
 	}	
 	
 	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc){
-		String sql="select * from express_ops_cwb_detail where consigneemobile=? or cwb=? or emaildate=? or consigneename=?";
+		String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? or cwb=? or emaildate=? or consigneename=? order by emaildate desc limit 10";
 	
 	return 	this.jdbcTemplate.query(sql, new CwbMapper(),coc.getConsigneemobile(),coc.getCwb(),coc.getEmaildate(),coc.getConsigneename());
 
