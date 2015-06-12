@@ -6505,6 +6505,50 @@ CREATE TABLE `cs_complaint_accept` (
         	ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `customerbillimportflag` INT(4) DEFAULT 0 NULL ;
         	</sql> 
         </changeSet>
+<changeSet id="wangyonghe-2015-06-12-01" author="wangyonghe">
+        	<sql>
+        	CREATE TABLE `express_ops_penalizeOut_detail` (
+				`penalizeOutId`  int(20) NOT NULL AUTO_INCREMENT,
+				`cwb`  varchar(50) NULL DEFAULT '' COMMENT '订单号' ,
+				`customerid`  int(20) NULL  COMMENT '客户id' ,
+				`flowordertype`  int(20) NULL  COMMENT '订单状态' ,
+				`receivablefee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '订单金额' ,
+				`penalizeOutfee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '对外赔付金额' ,
+				`penalizeOutbig`  int(10) NULL  COMMENT '赔付大类' ,
+				`penalizeOutsmall`  int(10) NULL  COMMENT '赔付小类' ,
+				`penalizeOutcontent`  varchar(50) NULL DEFAULT '' COMMENT '赔付说明' ,
+				`createruser`  int(10) NULL  COMMENT '创建人' ,
+				`createrdate`  datetime NULL  COMMENT '创建日期' ,
+				`canceluser`  int(20) NULL  COMMENT '撤销人' ,
+				`canceldate`  datetime NULL  COMMENT '撤销日期' ,
+				`cancelcontent`  varchar(50) NULL DEFAULT '' COMMENT '撤销说明' ,
+				`penalizeOutstate`  int(10)  COMMENT '赔付状态' ,
+				`state`  int(10) NULL  COMMENT '状态' ,
+				PRIMARY KEY (`penalizeOutid`),
+				INDEX `penalizeOutid_idx` (`penalizeOutid`) ,
+				INDEX `cwb_idx` (`cwb`) ,
+				INDEX `customerid_idx` (`customerid`) ,
+				INDEX `penalizeOutfee_idx` (`penalizeOutfee`) ,
+				INDEX `penalizeOutbig_idx` (`penalizeOutbig`) ,
+				INDEX `penalizeOutsmall_idx` (`penalizeOutsmall`) ,
+				INDEX `flowordertype_idx` (`flowordertype`) ,
+				INDEX `penalizeOutstate_idx` (`penalizeOutstate`) ,
+				INDEX `createrdate_idx` (`createrdate`) 
+				);
+				
+			CREATE TABLE `express_set_penalizeType` (
+				`id`  int(20) NOT NULL AUTO_INCREMENT ,
+				`text`  varchar(200) NULL DEFAULT '' COMMENT '赔付说明' ,
+				`type`  int(20) NULL COMMENT '赔付类型1:赔付大类，2:赔付小类' ,
+				`parent`  int(20) NULL COMMENT '赔付大类id' ,
+				`state`  int(20) NULL DEFAULT 1 COMMENT '状态 1 启用，0 停用' ,
+				PRIMARY KEY (`id`),
+				INDEX `type_idx` (`type`) ,
+				INDEX `parent_idx` (`parent`) ,
+				INDEX `text_idx` (`text`) 
+				);
+        	</sql> 
+        </changeSet>
 
 </databaseChangeLog>
  
