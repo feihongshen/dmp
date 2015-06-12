@@ -5728,3 +5728,56 @@ function AlreadyVerify(AVV){
 }
 	
 
+function penalizeType()
+{  	if($("#type").val()=='1')
+		{
+			$("#isshow").attr('style','display:none');
+			$("#parent").val(0);
+		}
+		else
+		{
+			$("#isshow").attr('style','');
+		}
+}
+
+function findbig()
+{ var parent=$("#penalizesmall").find("option:selected").attr("id");
+	$("#penalizebig option[value='"+parent+"']").attr("selected","selected");
+} 
+function findsmall(id)
+{
+	var dmpurl=$("#dmpurl").val();
+$("#penalizesmall").empty();
+$.ajax({
+	type:"post",
+	url:dmpurl+"/penalizeType/findsmall",
+	data:{"id":id},
+	dataType:"json",
+	success:function(data){
+		if(data.length>0){
+			var optstr="<option value='0'>请选择</option>";
+			for(var i=0;i<data.length;i++)
+			{
+				optstr+="<option value='"+data[i].id+"' id='"+data[i].parent+"'>"+data[i].text+"</option>";
+			}
+			
+			$("#penalizesmall").append(optstr);
+		}
+	}});
+}
+function init(cwb)
+{
+	var dmpurl=$("#dmpurl").val();
+	$.ajax({
+		type:"post",
+		url:dmpurl+"/penalizeOut/initaddpenalizeOut",
+		dataType:"json",
+		data:{"cwb":cwb},
+		success:function(data){
+		$("#flowordertype").val(data.flowordertyleValue);
+		$("#flowordertypeText").val(data.flowordertyleText);
+		$("#receivablefee").val(data.receivablefee);
+		$("#customername").val(data.customername);
+		$("#customerid").val(data.customerid);
+		}});
+}
