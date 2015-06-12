@@ -749,6 +749,8 @@ src/main/java/cn/explink/controller/PayUpController.java -text
 src/main/java/cn/explink/controller/PayUpDTO.java -text
 src/main/java/cn/explink/controller/PayWayController.java -text
 src/main/java/cn/explink/controller/PaymetDTO.java -text
+src/main/java/cn/explink/controller/PenalizeOutController.java -text
+src/main/java/cn/explink/controller/PenalizeTypeController.java -text
 src/main/java/cn/explink/controller/PopupConfig.java -text
 src/main/java/cn/explink/controller/PosPayController.java -text
 src/main/java/cn/explink/controller/PrintCwbController.java -text
@@ -909,6 +911,8 @@ src/main/java/cn/explink/dao/OverdueExMoDAO.java -text
 src/main/java/cn/explink/dao/ParameterDetailDAO.java -text
 src/main/java/cn/explink/dao/PayUpDAO.java -text
 src/main/java/cn/explink/dao/PayWayDao.java -text
+src/main/java/cn/explink/dao/PenalizeOutDAO.java -text
+src/main/java/cn/explink/dao/PenalizeTypeDAO.java -text
 src/main/java/cn/explink/dao/PosPayMoneyDAO.java -text
 src/main/java/cn/explink/dao/PrintcwbDetailDAO.java -text
 src/main/java/cn/explink/dao/PunishDAO.java -text
@@ -1083,6 +1087,8 @@ src/main/java/cn/explink/domain/PairList.java -text
 src/main/java/cn/explink/domain/ParameterDetail.java -text
 src/main/java/cn/explink/domain/PayUp.java -text
 src/main/java/cn/explink/domain/PayWay.java -text
+src/main/java/cn/explink/domain/PenalizeOut.java -text
+src/main/java/cn/explink/domain/PenalizeType.java -text
 src/main/java/cn/explink/domain/PrintStyle.java -text
 src/main/java/cn/explink/domain/PrintView.java -text
 src/main/java/cn/explink/domain/PrintcwbDetail.java -text
@@ -1220,6 +1226,7 @@ src/main/java/cn/explink/enumutil/OutwarehouseEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
 src/main/java/cn/explink/enumutil/PayMethodSwitchEnum.java -text
 src/main/java/cn/explink/enumutil/PaytypeEnum.java -text
+src/main/java/cn/explink/enumutil/PenalizeSateEnum.java -text
 src/main/java/cn/explink/enumutil/PrintTemplateOpertatetypeEnum.java -text
 src/main/java/cn/explink/enumutil/PunishlevelEnum.java -text
 src/main/java/cn/explink/enumutil/PunishtimeEnum.java -text
@@ -2211,7 +2218,13 @@ src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/addpenalizeIn.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/addpenalizeOut.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/cancelpenalizeOut.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/list.jsp -text
+src/main/webapp/WEB-INF/jsp/penalizeType/add.jsp -text
+src/main/webapp/WEB-INF/jsp/penalizeType/edit.jsp -text
+src/main/webapp/WEB-INF/jsp/penalizeType/list.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbnew.jsp -text
 src/main/webapp/WEB-INF/jsp/printcwbruku.jsp -text
