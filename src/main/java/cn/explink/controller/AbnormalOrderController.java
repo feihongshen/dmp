@@ -225,8 +225,6 @@ public class AbnormalOrderController {
 		if (abnormalOrder!=null) {
 			return "{\"errorCode\":0,\"error\":\"该订单号'"+cwb+"'已经创建过问题件，不允许再次创建！\"}";
 		}*/
-		//自动生成问题件单号
-		String questionNo="Q"+System.currentTimeMillis();
 		//判断插入的问题件isfind是已经找到（1）还是未找到（0）
 		long isfind=0;
 		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
@@ -245,6 +243,8 @@ public class AbnormalOrderController {
 				String nowtime = df.format(date);
 				StringBuffer cwbs = new StringBuffer();
 				for (String cwbStr : cwb.split("\r\n")) {
+					//自动生成问题件单号
+					String questionNo="Q"+System.currentTimeMillis();
 					try {
 						if (cwbStr.trim().length() == 0) {
 							continue;
@@ -1511,11 +1511,27 @@ public class AbnormalOrderController {
 	public @ResponseBody String cancelMisspiece(
 			@RequestParam(value="ids",defaultValue="",required=false) String ids)
 		{
-		long updatesum=missPieceDao.updateState(ids);
-		if (updatesum>0) {
-			return "{\"errorCode\":0,\"error\":\"作废丢失订单成功\"}";
+		long updatesum=0;
+		if(!ids.equals("")){
+			if (ids.split(",").length>0) {
+				for (String cwb : ids.split(",")) {
+					AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
+					if (abnormalOrder!=null) {
+						abnormalOrderDAO.updateMisspieceState(0, cwb);
+					}
+					missPieceDao.updateStateAdd(cwb);
+					updatesum++;
+				}
+			}
 		}
-		return "{\"errorCode\":1,\"error\":\"作废丢失订单失败\"}";
+		if (updatesum==ids.split(",").length) {
+			return "{\"errorCode\":0,\"error\":\"作废丢失订单全部成功\"}";
+		}else if(updatesum>0&&updatesum<=ids.split(",").length){
+			return "{\"errorCode\":1,\"error\":\"作废丢失订单部分成功\"}";
+
+		}else {
+			return "{\"errorCode\":1,\"error\":\"作废丢失订单全部失败\"}";
+		}
 	}
 	@RequestMapping("/download")
 	public void filedownload(HttpServletRequest request,HttpServletResponse response){

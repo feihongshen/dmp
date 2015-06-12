@@ -108,11 +108,21 @@ public class MissPieceDao {
 			e.printStackTrace();
 		}
 	}
-	//修改丢失件的状态1为有效，0为无效
+/*	//修改丢失件的状态1为有效，0为无效
 	public long updateState(String cwbs){
 		String sql="update express_ops_lose_back set state=0 where cwb IN('"+cwbs+"')";
 		try {
 			int k=this.jdbcTemplate.update(sql);
+			return k;
+		} catch (Exception e) {
+			return 0;
+		}
+	}*/
+	//修改丢失件的状态1为有效，0为无效
+	public long updateStateAdd(String cwbs){
+		String sql="delete  from  express_ops_lose_back  where cwb=?";
+		try {
+			int k=this.jdbcTemplate.update(sql, cwbs);
 			return k;
 		} catch (Exception e) {
 			return 0;

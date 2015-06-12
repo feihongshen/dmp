@@ -522,7 +522,7 @@ public class AbnormalOrderDAO {
 				}else if (currentbranchid==dutybranchid) {
 					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
 				}else {
-					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') And `ishandle` NOT IN('"+ishandledata1+"')"+")";
 
 				}
 				
@@ -632,7 +632,7 @@ public class AbnormalOrderDAO {
 				}else if (currentbranchid==dutybranchid) {
 					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
 				}else {
-					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') AND `ishandle` NOT IN('"+ishandledata1+"')"+")";
 
 				}
 				
@@ -689,7 +689,7 @@ public class AbnormalOrderDAO {
 		if (handleBranch!=BranchEnum.KeFu.getValue()) {
 			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
 			if (findscope!=0) {
-				sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+				sql += " AND (`creuserid`="+userid+"  or `dutypersonid`="+userid+")";
 			}
 		}
 		if (cwb.length() > 0) {
@@ -737,7 +737,7 @@ public class AbnormalOrderDAO {
 				}else if (currentbranchid==dutybranchid) {
 					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
 				}else {
-					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') And `ishandle` NOT IN('"+ishandledata1+"')"+")";
 
 				}
 				
@@ -854,7 +854,7 @@ public class AbnormalOrderDAO {
 				}else if (currentbranchid==dutybranchid) {
 					sql+="  AND `ishandle` NOT IN('"+ishandledata1+"')";
 				}else {
-					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') OR `ishandle` NOT IN('"+ishandledata1+"')"+")";
+					sql+="  AND (`ishandle` NOT IN('"+ishandledata+"') And `ishandle` NOT IN('"+ishandledata1+"')"+")";
 
 				}
 				
