@@ -514,15 +514,17 @@ public class AbnormalOrderController {
 		for (Branch b : branchlList) {
 			branchMap.put(b.getBranchid(), b.getBranchname());
 		}
-		//初判责任人
+		//初判责任人与责任机构
 		String username="";
 		String dutybranch="";
 		long dutyuser=abnormalOrder.getDutypersonid();
 		if (dutyuser!=0) {
-			User user=userDAO.getAllUserByid(dutyuser);
+			User user=userDAO.getUserByidAdd(dutyuser);
 			if (user!=null) {
 				username=user.getRealname();
-				dutybranch=branchDAO.getBranchName(user.getBranchid());
+				if (user.getBranchid()!=0) {
+					dutybranch=branchDAO.getBranchName(user.getBranchid());
+				}
 			}
 		}
 		//最终责任人机构与当事人
@@ -530,8 +532,8 @@ public class AbnormalOrderController {
 		String lastdutypersonName="";
 		long dutybranchid=abnormalOrder.getDutybrachid();
 		long dutypersonid=abnormalOrder.getDutypersonid();
-		Branch branch=this.branchDAO.getBranchById(dutybranchid);
-		User user1=this.userDAO.getAllUserByid(dutypersonid);
+		Branch branch=this.branchDAO.getBranchByIdAdd(dutybranchid);
+		User user1=this.userDAO.getUserByidAdd(dutypersonid);
 		if (branch!=null) {
 			lastdutybranchname=branch.getBranchname();
 		}
@@ -635,8 +637,8 @@ public class AbnormalOrderController {
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(Integer.parseInt(id));
 			if ((dutybranchid==""&&dutyname=="")||(dutybranchid.equals("undefined")&&dutyname.equals("undefined"))) {
-				dutyname=ab.getDutybrachid()+"";
-				dutybranchid=ab.getDutypersonid()+"";
+				dutyname=ab.getDutypersonid()+"";
+				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
 			long ishandle=0;
@@ -682,9 +684,9 @@ public class AbnormalOrderController {
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(Integer.parseInt(id));
-			if (dutybranchid==""&&dutyname=="") {
-				dutyname=ab.getDutybrachid()+"";
-				dutybranchid=ab.getDutypersonid()+"";
+			if ((dutybranchid==""&&dutyname=="")||(dutybranchid.equals("undefined")&&dutyname.equals("undefined"))) {
+				dutyname=ab.getDutypersonid()+"";
+				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
 			long ishandle=0;
@@ -957,10 +959,13 @@ public class AbnormalOrderController {
 	public String getFilepathSum(long id,String name){
 		String filepath="";
 		AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderById(id);
-		if (abnormalOrder.getFileposition()!=null) {
+		if (abnormalOrder.getFileposition()!=null&&abnormalOrder.getFileposition()!="") {
 			filepath=abnormalOrder.getFileposition()+","+name;
+			return filepath;
+		}else {
+			return name;
 		}
-		return filepath;
+		
 	}
 
 	public String getStrings(List<String> strArr) {
@@ -1218,9 +1223,15 @@ public class AbnormalOrderController {
 		String branchdutyuser="";
 		String branchname="";
 		if (abnormalOrder.getDutypersonid()!=0) {
-			branchdutyuser=userDAO.getAllUserByid(abnormalOrder.getDutypersonid()).getRealname();
+			User user=userDAO.getUserByidAdd(abnormalOrder.getDutypersonid());
+			if (user!=null) {
+				branchdutyuser=user.getRealname();
+			}
 			if(abnormalOrder.getDutybrachid()!=0){
-				branchname=branchMap.get(abnormalOrder.getDutybrachid());
+				Branch branch=this.branchDAO.getBranchByIdAdd(abnormalOrder.getDutybrachid());
+				if (branch!=null) {
+					branchname=branch.getBranchname();
+				}
 			}
 		}
 		model.addAttribute("branchdutyuser",branchdutyuser);

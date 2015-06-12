@@ -195,7 +195,19 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
-
+	public Branch getBranchByIdAdd(long branchid) {
+		try {
+			List<Branch> list = this.jdbcTemplate.query("select * from express_set_branch where branchid =?", new BranchRowMapper(), branchid);
+			if ((list != null) && (list.size() > 0)) {
+				return list.get(0);
+			} else {
+				return null;
+			}
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
 	@Cacheable(value = "branchCache", key = "#branchid")
 	public Branch getEffectBranchById(long branchid) {
 		try {

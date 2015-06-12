@@ -5324,6 +5324,32 @@ function submitReviseAbnormalCreate(){
 	$('#swfupload-control').swfupload('addPostParam', 'ids', $("#ids", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
+//判断申诉页面的弹出框的相关的条件
+function check_punishshensucondition(){
+	if($("#describe").val()==""){
+		alert("请输入申诉说明！");
+		return false;
+	}
+	return true;
+}
+//对内扣罚申诉
+function reviseShensuToSubmit(form){
+	
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "inpunish/submitPunishShensu");
+		submitCreateForm(form);
+		return;
+	}
+	
+	$("#update")[0].contentWindow.submitPunishShensu();
+}
+function submitPunishShensu(){
+	$('#swfupload-control').swfupload('addPostParam', 'shensutype', $("#shensutype", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'ids', $("#ids", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}
 //处理结案操作弹出框的判断
 function check_dealJieanResulet() {
 	if($("#dealresult").val()==0){

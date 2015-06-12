@@ -235,7 +235,7 @@ public class AbnormalService {
 	//结案处理修改两张表的信息
 	public void reviseAbnormalAndwritebackLast(AbnormalOrder co,String describe,long dealresult,long dutybranchid,long dutyname,String filepathsum,long action,User user,String nowtime,String filepath,long ishandle){
 		//,dutybranchid,dutyname
-		abnormalOrderDAO.saveAbnormalOrderResultByid(co.getId(), dealresult,filepathsum,ishandle,describe,nowtime);
+		abnormalOrderDAO.saveAbnormalOrderResultByid(co.getId(), dealresult,filepathsum,ishandle,describe,nowtime,dutybranchid,dutyname);
 		//long dutybranchid,long dutyusernameid,
 		abnormalWriteBackDAO.creAbnormalOrderAdd(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, co.getId(), co.getAbnormaltypeid(), co.getCwb(), filepath);
 	}

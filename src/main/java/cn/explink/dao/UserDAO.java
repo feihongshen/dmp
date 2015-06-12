@@ -116,6 +116,13 @@ public class UserDAO {
 			return new User();
 		}
 	}
+	public User getUserByidAdd(long userid) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where userid=?", new UserRowMapper(), userid);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 
 	public List<User> getUsersByPage(long page, String username, String realname, long branchid, long roleid) {
 		String sql = "SELECT * from express_set_user ";

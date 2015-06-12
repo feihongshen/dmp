@@ -101,7 +101,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 								</td>
 						</tr>
 						<tr class="font_1">
-							<td colspan="2" align="left" valign="top">处理内容：<textarea name="describe" id="describe" cols="40" rows="4" id="textfield"></textarea></td>
+							<td colspan="2" align="left" valign="top">处理内容：<textarea name="describe" id="describe" cols="40" rows="4" id="textfield" onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'"></textarea></td>
 						</tr>
 						 <tr class="font_1">
 							<td colspan="2" align="left" valign="top"> 

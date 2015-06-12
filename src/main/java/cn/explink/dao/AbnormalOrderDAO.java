@@ -146,10 +146,10 @@ public class AbnormalOrderDAO {
 		this.jdbcTemplate.update(sql, abnormaltypeid, describe,ishandle,nowtime,id);
 	}
 	//结案修改信息
-	public void saveAbnormalOrderResultByid(long id, long dealresult, String filepathsum,long ishandle,String resultdealcontent,String nowtime) {
+	public void saveAbnormalOrderResultByid(long id, long dealresult, String filepathsum,long ishandle,String resultdealcontent,String nowtime,long dutybranchid,long dutynameid) {
 		try {
-			String sql = "update express_ops_abnormal_order set `dealresult`=?,`fileposition`=?,`ishandle`=?,`resultdealcontent`=?,`handletime`=? where `id`=?";
-			this.jdbcTemplate.update(sql, dealresult,filepathsum,ishandle,resultdealcontent,nowtime,id);
+			String sql = "update express_ops_abnormal_order set `dealresult`=?,`fileposition`=?,`ishandle`=?,`resultdealcontent`=?,`handletime`=?,`lastdutybranchid`=?,`lastdutyuserid`=? where `id`=?";
+			this.jdbcTemplate.update(sql, dealresult,filepathsum,ishandle,resultdealcontent,nowtime,dutybranchid,dutynameid,id);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
