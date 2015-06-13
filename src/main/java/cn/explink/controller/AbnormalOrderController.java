@@ -1413,7 +1413,7 @@ public class AbnormalOrderController {
 		List<User> users=userDAO.getAllUser();
 		List<MissPieceView> missPieceViews=new ArrayList<MissPieceView>();
 		List<MissPiece> missPiecesCounList=new ArrayList<MissPiece>();
-		String quotAndComma = ",";
+		String quotAndComma = "',";
 		StringBuffer cwbs1 = new StringBuffer();
 		if (isshow==0) {
 			strtime="";
@@ -1426,7 +1426,7 @@ public class AbnormalOrderController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
-					cwbs1 = cwbs1.append(cwbStr).append(quotAndComma);
+					cwbs1 = cwbs1.append("'").append(cwbStr).append(quotAndComma);
 				}
 			}
 			String cwbs = new String();
@@ -1448,7 +1448,7 @@ public class AbnormalOrderController {
 		model.addAttribute("cwbordertype");
 		model.addAttribute("losebackbranchid", losebackbranchid);
 		model.addAttribute("page", page);
-		model.addAttribute("page_obj", new Page(missPiecesCounList.size(), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(missPiecesCounList==null?0:missPiecesCounList.size(), page, Page.ONE_PAGE_NUMBER));
 		return "abnormalorder/losebackdetail";
 	}
 	
