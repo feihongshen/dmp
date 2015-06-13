@@ -144,6 +144,20 @@ function Days(){
 function exportExcel(){
 	$("#exportExcel").submit();
 }
+function showButton()
+{ if($("#filename").val().length>0)
+	{
+	$("#subfile").removeAttr('disabled');
+	}
+}
+function showUp()
+{
+	$("#fileup").removeAttr('style');
+	$("#top").removeAttr('style');
+	$("#br").attr('style','display: none;');
+	$("#imp").attr('disabled','disabled');
+//	$("#box_form").removeAttr('style');
+	}
 </script>
 </head>
 
@@ -215,7 +229,7 @@ function exportExcel(){
 </tr>
 <tr>
 <td><input type="button" class="input_button2" id="addpenalizeOut" value="创建"/> </td>
-<td><input type="button" class="input_button2" value="导入"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
+<td><input type="button" class="input_button2" value="导入" id="imp" onclick="showUp()"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
 <td><input type="button" class="input_button2" disabled="disabled" id="cancelpenalizeOut" value="撤销"/></td>
 <td> </td>
 <td> </td>
@@ -227,9 +241,16 @@ function exportExcel(){
 <input class="input_button2" type="button" onclick="exportExcel()"  ${page_obj.total>0?'':'disabled="disabled"' } value="导出"/>  
 </td>
 </tr>
- </table>
 	<input name="isnow" value="1" type="hidden"/>
 	</form>
+<tr><td colspan="6">
+<div id="fileup" style="display: none;"><form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+		<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
+		 <input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
+	</form></div></td>
+</tr>
+ </table>
+
 	</div>
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>

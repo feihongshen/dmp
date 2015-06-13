@@ -3,6 +3,7 @@
  */
 package cn.explink.service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -97,6 +98,7 @@ public class PenalizeOutService {
 		try {
 			// 查询出数据
 			final List<PenalizeOut> penalizeOutlList = this.penalizeOutDAO.getPenalizeOutByListExport(cwbs, flowordertype, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, starttime, endtime);
+			final BigDecimal penalizeOutfeetotal=this.penalizeOutDAO.getPenalizeOutByPenalizeOutfeeSum(cwbs, flowordertype, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, starttime, endtime);
 			final List<Customer> customers = this.customerDAO.getAllCustomers();
 			final List<User> users = this.userDAO.getAllUser();
 			final List<PenalizeType> penalizeTypeList = this.penalizeTypeDAO.getAllPenalizeType();
@@ -119,6 +121,10 @@ public class PenalizeOutService {
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
+					Row row=sheet.createRow(penalizeOutlList.size()+1);
+					row.createCell(0).setCellValue("赔付总额");
+					row.createCell(4).setCellValue(penalizeOutfeetotal+"");
+
 				}
 				private Object setExcelObject(String[] cloumnName, Object a, int i, PenalizeOut out) {
 					try {
@@ -145,7 +151,7 @@ public class PenalizeOutService {
 									a = cu.getCustomername();
 								}
 							}
-						}  else if (cloumnName[i].equals("PenalizeOutState")) {
+						}  else if (cloumnName[i].equals("PenalizeOutstate")) {
 
 							a=PenalizeSateEnum.getPenalizebigEnum(out.getPenalizeOutstate()).getText();
 

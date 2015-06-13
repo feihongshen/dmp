@@ -49,7 +49,7 @@
            	</tr>
           	<tr>
            	<td align="right" nowrap="nowrap">扣罚金额<span style="color: red">*</span>：</td>
-            <td ><input  type="text" name="punishInsideprice" style="width: 100%;"/></td>
+            <td ><input  type="text" name="punishInsideprice" style="width: 100%;" onkeyup="if(this.value<'0'){ this.value=''}" /></td>
           	</tr>
             <tr>
             <td align="right" nowrap="nowrap">扣罚说明：</td>

@@ -20,6 +20,10 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.CwbOrderTypeDAO;
 import cn.explink.dao.PayWayDao;
+import cn.explink.dao.PenalizeOutDAO;
+import cn.explink.dao.PenalizeOutImportErrorRecordDAO;
+import cn.explink.dao.PenalizeOutImportRecordDAO;
+import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.ServiceAreaDAO;
@@ -33,6 +37,9 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelColumnSet;
 import cn.explink.domain.ImportValidationManager;
+import cn.explink.domain.PenalizeOut;
+import cn.explink.domain.PenalizeOutImportRecord;
+import cn.explink.domain.PenalizeType;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.ServiceArea;
@@ -40,6 +47,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
@@ -85,6 +93,14 @@ public abstract class ExcelExtractor {
 	PunishDAO punishDAO;
 	@Autowired
 	CwbDAO cwbDAO;
+	@Autowired
+	PenalizeTypeDAO penalizeTypeDAO;
+	@Autowired
+	PenalizeOutDAO penalizeOutDAO;
+	@Autowired
+	PenalizeOutImportErrorRecordDAO penalizeOutImportErrorRecordDAO;
+	@Autowired
+	PenalizeOutImportRecordDAO penalizeOutImportRecordDAO;
 
 	@Autowired
 	ImportCwbErrorService importCwbErrorService;
@@ -377,7 +393,7 @@ public abstract class ExcelExtractor {
 		 * if (excelColumnSet.getOrdercwbindex() != 0) {
 		 * cwbOrder.setOrdercwb(getXRowCellData(row,
 		 * excelColumnSet.getOrdercwbindex())); }
-		 * 
+		 *
 		 * if (excelColumnSet.getServiceareaindex() != 0) {
 		 * cwbOrder.setPaisongArea( getXRowCellData(row,
 		 * excelColumnSet.getServiceareaindex())); }
@@ -646,5 +662,104 @@ public abstract class ExcelExtractor {
 
 		punish.setState(this.getXRowCellData(row, 13).equals("已审核") ? 1 : 0);
 		return punish;
+	}
+
+	public void extractPenalizeOut(InputStream f, User user, Long systemTime) {
+		List<PenalizeType> penalizeTypelList = this.penalizeTypeDAO.getAllPenalizeType();
+
+		Map<String, Integer> penalizeTypeMap = this.SetMapPenalizeTypeMap(penalizeTypelList);
+
+		List<PenalizeOut> penalizeOuts = new ArrayList<PenalizeOut>();
+		int successCounts=0;
+		int failCounts=0;
+		for (Object row : this.getRows(f)) {
+			try {
+				PenalizeOut out = this.getPenalizeOutAccordingtoConf(row, penalizeTypeMap, user, systemTime);
+				if (out != null) {
+					penalizeOuts.add(out);
+					failCounts++;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+
+				// 失败订单数+1 前台显示
+
+				// 存储报错订单，以便统计错误记录和处理错误订单
+
+			}
+		}
+		for (PenalizeOut out : penalizeOuts) {
+			try {
+				int nums=this.penalizeOutDAO.crePenalizeOut(out);
+				successCounts+=nums;
+			} catch (Exception e) {
+				ExcelExtractor.logger.error("对外赔付信息导入异常:" + e);
+			}
+
+		}
+		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
+		record.setImportFlag(systemTime);
+		record.setUserid(user.getUserid());
+		record.setTotalCounts(this.getRows(f).size());
+		record.setSuccessCounts(successCounts);
+		record.setFailCounts(failCounts);
+		this.penalizeOutImportRecordDAO.crePenalizeOutImportRecord(record);
+	}
+
+	/**
+	 * @param row
+	 * @param userMap
+	 * @param penalizeTypeMap
+	 * @param customerMap
+	 * @return
+	 */
+	private PenalizeOut getPenalizeOutAccordingtoConf(Object row, Map<String, Integer> penalizeTypeMap, User user, long systemTime) {
+		PenalizeOut out = new PenalizeOut();
+		String cwb = this.getXRowCellData(row, 1);
+		BigDecimal penalizeOutfee = null;
+		try {
+			penalizeOutfee = new BigDecimal(this.getXRowCellData(row, 2));
+		} catch (Exception e) {
+
+		}
+		String penalizeOutsmallText = this.getXRowCellData(row, 3);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co == null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在");
+			return null;
+		} else {
+			out.setCwb(cwb);
+		}
+		int penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
+
+		PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(cwb, penalizeOutsmall, penalizeOutfee);
+		if (penalizeOut != null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
+		}
+		out.setCustomerid(co.getCustomerid());
+		out.setFlowordertype(co.getCustomerid());
+		out.setReceivablefee(co.getReceivablefee());
+		out.setPenalizeOutfee(penalizeOutfee);
+		out.setCreateruser(user.getUserid());
+		out.setPenalizeOutsmall(penalizeOutsmall);
+		out.setPenalizeOutstate(PenalizeSateEnum.Successful.getValue());
+		PenalizeType type = this.penalizeTypeDAO.getPenalizeTypeById(penalizeOutsmall);
+		out.setPenalizeOutbig(type == null ? 0 : type.getParent());
+
+		return out;
+	}
+
+	/**
+	 * @param penalizeTypelList
+	 * @return
+	 */
+	private Map<String, Integer> SetMapPenalizeTypeMap(List<PenalizeType> penalizeTypelList) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		if ((penalizeTypelList != null) && (penalizeTypelList.size() > 0)) {
+			for (PenalizeType type : penalizeTypelList) {
+				map.put(type.getText(), type.getId());
+			}
+		}
+		return map;
 	}
 }

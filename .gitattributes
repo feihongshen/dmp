@@ -912,6 +912,8 @@ src/main/java/cn/explink/dao/ParameterDetailDAO.java -text
 src/main/java/cn/explink/dao/PayUpDAO.java -text
 src/main/java/cn/explink/dao/PayWayDao.java -text
 src/main/java/cn/explink/dao/PenalizeOutDAO.java -text
+src/main/java/cn/explink/dao/PenalizeOutImportErrorRecordDAO.java -text
+src/main/java/cn/explink/dao/PenalizeOutImportRecordDAO.java -text
 src/main/java/cn/explink/dao/PenalizeTypeDAO.java -text
 src/main/java/cn/explink/dao/PosPayMoneyDAO.java -text
 src/main/java/cn/explink/dao/PrintcwbDetailDAO.java -text
@@ -1091,6 +1093,8 @@ src/main/java/cn/explink/domain/PayUp.java -text
 src/main/java/cn/explink/domain/PayWay.java -text
 src/main/java/cn/explink/domain/PenalizeInside.java -text
 src/main/java/cn/explink/domain/PenalizeOut.java -text
+src/main/java/cn/explink/domain/PenalizeOutImportErrorRecord.java -text
+src/main/java/cn/explink/domain/PenalizeOutImportRecord.java -text
 src/main/java/cn/explink/domain/PenalizeType.java -text
 src/main/java/cn/explink/domain/PrintStyle.java -text
 src/main/java/cn/explink/domain/PrintView.java -text

@@ -192,7 +192,7 @@ public class PenalizeOutDAO {
 			sql += " and penalizeOutsmall=" + penalizeOutsmall;
 		}
 		if (penalizeState > 0) {
-			sql += " and penalizeState=" + penalizeState;
+			sql += " and penalizeOutstate=" + penalizeState;
 		}
 		if ((starttime.length() > 0) && (endtime.length() > 0)) {
 			sql += " and createrdate>='" + starttime + "' and createrdate<='" + endtime + "'";
@@ -204,10 +204,10 @@ public class PenalizeOutDAO {
 	 * @param penalizeOutId
 	 * @param cancelContent
 	 */
-	public int cancelpenalizeOutDataById(int penalizeOutId,int penalizeOutState, String cancelContent) {
+	public int cancelpenalizeOutDataById(int penalizeOutId,int penalizeOutState, String cancelContent,String canceldate,long userid) {
 		try{
-			String  sql=" update express_ops_penalizeOut_detail set cancelContent=?,penalizeOutState=? where penalizeOutId=? ";
-			return this.jdbcTemplate.update(sql,cancelContent,penalizeOutState,penalizeOutId);
+			String  sql=" update express_ops_penalizeOut_detail set cancelContent=?,penalizeOutState=?,canceluser=?,canceldate=? where penalizeOutId=? ";
+			return this.jdbcTemplate.update(sql,cancelContent,penalizeOutState,userid,canceldate,penalizeOutId);
 		}
 	catch(Exception e)
 	{

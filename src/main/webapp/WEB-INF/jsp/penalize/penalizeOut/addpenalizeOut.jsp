@@ -50,7 +50,7 @@
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付金额<span style="color: red">*</span>：</td>
-            <td colspan="5"><input id="penalizeOutfee" name="penalizeOutfee" type="text" style="width: 24.5%;"/></td>
+            <td colspan="5"><input id="penalizeOutfee" onkeyup="if(this.value<'0'){ this.value=''}" name="penalizeOutfee" type="text" style="width: 24.5%;"/></td>
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付说明<span style="color: red">*</span>：</td>

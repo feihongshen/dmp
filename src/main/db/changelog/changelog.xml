@@ -6605,6 +6605,33 @@ CREATE TABLE `cs_complaint_accept` (
 			);
        	</sql> 
 	</changeSet>
+	<changeSet id="wangyonghe-2015-06-13-01" author="wangyonghe">
+       	<sql>
+       	CREATE TABLE `express_ops_penalizeOutImportErrorRecord` (
+					`id`  int NOT NULL AUTO_INCREMENT ,
+					`importFlag`  bigint(50) NULL COMMENT '导入记录标识' ,
+					`cwb`  varchar(30) NULL DEFAULT '' ,
+					`error`  varchar(100) NULL DEFAULT '' COMMENT '导入失败原因' ,
+					PRIMARY KEY (`id`),
+					INDEX `id_idx` (`id`) ,
+					INDEX `cwb_idx` (`cwb`) ,
+					INDEX `importFlag_idx` (`importFlag`) 
+					);
+		
+		CREATE TABLE `express_ops_penalizeOutImportRecord` (
+					`id`  int NOT NULL AUTO_INCREMENT ,
+					`importFlag`  bigint(50) NULL COMMENT '导入记录标识' ,
+					`userid`  bigint(30) NULL   COMMENT '操作人' ,
+					`starttime`  datetime NULL  COMMENT '导入时间' ,
+					`successCounts`  int(20) NULL COMMENT '成功数量' ,
+					`failCounts`  int(20) NULL   COMMENT '失败数量' ,
+					`totalCounts`  int(20) NULL COMMENT '总数' ,
+					PRIMARY KEY (`id`),
+					INDEX `id_idx` (`id`) ,
+					INDEX `importFlag_idx` (`importFlag`) 
+					);
+       	</sql> 
+	</changeSet>
 
 
 </databaseChangeLog>

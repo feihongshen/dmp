@@ -1,14 +1,19 @@
 package cn.explink.controller;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -35,14 +41,24 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
+import cn.explink.service.Excel2003Extractor;
+import cn.explink.service.Excel2007Extractor;
+import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PenalizeOutService;
+import cn.explink.service.ResultCollectorManager;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
 @Controller
 @RequestMapping("/penalizeOut")
 public class PenalizeOutController {
+	@Autowired
+	Excel2007Extractor excel2007Extractor;
+	@Autowired
+	Excel2003Extractor excel2003Extractor;
+	@Autowired
+	ResultCollectorManager resultCollectorManager;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -329,7 +345,8 @@ public class PenalizeOutController {
 			@RequestParam(value = "penalizeOutId", required = false, defaultValue = "0") int penalizeOutId,
 			Model model) throws Exception {
 		if(penalizeOutId>0){
-			int  couns=this.penalizeOutDAO.cancelpenalizeOutDataById(penalizeOutId,PenalizeSateEnum.Cancel.getValue(),cancelContent);
+			String canceldate=DateTimeUtil.getNowTime();
+			int  couns=this.penalizeOutDAO.cancelpenalizeOutDataById(penalizeOutId,PenalizeSateEnum.Cancel.getValue(),cancelContent,canceldate,this.getSessionUser().getUserid());
 			if(couns>0)
 			{
 				return "{\"errorCode\":0,\"error\":\"撤销对外赔付成功！\"}";
@@ -350,5 +367,48 @@ public class PenalizeOutController {
 
 		this.penalizeOutService.exportExcels(response, cwbs, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, flowordertype, starttime, endtime);
 	}
+	@RequestMapping("/importData")
+	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file)
+			throws Exception {
+		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
+		final InputStream inputStream = file.getInputStream();
+		final User user=this.getSessionUser();
+		final Long systemTime=System.currentTimeMillis();
+		final SecurityContext scontext = this.securityContextHolderStrategy.getContext();
+		if (excelExtractor != null) {
 
+			  ExecutorService newSingleThreadExecutor =
+			  Executors.newSingleThreadExecutor();
+			  newSingleThreadExecutor.execute(new Runnable() {
+
+			  @Override public void run() {
+			try {
+				PenalizeOutController.this.securityContextHolderStrategy.setContext(scontext);
+				PenalizeOutController.this.processFile(excelExtractor, inputStream,user,systemTime);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+
+			}
+
+			  } });
+
+		} else {
+		}
+
+		 return "redirect:list/1 ";
+	}
+	private ExcelExtractor getExcelExtractor(MultipartFile file) {
+		String originalFilename = file.getOriginalFilename();
+		if (originalFilename.endsWith("xlsx")) {
+			return this.excel2007Extractor;
+		} else if (originalFilename.endsWith(".xls")) {
+			return this.excel2003Extractor;
+		}
+		return null;
+	}
+	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream,User user, Long systemTime) {
+		 excelExtractor.extractPenalizeOut(inputStream,user,systemTime);
+
+	}
 }
