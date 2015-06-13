@@ -35,6 +35,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.WorkOrderDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
@@ -68,6 +69,8 @@ import cn.explink.util.StringUtil;
 @Controller
 @RequestMapping("/workorder")      
 public class WorkOrderController {
+	@Autowired
+	private SystemInstallDAO systeminstalldao;
 	@Autowired
 	private CwbOrderService cos;
 	@Autowired
@@ -395,6 +398,15 @@ public class WorkOrderController {
 		
 	}
 	
+	
+	@RequestMapping("/updateWorkOrderQueryF")
+	@ResponseBody
+	public String updateWorkOrderQueryF(CsComplaintAccept cca){	
+		workorderdao.ChangeGoOnAcceptcomplaintState(cca);	
+		return "{\"errorCode\":0,\"error\":\"处理成功\"}";
+		
+	}
+	
 	@RequestMapping("/saveComplainWorkOrderF")
 	@ResponseBody
 	public String saveComplainWorkOrderF(CsComplaintAccept cca){
@@ -441,6 +453,8 @@ public class WorkOrderController {
 			ca.setProvence(c.getProvence());
 			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
 			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			ca.setComplaintUser(c.getComplaintUser());
+			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
 		}
 		
@@ -467,7 +481,8 @@ public class WorkOrderController {
 			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
 			ca.setContent(c.getContent());
 			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
-			
+			ca.setComplaintUser(c.getComplaintUser());
+			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
 		}
 		
@@ -509,6 +524,19 @@ public class WorkOrderController {
 			return "workorder/CreateGoOnAcceptWorkOrder";			
 	}
 	
+	
+	
+	
+	@RequestMapping("/GoOnacceptWoQuery")
+	public String GoOnacceptWoQuery(HttpServletRequest req,Model model){
+		String workorder=req.getParameter("workorder");
+		CsComplaintAccept lcs=workorderdao.findGoOnacceptWOByWorkOrder(workorder);
+		model.addAttribute("lcs", lcs);
+			return "workorder/CreateGoonAcceptQueryWorkOrder";			
+	}
+	
+	
+	
 	@RequestMapping("/refreshwo")
 	public String refreshWo(CsComplaintAccept ca,Model model){
 		
@@ -549,12 +577,15 @@ public class WorkOrderController {
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomerid(c.getCustomerid());
 			ca.setHandleUser(c.getHandleUser());
+			ca.setJieanTime(c.getJieanTime());
 			lc.add(ca);			
 			String cname=workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName();
 			connameList.put(c.getPhoneOne(), cname);
 			String customerName=customerDAO.findcustomername(c.getCustomerid()).getCustomername();
 			customerList.put(c.getCustomerid(),customerName);			
 	}
+		
+		
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
 		/*String username=getSessionUser().getRealname();*/
 		List<Branch> lb=branchdao.getAllBranches();
@@ -564,6 +595,8 @@ public class WorkOrderController {
 			 lrs=reasondao.getSecondLevelReason(r.getReasonid());
 		}
 		
+		
+		model.addAttribute("shensuendTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("shensuendTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr==null?null:lr);
 		model.addAttribute("lrs", lrs==null?null:lrs);
@@ -907,8 +940,16 @@ public class WorkOrderController {
 		String jieanchongshenremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanchongshenremark"));
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String JieAnChongShenChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		/*String downloadjieanpath =workorderdao.getCsComplaintAccept(Integer.valueOf(jid)).getDownloadjieanpath();*/
 		String downloadname=workorderservice.loadexceptfile(file);
 		CsComplaintAccept cca = new CsComplaintAccept();
+		/*StringBuilder sb = new StringBuilder();
+		if(downloadjieanpath==null){
+			cca.setDownloadchongshenpath(downloadname);
+		}else{
+			sb.append(downloadjieanpath).append(",").append(downloadname);
+			cca.setDownloadchongshenpath(sb.toString());
+		}*/
 		cca.setDownloadchongshenpath(downloadname);
 		cca.setJieanchongshenremark(jieanchongshenremark);
 		cca.setId(Integer.valueOf(jid));

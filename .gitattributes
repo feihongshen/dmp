@@ -2374,6 +2374,7 @@ src/main/webapp/WEB-INF/jsp/workorder/AdjudicateRetrial.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CallerArchivalRepository.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateComplainWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateGoOnAcceptWorkOrder.jsp -text
+src/main/webapp/WEB-INF/jsp/workorder/CreateGoonAcceptQueryWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateQueryWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CustomerServiceAdjudicate.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CustomerServicesAcceptWorkOrder.jsp -text

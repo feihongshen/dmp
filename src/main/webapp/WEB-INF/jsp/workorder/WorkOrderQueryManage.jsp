@@ -11,15 +11,16 @@
 <%@page import="cn.explink.domain.CwbOrder"%>
 
  <% 
-	List<Reason> r = (List<Reason>)request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
-	List<Reason> rs = (List<Reason>)request.getAttribute("lrs")==null?null: (List<Reason>)request.getAttribute("lrs");
+	List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
+	List<Reason> rs =request.getAttribute("lrs")==null?null: (List<Reason>)request.getAttribute("lrs");
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
-	List<Branch> b =(List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+	List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
 	/*  String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username");  */
 	/* Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist")==null?null:(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist"); */
 	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
-	List<CwbOrder> co=(List<CwbOrder>)request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
+	List<CwbOrder> co=request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
+	Integer shensuendTime =(Integer)request.getAttribute("shensuendTime");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -82,7 +83,8 @@ $(function() {
 		getAddBox2();
 
 	});
-	$("#add_OrgAppeal").click(function() {
+	/* $("#add_OrgAppeal").click(function() {
+		
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
 			return false;
@@ -92,7 +94,7 @@ $(function() {
 		}
 		getAddBox3();
 
-	});
+	}); */
 	$("#add_AdjudicateRetrial").click(function() {
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
@@ -193,7 +195,8 @@ function addInit(){
 	
 }
 
-function getFomeV(v,l){
+function getFomeV(v,l,timev){
+	$('#JieAnTimeValue').val(timev);
 	$('#FormV').val("");
 	$('#FormV').val(v);	
 	
@@ -210,6 +213,66 @@ function testCwbsIfNull(){
 		alert("开始时间不能大于结束时间");
 		return;
 	}
+}
+function decideShenSudate(){
+	var str =$('#JieAnTimeValue').val();
+	/*var str ='2015-05-12 23:13:15'; */
+	str = str.replace(/-/g,"/");
+	var date1 = new Date(str);	
+	var str1=CurentTime();
+	str1 = str1.replace(/-/g,"/");
+	var date2 = new Date(str1);
+	var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
+	//计算出相差天数
+	var days=Math.floor(date3/(24*3600*1000));
+	var shensuendTime=$('#shensuendTime').val();
+	if(days>shensuendTime){
+		alert("抱歉，已经过了可申诉时间！");
+		return false;
+	}else if($('#FormV').val()==""){
+			alert('请选择一条记录');
+			return false;
+		}else if($('#ComStateV').val()!=$('#YiJieAn').val()){
+			alert('本条数据状态未结案不能申诉');
+			return false;
+		}
+		getAddBox3();
+	
+}
+function CurentTime()   //计算当天时间
+{ 
+    var now = new Date();
+    
+    var year = now.getFullYear();       //年
+    var month = now.getMonth() + 1;     //月
+    var day = now.getDate();            //日
+    
+    var hh = now.getHours();            //时
+    var mm = now.getMinutes();          //分
+    var ss = now.getSeconds();           //秒
+    
+    var clock = year + "-";
+    
+    if(month < 10)
+        clock += "0";
+    
+    clock += month + "-";
+    
+    if(day < 10)
+        clock += "0";
+        
+    clock += day + " ";
+    
+    if(hh < 10)
+        clock += "0";
+        
+    clock += hh + ":";
+    if (mm < 10) clock += '0'; 
+    clock += mm + ":"; 
+     
+    if (ss < 10) clock += '0'; 
+    clock += ss; 
+    return(clock); 
 }
 
 </script>
@@ -246,9 +309,10 @@ function testCwbsIfNull(){
 					<td>
 					投诉一级分类:<select class="select1" name="complaintOneLevel" id="ol">
 								<option value="-1">全部</option>
+								<%if(r!=null){ %>
 								<%for(Reason reason:r){ %>
 								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
-								<%} %>
+								<%} }%>
 								</select>
 					</td>	
 					<td>
@@ -271,9 +335,10 @@ function testCwbsIfNull(){
 					<td>
 				投诉二级处理:<select class="select1" name="complaintTwoLevel" id="tl">
 								<option value="-1">全部</option>
+								<%if(rs!=null){ %>
 									<%for(Reason r1:rs){ %>
 								<option value="<%=r1.getReasonid()%>"><%=r1.getReasoncontent()%></option>
-								<%} %>
+								<%} }%>
 									</select>
 					</td>						
 					<td>
@@ -307,7 +372,7 @@ function testCwbsIfNull(){
 					<button id="add_CUSA" class="input_button2">客服结案</button>
 					<button id="add_AdjudicateRetrial" class="input_button2">结案重审</button>
 					<button id="add_OrgVerify" class="input_button2">机构核实</button>
-					<button id="add_OrgAppeal" class="input_button2">机构申诉</button>
+					<button id="add_OrgAppeal" class="input_button2" onclick="decideShenSudate()">机构申诉</button>
 					<button class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo">导出</button>
 				</td>
 			</tr>
@@ -335,7 +400,7 @@ function testCwbsIfNull(){
 		<%if(a!=null){ %>
 			<%for(CsComplaintAccept c:a){ %>
 			<%if(c.getComplaintState()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
-			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>')" id="getFomeV">
+			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getJieanTime()%>')" id="getFomeV">
 				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()) {%>
 				<td><a href="<%=request.getContextPath()%>/workorder/WorkorderDetail/<%=c.getAcceptNo() %>" target='_Blank'><%=c.getAcceptNo() %></a></td>
 				<%}else{ %>
@@ -388,7 +453,11 @@ function testCwbsIfNull(){
 	<input type="hidden" id="FormV"/>
 	<input type="hidden" id="ComStateV"/>
 	<input type="hidden" id="add_OrgVerifyV" value="<%=request.getContextPath()%>/workorder/OrgVerify"/>
-	<input type="hidden" id="add_CSA" value="<%=request.getContextPath()%>/workorder/CustomerServiceAdjudicate">	
+	<input type="hidden" id="add_CSA" value="<%=request.getContextPath()%>/workorder/CustomerServiceAdjudicate">
+	<input type="hidden" id="JieAnTimeValue"/>
+	<input type="hidden" id="shensuendTime" value="<%=shensuendTime%>"/>
+	
+		
 	
 	
 	

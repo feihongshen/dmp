@@ -79,35 +79,70 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						
 					</tr>
 					<tr>
-						<td><span>核实内容:</span><%=cca.getRemark() %></td>	
-						<td><span>核实时间:</span><%=cca.getHeshiTime() %></td>
-						<td><span>核实人:</span><%=cca.getHandleUser() %><span>附件</span></td>
+						<td colspan="3">
+							<span>核实内容:</span><%=cca.getRemark() %>
+						</td>
+					</tr>
+					<tr>
+							
+						<td>
+							<span>核实时间:</span><%=cca.getHeshiTime() %>
+						</td>
+						<td>
+							<span>核实人:</span><%=cca.getHandleUser() %>
+						</td>
+						<td>
+							<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>"><b>附件下载</b></a></span>
+						</td>
 						
 					</tr>
 					<tr>
-						<td><span>处理结果:</span>
-							<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>
-						</td>	
-						<td><span>结案人</span><%=cca.getHandleUser() %></td>
-						<td><span>结案时间</span><%=cca.getJieanTime() %></td>
+								<td><span>处理结果:</span>
+									<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>
+								</td>	
+								<td>
+									<span>结案人</span><%=cca.getHandleUser() %>
+								</td>
+								<td>
+									<span>结案时间</span><%=cca.getJieanTime() %>
+								</td>
 					</tr>
 					<tr>
-						<td colspan="3"><span>结案备注:</span><%=cca.getJieanremark() %></td>
+								<td colspan="2"><span>结案备注:</span><%=cca.getJieanremark() %></td>
+								<td><span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>"><b>附件下载</b></a></span></td>
 					</tr>
 						<tr>
-							<td>	<span>申诉时间:</span><%=cca.getComplaintTime() %></td>
-							<td>	<span>申诉人:</span><%=cca.getHandleUser() %></td>
-							<td>	<span>申诉内容:</span><%=cca.getShensuremark() %></td>
+								<td colspan="3">
+									<span>申诉内容:</span><%=cca.getShensuremark() %>
+								</td>
+						</tr>			
+						<tr>
+								<td>
+									<span>申诉时间:</span><%=cca.getComplaintTime() %>
+								</td>
+								<td>
+									<span>申诉人:</span><%=cca.getHandleUser() %>
+								</td>							
+								<td>
+									<span>
+										<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadshensupath()%>"><b>附件下载</b></a>
+									</span>
+								</td>
 						</tr>
 						
 						<tr>				
-						<td><span>结案重审结果:</span>				
-						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></td>
-						<td><span>重审人:</span><%=cca.getHandleUser() %></td>
-						<td><span>结案时间:</span><%=cca.getJieanchongshenTime() %></td>
+								<td><span>结案重审结果:</span>				
+								<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></td>
+								<td><span>重审人:</span><%=cca.getHandleUser() %></td>
+								<td><span>结案时间:</span><%=cca.getJieanchongshenTime() %></td>
 						</tr>	
 						<tr>
-						<td colspan="3"><span>结案备注:</span><%=cca.getJieanchongshenremark()%></td>
+						<td colspan="2"><span>结案重审备注:</span><%=cca.getJieanchongshenremark()%></td>						
+								<td>
+									<span>
+										<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadchongshenpath()%>"><b>附件下载</b></a>
+									</span>
+								</td>							
 						</tr>
 						
 						</table>

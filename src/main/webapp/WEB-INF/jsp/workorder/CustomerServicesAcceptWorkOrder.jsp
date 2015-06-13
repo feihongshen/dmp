@@ -2,6 +2,8 @@
 <%@page import="cn.explink.domain.CwbOrderAndCustomname"%>
 <%@page import="cn.explink.util.DateTimeUtil"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
+<%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
+<%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<CwbOrderAndCustomname> lco=(List<CwbOrderAndCustomname>)request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
@@ -22,8 +24,10 @@
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <%-- <script language="javascript" src="<%=request.getContextPath()%>/js/temp.js"></script> --%>
 <script type="text/javascript">
-function getGoonacceptWO(GV,GS){
-
+/* Userflag */
+function getGoonacceptWO(GV,GS,uf){
+	$('#Userflag').val(uf);
+	$('#GoonacceptWO').show();	
 	$('#GV').val(GV);
 	$('#GS').val(GS);
 	
@@ -31,6 +35,8 @@ function getGoonacceptWO(GV,GS){
 
 function gettrValue(cwbId){
 	//$('#GV').val("");
+	$('#createquerywo_button').show();
+		$('#createcomplain_buttonn').show();
 	$('#trid').val(cwbId);
 	var cwbStr = 'cwb'+cwbId;
 	WOcwb=$('#'+cwbStr).text();
@@ -52,15 +58,27 @@ function gettrValue(cwbId){
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
 $.each(data,function(ind,ele){
 	var dataTrStr1 = "";
-	dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\")'>" +
-			"<td>"+ele.acceptNo+"</td>" +
-			"<td><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.orderNo+"' target='_Blank'>"+ele.orderNo+"</a></td>" +
+	if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
+		dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+				"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+				"<td>"+ele.orderNo+"</td>" +
+				"<td>"+ele.phoneOne+"</td>" +
+				"<td>"+ele.provence+"</td>" +
+				"<td>"+ele.acceptTime+"</td>" +
+				"<td>"+ele.showcomplaintTypeName+"</td>" +
+				"<td>"+ele.content+"</td>" +
+				"<td>"+ele.showComplaintStateName+"</td></tr>";
+		}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
+			dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+			"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+			"<td>"+ele.orderNo+"</td>" +
 			"<td>"+ele.phoneOne+"</td>" +
 			"<td>"+ele.provence+"</td>" +
 			"<td>"+ele.acceptTime+"</td>" +
 			"<td>"+ele.showcomplaintTypeName+"</td>" +
-			"<td>"+ele.content+"</td>" +
+			"<td>"+ele.queryContent+"</td>" +
 			"<td>"+ele.showComplaintStateName+"</td></tr>";
+		}	
 	thStr1 += dataTrStr1;
 	
 });
@@ -71,8 +89,29 @@ selectcolorofwo();
 	var cwbStr="";	
 }
 
-
+	
 $(function(){
+	
+	if($('#GV').val()==""){
+		$('#GoonacceptWO').hide();
+	}
+	
+	if($('#trid').val()==""){
+		$('#createquerywo_button').hide();
+		$('#createcomplain_buttonn').hide();
+	}
+	
+	
+	
+	$("#emaildate123").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
 	$("#contactLastTime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
@@ -88,15 +127,25 @@ $(function(){
 		getAddBoxx1();
 	});
 	$("#GoonacceptWO").click(function(){
-		if($('#GS').val()==4){
+		if($('#GS').val()==$('#ComplaintStateEnumValue').val()){
 			alert("此工单已结束，不能继续操作");
 			return false;
 		}
-		if($('#GV').val()==""){
+/* 		if($('#GV').val()==""){
 			alert('请选择一条数据');
 			return false;
-		}
-		getAddBoxx2($('#GV').val());
+		} */
+		
+		 if($('#Userflag').val()==$('#ComplaintTypeEnumChaXun').val()){
+			 getAddBoxGoOnAcceptQueryWo($('#GV').val());
+		}else if($('#Userflag').val()==$('#ComplaintTypeEnumTouSu').val()){						
+			getAddBoxx2($('#GV').val());
+		} 
+		/* getAddBoxGoOnAcceptQueryWo($('#GV').val()); */
+		
+		
+		
+		
 	});
 	
 	selectcolor();
@@ -104,6 +153,25 @@ $(function(){
 	
 
 });
+
+function getAddBoxGoOnAcceptQueryWo(valWo) {
+	 
+	$.ajax({
+		type : "POST",
+		data:"workorder="+valWo,
+		url : $("#GoOnacceptWoQuery").val(),
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+			
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面			
+			viewBox();
+		}
+	});
+	}
 
 function selectcolorofwo(){
 	$("table#showWO tr").click(function(){
@@ -122,7 +190,7 @@ function selectcolor(){
 	
 	}
 
-function getAddBoxx() {
+function getAddBoxx() { 
 	$.ajax({
 		type : "POST",
 		data:"opscwbid="+$('#trid').val(),
@@ -202,8 +270,7 @@ function SelectPhone(){
 			 dataType:'json',
 			 url:'<%=request.getContextPath()%>/workorder/selectByPhoneNum',
 			 success:function(data){
-				 if(data!=null)
-				 
+				 if(data!=null){					 
 					$('#dname').val(data.name);
 					 $('#consigneeType').val(data.consigneeType); 
 					$('#city').val(data.city);
@@ -215,7 +282,10 @@ function SelectPhone(){
 					}else{
 						$('#sex').attr("checked","true");
 					}
-					
+					$('#savecallerinfo').attr("disabled","disabled");
+				 }else{
+					 $('#savecallerinfo').removeAttr("disabled");
+				 	}
 				  }
 			 });
 
@@ -265,9 +335,10 @@ function SelectdetailForm(){
 
 	
 function submitselect(){
-	
+	$('#createquerywo_button').hide();
+	$('#createcomplain_buttonn').hide();
 	if($('#cwb123').val()==""&&$('#emaildate123').val()==""&&$('#consigneename123').val()==""&&$('#consigneemobile123').val()==""){
-		alert('请输入查询条件~O(∩_∩)O~');
+		alert('请输入查询条件');
 		return false;
 	}else
 	$.ajax({
@@ -327,8 +398,10 @@ function submitselect2(){    //通过手机号查询工单
 			"<th bgcolor='#eef6ff'>受理内容</th>" +
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
 $.each(data,function(ind,ele){
+	
 	var dataTrStr1 = "";
-	dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\")'>" +
+	if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
+	dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
 			"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
 			"<td>"+ele.orderNo+"</td>" +
 			"<td>"+ele.phoneOne+"</td>" +
@@ -337,6 +410,17 @@ $.each(data,function(ind,ele){
 			"<td>"+ele.showcomplaintTypeName+"</td>" +
 			"<td>"+ele.content+"</td>" +
 			"<td>"+ele.showComplaintStateName+"</td></tr>";
+	}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
+		dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+		"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+		"<td>"+ele.orderNo+"</td>" +
+		"<td>"+ele.phoneOne+"</td>" +
+		"<td>"+ele.provence+"</td>" +
+		"<td>"+ele.acceptTime+"</td>" +
+		"<td>"+ele.showcomplaintTypeName+"</td>" +
+		"<td>"+ele.queryContent+"</td>" +
+		"<td>"+ele.showComplaintStateName+"</td></tr>";
+	}	
 	thStr1 += dataTrStr1;
 	
 });
@@ -352,8 +436,10 @@ selectcolorofwo();
 
 }
  
-function verifyphoneonOne(){                   //电话号码验证是否为空和是否为数字
-	var reg = new RegExp("^[0-9]*$");  
+function verifyphoneonOne(){    
+	$('#createquerywo_button').hide();
+	$('#createcomplain_buttonn').hide();
+	var reg = new RegExp("^[0-9]*$");  //电话号码验证是否为空和是否为数字
     var obj = document.getElementById("phoneonOne");  
  if(!reg.test(obj.value)){  
      alert("请输入正确格式的手机号码!");
@@ -363,7 +449,7 @@ function verifyphoneonOne(){                   //电话号码验证是否为空�
 		SelectdetailForm();
 		submitselect2();
 	}else{
-		alert('手机号码不能为空O(∩_∩)O');
+		alert('手机号码不能为空');
 		return false;
 	}
 	
@@ -408,7 +494,11 @@ function verifyphoneonOne(){                   //电话号码验证是否为空�
 					</td>
 				</tr>	
 				</form>
-				<tr><td><button onclick="addCci()" class="input_button2">保存</button></td></tr>
+				<tr>
+					<td>
+						<button onclick="addCci()" class="input_button2" id=savecallerinfo>保存</button>
+					</td>
+				</tr>
 				</table>
 		</div>
 <hr>		
@@ -461,12 +551,18 @@ function verifyphoneonOne(){                   //电话号码验证是否为空�
 				
 	</div>
 
-	<input type="hidden" id=trid>
+	<input type="hidden" id="trid"/>
+	<input type="hidden" id="Userflag"/>
 	<input type="hidden" id="createquerywo" value="<%=request.getContextPath()%>/workorder/CreateQueryWorkOrder"/>
 	<input type="hidden" id="createcomplain" value="<%=request.getContextPath()%>/workorder/CreateComplainWorkOrder"/>					
 	<input type="hidden" id="GoOnacceptWo" value="<%=request.getContextPath()%>/workorder/GoOnacceptWo"/>
+	<input type="hidden" id="GoOnacceptWoQuery" value="<%=request.getContextPath()%>/workorder/GoOnacceptWoQuery"/>
 	<input type="hidden" id="GV" />
 	<input type="hidden" id="GS"/>
+	<input type="hidden" id="ComplaintStateEnumValue" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
+	<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
+	<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/>
+	
 </body>
 
 </html>

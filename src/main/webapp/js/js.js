@@ -5418,7 +5418,7 @@ function submitPunishInsideByCwb(){
 	$('#swfupload-control').swfupload('addPostParam', 'punishinsidetype', $("#punishinsidetype", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
-function btnswd(ev){
+/*function btnswd(ev){
 	$('#cls').val(ev);
 	alert(ev);
 	$.ajax({
@@ -5431,9 +5431,7 @@ function btnswd(ev){
 				}
 	});
 	closeBox();
-	$('#WaitAcceptNo').val("");
-	$('#GV').val('');
-}
+}*/
 
 function getSV(v){
 	$('#stateNum').val(v);
@@ -5576,7 +5574,6 @@ function AlreadyVerify(AVV){
 
 function btnswd(ev){
 	$('#cls').val(ev);
-	alert(ev);
 	$.ajax({
 				type:'POST',
 				data:$('#WorkOrderQueryForm').serialize(),
@@ -5587,8 +5584,7 @@ function btnswd(ev){
 				}
 	});
 	closeBox();
-	$('#WaitAcceptNo').val("");
-	$('#GV').val('');
+/*	$('#WaitAcceptNo').val("");*/
 }
 
 function getSV(v){
@@ -5914,3 +5910,27 @@ function init(cwb)
 		$("#customerid").val(data.customerid);
 		}});
 }
+
+function acceptcloseDiv(){
+	closeBox();
+}
+
+function acceptqueryWoJieAn(){
+	$.ajax({
+		type:'POST',
+		data:$('#GoonAcceptWorkOrderQueryForm').serialize(),
+		url:$("#GoonAcceptWorkOrderQueryForm").attr('action'),
+		dataType:'json',
+		success:function(data){
+			if(data.errorCode==0){
+				alert(data.error);
+				closeBox();
+			}
+			
+		}
+		
+		
+	});
+}
+
+

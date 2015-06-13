@@ -27,6 +27,12 @@
 
 
 $(function(){
+	if($('#WaitAcceptNo').val()==""){
+		$('#goonacceptinmanage').hide();
+	}
+	
+		
+	
 $("table#refreshWO tr").click(function(){
 	$(this).css("backgroundColor","yellow");
 	$(this).siblings().css("backgroundColor","#ffffff");
@@ -49,7 +55,9 @@ function addInit(){
 
 function saveAcceptNoV(NoV){
 	$('#WaitAcceptNo').val(NoV);
+	$('#goonacceptinmanage').show();
 	 getGoonacceptWO($('#WaitAcceptNo').val());
+	 
 	
 }
 
@@ -87,7 +95,11 @@ function saveAcceptNoV(NoV){
 					<td><%=c.getProvence() %></td>
 					<td><%=c.getAcceptTime() %></td>
 					<td><%=ComplaintTypeEnum.getByValue(c.getComplaintType()).getText()%></td>
-					<td><%=c.getContent() %></td>				
+					<%if(c.getComplaintType()==ComplaintTypeEnum.CuijianTousu.getValue()){ %>
+					<td><%=c.getContent() %></td>
+					<%}else if(c.getComplaintType()==ComplaintTypeEnum.DingDanChaXun.getValue()){ %>
+					<td><%=c.getQueryContent() %></td>
+					<%} %>		
 					<td><%=ComplaintStateEnum.DaiChuLi.getText()%></td>				
 				</tr>
 			<%}} %>
@@ -95,6 +107,8 @@ function saveAcceptNoV(NoV){
 		</div>
 	</div>
 			<input type="hidden" id="GoOnacceptWo" value="<%=request.getContextPath()%>/workorder/GoOnacceptWo"/>
-			<input type="hidden" id="WaitAcceptNo" value=""/>
+			<input type="hidden" id="WaitAcceptNo"/>
+			<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
+			<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/>
 </body>
 </html>

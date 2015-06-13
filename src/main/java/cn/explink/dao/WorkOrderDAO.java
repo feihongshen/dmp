@@ -153,6 +153,7 @@ public class WorkOrderDAO {
 	public void savequeryworkorderForm(CsComplaintAccept c){
 		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,querycontent,complaint_state,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getQueryContent(),c.getComplaintState(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
+		System.out.println(c.getQueryContent());
 	}
 	
 	public void saveComplainWorkOrderF(CsComplaintAccept c){
@@ -216,6 +217,7 @@ public class WorkOrderDAO {
 			c.setDownloadheshipath(rs.getString("downloadheshipath"));
 			c.setDownloadjieanpath(rs.getString("downloadjieanpath"));
 			c.setDownloadshensupath(rs.getString("downloadshensupath"));
+			c.setQueryContent(rs.getString("querycontent"));
 			
 			
 			return c;
@@ -357,4 +359,14 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		this.jt.update(sql);
 	}
 	
+	public CsComplaintAccept getCsComplaintAccept(int id){
+		String sql="select * from cs_complaint_accept where id=?";
+		return this.jt.queryForObject(sql, new CsComplaintAcceptRowMapper(),id);		
+	}
+	
+	public void ChangeGoOnAcceptcomplaintState(CsComplaintAccept cca){
+		String sql="update cs_complaint_accept set complaint_state=? where id=?";
+		this.jt.update(sql,cca.getComplaintState(),cca.getId());
+		
+	}
 }

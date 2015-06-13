@@ -3853,6 +3853,8 @@ public class CwbDAO {
 	}*/
 	
 	public CwbOrder getOneCwbOrderByCwb(String cwb) {
+		
+		
 		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where state=1 and cwb ='"+ cwb+"'", new CwbMapper());
 	}
 

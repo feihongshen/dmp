@@ -71,7 +71,26 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
 						<span>核实人:</span><%=cca.getHeshiUser()%>
-						<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件</a></span>
+						<%-- <input type="hidden" id="filepathsumsize" name="filepathsumsize" value="<%=filepathsum.split(",").length %>"/> --%>
+						
+						<span><%-- &nbsp;&nbsp;附件下载:<%if(!filepathsum.equals("")){if(filepathsum.split(",").length>=1){ %>
+							
+								&nbsp;&nbsp;&nbsp;&nbsp;<a href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=filepathsum.split(",")[0] %>" style="color: blue;"><%=filepathsum.split(",")[0] %></a>&nbsp;&nbsp;<em id="morefilebutton"><a href="javascript:filedownloadwithquestionfile();" style="color: blue;">更多附件</a></em>
+							<%} %>
+							<%} %>
+								<em id="morefiles"  hidden="hidden">
+								<%if(filepathsum.split(",").length==2){ %>
+								<a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=filepathsum.split(",")[1] %>" style="color: blue;"><%=filepathsum.split(",")[1] %></a>
+								<%}else{ %>
+								<%for(int i=0;i<filepathsum.split(",").length;i++){ %>
+								<%if(i>1){ %>
+									<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=filepathsum.split(",")[i] %>" style="color: blue;"><%=filepathsum.split(",")[1] %></a>
+								<%} %>
+								<%} %>
+								<%}%>
+							</em> --%>
+							<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a>
+						</span>
 					</li>
 					<li>
 							<span>处理结果:</span>
@@ -94,7 +113,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<input type="hidden" value="<%=cca.getJieanUser()%>" name="jieanUser"> --%>
 				</ul>
 				 <table>
-					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传文件：</span>
 					 <iframe id="update" name="update" src="workorder/update?fromAction=CustomerServiceChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
 					 </iframe> </td></tr>
 					 </table>
@@ -102,7 +121,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 			</div>
 						
 				<div align="center">
-						<input type="submit" value="结案" class="button" <%-- onclick="AlreadyVerifyJieAn('<%=ComplaintStateEnum.YiJieAn.getValue()%>')" --%>/>						
+						<input type="submit" value="结案" class="button" onclick="acceptcloseDiv()"<%-- onclick="AlreadyVerifyJieAn('<%=ComplaintStateEnum.YiJieAn.getValue()%>')" --%>/>						
 				</div>		
 				<input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="acceptresultV">	
 				<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="acceptresultVl"> 

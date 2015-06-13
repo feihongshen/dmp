@@ -39,12 +39,6 @@ List<Branch> b =(List<Branch>)request.getAttribute("lb");
 						<input type="hidden" value="<%=a.getCwbstate()%>"  name="cwbstate">
 					</td>	
 					<%}} %>
-					<%-- <%for(CwbFlowOrderTypeEnum cf : CwbFlowOrderTypeEnum.values()){ %>
-					<%if(cf.getValue()==a.getFlowordertype()) {%>
-					<td>订单操作状态:<%=cf.getText()%>
-					<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype">
-					</td>
-						<%}} %> --%>
 					<td>
 						收件人手机:<%=conmobile%>
 					</td>	
@@ -94,7 +88,7 @@ List<Branch> b =(List<Branch>)request.getAttribute("lb");
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea style="width: 80%;height: 150px;margin-left: 20px" name="content"></textarea>
+					<span>投诉内容:</span><textarea style="width: 80%;height: 150px;margin-left: 20px" name="content"><%=a.getContent() %></textarea>
 					
 				</tr>
 					</td>

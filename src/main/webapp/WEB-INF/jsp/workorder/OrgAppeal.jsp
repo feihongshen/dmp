@@ -68,7 +68,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
 						<span>核实人:</span><%=cca.getHeshiUser() %>
-						<span>附件</span>
+						<span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
 					</li>
 					<li>
 					<span>结案处理结果:</span>
@@ -82,6 +82,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<%=cca.getJieanUser() %>
 					<span>结案备注:</span>
 					<%=cca.getJieanremark() %>
+					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
 					</li>
 					<li>
 						<label>申诉内容*:</label>					
@@ -101,7 +102,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 				
 		
 				 <div align="center">
-						 <input type="submit" value="申诉" class="button" <%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>')" --%>/>
+						 <input type="submit" value="申诉" class="button" onclick="acceptcloseDiv()"<%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>')" --%>/>
 						
 					</div>
 		</div>
