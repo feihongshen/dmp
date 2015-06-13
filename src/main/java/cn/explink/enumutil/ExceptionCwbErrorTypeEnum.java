@@ -15,13 +15,14 @@ public enum ExceptionCwbErrorTypeEnum {
 			51, "目的站未知"), Invalid_Cwb_State(52, "无效的订单状态"), Field_IS_Mandatory(53, "{0}字段不能为空"), Field_IS_Cwb_State(54, "订单状态不对"), Operation_Repeat(55, "重复扫描"), Invalid_Operation(56, "不可识别的操作"), DingDanYiZhiFu(
 			57, "订单已支付"), ZhiFuAmountExceiton(58, "支付金额有误"), ChongFuShenHe(59, "{0}重复审核"), BaoHaoBuZhengQue(60, "包号不正确"), BAO_HAO_BU_CUN_ZAI(61, "包号不可以为0"), XiaoJianYuanYouQianKuan(62,
 			"此小件员上次交款有欠款，补齐欠款才能继续领货！"), YPDJSTATE_CONTROL_ERROR(63, "一票多件上一状态为{0}的订单未完成，不允许进行{1}操作"), Qing_SAO_MIAO_YUN_DAN_HAO(64, "请扫描运单号"), Qing_Xuan_Ze_Xiao_Jian_Yuan(555555, "请检查小件员是否选择"), Fen_Zhan_Dao_Huo_Ding_Dan_Bu_Yun_Xu_Shi_Xiao(
-			70, "分站到货订单不允许失效"), Fei_Dai_Fan_Dan(71, "非待返单"), Chong_Fu_Sao_Miao(72, "重复扫描"), FEI_BEN_ZHAN_HUO(73, "非本站货"), Wei_Shua_Ka_Yuan_Yin(74, "请选择未刷卡原因"), Bei_Zhu_Tai_Chang(75, "备注太长"), Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error(
-			76, "订单未申请中转或者未审核成功，不允许进行中转出站操作"), Bao_Hao_Bu_Keyi_Duozhan_Shiyong(77, "当前包号出给【{0}】,不能再出给【{1}】"), Fei_Kuai_Di_Dan_Bu_Yun_Xu_Lan_Shou_Dao_Huo(78, "非快递单不允许进行揽收到货操作"), JieSuanQianKuan(79,
+			70, "分站到货订单不允许失效"), Fei_Dai_Fan_Dan(71, "非待返单"), Chong_Fu_Sao_Miao(72, "重复扫描"), FEI_BEN_ZHAN_HUO(73, "非本站货"), Wei_Shua_Ka_Yuan_Yin(74, "请选择未刷卡原因"), Bei_Zhu_Tai_Chang(75, "备注太长"), 
+			Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error(76, "订单未申请中转或者未审核成功，不允许进行中转出站操作"), Bao_Hao_Bu_Keyi_Duozhan_Shiyong(77, "当前包号出给【{0}】,不能再出给【{1}】"), Fei_Kuai_Di_Dan_Bu_Yun_Xu_Lan_Shou_Dao_Huo(78, "非快递单不允许进行揽收到货操作"), JieSuanQianKuan(79,
 			"结算欠款金额验证不通过"), JieSuanJiaKuan(80, "结算加款金额验证不通过"), JieSuanJianKuan(81, "结算减款金额验证不通过"), JieSuanChongFuTiJiao(82, "结算重复提交!"), ZhanDianYuEBuZu(83, "站点余额不足"), ZhangDanWeiJieSuan(84,
 			"您有未结算的账单,请与财务联系"), LingHuoWeiTuoYiChangDingDan(85, "委托领货异常，订单不在可领货委托派送的数据中"), XiaoJianYuanBuYunXuLingHuoWeiTuo(86, "该订单已是此小件员的货，不允许领货委托派送"), FeiBenZhanDianDingDanBuYunXuZhongZhuanChuZhan(
 			87, "非本站点订单，不允许进行中转出站操作"), PiLiangFanKuiZhiFuFangShiXuYiZhi(88, "批量反馈前置支付方式需一致"), // 目前只适用于亚马逊
 	KouKuanLiuChengJianCha(89, "请检查流程设置,到货扫描不允许做到错货"), KouKuanLiuChengJianChaQiangZhiChuKu(90, "您当前选择扣款模式,不允许强制出库"), KouKuanLiuChengJianCha1(91, "请检查流程设置,到错货不允许做到货扫描"), KouKuanLiuChengJianCha2(92,
 			"请检查流程设置,到错货不允许做领货扫描"),
+			
 
 	// BU_SHI_ZHE_GE_MU_DI_DI(49,"不是这个目的地的货，目的站：{0}"),
 	Bale_Error(93, "{0}包号{1}!"), Bale_Error1(94, "订单{0}已经在{1}包号中{2}!"), Bale_ChongXinFengBao(95, "订单{0}已经在{1}包号中，确认重新封包吗?"),
@@ -36,7 +37,10 @@ public enum ExceptionCwbErrorTypeEnum {
 
 	GongHuoShang_Bufu(104, "请选择正确的供货商"),
 	WuShuJuYouHuoWuDanError(105,"无数据，有货无单"),
-	ShangWeiPiPeiZhanDian(102,"尚未匹配站点")
+	ShangWeiPiPeiZhanDian(102,"尚未匹配站点"),
+	
+	Shen_Qing_Tui_Huo_Wei_Shen_He_Cheng_Gong_Error(106, "订单未进行审核或者未审核成功，不允许进行退货出站操作"),
+	Shen_Qing_Tui_Huo_Zhi_Liu_Wu_Fa_Tui_Huo_Error(107, "退货单审核为站点滞留，不允许进行退货出站操作")
 	;
 
 	private int value;

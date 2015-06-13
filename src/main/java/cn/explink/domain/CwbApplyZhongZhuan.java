@@ -20,6 +20,15 @@ public class CwbApplyZhongZhuan {
 	private long handleuserid; // 处理人
 	private String handleremark; // 处理备注
 	private long isnow; // 标记为是否为最后一次申请(0不是，1是）
+	
+	private long shenhestate;//审核结果
+	
+	public long getShenhestate() {
+		return shenhestate;
+	}
+	public void setShenhestate(long shenhestate) {
+		this.shenhestate = shenhestate;
+	}
 
 	public long getId() {
 		return id;

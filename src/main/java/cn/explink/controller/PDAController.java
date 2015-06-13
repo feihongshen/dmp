@@ -68,6 +68,7 @@ import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.OperationTimeDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
@@ -96,6 +97,7 @@ import cn.explink.domain.GroupDetail;
 import cn.explink.domain.JsonContext;
 import cn.explink.domain.Menu;
 import cn.explink.domain.OperationTime;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
@@ -243,6 +245,8 @@ public class PDAController {
 	OneToMoreService otmservice;
 	@Autowired
 	TransCwbDao transCwbDao;
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDAO;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -4129,6 +4133,7 @@ public class PDAController {
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "comment", required = false, defaultValue = "") String comment) {
+		
 		String scancwb = cwb;
 		long SuccessCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
 		cwb = this.cwborderService.translateCwb(cwb);

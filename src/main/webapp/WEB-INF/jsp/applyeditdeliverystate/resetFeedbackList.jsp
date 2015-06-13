@@ -257,9 +257,9 @@ function resetfeedbackNoPass(){
 											审核状态:
 											<select name ="isdo" id ="isdo">
 												<option  value ="0">全部</option>
-												<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
-												<option value ="<%=ApplyStateEnum.shenhebutongguo.getValue() %>"><%=ApplyStateEnum.shenhebutongguo.getText() %></option>
-												<option value ="<%=ApplyStateEnum.shenhetongguo.getValue()%>"><%=ApplyStateEnum.shenhetongguo.getText() %></option>
+												<option value ="<%=ShenHeStateEnum.daishenhe.getValue() %>"><%=ShenHeStateEnum.daishenhe.getText() %></option>
+												<option value ="<%=ShenHeStateEnum.shenhebutongguo.getValue() %>"><%=ShenHeStateEnum.shenhebutongguo.getText() %></option>
+												<option value ="<%=ShenHeStateEnum.shenhetongguo.getValue()%>"><%=ShenHeStateEnum.shenhetongguo.getText() %></option>
 											</select>
 										</td>
 									</tr>

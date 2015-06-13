@@ -6632,7 +6632,61 @@ CREATE TABLE `cs_complaint_accept` (
 					);
        	</sql> 
 	</changeSet>
-
+	<changeSet id="liuxiao-2015-06-13-01" author="liuxiao">
+       	<sql>
+       		CREATE TABLE `express_ops_zhifu_apply` (  
+					  `applyid` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+					  `cwb` varchar(100) collate utf8_bin default NULL,
+					  `customerid` int(11) default NULL,
+					  `cwbordertypeid` varchar(11) collate utf8_bin default '-1',
+					  `applycwbordertypeid` int(11) collate utf8_bin default '0',
+					  `flowordertype` int(10) default '0',
+					  `branchid` int(10) default '0',
+					  `paywayid` int(4) default '1',
+					  `applypaywayid` int(4) default '0',
+					  `applystate` int(4) default '1',
+					  `applyresult` int(4) default '0',
+					  `confirmstate` int(4) default '1',
+					  `confirmresult` int(4) default '0',
+					  `applyway` int(4) default '0',
+					  `paybackfee` decimal(19,2) default '0.00',
+					  `userid` int(4) default NULL,
+					  `receivablefee` decimal(19,2) default '0.00',
+					  `applypaybackfee` decimal(19,2) default '0.00',
+					  `applyreceivablefee` decimal(19,2) default '0.00',
+					  `feewaytyperemark` varchar(225) collate utf8_bin default null,
+					 
+					  KEY `apply_cwb_idx` (`cwb`),
+					  KEY `apply_cwbordertypeid_idx` (`cwbordertypeid`),
+					  KEY `apply_userid_idx` (`userid`),
+					  KEY `apply_applyway_idx` (`applyway`),
+					  KEY `apply_applystate_idx` (`applystate`),
+					  KEY `apply_applyresult_idx` (`applyresult`),
+					  KEY `apply_confirmstate_idx` (`confirmstate`),
+					  KEY `apply_confirmresult_idx` (`confirmresult`)
+					  
+					 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+       	</sql> 
+    </changeSet>
+    
+    <changeSet id="liuxiao-2015-06-13-02" author="liuxiao">
+       	<sql>
+       		ALTER TABLE express_ops_applyeditdeliverystate add COLUMN `cwbstate` BIGINT(4) default '0';
+			ALTER TABLE express_ops_applyeditdeliverystate add COLUMN `shenhestate` int(4) default '0';
+       	</sql> 
+    </changeSet>
+    
+    <changeSet id="liuxiao-2015-06-13-03" author="liuxiao">
+       	<sql>
+       		ALTER TABLE ops_order_back_check add COLUMN `checkresult` BIGINT(4) default '0';
+       	</sql> 
+    </changeSet>
+    
+     <changeSet id="liuxiao-2015-06-13-04" author="liuxiao">
+       	<sql>
+       		ALTER TABLE op_cwbapplyzhongzhuan add COLUMN `shenhestate` BIGINT(4) default '0';
+       	</sql> 
+    </changeSet>
 
 </databaseChangeLog>
  

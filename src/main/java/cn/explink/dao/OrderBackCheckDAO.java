@@ -39,6 +39,7 @@ public class OrderBackCheckDAO {
 			orderBackCheck.setCheckuser(rs.getLong("checkuser"));
 			orderBackCheck.setCheckcreatetime(rs.getString("checkcreatetime"));
 			orderBackCheck.setBranchid(rs.getLong("branchid"));
+			orderBackCheck.setCheckresult(rs.getLong("checkresult"));
 			return orderBackCheck;
 		}
 	}
@@ -100,12 +101,19 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
-
-	public void updateOrderBackCheck(long id) {
-		String sql = "UPDATE ops_order_back_check SET checkstate=1 where id =? ";
-		jdbcTemplate.update(sql, id);
+	//审核为确认退货
+	public void updateOrderBackCheck1(long checkresult,long id) {
+		String sql = "UPDATE ops_order_back_check SET checkstate=1,checkresult=? where id =? ";
+		jdbcTemplate.update(sql, checkresult, id);
+	}
+	
+	//审核为站点滞留
+	public void updateOrderBackCheck2(long checkresult,String cwb) {
+		String sql = "UPDATE ops_order_back_check SET checkstate=1,checkresult=? where cwb =? ";
+		jdbcTemplate.update(sql, checkresult, cwb);
 	}
 
+	
 	public List<OrderBackCheck> getOrderBackCheckList(String id) {
 		String sql = "select * from ops_order_back_check where id in (" + id + ")";
 		try {
@@ -126,18 +134,34 @@ public class OrderBackCheckDAO {
 	
 	
 	//退货出站根据条件查询
-	public List<OrderBackCheck> getCwborderss(int cwbordertypeid,long customerid,long branchid) {
-		String sql = "SELECT * from ops_order_back_check  where cwbordertypeid in(1,3) and cwbstate=4";
+	public List<OrderBackCheck> getOrderBackChecks(int cwbtypeid,long customerid,long branchid,long checkstate,long checkresult,String begindate,String enddate) {
+		String sql = "SELECT * from ops_order_back_check  where cwbstate=4";
 		StringBuffer sb = new StringBuffer();
-		if (branchid!= 0) {
+		if (branchid>0) {
 			sb.append(" and branchid="+branchid);
-		}else if(customerid!= 0){
+		}else if(customerid>0){
 			sb.append(" and customerid="+customerid);
-		}else if(cwbordertypeid!=0){
-			sb.append(" and cwbordertypeid="+cwbordertypeid);
+		}else if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
+		}else if(checkstate>=0){
+			sb.append(" and checkstate="+checkstate);
+		}else if(checkresult>0){
+			sb.append(" and checkresult="+checkresult);
+		}else if(!begindate.equals("")){
+			sb.append(" and begindate>="+begindate);
+		}else if(!enddate.equals("")){
+			sb.append(" and enddate>="+enddate);
 		}
+		
 		sql+=sb.toString();
 		return this.jdbcTemplate.query(sql,new OrderBackCheckRowMapper());
 	}
+	
+	public List<OrderBackCheck> getOrderBackCheckByIds(String ids){
+		String sql = "select * from ops_order_back_check where id in(?)";
+		return jdbcTemplate.query(sql, new OrderBackCheckRowMapper(),ids);
+	}
+	
+	
 	
 }

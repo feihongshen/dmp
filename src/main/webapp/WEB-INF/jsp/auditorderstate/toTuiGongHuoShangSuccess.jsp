@@ -95,7 +95,7 @@ function check(){
 		return true;
 	}
 }
-
+//退客户成功
 function sub(){
 	var datavalue = "[";
 	
@@ -124,6 +124,36 @@ function sub(){
 	
 }
 
+//退客户成功
+function sub2(){
+	var datavalue = "[";
+	
+	if($('input[name="ischeck"]:checked').size()>0){
+		$('input[name="ischeck"]:checked').each(function(index){
+			$(this).attr("checked",false);
+			datavalue = datavalue +"\""+$(this).val()+"\",";
+		});
+	}
+	if(datavalue.length>1){
+		datavalue= datavalue.substring(0, datavalue.length-1);
+	}
+	datavalue= datavalue + "]";
+	if(datavalue.length>2){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/cwborder/auditTuiGongHuoShangFailure",
+			data:{cwbs:datavalue},
+			dataType:"html",
+			success : function(data) {
+				alert("成功修改状态："+data.split("_s_")[0]+"单\n订单状态无变动："+data.split("_s_")[1]+"单");
+				searchForm.submit();
+			}
+		});
+	}
+	
+}
+
+
 function exportField(){
 	if(<%=cwbList!=null&&cwbList.size()!=0%>){
 		$("#exportmould2").val($("#exportmould").val());
@@ -148,13 +178,13 @@ function exportField(){
 						<div class="kfsh_search">
 							<form action="./toTuiGongHuoShangSuccess" method="post" id="searchForm">
 								<%if(cwbList!=null){ %><span>
-								<select name ="exportmould" id ="exportmould">
-										<option  value ="0">导出模板</option>
-										<%for(Exportmould e:exportmouldlist){%>
-											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-										<%} %>
-								</select>
-								</span><%} %> 
+									<select name ="exportmould" id ="exportmould">
+											<option  value ="0">导出模板</option>
+											<%for(Exportmould e:exportmouldlist){%>
+												<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
+											<%} %>
+									</select></span>
+								<%} %> 
 								<table>
 									<tr>
 										<td rowspan="2">
@@ -187,11 +217,11 @@ function exportField(){
 									<tr>
 										<td>
 											&nbsp;&nbsp;
-											审核状态:
-											<select name ="auditstate" id ="auditstate">
+											确认状态:
+											<select name ="resultstate" id ="resultstate">
 												<option  value ="0">全部</option>
-													<option value = "1">待审核</option>
-													<option value ="<%=FlowOrderTypeEnum.YiShenHe.getValue() %>">已<%=FlowOrderTypeEnum.YiShenHe.getText() %></option>
+													<option value = "<%=FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()%>">退客户成功</option>
+													<option value ="<%=FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue() %>">拒收退货</option>
 											</select>
 										</td>
 										<td>
@@ -208,15 +238,14 @@ function exportField(){
 								<table>
 									<tr>
 										<td width="20%">
-											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
-											<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
+											<input type="submit"  value="查询" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
-											<input type="button" onclick="" value="退客户成功" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="" value="拒收退货" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="sub()" value="退客户成功" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="sub2()" value="拒收退货" class="input_button2">&nbsp;&nbsp;
 											<%if(cwbList!=null&&!cwbList.isEmpty()){ %>
-											<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+												<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 											<%} %>
 										</td>
 									</tr>
@@ -237,6 +266,7 @@ function exportField(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退客户出库时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认状态</td>
 								</tr>
 							</tbody>
 						</table> 
@@ -251,16 +281,30 @@ function exportField(){
 								if(cwb.getFlowordertype()!=FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&
 										!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue())){
 									out.print("no");
-								} %>">
-								<td  width="40" align="center" valign="middle">
-										<input type="checkbox" checked="checked" name="checkbox" id="checkbox" value="<%=cwb.getOpscwbid()%>"/>
-									</td>
+								} %>"	>
+								<td width="60" align="center" valign="middle" bgcolor="#f3f3f3">
+									<%if(cwb.getFlowordertype()!=FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&
+											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue())){%>
+										<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>_s_0">
+									<%}else{ %>
+										<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>_s_1" checked="checked">
+									<%} %>
+								</td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCustomername()%></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getJushoutime() %></td>
 								<td width="100" align="right" valign="middle"><strong><%=cwb.getReceivablefee() %></strong></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getTuigonghuoshangchukutime() %></td>
+								<td width="100" align="center" valign="middle">
+								<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){%>
+									<input id="flowordertype" name="flowordertype" value="退客户成功" />
+								<%}else if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()){%>
+									<input id="flowordertype" name="flowordertype" value="拒收退货" />
+								<%}else{ %>	
+									<input id="flowordertype" name="flowordertype" value="" />
+								<%} %>									
+								</td>
 							</tr>
 						<%} }%>
 						</tbody>

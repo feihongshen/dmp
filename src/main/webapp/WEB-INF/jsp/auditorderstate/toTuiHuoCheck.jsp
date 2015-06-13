@@ -7,7 +7,7 @@
 	List<OrderBackCheck> orderbackList = (List<OrderBackCheck>)request.getAttribute("orderbackList");
 	List<CwbOrderView> covlist = (List<CwbOrderView>)request.getAttribute("covlist");
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
-	List<Customer> customerlist = (List<Customer>)request.getAttribute("customerList");
+	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	//List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 	List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 %>
@@ -33,21 +33,19 @@
 function sub(){
 	var ids="";//选中id
 	$('input[type="checkbox"][name="checkbox"]').each(
-	       	function() {
-	          	if($(this).attr("checked")=="checked"){
-	          		ids+=$(this).val()+",";
-	          	}
-	          }
-	       );
+       	function() {
+          	if($(this).attr("checked")=="checked"){
+          		ids+=$(this).val()+",";
+          	}
+        }
+	 );
 	if(ids.length==0){
 		alert("无提交数据");
 		return false;
 	}
-	
 	if(confirm("确认审核吗？")){
 		$("#submitF").attr("disabled","disabled");
     	$("#submitF").val("请稍候");
-    	
     	$.ajax({
     		type: "POST",
     		url:'<%=request.getContextPath()%>/orderBackCheck/save',
@@ -56,10 +54,44 @@ function sub(){
     		success : function(data) {
     			if(data.errorCode==0){
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck?searchType="+$("#searchType").val();
+    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck";
     			}else{
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck?searchType="+$("#searchType").val();
+    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck";
+    			}
+    		}
+    	});
+	}
+}
+
+function sub2(){
+	var ids="";//选中id
+	$('input[type="checkbox"][name="checkbox"]').each(
+       	function() {
+          	if($(this).attr("checked")=="checked"){
+          		ids+=$(this).val()+",";
+          	}
+        }
+	 );
+	if(ids.length==0){
+		alert("无提交数据");
+		return false;
+	}
+	if(confirm("确认审核吗？")){
+		$("#submitZ").attr("disabled","disabled");
+    	$("#submitZ").val("请稍候");
+    	$.ajax({
+    		type: "POST",
+    		url:'<%=request.getContextPath()%>/orderBackCheck/resultZhiliu',
+    		data:"ids="+ids.substring(0,ids.lastIndexOf(",")),
+    		dataType : "json",
+    		success : function(data) {
+    			if(data.errorCode==0){
+    				alert(data.error);
+    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck";
+    			}else{
+    				alert(data.error);
+    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck";
     			}
     		}
     	});
@@ -81,15 +113,9 @@ function btnClick(){
 	$("[name='checkbox']").attr("checked",'true');//全选  
 }
 
-//查询全部
-function submitAll(){
-	$("#searchType").val("1");
-	$("#searchForm").submit();
-}
-
 //根据订单号查询
 function submitCwb(){
-	$("#searchType").val("0");
+	alert($("#areatest").val());
 	$("#searchForm").submit();
 }
 
@@ -131,7 +157,7 @@ $(function() {
 								<tr>
 									<td rowspan="2">
 										订单号：
-										<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+										<textarea name="cwbStr" rows="3"  id="areatest" class="kfsh_text" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
 									</td>
 									<td>
 										&nbsp;&nbsp;
@@ -153,7 +179,7 @@ $(function() {
 												<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
 												<%} }%>
 										</select>
-										&nbsp;&nbsp;&nbsp;
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										配送站点:
 										<select name ="branchid" id ="branchid">
 											<option  value ="0">全部</option>
@@ -168,7 +194,7 @@ $(function() {
 									<td>
 										&nbsp;&nbsp;
 										审核状态:
-										<select name ="auditstate" id ="auditstate">
+										<select name ="checkstate" id ="checkstate">
 											<option  value ="0">全部</option>
 												<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 												<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
@@ -177,11 +203,10 @@ $(function() {
 									<td>
 										&nbsp;&nbsp;
 										审核结果:
-										<select name ="shenheresult" id ="shenheresult">
+										<select name ="checkresult" id ="checkresult">
 											<option  value ="0">全部</option>
 											<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
 											<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
-											<option value ="<%=TuihuoResultEnum.zhandianmaidan.getValue() %>" ><%=TuihuoResultEnum.zhandianmaidan.getText() %></option>
 										</select>
 										&nbsp;&nbsp;
 										归班反馈时间:
@@ -196,14 +221,12 @@ $(function() {
 							<table>
 								<tr>
 									<td width="20%">
-										<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType">
-										<input type="button" onclick="submitCwb()" value="查询" class="input_button2">&nbsp;&nbsp;
-										<input type="button" onclick="submitAll()" value="重置" class="input_button2">&nbsp;&nbsp;
+										<input type="button" onclick="submitCwb()"  value="查询" class="input_button2">&nbsp;&nbsp;
+										<input type="button"  value="重置" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td width="20%">
-										<input type="button" onclick="getdisplay()" value="确认退货" class="input_button2">&nbsp;&nbsp;
-										<input type="button" onclick="getdisplay()" value="站点滞留" class="input_button2">&nbsp;&nbsp;
-										<input type="button" onclick="getdisplay()" value="站点买单" class="input_button2">&nbsp;&nbsp;
+										<input type="button" id="submitF" value="确认退货" onclick="sub()" class="input_button2">&nbsp;&nbsp;
+										<input type="button" id="submitZ" value="站点滞留" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td>
 										<%if(orderbackList!=null&&!orderbackList.isEmpty()){%><span>
@@ -213,28 +236,27 @@ $(function() {
 								</tr>
 							</table>
 						</div>
-							
-								<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
-							<tbody>
-								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">归班反馈时间</td>
-								</tr>
-							</tbody>
-						</table>
+					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
+						<tbody>
+							<tr class="font_1" height="30" >
+								<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">归班反馈时间</td>
+							</tr>
+						</tbody>
+					</table>
 					</div>
-					<div style="height:100px"></div>
+					<div style="height:109px"></div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
-							<%if(covlist!=null&&!covlist.isEmpty()){%> 
-								<%for(CwbOrderView cwb :covlist){ %>
+							<%if(orderbackList!=null&&!orderbackList.isEmpty()){%> 
+								<%for(OrderBackCheck cwb :orderbackList){ %>
 									<tr>
 										<td  width="40" align="center" valign="middle">
-											<input type="checkbox" checked="true" name="checkbox" id="checkbox" value="<%=cwb.getScancwb()%>"/>
+											<input type="checkbox"  name="checkbox" id="checkbox" value="<%=cwb.getId()%>"/>
 										</td>
 										<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCwbordertypename())%></td>

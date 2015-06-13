@@ -190,4 +190,43 @@ public class CwbApplyZhongZhuanDAO {
 		}
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
+	
+	//新加----lx
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuans(String cwbs) {
+		String sql = "select * from op_cwbapplyzhongzhuan where cwb in("+cwbs+") and ishandle=0 and isnow=1";
+		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
+	}
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanList(int cwbordertype,long customerid,long applyzhongzhuanbranchid,long shenhestate,String begindate, String enddate) {
+		String sql = "select * from op_cwbapplyzhongzhuan where ishandle=0";
+		StringBuffer w = new StringBuffer("");
+		if (cwbordertype > 0) {
+			w.append(" and cwbordertypeid=" + cwbordertype);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (applyzhongzhuanbranchid > 0) {
+			w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
+		}
+		if (shenhestate > 0) {
+			w.append(" and shenhestate=" + shenhestate);
+		}
+		if (begindate.length() > 0) {
+			w.append(" and applytime >= '" + begindate + "' ");
+		}
+		if (enddate.length() > 0) {
+			w.append(" and applytime <= '" + enddate + "' ");
+		}
+		
+		return jdbcTemplate.query(sql+=w, new CwbApplyZhongZhuanMapper());
+	}
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanByids(String ids) {
+		String sql = "select * from op_cwbapplyzhongzhuan where cwb in(?) and ishandle=0 and isnow=1";
+		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper(),ids);
+	}
+	public void updateCwbApplyZhongZhuanResultSuc(String handletime, long handleuserid, long ishandle, long applyzhongzhuanbranchid,long shenhestate, String cwb) {
+		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=?,isnow=0,shenhestate=? where cwb=? and isnow=1";
+		jdbcTemplate.update(sql, handletime, handleuserid, ishandle, applyzhongzhuanbranchid,shenhestate, cwb);
+	}
+	
 }

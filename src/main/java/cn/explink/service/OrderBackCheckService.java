@@ -58,19 +58,36 @@ public class OrderBackCheckService {
 		return list;
 	}
 
+	public List<OrderBackCheck> getOrderBackCheckList2(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<Branch> branchList) {
+		List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
+
+		if (orderbackList != null && !orderbackList.isEmpty()) {
+			for (OrderBackCheck o : orderbackList) {
+				o.setCustomername(dataStatisticsService.getQueryCustomerName(customerList, o.getCustomerid()));// 供货商的名称
+				o.setFlowordertypename(FlowOrderTypeEnum.getText(o.getFlowordertype()).getText());
+				o.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(o.getCwbordertypeid()).getText());
+				o.setCwbstatename(DeliveryStateEnum.getByValue((int) o.getCwbstate()).getText());
+				o.setBranchname(dataStatisticsService.getQueryBranchName(branchList, o.getBranchid()));
+				list.add(o);
+			}
+		}
+		return list;
+	}
+
+	
 	/**
-	 * 退货审核
-	 * 
+	 * 退货出站审核为
+	 * 退货确认
 	 * @param ids
 	 * @param user
 	 */
 	@Transactional
 	public void save(String ids, User user) {
 		if (!"".equals(ids)) {
-			logger.info("===退货审核开始===");
+			logger.info("===退货确认审核开始===");
 			for (String id : ids.split(",")) {
 				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckById(Long.parseLong(id));
-
+				
 				// 获得当前站点的退货站
 				List<Branch> bList = new ArrayList<Branch>();
 				for (long i : cwbRouteService.getNextPossibleBranch(order.getBranchid())) {
@@ -86,14 +103,46 @@ public class OrderBackCheckService {
 				cwbDAO.updateNextBranchid(order.getCwb(), tuihuoNextBranch.getBranchid());
 				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);
 
-				// 更新checkstate=1
-				orderBackCheckDAO.updateOrderBackCheck(Long.parseLong(id));
-				logger.info("用户:{}，对订单:{}，退货审核为退货状态", new Object[] { user.getRealname(), order.getCwb() });
+				// 更新checkstate=1 并且更新确认状态为确认退货
+				orderBackCheckDAO.updateOrderBackCheck1(1,Long.parseLong(id));
+				logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
 			}
-			logger.info("===退货审核结束===");
+			logger.info("===退货审核确认结束===");
 		}
 	}
 
+	/**
+	 * 退货出站审核为
+	 * 站点滞留
+	 * @param ids
+	 * @param user
+	 */
+	@Transactional
+	public void rsZhiliu(String ids){
+		if (!"".equals(ids)) {
+			logger.info("===退货站点滞留开始===");
+			List<OrderBackCheck> orderbackList = orderBackCheckDAO.getOrderBackCheckByIds(ids);
+			StringBuffer sb = new StringBuffer("");
+			for(OrderBackCheck obc:orderbackList){
+				sb.append("'").append(obc.getCwb()).append("',");
+			}
+			String cwbs = "";
+			if(sb.length()>0){
+				cwbs = sb.substring(0, sb.toString().length()-1);
+			}
+			List<CwbOrder> coList = cwbDAO.getcwborderList(cwbs);
+			
+			for (CwbOrder cwbOrder : coList) {
+				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckByCwb(cwbOrder.getCwb());
+				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.PeiShong);
+				cwbDAO.updateNextbranch(cwbOrder);//修改下一站为当前站
+				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb());//修改为站点滞留状态
+			}
+			logger.info("===退货站点滞留结束===");
+		}
+	}
+	
+	
 	public OrderBackCheck loadFormForOrderBackCheck(CwbOrder co, long branchid, long userid, long checkstate, long cwbstate) {
 		OrderBackCheck orderBackCheck = new OrderBackCheck();
 		orderBackCheck.setCheckstate(checkstate);

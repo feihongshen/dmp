@@ -1241,8 +1241,10 @@ src/main/java/cn/explink/enumutil/PunishtimeEnum.java -text
 src/main/java/cn/explink/enumutil/ReachErrorFlagEnum.java -text
 src/main/java/cn/explink/enumutil/RealFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ReasonTypeEnum.java -text
+src/main/java/cn/explink/enumutil/ResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/ReturnCwbsTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ShenHeResultEnum.java -text
+src/main/java/cn/explink/enumutil/ShenHeStateEnum.java -text
 src/main/java/cn/explink/enumutil/SignStateEnmu.java -text
 src/main/java/cn/explink/enumutil/SmsSendManageEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailEnum.java -text

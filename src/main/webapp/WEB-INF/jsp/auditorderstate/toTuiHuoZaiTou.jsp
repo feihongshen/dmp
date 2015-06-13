@@ -249,7 +249,9 @@ $(function() {
 								<%if(cwbList!=null){ 
 									for(CwbOrderView cwb :cwbList){ %>
 									<tr height="30">
-										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>></td>
+										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
+											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>>
+										</td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>

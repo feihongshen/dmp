@@ -3,6 +3,7 @@ package cn.explink.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -570,8 +571,8 @@ public class CwbApplyController {
 	 * @return
 	 */
 
-	@RequestMapping("/kefuuserapplytoZhongZhuanlist/{page}")
-	public String kefuuserapplytoZhongZhuanlist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
+	/*@RequestMapping("/kefuuserapplytoZhongZhuanlist-no/{page}")
+	public String kefuuserapplytoZhongZhuanlist-no(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", required = false, defaultValue = "0") long ishandle,
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) {
 		Page pageparm = new Page();
@@ -608,6 +609,60 @@ public class CwbApplyController {
 		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
 		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
 		return "cwbapply/kefuuserapplytoZhongZhuanlist";
+	}*/
+	
+	
+	/**
+	 * 审核为中转页面
+	 * 
+	 * @param model
+	 * @param request
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/kefuuserapplytoZhongZhuanlist")
+	public String toChangeZhongZhuan(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwb,// 订单状态类型
+			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
+			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
+			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
+			@RequestParam(value = "shenhestate", defaultValue = "", required = false) String shenhestate,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			) {
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Customer> customerList = this.customerDao.getAllCustomers();
+		Map<Long, String> customerMap = new HashMap<Long, String>();
+		for (Customer cu : customerList) {
+			customerMap.put(cu.getCustomerid(), cu.getCustomername());
+		}
+		
+		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
+		if(cwb.length()>0&&!cwb.equals("查询多个订单用回车隔开")){
+			StringBuffer cwbs = new StringBuffer();
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbs.append("'").append(cwbStr).append("',");
+			}
+			
+			if(cwbs.length()>0){
+				String cwbsStr = cwbs.toString().substring(0,cwbs.length()-1);
+				cwbApplyZhongZhuanlist = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuans(cwbsStr);
+			}
+			
+		}else{
+			if(cwb.equals("")&&cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&shenhestate.equals("")&&begindate.equals("")&&enddate.equals("")){
+				return "cwbapply/kefuuserapplytoZhongZhuanlist";
+			}else{
+				this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate);
+			}
+		}
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("customerList", customerList);
+		model.addAttribute("customerMap", customerMap);
+		model.addAttribute("cwbApplyZhongZhuanlist",cwbApplyZhongZhuanlist);
+		return "cwbapply/kefuuserapplytoZhongZhuanlist";
 	}
 
 	/**
@@ -623,15 +678,17 @@ public class CwbApplyController {
 	 */
 	@RequestMapping("/zhongZhuantrueAuditByCwb")
 	public @ResponseBody
-	String zhongZhuantrueAuditByCwb(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "applyzhongzhuanbranchid", required = false, defaultValue = "0") long applyzhongzhuanbranchid,
-			@RequestParam(value = "handleremark", required = false, defaultValue = "") String handleremark, HttpServletResponse response, HttpServletRequest request) {
+	String zhongZhuantrueAuditByCwb(Model model, @RequestParam(value = "ids", required = false, defaultValue = "") String ids){
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String datetime = df.format(date);
-
-			this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForHandle(datetime, this.getSessionUser().getUserid(), handleremark, 1, applyzhongzhuanbranchid, cwb);
+			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
+			if(cazzList.size()>0){
+				for(CwbApplyZhongZhuan cazz:cazzList){
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 1, cazz.getApplyzhongzhuanbranchid(),3, cazz.getCwb());
+				}
+			}
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
 		} catch (CwbException ce) {
 			return "{\"errorCode\":1,\"error\":\"审核失败，" + ce.getMessage() + "\",\"type\":\"add\"}";
@@ -651,18 +708,20 @@ public class CwbApplyController {
 	 */
 	@RequestMapping("/zhongZhuanrefuseAuditByCwb")
 	public @ResponseBody
-	String zhongZhuanrefuseAuditByCwb(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "applyzhongzhuanbranchid", required = false, defaultValue = "0") long applyzhongzhuanbranchid,
-			@RequestParam(value = "handleremark", required = false, defaultValue = "") String handleremark, HttpServletResponse response, HttpServletRequest request) {
+	String zhongZhuanrefuseAuditByCwb(Model model, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date date = new Date();
 			String datetime = df.format(date);
-
-			this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForHandle(datetime, this.getSessionUser().getUserid(), handleremark, 2, applyzhongzhuanbranchid, cwb);
-			return "{\"errorCode\":0,\"error\":\"客户拒审成功\"}";
+			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
+			if(cazzList.size()>0){
+				for(CwbApplyZhongZhuan cazz:cazzList){
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 1, cazz.getApplyzhongzhuanbranchid(),2, cazz.getCwb());
+				}
+			}
+			return "{\"errorCode\":0,\"error\":\"审核为不成功\"}";
 		} catch (CwbException ce) {
-			return "{\"errorCode\":1,\"error\":\"客服拒审失败，" + ce.getMessage() + "\",\"type\":\"add\"}";
+			return "{\"errorCode\":1,\"error\":\"审核为不成功失败，" + ce.getMessage() + "\",\"type\":\"add\"}";
 		}
 	}
 

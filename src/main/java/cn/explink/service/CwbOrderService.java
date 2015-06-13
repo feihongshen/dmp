@@ -3179,7 +3179,17 @@ public class CwbOrderService {
 		this.validateDeliveryStateForZhiLiu(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
-
+		
+		//退货出站前做订单校验（判断是否在退货申请表中，以及处于什么状态）
+		OrderBackCheck obc = orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
+		if(obc!=null){
+			if(obc.getCheckstate()==0){
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Tui_Huo_Wei_Shen_He_Cheng_Gong_Error);	
+			}else if(obc.getCheckresult()==2){
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Tui_Huo_Zhi_Liu_Wu_Fa_Tui_Huo_Error);
+			}
+		}
+		
 		this.produceGroupDetail(user, cwb, requestbatchno, false, flowOrderTypeEnum.getValue(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid(), 0, 0, "");
 
 		// =====加入按包出库标识 zs==========
@@ -4013,9 +4023,10 @@ public class CwbOrderService {
 				|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) {
 			// 拒收修改订单为配送状态
 			if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
+				List<Branch> bList = new ArrayList<Branch>();
 				//chechFlag (退货是否需要审核的标识 0：否 ,1：是)
 				if (chechFlag) {
-					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+				//	this.updateCwbState(cwb, CwbStateEnum.PeiShong);
 					// 获取订单信息
 					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 					// 退货审核表插入一条订单数据
@@ -4023,7 +4034,6 @@ public class CwbOrderService {
 					this.orderBackCheckDAO.createOrderBackCheck(o);
 					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 				} else {
-					List<Branch> bList = new ArrayList<Branch>();
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
@@ -6248,5 +6258,18 @@ public class CwbOrderService {
 		return strs;
 	}
 
+
+	public String getCwbsBydate(long flowordertypeid, String begindate,
+			String enddate) {
+		List<OrderFlow> orderList = orderFlowDAO.getOrderByCredates(flowordertypeid,begindate,enddate);
+		StringBuffer sb = new StringBuffer("");
+		for(OrderFlow of:orderList){
+			sb.append("'"+of.getCwb()+"',");
+		}
+		if(sb.length()>0){
+			return sb.toString().substring(0, sb.length()-1);
+		}
+		return null;
+	}
 	
 }

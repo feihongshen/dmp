@@ -17,6 +17,17 @@ public class OrderBackCheck {
 	private long checkuser;
 	private String checkcreatetime;
 	private long branchid;
+	
+	//新加数据库字段
+	private long checkresult;//审核结果（默认0， 1：确认退货 2：站点滞留）
+
+	public long getCheckresult() {
+		return checkresult;
+	}
+
+	public void setCheckresult(long checkresult) {
+		this.checkresult = checkresult;
+	}
 
 	// 不在数据库字段
 	private String customername;
@@ -25,6 +36,17 @@ public class OrderBackCheck {
 	private String flowordertypename;
 	private String cwbordertypename;
 	private String cwbstatename;
+	
+	private String branchname;//新加 lx
+	
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
 
 	public long getId() {
 		return id;

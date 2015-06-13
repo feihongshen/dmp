@@ -226,7 +226,7 @@ public class ApplyEditDeliverystateDAO {
 	}
 	
 	//根据条件查询获取信息
-	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByOthers(int cwbordertypeid,long cwbresult,long isdo,long cwbstate,long feedbackbranch) {
+	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByOthers(int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
 		String sql = "select * from express_ops_applyeditdeliverysate where state=1";
 		StringBuffer sb = new StringBuffer();
 		if(cwbordertypeid>0){
@@ -235,8 +235,8 @@ public class ApplyEditDeliverystateDAO {
 		if(cwbresult>0){
 			sb.append("and nowdeliverystate="+cwbresult);
 		}
-		if(isdo>0){
-			sb.append("and ishandle="+isdo);
+		if(shenhestate>0){
+			sb.append("and ishandle="+shenhestate);
 		}
 		if(cwbstate>0){
 			sb.append("and cwbstate="+cwbstate);
