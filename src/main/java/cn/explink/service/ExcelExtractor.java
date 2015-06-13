@@ -676,8 +676,10 @@ public abstract class ExcelExtractor {
 		for (Object row : this.getRows(f)) {
 			try {
 				PenalizeOut out = this.getPenalizeOutAccordingtoConf(row, penalizeTypeMap, user, systemTime);
-				if (out == null) {
+				if (out != null) {
 					penalizeOuts.add(out);
+				}
+				else{
 					failCounts++;
 				}
 				totalCounts++;
