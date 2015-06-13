@@ -521,6 +521,9 @@ function resultdatadeal(id)
 					</tbody>
 				</table>
 				</div>
+				<br>
+				<br>
+				<br>
 			<div style="height: 500px;overflow:auto; ">
 		    <div style="height: 140px;"></div>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
