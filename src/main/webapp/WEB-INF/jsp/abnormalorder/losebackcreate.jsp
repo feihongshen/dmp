@@ -73,10 +73,10 @@ function ajaxFileUpload()
         success: function (data)
         {  
             if(data.errorCode==0){
-            	$("#showMessage").html(data.error);
+            	alert(data.error);
             	
             }else{
-              $("#showMessage1").html(data.error);
+            	alert(data.error);
               $("#abnormalinfo").val("最多输入100个字");
           	$("#callbackbranchid").val(0);
           	$("#cwb").val("查询多个订单用回车隔开");
@@ -136,8 +136,8 @@ function ajaxFileUpload()
 								
 								
 								</table>
-								<font id="showMessage" color="red" style="border-left: thin;"></font>
-								<font id="showMessage1" color="blue" style="border-left: thin;"></font>
+						<!-- 		<font id="showMessage" color="red" style="border-left: thin;"></font>
+								<font id="showMessage1" color="blue" style="border-left: thin;"></font> -->
 								</div>	
 							</form>
 						</div>

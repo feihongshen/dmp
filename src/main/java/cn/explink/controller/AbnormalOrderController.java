@@ -1345,6 +1345,7 @@ public class AbnormalOrderController {
 			@RequestParam("file") CommonsMultipartFile[] files
 
 			){
+		Map<String, String> failCwbs=new HashMap<String, String>();
 		if (abnormalinfo.equals("最多输入100个字")) {
 			abnormalinfo="";
 		}
@@ -1354,37 +1355,45 @@ public class AbnormalOrderController {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String nowtime = df.format(date);
-		try {
+		
 			if (cwbStrings.length>0) {
 				for (String cwb : cwbStrings) {
-					CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
-					if (cwbOrder==null) {
-						return "{\"errorCode\":0,\"error\":\"不存在订单号为'"+cwb+"'的订单，不能执行该操作\"}";
+					try {
+						CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
+						if (cwbOrder==null) {
+							failCwbs.put(cwb, "不存在该订单号");
+							//return "{\"errorCode\":0,\"error\":\"不存在订单号为'"+cwb+"'的订单，不能执行该操作\"}";
+						}
+						 List<MissPiece> missPiece=missPieceDao.findMissPieceByCwb(cwb);
+						if (missPiece!=null&&missPiece.size()>0) {
+							failCwbs.put(cwb, "该订单号已经创建为丢失找回");
+							//return "{\"errorCode\":0,\"error\":\"该订单号'"+cwb+"'已经创建过为丢失找回，不能执行该操作\"}";
+						}
+						long customerid=cwbOrder.getCustomerid();
+						long cwbtypeid=cwbOrder.getCwbordertypeid();
+						long flowordertype=cwbOrder.getFlowordertype();
+						User user=this.getSessionUser();
+						long userid=user.getUserid();
+						AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
+						if (abnormalOrder!=null) {
+							questionNo=abnormalOrder.getQuestionno();
+							//修改问题件的是否丢失状态
+							abnormalOrderDAO.updateMisspieceState(1,cwb);
+						}
+						missPieceDao.insertintoMissPiece(cwb,callbackbranchid,abnormalinfo,filepath,questionNo,nowtime,customerid,cwbtypeid,flowordertype,userid);
+					} catch (Exception e) {
+						failCwbs.put(cwb, "创建时异常失败");
+						this.logger.error("订单号为'"+cwb+"'的订单创建丢失件的时候出现异常", e);
 					}
-					 List<MissPiece> missPiece=missPieceDao.findMissPieceByCwb(cwb);
-					if (missPiece!=null&&missPiece.size()>0) {
-						return "{\"errorCode\":0,\"error\":\"该订单号'"+cwb+"'已经创建过为丢失找回，不能执行该操作\"}";
-					}
-					long customerid=cwbOrder.getCustomerid();
-					long cwbtypeid=cwbOrder.getCwbordertypeid();
-					long flowordertype=cwbOrder.getFlowordertype();
-					User user=this.getSessionUser();
-					long userid=user.getUserid();
-					AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
-					if (abnormalOrder!=null) {
-						questionNo=abnormalOrder.getQuestionno();
-						//修改问题件的是否丢失状态
-						abnormalOrderDAO.updateMisspieceState(1,cwb);
-					}
-					missPieceDao.insertintoMissPiece(cwb,callbackbranchid,abnormalinfo,filepath,questionNo,nowtime,customerid,cwbtypeid,flowordertype,userid);
 				}
 			}
-			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
-		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
-		}
-		
-		
+			if (failCwbs.size()==0) {
+				return "{\"errorCode\":0,\"error\":\"创建全部成功\"}";
+			}else  if(failCwbs.size()==cwbStrings.length){
+				return "{\"errorCode\":1,\"error\":\"创建全部失败（可能由于其中有不存在或者已经创建丢失件的订单）\"}";
+			}else {
+				return "{\"errorCode\":2,\"error\":\"创建问题件部分成功\"}";
+			}
 	}
 	//进入根据条件查询的丢失件
 	@RequestMapping("/losebackdetail/{page}")
@@ -1403,6 +1412,7 @@ public class AbnormalOrderController {
 		List<Branch> branchs=branchDAO.getAllEffectBranches();
 		List<User> users=userDAO.getAllUser();
 		List<MissPieceView> missPieceViews=new ArrayList<MissPieceView>();
+		List<MissPiece> missPiecesCounList=new ArrayList<MissPiece>();
 		String quotAndComma = ",";
 		StringBuffer cwbs1 = new StringBuffer();
 		if (isshow==0) {
@@ -1425,6 +1435,7 @@ public class AbnormalOrderController {
 			}
 			
 			List<MissPiece> missPieces=missPieceDao.findMissPieces(page, cwbs, customerid, cwbordertype, losebackbranchid, strtime, endtime);
+			missPiecesCounList=missPieceDao.findMissPieces(-9, cwbs, customerid, cwbordertype, losebackbranchid, strtime, endtime);
 			if (missPieces!=null&&missPieces.size()>0) {
 				  missPieceViews=abnormalService.setMissPieceView(missPieces,branchs,users,customers);
 
@@ -1437,7 +1448,7 @@ public class AbnormalOrderController {
 		model.addAttribute("cwbordertype");
 		model.addAttribute("losebackbranchid", losebackbranchid);
 		model.addAttribute("page", page);
-		model.addAttribute("page_obj", new Page(missPieceViews.size(), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(missPiecesCounList.size(), page, Page.ONE_PAGE_NUMBER));
 		return "abnormalorder/losebackdetail";
 	}
 	

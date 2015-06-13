@@ -213,7 +213,14 @@ function getThisBoxListAdd(cwbinfo){
 		}
 	});
 }
-
+function resethence(){
+	$("#customerid").val(0);
+	$("#cwbordertype").val(0);
+	$("#losebackbranchid").val(0);
+	$("#strtime").val("");
+	$("#endtime").val("");
+	$("#cwb").val("");
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -274,7 +281,7 @@ function getThisBoxListAdd(cwbinfo){
 									<tr>
 									<td align="left">
 									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
-									<input type="reset"    value="重置" class="input_button2">
+									<input type="button" onclick="resethence();"   value="重置" class="input_button2">
 									<input type="button"  onclick="cancelmisspiece();"  value="作废" class="input_button2">
 									</td>
 									<td>
