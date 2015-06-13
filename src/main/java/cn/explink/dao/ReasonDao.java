@@ -181,15 +181,29 @@ public class ReasonDao {
 		return list;
 	}
 	public List<Reason> getSecondLevelReason(long rid){
-		String sql = "SELECT * FROM express_set_reason where whichreason=2 and parentid=?";
-		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),rid);
-		return list;
+		String sql ="";
+		List<Reason> lr = null;		
+		try {			
+				sql = "SELECT * FROM express_set_reason where whichreason=2 and parentid=?";
+				lr=jdbcTemplate.query(sql,new ReasonRowMapper(),rid);	
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		
+		return lr;
 	}
 	
 	//查出所有的一级原因
 	public List<Reason> addWO(){
 		int reasonGongdantousu=ReasonTypeEnum.GongDanTouSuYuanYin.getValue();
 		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype="+reasonGongdantousu;
+		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
+		return list;
+	}
+	
+	public List<Reason> getAllTwoLevelReason(){
+		String sql = "SELECT * FROM express_set_reason where whichreason=2";
 		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
 		return list;
 	}

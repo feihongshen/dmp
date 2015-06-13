@@ -12,7 +12,6 @@
 CsComplaintAccept a= request.getAttribute("ca")==null?null:(CsComplaintAccept)request.getAttribute("ca");
 List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
 List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
-List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.getAttribute("lrs");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -47,7 +46,8 @@ List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.g
 					<tr>
 						<td>
 							<span>被投诉机构:</span>
-							<select class="select1" name="codOrgId">
+							<select class="select1" name="codOrgId" onchange="getComplaintUserValue()" id="codOrgIdValue">
+								<option value="-1">全部</option>
 							<%for(Branch br:b){ %>
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
 							<%} %>	
@@ -55,25 +55,30 @@ List<Reason> rs = request.getAttribute("lrs")==null?null:(List<Reason>)request.g
 						</td>
 						<td>
 						<span>被投诉人:</span>
-						<input type="text" name="ComplaintUser">
+						
+						<select name="ComplaintUser" id="ComplaintUseridValue" class="select1">
+									
+						
+						
+						</select>
 						</td>
 				</tr>
 				<tr>
 						<td>
 							<span>一级分类:</span> 
-							<select class="select1" name="complaintOneLevel" id="ol">
+							<select class="select1" name="complaintOneLevel" id="olreason" onchange="getReasonValue()">
+							<option value="-1">全部</option>
+							<%if(r!=null){%>
 							<%for(Reason reason:r){ %>
 								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
-								<%} %>
+								<%} }%>
 								</select>
 						</td>
 						<td>
 							<span>二级分类:</span>
-							<select class="select1" name="complaintTwoLevel" id="tl">
-								<%for(Reason r1:rs){ %>
-								<option value="<%=r1.getReasonid()%>"><%=r1.getReasoncontent()%></option>
-								<%} %>
-									</select>
+							<select class="select1" name="complaintTwoLevel" id="tlreason">
+									
+							</select>
 						</td>
 				</tr>		
 							<td>

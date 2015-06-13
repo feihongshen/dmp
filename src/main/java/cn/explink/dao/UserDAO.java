@@ -321,6 +321,7 @@ public class UserDAO {
 		return userList;
 	}
 
+
 	public List<User> getAllUserByuserDeleteFlag() {
 		String sql = "select * from express_set_user where userDeleteFlag=1 order by CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
@@ -874,5 +875,16 @@ public class UserDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	
+	public List<User> getBeiTouSuRen(long branchid){
+		
+		try {
+			String sql="select * from express_set_user where branchid=?";
+			return this.jdbcTemplate.query(sql, new UserRowMapper(),branchid);
+		} catch (Exception e) {
+			return null;
+		}		
 	}
 }

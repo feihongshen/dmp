@@ -33,6 +33,8 @@ function getGoonacceptWO(GV,GS,uf){
 	
 }
 
+
+
 function gettrValue(cwbId){
 	//$('#GV').val("");
 	$('#createquerywo_button').show();
@@ -56,34 +58,34 @@ function gettrValue(cwbId){
 			"<th bgcolor='#eef6ff'>工单类型</th>" +
 			"<th bgcolor='#eef6ff'>受理内容</th>" +
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
-$.each(data,function(ind,ele){
-	var dataTrStr1 = "";
-	if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
-		dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-				"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
-				"<td>"+ele.orderNo+"</td>" +
-				"<td>"+ele.phoneOne+"</td>" +
-				"<td>"+ele.provence+"</td>" +
-				"<td>"+ele.acceptTime+"</td>" +
-				"<td>"+ele.showcomplaintTypeName+"</td>" +
-				"<td>"+ele.content+"</td>" +
-				"<td>"+ele.showComplaintStateName+"</td></tr>";
-		}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
-			dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-			"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
-			"<td>"+ele.orderNo+"</td>" +
-			"<td>"+ele.phoneOne+"</td>" +
-			"<td>"+ele.provence+"</td>" +
-			"<td>"+ele.acceptTime+"</td>" +
-			"<td>"+ele.showcomplaintTypeName+"</td>" +
-			"<td>"+ele.queryContent+"</td>" +
-			"<td>"+ele.showComplaintStateName+"</td></tr>";
-		}	
-	thStr1 += dataTrStr1;
-	
-});
-$("#showWO").html(thStr1);
-selectcolorofwo();
+			$.each(data,function(ind,ele){
+				var dataTrStr1 = "";
+				if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
+					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+							"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+							"<td>"+ele.orderNo+"</td>" +
+							"<td>"+ele.phoneOne+"</td>" +
+							"<td>"+ele.provence+"</td>" +
+							"<td>"+ele.acceptTime+"</td>" +
+							"<td>"+ele.showcomplaintTypeName+"</td>" +
+							"<td>"+ele.content+"</td>" +
+							"<td>"+ele.showComplaintStateName+"</td></tr>";
+					}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
+						dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+						"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+						"<td>"+ele.orderNo+"</td>" +
+						"<td>"+ele.phoneOne+"</td>" +
+						"<td>"+ele.provence+"</td>" +
+						"<td>"+ele.acceptTime+"</td>" +
+						"<td>"+ele.showcomplaintTypeName+"</td>" +
+						"<td>"+ele.queryContent+"</td>" +
+						"<td>"+ele.showComplaintStateName+"</td></tr>";
+					}	
+				thStr1 += dataTrStr1;
+				
+			});
+			$("#showWO").html(thStr1);
+			selectcolorofwo();
 		}
 	});	
 	var cwbStr="";	
@@ -386,77 +388,84 @@ function submitselect2(){    //通过手机号查询工单
 		type:'POST',
 		data:'phoneonOne='+$(phoneonOne).val(),
 		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWO',
-		dataType:'json',
-		success:function(data){
-			var thStr1 = "<tr class='font_1'>" +
-			"<th bgcolor='#eef6ff'>工单号</th>" +
-			"<th bgcolor='#eef6ff'>订单号</th>" +
-			"<th bgcolor='#eef6ff'>来电号码</th>" +
-			"<th bgcolor='#eef6ff'>归属地</th>"	 +			
-			"<th bgcolor='#eef6ff'>受理时间</th>" +
-			"<th bgcolor='#eef6ff'>工单类型</th>" +
-			"<th bgcolor='#eef6ff'>受理内容</th>" +
-			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
-$.each(data,function(ind,ele){
-	
-	var dataTrStr1 = "";
-	if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
-	dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-			"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
-			"<td>"+ele.orderNo+"</td>" +
-			"<td>"+ele.phoneOne+"</td>" +
-			"<td>"+ele.provence+"</td>" +
-			"<td>"+ele.acceptTime+"</td>" +
-			"<td>"+ele.showcomplaintTypeName+"</td>" +
-			"<td>"+ele.content+"</td>" +
-			"<td>"+ele.showComplaintStateName+"</td></tr>";
-	}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
-		dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-		"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
-		"<td>"+ele.orderNo+"</td>" +
-		"<td>"+ele.phoneOne+"</td>" +
-		"<td>"+ele.provence+"</td>" +
-		"<td>"+ele.acceptTime+"</td>" +
-		"<td>"+ele.showcomplaintTypeName+"</td>" +
-		"<td>"+ele.queryContent+"</td>" +
-		"<td>"+ele.showComplaintStateName+"</td></tr>";
-	}	
-	thStr1 += dataTrStr1;
-	
-});
-/* "<td>"+ele.showcomplaintTypeName+"</td>" +
-"<td>"+ele.content+"</td>" +
-"<td>"+ele.showComplaintStateName+"</td></tr>"; */
-$("#showWO").html(thStr1);
-selectcolorofwo();
+			dataType : 'json',
+			success : function(data) {
+				var thStr1 = "<tr class='font_1'>"
+						+ "<th bgcolor='#eef6ff'>工单号</th>"
+						+ "<th bgcolor='#eef6ff'>订单号</th>"
+						+ "<th bgcolor='#eef6ff'>来电号码</th>"
+						+ "<th bgcolor='#eef6ff'>归属地</th>"
+						+ "<th bgcolor='#eef6ff'>受理时间</th>"
+						+ "<th bgcolor='#eef6ff'>工单类型</th>"
+						+ "<th bgcolor='#eef6ff'>受理内容</th>"
+						+ "<th bgcolor='#eef6ff'>工单状态</th></tr>";
+				$.each(data,
+						function(ind, ele) {
+
+							var dataTrStr1 = "";
+							if (ele.complaintType == $(
+									'#ComplaintTypeEnumTouSu').val()) {
+								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
+										+ ele.acceptNo + "\",\""
+										+ ele.complaintState + "\",\""
+										+ ele.complaintType + "\")'>" + "<td>"
+										+ ele.acceptNo + "</td>" + /* order/queckSelectOrder/123 */
+										"<td>" + ele.orderNo + "</td>" + "<td>"
+										+ ele.phoneOne + "</td>" + "<td>"
+										+ ele.provence + "</td>" + "<td>"
+										+ ele.acceptTime + "</td>" + "<td>"
+										+ ele.showcomplaintTypeName + "</td>"
+										+ "<td>" + ele.content + "</td>"
+										+ "<td>" + ele.showComplaintStateName
+										+ "</td></tr>";
+							} else if (ele.complaintType == $(
+									'#ComplaintTypeEnumChaXun').val()) {
+								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
+										+ ele.acceptNo + "\",\""
+										+ ele.complaintState + "\",\""
+										+ ele.complaintType + "\")'>" + "<td>"
+										+ ele.acceptNo + "</td>" + /* order/queckSelectOrder/123 */
+										"<td>" + ele.orderNo + "</td>" + "<td>"
+										+ ele.phoneOne + "</td>" + "<td>"
+										+ ele.provence + "</td>" + "<td>"
+										+ ele.acceptTime + "</td>" + "<td>"
+										+ ele.showcomplaintTypeName + "</td>"
+										+ "<td>" + ele.queryContent + "</td>"
+										+ "<td>" + ele.showComplaintStateName
+										+ "</td></tr>";
+							}
+							thStr1 += dataTrStr1;
+
+						});
+				/* "<td>"+ele.showcomplaintTypeName+"</td>" +
+				 "<td>"+ele.content+"</td>" +
+				 "<td>"+ele.showComplaintStateName+"</td></tr>"; */
+				$("#showWO").html(thStr1);
+				selectcolorofwo();
 
 			}
 		});
 
-
-}
- 
-function verifyphoneonOne(){    
-	$('#createquerywo_button').hide();
-	$('#createcomplain_buttonn').hide();
-	var reg = new RegExp("^[0-9]*$");  //电话号码验证是否为空和是否为数字
-    var obj = document.getElementById("phoneonOne");  
- if(!reg.test(obj.value)){  
-     alert("请输入正确格式的手机号码!");
-     return false;
- }else if($('#phoneonOne').val()!=""){
-		SelectPhone();
-		SelectdetailForm();
-		submitselect2();
-	}else{
-		alert('手机号码不能为空');
-		return false;
 	}
-	
-}
 
+	function verifyphoneonOne() {
+		$('#createquerywo_button').hide();
+		$('#createcomplain_buttonn').hide();
+		var reg = new RegExp("^[0-9]*$"); //电话号码验证是否为空和是否为数字
+		var obj = document.getElementById("phoneonOne");
+		if (!reg.test(obj.value)) {
+			alert("请输入正确格式的手机号码!");
+			return false;
+		} else if ($('#phoneonOne').val() != "") {
+			SelectPhone();
+			SelectdetailForm();
+			submitselect2();
+		} else {
+			alert('手机号码不能为空');
+			return false;
+		}
 
-
+	}
 </script>
 
 

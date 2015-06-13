@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
@@ -42,21 +41,15 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
-import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class CwbDAO {
-	
-	
-	
 	private Logger logger = LoggerFactory.getLogger(CwbDAO.class);
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
-	@Autowired
-	CwbOrderService cwbOrderService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = new ExplinkUserDetail();
@@ -5759,31 +5752,40 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(),phone);
 	}	
 	
-	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc){
-		String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? or cwb=? or emaildate=? or consigneename=? order by emaildate desc limit 10";
+/*public List<CwbOrder> SelectDetalFormByConditio1n(CwbOrderAndCustomname coc){
+		String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=?"
+				+ " or cwb=? or emaildate=? or consigneename=? order by emaildate desc limit 10";
 	
 	return 	this.jdbcTemplate.query(sql, new CwbMapper(),coc.getConsigneemobile(),coc.getCwb(),coc.getEmaildate(),coc.getConsigneename());
+
+	}	*/
+	
+	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc){
+		StringBuilder sb = new StringBuilder();
+		String sql="select * from express_ops_cwb_detail where state=1";
+				
+				if(coc.getCwb()!=null&&coc.getCwb().length()>0){
+					sb.append(" and cwb='"+coc.getCwb()+"'");
+				}
+				if(coc.getEmaildate()!=null&&coc.getEmaildate().length()>0){
+					sb.append(" and emaildate='"+coc.getEmaildate()+"'");
+				}
+				if(coc.getConsigneename()!=null&&coc.getConsigneename().length()>0){
+					sb.append(" and consigneename='"+coc.getConsigneename()+"'");
+				}
+				if(coc.getConsigneemobile()!=null&&coc.getConsigneemobile().length()>0){
+					sb.append(" and consigneemobile='"+coc.getConsigneemobile()+"'");
+				}
+				
+				sb.append(" order by emaildate desc limit 10");
+				sql+=sb.toString();
+				
+	
+	return 	this.jdbcTemplate.query(sql, new CwbMapper());
 
 	}	
 	
 	
-	
-/*	private final class CsComplaintAcceptRowMapper implements RowMapper<CsComplaintAccept>{
-
-		@Override
-		public CsComplaintAccept mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
-			CsComplaintAccept c= new CsComplaintAccept();
-			c.setAcceptNo(rs.getString("accept_no"));
-			c.setAcceptTime(rs.getString("accpet_time"));
-			c.setComplaintState(rs.getInt("complaint_state"));
-			c.setOrderNo(rs.getString("order_no"));
-			c.setContent(rs.getString("content"));
-			c.setComplaintType(rs.getInt("complaint_type"));
-			return c;
-		}
-		
-	}*/
 	
 	public List<CwbOrder> SelectDetalForm1(String phone){
 		 
@@ -5792,7 +5794,7 @@ public class CwbDAO {
 	
 	return lc;
 
-	}
+}
 	//待领货状态
 	public void updateFlowordertypeByIds(String opscwbids, CwbStateEnum cwbstate) {
 		String sql = "update express_ops_cwb_detail set cwbstate=? where opscwbid in (" + opscwbids + ") and state=1";
@@ -5805,36 +5807,5 @@ public class CwbDAO {
 		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
-
-	public void updateNextbranch(CwbOrder cwbOrder) {
-		String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=?";
-		jdbcTemplate.update(sql,cwbOrder.getCurrentbranchid(),cwbOrder.getCwb());
-	}
-
-	//综合查询退客户确认lx
-	public List<CwbOrder> getCwbOrderLX(int cwbordertypeid,long customerid,long flowordertypeid,String begindate,String enddate) {
-		StringBuffer sb = new StringBuffer("select * from express_ops_cwb_detail where cwbstate="+CwbStateEnum.TuiHuo);
-		if(cwbordertypeid>0){
-			sb.append(" and cwbordertypeid="+cwbordertypeid);
-		}
-		if(customerid>0){
-			sb.append(" and customerid="+customerid);
-		}
-		if(flowordertypeid>0){
-			sb.append(" and flowordertype="+flowordertypeid);
-		}
-		if(!begindate.equals("0")&&!enddate.equals("0")){
-			sb.append(" and cwb in("+cwbOrderService.getCwbsBydate(flowordertypeid,begindate,enddate)+")");
-		}
-		return null;
-	}
-
-	public void updateFlowordertype(long flowordertypeid,String cwb) {
-		String sql = "update express_ops_cwb_detail set flowordertype=? where cwb=?";
-		jdbcTemplate.update(sql, new CwbMapper(),flowordertypeid,cwb);
-	}
-	
-	
-	
 	
 }	

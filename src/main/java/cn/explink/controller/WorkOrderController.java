@@ -36,6 +36,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.dao.WorkOrderDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
@@ -68,7 +69,10 @@ import cn.explink.util.StringUtil;
  */
 @Controller
 @RequestMapping("/workorder")      
+
 public class WorkOrderController {
+	@Autowired
+	private UserDAO userdao;
 	@Autowired
 	private SystemInstallDAO systeminstalldao;
 	@Autowired
@@ -213,13 +217,7 @@ public class WorkOrderController {
 			}
 			List<Branch> lb=branchdao.getAllBranches();
 			List<Reason> lr=reasondao.addWO();
-			List<Reason> lrs=null;
-			for(Reason r:lr){
-				 lrs=reasondao.getSecondLevelReason(r.getReasonid());
-			}
-			
 			model.addAttribute("lr", lr);
-			model.addAttribute("lrs", lrs);
 			model.addAttribute("ca", ca);
 			model.addAttribute("lb", lb);
 		return "workorder/CreateComplainWorkOrder";
@@ -238,14 +236,15 @@ public class WorkOrderController {
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());		
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getRealname();
+		String uname=getSessionUser().getUsername();
 		cca.setHeshiUser(uname);
 		cca.setHeshiTime(nowtime);
 		List<Branch> lb=branchdao.getAllBranches();	
-		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
+		model.addAttribute("alluser",userdao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
 		return "workorder/OrgVerify";
@@ -255,15 +254,16 @@ public class WorkOrderController {
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);		
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getRealname();
+		String uname=getSessionUser().getUsername();
 		cca.setJieanUser(uname);
 		cca.setJieanTime(nowtime);
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();	
-		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
+		model.addAttribute("alluser",userdao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
 		return "workorder/CustomerServiceAdjudicate";
@@ -276,13 +276,15 @@ public class WorkOrderController {
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getRealname();
+		String uname=getSessionUser().getUsername();
+		
 		cca.setShensuUser(uname);
 		cca.setComplaintTime(nowtime);
-		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);   
+		model.addAttribute("alluser",userdao.getAllUser());
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
@@ -295,13 +297,14 @@ public class WorkOrderController {
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getRealname();
+		String uname=getSessionUser().getUsername();
 		cca.setChongshenUser(uname);
 		cca.setJieanchongshenTime(nowtime);
-		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
-		model.addAttribute("lb", lb);   
+		model.addAttribute("lb", lb);  
+		model.addAttribute("alluser",userdao.getAllUser());
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
@@ -390,7 +393,7 @@ public class WorkOrderController {
 		cca.setAcceptTime(accepttime);		
 		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
 		cca.setCustomerid(co.getCustomerid());
-		String username=getSessionUser().getRealname();
+		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
 		workorderdao.savequeryworkorderForm(cca);
 	
@@ -415,7 +418,7 @@ public class WorkOrderController {
 		cca.setAcceptTime(accepttime);
 		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
 		cca.setCustomerid(co.getCustomerid());
-		String username=getSessionUser().getRealname();
+		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
 		workorderdao.saveComplainWorkOrderF(cca);
 	
@@ -426,9 +429,13 @@ public class WorkOrderController {
 	@RequestMapping("/updateComplainWorkOrderF")
 	@ResponseBody
 	public String updateComplainWorkOrderF(CsComplaintAccept cca){
+		System.out.println(cca.getAcceptNo());
+		System.out.println(cca.getOrderNo());
 		String accepttime=DateTimeUtil.formatDate(new Date());
 		cca.setAcceptTime(accepttime);
-		workorderdao.updateComplainWorkOrderF(cca);;
+		workorderdao.updateComplainWorkOrderF(cca);
+		System.out.println(cca.getAcceptNo());
+		System.out.println(cca.getOrderNo());
 	
 		return "{\"errorCode\":0,\"error\":\"受理成功\"}";
 	}
@@ -492,12 +499,9 @@ public class WorkOrderController {
 	
 	@RequestMapping("/GoOnacceptWo")
 	public String GoOnacceptWo(HttpServletRequest req,Model model){
-		String workorder=req.getParameter("workorder");
-		CsComplaintAccept lcs=null;
-		String RuKuTime=null;
-		if(workorder!=null){
-			lcs=workorderdao.findGoOnacceptWOByWorkOrder(workorder);	
-		}
+		String workorder=req.getParameter("workorder");		
+			String RuKuTime=null;
+			CsComplaintAccept lcs=workorderdao.findGoOnacceptWOByWorkOrder(workorder);	
 			String cwb=lcs.getOrderNo();  //获取订单号
 			CwbOrder lco=cwbdao.getOneCwbOrderByCwb(cwb);
 			String conMobile=lco.getConsigneemobile();
@@ -508,19 +512,16 @@ public class WorkOrderController {
 			RuKuTime=dateformat1.format(createTime); //获取入库时间
 			}
 			List<Reason> lr=reasondao.addWO();
-			List<Reason> lrs=null;
-			for(Reason r:lr){
-				 lrs=reasondao.getSecondLevelReason(r.getReasonid());
-			}
+			List<Reason> alltworeason=reasondao.getAllTwoLevelReason();
 			List<Branch> lb=branchdao.getAllBranches();
 			
 			model.addAttribute("lr", lr);
-			model.addAttribute("lrs", lrs);
+			model.addAttribute("alltworeason", alltworeason);
 			model.addAttribute("lcs",lcs );
 			model.addAttribute("conMobile",conMobile );
 			model.addAttribute("RuKuTime",RuKuTime);
 			model.addAttribute("lb", lb);
-			
+			model.addAttribute("alluser",userdao.getAllUser());
 			return "workorder/CreateGoOnAcceptWorkOrder";			
 	}
 	
@@ -583,29 +584,22 @@ public class WorkOrderController {
 			connameList.put(c.getPhoneOne(), cname);
 			String customerName=customerDAO.findcustomername(c.getCustomerid()).getCustomername();
 			customerList.put(c.getCustomerid(),customerName);			
-	}
-		
-		
+	}	
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
-		/*String username=getSessionUser().getRealname();*/
+		List<Reason> alltworeason=reasondao.getAllTwoLevelReason();
 		List<Branch> lb=branchdao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
-		List<Reason> lrs=null;
-		for(Reason r:lr){
-			 lrs=reasondao.getSecondLevelReason(r.getReasonid());
-		}
-		
-		
+		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		model.addAttribute("shensuendTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("shensuendTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr==null?null:lr);
-		model.addAttribute("lrs", lrs==null?null:lrs);
-	
+		model.addAttribute("lcsa", lcsa);
+		model.addAttribute("alltworeason", alltworeason);
 		model.addAttribute("lb", lb==null?null:lb); 
 		model.addAttribute("lc", lc==null?null:lc);
-		/*model.addAttribute("username", username==null?null:username);*/
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("co", co==null?null:co);
+		model.addAttribute("alluser",userdao.getAllUser());
 		
 		return "workorder/WorkOrderQueryManage";		
 	}
@@ -613,16 +607,12 @@ public class WorkOrderController {
 	public String WorkOrderQueryManage(Model model){
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		List<Reason> lr=reasondao.addWO();
-		List<Reason> lrs=null;
-		for(Reason r:lr){
-			 lrs=reasondao.getSecondLevelReason(r.getReasonid());
-		}
 		List<Branch> lb=branchdao.getAllBranches();
 		
 		model.addAttribute("lr", lr);
-		model.addAttribute("lrs", lrs);
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("lb", lb);
+		model.addAttribute("alluser",userdao.getAllUser());
 		
 		return "workorder/WorkOrderQueryManage";
 	}
@@ -650,7 +640,7 @@ public class WorkOrderController {
 		
 		cca.setComplaintState(Integer.valueOf(AlreadyVerifycomplaintState));
 		User user=this.getSessionUser();
-		cca.setHeshiUser(user.getRealname());
+		cca.setHeshiUser(user.getUsername());
 		cca.setHeshiTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -666,7 +656,7 @@ public class WorkOrderController {
 		cca.setRemark(heshiremark);
 		cca.setId(Integer.valueOf(vid));
 		cca.setComplaintState(Integer.valueOf(AlreadyVerifycomplaintState));
-		cca.setHeshiUser(getSessionUser().getRealname());
+		cca.setHeshiUser(getSessionUser().getUsername());
 		cca.setHeshiTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -683,7 +673,7 @@ public class WorkOrderController {
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchdao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
-		String uname=getSessionUser().getRealname();
+		String uname=getSessionUser().getUsername();
 		cca.setHandleUser(uname);
 		cca.setJieanchongshenTime(nowtime);
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
@@ -873,7 +863,7 @@ public class WorkOrderController {
 		cca.setJieanremark(jieanremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
-		cca.setJieanUser(getSessionUser().getRealname());
+		cca.setJieanUser(getSessionUser().getUsername());
 		cca.setJieanTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -889,7 +879,7 @@ public class WorkOrderController {
 		cca.setJieanremark(jieanremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
-		cca.setJieanUser(getSessionUser().getRealname());
+		cca.setJieanUser(getSessionUser().getUsername());
 		cca.setJieanTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -910,7 +900,7 @@ public class WorkOrderController {
 		cca.setShensuremark(shensuremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
-		cca.setShensuUser(getSessionUser().getRealname());
+		cca.setShensuUser(getSessionUser().getUsername());
 		cca.setComplaintTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -926,7 +916,7 @@ public class WorkOrderController {
 		cca.setShensuremark(shensuremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
-		cca.setShensuUser(getSessionUser().getRealname());
+		cca.setShensuUser(getSessionUser().getUsername());
 		cca.setComplaintTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -954,7 +944,7 @@ public class WorkOrderController {
 		cca.setJieanchongshenremark(jieanchongshenremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChongShenChangeComplaintState));
-		cca.setChongshenUser(getSessionUser().getRealname());
+		cca.setChongshenUser(getSessionUser().getUsername());
 		cca.setJieanchongshenTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -971,7 +961,7 @@ public class WorkOrderController {
 		cca.setJieanchongshenremark(jieanchongshenremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChongShenChangeComplaintState));
-		cca.setChongshenUser(getSessionUser().getRealname());
+		cca.setChongshenUser(getSessionUser().getUsername());
 		cca.setJieanchongshenTime(DateTimeUtil.getNowTime());
 		workorderdao.ChangecomplaintState(cca);
 		
@@ -1010,9 +1000,19 @@ public class WorkOrderController {
 	}
 
 	
+	@RequestMapping("/getBeiTouSuRenValue")
+	@ResponseBody
+	public List<User> getBeiTouSuRenValue(@RequestParam(value="codOrgId" ,defaultValue="",required=true) long codOrgId){
+		List<User> u=userdao.getBeiTouSuRen(codOrgId);
+	return u;		
+	}
 	
 	
-	
-	
+	@RequestMapping("/getTwoValueByOneReason")
+	@ResponseBody
+	public List<Reason> getTwoValueByOneReason(HttpServletRequest req){
+		String leave=req.getParameter("complaintOneLevel");
+	return reasondao.getSecondLevelReason(Integer.valueOf(leave));		
+	}	
 	
 }

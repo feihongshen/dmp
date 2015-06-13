@@ -9,18 +9,18 @@
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
-
- <% 
+<%@page import="cn.explink.domain.User"%>	
+<%
+List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 	List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
-	List<Reason> rs =request.getAttribute("lrs")==null?null: (List<Reason>)request.getAttribute("lrs");
+ 	List<Reason> alltworeason =request.getAttribute("alltworeason")==null?null:(List<Reason>)request.getAttribute("alltworeason");
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
-	List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
-	/*  String uname=(String)request.getAttribute("username")==null?null:(String)request.getAttribute("username");  */
-	/* Map<String,List<CsConsigneeInfo>>  maplist=(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist")==null?null:(Map<String,List<CsConsigneeInfo>>)request.getAttribute("maplist"); */
+	List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");	
 	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
 	List<CwbOrder> co=request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
 	Integer shensuendTime =(Integer)request.getAttribute("shensuendTime");
+	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -38,6 +38,27 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+
+function getReasonValueV(){
+	/* var jsonData = {};
+	jsonData['complaintOneLevel'] = $('#olreasonV').val(); */
+	$.ajax({
+		type:'POST',
+		data:'complaintOneLevel='+$('#olreasonV').val(),
+		url:"<%=request.getContextPath()%>/workorder/getTwoValueByOneReason",
+		dataType:'json',
+		success:function(data){
+			var Str = "<option value='-1'>全部</option>";
+			$.each(data,function(ind,ele){
+				var dataTrStr = "<option value='" + ele.reasonid + "'>" + ele.reasoncontent+ "</option>";
+				Str+=dataTrStr;
+			});
+			
+			$('#tlreasonV').html(Str);
+		}
+	
+	});	
+}
 
 
 $(function() {
@@ -83,18 +104,7 @@ $(function() {
 		getAddBox2();
 
 	});
-	/* $("#add_OrgAppeal").click(function() {
-		
-		if($('#FormV').val()==""){
-			alert('请选择一条记录');
-			return false;
-		}else if($('#ComStateV').val()!=$('#YiJieAn').val()){
-			alert('本条数据状态未结案不能申诉');
-			return false;
-		}
-		getAddBox3();
-
-	}); */
+	
 	$("#add_AdjudicateRetrial").click(function() {
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
@@ -307,17 +317,19 @@ function CurentTime()   //计算当天时间
 				</tr>	
 				<tr>			
 					<td>
-					投诉一级分类:<select class="select1" name="complaintOneLevel" id="ol">
+					<span>投诉一级分类:</span> 
+							<select class="select1" name="complaintOneLevel" id="olreasonV" onchange="getReasonValueV()">
 								<option value="-1">全部</option>
-								<%if(r!=null){ %>
+								<%if(r!=null){%>
 								<%for(Reason reason:r){ %>
 								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
 								<%} }%>
 								</select>
 					</td>	
 					<td>
-				被投诉机构:		<select class="select1" name="codOrgId">
-							<option value="-1">全部</option>
+							<span>被投诉机构:</span>
+							<select class="select1" name="codOrgId">
+								<option value="-1">全部</option>
 							<%for(Branch br:b){ %>
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
 							<%} %>	
@@ -333,13 +345,10 @@ function CurentTime()   //计算当天时间
 					</td>	
 				<tr>		
 					<td>
-				投诉二级处理:<select class="select1" name="complaintTwoLevel" id="tl">
-								<option value="-1">全部</option>
-								<%if(rs!=null){ %>
-									<%for(Reason r1:rs){ %>
-								<option value="<%=r1.getReasonid()%>"><%=r1.getReasoncontent()%></option>
-								<%} }%>
-									</select>
+							<span>投诉二级处理:</span>
+							<select class="select1" name="complaintTwoLevel" id="tlreasonV">
+							
+							</select>
 					</td>						
 					<td>
 				是否扣罚:		<select class="select1" name="ifpunish">
@@ -349,8 +358,13 @@ function CurentTime()   //计算当天时间
 							</select>
 					</td>			
 					<td>
+							
 				受理人:		<select class="select1" name="handleUser">
-							<option>全部</option>
+							<option value="-1">全部</option>
+							<%if(lcsa!=null){ %>
+							<%for(CsComplaintAccept c:lcsa) {%>
+							<option value="<%=c.getHandleUser() %>"><%=c.getHandleUser() %></option>
+							<% }}%>
 							</select>
 					</td>
 				</tr>
@@ -416,17 +430,26 @@ function CurentTime()   //计算当天时间
 					<%if(br.getBranchid()==c.getCodOrgId()){ %>  <!-- 被投诉机构 -->
 						<%=br.getBranchname()%>
 					<%} }%>
-				<td><%=c.getHandleUser()%></td>					<!--受理人  -->
-				<td><%=c.getAcceptTime() %></td>    <!--受理时间  -->
+				<td>
+						<%for(User u:alluser){ %>
+							<%if(c.getHandleUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
+				</td>					<!--受理人  -->
+				<td><%=c.getAcceptTime() %></td> 
+				   <!--受理时间  -->
+				   <%if(r!=null){ %>
 				<td><%for(Reason rsn:r){ %>
 								<%if(rsn.getReasonid()==c.getComplaintOneLevel()){ %>  <!-- 一级原因 -->
 									<%=rsn.getReasoncontent()==null?"":rsn.getReasoncontent()%>
-								<%} }%>
+								<%}} }%>
 				</td>
-				<td><%for(Reason rsn1:rs){ %>
+				<td>
+					<%if(alltworeason!=null){ %>
+						<%for(Reason rsn1:alltworeason){ %>
 						<%if(rsn1.getReasonid()==c.getComplaintTwoLevel()){ %> 	
 							<%=rsn1.getReasoncontent()==null?"":rsn1.getReasoncontent() %><!--二级原因  -->
-						<%} }%>
+						<%} }}%>
 				</td>
 				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
 				<td>
@@ -465,10 +488,10 @@ function CurentTime()   //计算当天时间
 		<input type="hidden" value="<%=request.getParameter("complaintType")%>" name="complaintType"/>
 		<input type="hidden" value="<%=request.getParameter("orderNo")%>" name="orderNo"/>
 		<input type="hidden" value="<%=request.getParameter("complaintState") %>" name="complaintState"/>
-		<input type="hidden" value="<%=request.getParameter("complaintOneLevel") %>" name="complaintOneLevel"/>
+		<input type="hidden" value="<%=request.getParameter("complaintOneLevel")==null?"-1":request.getParameter("complaintOneLevel") %>" name="complaintOneLevel"/>
 		<input type="hidden" value="<%=request.getParameter("codOrgId")%>" name="codOrgId"/>
 		<input type="hidden" value="<%=request.getParameter("complaintResult") %>" name="complaintResult"/>
-		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel") %>" name="complaintTwoLevel"/>
+		<input type="hidden" value="<%=request.getParameter("complaintTwoLevel")==null?"-1":request.getParameter("complaintTwoLevel") %>" name="complaintTwoLevel"/>
 		<input type="hidden" value="<%=request.getParameter("beginRangeTime")%>" name="beginRangeTime"/>
 		<input type="hidden" value="<%=request.getParameter("endRangeTime") %>" name="endRangeTime"/>
 		<input type="hidden" value="<%=request.getParameter("handleUser") %>" name="handleUser"/>

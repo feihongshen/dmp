@@ -5481,8 +5481,6 @@ function btnupdate(csv){
 					}
 				});
 	closeBox();
-	$('#WaitAcceptNo').val("");
-	$('#GV').val('');
 	}
 	
  function getAddBoxx2(valWo) {
@@ -5932,5 +5930,57 @@ function acceptqueryWoJieAn(){
 		
 	});
 }
+
+function getComplaintUserValue(){
+	var jsonData = {};
+	jsonData['codOrgId'] = $('#codOrgIdValue').val();
+	$.ajax({
+		type:'POST',
+		data:jsonData,
+		url:'workorder/getBeiTouSuRenValue',
+		dataType:'json',
+		success:function(data){
+			var Str = "<option value='-1'>全部</option>";
+			$.each(data,function(ind,ele){
+				var dataTrStr = "<option value='" + ele.username + "'>" + ele.realname + "</option>";
+				Str+=dataTrStr;
+			});
+			
+			$('#ComplaintUseridValue').html(Str);
+		}
+		
+		
+		
+		
+	});
+	
+	
+	
+}
+
+function getReasonValue(){
+	var jsonData = {};
+	jsonData['complaintOneLevel'] = $('#olreason').val();
+	$.ajax({
+		type:'POST',
+		data:jsonData,
+		url:'workorder/getTwoValueByOneReason',
+		dataType:'json',
+		success:function(data){
+			if(data!=null){
+			var Str = "<option value='-1'>全部</option>";
+			$.each(data,function(ind,ele){
+				var dataTrStr = "<option value='" + ele.reasonid + "'>" + ele.reasoncontent+ "</option>";
+				Str+=dataTrStr;
+			});
+			
+			$('#tlreason').html(Str);
+			}
+		}
+	});	
+}
+
+
+
 
 

@@ -10,8 +10,9 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
-
+<%@page import="cn.explink.domain.User"%>	
 <%
+List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 CsComplaintAccept cca=(CsComplaintAccept)request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
 CwbOrder co=(CwbOrder)request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
 CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
@@ -57,7 +58,12 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<%=b.getBranchname() %>
 						<%} }%></td>
 						
-						<td><span>被投诉人:</span><%= cca.getComplaintUser()%></td>
+						<td><span>被投诉人:</span>
+							<%for(User u:alluser){ %>
+							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
+						</td>
 						<td><span>订单操作状态:</span><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%></td>
 					</tr>
 					<tr>
@@ -75,7 +81,12 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<tr>
 						<td><span>投诉内容:</span><%=cca.getContent()%></td>
 						<td><span>受理时间:</span><%=cca.getAcceptTime() %></td>
-						<td><span>受理人:</span><%=cca.getHandleUser() %></td>
+						<td><span>受理人:</span>
+						<%for(User u:alluser){ %>
+							<%if(cca.getHandleUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
+						</td>
 						
 					</tr>
 					<tr>
@@ -89,7 +100,11 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 							<span>核实时间:</span><%=cca.getHeshiTime() %>
 						</td>
 						<td>
-							<span>核实人:</span><%=cca.getHandleUser() %>
+							<span>核实人:</span>
+							<%for(User u:alluser){ %>
+							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
 						</td>
 						<td>
 							<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>"><b>附件下载</b></a></span>
@@ -101,7 +116,11 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 									<label><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></label>
 								</td>	
 								<td>
-									<span>结案人</span><%=cca.getHandleUser() %>
+									<span>结案人</span>
+										<%for(User u:alluser){ %>
+									<%if(cca.getJieanUser().equals(u.getUsername())){ %>
+										<%=u.getRealname()%>
+									<%} }%>
 								</td>
 								<td>
 									<span>结案时间</span><%=cca.getJieanTime() %>
@@ -121,7 +140,11 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 									<span>申诉时间:</span><%=cca.getComplaintTime() %>
 								</td>
 								<td>
-									<span>申诉人:</span><%=cca.getHandleUser() %>
+									<span>申诉人:</span>
+									<%for(User u:alluser){ %>
+									<%if(cca.getShensuUser().equals(u.getUsername())){ %>
+										<%=u.getRealname()%>
+									<%} }%>
 								</td>							
 								<td>
 									<span>
@@ -133,7 +156,12 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<tr>				
 								<td><span>结案重审结果:</span>				
 								<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></td>
-								<td><span>重审人:</span><%=cca.getHandleUser() %></td>
+								<td><span>重审人:</span>
+									<%for(User u:alluser){ %>
+									<%if(cca.getChongshenUser().equals(u.getUsername())){ %>
+										<%=u.getRealname()%>
+									<%} }%>
+								</td>
 								<td><span>结案时间:</span><%=cca.getJieanchongshenTime() %></td>
 						</tr>	
 						<tr>

@@ -163,8 +163,63 @@ public class WorkOrderDAO {
 	
 	
 	public void updateComplainWorkOrderF(CsComplaintAccept c){
-		String sql="update cs_complaint_accept set complaint_type=?,order_no=?,cwbstate=?,currentbrannch=?,complaint_state=?,cod_org_id=?,complaint_user=?,complaint_one_level=?,complaint_two_level=?,complaint_result=?,content=?,accpet_time=?,phone_one=?,province=? where accept_no=?";
-		this.jt.update(sql,c.getComplaintType(),c.getOrderNo(),c.getCwbstate(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getAcceptNo());
+		String sql="update cs_complaint_accept set";	
+		StringBuilder sb = new StringBuilder();
+			if(c.getComplaintType()>0){
+				sb.append(" complaint_type="+c.getComplaintType());
+			}
+			if(c.getComplaintState()>=0){
+				sb.append(" ,complaint_state="+c.getComplaintState());
+			}
+			/*if(c.getOrderNo()!=null&&c.getOrderNo().length()>0){
+				sb.append(" ,order_no='"+c.getOrderNo()+"'");
+			}
+			if(c.getCwbstate()>0){
+				sb.append(" ,cwbstate="+c.getCwbstate());
+			}
+			if(c.getCurrentBranch()!=null&&c.getCurrentBranch().length()>0){
+				sb.append(" ,currentbrannch="+c.getCurrentBranch());
+			}
+			if(c.getComplaintState()>0){
+				sb.append(" ,complaint_state="+c.getComplaintState());
+			}
+			if(c.getCodOrgId()>0){
+				sb.append(" ,cod_org_id="+c.getCodOrgId());
+			}
+			
+			if(c.getComplaintUser()!=null&&c.getComplaintUser().length()>0){
+				sb.append(" ,complaint_user='"+c.getComplaintUser()+"'");
+			}
+			if(c.getComplaintOneLevel()>0){
+				sb.append(" ,complaint_one_level="+c.getComplaintOneLevel());
+			}
+			if(c.getComplaintTwoLevel()>0){
+				sb.append(" ,complaint_two_level="+c.getComplaintTwoLevel());
+																	
+			}*/
+			if(c.getComplaintResult()>=0){
+				sb.append(" ,complaint_result="+c.getComplaintResult());
+			}
+			if(c.getContent()!=null&&c.getContent().length()>0){
+				sb.append(" ,content='"+c.getContent()+"'");
+			}
+			/*if(c.getAcceptTime()!=null&&c.getAcceptTime().length()>0){
+				sb.append(" ,accpet_time='"+c.getAcceptTime()+"'");
+			}
+			if(c.getPhoneOne()!=null&&c.getPhoneOne().length()>0){
+				sb.append(" ,phone_one='"+c.getPhoneOne()+"'");
+			}
+			if(c.getProvence()!=null&&c.getProvence().length()>0){
+				sb.append(" ,province='"+c.getProvence()+"'");
+			}*/
+			if(c.getAcceptNo()!=null&&c.getAcceptNo().length()>0){
+				sb.append(" where accept_no='"+c.getAcceptNo()+"'");
+			}
+			sql=sql+sb.toString();
+			
+	
+				System.out.println(sql);
+			this.jt.update(sql);
 	}
 	
 	

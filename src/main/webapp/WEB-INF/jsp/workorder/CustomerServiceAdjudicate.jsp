@@ -10,7 +10,9 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
+<%@page import="cn.explink.domain.User"%>	
 <%
+List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 CsComplaintAccept cca=request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
 CwbOrder co=request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
 CsConsigneeInfo cci=request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
@@ -44,7 +46,11 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<%=b.getBranchname() %>
 						<%} }%>
 						
-						<span>被投诉人:</span><%= cca.getComplaintUser()%>
+						<span>被投诉人:</span>
+						<%for(User u:alluser){ %>
+							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
 					</li>
 					<li>
 						<span>订单操作状态:</span><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%>
@@ -63,14 +69,22 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<span>受理时间:</span><%=cca.getAcceptTime() %>
-						<span>受理人:</span><%=cca.getHandleUser() %>
+						<span>受理人:</span>
+						<%for(User u:alluser){ %>
+							<%if(cca.getHandleUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
 					</li>
 					<li>
 						<span>核实内容:</span><%=cca.getRemark() %>
 					</li>
 					<li>
 						<span>核实时间:</span><%=cca.getHeshiTime() %>
-						<span>核实人:</span><%=cca.getHeshiUser()%>
+						<span>核实人:</span>
+						<%for(User u:alluser){ %>
+							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
 						<%-- <input type="hidden" id="filepathsumsize" name="filepathsumsize" value="<%=filepathsum.split(",").length %>"/> --%>
 						
 						<span><%-- &nbsp;&nbsp;附件下载:<%if(!filepathsum.equals("")){if(filepathsum.split(",").length>=1){ %>

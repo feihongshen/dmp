@@ -10,13 +10,16 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
+<%@page import="cn.explink.domain.User"%>	
 <%
+List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 CsComplaintAccept cca=request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
 CwbOrder co=request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
 CsConsigneeInfo cci=request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
 List<Branch> lb =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
 String oneleave=request.getAttribute("OneLevel")==""?null:(String)request.getAttribute("OneLevel");
 String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAttribute("TwoLevel");
+
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -44,7 +47,11 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 								<%=b.getBranchname() %>
 						<%} }%>
 						
-						<span>被投诉人:<%= cca.getComplaintUser()%></span>
+						<span>被投诉人:</span>
+						<%for(User u:alluser){ %>
+							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
 					</li>
 					<li>
 						<span>订单操作状态:</span><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%>
@@ -74,7 +81,7 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					   
 					 </ul> 
 					 <table>
-					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传文件：</span>
 					 <iframe id="update" name="update" src="workorder/update?fromAction=ChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
 					 </iframe> </td></tr>
 					 </table>

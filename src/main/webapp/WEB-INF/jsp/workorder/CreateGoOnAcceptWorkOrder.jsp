@@ -7,13 +7,15 @@
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.enumutil.ComplaintResultEnum"%>
 <%@page import="cn.explink.domain.Branch"%>
+<%@page import="cn.explink.domain.User"%>
 <%
-List<Reason> r = (List<Reason>)request.getAttribute("lr");
-List<Reason> rs = (List<Reason>)request.getAttribute("lrs");
-CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("lcs");
-String conmobile=(String)request.getAttribute("conMobile");
-String rukutime=(String)request.getAttribute("RuKuTime");
-List<Branch> b =(List<Branch>)request.getAttribute("lb");
+List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
+List<Reason> alltworeason =request.getAttribute("alltworeason")==null?null:(List<Reason>)request.getAttribute("alltworeason");
+CsComplaintAccept a=request.getAttribute("lcs")==null?null: (CsComplaintAccept)request.getAttribute("lcs");
+String conmobile=request.getAttribute("conMobile")==null?"":(String)request.getAttribute("conMobile");
+String rukutime=request.getAttribute("RuKuTime")==null?"":(String)request.getAttribute("RuKuTime");
+List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -47,35 +49,44 @@ List<Branch> b =(List<Branch>)request.getAttribute("lb");
 					<tr>
 						<td>
 							<span>被投诉机构:</span>
-							<select class="select1" name="codOrgId">
+							<select class="select1" name="codOrgId" disabled="disabled">
 							<%for(Branch br:b){ %>
+							<%if(a.getCodOrgId()==br.getBranchid() ) {%>
+								<option value="<%=br.getBranchid()%>" selected="selected"><%=br.getBranchname() %></option>
+							<%}else{%> 
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
-							<%} %>	
+							<%	}}%>	
 							</select>					
 						</td>
 						<td>
 						<span>被投诉人:</span>
-						<%=a.getComplaintUser() %>
-						<input type="hidden" name="ComplaintUser" value="<%=a.getComplaintUser() %>">
+						<%for(User u:alluser){ %>
+							<%if(a.getComplaintUser().equals(u.getUsername())){ %>
+								<input type="text" value="<%=u.getRealname()%>"/>
+						<%} }%>
+						<%-- <input type="hidden" name="ComplaintUser" value="<%=a.getComplaintUser() %>"> --%>
 						</td>
 						<td>入库时间:<%=rukutime %></td>
 				</tr>
 				<tr>
 						<td>
 							<span>一级分类:</span>
-							<select class="select1" name="complaintOneLevel" id="ol">
+							<select class="select1" name="complaintOneLevel" id="ol" disabled="disabled">
+							<%if(r!=null){ %>
 							<%for(Reason reason:r){ %>
+								<%if(reason.getReasonid()==a.getComplaintOneLevel()) {%>
 								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
-								<%} %>
+								<%} }}%>
 								</select>
 						</td>
 						<td>
 							<span>二级分类:</span>
-							<select class="select1" name="complaintTwoLevel" id="tl">
-								<%for(Reason r1:rs){ %>
-								<option value="<%=r1.getReasonid()%>"><%=r1.getReasoncontent()%></option>
-								<%} %>
-									</select>
+							
+								<%if(r!=null){ %>
+								<%for(Reason r1:alltworeason){ %>
+								<%if(a.getComplaintTwoLevel()==r1.getReasonid()){%>
+								<input type="text" value="<%=r1.getReasoncontent()%>">
+								<%}}} %>
 						</td>
 				</tr>		
 							<td>

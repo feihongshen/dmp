@@ -22,20 +22,20 @@ CsComplaintAccept a= request.getAttribute("lcs")==null?null:(CsComplaintAccept)r
 					<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>">
 					</td>
 					<td>工单号:<input type="text" value="<%=a.getAcceptNo()%>" id="transn" name="acceptNo" disabled="disabled"/></td>
-					<td>订单号:<input type="text" value="<%=a.getOrderNo()%>" id="cwbn" name="orderNo"/></td></tr>
+					<td>订单号:<input type="text" value="<%=a.getOrderNo()%>" id="cwbn" name="orderNo" disabled="disabled"/></td></tr>
 					<%for(CwbStateEnum c:CwbStateEnum.values()) {%>
 						<%if(c.getValue()==a.getCwbstate()) {%>								
-					<tr><td>订单状态:<input type="text" value="<%=c.getText()%>" id="csn"/>
+					<tr><td>订单状态:<input type="text" value="<%=c.getText()%>" id="csn" disabled="disabled"/>
 						<input type="hidden" value="<%=a.getCwbstate()%>"  name="cwbstate">
 					</td>	
 					<%}} %>
 					<%for(CwbFlowOrderTypeEnum cf : CwbFlowOrderTypeEnum.values()){ %>
 					<%if(cf.getValue()==a.getFlowordertype()) {%>
-					<td>订单操作状态:<input type="text" value="<%=cf.getText()%>" id="cwsn"/>
+					<td>订单操作状态:<input type="text" value="<%=cf.getText()%>" id="cwsn" disabled="disabled"/>
 					<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype">
 					</td>
 						<%}} %>
-					<td>当前机构:<input type="text" value="<%=a.getCurrentBranch() %>" id="no" name="currentBranch"/></td></tr>
+					<td>当前机构:<input type="text" value="<%=a.getCurrentBranch() %>" id="no" name="currentBranch" disabled="disabled"/></td></tr>
 					<tr><td>查询内容:<textarea style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"><%=a.getQueryContent()%></textarea></td></tr>
 													
 				</table>
