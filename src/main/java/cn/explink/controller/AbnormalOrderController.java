@@ -530,8 +530,8 @@ public class AbnormalOrderController {
 		//最终责任人机构与当事人
 		String lastdutybranchname="";
 		String lastdutypersonName="";
-		long dutybranchid=abnormalOrder.getDutybrachid();
-		long dutypersonid=abnormalOrder.getDutypersonid();
+		long dutybranchid=abnormalOrder.getLastdutybranchid();
+		long dutypersonid=abnormalOrder.getLastdutyuserid();
 		Branch branch=this.branchDAO.getBranchByIdAdd(dutybranchid);
 		User user1=this.userDAO.getUserByidAdd(dutypersonid);
 		if (branch!=null) {
