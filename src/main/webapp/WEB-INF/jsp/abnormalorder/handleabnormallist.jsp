@@ -365,10 +365,21 @@ function resultdatadeal(id)
 	});
 	}
 	function resetData(){
+		$("#cwb").val("");
+		$("#createbranchid").val(0);
+		$("#customerid").val(-1);
+		$("#abnormaltypeid").val(0);
+		$("#ishandle").val(1);
+		$("#losebackisornot").val(-1);
+		$("#dealresult").val(0);
 		$("#chuangjianstrtime").show();
 		$("#chuangjianendtime").show();
 		$("#strtime").hide();
 		$("#endtime").hide();
+		$("#chuangjianstrtime").val("");
+		$("#chuangjianendtime").val("");
+		$("#strtime").val("");
+		$("#endtime").val("");
 		$("#chuli").html("创建时间：");
 	}
 
@@ -472,7 +483,7 @@ function resultdatadeal(id)
 									<tr>
 									<td align="left">
 									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
-									<input type="reset"    value="重置" class="input_button2" onclick="resetData();">
+									<input type="button"    value="重置" class="input_button2" onclick="resetData();">
 									</td>
 									<td>
 <!-- 									<input type="button" onclick="resultdatadeal();" value="结案处理"  class="input_button2"/>
