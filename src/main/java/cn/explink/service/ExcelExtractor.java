@@ -672,13 +672,15 @@ public abstract class ExcelExtractor {
 		List<PenalizeOut> penalizeOuts = new ArrayList<PenalizeOut>();
 		int successCounts=0;
 		int failCounts=0;
+		int totalCounts=0;
 		for (Object row : this.getRows(f)) {
 			try {
 				PenalizeOut out = this.getPenalizeOutAccordingtoConf(row, penalizeTypeMap, user, systemTime);
-				if (out != null) {
+				if (out == null) {
 					penalizeOuts.add(out);
 					failCounts++;
 				}
+				totalCounts++;
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -700,7 +702,7 @@ public abstract class ExcelExtractor {
 		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
 		record.setImportFlag(systemTime);
 		record.setUserid(user.getUserid());
-		record.setTotalCounts(this.getRows(f).size());
+		record.setTotalCounts(totalCounts);
 		record.setSuccessCounts(successCounts);
 		record.setFailCounts(failCounts);
 		this.penalizeOutImportRecordDAO.crePenalizeOutImportRecord(record);
