@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
@@ -41,6 +42,7 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -50,6 +52,8 @@ public class CwbDAO {
 	private Logger logger = LoggerFactory.getLogger(CwbDAO.class);
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	CwbOrderService cwbOrderService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = new ExplinkUserDetail();
@@ -5807,5 +5811,32 @@ public class CwbDAO {
 		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	public void updateNextbranch(CwbOrder cwbOrder) {
+		String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=?";
+		jdbcTemplate.update(sql,cwbOrder.getCurrentbranchid(),cwbOrder.getCwb());
+	}
+
 	
+	//综合查询退客户确认lx
+	public List<CwbOrder> getCwbOrderLX(int cwbordertypeid,long customerid,long flowordertypeid,String begindate,String enddate) {
+		StringBuffer sb = new StringBuffer("select * from express_ops_cwb_detail where cwbstate="+CwbStateEnum.TuiHuo);
+		if(cwbordertypeid>0){
+			sb.append(" and cwbordertypeid="+cwbordertypeid);
+		}
+		if(customerid>0){
+			sb.append(" and customerid="+customerid);
+		}
+		if(flowordertypeid>0){
+			sb.append(" and flowordertype="+flowordertypeid);
+		}
+		if(!begindate.equals("0")&&!enddate.equals("0")){
+			sb.append(" and cwb in("+cwbOrderService.getCwbsBydate(flowordertypeid,begindate,enddate)+")");
+		}
+		return null;
+	}
+
+	public void updateFlowordertype(long flowordertypeid,String cwb) {
+		String sql = "update express_ops_cwb_detail set flowordertype=? where cwb=?";
+		jdbcTemplate.update(sql, new CwbMapper(),flowordertypeid,cwb);
+	}
 }	
