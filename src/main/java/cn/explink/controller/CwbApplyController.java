@@ -620,49 +620,68 @@ public class CwbApplyController {
 	 * @param cwb
 	 * @return
 	 */
-	@RequestMapping("/kefuuserapplytoZhongZhuanlist")
-	public String toChangeZhongZhuan(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwb,// 订单状态类型
+	@RequestMapping("/kefuuserapplytoZhongZhuanlist/{page}")
+	public String toChangeZhongZhuan(Model model, HttpServletRequest request,
+			@PathVariable(value = "page") long page,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwb,// 订单状态类型
 			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
 			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
 			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
 			@RequestParam(value = "shenhestate", defaultValue = "", required = false) String shenhestate,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate,
+			@RequestParam(value = "hiddencwb", defaultValue = "", required = false) String hiddencwb
 			) {
+		Page pag = new Page();
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("customerList", customerList);
 		Map<Long, String> customerMap = new HashMap<Long, String>();
 		for (Customer cu : customerList) {
 			customerMap.put(cu.getCustomerid(), cu.getCustomername());
 		}
 		
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
-		if(cwb.length()>0&&!cwb.equals("查询多个订单用回车隔开")){
-			StringBuffer cwbs = new StringBuffer();
-			for (String cwbStr : cwb.split("\r\n")) {
-				if (cwbStr.trim().length() == 0) {
-					continue;
-				}
-				cwbs.append("'").append(cwbStr).append("',");
+		if((cwb.length()>0&&!cwb.equals("查询多个订单用回车隔开"))||!hiddencwb.equals("")){
+			String cwbs = "";
+			if(!cwb.equals("查询多个订单用回车隔开")){
+				cwbs = this.getCwbs(cwb);
+			}else if(cwb.equals("查询多个订单用回车隔开")){
+				cwbs = this.getCwbs(hiddencwb);
 			}
-			
 			if(cwbs.length()>0){
 				String cwbsStr = cwbs.toString().substring(0,cwbs.length()-1);
-				cwbApplyZhongZhuanlist = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuans(cwbsStr);
+				cwbApplyZhongZhuanlist = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuans(page,cwbsStr);
+				pag = new Page(this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(cwbsStr),page,Page.ONE_PAGE_NUMBER);
 			}
 			
 		}else{
 			if(cwb.equals("")&&cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&shenhestate.equals("")&&begindate.equals("")&&enddate.equals("")){
 				return "cwbapply/kefuuserapplytoZhongZhuanlist";
 			}else{
-				this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate);
+				this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(page,Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate);
+				pag = new Page(cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate),page,Page.ONE_PAGE_NUMBER);
 			}
 		}
-		model.addAttribute("branchList", branchList);
-		model.addAttribute("customerList", customerList);
+		model.addAttribute("cwb",cwb);
+		model.addAttribute("page_obj",pag);
+		
 		model.addAttribute("customerMap", customerMap);
 		model.addAttribute("cwbApplyZhongZhuanlist",cwbApplyZhongZhuanlist);
+		model.addAttribute("page",page);
 		return "cwbapply/kefuuserapplytoZhongZhuanlist";
+	}
+	
+	public String getCwbs(String cwb){
+		StringBuffer cwbs = new StringBuffer();
+		for (String cwbStr : cwb.split("\r\n")) {
+			if (cwbStr.trim().length() == 0) {
+				continue;
+			}
+			cwbs.append("'").append(cwbStr).append("',");
+		}
+		return cwbs.toString();
 	}
 
 	/**

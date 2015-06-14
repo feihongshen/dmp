@@ -5,12 +5,14 @@
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.domain.OrderBackCheck"%>
 <%@page import="cn.explink.util.StringUtil"%>
+<%@page import="cn.explink.util.Page"%>
 <%
+	String hiddenCwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb").toString();
 	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 	List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = (List<CwbApplyZhongZhuan>)request.getAttribute("cwbApplyZhongZhuanlist");
 	Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
-	
+	Page page_obj = (Page)request.getAttribute("page_obj");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -138,18 +140,18 @@ $(function() {
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div>
-		<div class="kfsh_tabbtn">
-		</div>
+		<div class="kfsh_tabbtn"></div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="./kefuuserapplytoZhongZhuanlist" method="POST" id="searchForm">
+							<form action="1" method="POST" id="searchForm">
 								<table >
 									<tr>
 										<td rowspan="2">
 											订单号：
 											<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+											<input name="hiddencwb" type="hidden" id="hiddencwb" value="<%=hiddenCwb %>" />
 										</td>
 										<td>
 											&nbsp;&nbsp;
@@ -187,7 +189,7 @@ $(function() {
 										<td>
 											&nbsp;&nbsp;
 											审核状态:
-											<select name ="auditstate" id ="auditstate">
+											<select name ="shenhestate" id ="shenhestate">
 												<option  value ="0">全部</option>
 												<option value ="<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 												<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText()%></option>
@@ -196,9 +198,9 @@ $(function() {
 										<td>
 											&nbsp;&nbsp;
 											归班反馈时间:
-												<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
+												<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
 											到
-												<input type ="text" name ="enddate" id="endtime"  value="" class="input_text1" style="height:20px;"/>
+												<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 										</td>
 									</tr>
 								</table>
@@ -261,17 +263,27 @@ $(function() {
 							</tbody>
 						</table>
 				</div>
-				
-				<div style="height:40px"></div>
-				<%-- <div class="iframe_bottom" >
+				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
+				<div class="iframe_bottom">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
-						<tbody>
-							<tr height="38" >
-								<td align="center" valign="middle" bgcolor="#FFFFFF"><input type="button" id="submitF" value="提交审核" onclick="sub()" class="input_button1"></td>
-							</tr>
-						</tbody>
+						<tr>
+							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+								<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
+								　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+										id="selectPg"
+										onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+										<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+										<option value="<%=i %>"><%=i %></option>
+										<% } %>
+									</select>页
+							</td>
+						</tr>
 					</table>
-				</div><%} %> --%>
+				</div>
+			    <%} %>
 		</div>
 	</div>
 </div>
@@ -279,5 +291,15 @@ $(function() {
 	<textarea style="display:none" name="cwb" id="cwb"><%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%></textarea>
 	<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"/>
 </form>
+<script type="text/javascript">
+	$("#selectPg").val(<%=request.getAttribute("page")%>);
+	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
+	$("#customerid").val(<%=request.getParameter("customerid")==null?0:Long.parseLong(request.getParameter("customerid"))%>);
+	$("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
+	$("#shenhestate").val(<%=request.getParameter("shenhestate")==null?0:Long.parseLong(request.getParameter("shenhestate"))%>);
+	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
+	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
+</script>
+
 </BODY>
 </HTML>

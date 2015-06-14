@@ -283,23 +283,23 @@ public class OrderBackCheckController {
 				if ("".equals(cwbStr.trim())) {
 					continue;
 				}
+				
 				OrderBackCheck o = orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
 				if (o != null) {
 					list.add(o);
 				}
 			}
 			orderbackList = orderBackCheckService.getOrderBackCheckList2(list, customerList,branchList);
-			model.addAttribute("orderbackList", orderbackList);
 		}else{
 			if(cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&checkstate.equals("")&&checkresult.equals("")&&begindate.equals("")&&enddate.equals("")){
 				return "auditorderstate/toTuiHuoCheck";
 			}else{
 				List<OrderBackCheck> list = orderBackCheckDAO.getOrderBackChecks(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(checkstate),Long.parseLong(checkresult),begindate,enddate);
 				orderbackList = orderBackCheckService.getOrderBackCheckList2(list, customerList,branchList);
-				model.addAttribute("orderbackList", orderbackList);
 			}
 		}
 		
+		model.addAttribute("orderbackList", orderbackList);
 		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);

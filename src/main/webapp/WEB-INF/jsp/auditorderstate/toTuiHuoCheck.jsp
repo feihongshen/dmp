@@ -115,7 +115,6 @@ function btnClick(){
 
 //根据订单号查询
 function submitCwb(){
-	alert($("#areatest").val());
 	$("#searchForm").submit();
 }
 
