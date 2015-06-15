@@ -21,6 +21,7 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
 	Integer shensuendTime =(Integer)request.getAttribute("shensuendTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
+	long currentuser =(Long)request.getAttribute("currentuser");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -300,9 +301,9 @@ function CurentTime()   //计算当天时间
 					<td>
 				工单类型:<select name="complaintType" class="select1">				
 							<option value="-1">全部</option>
-							<%for(ComplaintTypeEnum c:ComplaintTypeEnum.values()){ %>		
-							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
-								<%} %>
+									
+							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>
+							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>
 						</select>
 						
 					</td>
@@ -310,8 +311,9 @@ function CurentTime()   //计算当天时间
 				工单状态:<select name="complaintState" class="select1">				
 							<option value="-1">全部</option>
 							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	
+							<%if(c.getValue()!=0){ %>
 							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
-						<%} %>
+						<%} }%>
 						</select>
 					</td>
 				</tr>	
@@ -383,10 +385,13 @@ function CurentTime()   //计算当天时间
 			</form>	
 			<tr>
 				<td>
+				<%if(currentuser==1){ %>
 					<button id="add_CUSA" class="input_button2">客服结案</button>
 					<button id="add_AdjudicateRetrial" class="input_button2">结案重审</button>
+					 <%}else{ %>
 					<button id="add_OrgVerify" class="input_button2">机构核实</button>
 					<button id="add_OrgAppeal" class="input_button2" onclick="decideShenSudate()">机构申诉</button>
+					 <%} %>
 					<button class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo">导出</button>
 				</td>
 			</tr>

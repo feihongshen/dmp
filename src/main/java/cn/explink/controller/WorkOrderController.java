@@ -173,11 +173,11 @@ public class WorkOrderController {
 	}
 	
 	@RequestMapping("/CreateQueryWorkOrder")
-	public String CreateQueryWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid){
+	public String CreateQueryWorkOrder(CsComplaintAccept a,Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid,@RequestParam(value="CallerPhoneValue",defaultValue="",required=true) String CallerPhoneValue){
 		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
 		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept cca = new CsComplaintAccept();
-			cca.setPhoneOne(cl.getConsigneemobile());
+			cca.setPhoneOne(CallerPhoneValue);
 			cca.setProvence(cl.getConsigneeaddress());
 			cca.setAcceptNo(transcwb);
 			cca.setOrderNo(cl.getCwb());
@@ -197,12 +197,13 @@ public class WorkOrderController {
 	}
 	
 	@RequestMapping("/CreateComplainWorkOrder")
-	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid){
+	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid,@RequestParam(value="CallerPhoneValue",defaultValue="",required=true) String CallerPhoneValue){
 		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
 		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept ca = new CsComplaintAccept();
 			ca.setProvence(cl.getCwbprovince());
-			ca.setPhoneOne(cl.getConsigneemobile());
+			ca.setPhoneOne(CallerPhoneValue);
+			System.out.println(CallerPhoneValue);
 			ca.setAcceptNo(transcwb); //存入工单
 			ca.setOrderNo(cl.getCwb());//存入订单
 			ca.setCwbstate(cl.getCwbstate());//存入订单状态
@@ -600,6 +601,7 @@ public class WorkOrderController {
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("co", co==null?null:co);
 		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";		
 	}
@@ -613,6 +615,7 @@ public class WorkOrderController {
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("lb", lb);
 		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";
 	}

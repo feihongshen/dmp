@@ -280,6 +280,19 @@ public class WorkOrderDAO {
 		
 	}
 	
+	@SuppressWarnings("unused")
+	private final class HandleUserRowMapper implements RowMapper<CsComplaintAccept>{
+
+		@Override
+		public CsComplaintAccept mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			CsComplaintAccept c= new CsComplaintAccept();			
+			c.setHandleUser(rs.getString("handle_user"));			
+			return c;
+		}
+		
+	}
+	
 	public List<CsComplaintAccept> findGoOnacceptWO(String phone){
 		String sql="select * from cs_complaint_accept where phone_one=?";
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),phone);		
@@ -341,8 +354,8 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 	}
 	
 	public List<CsComplaintAccept> refreshWOFPage(){
-	String sql="select * from cs_complaint_accept";
-	return this.jt.query(sql,new CsComplaintAcceptRowMapper());
+	String sql="select distinct handle_user from cs_complaint_accept";
+	return this.jt.query(sql,new HandleUserRowMapper());
 	}
 	
 

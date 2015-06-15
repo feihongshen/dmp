@@ -27,7 +27,7 @@
 /* Userflag */
 function getGoonacceptWO(GV,GS,uf){
 	$('#Userflag').val(uf);
-	$('#GoonacceptWO').show();	
+	$('#GoonacceptWO').show();
 	$('#GV').val(GV);
 	$('#GS').val(GS);
 	
@@ -37,6 +37,7 @@ function getGoonacceptWO(GV,GS,uf){
 
 function gettrValue(cwbId){
 	//$('#GV').val("");
+	$('#GoonacceptWO').hide();
 	$('#createquerywo_button').show();
 		$('#createcomplain_buttonn').show();
 	$('#trid').val(cwbId);
@@ -195,7 +196,8 @@ function selectcolor(){
 function getAddBoxx() { 
 	$.ajax({
 		type : "POST",
-		data:"opscwbid="+$('#trid').val(),
+	/* 	data:"opscwbid="+$('#trid').val()&"CallerPhoneValue="+$('#CallerPhoneValue').val(), */
+		data:{"opscwbid":$('#trid').val(),"CallerPhoneValue":$('#CallerPhoneValue').val()},
 		url : $("#createcomplain").val(),
 		dataType : "html",
 		success : function(data) {
@@ -213,7 +215,8 @@ function getAddBoxx() {
 function getAddBoxx1() {
 	$.ajax({
 		type : "POST",
-		data:"opscwbid="+$('#trid').val(),
+		/* data:"opscwbid="+$('#trid').val(), */
+		data:{"opscwbid":$('#trid').val(),"CallerPhoneValue":$('#CallerPhoneValue').val()},
 		url : $("#createquerywo").val(),
 		dataType : "html",
 		success : function(data) {
@@ -252,6 +255,9 @@ function addCci(){
 		alert('请输入来电时间');
 		return false;
 	}
+	
+	$('#CallerPhoneValue').val($('#phoneonOne').val());
+	
 	$.ajax({
 		type:'POST',
 		data:$('#cciForm').serialize(),
@@ -262,6 +268,12 @@ function addCci(){
 		
 		
 	});
+	
+	
+	
+		$('#savecallerinfo').attr("disabled","disabled");
+
+	
 	
 }
 
@@ -449,6 +461,8 @@ function submitselect2(){    //通过手机号查询工单
 	}
 
 	function verifyphoneonOne() {
+		$('#CallerPhoneValue').val($('#phoneonOne').val());
+	
 		$('#createquerywo_button').hide();
 		$('#createcomplain_buttonn').hide();
 		var reg = new RegExp("^[0-9]*$"); //电话号码验证是否为空和是否为数字
@@ -464,6 +478,8 @@ function submitselect2(){    //通过手机号查询工单
 			alert('手机号码不能为空');
 			return false;
 		}
+		
+	
 
 	}
 </script>
@@ -571,6 +587,7 @@ function submitselect2(){    //通过手机号查询工单
 	<input type="hidden" id="ComplaintStateEnumValue" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
 	<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
 	<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/>
+	<input type="hidden" id="CallerPhoneValue">
 	
 </body>
 

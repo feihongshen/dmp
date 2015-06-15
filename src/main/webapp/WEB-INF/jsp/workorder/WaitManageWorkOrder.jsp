@@ -66,12 +66,13 @@ function saveAcceptNoV(NoV){
 </head>
 <body>
 	<div>
-			<button id="goonacceptinmanage" class="input_button2">继续受理</button>
+			
 		<form action="<%=request.getContextPath()%>/workorder/refreshwo">
 			<input class="input_text1" value="<%=ComplaintStateEnum.DaiChuLi.getValue()%>" name="complaintState" type="hidden">
 			<input type="submit" value="刷新表单" class="input_button2"/>
 		</form>
 		<hr>
+		<button id="goonacceptinmanage" class="input_button2">继续受理</button><br>
 		</br>
 		<hr>
 		<div>
