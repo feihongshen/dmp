@@ -6689,7 +6689,9 @@ CREATE TABLE `cs_complaint_accept` (
     </changeSet>
     
     <changeSet id="wangzhiyong-2015-06-15-01" author="wangzhiyong">
+    <sql>
    			 INSERT INTO `express_set_system_install('name','value','chinesename')` VALUES ('shensuendTime', '10', '可申诉时间是否过期');
+   </sql>
     </changeSet>
 
 </databaseChangeLog>
