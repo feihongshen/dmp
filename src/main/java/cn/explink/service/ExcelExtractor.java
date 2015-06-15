@@ -734,8 +734,8 @@ public abstract class ExcelExtractor {
 		try {
 
 			penalizeOutfee = new BigDecimal(this.getXRowCellData(row, 2));
-			if(penalizeOutfee.compareTo(new BigDecimal(0))<0){
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额有误！");
+			if(penalizeOutfee.compareTo(new BigDecimal(0))==-1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额必须大于0.00！");
 				return null;
 			}
 			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){

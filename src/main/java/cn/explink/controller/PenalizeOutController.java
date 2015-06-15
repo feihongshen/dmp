@@ -277,7 +277,10 @@ public class PenalizeOutController {
 			if (out.getPenalizeOutfee() == null) {
 				return "{\"errorCode\":1,\"error\":\"赔付金额不能为空！\"}";
 			}
-		/*	if (out.getReceivablefee().compareTo(out.getPenalizeOutfee()) == -1) {
+			if (out.getPenalizeOutfee().compareTo(new BigDecimal(0)) == -1) {
+				return "{\"errorCode\":1,\"error\":\"赔付金额必须大于0.00！\"}";
+			}
+			/*	if (out.getReceivablefee().compareTo(out.getPenalizeOutfee()) == -1) {
 				return "{\"errorCode\":1,\"error\":\"赔付金额不能大于订单金额！\"}";
 			}*/
 			if (out.getPenalizeOutbig() == 0) {
