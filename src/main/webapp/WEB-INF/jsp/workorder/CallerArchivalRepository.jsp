@@ -125,17 +125,19 @@ $(function(){
 					<td>女</td>
 					<%} %>
 					<td><%=ccf.getPhoneonOne() %></td>
-					<td><%=ccf.getPhoneonTwo() %></td>
-					<td><%=ccf.getMailBox() %></td>				
-					<td><%=ccf.getProvince() %></td>
-					<td><%=ccf.getCity() %></td>
+					<td><%=ccf.getPhoneonTwo()==null?"": ccf.getPhoneonTwo()%></td>
+					<td><%=ccf.getMailBox()==null?"":ccf.getMailBox() %></td>				
+					<td><%=ccf.getProvince()==null?"":ccf.getProvince() %></td>
+					<td><%=ccf.getCity()==null?"": ccf.getCity()%></td>
 					<%if(ccf.getConsigneeType()==2){ %>
 					<td><label>VIP客户</label></td>
 					<%}else if(ccf.getConsigneeType()==1){ %>
 					<td><label>普通客户</label></td>
+					<%}else if(ccf.getConsigneeType()==-1){  %>
+					<td></td>
 					<%} %>
-					<td><%=ccf.getContactLastTime() %></td>
-					<td><%=ccf.getContactNum() %></td>				
+					<td><%=ccf.getContactLastTime()==null?"":ccf.getContactLastTime() %></td>
+					<td><%=ccf.getContactNum()%></td>				
 				</tr>
 				<%} }%>
 			</table>
@@ -151,39 +153,38 @@ $(function(){
 		<input type="hidden" name="consigneeType" value="<%=request.getParameter("consigneeType")==null?"-1":request.getParameter("consigneeType")%>">	
 	</form>
 	
-	<script type="text/javascript">
-		
-	function exportInFoExcle(){
-		if(<%=ccilist != null && ccilist.size()>0 %>){
-		 	$("#exinfo").val("请稍后……");
-		 	$("#CallerInfoForm").submit();
-		}else{
-			alert("没有做查询操作，不能导出！");
-		};
-		
-	}	
-	$("#selectPg").val(<%=request.getAttribute("page") %>);
-	</script>
-	
-	
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
-	<tr>
-		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-			<a href="javascript:$('#PageFromW').attr('action','1');$('#PageFromW').submit();" >第一页</a>　
-			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#PageFromW').submit();">上一页</a>　
-			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#PageFromW').submit();" >下一页</a>　
-			<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#PageFromW').submit();" >最后一页</a>
-			　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
-					id="selectPg"
-					onchange="$('#PageFromW').attr('action',$(this).val());$('#PageFromW').submit()">
-					<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
-					<option value="<%=i %>"><%=i %></option>
-					<% } %>
-				</select>页
+		<tr>
+			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+				<a href="javascript:$('#PageFromW').attr('action','1');$('#PageFromW').submit();" >第一页</a>　
+				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#PageFromW').submit();">上一页</a>　
+				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#PageFromW').submit();" >下一页</a>　
+				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#PageFromW').submit();" >最后一页</a>
+				　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第
+					<select
+						id="selectPg"
+						onchange="$('#PageFromW').attr('action',$(this).val());$('#PageFromW').submit()">
+						<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+						<option value="<%=i %>"><%=i %></option>
+						<% } %>
+					</select>页
 			</td>
 		</tr>
 	</table>
 	
+	<script type="text/javascript">
+			
+		function exportInFoExcle(){
+			if(<%=ccilist != null && ccilist.size()>0 %>){
+			 	$("#exinfo").val("请稍后……");
+			 	$("#CallerInfoForm").submit();
+			}else{
+				alert("没有做查询操作，不能导出！");
+			};
+			
+		}	
+		$("#selectPg").val(<%=request.getAttribute("page") %>);
+	</script>
 	
 </body>
 </html>
