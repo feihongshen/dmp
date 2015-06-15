@@ -192,11 +192,16 @@ public class CwbApplyZhongZhuanDAO {
 	}
 	
 	//新加----lx
-	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuans(String cwbs) {
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuans(long page,String cwbs) {
 		String sql = "select * from op_cwbapplyzhongzhuan where cwb in("+cwbs+") and ishandle=0 and isnow=1";
+		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
-	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanList(int cwbordertype,long customerid,long applyzhongzhuanbranchid,long shenhestate,String begindate, String enddate) {
+	public long getCwbApplyZhongZhuanCount(String cwbs) {
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb in("+cwbs+") and ishandle=0 and isnow=1";
+		return jdbcTemplate.queryForInt(sql);
+	}
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanList(long page,int cwbordertype,long customerid,long applyzhongzhuanbranchid,long shenhestate,String begindate, String enddate) {
 		String sql = "select * from op_cwbapplyzhongzhuan where ishandle=0";
 		StringBuffer w = new StringBuffer("");
 		if (cwbordertype > 0) {
@@ -217,9 +222,38 @@ public class CwbApplyZhongZhuanDAO {
 		if (enddate.length() > 0) {
 			w.append(" and applytime <= '" + enddate + "' ");
 		}
-		
-		return jdbcTemplate.query(sql+=w, new CwbApplyZhongZhuanMapper());
+		sql += w;
+		String limitStr = " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql+=limitStr, new CwbApplyZhongZhuanMapper());
 	}
+	public long getCwbApplyZhongZhuanCount(int cwbordertype,long customerid,long applyzhongzhuanbranchid,long shenhestate,String begindate, String enddate) {
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where ishandle=0";
+		StringBuffer w = new StringBuffer("");
+		if (cwbordertype > 0) {
+			w.append(" and cwbordertypeid=" + cwbordertype);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (applyzhongzhuanbranchid > 0) {
+			w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
+		}
+		if (shenhestate > 0) {
+			w.append(" and shenhestate=" + shenhestate);
+		}
+		if (begindate.length() > 0) {
+			w.append(" and applytime >= '" + begindate + "' ");
+		}
+		if (enddate.length() > 0) {
+			w.append(" and applytime <= '" + enddate + "' ");
+		}
+		sql += w;
+		
+		return jdbcTemplate.queryForInt(sql);
+	}
+	
+	
+	
 	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanByids(String ids) {
 		String sql = "select * from op_cwbapplyzhongzhuan where cwb in(?) and ishandle=0 and isnow=1";
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper(),ids);
