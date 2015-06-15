@@ -6,7 +6,7 @@ public enum ComplaintTypeEnum {
 	CuijianTousu(1, "催件投诉"), FuwuTousu(2, "服务投诉"), KefuBeizhu(3, "客服备注"),DingDanChaXun(4,"订单查询");
 
 	private long value;
-	private String text;
+	private String text;	
 
 	private ComplaintTypeEnum(long value, String text) {
 		this.value = value;

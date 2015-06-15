@@ -19,23 +19,32 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 			<form action="<%=request.getContextPath()%>/workorder/saveWorkOrderQueryF" id="WorkOrderQueryForm">
 				<table id="tb01">					
 					<tr><td>受理类型:<span style="color:orange;">订单查询</span>
-					<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>">
+					<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>" disabled="disabled">
 					</td>
-					<td>工单号:<input type="text" value="<%=a.getAcceptNo()%>" id="transn" name="acceptNo"/></td>
-					<td>订单号:<input type="text" value="<%=a.getOrderNo()%>" id="cwbn" name="orderNo"/></td></tr>
+					<td>工单号:<input type="text" value="<%=a.getAcceptNo()%>" disabled="disabled"/>
+						<input type="hidden" value="<%=a.getAcceptNo()%>" id="transn" name="acceptNo"/>
+					</td>
+						<td>订单号:<input type="text" value="<%=a.getOrderNo()%>" disabled="disabled"/>
+							<input type="hidden" value="<%=a.getOrderNo()%>" id="cwbn" name="orderNo" />
+						</td>
+					</tr>
 					<%for(CwbStateEnum c:CwbStateEnum.values()) {%>
 						<%if(c.getValue()==a.getCwbstate()) {%>								
-					<tr><td>订单状态:<input type="text" value="<%=c.getText()%>" id="csn"/>
-						<input type="hidden" value="<%=a.getCwbstate()%>"  name="cwbstate">
+					<tr><td>订单状态:<input type="text" value="<%=c.getText()%>" id="csn" disabled="disabled"/>
+						<input type="hidden" value="<%=a.getCwbstate()%>" name="cwbstate"/>
 					</td>	
 					<%}} %>
 					<%for(CwbFlowOrderTypeEnum cf : CwbFlowOrderTypeEnum.values()){ %>
 					<%if(cf.getValue()==a.getFlowordertype()) {%>
-					<td>订单操作状态:<input type="text" value="<%=cf.getText()%>" id="cwsn"/>
-					<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype">
+					<td>订单操作状态:<input type="text" value="<%=cf.getText()%>" id="cwsn" disabled="disabled"/>
+					<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype" >
 					</td>
 						<%}} %>
-					<td>当前机构:<input type="text" value="<%=a.getCurrentBranch() %>" id="no" name="currentBranch"/></td></tr>
+					<td>
+					当前机构:<input type="text" value="<%=a.getCurrentBranch()%>" disabled="disabled"/>	
+							<input type="hidden" value="<%=a.getCurrentBranch()%>" id="no" name="currentBranch"/>				
+					</td>
+					</tr>
 					<tr>
 						<td>
 							查询内容:<textarea style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"></textarea>
