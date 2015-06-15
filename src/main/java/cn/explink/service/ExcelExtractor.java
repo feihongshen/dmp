@@ -672,8 +672,10 @@ public abstract class ExcelExtractor {
 		List<PenalizeOut> penalizeOuts = new ArrayList<PenalizeOut>();
 		int successCounts=0;
 		int failCounts=0;
-		int totalCounts=0;
+		int totalCounts=0;//this.getRows(f).size();
+		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
 		for (Object row : this.getRows(f)) {
+			totalCounts++;
 			try {
 				PenalizeOut out = this.getPenalizeOutAccordingtoConf(row, penalizeTypeMap, user, systemTime);
 				if (out != null) {
@@ -682,9 +684,11 @@ public abstract class ExcelExtractor {
 				else{
 					failCounts++;
 				}
-				totalCounts++;
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				failCounts++;
+				ExcelExtractor.logger.info("对外扣罚导入异常：cwb={},message={}",this.getXRowCellData(row, 1),e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
 
 				// 失败订单数+1 前台显示
 
@@ -697,11 +701,14 @@ public abstract class ExcelExtractor {
 				int nums=this.penalizeOutDAO.crePenalizeOut(out);
 				successCounts+=nums;
 			} catch (Exception e) {
-				ExcelExtractor.logger.error("对外赔付信息导入异常:" + e);
+				failCounts++;
+				ExcelExtractor.logger.info("对外扣罚导入异常：cwb={},message={}",out.getCwb(),e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(out.getCwb(), systemTime, "未知异常");
+
 			}
 
 		}
-		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
+
 		record.setImportFlag(systemTime);
 		record.setUserid(user.getUserid());
 		record.setTotalCounts(totalCounts);
@@ -717,28 +724,48 @@ public abstract class ExcelExtractor {
 	 * @param customerMap
 	 * @return
 	 */
-	private PenalizeOut getPenalizeOutAccordingtoConf(Object row, Map<String, Integer> penalizeTypeMap, User user, long systemTime) {
+	private PenalizeOut getPenalizeOutAccordingtoConf(Object row, Map<String, Integer> penalizeTypeMap, User user, long systemTime)
+			throws Exception
+	{
 		PenalizeOut out = new PenalizeOut();
 		String cwb = this.getXRowCellData(row, 1);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		BigDecimal penalizeOutfee = null;
 		try {
-			penalizeOutfee = new BigDecimal(this.getXRowCellData(row, 2));
-		} catch (Exception e) {
 
+			penalizeOutfee = new BigDecimal(this.getXRowCellData(row, 2));
+			if(penalizeOutfee.compareTo(new BigDecimal(0))<0){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额有误！");
+				return null;
+			}
+			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额不能大于订单金额有误！");
+				return null;
+			}*/
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额有误！");
+			return null;
 		}
+
 		String penalizeOutsmallText = this.getXRowCellData(row, 3);
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		if (co == null) {
-			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在");
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在！");
 			return null;
 		} else {
 			out.setCwb(cwb);
 		}
-		int penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
+		int penalizeOutsmall=0;
+		try {
+			penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付类型不存在！");
+			return null;
+		}
 
 		PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(cwb, penalizeOutsmall, penalizeOutfee);
 		if (penalizeOut != null) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
+			return null;
 		}
 		out.setCustomerid(co.getCustomerid());
 		out.setFlowordertype(co.getCustomerid());

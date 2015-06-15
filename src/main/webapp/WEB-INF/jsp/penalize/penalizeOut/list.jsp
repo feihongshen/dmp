@@ -150,6 +150,11 @@ function showButton()
 	$("#subfile").removeAttr('disabled');
 	}
 }
+function showError()
+{
+	$("#add").val('${pageContext.request.contextPath}/penalizeOut/importFlagError/'+$("#importFlag").val());
+	getAddBox();
+	}
 function showUp()
 {
 	$("#fileup").removeAttr('style');
@@ -244,10 +249,36 @@ function showUp()
 	<input name="isnow" value="1" type="hidden"/>
 	</form>
 <tr><td colspan="6">
-<div id="fileup" style="display: none;"><form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+<div id="fileup"  ${importFlag>0?'':'style="display: none;"' }>
+<table>
+	<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+		<tr>
+		<td>
 		<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
+		 </td>
+		 <td>
 		 <input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
-	</form></div></td>
+		 </td>
+		 
+		 <c:if test="${importFlag>0 }" >
+		 	<td>
+			 <span style="font-weight: bold;"> 成功:</span> 
+			 </td>
+			 <td>
+			 <span style="font-weight: bold;color: red">${record.successCounts}</span>
+			 </td> 
+			 <td>
+			 <span style="font-weight: bold;"> 失败:</span>
+			 </td>
+			 <td>
+			 <input type="hidden" id="importFlag" value="${importFlag}"/>
+			 <span ${record.failCounts>0?'onclick="showError()"':''} style="font-weight: bold;color: red;cursor:pointer ;">${record.failCounts}</span>
+			 </td>
+		 </c:if>
+		 </tr>
+	</form>
+	</table>
+	</div></td>
 </tr>
  </table>
 
@@ -276,42 +307,42 @@ function showUp()
 	<c:forEach items="${penalizeOutList}" var="out">
 	<tr>
 	<td height="30px"  valign="middle"><input type="radio" name="penalizeOutId" onclick="checkRdio()" id="penalizeOutId" value="${out.penalizeOutId}"/> </td>
-	<td align="center" valign="middle"style="font-weight: bold;"> ${out.cwb}</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> ${out.cwb}</td>
+	<td align="center" valign="middle"> 
 	<c:forEach items="${customerList}" var="customer">
 	<c:if test="${customer.customerid==out.customerid}">${customer.customername}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> 
 	<c:forEach items="${flowordertypes}" var="flow">
 	<c:if test="${flow.value==out.flowordertype}">${flow.text}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> ${out.receivablefee}</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> ${out.penalizeOutfee}</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> ${out.receivablefee}</td>
+	<td align="center" valign="middle"> ${out.penalizeOutfee}</td>
+	<td align="center" valign="middle"> 
 	<c:forEach items="${penalizebigList}" var="type">
 	<c:if test="${type.id==out.penalizeOutbig}">${type.text}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> 
 	<c:forEach items="${penalizesmallList}" var="type">
 	<c:if test="${type.id==out.penalizeOutsmall}">${type.text}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;">
+	<td align="center" valign="middle">
 	<c:forEach items="${userList}" var="user">
 	<c:if test="${user.userid==out.createruser}">${user.realname}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> ${out.createrdate}</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> ${out.createrdate}</td>
+	<td align="center" valign="middle"> 
 	<c:forEach items="${userList}" var="user">
 	<c:if test="${user.userid==out.canceluser}">${user.realname}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> ${out.canceldate}</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 
+	<td align="center" valign="middle"> ${out.canceldate}</td>
+	<td align="center" valign="middle"> 
 	<c:forEach items="${penalizeSateEnums}" var="state">
 	<c:if test="${state.value==out.penalizeOutstate}">${state.text}</c:if>
 	</c:forEach>
@@ -320,11 +351,11 @@ function showUp()
 	</c:forEach>
 	<tr>
 	<td></td>
-	<td>赔付总计</td>
+	<td align="center" valign="middle" style="color: red;font-weight: bold;">赔付总计</td>
 	<td></td>
 	<td></td>
 	<td></td>
-	<td>${penalizeOutfeeSum}</td>
+	<td align="center" valign="middle" style="color: red;font-weight: bold;">${penalizeOutfeeSum}</td>
 	<td></td>
 	<td></td>
 	<td></td>

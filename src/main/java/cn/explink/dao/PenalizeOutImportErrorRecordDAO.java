@@ -2,6 +2,7 @@ package cn.explink.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,5 +39,21 @@ public class PenalizeOutImportErrorRecordDAO {
 			return 0;
 		}
 	}
-
+	public List<PenalizeOutImportErrorRecord> getPenalizeOutImportRecordByImportFlag(long importFlag) {
+		try {
+			String sql = "select * from  express_ops_penalizeOutImportErrorRecord where importFlag=?";
+			//sql += " order by state desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+			return this.jdbcTemplate.query(sql,new PenalizeOutImportErrorRecordRowMapper(), importFlag);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public int getPenalizeOutImportRecordByImportFlagCount(long importFlag) {
+		try {
+			String sql = "select count(1) from  express_ops_penalizeOutImportErrorRecord where importFlag=?";
+			return this.jdbcTemplate.queryForInt(sql,importFlag);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
 }

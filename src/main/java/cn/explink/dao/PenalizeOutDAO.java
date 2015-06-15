@@ -144,14 +144,12 @@ public class PenalizeOutDAO {
 	}
 
 	public int crePenalizeOut(PenalizeOut out) throws Exception {
-		try {
+
 			String sql = "insert into express_ops_penalizeOut_detail(cwb,customerid,flowordertype,receivablefee,penalizeOutfee,penalizeOutbig,penalizeOutsmall,penalizeOutContent,createruser,createrdate,penalizeOutstate,state)"
 					+ "values(?,?,?,?,?,?,?,?,?,NOW(),?,?) ";
 			return this.jdbcTemplate.update(sql, out.getCwb(), out.getCustomerid(), out.getFlowordertype(), out.getReceivablefee(), out.getPenalizeOutfee(), out.getPenalizeOutbig(),
 					out.getPenalizeOutsmall(), out.getPenalizeOutContent(), out.getCreateruser(), out.getPenalizeOutstate(), 1);
-		} catch (Exception e) {
-			return 0;
-		}
+
 	}
 	public PenalizeOut getPenalizeOutByIsNull(String cwb,int penalizeOutsmall,BigDecimal penalizeOutfee)  {
 		try {

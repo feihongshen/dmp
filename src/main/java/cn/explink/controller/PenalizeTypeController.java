@@ -71,8 +71,8 @@ public class PenalizeTypeController {
 		if(text.trim().length()==0){
 			return "{\"errorCode\":1,\"error\":\"该赔付类型不能为空\"}";
 		}
-		if(text.trim().length()>100){
-			return "{\"errorCode\":1,\"error\":\"该赔付类型不能超过100字\"}";
+		if(text.trim().length()>20){
+			return "{\"errorCode\":1,\"error\":\"该赔付类型不能超过20字\"}";
 		}
 		PenalizeType type1 = this.penalizeTypeDAO.getPenalizeTypeByText(text);
 		if (type1 != null) {
@@ -109,8 +109,8 @@ public class PenalizeTypeController {
 			if(type.getText().trim().length()==0){
 				return "{\"errorCode\":1,\"error\":\"该赔付类型不能为空\"}";
 			}
-			if(type.getText().trim().length()>100){
-				return "{\"errorCode\":1,\"error\":\"该赔付类型不能超过100字\"}";
+			if(type.getText().trim().length()>20){
+				return "{\"errorCode\":1,\"error\":\"该赔付类型不能超过20字\"}";
 			}
 			this.penalizeTypeDAO.savePenalizeType(type);
 			this.logger.info("operatorUser={},赔付类型设置->save", this.getSessionUser().getUsername());

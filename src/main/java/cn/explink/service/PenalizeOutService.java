@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -115,6 +116,10 @@ public class PenalizeOutService {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
+							if(i==8){
+								sheet.setColumnWidth(i, 25 * 256);
+								style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy/MM/dd hh:mm:ss"));
+							}
 							// 给导出excel赋值
 							a = this.setExcelObject(cloumnName4, a, i, penalizeOutlList.get(k));
 
@@ -122,8 +127,14 @@ public class PenalizeOutService {
 						}
 					}
 					Row row=sheet.createRow(penalizeOutlList.size()+1);
-					row.createCell(0).setCellValue("赔付总额");
-					row.createCell(4).setCellValue(penalizeOutfeetotal+"");
+
+
+					Cell cell0=row.createCell(0);
+					cell0.setCellStyle(style);
+					cell0.setCellValue("赔付总额");
+					Cell cell4=row.createCell(4);
+					cell4.setCellStyle(style);
+					cell4.setCellValue(penalizeOutfeetotal+"");
 
 				}
 				private Object setExcelObject(String[] cloumnName, Object a, int i, PenalizeOut out) {

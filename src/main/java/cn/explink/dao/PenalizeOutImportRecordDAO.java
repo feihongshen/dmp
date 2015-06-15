@@ -44,4 +44,12 @@ public class PenalizeOutImportRecordDAO {
 		}
 
 	}
+	public PenalizeOutImportRecord getPenalizeOutImportRecordByImportFlag(long importFlag) {
+		try {
+			String sql = "select * from  express_ops_penalizeOutImportRecord where importFlag=?";
+			return this.jdbcTemplate.queryForObject(sql,new PenalizeOutImportRecordRowMapper(),importFlag);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

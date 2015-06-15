@@ -2232,6 +2232,7 @@ src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/addpenalizeIn.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/addpenalizeOut.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/cancelpenalizeOut.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/errorRecords.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeOut/list.jsp -text
 src/main/webapp/WEB-INF/jsp/penalizeType/add.jsp -text
 src/main/webapp/WEB-INF/jsp/penalizeType/edit.jsp -text
