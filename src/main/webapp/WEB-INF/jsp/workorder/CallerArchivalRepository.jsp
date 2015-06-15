@@ -118,7 +118,7 @@ $(function(){
 				<%if(ccilist!=null){ %>
 				<%for(CsConsigneeInfo ccf:ccilist){ %>
 				<tr onclick="getPhoneonOne('<%=ccf.getPhoneonOne() %>','<%=ccf.getId()%>')">
-					<td><%=ccf.getName() %></td>
+					<td><%=ccf.getName() %><%--  ${ccilist[0].name}</td>--%>
 					<%if(ccf.getSex()==1){ %>
 					<td>男</td>
 					<%}else{%>

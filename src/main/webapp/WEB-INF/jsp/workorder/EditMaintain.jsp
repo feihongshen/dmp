@@ -27,8 +27,8 @@
 						<td><span>客户分类*:</span>
 						<select class="select1" name="consigneeType" id="skhfl1">
 							<option value="-1">请选择客户分类</option>
-							<option value="1">VIP用户</option>
-							<option value="0">普通客户</option>
+							<option value="2">VIP用户</option>
+							<option value="1">普通客户</option>
 						</select></td>
 					</tr>				
 				</table>

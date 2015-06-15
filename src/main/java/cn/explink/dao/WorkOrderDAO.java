@@ -54,9 +54,54 @@ public class WorkOrderDAO {
 		jt.update(sql,cci.getPhoneonOne(),cci.getPhoneonTwo(),cci.getConsigneeType(),cci.getSex(),cci.getProvince(),cci.getCity(),cci.getName(),cci.getContactLastTime(),cci.getContactNum(),cci.getMailBox());
 	}
 	
-	public void editAllCsConsigneeInfo(CsConsigneeInfo cci){
+/*	public void editAllCsConsigneeInfo1(CsConsigneeInfo cci){
 		String sql="update cs_consignee_info set phone_one=?,phone_two=?,consignee_type=?,sex=?,province=?,city=?,name=?,contact_last_time=?,contact_num=?,mail_box=?,remark=? where id=?";
 		jt.update(sql,cci.getPhoneonOne(),cci.getPhoneonTwo(),cci.getConsigneeType(),cci.getSex(),cci.getProvince(),cci.getCity(),cci.getName(),cci.getContactLastTime(),cci.getContactNum(),cci.getMailBox(),cci.getRemark(),cci.getId());
+	}*/
+	
+	public void editAllCsConsigneeInfo(CsConsigneeInfo cci){
+		String sql="update cs_consignee_info set";
+		StringBuffer sb = new StringBuffer();
+		if(cci.getPhoneonOne()!=null&&cci.getPhoneonOne().length()>0){
+			sb.append(" phone_one='"+cci.getPhoneonOne()+"',");
+		}
+		if(cci.getPhoneonTwo()!=null&&cci.getPhoneonTwo().length()>0){
+			sb.append(" phone_two='"+cci.getPhoneonTwo()+"',");
+		}
+		if(cci.getConsigneeType()>0){
+			sb.append(" consignee_type="+cci.getConsigneeType()+",");
+		}
+		if(cci.getSex()>0){
+			sb.append(" sex="+cci.getSex()+",");
+		}
+		if(cci.getProvince()!=null&&cci.getProvince().length()>0){
+			sb.append(" province='"+cci.getProvince()+"',");
+		}
+		if(cci.getCity()!=null&&cci.getCity().length()>0){
+			sb.append(" city='"+cci.getCity()+"',");
+		}
+		
+		if(cci.getContactLastTime()!=null&&cci.getContactLastTime().length()>0){
+			sb.append(" contact_last_time='"+cci.getContactLastTime()+"',");
+		}
+		if(cci.getContactNum()>0){
+			sb.append(" contact_num="+cci.getContactNum()+",");
+		}
+		if(cci.getMailBox()!=null&&cci.getMailBox().length()>0){
+			sb.append(" mail_box='"+cci.getMailBox()+"',");
+		}
+		if(cci.getRemark()!=null&&cci.getRemark().length()>0){
+			sb.append(" remark='"+cci.getRemark()+"',");
+		}
+		if(cci.getName()!=null&&cci.getName().length()>0){
+			sb.append(" name='"+cci.getName()+"'");
+		}
+		
+		
+		sb.append(" where id="+cci.getId());
+		
+		sql+=sb.toString();
+		jt.update(sql);
 	}
 	
 	public List<CsConsigneeInfo> queryListCsConsigneeInfo(String phone){
