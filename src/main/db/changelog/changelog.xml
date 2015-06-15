@@ -6687,6 +6687,10 @@ CREATE TABLE `cs_complaint_accept` (
        		ALTER TABLE op_cwbapplyzhongzhuan add COLUMN `shenhestate` BIGINT(4) default '0';
        	</sql> 
     </changeSet>
+    
+    <changeSet id="wangzhiyong-2015-06-15-01" author="wangzhiyong">
+   			 INSERT INTO `express_set_system_install('name','value','chinesename')` VALUES ('shensuendTime', '10', '可申诉时间是否过期');
+    </changeSet>
 
 </databaseChangeLog>
  
