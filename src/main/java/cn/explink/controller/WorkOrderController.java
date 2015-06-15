@@ -6,20 +6,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -35,6 +41,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.SmsConfigDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.WorkOrderDAO;
@@ -47,18 +54,24 @@ import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
+import cn.explink.domain.SmsConfig;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.ComplaintResultEnum;
 import cn.explink.enumutil.ComplaintStateEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.SmsSendService;
 import cn.explink.service.WorkOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.HttpUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.StringUtil;
@@ -72,7 +85,7 @@ import cn.explink.util.StringUtil;
 
 public class WorkOrderController {
 	@Autowired
-	private UserDAO userdao;
+	private UserDAO userDao;
 	@Autowired
 	private SystemInstallDAO systeminstalldao;
 	@Autowired
@@ -80,7 +93,7 @@ public class WorkOrderController {
 	@Autowired
 	private ReasonDao reasondao;
 	@Autowired
-	private BranchDAO branchdao;
+	private BranchDAO branchDao;
 	@Autowired
 	private CustomerDAO customerDAO;
 	@Autowired
@@ -92,10 +105,15 @@ public class WorkOrderController {
 	@Autowired
 	private CwbDAO cwbdao;
 	@Autowired
+	private SmsSendService smsSendService;
+	@Autowired
+	private SmsConfigDAO smsConfigDAO;
+	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	ExportService es;
 	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -183,7 +201,7 @@ public class WorkOrderController {
 			cca.setOrderNo(cl.getCwb());
 			cca.setCwbstate(cl.getCwbstate());//(CwbStateEnum.getByValue((int) cl.getCwbstate()).getText());
 			cca.setFlowordertype(cl.getFlowordertype());//(CwbFlowOrderTypeEnum.getText(cl.getFlowordertype()).getText());
-			Branch b=branchdao.getbranchname(cl.getCurrentbranchid());
+			Branch b=branchDao.getbranchname(cl.getCurrentbranchid());
 			if(b!=null){
 			cca.setCurrentBranch(b.getBranchname());
 			}else{
@@ -210,13 +228,13 @@ public class WorkOrderController {
 			ca.setFlowordertype(cl.getFlowordertype());//存入订单操作状态
 			ca.setCustomerid(cl.getCustomerid());
 			System.out.println(cl.getCurrentbranchid());
-			Branch b=branchdao.getbranchname(cl.getCurrentbranchid());//存入站点信息
+			Branch b=branchDao.getbranchname(cl.getCurrentbranchid());//存入站点信息
 			if(b!=null){
 			ca.setCurrentBranch(b.getBranchname());
 			}else{
 			ca.setCurrentBranch("");	
 			}
-			List<Branch> lb=branchdao.getAllBranches();
+			List<Branch> lb=branchDao.getAllBranches();
 			List<Reason> lr=reasondao.addWO();
 			model.addAttribute("lr", lr);
 			model.addAttribute("ca", ca);
@@ -233,19 +251,18 @@ public class WorkOrderController {
 	@RequestMapping("/OrgVerify")
 	public String OrgVerify(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
-		System.out.println(acceptNo+"`~11`");
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());		
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
 		cca.setHeshiUser(uname);
 		cca.setHeshiTime(nowtime);
-		List<Branch> lb=branchdao.getAllBranches();	
+		List<Branch> lb=branchDao.getAllBranches();	
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
 		return "workorder/OrgVerify";
@@ -259,12 +276,12 @@ public class WorkOrderController {
 		cca.setJieanUser(uname);
 		cca.setJieanTime(nowtime);
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();	
+		List<Branch> lb=branchDao.getAllBranches();	
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("lb", lb);		
 		model.addAttribute("cci", cci);
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
 		return "workorder/CustomerServiceAdjudicate";
@@ -275,7 +292,7 @@ public class WorkOrderController {
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();
+		List<Branch> lb=branchDao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
 		
@@ -285,7 +302,7 @@ public class WorkOrderController {
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);   
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
@@ -296,7 +313,7 @@ public class WorkOrderController {
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();
+		List<Branch> lb=branchDao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
 		cca.setChongshenUser(uname);
@@ -305,7 +322,7 @@ public class WorkOrderController {
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);  
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
@@ -514,7 +531,7 @@ public class WorkOrderController {
 			}
 			List<Reason> lr=reasondao.addWO();
 			List<Reason> alltworeason=reasondao.getAllTwoLevelReason();
-			List<Branch> lb=branchdao.getAllBranches();
+			List<Branch> lb=branchDao.getAllBranches();
 			
 			model.addAttribute("lr", lr);
 			model.addAttribute("alltworeason", alltworeason);
@@ -522,7 +539,7 @@ public class WorkOrderController {
 			model.addAttribute("conMobile",conMobile );
 			model.addAttribute("RuKuTime",RuKuTime);
 			model.addAttribute("lb", lb);
-			model.addAttribute("alluser",userdao.getAllUser());
+			model.addAttribute("alluser",userDao.getAllUser());
 			return "workorder/CreateGoOnAcceptWorkOrder";			
 	}
 	
@@ -588,7 +605,7 @@ public class WorkOrderController {
 	}	
 		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
 		List<Reason> alltworeason=reasondao.getAllTwoLevelReason();
-		List<Branch> lb=branchdao.getAllBranches();
+		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		model.addAttribute("shensuendTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("shensuendTime").getValue()));
@@ -600,7 +617,7 @@ public class WorkOrderController {
 		model.addAttribute("lc", lc==null?null:lc);
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("co", co==null?null:co);
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";		
@@ -609,12 +626,12 @@ public class WorkOrderController {
 	public String WorkOrderQueryManage(Model model){
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		List<Reason> lr=reasondao.addWO();
-		List<Branch> lb=branchdao.getAllBranches();
+		List<Branch> lb=branchDao.getAllBranches();
 		
 		model.addAttribute("lr", lr);
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("lb", lb);
-		model.addAttribute("alluser",userdao.getAllUser());
+		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";
@@ -674,7 +691,7 @@ public class WorkOrderController {
 		System.out.println(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
-		List<Branch> lb=branchdao.getAllBranches();
+		List<Branch> lb=branchDao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
 		cca.setHandleUser(uname);
@@ -803,7 +820,7 @@ public class WorkOrderController {
 			ca.setOrderNo(c.getOrderNo());
 			ca.setComplaintType(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
 			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
-			ca.setCodOrgId(branchdao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
+			ca.setCodOrgId(branchDao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
 			if(c.getComplaintOneLevel()!=0){
 			ca.setComplaintOneLevel(reasondao.getReasonByReasonid(c.getComplaintOneLevel()).getReasoncontent());
 			}else{
@@ -1006,7 +1023,7 @@ public class WorkOrderController {
 	@RequestMapping("/getBeiTouSuRenValue")
 	@ResponseBody
 	public List<User> getBeiTouSuRenValue(@RequestParam(value="codOrgId" ,defaultValue="",required=true) long codOrgId){
-		List<User> u=userdao.getBeiTouSuRen(codOrgId);
+		List<User> u=userDao.getBeiTouSuRen(codOrgId);
 	return u;		
 	}
 	
@@ -1016,6 +1033,106 @@ public class WorkOrderController {
 	public List<Reason> getTwoValueByOneReason(HttpServletRequest req){
 		String leave=req.getParameter("complaintOneLevel");
 	return reasondao.getSecondLevelReason(Integer.valueOf(leave));		
-	}	
+	}
 	
+	/**
+	 * 发送催件短信
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/smsSend")
+	@ResponseBody
+	public String smsSend(HttpServletRequest request){
+		
+		String cwbScan = request.getParameter("cwbNo");
+		String cwb = cos.translateCwb(cwbScan);
+			
+		CwbOrder cwbOrder = cwbdao.getCwbByCwb(cwb);
+		FlowOrderTypeEnum cwbOrderFlow = FlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
+		DeliveryStateEnum cwbDeliverState = DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate());
+		
+		String smsSendMobile = null;
+		SystemInstall reminderMessage = systeminstalldao.getSystemInstallByName("ReminderMessage");
+		String message = reminderMessage == null? "" : reminderMessage.getValue() ;
+		
+		//分站领货、反馈为
+		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
+			FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow) && DeliveryStateEnum.ZhiLiuZiDongLingHuo.equals(cwbDeliverState)){
+			User deliver = userDao.getUserByUserid(cwbOrder.getDeliverid());
+			smsSendMobile = deliver.getUsermobile();
+		}
+		//其他状态订单
+		else{
+			Branch currentBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
+			smsSendMobile = currentBranch.getBranchmobile();
+		}
+		
+		String msg = "";
+		int j = 0;
+		int i = 0;
+		String errorMsg = "";
+		
+		SmsConfig smsConf = this.smsConfigDAO.getAllSmsConfig(0);
+		
+		try {
+			if (smsSendMobile.trim().length() > 0) {
+				logger.info("短信发送，单量：{}", smsSendMobile.split(",").length);
+				for (String mobile : smsSendMobile.split(",")) {
+					if (mobile.trim().length() == 0) {
+						continue;
+					}
+					if(StringUtils.isEmpty(message)){
+						errorMsg += "未设置催件短信内容，请前往系统设置页面进行设置！";
+						continue;
+					}
+					if (!isMobileNO(mobile)) {
+						logger.info("短信发送，手机号：{}", mobile.trim());
+						j++;
+						errorMsg += "手机号：[" + mobile.trim() + "]:手机号格式不正确";
+						continue;
+					}
+					if (mobile != null && !"".equals(mobile)) {
+						logger.info("短信发送，手机号：{}", mobile.trim());
+						try {
+							msg = smsSendService.sendSmsInterface(mobile, message, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request), smsConf.getName(), smsConf.getPassword());
+							logger.info("短信发送，手机号：{}  结果：{}", mobile.trim(), msg);
+							if ("发送短信成功".equals(msg)) {
+								i++;
+							} else {
+								errorMsg += "手机号：[" + mobile.trim() + "]:" + msg;
+								j++;
+							}
+						} catch (UnsupportedEncodingException e) {
+							logger.error("短信发送，异常", e);
+							j++;
+							errorMsg += "手机号：[" + mobile.trim() + "]:短信发送网络异常";
+						}
+					} else {
+						j++;
+						errorMsg += "手机号：[" + mobile.trim() + "]:手机号为空";
+					}
+				}
+			}
+			logger.info("短信发送，成功单数：{}", i);
+			logger.info("短信发送，失败单数：{}", j);
+
+		} catch (Exception e) {
+			logger.error("短信发送，异常", e);
+			errorMsg += e.getMessage();
+		}
+		
+		if( StringUtils.isEmpty(errorMsg) && "发送短信成功".equals(msg)){
+			return "{\"errorCode\":0,\"error\":\"催件短信发送成功\"}";
+		}else{
+			return "{\"errorCode\":1,\"error\":\"催件短信发送失败"+ errorMsg +"\"}";
+		}
+		
+	}
+	
+	// 验证手机号码的合法性
+	private static boolean isMobileNO(String mobiles) {
+		Pattern p = Pattern.compile("^1\\d{10}$");
+		Matcher m = p.matcher(mobiles);
+		return m.matches();
+	}
 }

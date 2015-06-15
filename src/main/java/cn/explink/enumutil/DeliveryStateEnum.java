@@ -3,8 +3,17 @@ package cn.explink.enumutil;
 import cn.explink.exception.ExplinkException;
 
 public enum DeliveryStateEnum {
-	WeiFanKui(0, "未反馈"), PeiSongChengGong(1, "配送成功"), ShangMenTuiChengGong(2, "上门退成功"), ShangMenHuanChengGong(3, "上门换成功"), JuShou(4, "拒收"), BuFenTuiHuo(5, "部分拒收"), FenZhanZhiLiu(6, "分站滞留"), ShangMenJuTui(
-			7, "上门拒退"), HuoWuDiuShi(8, "货物丢失"), ZhiLiuZiDongLingHuo(9, "滞留自动领货"), DaiZhongZhuan(10, "待中转");
+	WeiFanKui(0, "未反馈"), 
+	PeiSongChengGong(1, "配送成功"), 
+	ShangMenTuiChengGong(2, "上门退成功"), 
+	ShangMenHuanChengGong(3, "上门换成功"), 
+	JuShou(4, "拒收"), 
+	BuFenTuiHuo(5, "部分拒收"), 
+	FenZhanZhiLiu(6, "分站滞留"), 
+	ShangMenJuTui(7, "上门拒退"), 
+	HuoWuDiuShi(8, "货物丢失"), 
+	ZhiLiuZiDongLingHuo(9, "滞留自动领货"), 
+	DaiZhongZhuan(10, "待中转");
 
 	private int value;
 	private String text;
