@@ -116,7 +116,7 @@ public class PenalizeOutService {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
-							if(i==8){
+							if((i==8)||(i==10)){
 								sheet.setColumnWidth(i, 25 * 256);
 								style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy/MM/dd hh:mm:ss"));
 							}
