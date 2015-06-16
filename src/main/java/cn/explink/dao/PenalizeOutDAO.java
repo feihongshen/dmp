@@ -127,6 +127,7 @@ public class PenalizeOutDAO {
 		try {
 			String sql = "select * from express_ops_penalizeOut_detail where state=1 ";
 			sql += this.creConditions(cwbs, flowordertype, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, starttime, endtime);
+			sql += " order by createrdate desc ";
 			return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper());
 		} catch (Exception e) {
 			return null;
