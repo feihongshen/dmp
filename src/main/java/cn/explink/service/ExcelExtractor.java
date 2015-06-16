@@ -665,7 +665,7 @@ public abstract class ExcelExtractor {
 	}
 
 	public void extractPenalizeOut(InputStream f, User user, Long systemTime) {
-		List<PenalizeType> penalizeTypelList = this.penalizeTypeDAO.getAllPenalizeType();
+		List<PenalizeType> penalizeTypelList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
 
 		Map<String, Integer> penalizeTypeMap = this.SetMapPenalizeTypeMap(penalizeTypelList);
 
@@ -730,6 +730,12 @@ public abstract class ExcelExtractor {
 		PenalizeOut out = new PenalizeOut();
 		String cwb = this.getXRowCellData(row, 1);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co == null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在！");
+			return null;
+		} else {
+			out.setCwb(cwb);
+		}
 		BigDecimal penalizeOutfee = null;
 		try {
 
@@ -748,12 +754,6 @@ public abstract class ExcelExtractor {
 		}
 
 		String penalizeOutsmallText = this.getXRowCellData(row, 3);
-		if (co == null) {
-			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在！");
-			return null;
-		} else {
-			out.setCwb(cwb);
-		}
 		int penalizeOutsmall=0;
 		try {
 			penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
