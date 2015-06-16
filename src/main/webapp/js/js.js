@@ -6004,8 +6004,8 @@ function checke_fee(){
 function smsSend(){
 
 	var dataJson = {};
-	dataJson['cwbNo'] = $('#editCwb').val();
-	dataJson['acceptNo'] = $('#editAccept').val();
+	dataJson['cwbNo'] = $('#cwbn').val();
+	dataJson['acceptNo'] = $('#transn').val();
 	$.ajax({
 		type:"POST",
 		url:"workorder/smsSend",

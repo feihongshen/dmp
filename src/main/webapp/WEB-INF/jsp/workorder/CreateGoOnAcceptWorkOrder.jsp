@@ -31,8 +31,8 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 						<%=ComplaintTypeEnum.getByValue(a.getComplaintType()).getText()%>		
 						<input type="hidden" value="<%=a.getComplaintType()%>" name="complaintType">									
 						</td>
-						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" id="editAccept" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
-						<td>订单号:<%=a.getOrderNo() %><input type="hidden" id="editCwb" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
+						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" id="transn" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
+						<td>订单号:<%=a.getOrderNo() %><input type="hidden" id="cwbn" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
 					</tr>
 					<tr>	
 						<%for(CwbStateEnum c:CwbStateEnum.values()) {%>

@@ -46,6 +46,7 @@ CsComplaintAccept a= request.getAttribute("lcs")==null?null:(CsComplaintAccept)r
 				</form>	
 			 <div align="center"><!-- <button class="button">发送催件短信</button> -->
 						 <%-- <button class="button" id="btnnn" onclick="btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button> --%>
+						 <button class="button" onclick="smsSend()">发送催件短信</button>
 						 <input type="button" id="btncla" class="button" value="结案" onclick="acceptqueryWoJieAn()"> 
 				 </div>
 			</div>

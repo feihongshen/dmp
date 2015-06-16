@@ -57,6 +57,7 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 				<input type="hidden"  name="complaintState" id="cls">
 				<input type="hidden"  name="phoneOne" value="<%=a.getPhoneOne()%>">
 				<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
+				<input type="hidden"  name="cuijianNum" value="0">
 				
 			
 			</form>	
