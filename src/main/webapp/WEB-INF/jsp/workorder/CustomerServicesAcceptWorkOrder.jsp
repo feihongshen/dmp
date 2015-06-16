@@ -245,23 +245,39 @@ function addCci(){
 	if($('#phoneonOne').val()==""){
 		alert('请输入电话号码');
 		return false;
-	}else if($('#sex1').val()==""&&$('#sex').val()==""){
+	}
+	else if($('#consigneeType').val()=="-1"){
+		alert('请选择客户类型');
+		return false;
+	}
+	else if($('#sex1').val()==""&&$('#sex').val()==""){
 		alert('请选择性别');
 		return false;
-	}else if($('#province').val()==""){
+	}
+	else if($('#province').val()==""){
 		alert('请输入省份');
 		return false;
-	}else if($('#city').val()==""){
+	}
+
+	else if($('#city').val()==""){
 		alert('请输入城市');
 		return false;
-	}else if($('#name').val()==""){
+	}
+
+	else if($('#name').val()==""){
 		alert('请输入姓名');
 		return false;
-	}else if($('#contactLastTime').val()==""){
+	}
+
+	else if($('#contactLastTime').val()==""){
 		alert('请输入来电时间');
 		return false;
 	}
-	
+
+	else if($('#contactNum').val()==""){
+		alert('请填写联系次数');
+		return false;
+	}
 	$('#CallerPhoneValue').val($('#phoneonOne').val());
 	
 	$.ajax({
