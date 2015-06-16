@@ -145,7 +145,14 @@ function exportExcel(){
 	$("#exportExcel").submit();
 }
 function showButton()
-{ if($("#filename").val().length>0)
+{ 	if($("#filename").val().indexOf(" .xlsx")==-1||$("#filename").val().indexOf(".xls")==-1)
+	{
+	alert("文件类型必须为xls或者xlsx");
+	$("#filename").val('');
+	$("#subfile").attr('disabled','disabled');
+	return false;
+	}
+	if($("#filename").val().length>0)
 	{
 	$("#subfile").removeAttr('disabled');
 	}
