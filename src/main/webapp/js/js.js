@@ -5484,7 +5484,7 @@ function btnupdate(csv){
 	}
 	
  function getAddBoxx2(valWo) {
-	 
+	 alert(valWo);
 $.ajax({
 	type : "POST",
 	data:"workorder="+valWo,

@@ -8,7 +8,7 @@
 <%@page import="cn.explink.enumutil.ComplaintResultEnum"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%
-		List<CsComplaintAccept> l=(List<CsComplaintAccept>)request.getAttribute("lc");
+		List<CsComplaintAccept> l=request.getAttribute("lc")==null?null:(List<CsComplaintAccept>)request.getAttribute("lc");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -38,7 +38,12 @@ $("table#refreshWO tr").click(function(){
 	$(this).siblings().css("backgroundColor","#ffffff");
 	});
 $("#goonacceptinmanage").click(function(){
+	if($('#workordertypeV').val()==$('#ComplaintTypeEnumTouSu').val()){
 	getAddBoxx2($('#WaitAcceptNo').val());
+	}else if($('#workordertypeV').val()==$('#ComplaintTypeEnumChaXun').val()){
+		getAddBoxGoOnAcceptQueryWo($('#WaitAcceptNo').val());
+		
+	}
 });
 	
 });
@@ -53,13 +58,34 @@ function addInit(){
 	
 }
 
-function saveAcceptNoV(NoV){
+function saveAcceptNoV(NoV,Wotype){
 	$('#WaitAcceptNo').val(NoV);
+	$('#workordertypeV').val(Wotype);
 	$('#goonacceptinmanage').show();
 	 getGoonacceptWO($('#WaitAcceptNo').val());
 	 
 	
 }
+
+function getAddBoxGoOnAcceptQueryWo(valWo) {
+	 
+	$.ajax({
+		type : "POST",
+		data:"workorder="+valWo,
+		url : $("#GoOnacceptWoQuery").val(),
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+			
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面			
+			viewBox();
+		}
+	});
+	}
+
 
 
 </script>
@@ -89,7 +115,7 @@ function saveAcceptNoV(NoV){
 				</tr>
 			<%if(l!=null){ %>
 			<%for(CsComplaintAccept c:l){ %>
-				<tr onclick="saveAcceptNoV('<%=c.getAcceptNo()%>')">
+				<tr onclick="saveAcceptNoV('<%=c.getAcceptNo()%>',<%=c.getComplaintType()%>)">
 					<td><%=c.getAcceptNo() %></td>
 					<td><%=c.getOrderNo() %></td>
 					<td><%=c.getPhoneOne() %></td>
@@ -97,9 +123,17 @@ function saveAcceptNoV(NoV){
 					<td><%=c.getAcceptTime() %></td>
 					<td><%=ComplaintTypeEnum.getByValue(c.getComplaintType()).getText()%></td>
 					<%if(c.getComplaintType()==ComplaintTypeEnum.CuijianTousu.getValue()){ %>
-					<td><%=c.getContent() %></td>
+						<%if(c.getContent().length()>20) {%>
+					<td><%=c.getContent().substring(0, 20) %></td>
+						<%}else{ %>
+						<td><%=c.getContent()%></td>
+					<%} %>
 					<%}else if(c.getComplaintType()==ComplaintTypeEnum.DingDanChaXun.getValue()){ %>
-					<td><%=c.getQueryContent() %></td>
+						<%if(c.getQueryContent().length()>20){ %>
+					<td><%=c.getQueryContent().substring(0, 20) %></td>
+						<%}else{ %>
+						<td><%=c.getQueryContent()%></td>
+						<%} %>
 					<%} %>		
 					<td><%=ComplaintStateEnum.DaiChuLi.getText()%></td>				
 				</tr>
@@ -109,7 +143,9 @@ function saveAcceptNoV(NoV){
 	</div>
 			<input type="hidden" id="GoOnacceptWo" value="<%=request.getContextPath()%>/workorder/GoOnacceptWo"/>
 			<input type="hidden" id="WaitAcceptNo"/>
+			<input type="hidden" id="workordertypeV"/>
 			<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
 			<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/>
+				<input type="hidden" id="GoOnacceptWoQuery" value="<%=request.getContextPath()%>/workorder/GoOnacceptWoQuery"/>
 </body>
 </html>
