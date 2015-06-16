@@ -5981,25 +5981,9 @@ function getReasonValue(){
 }
 
 function checkLen(obj) {  
-
-
 var maxChars = 150;//最多字符数  
 
-function checke_fee(){
-
-
-
 if (obj.value.length > maxChars)  obj.value = obj.value.substring(0,maxChars);  
-
-	if(!isFloat($("#fee").val()))
-	{
-		alert("金额输入有误！");
-		$("#fee").val('');
-		return false;
-	}
-	return true;
-}
-
 
 var curr = maxChars - obj.value.length;  
 
@@ -6007,7 +5991,15 @@ document.getElementById("count").innerHTML = curr.toString();
 
 } 
 
+function checke_fee(){
+	if(!isFloat($("#fee").val()))
+	{
+		alert("金额输入有误！");
+		$("#fee").val('');
+		return false;
+	}
+	return true;
 
-
+}
 
 
