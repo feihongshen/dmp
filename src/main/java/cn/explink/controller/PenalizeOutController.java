@@ -342,7 +342,9 @@ public class PenalizeOutController {
 			penalizeInside.setCwbstate(out.getFlowordertype());
 			penalizeInside.setCwbPrice(out.getReceivablefee());
 			try {
-
+				if (punishInsideprice.compareTo(new BigDecimal(0)) == -1) {
+					return "{\"errorCode\":1,\"error\":\"对内扣罚金额必须大于0.00！\"}";
+				}
 				penalizeInside.setPunishInsideprice(punishInsideprice);
 			} catch (Exception e) {
 				return "{\"errorCode\":1,\"error\":\"对内扣罚金额有误！\"}";
