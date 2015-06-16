@@ -329,13 +329,24 @@ public class PenalizeOutController {
 					return "{\"errorCode\":1,\"error\":\"创建对内扣罚失败！责任人不存在,或已离职\"}";
 				}
 			}
+			if (punishdescribe.trim().length() <= 0) {
+				return "{\"errorCode\":1,\"error\":\"对内扣罚说明不能为空！\"}";
+			}
+			if (punishdescribe.trim().length() > 100) {
+				return "{\"errorCode\":1,\"error\":\"对内扣罚说明不能超过100个字\"}";
+			}
 			penalizeInside.setCwb(out.getCwb());
 			penalizeInside.setCreateBySource(1);
 			penalizeInside.setSourceNo(out.getCwb());
 			penalizeInside.setDutybranchid(dutybranchid);
 			penalizeInside.setCwbstate(out.getFlowordertype());
 			penalizeInside.setCwbPrice(out.getReceivablefee());
-			penalizeInside.setPunishInsideprice(punishInsideprice);
+			try {
+
+				penalizeInside.setPunishInsideprice(punishInsideprice);
+			} catch (Exception e) {
+				return "{\"errorCode\":1,\"error\":\"对内扣罚金额有误！\"}";
+			}
 			penalizeInside.setPunishbigsort(out.getPenalizeOutbig());
 			penalizeInside.setPunishsmallsort(out.getPenalizeOutsmall());
 			penalizeInside.setCreateuserid(this.getSessionUser().getUsercustomerid());
@@ -402,9 +413,6 @@ public class PenalizeOutController {
 	@RequestMapping("/importData")
 	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file)
 			throws Exception {
-		if(!file.getName().endsWith(".xls")||!file.getName().endsWith(".xlsx")){
-			return "redirect:list/1";
-		}
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
 		final User user = this.getSessionUser();
