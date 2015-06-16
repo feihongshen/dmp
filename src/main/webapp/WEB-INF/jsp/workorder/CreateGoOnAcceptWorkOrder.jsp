@@ -31,8 +31,8 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 						<%=ComplaintTypeEnum.getByValue(a.getComplaintType()).getText()%>		
 						<input type="hidden" value="<%=a.getComplaintType()%>" name="complaintType">									
 						</td>
-						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
-						<td>订单号:<%=a.getOrderNo() %><input type="hidden" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
+						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" id="editAccept" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
+						<td>订单号:<%=a.getOrderNo() %><input type="hidden" id="editCwb" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
 					</tr>
 					<tr>	
 						<%for(CwbStateEnum c:CwbStateEnum.values()) {%>
@@ -113,7 +113,7 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 							<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
 				</form>					
 			</div>
-			<button class="button">发送催件短信</button>
+			<button class="button" onclick="smsSend()">发送催件短信</button>
 			<button class="button" onclick="btnupdate('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
 			<button class="button" onclick="btnupdate('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')">待机构核实</button>
 			<button class="button" onclick="btnupdate('<%=ComplaintStateEnum.YiJieAn.getValue()%>')">结案</button>

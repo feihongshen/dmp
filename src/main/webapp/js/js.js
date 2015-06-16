@@ -5981,14 +5981,12 @@ function getReasonValue(){
 }
 
 function checkLen(obj) {  
-var maxChars = 150;//最多字符数  
-
-if (obj.value.length > maxChars)  obj.value = obj.value.substring(0,maxChars);  
-
-var curr = maxChars - obj.value.length;  
-
-document.getElementById("count").innerHTML = curr.toString(); 
-
+	var maxChars = 150;//最多字符数  
+	if (obj.value.length > maxChars){
+		obj.value = obj.value.substring(0,maxChars);  
+	} 
+	var curr = maxChars - obj.value.length;  
+	document.getElementById("count").innerHTML = curr.toString(); 
 } 
 
 function checke_fee(){
@@ -6001,5 +5999,25 @@ function checke_fee(){
 	return true;
 
 }
+
+
+function smsSend(){
+
+	var dataJson = {};
+	dataJson['cwbNo'] = $('#editCwb').val();
+	dataJson['acceptNo'] = $('#editAccept').val();
+	$.ajax({
+		type:"POST",
+		url:"workorder/smsSend",
+		data:dataJson,
+		dataType:"json",
+		success:function(result){
+			if(null != result){
+				alert(result.error);
+			}
+		}
+	})
+}
+
 
 

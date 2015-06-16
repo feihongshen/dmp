@@ -70,7 +70,7 @@ public class CsComplaintAccept {
 			private String jieanUser;
 			private String shensuUser;
 			private String chongshenUser;
-			private int cuijianNum;
+			private int cuijianNum = 0;
 
 			private String downloadheshipath;
 			public String getDownloadheshipath() {

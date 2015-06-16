@@ -202,8 +202,8 @@ public class WorkOrderDAO {
 	}
 	
 	public void saveComplainWorkOrderF(CsComplaintAccept c){
-		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid());
+		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid,cuijian_num) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum());
 	}
 	
 	
@@ -481,5 +481,14 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		String sql="update cs_complaint_accept set complaint_state=? where id=?";
 		this.jt.update(sql,cca.getComplaintState(),cca.getId());
 		
+	}
+
+	/**
+	 * 跟新工单催件次数
+	 * @param workOrderNo
+	 */
+	public void updateMsgNum(String workOrderNo) {
+		String sql = "UPDATE `cs_complaint_accept` SET cuijian_num = cuijian_num + 1 WHERE accept_no=?";
+		this.jt.update(sql,workOrderNo);
 	}
 }

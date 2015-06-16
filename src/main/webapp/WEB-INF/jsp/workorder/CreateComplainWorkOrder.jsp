@@ -101,6 +101,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							<input type="hidden"  name="complaintState" id="cwo"/>
 							<input type="hidden"  name="phoneOne" value="<%=a.getPhoneOne()%>">
 							<input type="hidden"  name="provence" value="<%=a.getProvence()%>">
+							<input type="hidden"  name="cuijianNum" value="0">
 				</form>					
 			</div>
 			<div align="center">

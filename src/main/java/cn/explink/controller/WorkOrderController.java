@@ -1045,17 +1045,19 @@ public class WorkOrderController {
 	@ResponseBody
 	public String smsSend(HttpServletRequest request){
 		
+		//构建数据
 		String cwbScan = request.getParameter("cwbNo");
+		String workOrderNo = request.getParameter("acceptNo");
 		String cwb = cos.translateCwb(cwbScan);
-			
 		CwbOrder cwbOrder = cwbdao.getCwbByCwb(cwb);
 		FlowOrderTypeEnum cwbOrderFlow = FlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
 		DeliveryStateEnum cwbDeliverState = DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate());
-		
+
+		//构建短信数据
 		String smsSendMobile = null;
 		SystemInstall reminderMessage = systeminstalldao.getSystemInstallByName("ReminderMessage");
 		String message = reminderMessage == null? "" : reminderMessage.getValue() ;
-		
+		/** 短信逻辑  */
 		//分站领货、反馈为
 		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
 			FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow) && DeliveryStateEnum.ZhiLiuZiDongLingHuo.equals(cwbDeliverState)){
@@ -1067,15 +1069,17 @@ public class WorkOrderController {
 			Branch currentBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
 			smsSendMobile = currentBranch.getBranchmobile();
 		}
-		
 		String msg = "";
 		int j = 0;
 		int i = 0;
 		String errorMsg = "";
-		
+		//系统设置短信模板
 		SmsConfig smsConf = this.smsConfigDAO.getAllSmsConfig(0);
-		
+		//发送短信
 		try {
+			if(StringUtils.isEmpty(smsSendMobile)){
+				throw new RuntimeException("当前负责人未设置手机号，请前往设置页面进行设置！");
+			}
 			if (smsSendMobile.trim().length() > 0) {
 				logger.info("短信发送，单量：{}", smsSendMobile.split(",").length);
 				for (String mobile : smsSendMobile.split(",")) {
@@ -1095,7 +1099,8 @@ public class WorkOrderController {
 					if (mobile != null && !"".equals(mobile)) {
 						logger.info("短信发送，手机号：{}", mobile.trim());
 						try {
-							msg = smsSendService.sendSmsInterface(mobile, message, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request), smsConf.getName(), smsConf.getPassword());
+//							msg = smsSendService.sendSmsInterface(mobile, message, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request), smsConf.getName(), smsConf.getPassword());
+							msg = smsSendService.sendSms(mobile, message, 1, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request));
 							logger.info("短信发送，手机号：{}  结果：{}", mobile.trim(), msg);
 							if ("发送短信成功".equals(msg)) {
 								i++;
@@ -1123,9 +1128,10 @@ public class WorkOrderController {
 		}
 		
 		if( StringUtils.isEmpty(errorMsg) && "发送短信成功".equals(msg)){
-			return "{\"errorCode\":0,\"error\":\"催件短信发送成功\"}";
+			this.workorderdao.updateMsgNum(workOrderNo);
+			return "{\"errorCode\":0,\"error\":\"催件短信发送成功！\"}";
 		}else{
-			return "{\"errorCode\":1,\"error\":\"催件短信发送失败"+ errorMsg +"\"}";
+			return "{\"errorCode\":1,\"error\":\"催件短信发送失败："+ errorMsg +"\"}";
 		}
 		
 	}
@@ -1136,4 +1142,5 @@ public class WorkOrderController {
 		Matcher m = p.matcher(mobiles);
 		return m.matches();
 	}
+	
 }
