@@ -5571,18 +5571,19 @@ function AlreadyVerify(AVV){
 
 
 function btnswd(ev){
-	$('#cls').val(ev);
-	$.ajax({
-				type:'POST',
-				data:$('#WorkOrderQueryForm').serialize(),
-				url:$('#WorkOrderQueryForm').attr('action'),
-				dataType:'json',				
-				success:function(data){
-					alert(data.error);
-				}
-	});
-	closeBox();
+			$('#cls').val(ev);
+			$.ajax({
+						type:'POST',
+						data:$('#WorkOrderQueryForm').serialize(),
+						url:$('#WorkOrderQueryForm').attr('action'),
+						dataType:'json',				
+						success:function(data){
+							alert(data.error);
+						}
+			});
+			closeBox();
 /*	$('#WaitAcceptNo').val("");*/
+		
 }
 
 function getSV(v){
@@ -6000,6 +6001,39 @@ function checke_fee(){
 
 }
 
+function  decidecomplain(){
+	if($('#codOrgIdValue').val()=='-1'){
+		alert('请选择机构')
+		return false;
+	}
+	if($('#ComplaintUseridValue').val()==-1){
+		alert('请选择被投诉人')
+		return false;
+	}
+	if($('#olreason').val()==-1){
+		alert('请输入一级分类')
+		return false;
+	}
+	
+	if($('#tlreason').val()==-1){
+		alert('请输入二级分类')
+		return false;
+	}
+	 if($('#compaltecontent').val()==""){
+		alert('请填写投诉内容')
+		return false;
+	}
+	return true;
+}	
+function  decidequery(){
+	 if($('#queryContentd').val()==""){
+		alert('请填写查询内容')
+		return false;
+	}
+	 return true;
+}	
+	
+	
 
 function smsSend(){
 
@@ -6018,6 +6052,4 @@ function smsSend(){
 		}
 	})
 }
-
-
 

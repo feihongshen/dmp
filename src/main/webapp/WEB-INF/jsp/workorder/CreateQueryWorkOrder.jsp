@@ -48,7 +48,7 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 					</tr>
 					<tr>
 						<td>
-							查询内容:<textarea onkeyup="checkLen(this)" style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"></textarea>
+							查询内容:<textarea onkeyup="checkLen(this)" style="width: 100%;height: 150px;margin-left: 50px" name="queryContent" id="queryContentd"></textarea>
 							<div>您最多可以输入<span id="count">150</span>个文字</div> 
 						</td>
 				</tr>
@@ -63,8 +63,8 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 			</form>	
 			
 				 <div align="center"><!-- <button class="button">发送催件短信</button> -->
-						 <button class="button" id="btnnn" onclick="btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
-						 <button class="button" onclick="btnswd('<%=ComplaintStateEnum.YiJieShu.getValue()%>')" id="btnnnnn">结案</button>
+						 <button class="button" id="btnnn" onclick="if(decidequery())btnswd('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
+						 <button class="button" onclick="if(decidequery())btnswd('<%=ComplaintStateEnum.YiJieShu.getValue()%>')" id="btnnnnn">结案</button>
 						 <button class="button" onclick="closeBox()">取消</button>
 				 </div>
 		</div>

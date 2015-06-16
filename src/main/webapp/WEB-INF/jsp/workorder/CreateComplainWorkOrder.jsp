@@ -91,7 +91,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content"></textarea>
+					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent"></textarea>
 					<div>您最多可以输入<font id="count" color="red">150</font>个文字</div> 
 					</td>
 				</tr>
@@ -105,9 +105,9 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 				</form>					
 			</div>
 			<div align="center">
-			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')">保存待处理</button>
-			<button class="button" onclick="btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')">待机构核实</button>
-			<button class="button" onclick="btnccwo()">结案</button>
+			<button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')}">保存待处理</button>
+			<button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')}">待机构核实</button>
+			<button class="button" onclick="if(decidecomplain()){btnccwo()}">结案</button>
 			<button class="button" onclick="closeBox()">取消</button>
 			<input type="hidden" id="stateNum">
 			<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yja">

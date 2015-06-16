@@ -300,8 +300,7 @@ function CurentTime()   //计算当天时间
 					</td>		
 					<td>
 				工单类型:<select name="complaintType" class="select1">				
-							<option value="-1">全部</option>
-									
+							<option value="-1">全部</option>									
 							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>
 							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>
 						</select>
