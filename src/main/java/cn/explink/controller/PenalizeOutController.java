@@ -367,6 +367,12 @@ public class PenalizeOutController {
 			defaultValue = "0") int penalizeOutId, Model model) throws Exception {
 		if (penalizeOutId > 0) {
 			String canceldate = DateTimeUtil.getNowTime();
+			if (cancelContent.trim().length() <= 0) {
+				return "{\"errorCode\":1,\"error\":\"撤销说明不能为空！\"}";
+			}
+			if (cancelContent.trim().length() > 100) {
+				return "{\"errorCode\":1,\"error\":\"撤销说明不能超过100个字\"}";
+			}
 			int couns = this.penalizeOutDAO.cancelpenalizeOutDataById(penalizeOutId, PenalizeSateEnum.Cancel.getValue(), cancelContent, canceldate, this.getSessionUser().getUserid());
 			if (couns > 0) {
 				return "{\"errorCode\":0,\"error\":\"撤销对外赔付成功！\"}";
@@ -396,6 +402,9 @@ public class PenalizeOutController {
 	@RequestMapping("/importData")
 	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file)
 			throws Exception {
+		if(!file.getName().endsWith(".xls")||!file.getName().endsWith(".xlsx")){
+			return "redirect:list/1";
+		}
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
 		final User user = this.getSessionUser();
