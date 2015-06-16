@@ -5747,8 +5747,8 @@ function AlreadyVerifyJieAn(AVV){
 }
 	
 function heshiremarkV(){
-	console.info("hahah");
 	if($('#remark').val()==""){
+		alert('please input content')
 		return false;
 	}	
 	return true;
@@ -5774,6 +5774,7 @@ function submitsubmitHeShiLoad() {
 
 function jieanremarkV(){
 	if($('#jieanremark').val()==""){
+		alert('please input content');
 		return false;
 	}	
 	return true;
@@ -5806,6 +5807,7 @@ function decideV(){
 
 function IfShenSu(){
 	if($('#shensuremark').val()==""){
+		alert('please input content')
 		return false;
 	}	
 	return true;
@@ -5831,6 +5833,7 @@ function submitsubmitShenSuLoad() {
 
 function JieAnChongShen(){
 	if($('#jieanchongshenremark').val()==""){
+		alert('please input content');
 		return false;
 	}	
 	return true;

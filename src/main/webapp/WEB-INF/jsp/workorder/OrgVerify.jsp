@@ -72,7 +72,7 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					<li>
 						核实内容*:				
 						<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="remark" id="remark"></textarea>																	
-						<div>您最多可以输入<span id="count">150</span>个文字</div>
+						<div>您还可以输入<font id="count" color="red">150</font>个文字</div>
 					</li>
 						<input type="hidden" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>" name="complaintState" id="complaintState">
 						<input type="hidden" value="<%=cca.getId()%>" name="id" id="id">

@@ -49,7 +49,7 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 					<tr>
 						<td>
 							查询内容:<textarea onkeyup="checkLen(this)" style="width: 100%;height: 150px;margin-left: 50px" name="queryContent" id="queryContentd"></textarea>
-							<div>您最多可以输入<span id="count">150</span>个文字</div> 
+							<div>您还可以输入<font id="count" color="red">150</font>个文字</div> 
 						</td>
 				</tr>
 													

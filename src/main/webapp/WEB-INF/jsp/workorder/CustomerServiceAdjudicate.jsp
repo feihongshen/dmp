@@ -120,7 +120,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<li>
 							<label>备注*:</label>									
 								<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="jieanremark" id="jieanremark"></textarea>																	
-								<div>您最多可以输入<span id="count">150</span>个文字</div>
+								<div>您还可以输入<font id="count" color="red">150</font>个文字</div>
 					</li>
 					<li>
 					
