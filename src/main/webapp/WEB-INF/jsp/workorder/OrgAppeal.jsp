@@ -101,7 +101,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<%} }%>
 					<span>结案备注:</span>
 					<%=cca.getJieanremark() %>
+					<%if(cca.getDownloadjieanpath()!=null){ %>
 					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
+					<%}%>
 					</li>
 					<li>
 						<label>申诉内容*:</label>					
@@ -114,7 +116,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 				<input type="hidden" value="<%=cca.getShensuUser()%>" name="shensuUser"> --%>
 			</div>	
 			 		<table>
-					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传声音文件：</span>
+					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传文件：</span>
 					 <iframe id="update" name="update" src="workorder/update?fromAction=ShenSuChangeComplaintStateF&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" >
 					 </iframe> </td></tr>
 					 </table>

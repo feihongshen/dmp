@@ -103,7 +103,10 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<%} %>
 								<%}%>
 							</em> --%>
+							<%if(cca.getDownloadheshipath()!=null){ %>
+							
 							<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a>
+							<%} %>
 						</span>
 					</li>
 					<li>

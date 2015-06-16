@@ -111,8 +111,10 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<%for(User u:alluser){ %>
 							<%if(cca.getShensuUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
-						<%} }%>
+							<%} }%>
+						<%for(cca.getDownloadshensupath()!=null){ %>
 								<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadshensupath()%>"><b>附件下载</b></a></span>
+						<%} %>
 						</li>
 						<li>
 								<span>结案重审*:</span>
