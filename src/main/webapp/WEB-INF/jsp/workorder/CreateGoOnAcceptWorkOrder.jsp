@@ -60,10 +60,12 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 						</td>
 						<td>
 						<span>被投诉人:</span>
+						<select class="select1" disabled="disabled">
 						<%for(User u:alluser){ %>
 							<%if(a.getComplaintUser().equals(u.getUsername())){ %>
-								<input type="text" value="<%=u.getRealname()%>"/>
+								<option><%=u.getRealname()%></option>
 						<%} }%>
+						</select>		
 						<%-- <input type="hidden" name="ComplaintUser" value="<%=a.getComplaintUser() %>"> --%>
 						</td>
 						<td>入库时间:<%=rukutime %></td>
@@ -81,12 +83,13 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 						</td>
 						<td>
 							<span>二级分类:</span>
-							
+							<select class="select1" disabled="disabled">
 								<%if(r!=null){ %>
 								<%for(Reason r1:alltworeason){ %>
 								<%if(a.getComplaintTwoLevel()==r1.getReasonid()){%>
-								<input type="text" value="<%=r1.getReasoncontent()%>">
+									<option><%=r1.getReasoncontent()%></option>
 								<%}}} %>
+								</select>
 						</td>
 				</tr>		
 							<td>
@@ -99,7 +102,7 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea style="width: 80%;height: 150px;margin-left: 20px" name="content"><%=a.getContent() %></textarea>
+					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content"><%=a.getContent() %></textarea>
 					
 				</tr>
 					</td>

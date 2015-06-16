@@ -18,9 +18,10 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 		<div id="box_form">
 			<form action="<%=request.getContextPath()%>/workorder/saveWorkOrderQueryF" id="WorkOrderQueryForm">
 				<table id="tb01">					
-					<tr><td>受理类型:<span style="color:orange;">订单查询</span>
-					<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>" disabled="disabled">
-					</td>
+					<tr>
+						<td>受理类型:<span style="color:orange;">订单查询</span>
+								<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>">
+						</td>
 					<td>工单号:<input type="text" value="<%=a.getAcceptNo()%>" disabled="disabled"/>
 						<input type="hidden" value="<%=a.getAcceptNo()%>" id="transn" name="acceptNo"/>
 					</td>
@@ -47,7 +48,8 @@ CsComplaintAccept a= (CsComplaintAccept)request.getAttribute("cca");
 					</tr>
 					<tr>
 						<td>
-							查询内容:<textarea style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"></textarea>
+							查询内容:<textarea onkeyup="checkLen(this)" style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"></textarea>
+							<div>您最多可以输入<span id="count">150</span>个文字</div> 
 						</td>
 				</tr>
 													

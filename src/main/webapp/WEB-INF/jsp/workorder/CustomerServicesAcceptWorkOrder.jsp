@@ -62,6 +62,9 @@ function gettrValue(cwbId){
 			$.each(data,function(ind,ele){
 				var dataTrStr1 = "";
 				if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
+					var contentTemp = ele.content;								
+					contentTemp = contentTemp.substring(0,10);
+					
 					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
 							"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
 							"<td>"+ele.orderNo+"</td>" +
@@ -69,9 +72,12 @@ function gettrValue(cwbId){
 							"<td>"+ele.provence+"</td>" +
 							"<td>"+ele.acceptTime+"</td>" +
 							"<td>"+ele.showcomplaintTypeName+"</td>" +
-							"<td>"+ele.content+"</td>" +
+							"<td>"+contentTemp+"</td>" +
 							"<td>"+ele.showComplaintStateName+"</td></tr>";
 					}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
+						
+						var contentTemp = ele.queryContent;								
+						contentTemp = contentTemp.substring(0,10);
 						dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
 						"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
 						"<td>"+ele.orderNo+"</td>" +
@@ -79,7 +85,7 @@ function gettrValue(cwbId){
 						"<td>"+ele.provence+"</td>" +
 						"<td>"+ele.acceptTime+"</td>" +
 						"<td>"+ele.showcomplaintTypeName+"</td>" +
-						"<td>"+ele.queryContent+"</td>" +
+						"<td>"+contentTemp+"</td>" +
 						"<td>"+ele.showComplaintStateName+"</td></tr>";
 					}	
 				thStr1 += dataTrStr1;
@@ -417,6 +423,9 @@ function submitselect2(){    //通过手机号查询工单
 							var dataTrStr1 = "";
 							if (ele.complaintType == $(
 									'#ComplaintTypeEnumTouSu').val()) {
+								var contentTemp = ele.content;								
+								contentTemp = contentTemp.substring(0,10);
+								
 								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
 										+ ele.acceptNo + "\",\""
 										+ ele.complaintState + "\",\""
@@ -427,11 +436,13 @@ function submitselect2(){    //通过手机号查询工单
 										+ ele.provence + "</td>" + "<td>"
 										+ ele.acceptTime + "</td>" + "<td>"
 										+ ele.showcomplaintTypeName + "</td>"
-										+ "<td>" + ele.content + "</td>"
+										+ "<td>" + contentTemp + "</td>"
 										+ "<td>" + ele.showComplaintStateName
 										+ "</td></tr>";
 							} else if (ele.complaintType == $(
 									'#ComplaintTypeEnumChaXun').val()) {
+								var contentTemp = ele.queryContent;								
+									contentTemp = contentTemp.substring(0,10);
 								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
 										+ ele.acceptNo + "\",\""
 										+ ele.complaintState + "\",\""
@@ -442,7 +453,7 @@ function submitselect2(){    //通过手机号查询工单
 										+ ele.provence + "</td>" + "<td>"
 										+ ele.acceptTime + "</td>" + "<td>"
 										+ ele.showcomplaintTypeName + "</td>"
-										+ "<td>" + ele.queryContent + "</td>"
+										+ "<td>" + contentTemp + "</td>"
 										+ "<td>" + ele.showComplaintStateName
 										+ "</td></tr>";
 							}
@@ -492,29 +503,29 @@ function submitselect2(){    //通过手机号查询工单
 		<table width="100%">
 				<form id="cciForm" action="<%=request.getContextPath()%>/workorder/addCsConsigneeInfo">
 				<tr>
-					<td>来电号码:<input type="text" name="phoneonOne" 
+					<td><font color="red">*</font>来电号码:<input type="text" name="phoneonOne" 
 					id="phoneonOne" 
 					onkeypress="if (event.keyCode == 13){verifyphoneonOne();}"  
 					class="input_text1" />
 					</td>
-					<td>客户分类:
+					<td><font color="red">*</font>客户分类:
 					<select name="consigneeType" id="consigneeType" class="select1">
 						<option value="-1">选择客户分类</option>
 						<option value="1" id="op0">普通客户</option>
 						<option value="2" id="op1">VIP客户</option>						
 					</select>
 					</td>				
-					<td>性别:
+					<td><font color="red">*</font>性别:
 					男<input type="radio" name="sex" value="1" id="sex1">
 					女<input type="radio" name="sex" value="0" id="sex">
 					</td>
-					<td>归属省份:<input type="text" name="province" class="input_text1" id="province"></td>
-					<td>归属城市:<input type="text" name="city" id="city" class="input_text1"></td>
+					<td><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province"></td>
+					<td><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1"></td>
 				</tr>
 				<tr>									
-					<td>来电姓名:<input type="text" name="name" class="input_text1" id="dname"></td>
-					<td>最后联系时间:<input type="text" name="contactLastTime" id="contactLastTime" class="input_text1"></td>
-					<td>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum"></td>
+					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname"></td>
+					<td><font color="red">*</font>最后联系时间:<input type="text" name="contactLastTime" id="contactLastTime" class="input_text1"></td>
+					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum"></td>
 					
 					</td>
 				</tr>	

@@ -36,7 +36,7 @@ CsComplaintAccept a= request.getAttribute("lcs")==null?null:(CsComplaintAccept)r
 					</td>
 						<%}} %>
 					<td>当前机构:<input type="text" value="<%=a.getCurrentBranch() %>" id="no" name="currentBranch" disabled="disabled"/></td></tr>
-					<tr><td>查询内容:<textarea style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"><%=a.getQueryContent()%></textarea></td></tr>
+					<tr><td>查询内容:<textarea  onkeyup="checkLen(this)" style="width: 100%;height: 150px;margin-left: 50px" name="queryContent"><%=a.getQueryContent()%></textarea></td></tr>
 													
 				</table>
 				<input type="hidden"  name="complaintState" id="cls" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>">

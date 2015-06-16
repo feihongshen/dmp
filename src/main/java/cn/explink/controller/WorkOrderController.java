@@ -504,6 +504,7 @@ public class WorkOrderController {
 			ca.setComplaintType(c.getComplaintType());
 			ca.setComplaintState(c.getComplaintState());
 			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			System.out.println(c.getComplaintType());
 			ca.setContent(c.getContent());
 			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
 			ca.setComplaintUser(c.getComplaintUser());

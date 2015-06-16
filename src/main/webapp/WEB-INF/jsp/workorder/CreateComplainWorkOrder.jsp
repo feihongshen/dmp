@@ -91,10 +91,11 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea style="width: 80%;height: 150px;margin-left: 20px" name="content"></textarea>
-					
-				</tr>
+					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content"></textarea>
+					<div>您最多可以输入<font id="count" color="red">150</font>个文字</div> 
 					</td>
+				</tr>
+					
 					
 				</table>
 							<input type="hidden"  name="complaintState" id="cwo"/>

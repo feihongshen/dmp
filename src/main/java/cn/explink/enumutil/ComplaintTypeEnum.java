@@ -27,6 +27,6 @@ public enum ComplaintTypeEnum {
 				return complaintEnum;
 			}
 		}
-		throw new ExplinkException(ExceptionCwbErrorTypeEnum.PEi_SONG_LEI_XING_WEI_ZHAO_DAO, value);
+		throw new ExplinkException(ExceptionCwbErrorTypeEnum.GongDanLeiXingWeiZhaoDao, value);
 	}
 }

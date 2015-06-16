@@ -83,8 +83,10 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
 						<%} }%>
+						<%if(cca.getDownloadheshipath()!=null){ %>
 						
 						<span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
+						<%} %>
 					</li>
 					<li>
 					<span>结案处理结果:</span>
@@ -107,7 +109,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<label>申诉内容*:</label>					
-						<textarea style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark" id="shensuremark"></textarea>																	
+						<textarea  onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark" id="shensuremark"></textarea>																	
+						<div>您最多可以输入<span id="count">150</span>个文字</div>
 					</li>
 					
 				<input type="hidden" value="<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>" name="complaintState" id="complaintState">

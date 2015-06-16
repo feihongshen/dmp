@@ -129,7 +129,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 <hr>			</ul>
 				<div>					
 					<span>结案重审备注:</span>				
-					<textarea style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark" id="jieanchongshenremark"></textarea>
+					<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="jieanchongshenremark" id="jieanchongshenremark"></textarea>
+					<div>您最多可以输入<span id="count">150</span>个文字</div>
 					<input type="hidden" name="complaintState" id="complaintState" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
 					<input type="hidden" value="<%=cca.getId()%>" name="id" id="id"/>
 																								
