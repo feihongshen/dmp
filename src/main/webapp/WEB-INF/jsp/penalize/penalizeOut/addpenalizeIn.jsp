@@ -10,7 +10,7 @@
             <legend>
                 	生成对内扣罚单
             </legend>
-            <form onSubmit="submitCreateForm(this);return false;" action="${pageContext.request.contextPath}/penalizeOut/addpenalizeInData"  method="post">
+            <form onSubmit="if(checke_fee()){submitCreateForm(this);}return false;" action="${pageContext.request.contextPath}/penalizeOut/addpenalizeInData"  method="post">
             <table style="width: 100%;">
             <tr>
             <td align="right" nowrap="nowrap">订单号：</td>
@@ -49,7 +49,7 @@
            	</tr>
           	<tr>
            	<td align="right" nowrap="nowrap">扣罚金额<span style="color: red">*</span>：</td>
-            <td ><input  type="text" name="punishInsideprice" style="width: 100%;" onkeyup="if(this.value<'0'){ this.value=''}" /></td>
+            <td ><input  type="text" id="fee" name="punishInsideprice" style="width: 100%;" onkeyup="if(this.value<'0'){ this.value=''}" /></td>
           	</tr>
             <tr>
             <td align="right" nowrap="nowrap">扣罚说明：</td>

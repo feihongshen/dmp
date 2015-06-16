@@ -10,7 +10,7 @@
             <legend>
                 	对外赔付单创建
             </legend>
-            <form onSubmit="submitCreateForm(this);return false;" action="${pageContext.request.contextPath}/penalizeOut/addpenalizeOutData" method="post">
+            <form onSubmit="if(checke_fee()){submitCreateForm(this);}return false;" action="${pageContext.request.contextPath}/penalizeOut/addpenalizeOutData" method="post">
             <table style="width: 100%;">
             <tr>
             <td align="right" nowrap="nowrap" >订单号<span style="color: red">*</span>：</td>
@@ -50,7 +50,7 @@
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付金额<span style="color: red">*</span>：</td>
-            <td colspan="5"><input id="penalizeOutfee" onkeyup="if(this.value<'0'){ this.value=''}" name="penalizeOutfee" type="text" style="width: 24.5%;"/></td>
+            <td colspan="5"><input id="fee" onkeyup="if(this.value<'0'){ this.value=''}" name="penalizeOutfee" type="text" style="width: 24.5%;"/></td>
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付说明<span style="color: red">*</span>：</td>
