@@ -82,7 +82,7 @@ $(function(){
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#shenlibegintime").datetimepicker({
+	$("#wenticjbegintime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
 	    hourGrid: 4,
@@ -90,7 +90,7 @@ $(function(){
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#shouliendtime").datetimepicker({
+	$("#wenticjendtime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
 	    hourGrid: 4,
