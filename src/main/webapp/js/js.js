@@ -5981,6 +5981,14 @@ function getReasonValue(){
 }
 
 
+function checke_fee(){
 
+	if(!isFloat($("#fee").val()))
+	{
+		alert("金额输入有误！");
+		$("#fee").val('');
+		return false;
+	}
+}
 
 
