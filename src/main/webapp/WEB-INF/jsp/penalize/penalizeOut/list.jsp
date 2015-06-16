@@ -234,7 +234,7 @@ function showUp()
 </tr>
 <tr>
 <td><input type="button" class="input_button2" id="addpenalizeOut" value="创建"/> </td>
-<td><input type="button" class="input_button2" value="导入" id="imp" onclick="showUp()"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
+<td><input type="button" ${importFlag>0?'disabled="disabled"':''}  class="input_button2" value="导入" id="imp"  onclick="showUp()"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
 <td><input type="button" class="input_button2" disabled="disabled" id="cancelpenalizeOut" value="撤销"/></td>
 <td> </td>
 <td> </td>
