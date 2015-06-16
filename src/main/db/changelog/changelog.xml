@@ -6693,6 +6693,28 @@ CREATE TABLE `cs_complaint_accept` (
    			 INSERT INTO `express_set_system_install` (`name`,`value`,`chinesename`) VALUES ('shensuendTime', '10', '可申诉时间是否过期');
    </sql>
     </changeSet>
+    
+    <changeSet id="wangzhiyong-2015-06-16-1" author="wangzhiyong">
+    	<sql>
+    		DROP TABLE IF EXISTS `cs_consignee_info`;
+			CREATE TABLE `cs_consignee_info` (
+				  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+				  `name` varchar(64) DEFAULT NULL,
+				  `sex` int(2) DEFAULT NULL,
+				  `phone_one` varchar(20) DEFAULT NULL,
+				  `phone_two` varchar(20) DEFAULT NULL,
+				  `mail_box` varchar(64) DEFAULT NULL,
+				  `province` varchar(64) DEFAULT NULL,
+				  `city` varchar(64) DEFAULT NULL,
+				  `consignee_type` int(8) DEFAULT '-1',
+				  `contact_last_time` varchar(50) DEFAULT '',
+				  `contact_num` int(8) DEFAULT NULL,
+				  `callerremark` varchar(500) DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `phone_one_idx` (`phone_one`)
+			) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
+    	</sql>
+    </changeSet>
 
 </databaseChangeLog>
  

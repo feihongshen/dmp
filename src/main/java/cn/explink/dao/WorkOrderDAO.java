@@ -38,6 +38,7 @@ public class WorkOrderDAO {
 			cci.setName(rs.getString("name"));
 			cci.setContactLastTime((String)rs.getString("contact_last_time"));
 			cci.setContactNum(rs.getInt("contact_num"));
+			cci.setCallerremark(rs.getString("callerremark"));
 			
 			return cci;
 		}
@@ -90,8 +91,8 @@ public class WorkOrderDAO {
 		if(cci.getMailBox()!=null&&cci.getMailBox().length()>0){
 			sb.append(" mail_box='"+cci.getMailBox()+"',");
 		}
-		if(cci.getRemark()!=null&&cci.getRemark().length()>0){
-			sb.append(" remark='"+cci.getRemark()+"',");
+		if(cci.getCallerremark()!=null&&cci.getCallerremark().length()>0){
+			sb.append(" callerremark='"+cci.getCallerremark()+"',");
 		}
 		if(cci.getName()!=null&&cci.getName().length()>0){
 			sb.append(" name='"+cci.getName()+"'");

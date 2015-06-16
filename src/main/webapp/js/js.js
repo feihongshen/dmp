@@ -5503,10 +5503,8 @@ $.ajax({
 }
  
  function addcaller(){
-	 if($('#skhfl').val()==-1){
-		 alert('请选择客户分类');
-		 return false;
-	 }
+	 
+	 if(Callerifnull())		
 	 $.ajax({
 			type : "POST",
 			data:$('#addcallerForm').serialize(),
@@ -5526,10 +5524,7 @@ $.ajax({
  }
  
  function editcaller(){
-	 if($('#skhfl1').val()==-1){
-		 alert('请选择客户分类');
-		 return false;
-	 }
+	 if(Callerifnull())
 	 $.ajax({
 			type : "POST",
 			data:$('#editcallerForm').serialize(),
@@ -5655,8 +5650,8 @@ $.ajax({
 	}
 });
 }
- 
- function addcaller(){
+
+ /*function addcaller(){
 	 if($('#skhfl').val()==-1){
 		 alert('请选择客户分类');
 		 return false;
@@ -5700,7 +5695,7 @@ $.ajax({
 				
 			});
 	 
- }
+ }*/
  
 function AlreadyVerify(AVV){
 	$('#AlreadyVerifycomplaintState').val(AVV);
@@ -6054,5 +6049,94 @@ function smsSend(){
 			}
 		}
 	})
+}
+
+function Callerifnull(){
+if($('#caname').val()==''){
+		alert('请输入姓名');
+		return false
+	}
+if($('#cp').val()==''){
+	alert('请输入电话');
+	return false
+}
+if($('#ccity').val()==''){
+	alert('请输入城市');
+	return false
+}
+if($('#cprovince').val()==''){
+	alert('请输入省份');
+	return false
+}
+if($('#skhfl').val()==-1){
+	alert('请选择客户分类');
+	return false
+}if($('#cprovince').val()==''){
+	alert('请输入省份');
+	return false
+}
+if($('#callerremark').val()==''){
+	alert('请输入备注');
+	return false
+}
+	
+	
+	return true;
+	 
+}
+
+
+/*function ifphoneNum(phonevalue){
+	if(isMobileNumber(phonevalue)){		
+		return true;
+	}else{
+		alert('请输入正确的手机号');
+		$('#cp').val('');
+		return false;
+	}
+}*/
+function ifphoneNum(str) {
+	var reg = new RegExp("/^1\d{10}$/"); //电话号码验证是否为空和是否为数字
+	if (!reg.test(str)) {
+		alert("请输入正确格式的手机号码!");
+		$('#cp').val("");
+		return false;
+	}
+}
+
+
+
+function isEmailValue(str){
+   var re = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/
+   if(!re.test(str)){
+	   alert('请输入正确的邮箱');
+		$('#mailBoxid').val("");
+		return false;
+   }
+}
+
+function isChineseValue(str){
+	   var re = /^[^[\u4e00-\u9fa5]*]*$/
+	   if(!re.test(str)){
+		   alert('请输入正确的省份');
+			$('#mailBoxid').val("");
+			return false;
+	   }
+	}
+function isChineseValue1(str){
+	   var re = /^[^[\u4e00-\u9fa5]*]*$/
+	   if(!re.test(str)){
+		   alert('请输入正确的城市');
+			$('#mailBoxid').val("");	
+			return false;
+	   }
+	}
+
+function isnum(str){
+	if(!isNumber(str)){
+		alert('请输入正确的数字');
+		$('#contactNum').val("");	
+		return false;
+	}
 }
 

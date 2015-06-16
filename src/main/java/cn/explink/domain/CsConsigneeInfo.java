@@ -31,7 +31,7 @@ public class CsConsigneeInfo {
 		private int consigneeType;
 		private String contactLastTime;
 		private int contactNum;
-		private String remark;
+		private String callerremark;
 		public int getId() {
 			return id;
 		}
@@ -77,6 +77,12 @@ public class CsConsigneeInfo {
 		public String getCity() {
 			return city;
 		}
+		public String getCallerremark() {
+			return callerremark;
+		}
+		public void setCallerremark(String callerremark) {
+			this.callerremark = callerremark;
+		}
 		public void setCity(String city) {
 			this.city = city;
 		}
@@ -98,13 +104,7 @@ public class CsConsigneeInfo {
 		public void setContactNum(int contactNum) {
 			this.contactNum = contactNum;
 		}
-		public String getRemark() {
-			return remark;
-		}
-		public void setRemark(String remark) {
-			this.remark = remark;
-		}
-		
+	
 		
 		
 
