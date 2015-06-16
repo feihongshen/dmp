@@ -768,7 +768,7 @@ public abstract class ExcelExtractor {
 			return null;
 		}
 		out.setCustomerid(co.getCustomerid());
-		out.setFlowordertype(co.getCustomerid());
+		out.setFlowordertype(co.getFlowordertype());
 		out.setReceivablefee(co.getReceivablefee());
 		out.setPenalizeOutfee(penalizeOutfee);
 		out.setCreateruser(user.getUserid());
