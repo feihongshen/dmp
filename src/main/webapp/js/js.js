@@ -5989,6 +5989,7 @@ function checke_fee(){
 		$("#fee").val('');
 		return false;
 	}
+	return true;
 }
 
 
