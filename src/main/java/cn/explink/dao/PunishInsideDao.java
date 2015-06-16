@@ -6,38 +6,63 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.PenalizeInsideShenhe;
+import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 
 @Component
 public class PunishInsideDao {
+	
+	@Autowired
+	PunishInsideService punishInsideService;
 	private final class PenalizeInsideRowMapper implements RowMapper<PenalizeInside>{
 		@Override
 		public PenalizeInside mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
 			PenalizeInside penalizeInside=new PenalizeInside();
 			penalizeInside.setCreateBySource(rs.getLong("createBySource"));
+			penalizeInside.setCreateBysourcename(punishInsideService.getCreateSource(rs.getLong("createBySource")));
 			penalizeInside.setCreateuserid(rs.getLong("createuserid"));
+			penalizeInside.setCreUserName(punishInsideService.getCreUser(rs.getLong("createuserid")));
 			penalizeInside.setCreDate(rs.getString("creDate"));
 			penalizeInside.setCwb(rs.getString("cwb"));
 			penalizeInside.setCwbPrice(rs.getBigDecimal("cwbPrice"));
 			penalizeInside.setCwbstate(rs.getLong("cwbstate"));
+			penalizeInside.setCwbstatename(punishInsideService.getFlowOrdertype(rs.getLong("cwbstate")));
 			penalizeInside.setDutybranchid(rs.getLong("dutybranchid"));
+			penalizeInside.setDutybranchname(punishInsideService.getBranchName(rs.getLong("dutybranchid")));
 			penalizeInside.setDutypersonid(rs.getLong("dutypersonid"));
+			penalizeInside.setDutypersonname(punishInsideService.getCreUser(rs.getLong("dutypersonid")));
 			penalizeInside.setFileposition(rs.getString("fileposition"));
 			penalizeInside.setId(rs.getLong("id"));
 			penalizeInside.setPunishbigsort(rs.getLong("punishbigsort"));
 			penalizeInside.setPunishcwbstate(rs.getInt("punishcwbstate"));
+			penalizeInside.setPunishcwbstatename(punishInsideService.getPunishState(rs.getInt("punishcwbstate")));
 			penalizeInside.setPunishdescribe(rs.getString("punishdescribe"));
 			penalizeInside.setPunishInsideprice(rs.getBigDecimal("punishInsideprice"));
 			penalizeInside.setPunishNo(rs.getString("punishNo"));
 			penalizeInside.setPunishsmallsort(rs.getLong("punishsmallsort"));
-			penalizeInside.setSourceNo(rs.getString("sourceNo"));;
+			penalizeInside.setSourceNo(rs.getString("sourceNo"));
+			penalizeInside.setShensutype(rs.getLong("shensutype"));
+			penalizeInside.setShensudescribe(rs.getString("shensudescribe"));
+			penalizeInside.setShensufileposition(rs.getString("shensufileposition"));
+			penalizeInside.setShensuuserid(rs.getLong("shensuuserid"));
+			penalizeInside.setShenhedescribe(rs.getString("shenhedescribe"));
+			penalizeInside.setShenhefileposition(rs.getString("shenhefileposition"));
+			penalizeInside.setShenhepunishprice(rs.getBigDecimal("shenhepunishprice"));
+			penalizeInside.setShenhetype(rs.getLong("shenhetype"));
+			penalizeInside.setShenheuserid(rs.getLong("shenheuserid"));
+			penalizeInside.setShensudate(rs.getString("shensudate"));
+			penalizeInside.setShenhedate(rs.getString("shenhedate"));
+			penalizeInside.setPunishbigsortname(punishInsideService.getSortname(Integer.parseInt(rs.getLong("punishbigsort")+"")));
+			penalizeInside.setPunishsmallsortname(punishInsideService.getSortname(Integer.parseInt(rs.getLong("punishsmallsort")+"")));
 			return penalizeInside;
 		}
 
@@ -79,7 +104,7 @@ public class PunishInsideDao {
 	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
 		String sql="select * from express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
-			sql+=" And cwb IN('"+cwb+"')";
+			sql+=" And cwb IN("+cwb+")";
 		}
 		if (cwbpunishtype>0) {
 			sql+="  And punishcwbstate="+cwbpunishtype;
@@ -103,13 +128,46 @@ public class PunishInsideDao {
 			sql+=" And creDate>='"+begindate+"'";
 		}
 		if (!enddate.equals("")) {
-			sql+=" And creDate>='"+enddate+"'";
+			sql+=" And creDate<='"+enddate+"'";
 		}
 		if (page!=-9) {
 			sql += " ORDER BY creDate DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
 		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
 
+	}
+	//根据查询条件查询对内扣罚的扣罚单总单数
+	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+		String sql="select count(1) from express_ops_punishInside_detail where 1=1";
+		if (cwb.length()>0) {
+			sql+=" And cwb IN("+cwb+")";
+		}
+		if (cwbpunishtype>0) {
+			sql+="  And punishcwbstate="+cwbpunishtype;
+		}
+		if (dutybranchid>0) {
+			sql+=" And dutybranchid="+dutybranchid;
+		}
+		if (dutynameid>0) {
+			sql+=" And dutypersonid="+dutynameid;
+		}
+		if (cwbstate>0) {
+			sql+=" And cwbstate="+cwbstate;
+		}
+		if (punishbigsort>0) {
+			sql+=" And punishbigsort="+punishbigsort;
+		}
+		if (punishsmallsort>0) {
+			sql+=" And punishsmallsort="+punishsmallsort;
+		}
+		if (!begindate.equals("")) {
+			sql+=" And creDate>='"+begindate+"'";
+		}
+		if (!enddate.equals("")) {
+			sql+=" And creDate<='"+enddate+"'";
+		}
+		return this.jdbcTemplate.queryForInt(sql);
+		
 	}
 	public List<PenalizeInside> getPenalizeInsideIsNull(String cwb,long dutybranchid,long punishsmallsort){
 		String sql="select * from express_ops_punishInside_detail where 1=1";
@@ -126,5 +184,94 @@ public class PunishInsideDao {
 		}
 		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
 
+	}
+	public PenalizeInside getInsidebycwb(String cwb){
+		try {
+			String sql="select * from express_ops_punishInside_detail where cwb=?";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), cwb);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	}
+	public PenalizeInside getInsidebyid(long id){
+		try {
+			String sql="select * from express_ops_punishInside_detail where id=?";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), id);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	}
+	
+	public void updateShensuPunishInside(final long id,final long shensutype,final String describe,final String fileposition,final long userid,final long punishcwbstate){
+		this.jdbcTemplate.update("update express_ops_punishInside_detail set shensutype=?,shensudescribe=?,shensufileposition=?,shensuuserid=?,punishcwbstate=?,shensudate=? where id=?", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+					ps.setLong(1, shensutype);
+					ps.setString(2, describe);
+					ps.setString(3, fileposition);
+					ps.setLong(4, userid);
+					ps.setLong(5, punishcwbstate);
+					ps.setString(6, punishInsideService.getNowtime());
+					ps.setLong(7, id);
+			}
+		});
+	}
+	public void updatePunishShenhe(final PenalizeInsideShenhe penalizeInsideShenhe){
+		this.jdbcTemplate.update("update express_ops_punishInside_detail set shenhepunishprice=?,shenhetype=?,shenhedescribe=?,shenhefileposition=?,shenheuserid=?,punishcwbstate=?,shenhedate=? where id=?", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+					ps.setBigDecimal(1, penalizeInsideShenhe.getShenhepunishprice());
+					ps.setLong(2, penalizeInsideShenhe.getShenheresult());
+					ps.setString(3, penalizeInsideShenhe.getShenhedescribe());
+					ps.setString(4, penalizeInsideShenhe.getShenheposition());
+					ps.setLong(5, penalizeInsideShenhe.getShenheuserid());
+					ps.setLong(6, penalizeInsideShenhe.getPunishcwbstate());
+					ps.setString(7, punishInsideService.getNowtime());
+					ps.setLong(8, penalizeInsideShenhe.getId());
+			}
+		});
+	}
+	public String calculateSumPrice(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+		String sql="SELECT SUM(punishInsideprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
+		if (cwb.length()>0) {
+			sql+=" And cwb IN("+cwb+")";
+		}
+		if (cwbpunishtype>0) {
+			sql+="  And punishcwbstate="+cwbpunishtype;
+		}
+		if (dutybranchid>0) {
+			sql+=" And dutybranchid="+dutybranchid;
+		}
+		if (dutynameid>0) {
+			sql+=" And dutypersonid="+dutynameid;
+		}
+		if (cwbstate>0) {
+			sql+=" And cwbstate="+cwbstate;
+		}
+		if (punishbigsort>0) {
+			sql+=" And punishbigsort="+punishbigsort;
+		}
+		if (punishsmallsort>0) {
+			sql+=" And punishsmallsort="+punishsmallsort;
+		}
+		if (!begindate.equals("")) {
+			sql+=" And creDate>='"+begindate+"'";
+		}
+		if (!enddate.equals("")) {
+			sql+=" And creDate<='"+enddate+"'";
+		}
+		String sumprice=this.jdbcTemplate.queryForObject(sql, String.class);
+		return sumprice;
+	}
+	public PenalizeInside getInsidebyidwithstate(long id,long state1,long state2){
+		try {
+			String sql="select * from express_ops_punishInside_detail where id=? And punishcwbstate IN(?,?)";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), id,state1,state2);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
 	}
 }

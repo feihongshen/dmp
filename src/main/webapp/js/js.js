@@ -61,6 +61,26 @@ function centerBox() {
 	$(".box_contant2").css("top", ($see_height / 2) - ($tcbox_height / 2));
 	$(".box_contant2").css("left", ($see_width / 2) - ($tcbox_width / 2));
 }
+// 窗口改变刷新
+function centerBox1() {
+	var $see_height = document.documentElement.clientHeight;
+	var $see_width = document.documentElement.clientWidth;
+	// 底部信息位置
+	$("#box_bg1,.boxbg").css("height", $see_height);
+	if ($("#box_form").height() > 500) {
+		$("#box_form").css("height", "500px");
+		$("#box_form").css("overflow", "auto");
+	}
+	$tcbox_height = $("#box_contant1,.box_contant").height();
+	$tcbox_width = $("#box_contant1,.box_contant").width();
+	$("#box_contant1,.box_contant").css("top", ($see_height / 2) - ($tcbox_height / 2));
+	$("#box_contant1,.box_contant").css("left", ($see_width / 2) - ($tcbox_width / 2));
+	
+	$tcbox_height = $(".box_contant2").height();
+	$tcbox_width = $(".box_contant2").width();
+	$(".box_contant2").css("top", ($see_height / 2) - ($tcbox_height / 2));
+	$(".box_contant2").css("left", ($see_width / 2) - ($tcbox_width / 2));
+}
 // 根据滚动条滚动时间刷新漂浮框的xy轴
 function reIframeTopAndBottomXY() {
 	var st = document.documentElement.scrollTop;
@@ -5190,17 +5210,17 @@ function getSecondReasonByFirstreasonid(URL,targetid,firstreasonid) {
 
 
 
-function selectbranchUsers(){
+function selectbranchUsers(targetid,oldid){
 	$.ajax({
 		url:$("#getbranchusers").val(),
 		type:"POST",
-		data:"dutybranchid="+$("#dutybranchid").val(),
+		data:"dutybranchid="+$("#"+oldid).val(),
 	dataType:'json',
 	success:function (json){
-		$("#dutyname").empty();
-		$("<option value ='0'>==请选择机构责任人==</option>").appendTo("#dutyname");// 添加下拉框的option
+		$("#"+targetid).empty();
+		$("<option value ='0'>==请选择机构责任人==</option>").appendTo("#"+targetid);// 添加下拉框的option
 		for (var j = 0; j < json.length; j++) {
-			$("<option value=' "+ json[j].userid +" '>"+json[j].realname+"</option>").appendTo("#dutyname");
+			$("<option value=' "+ json[j].userid +" '>"+json[j].realname+"</option>").appendTo("#"+targetid);
 		}
 	}
 	});
@@ -5326,6 +5346,10 @@ function submitReviseAbnormalCreate(){
 }
 //判断申诉页面的弹出框的相关的条件
 function check_punishshensucondition(){
+	if($("#shensutype").val()==0){
+		alert("请输入申诉类型！");
+		return false;
+	}
 	if($("#describe").val()==""){
 		alert("请输入申诉说明！");
 		return false;
@@ -5384,11 +5408,11 @@ function check_createbycwb(){
 	}else if($("#punishbigsort").val()==0){
 		alert("请选择扣罚大类！！");
 		return false;
-	}else if($("#punishsmallsort").val()==0){
-		alert("请选择扣罚小类！！");
+	}else if($("#dutybranchid").val()==0){
+		alert("请输入责任机构！！");
 		return false;
-	}else if($("#punishdescribe").val()==""){
-		alert("请输入扣罚说明！！");
+	}else if($("#punishprice").val()==""){
+		alert("请输入扣罚金额！！");
 		return false;
 	}
 	return true;
@@ -5416,6 +5440,7 @@ function submitPunishInsideByCwb(){
 	$('#swfupload-control').swfupload('addPostParam', 'punishprice', $("#punishprice", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'punishdescribe', $("#punishdescribe", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'punishinsidetype', $("#punishinsidetype", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'flowordertype', $("#flowordertype", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
 /*function btnswd(ev){
@@ -5719,7 +5744,7 @@ function AlreadyVerify(AVV){
 
 function AlreadyVerifyJieAn(AVV){
 	if($('#acceptresult').val()!=""&&$('#acceptresult').val()==$('#acceptresultVl').val()){
-		$('#AlreadyVerifycomplaintState').val($('#acceptresultV').val())
+		$('#AlreadyVerifycomplaintState').val($('#acceptresultV').val());
 	}else{
 	$('#AlreadyVerifycomplaintState').val(AVV);
 	}
@@ -5741,13 +5766,139 @@ function AlreadyVerifyJieAn(AVV){
 	$('#AlreadyVerifycomplaintState').val("");
 }
 	
+
+function revisefindWithByCreateGongdan(form){
+	$.ajax({
+		type : "POST",
+		url:$(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+}
+var selectedTr=null;
+function clickonenum(obj){
+	 obj.style.backgroundColor = 'gray'; //把点到的那一行变希望的颜色;   
+     if (selectedTr != null)  
+         $(selectedTr).attr("style", "BACKGROUND-COLOR: white");  
+     if (selectedTr == obj)  
+         selectedTr = null;//加上此句，以控制点击变白，再点击反灰   
+     else  
+         selectedTr = obj;  
+}
+
 function heshiremarkV(){
 	if($('#remark').val()==""){
-		alert('please input content')
+		alert('please input content');
 		return false;
 	}	
 	return true;
 }
+
+
+/*得到选中行相关的值*/  
+function checkCreateGongdan() {  
+    if (selectedTr != null) {  
+       // var str = selectedTr.cells[0].childNodes[0].value;  
+    	var str=$(selectedTr).find("td:first").text();
+    	$("#availablecwb").val(str);
+        alert(str);
+    } else {  
+        alert("请选择一条要创建的问题件的记录！！");  
+    }  
+}  
+//验证通过工单创建对内扣罚单的参数
+function check_createbygongdan(){
+	 if (selectedTr != null) {  
+	    	var str=$(selectedTr).find("td:first").text();
+	    	var str1=$(selectedTr).children('td').eq(1).text();
+	    	$("#availablecwb2").val(str);
+			$("#cwbhhh2").val(str1);
+	       /* alert(str);*/
+	    } else {  
+	        alert("请选择一条要创建的工单的记录！！"); 
+	        return false;
+	    }  
+	if($("#availablecwb2").val()==""){
+		alert("请选择需要创建的工单！！");
+		return false;
+	}
+	if($("#punishbigsort2").val()==0){
+		alert("请选择扣罚大类！！");
+		return false;
+	}
+	
+	if($("#dutybranchid2").val()==0){
+		alert("请选择责任机构！！");
+		return false;
+	}
+	if($("#punishprice2").val()==""){
+		alert("请输入扣罚金额！！");
+		return false;
+	}
+	return true;
+}
+//验证通过问题件创建对内扣罚单的参数
+function check_createbywentijian(){
+	if (selectedTr != null) {  
+		// var str = selectedTr.cells[0].childNodes[0].value;  
+		var str=$(selectedTr).find("td:first").text();
+		var str1=$(selectedTr).children('td').eq(1).text();
+		$("#availablecwb3").val(str);
+		$("#cwbhhh3").val(str1);
+		/*alert(str);*/
+	} else {  
+		alert("请选择一条要创建的问题件的记录！！"); 
+		return false;
+	}  
+	if($("#availablecwb3").val()==""){
+		alert("请选择需要创建的问题件！！");
+		return false;
+	}
+	if($("#punishbigsort3").val()==0){
+		alert("请选择扣罚大类！！");
+		return false;
+	}
+
+	if($("#dutybranchid3").val()==0){
+		alert("请选择责任机构！！");
+		return false;
+	}
+	if($("#punishprice3").val()==""){
+		alert("请输入扣罚金额！！");
+		return false;
+	}
+	return true;
+}
+/*//根据工单创建对内扣罚单
+function submitPunishCreateBygongdan(form){
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "inpunish/submitPunishCreateBygongdanLoad");
+		submitCreateForm(form);
+		return;
+	}
+	$("#update")[0].contentWindow.submitPunishCreateBygongdanLoad();
+}
+//根据工单创建对内扣罚单（带文件的）
+function submitPunishCreateBygongdanLoad() {
+	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort', $("#punishbigsort", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort', $("#punishsmallsort", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid', $("#dutybranchid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutypersoname', $("#dutypersoname", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishprice', $("#punishprice", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'type', $("#type", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'availablecwb', $("#availablecwb", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
+}*/
+
+
+
 
 function submitHeShi(form){
 	if ($("#update").contents().find("#wavText").val() == "") {
@@ -5929,6 +6080,41 @@ function acceptqueryWoJieAn(){
 		
 	});
 }
+function createbycwbinit(cwb)
+{
+	var dmpurl=$("#absolutepath").val();
+	$.ajax({
+		type:"post",
+		url:dmpurl+"/penalizeOut/initaddpenalizeOut",
+		dataType:"json",
+		data:{"cwb":cwb},
+		success:function(data){
+		$("#flowordertype").val(data.flowordertyleText);
+		$("#cwbprice").val(data.receivablefee);
+		$("#cwbstate").val(data.flowordertyleValue);
+
+
+		}});
+}
+function submitCreateFormAdd(form) {
+	$.ajax({
+		type : "POST",
+		url : $(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box",parent.document).html(data.error);
+			$(".tishi_box",parent.document).show();
+			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				$(form)[0].reset();
+				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+			}
+		}
+	});
+}
 
 function getComplaintUserValue(){
 	var jsonData = {};
@@ -5955,6 +6141,56 @@ function getComplaintUserValue(){
 	
 	
 	
+}
+
+
+
+//对内扣罚审核的判断
+function check_punishinsideshenhe(){
+	if($("#koufajine").val()==""){
+		alert("请输入扣罚金额！！");
+		return false;
+	}
+	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
+		alert("请输入对内扣罚审核说明！！");
+		return false;
+	}
+	return true;
+}
+//对内扣罚之扣罚成立
+function koufachengli(){
+	if(check_punishinsideshenhe()){
+		$("#shenheresult").val("1");
+		if ($("#update").contents().find("#wavText").val() == "") {
+			$("#form1").attr("enctype", "");
+			$("#form1").attr("action", "inpunish/submitHandleShenheResult");
+			submitCreateForm($("#form1"));
+			return;
+		}
+		$("#update")[0].contentWindow.submitShenheLoad();
+	}
+	
+}
+//对内扣罚之撤销扣罚
+function chexiaokoufa(){
+	if(check_punishinsideshenhe()){
+		$("#shenheresult").val("2");
+		if ($("#update").contents().find("#wavText").val() == "") {
+			$("#form1").attr("enctype", "");
+			$("#form1").attr("action", "inpunish/submitHandleShenheResult");
+			submitCreateForm($("#form1"));
+			return;
+		}
+		$("#update")[0].contentWindow.submitShenheLoad();
+	}
+	
+}
+function submitShenheLoad(){
+	$('#swfupload-control').swfupload('addPostParam', 'koufajine', $("#koufajine", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'shenheresult', $("#shenheresult", parent.document).val());
+	$('#swfupload-control').swfupload('startUpload');
 }
 
 function getReasonValue(){
@@ -6001,37 +6237,63 @@ function checke_fee(){
 
 function  decidecomplain(){
 	if($('#codOrgIdValue').val()=='-1'){
-		alert('请选择机构')
+		alert('请选择机构');
 		return false;
 	}
 	if($('#ComplaintUseridValue').val()==-1){
-		alert('请选择被投诉人')
+		alert('请选择被投诉人');
 		return false;
 	}
 	if($('#olreason').val()==-1){
-		alert('请输入一级分类')
+		alert('请输入一级分类');
 		return false;
 	}
 	
 	if($('#tlreason').val()==-1){
-		alert('请输入二级分类')
+		alert('请输入二级分类');
 		return false;
 	}
 	 if($('#compaltecontent').val()==""){
-		alert('请填写投诉内容')
+		alert('请填写投诉内容');
 		return false;
 	}
 	return true;
 }	
 function  decidequery(){
 	 if($('#queryContentd').val()==""){
-		alert('请填写查询内容')
+		alert('请填写查询内容');
 		return false;
 	}
 	 return true;
 }	
+
+//扣罚大类触发扣罚小类
+function findsmallAdd(contextPath,self,chufaobject)
+{
 	
-	
+$("#"+chufaobject).empty();
+$.ajax({
+	type:"post",
+	url:contextPath+"/penalizeType/findsmall",
+	data:{"id":$(self).val()},
+	dataType:"json",
+	success:function(data){
+		if(data.length>0){
+			var optstr="<option value='0'>请选择扣罚小类</option>";
+			for(var i=0;i<data.length;i++)
+			{
+				optstr+="<option value='"+data[i].id+"' id='"+data[i].parent+"'>"+data[i].text+"</option>";
+			}
+			
+			$("#"+chufaobject).append(optstr);
+		}
+	}});
+}
+//小类触发大类
+function findbigAdd(self,chufaobject)
+{ var parent=$(self).find("option:selected").attr("id");
+	$("#"+chufaobject+" option[value='"+parent+"']").attr("selected","selected");
+} 
 
 function smsSend(){
 
@@ -6048,7 +6310,7 @@ function smsSend(){
 				alert(result.error);
 			}
 		}
-	})
+	});
 }
 
 function Callerifnull(){

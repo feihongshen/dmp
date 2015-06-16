@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum PunishInsideStateEnum {
-	chuangjian(1,"对内扣罚单创建"),koufadanshensu(2,"扣罚单申诉"),koufadanshenhe(3,"扣罚单审核");
+	daiqueren(1,"待确认"),daishenhe(2,"待审核"),koufachengli(3,"扣罚成立"),koufachexiao(4,"扣罚撤销");
 	private int value;
 	private String text;
 	public int getValue() {

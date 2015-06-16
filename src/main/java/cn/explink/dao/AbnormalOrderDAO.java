@@ -461,6 +461,22 @@ public class AbnormalOrderDAO {
 		}
 		return ab;
 	}
+	/**
+	 * 根据问题件号 得到
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public AbnormalOrder getAbnormalOrderByQuestNo(String questionno) {
+		String sql = "select * from express_ops_abnormal_order where questionno=? ";
+		AbnormalOrder ab = new AbnormalOrder();
+		try {
+			ab = this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), questionno);
+		} catch (Exception e) {
+			ab = null;
+		}
+		return ab;
+	}
 
 
 	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle,
@@ -963,6 +979,33 @@ public class AbnormalOrderDAO {
 		String sql="update  express_ops_abnormal_order set isfind=? where cwb=?";
 		return this.jdbcTemplate.update(sql, isfind,cwb);
 	}
-	
+	public List<AbnormalOrder>  getAbnormalToCreateKoufaInside(String cwb,String wenticwb,long wentistate,long wentitype,String wentibegindateh,String wentienddateh){
+		try {
+			String sql = "select * from express_ops_abnormal_order where 1=1";
+			if (!cwb.equals("")) {
+				sql+=" And cwb='"+cwb+"'";
+			}
+			if (!wenticwb.equals("")) {
+				sql+=" And questionno='"+wenticwb+"'";
+			}
+			if (wentistate>0) {
+				sql+=" And ishandle="+wentistate;
+			}
+			if (wentitype>0) {
+				sql+=" And abnormaltypeid="+wentitype;
+			}
+			if (!wentibegindateh.equals("")) {
+				sql+=" And credatetime>='"+wentibegindateh+"'";
+			}
+			if (!wentienddateh.equals("")) {
+				sql+=" And credatetime<='"+wentienddateh+"'";
+			}
+			return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		
+	}
 	
 }

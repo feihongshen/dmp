@@ -380,6 +380,40 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
 	}
+public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gongdancwb,long gongdantype,long gongdanstate,long complainresultcontent,long complainedmechanism,String begindateh,String enddateh,long tousuonesort,long tousutwosort){
+	String sql="select * from cs_complaint_accept where id>0";
+	StringBuilder sb = new StringBuilder();	
+	if(ncwbs.trim()!=null&&ncwbs.trim().length()>0){
+		sb.append(" and order_no in(").append(ncwbs).append(")");
+	}
+	if (!gongdancwb.equals("")) {
+		sb.append("  accept_no='"+gongdancwb+"'");
+	}
+	if(gongdanstate>0){
+		sb.append(" and complaint_state="+gongdanstate);
+	}
+	if(gongdantype>0){
+		sb.append(" and complaint_type="+gongdantype);
+	}
+	if(tousuonesort>0){
+		sb.append(" and complaint_one_level="+tousuonesort);
+	}
+	if(complainedmechanism>0){
+		sb.append(" and cod_org_id="+complainedmechanism);
+	}if(complainresultcontent>0){
+		sb.append(" and complaint_result="+complainresultcontent);
+	}
+	if(tousutwosort>0){
+		sb.append(" and complaint_two_level="+tousutwosort);	
+	}
+	if(begindateh!=null&&begindateh.length()>0&&enddateh!=null&&enddateh.length()>0){
+		sb.append(" and accpet_time between '"+begindateh+"'" +" and '"+enddateh+"'");
+	}
+	
+	sql+=sb.toString();
+	
+	return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
+}
 
 	public CsComplaintAccept findGoOnacceptWOByWorkOrder(String workorder){
 		CsComplaintAccept lcs;

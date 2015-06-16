@@ -357,7 +357,7 @@ public class PenalizeOutController {
 			penalizeInside.setPunishsmallsort(out.getPenalizeOutsmall());
 			penalizeInside.setCreateuserid(this.getSessionUser().getUsercustomerid());
 			penalizeInside.setPunishdescribe(punishdescribe);
-			penalizeInside.setPunishcwbstate(PunishInsideStateEnum.chuangjian.getValue());
+			penalizeInside.setPunishcwbstate(PunishInsideStateEnum.daiqueren.getValue());
 			penalizeInside.setCreDate(DateTimeUtil.getNowTime());
 			try {
 				List<PenalizeInside> sInsideList = this.punishInsideDao.getPenalizeInsideIsNull(out.getCwb(), dutybranchid, out.getPenalizeOutsmall());

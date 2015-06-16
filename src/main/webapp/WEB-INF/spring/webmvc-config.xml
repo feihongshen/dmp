@@ -49,7 +49,12 @@
 	<mvc:view-controller path="/user/update" />
 	<mvc:view-controller path="/branch/update" />
 	<mvc:view-controller path="/abnormalorder/update" />
+
+	<mvc:view-controller path="/penalize/penalizeIn/update" />
+	<mvc:view-controller path="/penalize/penalizeIn/qianrushijian" />
+
 	<mvc:view-controller path="/workorder/update" />
+
 	<mvc:view-controller path="/customer/update" />
 	<mvc:view-controller path="/setexportcwb" />
 	<mvc:view-controller path="/wavPlay" />

@@ -20,6 +20,7 @@ import cn.explink.controller.AbnormalView;
 import cn.explink.controller.ComplaintView;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.DeliveryStateView;
+import cn.explink.controller.PenalizeInsideView;
 import cn.explink.controller.UserView;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
@@ -376,7 +377,37 @@ public class ExportService {
 		cloumnName1[8] = "丢失件说明";
 		cloumnName2[8] = "Describe";
 	}
-
+	// 对内扣罚单的信息导出
+	public void SetPunishInsideFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "扣罚单号";
+		cloumnName2[0] = "PunishNo";
+		cloumnName1[1] = "来源";
+		cloumnName2[1] = "CreateBySource";
+		cloumnName1[2] = "来源单号";
+		cloumnName2[2] = "SourceNo";
+		cloumnName1[3] = "订单号";
+		cloumnName2[3] = "Cwb";
+		cloumnName1[4] = "责任机构";
+		cloumnName2[4] = "DutyBranch";
+		cloumnName1[5] = "责任人";
+		cloumnName2[5] = "DutyPerson";
+		cloumnName1[6] = "订单状态";
+		cloumnName2[6] = "Cwbstate";
+		cloumnName1[7] = "订单金额";
+		cloumnName2[7] = "CwbPrice";
+		cloumnName1[8] = "对内扣罚金额";
+		cloumnName2[8] = "PunishInsideprice";
+		cloumnName1[9] = "扣罚大类";
+		cloumnName2[9] = "Punishbigsort";
+		cloumnName1[10] = "扣罚小类";
+		cloumnName2[10] = "Punishsmallsort";
+		cloumnName1[11] = "创建人";
+		cloumnName2[11] = "Createuser";
+		cloumnName1[12] = "创建日期";
+		cloumnName2[12] = "CreDate";
+		cloumnName1[13] = "扣罚单状态";
+		cloumnName2[13] = "Punishcwbstate";
+	}
 	// 审核页面导出
 	public void SetAuditFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
@@ -602,7 +633,43 @@ public class ExportService {
 		}
 		return a;
 	}
-	
+	// 对内扣罚单功能导出
+	public Object setPunishInsideObject(String[] cloumnName3, List<PenalizeInsideView> views, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("PunishNo")) {
+				a = views.get(k).getPunishno();
+			} else if (cloumnName3[i].equals("CreateBySource")) {
+				a = views.get(k).getCreatesourcename();
+			} else if (cloumnName3[i].equals("SourceNo")) {
+				a = views.get(k).getSourceNo();
+			} else if (cloumnName3[i].equals("Cwb")) {
+				a = views.get(k).getCwb();
+			} else if (cloumnName3[i].equals("DutyBranch")) {
+				a = views.get(k).getDutybranchname();
+			} else if (cloumnName3[i].equals("DutyPerson")) {
+				a = views.get(k).getDutyperson();
+			} else if (cloumnName3[i].equals("Cwbstate")) {
+				a = views.get(k).getFlowordertypename();
+			} else if (cloumnName3[i].equals("CwbPrice")) {
+				a = views.get(k).getCwbprice();
+			} else if (cloumnName3[i].equals("PunishInsideprice")) {
+				a = views.get(k).getPunishInsideprice();
+			}else if (cloumnName3[i].equals("Punishbigsort")) {
+				a = views.get(k).getPunishbigsort();
+			}else if (cloumnName3[i].equals("Punishsmallsort")) {
+				a = views.get(k).getPunishsmallsort();
+			}else if (cloumnName3[i].equals("Createuser")) {
+				a = views.get(k).getCreateusername();
+			}else if (cloumnName3[i].equals("CreDate")) {
+				a = views.get(k).getCreDate();
+			}else if (cloumnName3[i].equals("Punishcwbstate")) {
+				a = views.get(k).getPunishcwbstate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
 	public Object setCSInfoObject(String[] cloumnName3, List<CsConsigneeInfoVO> ccilist, Object a, int i, int k) {
 		try {
 			if (cloumnName3[i].equals("name")) {

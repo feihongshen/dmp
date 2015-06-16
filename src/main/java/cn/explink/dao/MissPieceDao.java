@@ -41,7 +41,7 @@ public class MissPieceDao {
 	public List<MissPiece>  findMissPieces(long page,String cwbs,long customerid,long cwbordertypeid,long callbackbranchid,String begindate,String enddate){
 		String sql="select * from express_ops_lose_back where 1=1 and state=1 ";
 		if (cwbs.length()>0) {
-			sql+=" and cwb IN('"+cwbs+"')";
+			sql+=" and cwb IN("+cwbs+")";
 		}
 		if (customerid>0) {
 			sql+=" and customerid="+customerid;

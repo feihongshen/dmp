@@ -7,22 +7,155 @@ public class PenalizeInside {
 	private long id;//主键id
 	private String punishNo;//扣罚单号
 	private long createBySource;//创建扣罚单的来源
+	private String createBysourcename;
 	private String  sourceNo;//来源单号
 	private String cwb;//订单号
 	private long dutybranchid;//责任机构
+	private String dutybranchname;
 	private long dutypersonid;//责任人
+	private String dutypersonname;
 	private long cwbstate;//订单状态
+	private String cwbstatename;
 	private BigDecimal cwbPrice;//订单价格
 	private BigDecimal punishInsideprice;//对内扣罚金额
 	private long punishbigsort;//扣罚大类
 	private long punishsmallsort;//扣罚小类
 	private long createuserid;//创建人
+	private String creUserName;
 	private String creDate;//创建日期
 	private int punishcwbstate;//扣罚单状态
+	private String punishcwbstatename;
 	private String punishdescribe;//扣罚描述
 	private String fileposition;//上传附件的存储的位置
+	private long shensutype;//申诉类型
+	private String shensudescribe;//申诉描述
+	private String shensufileposition;//申诉上传的证据的地址
+	private long shensuuserid;//申诉人的userid
+	private BigDecimal shenhepunishprice;//申诉罚款
+	private long shenhetype;//审核类型
+	private String shenhedescribe;//审核描述
+	private String shenhefileposition;//审核的附件上传的附件名
+	private long shenheuserid;//审核人
+	private String shenhedate;//审核时间
+	private String shensudate;//申诉时间
+	private String punishbigsortname;//扣罚大类中文名
+	private String punishsmallsortname;//扣罚小类中文名
 	
+	public String getCreUserName() {
+		return creUserName;
+	}
+	public void setCreUserName(String creUserName) {
+		this.creUserName = creUserName;
+	}
+	public String getCreateBysourcename() {
+		return createBysourcename;
+	}
+	public void setCreateBysourcename(String createBysourcename) {
+		this.createBysourcename = createBysourcename;
+	}
+	public String getDutybranchname() {
+		return dutybranchname;
+	}
+	public void setDutybranchname(String dutybranchname) {
+		this.dutybranchname = dutybranchname;
+	}
+	public String getDutypersonname() {
+		return dutypersonname;
+	}
+	public void setDutypersonname(String dutypersonname) {
+		this.dutypersonname = dutypersonname;
+	}
+	public String getCwbstatename() {
+		return cwbstatename;
+	}
+	public void setCwbstatename(String cwbstatename) {
+		this.cwbstatename = cwbstatename;
+	}
+	public String getPunishcwbstatename() {
+		return punishcwbstatename;
+	}
+	public void setPunishcwbstatename(String punishcwbstatename) {
+		this.punishcwbstatename = punishcwbstatename;
+	}
+	public String getPunishbigsortname() {
+		return punishbigsortname;
+	}
+	public void setPunishbigsortname(String punishbigsortname) {
+		this.punishbigsortname = punishbigsortname;
+	}
+	public String getPunishsmallsortname() {
+		return punishsmallsortname;
+	}
+	public void setPunishsmallsortname(String punishsmallsortname) {
+		this.punishsmallsortname = punishsmallsortname;
+	}
+	public String getShenhedate() {
+		return shenhedate;
+	}
+	public void setShenhedate(String shenhedate) {
+		this.shenhedate = shenhedate;
+	}
+	public String getShensudate() {
+		return shensudate;
+	}
+	public void setShensudate(String shensudate) {
+		this.shensudate = shensudate;
+	}
+	public long getShenheuserid() {
+		return shenheuserid;
+	}
+	public void setShenheuserid(long shenheuserid) {
+		this.shenheuserid = shenheuserid;
+	}
+	public BigDecimal getShenhepunishprice() {
+		return shenhepunishprice;
+	}
+	public void setShenhepunishprice(BigDecimal shenhepunishprice) {
+		this.shenhepunishprice = shenhepunishprice;
+	}
 	
+	public long getShenhetype() {
+		return shenhetype;
+	}
+	public void setShenhetype(long shenhetype) {
+		this.shenhetype = shenhetype;
+	}
+	public String getShenhedescribe() {
+		return shenhedescribe;
+	}
+	public void setShenhedescribe(String shenhedescribe) {
+		this.shenhedescribe = shenhedescribe;
+	}
+	public String getShenhefileposition() {
+		return shenhefileposition;
+	}
+	public void setShenhefileposition(String shenhefileposition) {
+		this.shenhefileposition = shenhefileposition;
+	}
+	public long getShensuuserid() {
+		return shensuuserid;
+	}
+	public void setShensuuserid(long shensuuserid) {
+		this.shensuuserid = shensuuserid;
+	}
+	public long getShensutype() {
+		return shensutype;
+	}
+	public void setShensutype(long shensutype) {
+		this.shensutype = shensutype;
+	}
+	public String getShensudescribe() {
+		return shensudescribe;
+	}
+	public void setShensudescribe(String shensudescribe) {
+		this.shensudescribe = shensudescribe;
+	}
+	public String getShensufileposition() {
+		return shensufileposition;
+	}
+	public void setShensufileposition(String shensufileposition) {
+		this.shensufileposition = shensufileposition;
+	}
 	public String getFileposition() {
 		return fileposition;
 	}

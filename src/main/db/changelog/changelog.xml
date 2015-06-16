@@ -6501,7 +6501,7 @@ CREATE TABLE `cs_complaint_accept` (
 	</changeSet>
 
 	<changeSet id="mali-2015-06-04-01" author="mali">
-		<sql>
+        <sql>
         	ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `customerbillimportflag` INT(4) DEFAULT 0 NULL ;
         </sql> 
 	</changeSet>
@@ -6693,6 +6693,7 @@ CREATE TABLE `cs_complaint_accept` (
    			 INSERT INTO `express_set_system_install` (`name`,`value`,`chinesename`) VALUES ('shensuendTime', '10', '可申诉时间是否过期');
    </sql>
     </changeSet>
+
     
     <changeSet id="wangzhiyong-2015-06-16-1" author="wangzhiyong">
     	<sql>
@@ -6714,6 +6715,49 @@ CREATE TABLE `cs_complaint_accept` (
 				  KEY `phone_one_idx` (`phone_one`)
 			) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
     	</sql>
+    </changeSet>
+	  <changeSet id="wukong-2015-06-16-01" author="wukong">
+        	<sql>
+   CREATE TABLE `express_ops_punishInside_detail` (
+		 	 `id` INT(11) NOT NULL AUTO_INCREMENT,
+			 `punishNo` VARCHAR(100) COLLATE utf8_bin DEFAULT NULL,
+		 	 `createBySource` INT(11) DEFAULT NULL,
+		 	 `sourceNo` VARCHAR(100) COLLATE utf8_bin DEFAULT NULL,
+		 	 `cwb` VARCHAR(100) COLLATE utf8_bin DEFAULT NULL,
+			 `dutybranchid` INT(10) DEFAULT '0',
+		 	 `dutypersonid` INT(11) DEFAULT '0',
+			 `cwbstate` INT(11) NOT NULL,
+		 	 `cwbPrice` DECIMAL(19,2) DEFAULT '0.00',
+		 	 `punishInsideprice` DECIMAL(19,2) DEFAULT '0.00',
+	 		 `punishbigsort` INT(10) DEFAULT '0',
+			 `punishsmallsort` INT(10) DEFAULT '0',
+			 `createuserid` INT(11) DEFAULT '0',
+			 `creDate` VARCHAR(20) COLLATE utf8_bin DEFAULT '',
+	 		 `punishcwbstate` INT(10) DEFAULT '0',
+	 		 `punishdescribe` VARCHAR(500) COLLATE utf8_bin DEFAULT NULL,
+	 		 `fileposition` VARCHAR(100) NULL DEFAULT '',
+	 		 `shensutype` INT(10) DEFAULT '0',
+	 		 `shensudescribe` VARCHAR(100) NULL DEFAULT '',
+	 		 `shensufileposition` VARCHAR(100) NULL DEFAULT '',
+	 		 `shensuuserid` INT(10) DEFAULT '0',
+	 		 `shenhepunishprice` DECIMAL(19,2) DEFAULT '0.00',
+	 		  `shenhetype` INT(10) DEFAULT '0',
+	 		  `shenhedescribe` VARCHAR(100) NULL DEFAULT '',
+	 		 `shenhefileposition` VARCHAR(100) NULL DEFAULT '',
+	 		 `shenheuserid` INT(10) DEFAULT '0',
+	 		  `shensudate` VARCHAR(100) NULL DEFAULT '',
+	 		   `shenhedate` VARCHAR(100) NULL DEFAULT '',
+			  PRIMARY KEY  (`id`),
+	 		  INDEX `cwb_idx` (`cwb`) ,
+	 		  INDEX `sourceNo_idx` (`sourceNo`) ,
+	 		  INDEX `createBySource_idx` (`createBySource`)
+	 		  ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;        	
+	 		  </sql> 
+        </changeSet>
+    <changeSet id="wukong-2015-06-16-02" author="wukong">
+    <sql>
+       INSERT INTO express_set_system_install (`name`, `value`, `chinesename`) VALUES ('punishinsideshixiao', '24', '对内扣罚的时间限制(以小时为单位)');	  
+   </sql>
     </changeSet>
 
 </databaseChangeLog>
