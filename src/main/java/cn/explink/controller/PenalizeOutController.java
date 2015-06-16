@@ -329,6 +329,10 @@ public class PenalizeOutController {
 					return "{\"errorCode\":1,\"error\":\"创建对内扣罚失败！责任人不存在,或已离职\"}";
 				}
 			}
+			if(dutybranchid==0)
+			{
+				return "{\"errorCode\":1,\"error\":\"请选择责任机构！\"}";
+			}
 			if (punishdescribe.trim().length() <= 0) {
 				return "{\"errorCode\":1,\"error\":\"对内扣罚说明不能为空！\"}";
 			}
