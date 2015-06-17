@@ -97,7 +97,7 @@ $(function() {
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
 			return false;
-		}else if($('#ComStateV').val()==$('#JieAnChongShenZhong').val()||$('#ComStateV').val()==$('#YiJieShu').val()||$('#ComStateV').val()==$('#YiJieAn').val()){
+		}else if($('#ComStateV').val()==$('#JieAnChongShenZhong').val()||$('#ComStateV').val()==$('#YiJieShu').val()||$('#ComStateV').val()==$('#YiJieAn').val()||$('#ComStateV').val()==$('#DaiHeShi').val()){
 			alert('本条数据状态不能结案');
 			return false;
 		}
