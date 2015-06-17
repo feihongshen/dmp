@@ -181,7 +181,7 @@ function serchsubmit(){
 												<option  value ="0">全部</option>
 													<%if(uslist.size()>0){
 														for(User u:uslist){ %>
-															<option value ="<%=u.getUserid() %>"><%=u.getUsername() %></option>
+															<option value ="<%=u.getUserid() %>"><%=u.getRealname() %></option>
 													<%} }%>
 											</select>
 										</td>
