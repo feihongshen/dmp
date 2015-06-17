@@ -137,24 +137,66 @@ $(function(){
 	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
 	}).bind('uploadStart', function(event, file) {
 	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
-		/*
-		 * 进度条 var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
-		 * $("#progressbar").progressbar({ value : percent });
-		 * $("#progressstatus").text(percent);
-		 */
 
 	}).bind('uploadSuccess', function(event, file, serverData) {
 		var dataObj = eval("(" + serverData + ")");
 		$(".tishi_box", parent.document).html(dataObj.error);
 		$(".tishi_box", parent.document).show();
 		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$("#punishbigsort3").val(0);
+		$("#punishsmallsort3").val(0);
+		$("#dutybranchid3").val(0);
+		$("#dutypersoname3").val(0);
+		$("#punishprice3").val("");
+		$("#txtFileName").val("");
+		$("#describe3").val("最多一100个字");
 		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
-		// $("#wavText").val("");
-		/*if (dataObj.errorCode == 0) {
-			alert("处理成功");
-		}*/
-		// setTimeout(queryProgress, 10);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+	
+	//上传附件使用
+	$('#swfupload-control1').swfupload({
+		upload_url : $("#form3").attr("action"),
+		file_size_limit : "10240",
+		file_types : "*.img;*.txt",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : "<%=request.getContextPath()%>/js/swfupload/swfupload.swf",
+		button_image_url :"<%=request.getContextPath()%>/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#button1")[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#txtFileName1").val(file.name);
+		file_id = $('#swfupload-control1');
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$("#punishbigsort2").val(0);
+		$("#punishsmallsort2").val(0);
+		$("#dutybranchid2").val(0);
+		$("#dutypersoname2").val(0);
+		$("#punishprice2").val("");
+		$("#txtFileName1").val("");
+		$("#describe2").val("最多一100个字");
+		$(form)[0].reset();
+		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
 	}).bind('uploadComplete', function(event, file) {
 		$(this).swfupload('startUpload');
 	}).bind('uploadError', function(event, file, errorCode, message) {
@@ -296,22 +338,22 @@ function createinpunishbyquestionno(){
 }
 //根据工单创建对内扣罚单
 function submitPunishCreateBygongdan(form){
-	if ($("#txtFileName").val()=="") {
+	if ($("#txtFileName1").val()=="") {
 		$(form).attr("enctype", "");
 		$(form).attr("action", "<%=request.getContextPath()%>/inpunish/submitPunishCreateBygongdanLoad");
 		submitCreateFormAdd(form);
 		return;
 	}
-	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort1', $("#punishbigsort1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort1', $("#punishsmallsort1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid1', $("#dutybranchid1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutypersoname1', $("#dutypersoname1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishprice1', $("#punishprice1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'describe1', $("#describe1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'type1', $("#type1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'availablecwb1', $("#availablecwb1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'cwbhhh1', $("#cwbhhh1").val());
-	$('#swfupload-control').swfupload('startUpload');
+	$('#swfupload-control1').swfupload('addPostParam', 'punishbigsort2', $("#punishbigsort2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'punishsmallsort2', $("#punishsmallsort2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'dutybranchid2', $("#dutybranchid2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'dutypersoname2', $("#dutypersoname2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'punishprice2', $("#punishprice2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'describe2', $("#describe2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'type2', $("#type2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'availablecwb2', $("#availablecwb2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'cwbhhh2', $("#cwbhhh2").val());
+	$('#swfupload-control1').swfupload('startUpload');
 	//submitPunishCreateBygongdanLoad();
 }
 //根据问题件创建对内扣罚单
@@ -322,15 +364,15 @@ function submitPunishCreateBywentijian(form){
 		submitCreateFormAdd(form);
 		return;
 	}
-	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort2', $("#punishbigsort2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort2', $("#punishsmallsort2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid2', $("#dutybranchid2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutypersoname2', $("#dutypersoname2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishprice2', $("#punishprice2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'describe2', $("#describe2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'type2', $("#type2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'availablecwb2', $("#availablecwb2").val());
-	$('#swfupload-control').swfupload('addPostParam', 'cwbhhh2', $("#cwbhhh2").val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort3', $("#punishbigsort3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort3', $("#punishsmallsort3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid3', $("#dutybranchid3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'dutypersoname3', $("#dutypersoname3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'punishprice3', $("#punishprice3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'describe3', $("#describe3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'type1', $("#type1").val());
+	$('#swfupload-control').swfupload('addPostParam', 'availablecwb3', $("#availablecwb3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbhhh3', $("#cwbhhh3").val());
 	$('#swfupload-control').swfupload('startUpload');
 	//submitPunishCreateBygongdanLoad();
 }
@@ -347,7 +389,7 @@ function submitPunishCreateBygongdanLoad() {
 	$('#swfupload-control').swfupload('startUpload');
 } */
 function check_revisefindWithByCreateQuestionNo(){
-	if($("#wenticwb").val()==""&&$("wentitype").val()==0&&$("#wentistate").val()==0&&$("#wenticjbegintime").val()==""&&$("#wenticjendtime").val()==""){
+	if($("#cwb").val()==""&&$("#wenticwb").val()==""&&$("wentitype").val()==0&&$("#wentistate").val()==0&&$("#wenticjbegintime").val()==""&&$("#wenticjendtime").val()==""){
 		alert("至少选择一个条件进行查询！！");
 		return false;
 	}
@@ -419,7 +461,7 @@ function closeBox1() {
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 600px;">
 		<h1><div id="close_box" onclick="closeBox1()"></div>根据问题件创建对内扣罚单</h1>
-		<form method="post" id="wentiform"  action="<%=request.getContextPath()%>/inpunish/createinpunishbyQuestNo" onsubmit="if(check_revisefindWithByCreateQuestionNo())createinpunishbyQuestNo(this,'appendhtmlid');return false;">
+		<form method="post" id="wentiform"  action="<%=request.getContextPath()%>/inpunish/createinpunishbyQuestNo" onsubmit="if(check_revisefindWithByCreateQuestionNo())createinpunishbyQuestNo(this,'appendhtmlid3');return false;">
 			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
@@ -456,8 +498,8 @@ function closeBox1() {
 						<td align="left" valign="top">
 							<input type="submit"   value="查询" class="input_button2"/>
 							<input type="reset"    value="重置" class="input_button2" >
-							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
-						</td>
+<!-- 							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
+ -->						</td>
 						</tr>
 			</table>
 			</td>
@@ -512,13 +554,17 @@ function closeBox1() {
 								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>
 								<%}} %>
 							</select>
-							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid3" name="dutybranchid3" class="select1" onchange="selectbranchUsers('dutybranchid3','dutybranchid3');>
+							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid3" name="dutybranchid3" class="select1" onchange="selectbranchUsers('dutypersoname3','dutybranchid3');">
 							<option value="0" selected="selected">请选择责任机构</option>
 							<%if(branchList!=null){for(Branch branch:branchList){ %>
 							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
 							<% }}%>
 						</select>
-						&nbsp;&nbsp;责任人:<input type="text" id="dutypersoname3" name="dutypersoname3" class="input_text1" style="height:15px;width: 120px;"/>
+						&nbsp;&nbsp;责任人:
+							<select id="dutypersoname3" name="dutypersoname3" class="select1" >
+							<option value ='0' selected="selected">请选择机构责任人</option>
+							</select>
+						
 							</td>
 						
 						</tr >
@@ -623,8 +669,7 @@ function closeBox1() {
 						<td align="left" valign="top">
 							<input type="submit"   value="查询" class="input_button2"/>
 							<input type="reset"    value="重置" class="input_button2" >
-<!-- 							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
- -->						</td>
+						</td>
 						</tr>
 			</table>
 			</td>
@@ -660,7 +705,7 @@ function closeBox1() {
             </div>
 				</td>
 						</tr>
-		<form method="post" id="form2" onSubmit="if(check_createbygongdan()){submitPunishCreateBygongdan(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBygongdanLoadfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">
+		<form method="post" id="form3" onSubmit="if(check_createbygongdan()){submitPunishCreateBygongdan(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBygongdanLoadfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">
 			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
@@ -698,7 +743,7 @@ function closeBox1() {
 						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;"/>
 						&nbsp;&nbsp;上传附件：
 						<label for="fileField"></label>
-						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*
+						<span id="swfupload-control1"><input type="text" id="txtFileName1" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button1" /></span>*
 						</td>
 						</tr>
 						 <tr class="font_1">
@@ -711,7 +756,7 @@ function closeBox1() {
 					</td>
 				</tr>
 			</table>
-			<input type="hidden" id="type1" name="type1" value="2"/>
+			<input type="hidden" id="type2" name="type2" value="2"/>
 			<input type="hidden" id="availablecwb2" name="availablecwb2" value=""/>
 			<input type="hidden" id="cwbhhh2" name="cwbhhh2" value=""/>
 			<div align="center">

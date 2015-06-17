@@ -212,14 +212,14 @@ public class PunishInsideController {
 			@RequestParam(value = "Filedata", required = false) MultipartFile file
 			){
 		try {
-			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type1"));
+			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type2"));
 			//订单号
 			String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 			PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
 			}
-			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request);
+			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -232,14 +232,14 @@ public class PunishInsideController {
 	@RequestMapping("/submitPunishCreateBygongdanLoad")
 	public @ResponseBody String submitPunishCreateBygongdanLoad(HttpServletRequest request,Model model){
 		try{
-		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type1"));
+		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type2"));
 		//订单号
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 		PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 		if (penalizeInside1!=null) {
 			return "{\"errorCode\":0,\"error\":\"该工单已经创建过对内扣罚单，不能再次创建\"}";
 		}
-		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request);
+		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 		punishInsideDao.createPunishInside(penalizeInside);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
@@ -354,7 +354,7 @@ public class PunishInsideController {
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
 			}
-			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request);
+			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			punishInsideDao.createPunishInside(penalizeInside);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
@@ -374,7 +374,7 @@ public class PunishInsideController {
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
 			}
-			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request);
+			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";

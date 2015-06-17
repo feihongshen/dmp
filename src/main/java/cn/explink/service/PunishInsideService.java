@@ -127,11 +127,10 @@ public class PunishInsideService {
 		return penalizeInside;
 	}
 	//根据问题件生成想要的insert对内扣罚单的数据
-	public PenalizeInside switchTowantDataWithQuestion(HttpServletRequest request){
+	public PenalizeInside switchTowantDataWithQuestion(HttpServletRequest request,String type1){
 		//生成扣罚单号
 		String punishNO="P"+System.currentTimeMillis()+"";
 		int punishinsidetype=PunishInsideStateEnum.daiqueren.getValue();
-		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type1"));
 		String punishbigsort1=StringUtil.nullConvertToEmptyString(request.getParameter("punishbigsort"+type1));
 		String punishsmallsort1=StringUtil.nullConvertToEmptyString(request.getParameter("punishsmallsort"+type1));
 		String dutybranchid1=StringUtil.nullConvertToEmptyString(request.getParameter("dutybranchid"+type1));
