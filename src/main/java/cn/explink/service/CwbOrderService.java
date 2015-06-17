@@ -109,6 +109,7 @@ import cn.explink.domain.AccountCwbDetail;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.AccountDeducDetail;
 import cn.explink.domain.AccountDeductRecord;
+import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Bale;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
@@ -153,6 +154,7 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
 import cn.explink.enumutil.ApplyEnum;
+import cn.explink.enumutil.ApplyStateEnum;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -6427,6 +6429,30 @@ public class CwbOrderService {
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}
+			}
+		}
+		return cwbOrderViewList;
+	}
+	
+	//修改状态重置反馈(页面view)
+	public List<CwbOrderView> getResetCwbOrderView(List<ApplyEditDeliverystate> applyeditlist,
+			List<User> uslist,List<Branch> branchList) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (applyeditlist.size() > 0) {
+			for (ApplyEditDeliverystate ot :applyeditlist ){
+				CwbOrderView cwbOrderView = new CwbOrderView();
+				cwbOrderView.setCwb(ot.getCwb());
+				cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(ot.getCwbordertypeid()));//订单类型
+				cwbOrderView.setDeliveryname(DeliveryStateEnum.getByValue((int)(ot.getNowdeliverystate())).getText());//配送结果
+				cwbOrderView.setCwbstatename(CwbStateEnum.getByValue(ot.getCwbstate()).getText());//订单状态
+				cwbOrderView.setRemark1("");//结算状态
+				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getApplybranchid()));//反馈站点
+				cwbOrderView.setResetfeedusername(this.dataStatisticsService.getQueryUserName(uslist,ot.getApplyuserid()));//反馈人
+				cwbOrderView.setResetfeedtime(ot.getApplytime());//反馈时间
+				cwbOrderView.setDonepeople(this.dataStatisticsService.getQueryUserName(uslist,ot.getEdituserid()));//操作人
+				cwbOrderView.setDonetime(ot.getEdittime());//操作时间
+				cwbOrderView.setNowState(ApplyStateEnum.getTextByValue(ot.getShenhestate()));//订单当前状态
+				cwbOrderViewList.add(cwbOrderView);
 			}
 		}
 		return cwbOrderViewList;

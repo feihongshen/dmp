@@ -236,39 +236,45 @@ public class ApplyEditDeliverystateController {
 	/**
 	 * 重置反馈并显示查询列表
 	 */
-	@RequestMapping("/resetFeedbackList")
+	@RequestMapping("/resetFeedbackList/{page}")
 	public String resetFeedbackList(Model model,HttpServletRequest request,
+			@PathVariable(value = "page") long page, 
 			@RequestParam(value = "cwb",defaultValue = "",required = false) String cwbs,
-			@RequestParam(value = "cwbtypeid",defaultValue = "",required = false) Integer cwbtypeid,
-			@RequestParam(value = "cwbresultid",defaultValue = "",required = false) Long cwbresultid,
-			@RequestParam(value = "isdo",defaultValue = "",required = false) Integer isdo,
-			@RequestParam(value = "cwbstate",defaultValue = "",required = false) Long cwbstate,
-			@RequestParam(value = "feedbackbranchid",defaultValue = "",required = false) Long feedbackbranchid,
+			@RequestParam(value = "cwbtypeid",defaultValue = "0",required = false) Integer cwbtypeid,
+			@RequestParam(value = "cwbresultid",defaultValue = "0",required = false) Long cwbresultid,
+			@RequestParam(value = "isdo",defaultValue = "0",required = false) Integer isdo,
+			@RequestParam(value = "cwbstate",defaultValue = "0",required = false) Long cwbstate,
+			@RequestParam(value = "feedbackbranchid",defaultValue = "0",required = false) Long feedbackbranchid,
 			@RequestParam(value = "begindate",defaultValue = "",required = false) String begindate,
 			@RequestParam(value = "enddate",defaultValue = "",required = false) String enddate
 			){
-		
-		List<Branch> branchList = branchDAO.getAllBranches();
-		Map<Long, String> branchMap = new HashMap<Long, String>();
-		for(Branch br:branchList){
-			branchMap.put(br.getBranchid(), br.getBranchname());
-		}
-		if(cwbs==null){
-			List<ApplyEditDeliverystate> applyeditlist = new ArrayList<ApplyEditDeliverystate>();
-			if(cwbs.length()>0&&!"".equals(cwbs.trim())){
-				String[] cwbss = cwbs.split("\r\n");
-				StringBuffer sb = new StringBuffer("");
-				for(String cwb:cwbss){
-					sb.append("'").append(cwb).append("',");
-				}
-				applyeditlist = applyEditDeliverystateDAO.getApplyEditBycwbs(sb.substring(0, sb.length()-1).toString());
-			}else{
-				applyeditlist = applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
+		Page pag = new Page();
+		List<User> uslist = userDAO.getAllUser();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		StringBuffer sb = new StringBuffer("");
+		if(!cwbs.equals("")){
+			for(String str:cwbs.split("\r\n")){
+				sb.append("'").append(str).append("',");
 			}
-			model.addAttribute("applyeditlist",applyeditlist);
 		}
+		String cwbss = "";
+		if(sb.length()>0){
+			cwbss = sb.substring(0,sb.length()-1);
+		}
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		List<ApplyEditDeliverystate> applyeditlist = new ArrayList<ApplyEditDeliverystate>();
+		if(!(cwbs.equals("")&&begindate.equals(""))){
+			applyeditlist = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(page,cwbss,cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
+			long count = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateCount(cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid);
+			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+			covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchList);
+		}
+		model.addAttribute("page",page);
+		model.addAttribute("page_obj",pag);
 		model.addAttribute("branchList", branchList);
-		model.addAttribute("branchMap", branchMap);
+		model.addAttribute("exportmouldlist",exportmouldlist);
+		model.addAttribute("applyeditlist",covList);
 		return "applyeditdeliverystate/resetFeedbackList";
 	}
 	
@@ -277,38 +283,30 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String getCheckboxDealPass(
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
-		if(cwbdata.equals("")){
-			return null;
-		}else{
-			String cwbs = cwbdata.substring(0,cwbdata.length()-1);
-			//StringBuffer sb = new StringBuffer();
-			for(String cwb:cwbs.split(",")){
+		if(cwbdata.length()>0){
+			for(String cwb:cwbdata.split(",")){
 				applyEditDeliverystateDAO.updateShenheStatePass(cwb);
 				ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
 				//重置审核的最终方法
 				EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
+				return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
 			}
-			//List<ApplyEditDeliverystate> list = applyEditDeliverystateDAO.getApplyEditBycwbs(sb.substring(0,sb.length()-1));
 			
 		}
-		return null;
+		return "{\"errorCode\":1,\"error\":\"审核失败\"}";
 	}
-	//处理为审核通过状态
+	//处理为审核不通过状态
 	@RequestMapping("/getCheckboxDealNoPass")
 	public @ResponseBody String getCheckboxDealNoPass(
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
-		if(cwbdata.equals("")){
-			return null;
-		}else{
-			String cwbs = cwbdata.substring(0,cwbdata.length()-1);
-			//StringBuffer sb = new StringBuffer();
-			for(String cwb:cwbs.split(",")){
+		if(cwbdata.length()>0){
+			for(String cwb:cwbdata.split(",")){
 				applyEditDeliverystateDAO.updateShenheStateNoPass(cwb);
+				return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 			}
-			
 		}
-		return null;
+		return "{\"errorCode\":1,\"error\":\"审核为不通过失败\"}";
 	}
 	
 	/**

@@ -251,6 +251,61 @@ public class CwbOrderView {
 	private String nowState;//订单当前状态
 	private String applytype;//申请类型
 	
+	//重置状态反馈
+	private String deliveryname;//配送结果
+	private String cwbstatename;//订单状态
+	private String resetfeedusername;//反馈人
+	private String resetfeedtime;//反馈时间
+	private String donepeople;//操作人
+	private String donetime;//操作时间
+	
+	public String getDeliveryname() {
+		return deliveryname;
+	}
+
+	public void setDeliveryname(String deliveryname) {
+		this.deliveryname = deliveryname;
+	}
+
+	public String getCwbstatename() {
+		return cwbstatename;
+	}
+
+	public void setCwbstatename(String cwbstatename) {
+		this.cwbstatename = cwbstatename;
+	}
+
+	public String getResetfeedusername() {
+		return resetfeedusername;
+	}
+
+	public void setResetfeedusername(String resetfeedusername) {
+		this.resetfeedusername = resetfeedusername;
+	}
+
+	public String getResetfeedtime() {
+		return resetfeedtime;
+	}
+
+	public void setResetfeedtime(String resetfeedtime) {
+		this.resetfeedtime = resetfeedtime;
+	}
+
+	public String getDonepeople() {
+		return donepeople;
+	}
+
+	public void setDonepeople(String donepeople) {
+		this.donepeople = donepeople;
+	}
+
+	public String getDonetime() {
+		return donetime;
+	}
+
+	public void setDonetime(String donetime) {
+		this.donetime = donetime;
+	}
 
 	public String getApplytype() {
 		return applytype;

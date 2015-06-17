@@ -28,8 +28,9 @@ public enum CwbOrderTypeIdEnum {
 	}
 	public static String getTextByValue(int value) {
 		for (CwbOrderTypeIdEnum cotie : CwbOrderTypeIdEnum.values()) {
-			if (cotie.getValue() == value)
+			if (cotie.getValue() == value){
 				return cotie.getText();
+			}	
 		}
 		return "";
 	}
