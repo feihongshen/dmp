@@ -22,6 +22,7 @@ import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -979,7 +980,7 @@ public class AbnormalOrderDAO {
 		String sql="update  express_ops_abnormal_order set isfind=? where cwb=?";
 		return this.jdbcTemplate.update(sql, isfind,cwb);
 	}
-	public List<AbnormalOrder>  getAbnormalToCreateKoufaInside(String cwb,String wenticwb,long wentistate,long wentitype,String wentibegindateh,String wentienddateh){
+	public List<AbnormalOrder>  getAbnormalToCreateKoufaInside(String cwb,String wenticwb,long wentitype,long wentistate,String wentibegindateh,String wentienddateh){
 		try {
 			String sql = "select * from express_ops_abnormal_order where 1=1";
 			if (!cwb.equals("")) {
@@ -989,7 +990,15 @@ public class AbnormalOrderDAO {
 				sql+=" And questionno='"+wenticwb+"'";
 			}
 			if (wentistate>0) {
-				sql+=" And ishandle="+wentistate;
+				String weichuliishandles=AbnormalOrderHandleEnum.weichuli.getValue()+","+AbnormalOrderHandleEnum.xiugai.getValue();
+				String yichuliIshandles=AbnormalOrderHandleEnum.kefuchuli.getValue()+","+AbnormalOrderHandleEnum.zerenfangchuli.getValue()+","+AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
+				if (wentistate==1) {
+					sql+="  And ishandle IN("+weichuliishandles+")";
+				}else if (wentistate==9) {
+					sql+=" And  ishandle IN("+yichuliIshandles+") ";
+				}else if (wentistate==5) {
+					sql+=" And ishandle="+AbnormalOrderHandleEnum.jieanchuli.getValue()+" And dealresult=1";
+				}
 			}
 			if (wentitype>0) {
 				sql+=" And abnormaltypeid="+wentitype;

@@ -137,6 +137,9 @@ public class PunishInsideService {
 		String dutypersoname1=StringUtil.nullConvertToEmptyString(request.getParameter("dutypersoname"+type1)).trim();
 		String punishprice1=StringUtil.nullConvertToEmptyString(request.getParameter("punishprice"+type1));
 		String describe1=StringUtil.nullConvertToEmptyString(request.getParameter("describe"+type1));
+		if(describe1.equals("最多100个字")){
+			describe1="";
+		}
 		String availablecwb1=StringUtil.nullConvertToEmptyString(request.getParameter("availablecwb"+type1));
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 		long userid=this.getSessionUser().getUserid();
@@ -213,7 +216,7 @@ public class PunishInsideService {
 			penalizeInsideView.setShensuUsername(this.getCreUser(penalizeInside.getShensuuserid()));
 			penalizeInsideView.setShenhedescribe(penalizeInside.getShenhedescribe());
 			penalizeInsideView.setShenhefileposition(penalizeInside.getShenhefileposition());
-			penalizeInsideView.setShenhepunishprice(String.valueOf(penalizeInside.getShenhepunishprice()));
+			penalizeInsideView.setShenhepunishprice(this.checkkoufajine(penalizeInside.getPunishcwbstate(), String.valueOf(penalizeInside.getShenhepunishprice())));
 			penalizeInsideView.setShenhetype(this.getShenheType(penalizeInside.getShenhetype()));
 			penalizeInsideView.setShenheusername(this.getCreUser(penalizeInside.getShenheuserid()));
 			penalizeInsideView.setShenhedate(penalizeInside.getShenhedate());
@@ -331,17 +334,19 @@ public class PunishInsideService {
 			return stateString;
 		}
 		public String getShenheType(long shenhetype){
+			String shensutypeString="";
 			if (shenhetype==1) {
-				return PunishInsideService.KOUFACHENGLI;
-			}else {
-				return PunishInsideService.CHEXIAOKOUFA;
+				shensutypeString=PunishInsideService.KOUFACHENGLI;
+			}else if(shenhetype==2){
+				shensutypeString=PunishInsideService.CHEXIAOKOUFA;
 			}
+			return shensutypeString;
 		}
 		public String getShenSuType(long shensutype){
 			String shensutypeString="";
 			if (shensutype==1) {
 				shensutypeString=PunishInsideService.CHEXIAOKOUFA;
-			}else {
+			}else if(shensutype==2){
 				shensutypeString=PunishInsideService.JIANSHAOKOUFA;
 			}
 			return shensutypeString;
@@ -433,11 +438,13 @@ public class PunishInsideService {
 			}
 		}
 		public String getdealresult(String dealresult){
+			String dealresultString="";
 			if (dealresult.equals("1")) {
-				return PunishInsideService.WENTICHENGLI;
-			}else {
-				return PunishInsideService.WENTIBUCHENGLI;
+				dealresultString=PunishInsideService.WENTICHENGLI;
+			}else if (dealresult.equals("2")) {
+				dealresultString=PunishInsideService.WENTIBUCHENGLI;
 			}
+			return dealresultString;
 		}
 		public String getCwbprice(String cwb){
 			String cwbprice="";
@@ -500,5 +507,12 @@ public class PunishInsideService {
 				return true;
 			}
 			return false;
+		}
+		public String checkkoufajine(long state,String price){
+			String koufajine="";
+			if (state==PunishInsideStateEnum.koufachengli.getValue()||state==PunishInsideStateEnum.koufachexiao.getValue()) {
+				koufajine=price;
+			}
+			return koufajine;
 		}
 }

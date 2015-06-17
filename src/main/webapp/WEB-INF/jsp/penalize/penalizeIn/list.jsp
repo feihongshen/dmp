@@ -149,7 +149,7 @@ $(function(){
 		$("#dutypersoname3").val(0);
 		$("#punishprice3").val("");
 		$("#txtFileName").val("");
-		$("#describe3").val("最多一100个字");
+		$("#describe3").val("最多100个字");
 		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
 	}).bind('uploadComplete', function(event, file) {
@@ -193,7 +193,7 @@ $(function(){
 		$("#dutypersoname2").val(0);
 		$("#punishprice2").val("");
 		$("#txtFileName1").val("");
-		$("#describe2").val("最多一100个字");
+		$("#describe2").val("最多100个字");
 		$(form)[0].reset();
 		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
@@ -376,42 +376,53 @@ function submitPunishCreateBywentijian(form){
 	$('#swfupload-control').swfupload('startUpload');
 	//submitPunishCreateBygongdanLoad();
 }
-/* //根据工单创建对内扣罚单（带文件的）
-function submitPunishCreateBygongdanLoad() {
-	$('#swfupload-control').swfupload('addPostParam', 'punishbigsort1', $("#punishbigsort1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishsmallsort1', $("#punishsmallsort1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutybranchid1', $("#dutybranchid1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'dutypersoname1', $("#dutypersoname1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'punishprice1', $("#punishprice1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'describe1', $("#describe1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'type1', $("#type1").val());
-	$('#swfupload-control').swfupload('addPostParam', 'availablecwb', $("#availablecwb").val());
-	$('#swfupload-control').swfupload('startUpload');
-} */
+
 function check_revisefindWithByCreateQuestionNo(){
-	if($("#cwb").val()==""&&$("#wenticwb").val()==""&&$("wentitype").val()==0&&$("#wentistate").val()==0&&$("#wenticjbegintime").val()==""&&$("#wenticjendtime").val()==""){
-		alert("至少选择一个条件进行查询！！");
+	/* console.info($("#wentiform input:[name='cwb']").val()=="");
+	console.info($("#wentiform input:[name='wenticwb']").val()=="");
+	console.info($("#wentiform select:[name='wentitype']").val()==0);
+	console.info($("#wentiform select:[name='wentistate']").val()==0);
+	console.info($("#wentiform input:[name='wentibegindateh']").val()=="");
+	console.info($("#wentiform input:[name='wentienddateh']").val()==""); */
+	if($("#wentiform input:[name='cwb']").val()==""&&$("#wentiform input:[name='wenticwb']").val()==""&&$("#wentiform select:[name='wentitype']").val()==0&&$("#wentiform select:[name='wentistate']").val()==0&&$("#wentiform input:[name='wentibegindateh']").val()==""&&$("#wentiform input:[name='wentienddateh']").val()==""){
+		alert("请输入需要查询的至少一个条件");
 		return false;
 	}
-	if($("#wenticjbegintime").val("")==""){
-		if($("#wenticjendtime").val()!=""){
-			alert("请输入开始时间！！");
+	if($("#wenticjbegintime").val()!=""||$("#wenticjendtime").val()!=""){
+		if($("#wenticjbegintime").val()!=""&&$("#wenticjendtime").val()!=""){
+			
 		}else{
-			alert("请输入时间！！");
+			alert("按照时间查询条件时开始时间与结束时间需要全部选择");
+			return false;
 		}
+		
+	}
+	
+	return true;
+}
+function check_findBygongdan(){
+/* 	console.info($("#form1 input:[name='cwb']").val()=="");
+	console.info($("#form1 input:[name='gongdancwb']").val()=="");
+	console.info($("#form1 select:[name='gongdantype']").val()==0);
+	console.info($("#form1 select:[name='gongdanstate']").val()==-1);
+	console.info($("#form1 select:[name='complainedmechanism']").val()==0);
+	console.info($("#form1 select:[name='complainresultcontent']").val()==-1);
+	console.info($("#form1 input:[name='begindateh']").val()=="");
+	console.info($("#form1 input:[name='enddateh']").val()=="");
+	console.info($("#form1 select:[name='tousuonesort']").val()==-1);
+	console.info($("#form1 select:[name='tousutwosort']").val()==0); */
+	if($("#form1 input:[name='cwb']").val()==""&&$("#form1 input:[name='gongdancwb']").val()==""&&$("#form1 select:[name='gongdantype']").val()==0&&$("#form1 select:[name='gongdanstate']").val()==-1&&$("#form1 select:[name='complainedmechanism']").val()==0&&$("#form1 select:[name='complainresultcontent']").val()==-1&&$("#form1 input:[name='begindateh']").val()==""&&$("#form1 input:[name='enddateh']").val()==""&&$("#form1 select:[name='tousuonesort']").val()==-1&&$("#form1 select:[name='tousutwosort']").val()==0){
+		alert("请至少选择其中一个查询条件！");
 		return false;
 	}
-	if($("#wenticjendtime").val("")==""){
-		if($("#wenticjbegintime").val()!=""){
-			alert("请输入结束时间！！");
+	if($("#form1 input:[name='begindateh']").val()!=""||$("#form1 input:[name='enddateh']").val()!=""){
+		if($("#form1 input:[name='begindateh']").val()!=""&&$("#form1 input:[name='enddateh']").val()!=""){
+			
 		}else{
-			alert("请输入时间！！");
+			alert("按照时间查询条件时开始时间与结束时间需要全部选择");
+			return false;
 		}
-		return false;
-	}
-	if($("#wenticjendtime").val("")<$("#wenticjbegintime").val()){
-		alert("结束时间不能小于开始时间");
-		return false;
+		
 	}
 	return true;
 }
@@ -481,8 +492,7 @@ function closeBox1() {
 							<select id="wentistate" name="wentistate" class="select1">
 									<option value="0">请选择处理状态</option>
 									<option value="<%=AbnormalOrderHandleEnum.weichuli.getValue()%>"><%=AbnormalOrderHandleEnum.weichuli.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.daichuli.getValue()%>"><%=AbnormalOrderHandleEnum.daichuli.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
+										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>"><%=AbnormalOrderHandleEnum.jieanchuli.getText() %></option>
 							</select>						
 							</tr>
@@ -578,7 +588,7 @@ function closeBox1() {
 						</tr>
 						 <tr class="font_1">
 							<td  align="left" valign="top"> 
-							扣罚说明：<textarea name="describe3" id="describe3" cols="40" rows="4"  onblur="jascript:if(this.val=='最多100个字')this.val=''" onfocus="javascript:if(this.val=='')this.val='最多一100个字'"></textarea>
+							扣罚说明：<textarea name="describe3" id="describe3" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
 							</td>
 						</tr>  
 					</table>
@@ -604,7 +614,7 @@ function closeBox1() {
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg" style="width: 800px;height: 600px;overflow: auto;">
 		<h1><div id="close_box" onclick="closeBox()"></div>根据工单创建对内扣罚单</h1>
-		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/querygogdan" onsubmit="revisefindWithByCreateGongdan(this,'appendhtmlid2');return false;">
+		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/querygogdan" onsubmit="if(check_findBygongdan())revisefindWithByCreateGongdan(this,'appendhtmlid2');return false;">
 			<table  width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
@@ -748,7 +758,7 @@ function closeBox1() {
 						</tr>
 						 <tr class="font_1">
 							<td  align="left" valign="top"> 
-							扣罚说明：<textarea name="describe2" id="describe2" cols="40" rows="4"  onblur="jascript:if(this.val=='最多100个字')this.val=''" onfocus="javascript:if(this.val=='')this.val='最多一100个字'"></textarea>
+							扣罚说明：<textarea name="describe2" id="describe2" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
 							</td>
 						</tr>  
 					</table>

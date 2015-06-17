@@ -65,7 +65,7 @@ List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("p
 						</td>
 						</tr>
 						<tr class="font_1">
-							<td  align="left" valign="top">扣罚说明：<textarea name="punishdescribe" id="punishdescribe" cols="40" rows="4" id="textfield"  ></textarea></td>
+							<td  align="left" valign="top">扣罚说明：<textarea onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" name="punishdescribe" id="punishdescribe" cols="40" rows="4" id="textfield"  >最多100个字</textarea></td>
 						</tr>
 						 <tr class="font_1">
 							<td  align="left" valign="top"> 
@@ -80,7 +80,7 @@ List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("p
 			<input type="hidden" name="absolutepath" id="absolutepath" value="<%=request.getContextPath() %>">
 			<div align="center">
 				<input type="submit" value="提交" class="button">
-				<input type="reset"   value="取消" class="button">
+				<input type="button" onclick="closeBox();"  value="取消" class="button">
 			</div>
 		</form>
 	</div>

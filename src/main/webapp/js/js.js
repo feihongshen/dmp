@@ -5415,6 +5415,10 @@ function check_createbycwb(){
 		alert("请输入扣罚金额！！");
 		return false;
 	}
+	if($("#punishdescribe").val().length>100){
+		alert("扣罚说明不能超过100个字噢！！");
+		return false;
+	}
 	return true;
 }
 //根据订单号创建对内扣罚单
@@ -5802,6 +5806,10 @@ function check_createbygongdan(){
 		alert("请输入扣罚金额！！");
 		return false;
 	}
+	if($("#describe2").val().length>100){
+		alert("扣罚说明不能超过100个字！！");
+		return false;
+	}
 	return true;
 }
 //验证通过问题件创建对内扣罚单的参数
@@ -5832,6 +5840,10 @@ function check_createbywentijian(){
 	}
 	if($("#punishprice3").val()==""){
 		alert("请输入扣罚金额！！");
+		return false;
+	}
+	if($("#describe3").val().length>100){
+		alert("扣罚说明不能超过100个字！！");
 		return false;
 	}
 	return true;
