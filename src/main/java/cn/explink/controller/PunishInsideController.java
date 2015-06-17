@@ -169,11 +169,11 @@ public class PunishInsideController {
 	@RequestMapping("/createbycwbwithoutfile")
 	public @ResponseBody String createbycwbwithoutfile(HttpServletRequest request){
 		try {
-			String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
+		/*	String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
 			PenalizeInside penalizeInsidesingle=punishInsideDao.getInsidebycwb(cwb);
 			if (penalizeInsidesingle!=null) {
 				return "{\"errorCode\":1,\"error\":\"该订单已经生成扣罚单\"}";
-			}
+			}*/
 			PenalizeInside penalizeInside=punishInsideService.changePageValue(request);
 			penalizeInside.setFileposition("");
 			//将相关的信息存入表中
@@ -189,11 +189,11 @@ public class PunishInsideController {
 			@RequestParam(value = "Filedata", required = false) MultipartFile file
 			){
 		try {
-			String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
+		/*	String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
 			PenalizeInside penalizeInsidesingle=punishInsideDao.getInsidebycwb(cwb);
 			if (penalizeInsidesingle!=null) {
 				return "{\"errorCode\":1,\"error\":\"该订单已经生成扣罚单\"}";
-			}
+			}*/
 			PenalizeInside penalizeInside=punishInsideService.changePageValue(request);
 			//获得上传文件的文件名
 			String filename=abnormalService.loadexceptfile(file);
@@ -213,15 +213,17 @@ public class PunishInsideController {
 			){
 		try {
 			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type2"));
-			//订单号
+			/*//订单号
 			String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 			PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
-			}
+			}*/
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
+			punishInsideDao.createPunishInside(penalizeInside);
+
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("根据工单创建对内扣罚单的时候出现异常", e);
@@ -233,12 +235,12 @@ public class PunishInsideController {
 	public @ResponseBody String submitPunishCreateBygongdanLoad(HttpServletRequest request,Model model){
 		try{
 		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type2"));
-		//订单号
+		/*//订单号
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 		PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 		if (penalizeInside1!=null) {
 			return "{\"errorCode\":0,\"error\":\"该工单已经创建过对内扣罚单，不能再次创建\"}";
-		}
+		}*/
 		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 		punishInsideDao.createPunishInside(penalizeInside);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -267,29 +269,43 @@ public class PunishInsideController {
 		long count=0;
 		String filepath=punishInsideService.loadexceptfile(file);
 		String[] arrayIds = ids.split(",");
-		for (int i = 0; i < arrayIds.length; i++) {
-			try {
-				if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[i]))) {
+		if (arrayIds.length==1) {
+			if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[0]))) {
+				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
+			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
+				
+				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经失效！！\"}";
+			}else {
+				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
+				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
+			}
+			
+		}else {
+			for (int i = 0; i < arrayIds.length; i++) {
+				try {
+					if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[i]))) {
+						count++;
+						continue;
+					}
+					if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[i]))) {
+						count++;
+						continue;
+					}
+					punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
+				} catch (NumberFormatException e) {
 					count++;
-					continue;
 				}
-				if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[i]))) {
-					count++;
-					continue;
-				}
-				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
-			} catch (NumberFormatException e) {
-				count++;
+			}
+			if (count==0) {
+				return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
+			}else if (count==arrayIds.length) {
+				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核或者已经申诉过)\"}";
+
+			}else {
+				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核或者已经申诉过）\"}";
 			}
 		}
-		if (count==0) {
-			return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
-		}else if (count==arrayIds.length) {
-			return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核)\"}";
-
-		}else {
-			return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核）\"}";
-		}
+		
 		
 	}
 	//不带文件的申诉处理
@@ -299,33 +315,47 @@ public class PunishInsideController {
 			@RequestParam(value="describe",required=false,defaultValue="")String describe,
 			@RequestParam(value="ids",required=false,defaultValue="")String ids
 			){
+		long punishinsidestate=PunishInsideStateEnum.daishenhe.getValue();
 		User user=this.getSessionUser();
 		long count=0;
 		String[] arrayIds = ids.split(",");
-		for (int i = 0; i < arrayIds.length; i++) {
-			try {
-				if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[i]))) {
+		if (arrayIds.length==1) {
+			if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[0]))) {
+				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
+			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
+				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经失效！！\"}";
+			}else {
+				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
+				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
+
+			}
+			
+		}else {
+			for (int i = 0; i < arrayIds.length; i++) {
+				try {
+					if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[i]))) {
+						count++;
+						continue;
+					}
+					if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[i]))) {
+						count++;
+						continue;
+					}
+					punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
+				} catch (NumberFormatException e) {
 					count++;
-					continue;
 				}
-				if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[i]))) {
-					count++;
-					continue;
-				}
-				long punishinsidestate=PunishInsideStateEnum.daishenhe.getValue();
-				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
-			} catch (NumberFormatException e) {
-				count++;
+			}
+			if (count==0) {
+				return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
+			}else if (count==arrayIds.length) {
+				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核或者已经申诉过)\"}";
+
+			}else {
+				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核或者已经申诉过）\"}";
 			}
 		}
-		if (count==0) {
-			return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
-		}else if (count==arrayIds.length) {
-			return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核)\"}";
-
-		}else {
-			return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核）\"}";
-		}
+		
 	}
 	//在根据工单创建扣罚单的页面查询问题件的想关信息
 	@RequestMapping("/createinpunishbyQuestNo")
@@ -348,12 +378,12 @@ public class PunishInsideController {
 			){
 		try {
 			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type1"));
-			//订单号
+		/*	//订单号
 			String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 			PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
-			}
+			}*/
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			punishInsideDao.createPunishInside(penalizeInside);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -368,15 +398,16 @@ public class PunishInsideController {
 			){
 		try {
 			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type1"));
-			//订单号
+		/*	//订单号
 			String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 			PenalizeInside penalizeInside1=punishInsideDao.getInsidebycwb(cwbhhh);
 			if (penalizeInside1!=null) {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
-			}
+			}*/
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
+			punishInsideDao.createPunishInside(penalizeInside);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("根据问题创建对内扣罚单的时候出现异常", e);
@@ -433,9 +464,9 @@ public class PunishInsideController {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经审核过，不允许再次审核\"}";
 
 		}
-		if (!punishInsideService.switchhourTomill(Long.parseLong(id))) {
+	/*	if (!punishInsideService.switchhourTomill(Long.parseLong(id))) {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经失效\"}";
-		}
+		}*/
 		PenalizeInsideShenhe pennishinsideShenhe=punishInsideService.getpunInsideShenhe(request);
 		String filename=punishInsideService.loadexceptfile(file);
 		pennishinsideShenhe.setShenheposition(filename);
@@ -461,9 +492,9 @@ public class PunishInsideController {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经审核过，不允许再次审核\"}";
 
 		}
-		if (!punishInsideService.switchhourTomill(Long.parseLong(id))) {
+		/*if (!punishInsideService.switchhourTomill(Long.parseLong(id))) {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经失效\"}";
-		}
+		}*/
 		PenalizeInsideShenhe pennishinsideShenhe=punishInsideService.getpunInsideShenhe(request);
 		pennishinsideShenhe.setShenheposition("");
 		pennishinsideShenhe.setShenheuserid(user.getUserid());

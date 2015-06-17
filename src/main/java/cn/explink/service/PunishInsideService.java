@@ -118,7 +118,7 @@ public class PunishInsideService {
 		penalizeInside.setDutypersonid(Integer.valueOf(dutypersoname));
 		BigDecimal punishprice1=new BigDecimal(punishprice);
 		penalizeInside.setPunishInsideprice(punishprice1);
-		penalizeInside.setPunishdescribe(punishdescribe);
+		penalizeInside.setPunishdescribe(this.switchDescribe(punishdescribe));
 		penalizeInside.setPunishNo(punishNO);
 		penalizeInside.setCreateuserid(userid);
 		penalizeInside.setCreDate(nowtime);
@@ -137,9 +137,6 @@ public class PunishInsideService {
 		String dutypersoname1=StringUtil.nullConvertToEmptyString(request.getParameter("dutypersoname"+type1)).trim();
 		String punishprice1=StringUtil.nullConvertToEmptyString(request.getParameter("punishprice"+type1));
 		String describe1=StringUtil.nullConvertToEmptyString(request.getParameter("describe"+type1));
-		if(describe1.equals("最多100个字")){
-			describe1="";
-		}
 		String availablecwb1=StringUtil.nullConvertToEmptyString(request.getParameter("availablecwb"+type1));
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 		long userid=this.getSessionUser().getUserid();
@@ -154,14 +151,20 @@ public class PunishInsideService {
 		penalizeInside.setDutypersonid(Long.parseLong(dutypersoname1==""?"0":dutypersoname1));
 		penalizeInside.setPunishbigsort(Long.parseLong(punishbigsort1));
 		penalizeInside.setPunishcwbstate(punishinsidetype);
-		penalizeInside.setPunishdescribe(describe1);
+		penalizeInside.setPunishdescribe(this.switchDescribe(describe1));
 		penalizeInside.setPunishInsideprice(new BigDecimal(punishprice1));
 		penalizeInside.setPunishNo(punishNO);
 		penalizeInside.setSourceNo(availablecwb1);
 		penalizeInside.setPunishsmallsort(Integer.parseInt(punishsmallsort1));
 		return penalizeInside;
 	}
-		
+		public String switchDescribe(String describe){
+			String deString="";
+			if(!describe.equals("最多100个字")){
+				deString=describe;
+			}
+			return deString;
+		}
 		//转化为在创建为对内扣罚单的时候弹出框对问题件的查询
 		public List<AbnormalPunishView> changeWantData(List<AbnormalOrder> abnormalOrders){
 			List<AbnormalPunishView> abnormalPunishViews=new ArrayList<AbnormalPunishView>();
@@ -238,10 +241,7 @@ public class PunishInsideService {
 				long koufachexiao=PunishInsideStateEnum.koufachexiao.getValue();
 				penalizeInsideShenhe.setPunishcwbstate(koufachexiao);
 			}
-			if (describe.equals("最多100个字")) {
-				describe="";
-			}
-			penalizeInsideShenhe.setShenhedescribe(describe);
+			penalizeInsideShenhe.setShenhedescribe(this.switchDescribe(describe));
 			penalizeInsideShenhe.setShenhepunishprice(new BigDecimal(koufajine));
 			penalizeInsideShenhe.setShenheresult(Long.parseLong(shenheresult));
 			penalizeInsideShenhe.setId(Long.parseLong(id));
@@ -502,10 +502,11 @@ public class PunishInsideService {
 			return true;
 		}
 		public boolean checkisshenhe(long id){
-			PenalizeInside penalizeInside=punishInsideDao.getInsidebyidwithstate(id,PunishInsideStateEnum.koufachengli.getValue(),PunishInsideStateEnum.koufachexiao.getValue());
-			if (penalizeInside!=null) {
+			PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
+			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()) {
 				return true;
 			}
+		
 			return false;
 		}
 		public String checkkoufajine(long state,String price){

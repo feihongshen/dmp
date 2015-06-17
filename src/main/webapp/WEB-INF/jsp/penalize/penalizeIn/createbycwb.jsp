@@ -23,7 +23,7 @@ List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("p
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">订单号：<font color="red">*</font>
-							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;" onkeyup="createbycwbinit($(this).val())"/>
+							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;" onkeyup="createbycwbinit($(this).val());" onblur="createbycwbinit($(this).val());"/>
 							&nbsp;&nbsp;订单状态：
 							<input type="text" id="flowordertype" name="flowordertype" readonly="readonly" class="input_text1" style="height:15px;width: 120px;border-style:none"/>
 							<input type="hidden" id="cwbstate" name="cwbstate" />

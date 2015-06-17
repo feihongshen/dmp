@@ -22,7 +22,7 @@ String ids = request.getAttribute("ids")==null?"":request.getAttribute("ids").to
 			<table width="600" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox" class="table_2">
 						<tr class="font_1">
 						<td align="left" valign="middle">
-							申诉类型类型：
+							申诉类型类型<font color="red">*</font>：
 									<select name="shensutype" id="shensutype" class="select1">
 										<option value="0">请选择申诉类型</option>
 										<option value="1">撤销扣罚</option>
@@ -32,8 +32,8 @@ String ids = request.getAttribute("ids")==null?"":request.getAttribute("ids").to
 						<td></td>
 						</tr>
 						<tr class="font_1">
-							<td  align="left" valign="middle">申诉理由*：
-							<textarea name="describe" id="describe" cols="80%" rows="3" id="textfield"></textarea></td>
+							<td  align="left" valign="middle">申诉理由<font color="red">*</font>：
+							<textarea name="describe" id="describe" cols="80%" rows="3" id="textfield" onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea></td>
 						</tr>
 						 <tr class="font_1">
 							<td colspan="2" align="left" valign="top"> 

@@ -5350,8 +5350,12 @@ function check_punishshensucondition(){
 		alert("请输入申诉类型！");
 		return false;
 	}
-	if($("#describe").val()==""){
+	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
 		alert("请输入申诉说明！");
+		return false;
+	}
+	if($("#describe").val().length>100){
+		alert("输入的申诉说明不能 超过100个字噢！！");
 		return false;
 	}
 	return true;
@@ -5367,6 +5371,10 @@ function reviseShensuToSubmit(form){
 	}
 	
 	$("#update")[0].contentWindow.submitPunishShensu();
+	$("#shensutype").val(0);
+	$("#describe").val("最多100个字");
+	$("#update")[0].contentWindow.chuShihuatiaojian();
+
 }
 function submitPunishShensu(){
 	$('#swfupload-control').swfupload('addPostParam', 'shensutype', $("#shensutype", parent.document).val());
@@ -6130,8 +6138,13 @@ function check_punishinsideshenhe(){
 		alert("请输入扣罚金额！！");
 		return false;
 	}
+/*	console.info($("#describe").val());
 	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
 		alert("请输入对内扣罚审核说明！！");
+		return false;
+	}*/
+	if($("#describe").val().length>100){
+		alert("输入的对内扣罚审核说明不能 超过100个字！！");
 		return false;
 	}
 	return true;
@@ -6147,6 +6160,10 @@ function koufachengli(){
 			return;
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
+		$("#koufajine").val("");
+		$("#describe").val("最多100个字");
+		$("#update")[0].contentWindow.chuShihuatiaojian();
+
 	}
 	
 }
@@ -6161,6 +6178,10 @@ function chexiaokoufa(){
 			return;
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
+		$("#update")[0].contentWindow.submitShenheLoad();
+		$("#koufajine").val("");
+		$("#describe").val("最多100个字");
+		$("#update")[0].contentWindow.chuShihuatiaojian();
 	}
 	
 }
@@ -6295,30 +6316,30 @@ function smsSend(){
 function Callerifnull(){
 if($('#caname').val()==''){
 		alert('请输入姓名');
-		return false
+		return false;
 	}
 if($('#cp').val()==''){
 	alert('请输入电话');
-	return false
+	return false;
 }
 if($('#ccity').val()==''){
 	alert('请输入城市');
-	return false
+	return false;
 }
 if($('#cprovince').val()==''){
 	alert('请输入省份');
-	return false
+	return false;
 }
 if($('#skhfl').val()==-1){
 	alert('请选择客户分类');
-	return false
+	return false;
 }if($('#cprovince').val()==''){
 	alert('请输入省份');
-	return false
+	return false;
 }
 if($('#callerremark').val()==''){
 	alert('请输入备注');
-	return false
+	return false;
 }
 	
 	
@@ -6381,4 +6402,6 @@ function isnum(str){
 	        return false;
 	    }
 }
-
+function chuShihuatiaojian(){
+	$("#wavText").val("");
+}

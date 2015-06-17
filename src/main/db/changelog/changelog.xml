@@ -6785,7 +6785,11 @@ CREATE TABLE `cs_complaint_accept` (
 					 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 	   	</sql>
     </changeSet>
-    
+    <changeSet id="wukong-2015-06-17-01" author="wukong">
+    		<sql>
+    	       	ALTER TABLE express_ops_punishInside_detail ADD COLUMN `isinvalid` INT(10) DEFAULT '1';
+   			</sql>
+    </changeSet>
     
 
 </databaseChangeLog>
