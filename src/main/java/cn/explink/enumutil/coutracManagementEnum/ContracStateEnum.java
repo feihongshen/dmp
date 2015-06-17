@@ -25,4 +25,14 @@ public enum ContracStateEnum {
 	public String getText() {
 		return this.text;
 	}
+	
+	public static ContracStateEnum getValue(long value) {
+		for (ContracStateEnum typeEnum : ContracStateEnum
+				.values()) {
+			if (typeEnum.getValue() == value) {
+				return typeEnum;
+			}
+		}
+		return null;
+	}
 }
