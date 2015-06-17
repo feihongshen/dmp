@@ -6759,6 +6759,34 @@ CREATE TABLE `cs_complaint_accept` (
        INSERT INTO express_set_system_install (`name`, `value`, `chinesename`) VALUES ('punishinsideshixiao', '24', '对内扣罚的时间限制(以小时为单位)');	  
    </sql>
     </changeSet>
+    
+    <changeSet id="liuxiao-2015-06-17-01" author="liuxiao">
+	    <sql>
+	       	ALTER TABLE op_cwbapplyzhongzhuan drop COLUMN `shenhestate`;
+	   	</sql>
+    </changeSet>
+    <changeSet id="liuxiao-2015-06-17-02" author="liuxiao">
+	    <sql>
+	        CREATE TABLE `express_ops_orderback_record` (  
+					  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+					  `cwb` varchar(100) collate utf8_bin default NULL,
+					  `customerid` int(11) default '0',
+					  `cwbordertypeid` int(11) default '0',
+					  `shenhestate` int(4) default '0',
+					   `createtime` varchar(100) collate utf8_bin default NULL,
+					   `receivablefee` decimal(19,2) default '0.00', 
+					   `emaildate` varchar(100) collate utf8_bin default NULL,
+					 
+					  KEY `apply_cwb_idx` (`cwb`),
+					  KEY `apply_cwbordertypeid_idx` (`cwbordertypeid`),
+					  KEY `apply_customerid_idx` (`customerid`),
+					  KEY `apply_shenhestate_idx` (`shenhestate`),
+					  KEY `apply_createtime_idx` (`createtime`)
+					 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+	   	</sql>
+    </changeSet>
+    
+    
 
 </databaseChangeLog>
  
