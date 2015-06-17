@@ -1616,6 +1616,7 @@ src/main/java/cn/explink/util/Dom4jParseUtil.java -text
 src/main/java/cn/explink/util/EmailUtil.java -text
 src/main/java/cn/explink/util/EncryptData.java -text
 src/main/java/cn/explink/util/ExcelUtils.java -text
+src/main/java/cn/explink/util/ExcelUtilsHandler.java -text
 src/main/java/cn/explink/util/FinalVar.java -text
 src/main/java/cn/explink/util/HttpUtil.java -text
 src/main/java/cn/explink/util/JMath.java -text
