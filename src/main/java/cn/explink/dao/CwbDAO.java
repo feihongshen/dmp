@@ -5817,7 +5817,7 @@ public class CwbDAO {
 	}
 
 	
-	//综合查询退客户确认lx
+	/*//综合查询退客户确认lx
 	public List<CwbOrder> getCwbOrderLX(int cwbordertypeid,long customerid,long flowordertypeid,String begindate,String enddate) {
 		StringBuffer sb = new StringBuffer("select * from express_ops_cwb_detail where cwbstate="+CwbStateEnum.TuiHuo);
 		if(cwbordertypeid>0){
@@ -5834,7 +5834,7 @@ public class CwbDAO {
 		}
 		return null;
 	}
-
+*/
 	public void updateFlowordertype(long flowordertypeid,String cwb) {
 		String sql = "update express_ops_cwb_detail set flowordertype=? where cwb=?";
 		jdbcTemplate.update(sql, new CwbMapper(),flowordertypeid,cwb);

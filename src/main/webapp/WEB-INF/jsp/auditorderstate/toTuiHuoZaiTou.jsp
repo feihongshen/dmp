@@ -1,3 +1,5 @@
+<%@page import="cn.explink.util.Page"%>
+<%@page import="cn.explink.domain.OperationTime"%>
 <%@page import="cn.explink.controller.pda.BranchListBodyPdaResponse"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.StringUtil"%>
@@ -6,18 +8,15 @@
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.domain.Exportmould"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-/* String starttime=request.getParameter("begindate")==null?DateTimeUtil.getNowDate()+" 00:00:00":request.getParameter("begindate");
-String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowDate()+" 23:59:59":request.getParameter("enddate"); */
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
-List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
+List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
-Map<Long,String> mapbranch = (Map<Long,String>)request.getAttribute("mapbranch");
-Map<Long,String> mapcustomer = (Map<Long,String>)request.getAttribute("mapcustomer");
-Map<Long,String> mapcwbordertype = (Map<Long,String>)request.getAttribute("mapcwbordertype");
+String cwbStr = request.getParameter("cwbs")==null?"":request.getParameter("cwbs");
+Page page_obj = (Page)request.getAttribute("page_obj");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -105,12 +104,14 @@ function sub(){
 			}
 		});
 	}
+}
 
-	
+function btnClick(){
+	$("[name='ischeck']").attr("checked",'true');//全选  
 }
 
 function exportField(){
-	if(<%=cwbList!=null&&cwbList.size()!=0%>){
+	if(<%=covList!=null&&covList.size()!=0%>){
 		$("#exportmould2").val($("#exportmould").val());
 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
@@ -118,6 +119,56 @@ function exportField(){
 	}else{
 		alert("没有做查询操作，不能导出！");
 	}
+}
+
+function check(){
+	var len=$.trim($("#cwbs").val()).length;
+ 	if(len>0)
+		{
+ 		 $("#searchForm").submit();
+		return true;
+		} 
+
+	if($("#strttime").val()==""){
+		alert("请选择开始时间");
+		return false;
+	}
+	if($("#endtime").val()==""){
+		alert("请选择结束时间");
+		return false;
+	}
+	if($("#strttime").val()>$("#endtime").val()){
+		alert("开始时间不能大于结束时间");
+		return false;
+	}
+	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strttime").val()!='' &&$("#endtime").val()=='')){
+		alert("时间跨度不能大于30天！");
+		return false;
+	}
+
+   $("#searchForm").submit();
+	return true;
+}
+function Days(){     
+	var day1 = $("#strttime").val();   
+	var day2 = $("#endtime").val(); 
+	var y1, y2, m1, m2, d1, d2;//year, month, day;   
+	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
+	day2=new Date(Date.parse(day2.replace(/-/g,"/")));
+	y1=day1.getFullYear();
+	y2=day2.getFullYear();
+	m1=parseInt(day1.getMonth())+1 ;
+	m2=parseInt(day2.getMonth())+1;
+	d1=day1.getDate();
+	d2=day2.getDate();
+	var date1 = new Date(y1, m1, d1);            
+	var date2 = new Date(y2, m2, d2);   
+	var minsec = Date.parse(date2) - Date.parse(date1);          
+	var days = minsec / 1000 / 60 / 60 / 24;  
+	if(days>30){
+		return false;
+	}        
+	return true;
 }
 
 $(function() {
@@ -151,7 +202,7 @@ $(function() {
 				<div style="position:relative; z-index:0 ">
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="./toTuiHuoZaiTou" method="POST" id="searchForm">
+							<form action="1" method="POST" id="searchForm">
 								<span>
 								<select name ="exportmould" id ="exportmould">
 									<option  value ="0">导出模板</option>
@@ -164,7 +215,7 @@ $(function() {
 									<tr>
 										<td rowspan="2">
 											订单号：
-											<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+											<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" ><%=cwbStr %></textarea>
 										</td>
 										<td>
 											订单类型:
@@ -208,18 +259,17 @@ $(function() {
 								<table>
 									<tr>
 										<td width="20%">
-											<input type="submit" value="查询" class="input_button2">&nbsp;&nbsp;
-											<input type="submit" value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="check();"  value="查询" class="input_button2">&nbsp;&nbsp;
+											<input type="reset" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
-											<input type="submit" name="button" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
-											<%if(cwbList!=null&&!cwbList.isEmpty()){%><span>
+											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
+											<%if(covList!=null&&!covList.isEmpty()){%><span>
 												<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 											</span> <%} %>
 										</td>
 									</tr>
 								</table>
-								
 							</form>
 						<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 							<input type="hidden" name="exportmould2" id="exportmould2"  class="input_button2" />
@@ -243,23 +293,23 @@ $(function() {
 						</table>
 					</div>
 					<div style="height:135px"></div>
-					<from action="./auditTuiHuoZaiTou" method="post" id="SubFrom" >
+					<from action="<%=request.getContextPath() %>/cwborder/auditTuiHuoZaiTou" method="post" id="SubFrom" >
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 							<tbody>
-								<%if(cwbList!=null){ 
-									for(CwbOrderView cwb :cwbList){ %>
+								<%if(covList!=null){ 
+									for(CwbOrderView cwb :covList){ %>
 									<tr height="30">
 										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
-											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getScancwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>>
+											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getCwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>>
 										</td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcwbordertype.get(cwb.getCwbordertypeid()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapcustomer.get(cwb.getCustomerid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwbordertypename()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCustomername() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime()%></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=mapbranch.get(cwb.getTuihuoid()) %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getBranchname()%></td>
 										<td width="200" align="center" valign="middle">
 										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>
 												<%=cwb.getCwbremark() %>
@@ -276,19 +326,37 @@ $(function() {
 						</table>
 					</from>
 				</div>
-				<%-- <div style="height:40px"></div>
-				<%if(cwbList!=null){ %>
-				<div class="iframe_bottom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" id="gd_table2">
-						<tbody>
-							<tr height="30" >
-								<td align="center" valign="middle" bgcolor="#f3f3f3"><input type="submit" name="button" id="button" value="退货再投" class="input_button1" onclick="sub()"></td>
-							</tr>
-						</tbody>
+				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
+				<div class="iframe_bottom">
+					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+						<tr>
+							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+								<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
+								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
+								　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+										id="selectPg"
+										onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+										<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+										<option value="<%=i %>"><%=i %></option>
+										<% } %>
+									</select>页
+							</td>
+						</tr>
 					</table>
-				</div><%} %>  --%>
+				</div>
+			    <%} %>
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+	$("#selectPg").val(<%=request.getAttribute("page")%>);
+	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
+	$("#customerid").val(<%=request.getParameter("customerid")==null?0:Long.parseLong(request.getParameter("customerid"))%>);
+	$("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
+	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
+	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
+</script>
 </BODY>
 </HTML>

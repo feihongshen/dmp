@@ -12,7 +12,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.OrderBackCheck;
+import cn.explink.util.Page;
 
 @Component
 public class OrderBackCheckDAO {
@@ -101,6 +103,26 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
+	
+	//全部
+	public List<OrderBackCheck> getOrderBackChecksByCwbsAndBranch(String cwbs, String branchid) {
+		String sql = "select * from ops_order_back_check where cwb in("+cwbs+") and branchid in(" + branchid + ") and checkstate=0 ";
+		try {
+			return jdbcTemplate.query(sql, new OrderBackCheckRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	//分页
+	public List<OrderBackCheck> getOrderBackCheckByCwbsAndBranch(long page,String cwbs, String branchid) {
+		String sql = "select * from ops_order_back_check where cwb in("+cwbs+") and branchid in(" + branchid + ") and checkstate=0 ";
+		try {
+			sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+			return jdbcTemplate.query(sql, new OrderBackCheckRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	//审核为确认退货
 	public void updateOrderBackCheck1(long checkresult,long id) {
 		String sql = "UPDATE ops_order_back_check SET checkstate=1,checkresult=? where id =? ";
@@ -133,27 +155,59 @@ public class OrderBackCheckDAO {
 	}
 	
 	
-	//退货出站根据条件查询
-	public List<OrderBackCheck> getOrderBackChecks(int cwbtypeid,long customerid,long branchid,long checkstate,long checkresult,String begindate,String enddate) {
-		String sql = "SELECT * from ops_order_back_check  where cwbstate=4";
-		StringBuffer sb = new StringBuffer();
-		if (branchid>0) {
-			sb.append(" and branchid="+branchid);
-		}else if(customerid>0){
-			sb.append(" and customerid="+customerid);
-		}else if(cwbtypeid>0){
-			sb.append(" and cwbordertypeid="+cwbtypeid);
-		}else if(checkstate>=0){
-			sb.append(" and checkstate="+checkstate);
-		}else if(checkresult>0){
-			sb.append(" and checkresult="+checkresult);
-		}else if(!begindate.equals("")){
-			sb.append(" and begindate>="+begindate);
-		}else if(!enddate.equals("")){
-			sb.append(" and enddate>="+enddate);
+	//退货出站根据条件查询(总量)
+	public List<OrderBackCheck> getOrderBackChecks(String cwbs,int cwbtypeid,long customerid,long branchid,long checkstate,long checkresult,String begindate,String enddate) {
+		String sql = "SELECT * from ops_order_back_check  ";
+		if(!cwbs.equals("")){
+			sql += " where cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1 ";
+			StringBuffer sb = new StringBuffer();
+			if (branchid>0) {
+				sb.append(" and branchid="+branchid);
+			}else if(customerid>0){
+				sb.append(" and customerid="+customerid);
+			}else if(cwbtypeid>0){
+				sb.append(" and cwbordertypeid="+cwbtypeid);
+			}else if(checkstate>=0){
+				sb.append(" and checkstate="+checkstate);
+			}else if(checkresult>0){
+				sb.append(" and checkresult="+checkresult);
+			}else if(!begindate.equals("")){
+				sb.append(" and begindate>="+begindate);
+			}else if(!enddate.equals("")){
+				sb.append(" and enddate>="+enddate);
+			}
+			sql +=sb;
 		}
-		
-		sql+=sb.toString();
+		return this.jdbcTemplate.query(sql,new OrderBackCheckRowMapper());
+	}
+	//退货出站根据条件查询(分页)
+	public List<OrderBackCheck> getOrderBackChecksForpage(long page,String cwbs,int cwbtypeid,long customerid,long branchid,long checkstate,long checkresult,String begindate,String enddate) {
+		String sql = "SELECT * from ops_order_back_check ";
+		if(!cwbs.equals("")){
+			sql += " where cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1 ";
+			StringBuffer sb = new StringBuffer();
+			if (branchid>0) {
+				sb.append(" and branchid="+branchid);
+			}else if(customerid>0){
+				sb.append(" and customerid="+customerid);
+			}else if(cwbtypeid>0){
+				sb.append(" and cwbordertypeid="+cwbtypeid);
+			}else if(checkstate>=0){
+				sb.append(" and checkstate="+checkstate);
+			}else if(checkresult>0){
+				sb.append(" and checkresult="+checkresult);
+			}else if(!begindate.equals("")){
+				sb.append(" and begindate>="+begindate);
+			}else if(!enddate.equals("")){
+				sb.append(" and enddate>="+enddate);
+			}
+			sql +=sb;
+		}
+		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql,new OrderBackCheckRowMapper());
 	}
 	

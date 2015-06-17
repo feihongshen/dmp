@@ -9,12 +9,17 @@ public class OperationTime {
 	protected long nextbranchid;
 	protected String isupdate;
 	protected int cwbordertypeid;
-
-	public OperationTime() {
-	}
-
 	private int sitetype;
 	private int state;
+	private long customerid;
+	public long getCustomerid() {
+		return customerid;
+	}
+	public void setCustomerid(long customerid) {
+		this.customerid = customerid;
+	}
+	public OperationTime() {
+	}
 
 	public OperationTime(int id, String cwb, long branchid, long credate, int flowordertype, long nextbranchid) {
 		this.id = id;

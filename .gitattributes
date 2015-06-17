@@ -907,6 +907,7 @@ src/main/java/cn/explink/dao/OrderFlowDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowLogDAO.java -text
 src/main/java/cn/explink/dao/OrderGoodsDAO.java -text
 src/main/java/cn/explink/dao/OrderPartGoodsRtDAO.java -text
+src/main/java/cn/explink/dao/OrderbackRecordDao.java -text
 src/main/java/cn/explink/dao/OrgBillAdjustmentRecordDao.java -text
 src/main/java/cn/explink/dao/OutWarehouseGroupDAO.java -text
 src/main/java/cn/explink/dao/OverdueExMoDAO.java -text
@@ -1078,6 +1079,7 @@ src/main/java/cn/explink/domain/OrderDeliveryClient.java -text
 src/main/java/cn/explink/domain/OrderGoods.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRtList.java -text
+src/main/java/cn/explink/domain/OrderbackRecord.java -text
 src/main/java/cn/explink/domain/OrgBillAdjustmentRecord.java -text
 src/main/java/cn/explink/domain/OutWarehouseGroup.java -text
 src/main/java/cn/explink/domain/OverdueBranchResultVO.java -text

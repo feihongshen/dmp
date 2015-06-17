@@ -315,63 +315,46 @@ public class ApplyEditDeliverystateController {
 	 * 支付信息修改审核
 	 */
 	@SuppressWarnings("unused")
-	@RequestMapping("/paywayInfoModifyCheck")
+	@RequestMapping("/paywayInfoModifyCheck/{page}")
 	public String paywayInfoModifyCheck(Model model,HttpServletRequest request,
+			@PathVariable(value = "page") long page,
 			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
-			@RequestParam(value = "applypeople", defaultValue = "0", required = false) long applypeople,
+			//@RequestParam(value = "applypeople", defaultValue = "0", required = false) int applypeople,
 			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
-			@RequestParam(value = "userid", defaultValue = "0", required = false) int userid,
+			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
 			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) int shenhestate,
 			@RequestParam(value = "shenheresult", defaultValue = "0", required = false) int shenheresult
 			) {
 		
-		List<ZhiFuApplyView> zflist = zhiFuApplyDao.getAllZFAVBycwbs();
+		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
-		Map<Long,String> userMap = new HashMap<Long, String>();
-		for(ZhiFuApplyView zf:zflist){
-			for(User us:uslist){
-				if(us.getUserid()==zf.getUserid()){
-					userMap.put(us.getUserid(), us.getUsername());
-				}
+		List<Customer> customerList = customerDao.getAllCustomers();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		StringBuffer strs = new StringBuffer("");
+		if(!cwbs.equals("")){
+			for(String str:cwbs.split("\r\n")){
+				strs.append("'").append(str).append("',");
 			}
 		}
-		model.addAttribute("applytype",applytype);
-		model.addAttribute("userMap", userMap);
-		List<Customer> customerList = customerDao.getAllCustomers();
-		Map<Long, String> customerMap = new HashMap<Long, String>();
-		for(Customer cus:customerList){
-			customerMap.put(cus.getCustomerid(),cus.getCustomername());
+		String cwbss = "";
+		if(strs.length()>0){
+			strs.substring(0, strs.length()-1);
 		}
-		model.addAttribute("customerMap",customerMap);
-		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		Map<Long, String> bramap = new HashMap<Long, String>();
-		for(Branch bra : branchList){
-			bramap.put(bra.getBranchid(), bra.getBranchname());
-		}
-		model.addAttribute("bramap",bramap);
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
+		long count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
+		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
 		
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		model.addAttribute("page",page);
+		model.addAttribute("page_obj",pag);
+		model.addAttribute("uslist",uslist);
 		model.addAttribute("exportmouldlist", exportmouldlist);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
-		List<ZhiFuApplyView> zhifulist = null;
-		if (cwbs.length() > 0) {
-			StringBuffer sb = new StringBuffer("");
-			for (String cwbStr : cwbs.split("\r\n")) {
-				if (cwbStr.trim().length() == 0) {
-					continue;
-				}
-				sb.append("'"+cwbStr+"',");
-			}
-			zhifulist = zhiFuApplyDao.getZFAVBycwbs(sb.toString().substring(0,sb.lastIndexOf(",")));
-			//request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
-			model.addAttribute("zhifulist", zhifulist);
-		}else if(cwbs==null||"".equals(cwbs.trim())){
-			zhifulist = zhiFuApplyDao.getapplycwbs(cwbtypeid,applytype,userid,shenhestate,shenheresult);
-			model.addAttribute("zhifulist", zhifulist);
-		}
+		model.addAttribute("zhifulist", covList);
 		return "applyeditdeliverystate/paywayInfoModifyCheck";
 	}
 	
@@ -398,65 +381,44 @@ public class ApplyEditDeliverystateController {
 	/**
 	 * 支付信息修改确认
 	 */
-	@RequestMapping("/paywayInfoModifyConfirm")
+	@RequestMapping("/paywayInfoModifyConfirm/{page}")
 	public String paywayInfoModifyConfirm(Model model,HttpServletRequest request,
+		@PathVariable(value = "page") long page,	
 		@RequestParam(value = "exportmould", defaultValue = "", required = true) String exportmould,
 		@RequestParam(value = "cwb", defaultValue = "", required = true) String cwbs,
 		@RequestParam(value = "cwbtypeid", defaultValue = "0", required = true) int cwbtypeid,
-		@RequestParam(value = "applypeople", defaultValue = "0", required = true) long applypeople,
-		@RequestParam(value = "applytype", defaultValue = "0", required = true) int applytype,
+		@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 		@RequestParam(value = "userid", defaultValue = "0", required = true) int userid,
 		@RequestParam(value = "confirmstate", defaultValue = "0", required = true) int confirmstate,
 		@RequestParam(value = "confirmresult", defaultValue = "0", required = true) int confirmresult
 			) {
-		List<ZhiFuApplyView> zflist = zhiFuApplyDao.getAllZFAVBycwbs();
+		
+		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
-		Map<Long, String> userMap = new HashMap<Long, String>();
-		for(ZhiFuApplyView zf:zflist){
-			for(User us:uslist){
-				if(us.getUserid()==zf.getUserid()){
-					userMap.put(us.getUserid(),us.getUsername());
-				}
+		List<Customer> customerList = customerDao.getAllCustomers();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		StringBuffer strs = new StringBuffer("");
+		if(!cwbs.equals("")){
+			for(String str:cwbs.split("\r\n")){
+				strs.append("'").append(str).append("',");
 			}
 		}
-		model.addAttribute("userMap", userMap);
-		
-		List<Customer> customerList = customerDao.getAllCustomers();
-		Map<Long, String> customerMap = new HashMap<Long, String>();
-		for(Customer cus:customerList){
-			customerMap.put(cus.getCustomerid(),cus.getCustomername());
+		String cwbss = "";
+		if(strs.length()>0){
+			strs.substring(0, strs.length()-1);
 		}
-		model.addAttribute("customerMap",customerMap);
-		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		Map<Long, String> braMap = new HashMap<Long, String>();
-		for(Branch bra : branchList){
-			braMap.put(bra.getBranchid(), bra.getBranchname());
-		}
-		model.addAttribute("bramap",braMap);
-		
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getConfirmCwbsForpage(page,cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
+		long count = zhiFuApplyDao.getConfirmCwbsForCount(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
+		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+		model.addAttribute("page",page);
+		model.addAttribute("page_obj",pag);
+		model.addAttribute("uslist",uslist);
 		model.addAttribute("exportmouldlist", exportmouldlist);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
-		List<ZhiFuApplyView> zhifulist = null;
-		if (cwbs.length() > 0) {
-			StringBuffer sb = new StringBuffer("");
-			for (String cwbStr : cwbs.split("\r\n")) {
-				if (cwbStr.trim().length() == 0) {
-					continue;
-				}
-				
-				sb.append("'"+cwbStr+"',");
-			}
-			zhifulist = zhiFuApplyDao.getZFAVBycwbss(sb.toString().substring(0,sb.lastIndexOf(",")));
-			//request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
-			model.addAttribute("zhifulist", zhifulist);
-		}else if(cwbs==null||"".equals(cwbs.trim())){
-			zhifulist = zhiFuApplyDao.getapplycwbss(cwbtypeid,applytype,userid,confirmstate,confirmresult);
-			model.addAttribute("zhifulist", zhifulist);
-		}
-
-
+		model.addAttribute("zhifulist", covList);
 		return "applyeditdeliverystate/paywayInfoModifyConfirm";
 	}
 	
@@ -476,17 +438,14 @@ public class ApplyEditDeliverystateController {
 				todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
 				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
 				return "{\"errorCode\":0,\"msg\":\"true1\"}";
-				//return "editcwb/XiuGaiJinEResult";
 			}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
 				todoConfirmWayResult(fwtr,ecList,errorList,model);
 				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
 				return "{\"errorCode\":0,\"msg\":\"true2\"}";
-				//return "editcwb/XiuGaiZhiFuFangShiResult";
 			}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
 				todoConfirmTypeResult(fwtr,ecList,errorList,model);
 				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过	
 				return "{\"errorCode\":0,\"msg\":\"true3\"}";
-				//return "editcwb/XiuGaiDingDanLeiXingResult";
 			}
 		}
 		

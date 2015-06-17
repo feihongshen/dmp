@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -57,6 +58,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrderBackCheckService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.Page;
 
 /**
  * 退款审核
@@ -253,57 +255,51 @@ public class OrderBackCheckController {
 	 * @param cwb
 	 * @return
 	 */
-	@RequestMapping("/toTuiHuoCheck")
-	public String toTuiHuoCheck(Model model, HttpServletRequest request, @RequestParam(value = "cwbStr", defaultValue = "", required = false) String cwb,
-			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
-			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
-			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
-			@RequestParam(value = "checkstate", defaultValue = "", required = false) String checkstate,
-			@RequestParam(value = "checkresult", defaultValue = "", required = false) String checkresult,
+	@RequestMapping("/toTuiHuoCheck/{page}")
+	public String toTuiHuoCheck(Model model, HttpServletRequest request,
+			@PathVariable(value = "page") long page,
+			@RequestParam(value = "cwbStr", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
+			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) long checkstate,
+			@RequestParam(value = "checkresult", defaultValue = "0", required = false) long checkresult,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
 			) {
-		
+		Page pag = new Page();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		String branchids = "";
-		// 如果为选择站点则匹配用户权限
-		if (branchList != null && !branchList.isEmpty()) {
-			for (Branch listb : branchList) {
-				branchids += listb.getBranchid() + ",";
-			}
-		}
-		branchids = branchids.substring(0, branchids.lastIndexOf(","));
-
 		List<OrderBackCheck> orderbackList = null;
-		// 根据订单号查询
-		if (!"".equals(cwb.trim())) {
-			List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
-			for (String cwbStr : cwb.split("\r\n")) {
-				if ("".equals(cwbStr.trim())) {
-					continue;
-				}
-				
-				OrderBackCheck o = orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
-				if (o != null) {
-					list.add(o);
-				}
-			}
-			orderbackList = orderBackCheckService.getOrderBackCheckList2(list, customerList,branchList);
-		}else{
-			if(cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&checkstate.equals("")&&checkresult.equals("")&&begindate.equals("")&&enddate.equals("")){
-				return "auditorderstate/toTuiHuoCheck";
-			}else{
-				List<OrderBackCheck> list = orderBackCheckDAO.getOrderBackChecks(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(checkstate),Long.parseLong(checkresult),begindate,enddate);
-				orderbackList = orderBackCheckService.getOrderBackCheckList2(list, customerList,branchList);
-			}
+		String cwbsStr = this.getCwbs(cwbs);
+		if(!(cwbs.equals("")&&begindate.equals(""))){	
+			List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(page,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
+			orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
+			List<OrderBackCheck> obcAllList = this.orderBackCheckDAO.getOrderBackChecks(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
+			long count = this.orderBackCheckService.getOrderBackCheckList2(obcAllList, customerList,branchList).size();
+			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
 		}
-		
+		model.addAttribute("page_obj",pag);
+		model.addAttribute("page",page);
 		model.addAttribute("orderbackList", orderbackList);
 		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		return "auditorderstate/toTuiHuoCheck";
+	}
+	
+	public String getCwbs(String cwb){
+		StringBuffer cwbs = new StringBuffer();
+		for (String cwbStr : cwb.split("\r\n")) {
+			if (cwbStr.trim().length() == 0) {
+				continue;
+			}
+			cwbs.append("'").append(cwbStr).append("',");
+		}
+		if(cwbs.length()>0){
+			return cwbs.substring(0, cwbs.length()-1);
+		}
+		return "";
 	}
 	
 	/**

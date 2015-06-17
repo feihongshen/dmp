@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.ZhiFuApplyView;
+import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
@@ -153,6 +154,11 @@ public class ZhiFuApplyDao {
 		return jdbcTemplate.query(sql+=sb, new ZhiFuApplyMapper());
 	}
 	
+	
+	
+	
+	
+	
 	//在 审核~确认 页面通过条件查询
 	public List<ZhiFuApplyView> getapplycwbss(int cwbtypeid, int applytype,int userid,int confirmstate,int confirmresult) {
 		String sql = "";
@@ -221,5 +227,122 @@ public class ZhiFuApplyDao {
 		String sql = "select * from express_ops_zhifu_apply where applyid=?";
 		return jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyid );
 	}
-
+	
+	//在 审核 页面通过条件查询
+	public List<ZhiFuApplyView> getapplycwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int shenhestate,
+			int shenheresult) {
+		String sql = "select * from express_ops_zhifu_apply";
+		if(!cwbs.equals("")){
+			sql += " where cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1";
+			StringBuffer sb = new StringBuffer("");
+			if(cwbtypeid>0){
+				sb.append(" and cwbordertypeid="+cwbtypeid);
+			}
+			if(userid>0){
+				sb.append(" and userid="+userid);
+			}
+			if(applytype>0){
+				sb.append(" and applyway="+applytype);
+			}
+			if(shenhestate>0){
+				sb.append(" and applystate="+shenhestate);
+			}
+			if(shenheresult>0){
+				sb.append(" and applyresult="+shenheresult);
+			}
+			sql += sb;
+		}
+		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
+	}
+	//查出申请总数
+	public long getapplycwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int shenhestate,
+			int shenheresult) {
+		String sql = "select count(1) from express_ops_zhifu_apply";
+		if(!cwbs.equals("")){
+			sql += " where cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1";
+			StringBuffer sb = new StringBuffer("");
+			if(cwbtypeid>0){
+				sb.append(" and cwbordertypeid="+cwbtypeid);
+			}
+			if(userid>0){
+				sb.append(" and userid="+userid);
+			}
+			if(applytype>0){
+				sb.append(" and applyway="+applytype);
+			}
+			if(shenhestate>0){
+				sb.append(" and applystate="+shenhestate);
+			}
+			if(shenheresult>0){
+				sb.append(" and applyresult="+shenheresult);
+			}
+			sql += sb;
+		}
+		return jdbcTemplate.queryForLong(sql);
+	}
+	
+	
+	//在确认 页面通过条件查询
+	public List<ZhiFuApplyView> getConfirmCwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
+			int confirmresult) {
+		String sql = "select * from express_ops_zhifu_apply";
+		if(!cwbs.equals("")){
+			sql += " where cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1";
+			StringBuffer sb = new StringBuffer("");
+			if(cwbtypeid>0){
+				sb.append(" and cwbordertypeid="+cwbtypeid);
+			}
+			if(userid>0){
+				sb.append(" and userid="+userid);
+			}
+			if(applytype>0){
+				sb.append(" and applyway="+applytype);
+			}
+			if(confirmstate>0){
+				sb.append(" and confirmstate="+confirmstate);
+			}
+			if(confirmresult>0){
+				sb.append(" and confirmresult="+confirmresult);
+			}
+			sql += sb;
+		}
+		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
+	}
+	
+	//在确认 页面通过条件查询
+		public long getConfirmCwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
+				int confirmresult) {
+			String sql = "select count(1) from express_ops_zhifu_apply";
+			if(!cwbs.equals("")){
+				sql += " where cwb in("+cwbs+")";
+			}else{
+				sql += " where 1=1";
+				StringBuffer sb = new StringBuffer("");
+				if(cwbtypeid>0){
+					sb.append(" and cwbordertypeid="+cwbtypeid);
+				}
+				if(userid>0){
+					sb.append(" and userid="+userid);
+				}
+				if(applytype>0){
+					sb.append(" and applyway="+applytype);
+				}
+				if(confirmstate>0){
+					sb.append(" and confirmstate="+confirmstate);
+				}
+				if(confirmresult>0){
+					sb.append(" and confirmresult="+confirmresult);
+				}
+				sql += sb;
+			}
+			return jdbcTemplate.queryForLong(sql);
+		}
 }

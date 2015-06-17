@@ -53,6 +53,7 @@ import cn.explink.domain.CwbApplyTuiHuo;
 import cn.explink.domain.CwbApplyZhongZhuan;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.User;
@@ -623,16 +624,17 @@ public class CwbApplyController {
 	@RequestMapping("/kefuuserapplytoZhongZhuanlist/{page}")
 	public String toChangeZhongZhuan(Model model, HttpServletRequest request,
 			@PathVariable(value = "page") long page,
-			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwb,// 订单状态类型
-			@RequestParam(value = "cwbtypeid", defaultValue = "", required = false) String cwbtypeid,
-			@RequestParam(value = "customerid", defaultValue = "", required = false) String customerid,
-			@RequestParam(value = "branchid", defaultValue = "", required = false) String branchid,
-			@RequestParam(value = "shenhestate", defaultValue = "", required = false) String shenhestate,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,// 订单状态类型
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
+			@RequestParam(value = "ishandle", defaultValue = "0", required = false) int ishandle,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate,
-			@RequestParam(value = "hiddencwb", defaultValue = "", required = false) String hiddencwb
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			
 			) {
 		Page pag = new Page();
+		
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		model.addAttribute("branchList", branchList);
@@ -641,34 +643,32 @@ public class CwbApplyController {
 		for (Customer cu : customerList) {
 			customerMap.put(cu.getCustomerid(), cu.getCustomername());
 		}
-		
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
-		if((cwb.length()>0&&!cwb.equals("查询多个订单用回车隔开"))||!hiddencwb.equals("")){
-			String cwbs = "";
-			if(!cwb.equals("查询多个订单用回车隔开")){
-				cwbs = this.getCwbs(cwb);
-			}else if(cwb.equals("查询多个订单用回车隔开")){
-				cwbs = this.getCwbs(hiddencwb);
+		String cwbStr = getCwbs(cwbs);	
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(!(cwbs.equals("")&&begindate.equals(""))){
+			cwbApplyZhongZhuanlist=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(page,cwbStr,cwbtypeid,customerid,branchid,ishandle,begindate,enddate);
+			long count=  cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(cwbStr,cwbtypeid,customerid,branchid,ishandle,begindate,enddate);
+			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+			StringBuffer sb = new StringBuffer();
+			if(cwbApplyZhongZhuanlist.size()>0){
+				for(CwbApplyZhongZhuan ot:cwbApplyZhongZhuanlist){
+					sb.append("'").append(ot.getCwb()).append("',");
+				}
 			}
-			if(cwbs.length()>0){
-				String cwbsStr = cwbs.toString().substring(0,cwbs.length()-1);
-				cwbApplyZhongZhuanlist = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuans(page,cwbsStr);
-				pag = new Page(this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(cwbsStr),page,Page.ONE_PAGE_NUMBER);
+			String strs = "";
+			List<CwbOrder> coList = new ArrayList<CwbOrder>();
+			if(sb.length()>0){
+				strs = sb.substring(0, sb.length()-1);
+				coList = cwbDAO.getListbyCwbs(strs);
 			}
 			
-		}else{
-			if(cwb.equals("")&&cwbtypeid.equals("")&&customerid.equals("")&&branchid.equals("")&&shenhestate.equals("")&&begindate.equals("")&&enddate.equals("")){
-				return "cwbapply/kefuuserapplytoZhongZhuanlist";
-			}else{
-				this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(page,Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate);
-				pag = new Page(cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(Integer.parseInt(cwbtypeid),Long.parseLong(customerid),Long.parseLong(branchid),Long.parseLong(shenhestate),begindate,enddate),page,Page.ONE_PAGE_NUMBER);
-			}
+			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
 		}
-		model.addAttribute("cwb",cwb);
 		model.addAttribute("page_obj",pag);
-		
 		model.addAttribute("customerMap", customerMap);
-		model.addAttribute("cwbApplyZhongZhuanlist",cwbApplyZhongZhuanlist);
+		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("cwbApplyZhongZhuanlist",covList);
 		model.addAttribute("page",page);
 		return "cwbapply/kefuuserapplytoZhongZhuanlist";
 	}
@@ -681,8 +681,12 @@ public class CwbApplyController {
 			}
 			cwbs.append("'").append(cwbStr).append("',");
 		}
-		return cwbs.toString();
+		if(cwbs.length()>0){
+			return cwbs.substring(0, cwbs.length()-1);
+		}
+		return "";
 	}
+
 
 	/**
 	 * 中转申请订单确认审核
@@ -705,7 +709,7 @@ public class CwbApplyController {
 			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
 			if(cazzList.size()>0){
 				for(CwbApplyZhongZhuan cazz:cazzList){
-					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 1, cazz.getApplyzhongzhuanbranchid(),3, cazz.getCwb());
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(),3, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
 				}
 			}
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
@@ -735,7 +739,7 @@ public class CwbApplyController {
 			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
 			if(cazzList.size()>0){
 				for(CwbApplyZhongZhuan cazz:cazzList){
-					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 1, cazz.getApplyzhongzhuanbranchid(),2, cazz.getCwb());
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 2, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
 				}
 			}
 			return "{\"errorCode\":0,\"error\":\"审核为不成功\"}";

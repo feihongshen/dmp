@@ -4,23 +4,22 @@ public enum ConfirmResultEnum {
 	querenbutongguo(1,"确认不通过"),
 	querentongguo(2,"确认通过");
 	private int value;
-	private String txt;
+	private String text;
 	public int getValue() {
 		return value;
 	}
 	public void setValue(int value) {
 		this.value = value;
 	}
-	public String getTxt() {
-		return txt;
+	public String getText() {
+		return text;
 	}
-	public void setTxt(String txt) {
-		this.txt = txt;
+	public void setText(String text) {
+		this.text = text;
 	}
-	
-	private ConfirmResultEnum(int value,String txt){
+	private ConfirmResultEnum(int value,String text){
 		this.value = value;
-		this.txt = txt;
+		this.text = text;
 	}
 	
 }

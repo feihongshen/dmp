@@ -1205,10 +1205,4 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(),flowordertype,begindate,enddate);
 	}
 	
-	//每次查询10条 lx
-	public List<OrderFlow> getOrderByCredates(long flowordertype, String begindate,String enddate){
-		String sql = "select * from express_ops_order_flow where flowordertype=? and credate>=? and credate<=? limit 0,10" ;
-		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(),flowordertype,begindate,enddate);
-	}
-	
 }

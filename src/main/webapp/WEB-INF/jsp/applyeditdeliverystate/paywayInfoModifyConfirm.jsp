@@ -1,16 +1,16 @@
-<%@page import="cn.explink.util.StringUtil"%>
+<%@page import="cn.explink.util.*"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.controller.CwbOrderView"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+List<User> uslist = (List<User>)request.getAttribute("uslist");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
-Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
-Map<Long,String> userMap = (Map<Long,String>)request.getAttribute("userMap");
-List<ZhiFuApplyView> zhifulist = (List<ZhiFuApplyView>)request.getAttribute("zhifulist");
-Map<Long,String> braMap = (Map<Long,String>)request.getAttribute("braMap");
+String cwbs = request.getParameter("cwb")==null?"":request.getParameter("cwb");
+List<CwbOrderView> zhifulist = (List<CwbOrderView>)request.getAttribute("zhifulist");
+Page page_obj = (Page)request.getAttribute("page_obj");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -68,36 +68,16 @@ $(function(){
 	$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
 });
 
-$(function() {
-	$("#strtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-		timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	
-});
 
 function check(){
-	if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
-		alert("开始时间不能大于结束时间");
-		return false;
-	}
-	else{
-		return true;
-	}
+	$("#searchForm").submit();
+	return true;
+
 }
 
+function btnClick(){
+	$("[name='checkbox']").attr("checked",'true');//全选  
+}
 /* function sub(){
 	var datavalue = "[";
 	
@@ -207,7 +187,7 @@ function applynopass(){
 				<div style="position:relative; z-index:0 " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form action="./paywayInfoModifyCheck" method="post" id="searchForm">
+							<form action="1" method="post" id="searchForm">
 								<span>
 								<select name ="exportmould" id ="exportmould">
 										<option  value ="0">导出模板</option>
@@ -221,7 +201,7 @@ function applynopass(){
 									<tr>
 										<td rowspan="2">
 											订单号：
-											<textarea name="cwb"  rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+											<textarea name="cwb"  rows="3" class="kfsh_text" id="cwb" ><%=cwbs %></textarea>
 										</td>
 										<td>
 											订单类型:
@@ -234,17 +214,17 @@ function applynopass(){
 										</td>
 										<td>
 											申请人:
-											<select name ="applypeople" id ="cwbtypeid">
+											<select name ="applypeople" id ="applypeople">
 												<option  value ="0">全部</option>
-													<% Set<Long> s=userMap.keySet();%>
-													<%for(Long u:s){ %>
-													<option value ="<%=u %>"><%=userMap.get(u) %></option>
-													<%} %>
+													<%if(uslist.size()>0){
+														for(User u:uslist){ %>
+															<option value ="<%=u.getUserid() %>"><%=u.getUsername() %></option>
+													<%} }%>
 											</select>
 										</td>
 										<td>
 											申请类型:
-											<select name ="applytype" id ="cwbtypeid">
+											<select name ="applytype" id ="applytype">
 												<option  value ="0">全部</option>
 													<option value ="<%=ApplyEnum.dingdanjinE.getValue()%>"><%=ApplyEnum.dingdanjinE.getText() %></option>
 													<option value ="<%=ApplyEnum.zhifufangshi.getValue()%>"><%=ApplyEnum.zhifufangshi.getText() %></option>
@@ -256,9 +236,8 @@ function applynopass(){
 										<td>
 											确认状态:
 											<select name ="confirmstate" id ="confirmstate">
-												<option  value ="0">全部</option>
-													<option value ="<%=ConfirmStateEnum.daiqueren.getValue() %>"><%=ConfirmStateEnum.daiqueren.getText() %></option>
-													<option value ="<%=ConfirmStateEnum.yiqueren.getValue() %>"><%=ConfirmStateEnum.yiqueren.getText() %></option>
+												<option value ="<%=ConfirmStateEnum.daiqueren.getValue() %>"><%=ConfirmStateEnum.daiqueren.getText() %></option>
+												<option value ="<%=ConfirmStateEnum.yiqueren.getValue() %>"><%=ConfirmStateEnum.yiqueren.getText() %></option>
 											</select>
 										</td>
 										<td>
@@ -274,8 +253,8 @@ function applynopass(){
 								<table>
 									<tr>
 										<td width="20%">
-											<input type="button" value="查询" onclick="serchsubmit();" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" value="查询" onclick="check();" class="input_button2">&nbsp;&nbsp;
+											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
 											<input type="button" onclick="applypass()" id="pass" value="确认通过" class="input_button2">&nbsp;&nbsp;
@@ -284,9 +263,6 @@ function applynopass(){
 										</td>
 									</tr>
 								</table>
-							</form>
-							<form action="" id="shenhesubmit" method="post">
-								<input hidden="hidden" id="hiddencwbs" value="" />
 							</form>
 							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
 								<input type="hidden" name="exportmould2" id="exportmould2" />
@@ -314,28 +290,57 @@ function applynopass(){
 						<tbody>
 							<%
 							if(zhifulist!=null){
-								for(ZhiFuApplyView zav :zhifulist){ 
+								for(CwbOrderView zav :zhifulist){ 
 									%>
 									<tr height="30" >
 										<td  width="40" align="center" valign="middle">
-												<input type="checkbox"  name="checkbox" id="checkbox" value="<%=zav.getApplyid()%>"/>
-											</td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav==null?"":zav.getCwb() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=customerMap==null?"":customerMap.get(zav.getCustomerid()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyEnum.getTextByValue(zav.getApplyway()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=CwbOrderTypeIdEnum.getTextByValue(zav.getCwbordertypeid()) %>/<%=CwbOrderTypeIdEnum.getTextByValue(zav.getApplycwbordertypeid()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav==null?"":zav.getReceivablefee() %>/<%=zav==null?"":zav.getApplyreceivablefee() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=PaytypeEnum.getTextByValue(zav.getPaywayid()) %>/<%=PaytypeEnum.getTextByValue(zav.getApplypaywayid()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=ApplyStateEnum.getTextByValue(zav.getApplystate()) %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=braMap==null?"":braMap.get(zav.getBranchid()) %></td>
+											<input type="checkbox"  name="checkbox" id="checkbox" value="<%=zav.getOpscwbid()%>"/>
+										</td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getApplytype() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwbordertypename() %>/<%=zav.getNewcwbordertypename() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getReceivablefee()%>/<%=zav.getNewreceivefee() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getPaytype_old() %>/<%=zav.getPaytype()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getNowState() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getBranchname()%></td>
 									</tr>
 								<%} }%>
 						</tbody>
 					</table>
 					</from>
+					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
+					<div class="iframe_bottom">
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+							<tr>
+								<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+									<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
+									<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
+									<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
+									<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
+									　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+											id="selectPg"
+											onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+											<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+											<option value="<%=i %>"><%=i %></option>
+											<% } %>
+										</select>页
+								</td>
+							</tr>
+						</table>
+					</div>
+				    <%} %>
 				</div>
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+	$("#selectPg").val(<%=request.getAttribute("page")%>);
+	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
+	$("#applypeople").val(<%=request.getParameter("applypeople")==null?0:Long.parseLong(request.getParameter("applypeople"))%>);
+	$("#applytype").val(<%=request.getParameter("applytype")==null?0:Long.parseLong(request.getParameter("applytype"))%>);
+	$("#confirmstate").val(<%=request.getParameter("confirmstate")==null?0:Long.parseLong(request.getParameter("confirmstate"))%>);
+	$("#confirmresult").val(<%=request.getParameter("confirmresult")==null?0:Long.parseLong(request.getParameter("confirmresult"))%>);
+</script>
 </BODY>
 </HTML>

@@ -33,6 +33,7 @@ public class OperationTimeDAO {
 			operationTime.setNextbranchid(rs.getLong("nextbranchid"));
 			operationTime.setIsupdate(rs.getString("isupdate"));
 			operationTime.setCwbordertypeid(rs.getInt("cwbordertypeid"));
+			operationTime.setCustomerid(rs.getLong("customerid"));
 			return operationTime;
 		}
 	}
@@ -600,6 +601,62 @@ public class OperationTimeDAO {
 	public void updateOperationTimeMoney(String cwb, BigDecimal receivablefee,BigDecimal paybackfee) {
 		String sql = "update express_ops_operation_time set receivablefee="+receivablefee+",paybackfee="+paybackfee+" where cwb=?";
 		this.jdbcTemplate.update(sql,  cwb);
+	}
+
+	public List<OperationTime> getCwbViewList(long page,String cwbs, int cwbordertype, long customerid, long branchid,long begindate, long enddate) {
+		String sql = "select * from express_ops_operation_time where flowordertype=15";
+		if(!cwbs.equals("")){
+			sql += " and cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1 ";
+			StringBuffer w = new StringBuffer("");
+			if (cwbordertype > 0) {
+				w.append(" and cwbordertypeid=" + cwbordertype);
+			}
+			if (customerid > 0) {
+				w.append(" and customerid=" + customerid);
+			}
+			if (branchid > 0) {
+				w.append(" and branchid=" + branchid);
+			}
+			if (begindate> 0) {
+				w.append(" and credate >= " + begindate);
+			}
+			if (enddate> 0) {
+				w.append(" and credate <= " + enddate);
+			}
+			sql += w;
+		}
+		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql, new OperationTimeRowMapper());
+	}
+	
+	public long getCwbViewListCount(String cwbs, int cwbordertype, long customerid, long branchid,long begindate, long enddate) {
+		String sql = "select count(1) from express_ops_operation_time where flowordertype=15";
+		if(!cwbs.equals("")){
+			sql += " and cwb in("+cwbs+")";
+		}else{
+			sql += " where 1=1 ";
+			StringBuffer w = new StringBuffer("");
+			if (cwbordertype > 0) {
+				w.append(" and cwbordertypeid=" + cwbordertype);
+			}
+			if (customerid > 0) {
+				w.append(" and customerid=" + customerid);
+			}
+			if (branchid > 0) {
+				w.append(" and branchid=" + branchid);
+			}
+			if (begindate> 0) {
+				w.append(" and credate >= " + begindate);
+			}
+			if (enddate> 0) {
+				w.append(" and credate <= " + enddate);
+			}
+			sql += w;
+		}
+		
+		return jdbcTemplate.queryForLong(sql);
 	}
 	
 }

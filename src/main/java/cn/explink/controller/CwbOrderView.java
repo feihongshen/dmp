@@ -243,8 +243,66 @@ public class CwbOrderView {
 	private String applyzhongzhuanhandletime;// 中转申请审核时间
 	
 	//新加显示字段2015-5-27
-	private String cwbordertypename;//订单类型名
+	private String cwbordertypename;//订单类型名(原类型)
+	private String matchbranchid;//匹配站点id
+	private String matchbranchname;//匹配站点名称
+	private String newcwbordertypename;//现类型
+	private BigDecimal newreceivefee;//现在金额
+	private String nowState;//订单当前状态
+	private String applytype;//申请类型
 	
+
+	public String getApplytype() {
+		return applytype;
+	}
+
+	public void setApplytype(String applytype) {
+		this.applytype = applytype;
+	}
+
+	public String getNowState() {
+		return nowState;
+	}
+
+	public void setNowState(String nowState) {
+		this.nowState = nowState;
+	}
+
+	public String getNewcwbordertypename() {
+		return newcwbordertypename;
+	}
+
+	public void setNewcwbordertypename(String newcwbordertypename) {
+		this.newcwbordertypename = newcwbordertypename;
+	}
+
+
+
+
+	public BigDecimal getNewreceivefee() {
+		return newreceivefee;
+	}
+
+	public void setNewreceivefee(BigDecimal newreceivefee) {
+		this.newreceivefee = newreceivefee;
+	}
+
+	public String getMatchbranchid() {
+		return matchbranchid;
+	}
+
+	public void setMatchbranchid(String matchbranchid) {
+		this.matchbranchid = matchbranchid;
+	}
+
+	public String getMatchbranchname() {
+		return matchbranchname;
+	}
+
+	public void setMatchbranchname(String matchbranchname) {
+		this.matchbranchname = matchbranchname;
+	}
+
 	public String getCwbordertypename() {
 		return cwbordertypename;
 	}

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.OrderFlowExport;
 import cn.explink.dao.AccountCwbDetailDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
@@ -84,6 +86,7 @@ import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OrderFlowLogDAO;
+import cn.explink.dao.OrderbackRecordDao;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.PosPayMoneyDAO;
 import cn.explink.dao.ReasonDao;
@@ -127,8 +130,10 @@ import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
 import cn.explink.domain.GroupDetail;
 import cn.explink.domain.NoPiPeiCwbDetail;
+import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderArriveTime;
 import cn.explink.domain.OrderBackCheck;
+import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.ReturnCwbs;
@@ -141,11 +146,13 @@ import cn.explink.domain.TransferResMatch;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.YpdjHandleRecord;
+import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
+import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -364,6 +371,11 @@ public class CwbOrderService {
 	TransferReasonStasticsDao transferReasonStasticsDao;
 	@Autowired
 	TransferResMatchDao transferResMatchDao;
+	@Autowired
+	DataStatisticsService dataStatisticsService;
+	@Autowired
+	OrderbackRecordDao orderbackRecordDao;
+	
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -4610,8 +4622,21 @@ public class CwbOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 		}
+		creOrderbackRecord(cwb,co.getCwbordertypeid(),co.getCustomerid(),co.getReceivablefee(),co.getEmaildate(),DateTimeUtil.getNowTime());
 	}
 
+	//新加---在退供应商出库操作时存入退供应商数据lx
+	public void creOrderbackRecord(String cwb,int cwbordertypeid,long customerid,BigDecimal recievefee,String emaildate,String createtime){
+		OrderbackRecord or = new OrderbackRecord();
+		or.setCwb(cwb);
+		or.setCwbordertypeid(cwbordertypeid);
+		or.setCustomerid(customerid);
+		or.setReceivablefee(recievefee);
+		or.setEmaildate(emaildate);
+		or.setCreatetime(createtime);
+		orderbackRecordDao.creOrderbackRecord(or);
+	}
+	
 	/**
 	 * 供货商拒收返库
 	 *
@@ -4751,7 +4776,6 @@ public class CwbOrderService {
 		this.logger.info("{} 将订单 {} 改为供货商退货成功", flowordertype, cwb);
 
 		cwb = this.translateCwb(cwb);
-
 		return this.supplierBackSuccessHandle(user, cwb, scancwb);
 	}
 
@@ -6258,8 +6282,157 @@ public class CwbOrderService {
 		return strs;
 	}
 
+	
+	//新增退货再投view
+	public List<CwbOrderView> getTuiZaiCwbOrderView(List<CwbOrder> orderlist, List<OperationTime> optList, List<Customer> customerList, List<Branch> branchList
+				) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (optList.size() > 0 && orderlist.size() > 0) {
+			for (OperationTime ot :optList ) {
+				for (CwbOrder c : orderlist) {
+					if (ot.getCwb().equals(c.getCwb())) {
+						CwbOrderView cwbOrderView = new CwbOrderView();
+						cwbOrderView.setCwb(c.getCwb());
+						cwbOrderView.setCwbordertypeid(CwbOrderTypeIdEnum.getByValue(c.getCwbordertypeid()).getText());// 订单类型
+						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, c.getCustomerid()));// 供货商的名称
+						cwbOrderView.setConsigneename(c.getConsigneename());//收件人
+						cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());//收件人地址
+						cwbOrderView.setTuihuozhaninstoreroomtime(this.getStringDate(ot.getCredate()));//退货库入库时间
+						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));
+						cwbOrderViewList.add(cwbOrderView);
+					}
+				}
+			}
+		}
+		return cwbOrderViewList;
+	}
+	
+	
+	//新增退货再投view
+	public List<CwbOrderView> getTuigongSuccessCwbOrderView(List<CwbOrder> orderlist, List<OrderbackRecord> orList, List<Customer> customerList
+				) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (orList.size() > 0 && orderlist.size() > 0) {
+			for (CwbOrder c : orderlist){
+				for (OrderbackRecord ot :orList ){
+					if (ot.getCwb().equals(c.getCwb())) {
+						CwbOrderView cwbOrderView = new CwbOrderView();
+						cwbOrderView.setCwb(ot.getCwb());
+						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText());// 订单类型
+						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
+						cwbOrderView.setReceivablefee(ot.getReceivablefee());//收件人
+						cwbOrderView.setEmaildate(ot.getEmaildate());;//收件人地址
+						cwbOrderView.setCreatetime(ot.getCreatetime());
+						cwbOrderViewList.add(cwbOrderView);
+					}
+				}
+			}
+		}
+		return cwbOrderViewList;
+	}
+	
+	//新增支付信息申请view
+	public List<CwbOrderView> getZhifuApplyCwbOrderView( List<ZhiFuApplyView> orList, List<Customer> customerList,
+			List<Branch> branchList	) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (orList.size() > 0 && orList.size() > 0) {
+			for (ZhiFuApplyView ot :orList){
+				CwbOrderView cwbOrderView = new CwbOrderView();
+				cwbOrderView.setOpscwbid(ot.getApplyid());//存放支付申请的主键id
+				cwbOrderView.setCwb(ot.getCwb());
+				cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
+				cwbOrderView.setApplytype(ApplyEnum.getTextByValue(ot.getApplyway()));
+				cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText());// 订单类型
+				cwbOrderView.setNewcwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText());
+				cwbOrderView.setReceivablefee(ot.getReceivablefee());
+				cwbOrderView.setNewreceivefee(ot.getApplyreceivablefee());
+				cwbOrderView.setPaytype_old(PaytypeEnum.getTextByValue(ot.getPaywayid()));//原支付方式
+				cwbOrderView.setPaytype(PaytypeEnum.getTextByValue(ot.getApplypaywayid()));//现支付方式
+				cwbOrderView.setNowState(this.getNowApplyState(ot.getApplystate()));//订单当前状态
+				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
+				cwbOrderViewList.add(cwbOrderView);
+			}
+		}
+		return cwbOrderViewList;
+	}
+	
+	public String getNowApplyState(int statevalue){
+		if(statevalue==1||statevalue==2){
+			String str = statevalue==1?"待审核":"已审核";
+			return str;
+		}
+		return null;
+	}
+	
+	//新增支付信息确认view
+	public List<CwbOrderView> getZhifuConfirmCwbOrderView(List<ZhiFuApplyView> orList, List<Customer> customerList,
+			List<Branch> branchList	) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (orList.size() > 0 && orList.size() > 0) {
+			for (ZhiFuApplyView ot :orList){
+				CwbOrderView cwbOrderView = new CwbOrderView();
+				cwbOrderView.setOpscwbid(ot.getApplyid());//存放支付申请的主键id
+				cwbOrderView.setCwb(ot.getCwb());
+				cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
+				cwbOrderView.setApplytype(ApplyEnum.getTextByValue(ot.getApplyway()));
+				cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText());// 订单类型
+				cwbOrderView.setNewcwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText());
+				cwbOrderView.setReceivablefee(ot.getReceivablefee());
+				cwbOrderView.setNewreceivefee(ot.getApplyreceivablefee());
+				cwbOrderView.setPaytype_old(PaytypeEnum.getTextByValue(ot.getPaywayid()));//原支付方式
+				cwbOrderView.setPaytype(PaytypeEnum.getTextByValue(ot.getApplypaywayid()));//现支付方式
+				cwbOrderView.setNowState(this.getNowConfirmState(ot.getConfirmstate()));//订单当前状态
+				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
+				cwbOrderViewList.add(cwbOrderView);
+			}
+		}
+		return cwbOrderViewList;
+	}
+	public String getNowConfirmState(int statevalue){
+		if(statevalue==1||statevalue==2){
+			String str = statevalue==1?"待审核":"已审核";
+			return str;
+		}
+		return null;
+	}
+	
+	public String getStringDate(long datetime){	
+		Date date = new Date(datetime);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		return sdf.format(date);
+	}
+	
+	public String getCwbs(String cwbs){
+		StringBuffer sb = new StringBuffer();
+		for(String str:cwbs.split("\r\n")){
+			sb.append("'").append(str).append("',");
+		}
+		return sb.substring(0, sb.length()-1);
+	}
 
-	public String getCwbsBydate(long flowordertypeid, String begindate,
+	public List<CwbOrderView> getZhongZhuanCwbOrderView(List<CwbOrder> coList,List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist,
+			List<Customer> customerList,List<Branch> branchList) {
+		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
+		if (cwbApplyZhongZhuanlist.size() > 0 && cwbApplyZhongZhuanlist.size() > 0) {
+			for (CwbOrder c : coList){
+				for (CwbApplyZhongZhuan ot :cwbApplyZhongZhuanlist ){
+					if (ot.getCwb().equals(c.getCwb())) {
+						CwbOrderView cwbOrderView = new CwbOrderView();
+						cwbOrderView.setCwb(ot.getCwb());
+						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
+						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
+						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getApplyzhongzhuanbranchid()));//当前站点
+						cwbOrderView.setMatchbranchname("");//匹配站点名称
+						cwbOrderView.setInSitetime("");//到站时间
+						cwbOrderViewList.add(cwbOrderView);
+					}
+				}
+			}
+		}
+		return cwbOrderViewList;
+	}
+	
+	/*public String getCwbsBydate(long flowordertypeid, String begindate,
 			String enddate) {
 		List<OrderFlow> orderList = orderFlowDAO.getOrderByCredates(flowordertypeid,begindate,enddate);
 		StringBuffer sb = new StringBuffer("");
@@ -6270,6 +6443,6 @@ public class CwbOrderService {
 			return sb.toString().substring(0, sb.length()-1);
 		}
 		return null;
-	}
+	}*/
 	
 }

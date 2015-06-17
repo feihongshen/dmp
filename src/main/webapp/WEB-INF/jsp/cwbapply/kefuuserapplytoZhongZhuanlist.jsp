@@ -13,6 +13,8 @@
 	List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = (List<CwbApplyZhongZhuan>)request.getAttribute("cwbApplyZhongZhuanlist");
 	Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
 	Page page_obj = (Page)request.getAttribute("page_obj");
+	
+	String cwbs=request.getParameter("cwbs")==null?"":request.getParameter("cwbs");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -99,6 +101,66 @@ function subNopass(){
 	}
 }
 
+function check(){
+	var len=$.trim($("#cwbs").val()).length;
+ 	if(len>0)
+		{
+ 		 $("#searchForm").submit();
+		return true;
+		} 
+
+	if($("#strttime").val()==""){
+		alert("请选择开始时间");
+		return false;
+	}
+	if($("#endtime").val()==""){
+		alert("请选择结束时间");
+		return false;
+	}
+	if($("#strttime").val()>$("#endtime").val()){
+		alert("开始时间不能大于结束时间");
+		return false;
+	}
+	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strttime").val()!='' &&$("#endtime").val()=='')){
+		alert("时间跨度不能大于30天！");
+		return false;
+	}
+
+   $("#searchForm").submit();
+	return true;
+}
+function Days(){     
+	var day1 = $("#strttime").val();   
+	var day2 = $("#endtime").val(); 
+	var y1, y2, m1, m2, d1, d2;//year, month, day;   
+	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
+	day2=new Date(Date.parse(day2.replace(/-/g,"/")));
+	y1=day1.getFullYear();
+	y2=day2.getFullYear();
+	m1=parseInt(day1.getMonth())+1 ;
+	m2=parseInt(day2.getMonth())+1;
+	d1=day1.getDate();
+	d2=day2.getDate();
+	var date1 = new Date(y1, m1, d1);            
+	var date2 = new Date(y2, m2, d2);   
+	var minsec = Date.parse(date2) - Date.parse(date1);          
+	var days = minsec / 1000 / 60 / 60 / 24;  
+	if(days>30){
+		return false;
+	}        
+	return true;
+}
+
+function reset(){
+	 $("#cwbs").val('');
+	 $("#cwbtypeid").val('0');
+	 $("#customerid").val('0');
+	 $("#branchid").val('0');
+	 $("#ishandle").val('0');
+	 $("#strtime").val('');
+	 $("#endtime").val('');
+	};	
+
 function exportField(){
 	if(<%=cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()%>){
 		$("#btnval").attr("disabled","disabled"); 
@@ -150,8 +212,8 @@ $(function() {
 									<tr>
 										<td rowspan="2">
 											订单号：
-											<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
-											<input name="hiddencwb" type="hidden" id="hiddencwb" value="<%=hiddenCwb %>" />
+											<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs"  ><%=cwbs %></textarea>
+											
 										</td>
 										<td>
 											&nbsp;&nbsp;
@@ -189,10 +251,11 @@ $(function() {
 										<td>
 											&nbsp;&nbsp;
 											审核状态:
-											<select name ="shenhestate" id ="shenhestate">
+											<select name ="ishandle" id ="ishandle">
 												<option  value ="0">全部</option>
-												<option value ="<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
-												<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText()%></option>
+												<option value ="<%=ShenHeStateEnum.daishenhe.getValue()%>"><%=ShenHeStateEnum.daishenhe.getText() %></option>
+												<option value ="<%=ShenHeStateEnum.shenhebutongguo.getValue() %>"><%=ShenHeStateEnum.shenhebutongguo.getText()%></option>
+												<option value ="<%=ShenHeStateEnum.shenhetongguo.getValue() %>"><%=ShenHeStateEnum.shenhetongguo.getText()%></option>
 											</select>
 										</td>
 										<td>
@@ -207,8 +270,8 @@ $(function() {
 								<table>
 									<tr>
 										<td>
-											<input type="submit" value="查询" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="" value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="check();" id="serch" value="查询" class="input_button2">&nbsp;&nbsp;
+											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td>
 											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"> 
