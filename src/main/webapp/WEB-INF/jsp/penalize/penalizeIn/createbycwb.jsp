@@ -45,7 +45,7 @@ List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("p
 								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>
 								<%}} %>
 							</select>
-							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutyname');" class="select1">
+							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutyname','dutybranchid');" class="select1">
 							<option value="0" selected="selected">请选择责任机构</option>
 							<%if(branchList!=null){for(Branch branch:branchList){ %>
 							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
