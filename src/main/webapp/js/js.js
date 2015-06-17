@@ -6378,35 +6378,28 @@ function isEmailValue(str){
 }
 
 function isChineseValue(str){
-	   var re = /^[^[\u4e00-\u9fa5]*]*$/
+	   var re = /^[\u4e00-\u9fa5]{2,10}$/ 
 	   if(!re.test(str)){
 		   alert('请输入正确的省份');
-			$('#mailBoxid').val("");
+			$('#province').val("");
 			return false;
 	   }
 	}
 function isChineseValue1(str){
-	   var re = /^[^[\u4e00-\u9fa5]*]*$/
-	   if(!re.test(str)){
+	var re1 = /^[\u4e00-\u9fa5]{2,10}$/ 
+	   if(!re1.test(str)){
 		   alert('请输入正确的城市');
-			$('#mailBoxid').val("");	
+			$('#city').val("");	
 			return false;
 	   }
 	}
 
 function isnum(str){
-	if(!isNumber(str)){
-		alert('请输入正确的数字');
-		$('#contactNum').val("");	
-		return false;
-	}
+	 var reg = new RegExp("^[0-9]*$");
+	    if(!/^[0-9]*$/.test(str)){
+	        alert("请输入数字!");
+	        $('#contactNum').val("");	
+	        return false;
+	    }
 }
-function FormcheckLen(obj) {  
-	var maxChars = 20;//最多字符数  
-	if (obj.value.length > maxChars){
-		obj.value = obj.value.substring(0,maxChars);  
-	} 
-/*	var curr = maxChars - obj.value.length;  
-	document.getElementById("count").innerHTML = curr.toString(); */
-} 
 

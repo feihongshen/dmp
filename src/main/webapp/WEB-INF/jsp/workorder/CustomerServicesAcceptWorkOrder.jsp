@@ -535,13 +535,13 @@ function submitselect2(){    //通过手机号查询工单
 					男<input type="radio" name="sex" value="1" id="sex1">
 					女<input type="radio" name="sex" value="0" id="sex">
 					</td>
-					<td><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this)"></td>
-					<td><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this)"></td>
+					<td><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this.value)"></td>
+					<td><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this.value)"></td>
 				</tr>
 				<tr>									
-					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname"></td>
+					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
 					<td><font color="red">*</font>最后联系时间:<input type="text" name="contactLastTime" id="contactLastTime" class="input_text1"></td>
-					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum" onblur=" isnum(this) "></td>
+					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum" onblur="isnum(this.value)"></td>
 					
 					</td>
 				</tr>	

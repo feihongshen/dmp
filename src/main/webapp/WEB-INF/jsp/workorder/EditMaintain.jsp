@@ -14,14 +14,14 @@
 				<table>
 					<tr>
 					<td><input type="hidden" name="id" value="<%=ccf.getId()%>"></td>
-					<td><span><font color="red">*</font>姓名</span><input type="text" name="name" value="<%=ccf.getName()%>" id="caname"></td>
-					<td><span><font color="red">*</font>电话1</span><input type="text" name="phoneonOne" id='cp' value="<%=ccf.getPhoneonOne()%>" id="cp" onblur=" ifphoneNum(this)"></td>
-					<td><span>电话2</span><input type="text" name="phoneonTwo" value="<%=ccf.getPhoneonTwo()%>"></td>
+					<td><span><font color="red">*</font>姓名</span><input type="text" name="name" value="<%=ccf.getName()%>" id="caname" maxlength="20"/></td>
+					<td><span><font color="red">*</font>电话1</span><input type="text" name="phoneonOne" id='cp' value="<%=ccf.getPhoneonOne()%>" id="cp" onblur=" ifphoneNum(this.value)" /></td>
+					<td><span>电话2</span><input type="text" name="phoneonTwo" value="<%=ccf.getPhoneonTwo()%>" onblur=" ifphoneNum(this.value)"/></td>
 					</tr>
 					<tr>
-					<td><span>邮箱</span><input type="text" name="mailBox" value="<%=ccf.getMailBox()%>" id="mailBoxid"></td>
-					<td><span><font color="red">*</font>省份</span><input type="text" name="province" value="<%=ccf.getProvince()%>" id="cprovince" onblur="isChineseValue(this)"></td>
-					<td><span><font color="red">*</font>城市</span><input type="text" name="city" value="<%=ccf.getCity()%>" id="ccity" onblur="isChineseValue1(this)"></td>					
+					<td><span>邮箱</span><input type="text" name="mailBox" value="<%=ccf.getMailBox()%>" id="mailBoxid" onblur="isEmailValue(this.value)" maxlength="30"/></td>
+					<td><span><font color="red">*</font>省份</span><input type="text" name="province" value="<%=ccf.getProvince()%>" id="cprovince" onblur="isChineseValue(this.value)" maxlength="30"/></td>
+					<td><span><font color="red">*</font>城市</span><input type="text" name="city" value="<%=ccf.getCity()%>" id="ccity" onblur="isChineseValue1(this.value)" maxlength="30"/></td>					
 					</tr>
 					<tr>
 						<td><span><font color="red">*</font>客户分类:</span>

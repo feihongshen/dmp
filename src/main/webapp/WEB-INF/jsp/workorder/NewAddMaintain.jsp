@@ -9,14 +9,14 @@
 			<form action="<%=request.getContextPath()%>/workorder/addCallerArchival" id="addcallerForm">
 				<table>
 					<tr>
-					<td><span><font color="red">*</font>姓名</span><input type="text" name="name" id="caname"></td>
+					<td><span><font color="red">*</font>姓名</span><input type="text" name="name" id="caname" maxlength="20"></td>
 					<td><span><font color="red">*</font>电话1</span><input type="text" name="phoneonOne" id="cp" onblur="ifphoneNum(this.value)"></td>
-					<td><span>电话2</span><input type="text" name="phoneonTwo"></td>
+					<td><span>电话2</span><input type="text" name="phoneonTwo" onblur="ifphoneNum(this.value)"></td>
 					</tr>
 					<tr>
-					<td><span>邮箱</span><input type="text" name="mailBox" id="mailBoxid" onblur="isEmailValue(this)"></td>
-					<td><span><font color="red">*</font>省份</span><input type="text" name="province" id="cprovince" onblur="isChineseValue(this)" /></td>
-					<td><span><font color="red">*</font>城市</span><input type="text" name="city" id="ccity" onblur="isChineseValue1(this)"/></td>
+					<td><span>邮箱</span><input type="text" name="mailBox" id="mailBoxid" onblur="isEmailValue(this.value)" maxlength="30"></td>
+					<td><span><font color="red">*</font>省份</span><input type="text" name="province" id="cprovince" onblur="isChineseValue(this.value)" maxlength="30"/></td>
+					<td><span><font color="red">*</font>城市</span><input type="text" name="city" id="ccity" onblur="isChineseValue1(this.value)" maxlength="30"/></td>
 					</tr>
 					<tr>
 					<td><span><font color="red">*</font>客户分类:</span>
