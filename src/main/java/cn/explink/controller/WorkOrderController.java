@@ -539,8 +539,8 @@ public class WorkOrderController {
 	投诉处理结果 	是否扣罚 	客户名称	催件次数*/
 	@RequestMapping("/WorkOrderManageQuery")
 	public String WorkOrderManageQuery(HttpServletRequest req,Model model,CsComplaintAcceptVO cv) throws Exception{
-	
-		String cwb[]=cv.getOrderNo().trim().split("\r\n");
+		String cwb1 = cos.translateCwb(cv.getOrderNo());
+		String cwb[]=cwb1.trim().split("\r\n");
 		StringBuffer sb = new StringBuffer();
 		for(String str:cwb){
 			sb=sb.append("'"+str+"',");

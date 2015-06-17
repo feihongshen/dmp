@@ -70,11 +70,18 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						
 						<td><span>当前机构:</span><%=cca.getCurrentBranch() %></td>
 						<td><span>客户名称:</span><%=co.getConsigneename() %></td>
-						<td><span>来电人姓名:</span><%=cci.getName() %></td>
+						<%if(cci!=null){ %>
+						<span>来电人姓名:</span><%=cci.getName()==null?"":cci.getName() %>						
+						<%}else{ %>
+						<span>来电人姓名:</span>
+						<%} %>
 					</tr>
-					<tr>
-						
-						<td><span>来电号码:</span><%=cci.getPhoneonOne() %></td>
+					<tr>					
+						<%if(cci!=null){ %>						
+						<span>来电号码:</span><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%>
+						<%}else{ %>					
+						<span>来电号码:</span>
+						<%} %>
 						<td colspan="2"><span>收件人手机:</span><%=co.getConsigneemobile() %></td>
 						
 					</tr>

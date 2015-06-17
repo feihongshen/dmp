@@ -59,8 +59,13 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					
 					<li>
-						<span>来电人姓名:</span><%=cci.getName() %>
-						<span>来电号码:</span><%=cci.getPhoneonOne() %>
+						<%if(cci!=null){ %>
+						<span>来电人姓名:</span><%=cci.getName()==null?"":cci.getName() %>
+						<span>来电号码:</span><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%>
+						<%}else{ %>
+						<span>来电人姓名:</span>
+						<span>来电号码:</span>
+						<%} %>
 						<span>收件人手机:</span><%=co.getConsigneemobile() %>
 					</li>
 					

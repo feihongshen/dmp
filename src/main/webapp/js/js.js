@@ -5477,7 +5477,13 @@ function btnccwo(Val){
 				dataType:'json',				
 				success:function(data){
 					
-					alert(data.error);
+					$(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0) {
+					    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+					   }  		
 					
 				}
 	});
@@ -5498,18 +5504,19 @@ function btnupdate(csv){
 				url:$('#UpdateComplainWorkOrderF').attr('action'),
 				dataType:'json',				
 				success:function(data){
-					if (data.errorCode == 0) {					
-					/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-						closeBox();*/
-						alert(data.error);
-						}
+					$(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0) {  
+					    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+					   }  
 					}
 				});
 	closeBox();
 	}
 	
  function getAddBoxx2(valWo) {
-	 alert(valWo);
 $.ajax({
 	type : "POST",
 	data:"workorder="+valWo,
@@ -5537,9 +5544,13 @@ $.ajax({
 			dataType : "json",
 			success : function(data) {
 				if(data.errorCode==0){
-						alert(data.error);
-						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+					$(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0) { 
+					    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 
+					   }  
 						closeBox();
 					}
 				}
@@ -5557,9 +5568,13 @@ $.ajax({
 			dataType : "json",
 			success : function(data) {
 				if(data.errorCode==0){
-						alert(data.error);
-						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+					$(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0) { 
+					    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 
+					   }  
 						closeBox();
 					}
 				}
@@ -5570,22 +5585,6 @@ $.ajax({
  
 function AlreadyVerify(AVV){
 	$('#AlreadyVerifycomplaintState').val(AVV);
-	/*$.ajax({
-		type:'POST',
-		data:$('#ChangeComplaintStateF').serialize(),
-		url:$('#ChangeComplaintStateF').attr('action'),
-		dataType:'json',				
-		success:function(data){
-			if (data.errorCode == 0) {					
-				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-				closeBox();
-				alert(data.error);
-				$('#AlreadyVerifycomplaintState').val("");
-				}
-			}
-		});
-	closeBox();
-	$('#AlreadyVerifycomplaintState').val("");*/
 }
 	
 
@@ -5598,12 +5597,17 @@ function btnswd(ev){
 						url:$('#WorkOrderQueryForm').attr('action'),
 						dataType:'json',				
 						success:function(data){
-							alert(data.error);
+							$(".tishi_box").html(data.error);
+							   $(".tishi_box").show();
+							   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+							   if (data.errorCode == 0){
+							    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+							   }  
 						}
 			});
 			closeBox();
-/*	$('#WaitAcceptNo').val("");*/
-		
+
 }
 
 function getSV(v){
@@ -5645,11 +5649,13 @@ function btnupdate(csv){
 				url:$('#UpdateComplainWorkOrderF').attr('action'),
 				dataType:'json',				
 				success:function(data){
-					if (data.errorCode == 0) {					
-					/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-						closeBox();*/
-						alert(data.error);
-						}
+					$(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0){
+					    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+					   }  
 					}
 				});
 	closeBox();
@@ -5676,52 +5682,6 @@ $.ajax({
 });
 }
 
- /*function addcaller(){
-	 if($('#skhfl').val()==-1){
-		 alert('请选择客户分类');
-		 return false;
-	 }
-	 $.ajax({
-			type : "POST",
-			data:$('#addcallerForm').serialize(),
-			url : $("#addcallerForm").attr('action'),
-			dataType : "json",
-			success : function(data) {
-				if(data.errorCode==0){
-						alert(data.error);
-						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-
-						closeBox();
-					}
-				}
-				
-			});
-	 
- }
- 
- function editcaller(){
-	 if($('#skhfl1').val()==-1){
-		 alert('请选择客户分类');
-		 return false;
-	 }
-	 $.ajax({
-			type : "POST",
-			data:$('#editcallerForm').serialize(),
-			url : $("#editcallerForm").attr('action'),
-			dataType : "json",
-			success : function(data) {
-				if(data.errorCode==0){
-						alert(data.error);
-						$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-
-						closeBox();
-					}
-				}
-				
-			});
-	 
- }*/
- 
 function AlreadyVerify(AVV){
 	$('#AlreadyVerifycomplaintState').val(AVV);
 	$.ajax({
@@ -5730,12 +5690,13 @@ function AlreadyVerify(AVV){
 		url:$('#ChangeComplaintStateF').attr('action'),
 		dataType:'json',				
 		success:function(data){
-			if (data.errorCode == 0) {					
-			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-				closeBox();*/
-				alert(data.error);
-				$('#AlreadyVerifycomplaintState').val("");
-				}
+			$(".tishi_box").html(data.error);
+			   $(".tishi_box").show();
+			   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			   if (data.errorCode == 0){
+			    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+			   }  
 			}
 		});
 	closeBox();
@@ -5754,12 +5715,13 @@ function AlreadyVerifyJieAn(AVV){
 		url:$('#ChangeComplaintStateF').attr('action'),
 		dataType:'json',				
 		success:function(data){
-			if (data.errorCode == 0) {					
-			/*	$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-				closeBox();*/
-				alert(data.error);
-				$('#AlreadyVerifycomplaintState').val("");
-				}
+			$(".tishi_box").html(data.error);
+			   $(".tishi_box").show();
+			   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			   if (data.errorCode == 0){
+			    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+
+			   }  
 			}
 		});
 	closeBox();
@@ -6070,10 +6032,15 @@ function acceptqueryWoJieAn(){
 		url:$("#GoonAcceptWorkOrderQueryForm").attr('action'),
 		dataType:'json',
 		success:function(data){
-			if(data.errorCode==0){
-				alert(data.error);
+			$(".tishi_box").html(data.error);
+			   $(".tishi_box").show();
+			   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			   if (data.errorCode == 0){
+			    $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 				closeBox();
-			}
+			   }  
+			
+			
 			
 		}
 		
@@ -6107,7 +6074,7 @@ function submitCreateFormAdd(form) {
 			$(".tishi_box",parent.document).show();
 			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
 			if (data.errorCode == 0) {
-				$(form)[0].reset();
+				/*$(form)[0].reset();*/
 				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);

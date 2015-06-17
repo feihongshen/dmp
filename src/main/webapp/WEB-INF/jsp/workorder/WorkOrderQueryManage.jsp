@@ -311,8 +311,9 @@ function CurentTime()   //计算当天时间
 							<option value="-1">全部</option>
 							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	
 							<%if(c.getValue()!=0){ %>
+							<%if(c.getValue()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
 							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
-						<%} }%>
+						<%} }}%>
 						</select>
 					</td>
 				</tr>	
@@ -415,7 +416,7 @@ function CurentTime()   //计算当天时间
 				<th bgcolor="#eef6ff">客户名称</th>	
 				<th bgcolor="#eef6ff">催件次数</th>			
 			</tr>
-		<%if(a!=null){ %>
+		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
 			<%if(c.getComplaintState()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getJieanTime()%>')" id="getFomeV">
