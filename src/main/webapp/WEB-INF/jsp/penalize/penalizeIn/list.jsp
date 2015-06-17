@@ -623,8 +623,8 @@ function closeBox1() {
 						<td align="left" valign="top">
 							<input type="submit"   value="查询" class="input_button2"/>
 							<input type="reset"    value="重置" class="input_button2" >
-							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
-						</td>
+<!-- 							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
+ -->						</td>
 						</tr>
 			</table>
 			</td>
