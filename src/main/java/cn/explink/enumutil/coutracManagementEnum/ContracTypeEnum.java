@@ -5,11 +5,11 @@ package cn.explink.enumutil.coutracManagementEnum;
 
 /**
  * 合同类型
- * 
+ *
  * @author wangqiang
  */
 public enum ContracTypeEnum {
-	liangfang(1, "两方"), sanfang(2, "三方");
+	LiangFang(1, "两方"), SanFang(2, "三方");
 	private int value;
 	private String text;
 

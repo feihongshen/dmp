@@ -5,11 +5,11 @@ package cn.explink.enumutil.coutracManagementEnum;
 
 /**
  * 是否有押金
- * 
+ *
  * @author wangqiang
  */
 public enum WhetherHaveDepositEnum {
-	you(1, "有押金"), meiyou(2, "没押金");
+	You(1, "有押金"), MeiYou(2, "没押金");
 	private int value;
 	private String text;
 

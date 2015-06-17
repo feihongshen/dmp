@@ -5,11 +5,11 @@ package cn.explink.enumutil.coutracManagementEnum;
 
 /**
  * 结算周期
- * 
+ *
  * @author wangqiang
  */
 public enum SettlementPeriodEnum {
-	yizhouliangci(1, "一周两次");
+	YiZhouLiangCi(1, "一周两次");
 	private int value;
 	private String text;
 

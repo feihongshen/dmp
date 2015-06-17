@@ -9,7 +9,7 @@ package cn.explink.enumutil.coutracManagementEnum;
  * @author wangqiang
  */
 public enum LoanTypeEnum {
-	maibao(1, "买包"), qianshou(2, "签收");
+	MaiBao(1, "买包"), QianShou(2, "签收");
 	private int value;
 	private String text;
 
