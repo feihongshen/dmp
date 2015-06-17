@@ -6358,10 +6358,10 @@ if($('#callerremark').val()==''){
 	}
 }*/
 function ifphoneNum(str) {
-	var reg = new RegExp("/^1\d{10}$/"); //电话号码验证是否为空和是否为数字
+	var reg = /^1\d{10}$/ //电话号码验证是否为空和是否为数字
 	if (!reg.test(str)) {
 		alert("请输入正确格式的手机号码!");
-		$('#cp').val("");
+		
 		return false;
 	}
 }
@@ -6401,4 +6401,12 @@ function isnum(str){
 		return false;
 	}
 }
+function FormcheckLen(obj) {  
+	var maxChars = 20;//最多字符数  
+	if (obj.value.length > maxChars){
+		obj.value = obj.value.substring(0,maxChars);  
+	} 
+/*	var curr = maxChars - obj.value.length;  
+	document.getElementById("count").innerHTML = curr.toString(); */
+} 
 
