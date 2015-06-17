@@ -54,11 +54,7 @@ public class WorkOrderDAO {
 		String sql="insert into cs_consignee_info(phone_one,phone_two,consignee_type,sex,province,city,name,contact_last_time,contact_num,mail_box) values(?,?,?,?,?,?,?,?,?,?)";
 		jt.update(sql,cci.getPhoneonOne(),cci.getPhoneonTwo(),cci.getConsigneeType(),cci.getSex(),cci.getProvince(),cci.getCity(),cci.getName(),cci.getContactLastTime(),cci.getContactNum(),cci.getMailBox());
 	}
-	
-/*	public void editAllCsConsigneeInfo1(CsConsigneeInfo cci){
-		String sql="update cs_consignee_info set phone_one=?,phone_two=?,consignee_type=?,sex=?,province=?,city=?,name=?,contact_last_time=?,contact_num=?,mail_box=?,remark=? where id=?";
-		jt.update(sql,cci.getPhoneonOne(),cci.getPhoneonTwo(),cci.getConsigneeType(),cci.getSex(),cci.getProvince(),cci.getCity(),cci.getName(),cci.getContactLastTime(),cci.getContactNum(),cci.getMailBox(),cci.getRemark(),cci.getId());
-	}*/
+
 	
 	public void editAllCsConsigneeInfo(CsConsigneeInfo cci){
 		String sql="update cs_consignee_info set";
@@ -215,47 +211,13 @@ public class WorkOrderDAO {
 			if(c.getComplaintState()>=0){
 				sb.append(" ,complaint_state="+c.getComplaintState());
 			}
-			/*if(c.getOrderNo()!=null&&c.getOrderNo().length()>0){
-				sb.append(" ,order_no='"+c.getOrderNo()+"'");
-			}
-			if(c.getCwbstate()>0){
-				sb.append(" ,cwbstate="+c.getCwbstate());
-			}
-			if(c.getCurrentBranch()!=null&&c.getCurrentBranch().length()>0){
-				sb.append(" ,currentbrannch="+c.getCurrentBranch());
-			}
-			if(c.getComplaintState()>0){
-				sb.append(" ,complaint_state="+c.getComplaintState());
-			}
-			if(c.getCodOrgId()>0){
-				sb.append(" ,cod_org_id="+c.getCodOrgId());
-			}
-			
-			if(c.getComplaintUser()!=null&&c.getComplaintUser().length()>0){
-				sb.append(" ,complaint_user='"+c.getComplaintUser()+"'");
-			}
-			if(c.getComplaintOneLevel()>0){
-				sb.append(" ,complaint_one_level="+c.getComplaintOneLevel());
-			}
-			if(c.getComplaintTwoLevel()>0){
-				sb.append(" ,complaint_two_level="+c.getComplaintTwoLevel());
-																	
-			}*/
 			if(c.getComplaintResult()>=0){
 				sb.append(" ,complaint_result="+c.getComplaintResult());
 			}
 			if(c.getContent()!=null&&c.getContent().length()>0){
 				sb.append(" ,content='"+c.getContent()+"'");
 			}
-			/*if(c.getAcceptTime()!=null&&c.getAcceptTime().length()>0){
-				sb.append(" ,accpet_time='"+c.getAcceptTime()+"'");
-			}
-			if(c.getPhoneOne()!=null&&c.getPhoneOne().length()>0){
-				sb.append(" ,phone_one='"+c.getPhoneOne()+"'");
-			}
-			if(c.getProvence()!=null&&c.getProvence().length()>0){
-				sb.append(" ,province='"+c.getProvence()+"'");
-			}*/
+			
 			if(c.getAcceptNo()!=null&&c.getAcceptNo().length()>0){
 				sb.append(" where accept_no='"+c.getAcceptNo()+"'");
 			}
@@ -416,7 +378,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 			String sql="select * from cs_complaint_accept where accept_no='"+workorder+"'";	
 			lcs = this.jt.queryForObject(sql, new CsComplaintAcceptRowMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
+			
 			return null;
 		}
 		

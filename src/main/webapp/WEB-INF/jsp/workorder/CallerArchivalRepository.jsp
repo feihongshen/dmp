@@ -33,9 +33,11 @@ $(function(){
 	
 	
 	$('#edit_but').click(function(){
-				
+		if($('#callerphoneid').val()==""){
+			alert('请选择一行数据' );
+		}	else{	
 		edit_button($('#callerphoneid').val());
-		
+		}
 	});
 	
 	
@@ -50,22 +52,23 @@ $(function(){
 				url:'<%=request.getContextPath()%>/workorder/removeCallerArchival',
 				dataType:'json',
 				success:function(data){
-					if(data.errorCode==0){
-						alert(data.error);
-						window.location.href='<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1';
-					}
-					
-					
+					   $(".tishi_box").html(data.error);
+					   $(".tishi_box").show();
+					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+					   if (data.errorCode == 0){
+						   window.location.href="<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1"
+						   $('#PageFromW').submit();
+					   } 					
 				}
-				
-				
-				
-				
 			});
+			$('#callerphoneid').val('');
 	});
 });
 
-
+function deleteidValue(){
+	$('#callerphone').val('');
+	$('#callerphoneid').val('');
+}
 
 </script>
 </head>
@@ -95,7 +98,7 @@ $(function(){
 		
 			<table>
 				<tr>
-					<td><button id="add_button" class="input_button2">新增</button></td>
+					<td><button id="add_button" class="input_button2" onclick="deleteidValue()">新增</button></td>
 					<td><button id="edit_but" class="input_button2">修改</button></td>
 					<td><button id="remove_button" class="input_button2">删除</button></td>
 					<td><button class="input_button2" onclick="exportInFoExcle()" id="exinfo">导出</button></td>
@@ -185,6 +188,6 @@ $(function(){
 		}	
 		$("#selectPg").val(<%=request.getAttribute("page") %>);
 	</script>
-	
+	<div class="tishi_box"></div>
 </body>
 </html>
