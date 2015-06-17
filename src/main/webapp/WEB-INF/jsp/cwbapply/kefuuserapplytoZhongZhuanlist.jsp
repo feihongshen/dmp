@@ -109,7 +109,7 @@ function check(){
 		return true;
 		} 
 
-	if($("#strttime").val()==""){
+	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
@@ -117,11 +117,11 @@ function check(){
 		alert("请选择结束时间");
 		return false;
 	}
-	if($("#strttime").val()>$("#endtime").val()){
+	if($("#strtime").val()>$("#endtime").val()){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strttime").val()!='' &&$("#endtime").val()=='')){
+	if(!Days()||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
 		alert("时间跨度不能大于30天！");
 		return false;
 	}
@@ -130,7 +130,7 @@ function check(){
 	return true;
 }
 function Days(){     
-	var day1 = $("#strttime").val();   
+	var day1 = $("#strtime").val();   
 	var day2 = $("#endtime").val(); 
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
@@ -162,13 +162,14 @@ function reset(){
 	};	
 
 function exportField(){
-	if(<%=cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()%>){
-		$("#btnval").attr("disabled","disabled"); 
+ 	if(<%=cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()%>){
+ 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
-		$("#exportForm").submit();	
+		$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwbapply/zhongzhuanchuzhanshenhexport');	
+		$("#searchForm").submit();	
 	}else{
 		alert("没有做查询操作，不能导出！");
-	}
+	} 
 }
 
 //全选按钮
@@ -277,14 +278,16 @@ $(function() {
 											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"> 
 											<input type="button" onclick="subPass()" value="审核通过" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="subNopass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;
+											<%-- <%if(cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()){%> --%>
+								
+									<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
+								
+								<%-- <%} %> --%>
+										
 										</td>
 									</tr>
 								</table>
-								<%if(cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()){%>
-								<span>
-									<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-								</span> 
-								<%} %>
+							
 							</form>
 						</div>
 						

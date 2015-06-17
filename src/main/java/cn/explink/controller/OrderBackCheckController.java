@@ -58,6 +58,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrderBackCheckService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 
 /**
@@ -626,5 +627,36 @@ public class OrderBackCheckController {
 			orderflowList = orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, flowordertype, begindate, enddate);
 			OrderFlow orderflow = orderflowList.size() > 0 ? orderflowList.get(orderflowList.size() - 1) : new OrderFlow();
 			return orderflow;
+		}
+		@RequestMapping("/toTuiHuoCheckExport")
+		public void toTuiHuoCheckExport(HttpServletRequest request,HttpServletResponse response,
+				@RequestParam(value = "cwbStr", defaultValue = "", required = false) String cwbs,
+				@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+				@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
+				@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
+				@RequestParam(value = "shenhestate", defaultValue = "0", required = false) long checkstate,
+				@RequestParam(value = "checkresult", defaultValue = "0", required = false) long checkresult,
+				@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+				@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+				
+				){
+			List<Customer> customerList = this.customerDAO.getAllCustomers();
+			List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+			List<OrderBackCheck> orderbackList = null;
+			String cwbsStr = this.getCwbs(cwbs);
+			if(!(cwbs.equals("")&&begindate.equals(""))){	
+				List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(-9,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
+				orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
+			}
+			String[] cloumnName1 = new String[5]; // 导出的列名
+			String[] cloumnName2 = new String[5]; // 导出的英文列名
+
+			this.exportService.SetTuiHuoChuzhanFields(cloumnName1, cloumnName2);
+			final String[] cloumnName = cloumnName1;
+			final String[] cloumnName3 = cloumnName2;
+			String sheetName = "退货出站审核"; // sheet的名称
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String fileName = "tuihuochuzhanshenhe_" + df.format(new Date()) + ".xlsx"; // 文件名
+			ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, orderbackList);
 		}
 }

@@ -207,7 +207,10 @@ public class OrderBackCheckDAO {
 			}
 			sql +=sb;
 		}
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		if(page!=-9){
+			sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+
+		}
 		return this.jdbcTemplate.query(sql,new OrderBackCheckRowMapper());
 	}
 	

@@ -96,7 +96,10 @@ public class OrderbackRecordDao {
 			}
 			sql += w;
 		}
-		 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		if (page!=-9) {
+			 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+
+		}
 		return jdbcTemplate.query(sql, new OrderbackRecordMapper());
 	}
 	

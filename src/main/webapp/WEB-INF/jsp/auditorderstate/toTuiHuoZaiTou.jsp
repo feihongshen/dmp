@@ -112,13 +112,13 @@ function btnClick(){
 
 function exportField(){
 	if(<%=covList!=null&&covList.size()!=0%>){
-		$("#exportmould2").val($("#exportmould").val());
 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
-		$("#searchForm2").submit();	
-	}else{
+	 	$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwborder/tuihuozaitouexport');
+		$("#searchForm").submit();	
+ }else{
 		alert("没有做查询操作，不能导出！");
-	}
+	} 
 }
 
 function check(){
@@ -129,7 +129,7 @@ function check(){
 		return true;
 		} 
 
-	if($("#strttime").val()==""){
+	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
@@ -137,11 +137,11 @@ function check(){
 		alert("请选择结束时间");
 		return false;
 	}
-	if($("#strttime").val()>$("#endtime").val()){
+	if($("#strtime").val()>$("#endtime").val()){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strttime").val()!='' &&$("#endtime").val()=='')){
+	if(!Days()||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
 		alert("时间跨度不能大于30天！");
 		return false;
 	}
@@ -150,7 +150,7 @@ function check(){
 	return true;
 }
 function Days(){     
-	var day1 = $("#strttime").val();   
+	var day1 = $("#strtime").val();   
 	var day2 = $("#endtime").val(); 
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
@@ -203,14 +203,6 @@ $(function() {
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="POST" id="searchForm">
-								<span>
-								<select name ="exportmould" id ="exportmould">
-									<option  value ="0">导出模板</option>
-									<%for(Exportmould e:exportmouldlist){%>
-										<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-									<%} %>
-								</select>
-								</span>  
 								<table>
 									<tr>
 										<td rowspan="2">
@@ -219,7 +211,7 @@ $(function() {
 										</td>
 										<td>
 											订单类型:
-											<select name ="cwbtypeid" id ="cwbtypeid">
+											<select name ="cwbtypeid" id ="cwbtypeid" class="select1">
 												<option  value ="0">全部</option>
 													<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
 													<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
@@ -227,7 +219,7 @@ $(function() {
 											</select>
 											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 											客户名称:
-											<select name ="customerid" id ="customerid">
+											<select name ="customerid" id ="customerid" class="select1">
 												<option  value ="0">全部</option>
 												<%if(customerList!=null){ %>
 													<%for(Customer cus:customerList){ %>
@@ -238,7 +230,7 @@ $(function() {
 										</td>
 										<td>
 											配送站点:
-											<select name ="branchid" id ="branchid">
+											<select name ="branchid" id ="branchid" class="select1">
 												<option  value ="0">全部</option>
 												 <%if(branchList!=null && branchList.size()>0) {%>
 													<%for(Branch branch:branchList){ %>
@@ -264,9 +256,9 @@ $(function() {
 										</td>
 										<td width="20%">
 											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
-											<%if(covList!=null&&!covList.isEmpty()){%><span>
-												<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-											</span> <%} %>
+											<%-- <%if(covList!=null&&!covList.isEmpty()){%> --%><span>
+												<input name="" type="button" id="btnval" value="导出" class="input_button2"  onclick="exportField();"/>
+											</span> <%-- <%} %> --%>
 										</td>
 									</tr>
 								</table>

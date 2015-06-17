@@ -608,7 +608,6 @@ public class OperationTimeDAO {
 		if(!cwbs.equals("")){
 			sql += " and cwb in("+cwbs+")";
 		}else{
-			sql += " where 1=1 ";
 			StringBuffer w = new StringBuffer("");
 			if (cwbordertype > 0) {
 				w.append(" and cwbordertypeid=" + cwbordertype);
@@ -620,14 +619,16 @@ public class OperationTimeDAO {
 				w.append(" and branchid=" + branchid);
 			}
 			if (begindate> 0) {
-				w.append(" and credate >= " + begindate);
+				w.append(" and credate >= '" + begindate+"'");
 			}
 			if (enddate> 0) {
-				w.append(" and credate <= " + enddate);
+				w.append(" and credate <= '" + enddate+"'");
 			}
 			sql += w;
 		}
-		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		if (page!=-9) {
+			sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + "," + Page.ONE_PAGE_NUMBER;
+		}
 		return jdbcTemplate.query(sql, new OperationTimeRowMapper());
 	}
 	
@@ -636,7 +637,6 @@ public class OperationTimeDAO {
 		if(!cwbs.equals("")){
 			sql += " and cwb in("+cwbs+")";
 		}else{
-			sql += " where 1=1 ";
 			StringBuffer w = new StringBuffer("");
 			if (cwbordertype > 0) {
 				w.append(" and cwbordertypeid=" + cwbordertype);

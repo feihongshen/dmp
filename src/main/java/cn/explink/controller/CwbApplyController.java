@@ -69,6 +69,7 @@ import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -1093,5 +1094,52 @@ public class CwbApplyController {
 			}
 		}
 		return branchsitetype;
+	}
+	@RequestMapping("/zhongzhuanchuzhanshenhexport")
+	public void zhongzhuanchuzhanshenhexport(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,// 订单状态类型
+			@RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
+			@RequestParam(value = "ishandle", defaultValue = "0", required = false) int ishandle,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			){
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Customer> customerList = this.customerDao.getAllCustomers();
+		Map<Long, String> customerMap = new HashMap<Long, String>();
+		for (Customer cu : customerList) {
+			customerMap.put(cu.getCustomerid(), cu.getCustomername());
+		}
+		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
+		String cwbStr = getCwbs(cwbs);	
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(!(cwbs.equals("")&&begindate.equals(""))){
+			cwbApplyZhongZhuanlist=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(-9,cwbStr,cwbtypeid,customerid,branchid,ishandle,begindate,enddate);
+			StringBuffer sb = new StringBuffer();
+			if(cwbApplyZhongZhuanlist.size()>0){
+				for(CwbApplyZhongZhuan ot:cwbApplyZhongZhuanlist){
+					sb.append("'").append(ot.getCwb()).append("',");
+				}
+			}
+			String strs = "";
+			List<CwbOrder> coList = new ArrayList<CwbOrder>();
+			if(sb.length()>0){
+				strs = sb.substring(0, sb.length()-1);
+				coList = cwbDAO.getListbyCwbs(strs);
+			}
+			
+			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
+		}
+		String[] cloumnName1 = new String[6]; // 导出的列名
+		String[] cloumnName2 = new String[6]; // 导出的英文列名
+
+		this.exportService.SetZhongzhuanchuzhanFields(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "中转出站审核"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "zhongzhuanchuzhanshenhe_" + df.format(new Date()) + ".xlsx"; // 文件名
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, covList);
 	}
 }

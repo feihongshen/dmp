@@ -110,6 +110,7 @@ import cn.explink.service.LogToDayService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -2581,6 +2582,122 @@ public class CwbOrderController {
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}
+
+	}
+	@RequestMapping("/tuihuozaitouexport")
+	public void tuihuozaitouexport(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			){
+		long begintime = 0;
+		long endtime = 0;
+		if(!begindate.equals("")&&!enddate.equals("")){
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			try {
+				Date date1 = sdf.parse(begindate);
+				begintime = date1.getTime();
+				Date date2 = sdf.parse(enddate);
+				endtime = date2.getTime();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		String cwbsStr = "";
+		if(cwbs.length()>0){
+			cwbsStr = cwborderService.getCwbs(cwbs);
+		}
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Customer> customerList = this.customerDao.getAllCustomers();
+		
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(!(cwbs.equals("")&&begindate.equals(""))){
+			List<OperationTime> optList = new ArrayList<OperationTime>();
+			optList = this.operationTimeDAO.getCwbViewList(-9,cwbsStr,cwbtypeid,customerid,branchid,begintime,endtime);
+			StringBuffer sb = new StringBuffer();
+			if(optList.size()>0){
+				for(OperationTime ot:optList){
+					sb.append("'").append(ot.getCwb()).append("',");
+				}
+			}
+			String strs = "";
+			List<CwbOrder> coList = new ArrayList<CwbOrder>();
+			if(sb.length()>0){
+				strs = sb.substring(0, sb.length()-1);
+				coList = cwbDao.getListbyCwbs(strs);
+			}
+			
+			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchList);//获取分页查询的view
+			
+		}	
+		String[] cloumnName1 = new String[6]; // 导出的列名
+		String[] cloumnName2 = new String[6]; // 导出的英文列名
+
+		this.exportService.SetTuiHuoZaiTouFields(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "退货再投"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "tuihuozaitou_" + df.format(new Date()) + ".xlsx"; // 文件名
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, covList);
+		
+	}
+	@RequestMapping("/toGonghuoshangExport")
+	public void toGonghuoshangExport(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
+			@RequestParam(value = "shenhestate",defaultValue = "0", required = false)long shenhestate,
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			
+			){
+		List<Customer> customerList = this.customerDao.getAllCustomers();
+		String cwbss = "";
+		if(cwb.length()>0){
+			StringBuffer cwbs = new StringBuffer();
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbs = cwbs.append("'").append(cwbStr).append("',");
+			}
+			cwbss = cwbs.substring(0, cwbs.length()-1);
+		}
+		List<OrderbackRecord> orList = new ArrayList<OrderbackRecord>();
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(!(cwb.equals("")&&begindate.equals(""))){
+			orList = orderbackRecordDao.getCwbOrdersByCwbspage(-9,cwbss,cwbtypeid,customerid,shenhestate,begindate,enddate);
+			
+			StringBuffer sb = new StringBuffer();
+			if(orList.size()>0){
+				for(OrderbackRecord ot:orList){
+					sb.append("'").append(ot.getCwb()).append("',");
+				}
+			}
+			String strs = "";
+			List<CwbOrder> coList = new ArrayList<CwbOrder>();
+			if(sb.length()>0){
+				strs = sb.substring(0, sb.length()-1);
+				coList = cwbDao.getListbyCwbs(strs);
+			}
+			
+			covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
+		}
+		String[] cloumnName1 = new String[6]; // 导出的列名
+		String[] cloumnName2 = new String[6]; // 导出的英文列名
+
+		this.exportService.SetKehuShoutuihuoFields(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "客户收退货"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "kehushoutuihuo_" + df.format(new Date()) + ".xlsx"; // 文件名
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, covList);
 
 	}
 

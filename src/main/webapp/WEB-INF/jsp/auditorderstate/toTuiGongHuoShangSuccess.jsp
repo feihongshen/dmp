@@ -200,14 +200,14 @@ function btnClick(){
 
 
 function exportField(){
-	if(<%=cwbList!=null&&cwbList.size()!=0%>){
-		$("#exportmould2").val($("#exportmould").val());
-		$("#btnval").attr("disabled","disabled"); 
+ 	if(<%=cwbList!=null&&cwbList.size()!=0%>){
+ 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
-		$("#searchForm2").submit();	
-	}else{
+		$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwborder/toGonghuoshangExport');	
+		$("#searchForm").submit();	
+ 	}else{
 		alert("没有做查询操作，不能导出！");
-	}
+	} 
 }
 
 </script>
@@ -222,14 +222,7 @@ function exportField(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<%if(cwbList!=null){ %><span>
-									<select name ="exportmould" id ="exportmould">
-											<option  value ="0">导出模板</option>
-											<%for(Exportmould e:exportmouldlist){%>
-												<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-											<%} %>
-									</select></span>
-								<%} %> 
+								
 								<table>
 									<tr>
 										<td rowspan="2">
@@ -289,9 +282,9 @@ function exportField(){
 										<td width="20%">
 											<input type="button" onclick="sub()" value="退客户成功" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="sub2()" value="拒收退货" class="input_button2">&nbsp;&nbsp;
-											<%if(cwbList!=null&&!cwbList.isEmpty()){ %>
+											<%-- <%if(cwbList!=null&&!cwbList.isEmpty()){ %> --%>
 												<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-											<%} %>
+											<%-- <%} %> --%>
 										</td>
 									</tr>
 									

@@ -104,10 +104,12 @@ function exportField(){
 	if(<%=orderbackList!=null&&!orderbackList.isEmpty()%>){
 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
-		$("#exportForm").submit();	
-	}else{
+	 	
+		$("#searchForm").attr("action",'<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheckExport');	
+		$("#searchForm").submit();	
+	 }else{
 		alert("没有做查询操作，不能导出！");
-	}
+	} 
 }
 
 function check(){
@@ -118,7 +120,7 @@ function check(){
 		return true;
 		} 
 
-	if($("#strttime").val()==""){
+	if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
@@ -126,11 +128,11 @@ function check(){
 		alert("请选择结束时间");
 		return false;
 	}
-	if($("#strttime").val()>$("#endtime").val()){
+	if($("#strtime").val()>$("#endtime").val()){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strttime").val()!='' &&$("#endtime").val()=='')){
+	if(!Days()||($("#strttime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
 		alert("时间跨度不能大于30天！");
 		return false;
 	}
@@ -139,7 +141,7 @@ function check(){
 	return true;
 }
 function Days(){     
-	var day1 = $("#strttime").val();   
+	var day1 = $("#strtime").val();   
 	var day2 = $("#endtime").val(); 
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
@@ -280,9 +282,9 @@ $(function() {
 										<input type="button" id="submitZ" value="站点滞留" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td>
-										<%if(orderbackList!=null&&!orderbackList.isEmpty()){%><span>
+										<%-- <%if(orderbackList!=null&&!orderbackList.isEmpty()){%> --%><span>
 											<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-										</span> <%} %>
+										</span><%--  <%} %> --%>
 									</td>
 								</tr>
 							</table>
@@ -300,6 +302,10 @@ $(function() {
 						</tbody>
 					</table>
 					</div>
+					<br>
+					<br>
+					<br>
+					
 					<div style="height:109px"></div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>

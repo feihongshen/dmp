@@ -228,7 +228,10 @@ public class CwbApplyZhongZhuanDAO {
 			}
 			sql += w;
 		}
-		 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		if (page!=-9) {
+			 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+
+		}
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
 	public long getCwbApplyZhongZhuanCount(String cwbs,int cwbordertype,long customerid,long applyzhongzhuanbranchid,int ishandle, String begindate, String enddate) {

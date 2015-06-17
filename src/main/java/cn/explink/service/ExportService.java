@@ -3041,6 +3041,70 @@ public class ExportService {
 		return userDetail.getUser();
 	}
 
+	// 退货再投导出view
+		public void SetTuiHuoZaiTouFields(String[] cloumnName1, String[] cloumnName2) {
+			cloumnName1[0] = "订单号";
+			cloumnName2[0] = "Cwb";
+			cloumnName1[1] = "订单类型";
+			cloumnName2[1] = "Cwbordertypeid";
+			cloumnName1[2] = "供货商名";
+			cloumnName2[2] = "Customername";
+			cloumnName1[3] = "收件人";
+			cloumnName2[3] = "Consigneename";
+			cloumnName1[4] = "收件人地址";
+			cloumnName2[4] = "Consigneeaddress";
+			cloumnName1[5] = "退货入库时间";
+			cloumnName2[5] = "Tuihuozhaninstoreroomtime";
+		
+		}
+		// 退货出站view
+		public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {
+			cloumnName1[0] = "供货商名";
+			cloumnName2[0] = "Customername";
+			cloumnName1[1] = "订单状态";
+			cloumnName2[1] = "Flowordertypename";
+			cloumnName1[2] = "订单类型";
+			cloumnName2[2] = "Cwbordertypename";
+			cloumnName1[3] = "反馈状态";
+			cloumnName2[3] = "Cwbstatename";
+			cloumnName1[4] = "匹配站点";
+			cloumnName2[4] = "Branchname";
+			
+		}
+		// 中转出站view
+		public void SetZhongzhuanchuzhanFields(String[] cloumnName1, String[] cloumnName2) {
+			cloumnName1[0] = "订单号";
+			cloumnName2[0] = "Cwb";
+			cloumnName1[1] = "订单类型";
+			cloumnName2[1] = "Cwbordertypename";
+			cloumnName1[2] = "供货商名";
+			cloumnName2[2] = "Customername";
+			cloumnName1[3] = "当前站点";
+			cloumnName2[3] = "Branchname";
+			cloumnName1[4] = "匹配站点";
+			cloumnName2[4] = "Matchbranchname";
+			cloumnName1[5] = "到站时间";
+			cloumnName2[5] = "InSitetime";
+			
+		}
+		// 中转出站view
+		public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
+			cloumnName1[0] = "订单号";
+			cloumnName2[0] = "Cwb";
+			cloumnName1[1] = "订单类型";
+			cloumnName2[1] = "Cwbordertypename";
+			cloumnName1[2] = "供货商名";
+			cloumnName2[2] = "Customername";
+			cloumnName1[3] = "收件人";
+			cloumnName2[3] = "Receivablefee";
+			cloumnName1[4] = "发货时间";
+			cloumnName2[4] = "Emaildate";
+			cloumnName1[5] = "退客户出户时间";
+			cloumnName2[5] = "Createtime";
+			
+		}
+
+
 	public void SetEditPIMCheckOrderFields(String[] cloumnName1,String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
@@ -3086,4 +3150,5 @@ public class ExportService {
 		cloumnName1[10] = "审核状态";
 		cloumnName2[10] = "NowState";
 	}
+
 }
