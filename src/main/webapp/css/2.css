@@ -120,6 +120,7 @@ _width:600px }
 #box_form h2 { font-size:14px; font-weight:bold }
 .input_text1 { border:1px solid #09C; background:url(../images/repeatx.png) repeat-x 0 -175px; height:16px; line-height:16px }
 .input_button1 { width:135px; line-height:24px; height:24px; background:url(../images/indexbg.png) no-repeat right 0px; border:none; cursor:pointer; padding:0; text-align:center }
+.input_button3 { width:100px; line-height:24px; height:24px; background:url(../images/indexbg.png) no-repeat right 0px; border:none; cursor:pointer; padding:0; text-align:center }
 .input_button2 { width:65px; height:20px; border:none; background:url(../images/indexbg.png) no-repeat 0 -200px; cursor:pointer; padding:0; text-align:center }
 .top_line { height:3px; background:url(../images/repeatx.png) repeat-x; color:#FFF }
 .inputselect_box {padding:5px 10px; position:absolute; z-index:9; width:100%; background:#FFF; border:1px solid #86AFD5}
