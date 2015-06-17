@@ -56,7 +56,7 @@ $(function(){
 					   $(".tishi_box").show();
 					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 					   if (data.errorCode == 0){
-						   window.location.href="<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1"
+						 <%--   window.location.href="<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1" --%>
 						   $('#PageFromW').submit();
 					   } 					
 				}
