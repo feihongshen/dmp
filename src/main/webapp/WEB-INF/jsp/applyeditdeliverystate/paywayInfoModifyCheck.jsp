@@ -132,12 +132,10 @@ function applynopass(){
 	}
 }
 
-
-function serchsubmit(){
-	$("#shenhesubmit").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/paywayInfoModifyCheck");
-	$("#shenhesubmit").submit();
+function exportExcel(){
+	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
+	$("#searchForm").submit();
 }
-
 
 </script>
 </HEAD>
@@ -151,15 +149,6 @@ function serchsubmit(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<span>
-								<select name ="exportmould" id ="exportmould">
-										<option  value ="0">导出模板</option>
-										<%for(Exportmould e:exportmouldlist){%>
-											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-										<%} %>
-									</select>
-									<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span>
 								<table>
 									<tr>
 										<td rowspan="2">
@@ -222,16 +211,10 @@ function serchsubmit(){
 										<td width="20%">
 											<input type="button" onclick="applypass()" id="pass" value="审核通过" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="applynopass()" id="nopass" value="审核不通过" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="" value="导出" class="input_button2">
+											<input type="button" onclick="exportExcel();" value="导出" class="input_button2">
 										</td>
 									</tr>
 								</table>
-							</form>
-							<form action="" id="shenhesubmit" method="post">
-								<input hidden="hidden" id="hiddencwbs" value="" />
-							</form>
-							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
-								<input type="hidden" name="exportmould2" id="exportmould2" />
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">

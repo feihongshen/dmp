@@ -13,7 +13,6 @@ import cn.explink.util.ExcelUtils;
 
 public class ExcelUtilsHandler {
 
-
 	public static <T>  void exportExcelHandler(HttpServletResponse response,final String cloumnZ[],final String cloumnName[],String sheetName,String fileName,final List<T> objList ){
 		
 		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法

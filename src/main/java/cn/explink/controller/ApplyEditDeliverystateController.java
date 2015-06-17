@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +65,11 @@ import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.ExcelUtils;
+import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 
@@ -104,7 +111,8 @@ public class ApplyEditDeliverystateController {
 	AdjustmentRecordService adjustmentRecordService;
 	@Autowired
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
-	
+	@Autowired
+	ExportService exportService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -251,7 +259,6 @@ public class ApplyEditDeliverystateController {
 		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
 		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
 			for(String str:cwbs.split("\r\n")){
@@ -273,10 +280,40 @@ public class ApplyEditDeliverystateController {
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("branchList", branchList);
-		model.addAttribute("exportmouldlist",exportmouldlist);
 		model.addAttribute("applyeditlist",covList);
 		return "applyeditdeliverystate/resetFeedbackList";
 	}
+	
+	
+	/**
+	 * 重置反馈并显示查询列表
+	 */
+	@RequestMapping("/rfbExportExcel")
+	public void rfbExportExcel(Model model,HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "cwb",defaultValue = "",required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid",defaultValue = "0",required = false) Integer cwbtypeid,
+			@RequestParam(value = "cwbresultid",defaultValue = "0",required = false) Long cwbresultid,
+			@RequestParam(value = "isdo",defaultValue = "0",required = false) Integer isdo,
+			@RequestParam(value = "cwbstate",defaultValue = "0",required = false) Long cwbstate,
+			@RequestParam(value = "feedbackbranchid",defaultValue = "0",required = false) Long feedbackbranchid,
+			@RequestParam(value = "begindate",defaultValue = "",required = false) String begindate,
+			@RequestParam(value = "enddate",defaultValue = "",required = false) String enddate
+			){
+		List<User> uslist = userDAO.getAllUser();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		String cwbss = getCwbs(cwbs);
+		List<ApplyEditDeliverystate> applyeditlist =  this.applyEditDeliverystateDAO.getAppliedEditDeliverystate(cwbss,cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
+		List<CwbOrderView> covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchList);
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		this.exportService.SetResetFeedbackOrderFields(cloumnName1, cloumnName2);
+		String sheetName = "重置反馈状态"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Reset_Feed_Back_" + df.format(new Date()) + ".xlsx"; // 文件名  
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
+	}
+	
+	
 	
 	//处理为审核通过状态
 	@RequestMapping("/getCheckboxDealPass")
@@ -319,7 +356,6 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
-			//@RequestParam(value = "applypeople", defaultValue = "0", required = false) int applypeople,
 			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
 			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) int shenhestate,
@@ -331,16 +367,7 @@ public class ApplyEditDeliverystateController {
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
 		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
-		StringBuffer strs = new StringBuffer("");
-		if(!cwbs.equals("")){
-			for(String str:cwbs.split("\r\n")){
-				strs.append("'").append(str).append("',");
-			}
-		}
-		String cwbss = "";
-		if(strs.length()>0){
-			strs.substring(0, strs.length()-1);
-		}
+		String cwbss = getCwbs(cwbs);
 		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
 		long count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
 		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
@@ -355,6 +382,80 @@ public class ApplyEditDeliverystateController {
 		model.addAttribute("zhifulist", covList);
 		return "applyeditdeliverystate/paywayInfoModifyCheck";
 	}
+	
+	
+	//支付信息修改审核-导出
+	@RequestMapping("/checkExportExcel")
+	public void checkExportExcel(Model model,HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
+			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
+			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) int shenhestate,
+			@RequestParam(value = "shenheresult", defaultValue = "0", required = false) int shenheresult
+			) {
+
+		List<Customer> customerList = customerDao.getAllCustomers();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		
+		String cwbss = getCwbs(cwbs);
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbs(cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
+		
+		String[] cloumnName1 = new String[8]; // 导出的列名
+		String[] cloumnName2 = new String[8]; // 导出的英文列名
+		this.exportService.SetEditPIMCheckOrderFields(cloumnName1, cloumnName2);
+		String sheetName = "支付信息修改审核"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "ZhiFU_Info_Check_" + df.format(new Date()) + ".xlsx"; // 文件名  
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
+	}
+
+	
+	//支付信息修改确认-导出
+	@RequestMapping("/confirmExportExcel")
+	public void confirmExportExcel(Model model,HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value = "cwb", defaultValue = "", required = true) String cwbs,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = true) int cwbtypeid,
+			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
+			@RequestParam(value = "userid", defaultValue = "0", required = true) int userid,
+			@RequestParam(value = "confirmstate", defaultValue = "0", required = true) int confirmstate,
+			@RequestParam(value = "confirmresult", defaultValue = "0", required = true) int confirmresult
+			) {
+
+		List<Customer> customerList = customerDao.getAllCustomers();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		
+		String cwbss = getCwbs(cwbs);
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getConfirmCwbs(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+		
+		String[] cloumnName1 = new String[8]; // 导出的列名
+		String[] cloumnName2 = new String[8]; // 导出的英文列名
+		this.exportService.SetEditPIMCheckOrderFields(cloumnName1, cloumnName2);
+		String sheetName = "支付信息修改确认"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "ZhiFU_Info_Confirm_" + df.format(new Date()) + ".xlsx"; // 文件名  
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
+	}
+
+	private String getCwbs(String cwbs) {
+		StringBuffer strs = new StringBuffer("");
+		if(!cwbs.equals("")){
+			for(String str:cwbs.split("\r\n")){
+				strs.append("'").append(str).append("',");
+			}
+		}
+		String cwbss = "";
+		if(strs.length()>0){
+			strs.substring(0, strs.length()-1);
+		}
+		return cwbss;
+	}	
+	
+	
+
+	
 	
 	//获取需要审核的订单并进行处理成通过审核
 	@RequestMapping("/editPaywayInfoModifyCheckpass")
@@ -396,16 +497,7 @@ public class ApplyEditDeliverystateController {
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
 		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
-		StringBuffer strs = new StringBuffer("");
-		if(!cwbs.equals("")){
-			for(String str:cwbs.split("\r\n")){
-				strs.append("'").append(str).append("',");
-			}
-		}
-		String cwbss = "";
-		if(strs.length()>0){
-			strs.substring(0, strs.length()-1);
-		}
+		String cwbss = getCwbs(cwbs);
 		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getConfirmCwbsForpage(page,cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
 		long count = zhiFuApplyDao.getConfirmCwbsForCount(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
 		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);

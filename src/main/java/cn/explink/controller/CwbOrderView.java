@@ -259,6 +259,35 @@ public class CwbOrderView {
 	private String donepeople;//操作人
 	private String donetime;//操作时间
 	
+	//支付信息修改部分（合成字段）
+	private String oldnewCwbordertypename;
+	private String oldnewReceivablefee;
+	private String oldnewPaytype;
+	
+	public String getOldnewCwbordertypename() {
+		return oldnewCwbordertypename;
+	}
+
+	public void setOldnewCwbordertypename(String oldnewCwbordertypename) {
+		this.oldnewCwbordertypename = oldnewCwbordertypename;
+	}
+
+	public String getOldnewReceivablefee() {
+		return oldnewReceivablefee;
+	}
+
+	public void setOldnewReceivablefee(String oldnewReceivablefee) {
+		this.oldnewReceivablefee = oldnewReceivablefee;
+	}
+
+	public String getOldnewPaytype() {
+		return oldnewPaytype;
+	}
+
+	public void setOldnewPaytype(String oldnewPaytype) {
+		this.oldnewPaytype = oldnewPaytype;
+	}
+
 	public String getDeliveryname() {
 		return deliveryname;
 	}

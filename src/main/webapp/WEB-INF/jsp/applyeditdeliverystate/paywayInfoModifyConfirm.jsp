@@ -35,8 +35,6 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <script type="text/javascript">
 
 $(function(){
-
-	
 	$("table#gd_table tr:odd").css("backgroundColor","#f9fcfd");
 	$("table#gd_table tr:odd").hover(function(){
 		$(this).css("backgroundColor","#fff9ed");									  
@@ -78,33 +76,7 @@ function check(){
 function btnClick(){
 	$("[name='checkbox']").attr("checked",'true');//全选  
 }
-/* function sub(){
-	var datavalue = "[";
-	
-	if($('input[name="ischeck"]:checked').size()>0){
-		$('input[name="ischeck"]:checked').each(function(index){
-			$(this).attr("checked",false);
-			datavalue = datavalue +"\""+$(this).val()+"\",";
-		});
-	}
-	if(datavalue.length>1){
-		datavalue= datavalue.substring(0, datavalue.length-1);
-	}
-	datavalue= datavalue + "]";
-	if(datavalue.length>2){
-	$.ajax({
-		type: "POST",
-		url:$("#SubFrom").attr("action"),
-		data:{cwbs:datavalue},
-		dataType:"html",
-		success : function(data) {
-			alert("成功修改状态："+data.split("_s_")[0]+"单\n订单状态无变动："+data.split("_s_")[1]+"单");
-			searchForm.submit();
-		}
-	});
-	}
-	
-} */
+
 function applypass(){
 	var datavalue = "";
 	
@@ -175,7 +147,10 @@ function applynopass(){
 	 });
 	}
 }
-
+function exportExcel(){
+	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
+	$("#searchForm").submit();
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -188,15 +163,6 @@ function applynopass(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<span>
-								<select name ="exportmould" id ="exportmould">
-										<option  value ="0">导出模板</option>
-										<%for(Exportmould e:exportmouldlist){%>
-											<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-										<%} %>
-									</select>
-									<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span>
 								<table>
 									<tr>
 										<td rowspan="2">
@@ -257,15 +223,12 @@ function applynopass(){
 											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
-											<input type="button" onclick="applypass()" id="pass" value="确认通过" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="applynopass()" id="nopass" value="确认不通过" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="" value="导出" class="input_button2">
+											<input type="button" onclick="applypass();" id="pass" value="确认通过" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="applynopass();" id="nopass" value="确认不通过" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="exportExcel();" value="导出" class="input_button2">
 										</td>
 									</tr>
 								</table>
-							</form>
-							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
-								<input type="hidden" name="exportmould2" id="exportmould2" />
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">

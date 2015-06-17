@@ -6,7 +6,6 @@
 <%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
-List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<CwbOrderView> applyeditlist = (List<CwbOrderView>)request.getAttribute("applyeditlist");
 Page page_obj = (Page)request.getAttribute("page_obj");
@@ -84,46 +83,6 @@ $(function() {
 	
 });
 
-
-//function sub(){
-/* 	var datavalue = "[";
-	
-	if($('input[name="ischeck"]:checked').size()>0){
-		$('input[name="ischeck"]:checked').each(function(index){
-			$(this).attr("checked",false);
-			datavalue = datavalue +"\""+$(this).val()+"\",";
-		});
-	}
-	if(datavalue.length>1){
-		datavalue= datavalue.substring(0, datavalue.length-1);
-	}
-	datavalue= datavalue + "]";
-	if(datavalue.length>2){
-	$.ajax({
-		type: "POST",
-		url:$("#SubFrom").attr("action"),
-		data:{cwbs:datavalue},
-		dataType:"html",
-		success : function(data) {
-			alert("成功修改状态："+data.split("_s_")[0]+"单\n订单状态无变动："+data.split("_s_")[1]+"单");
-			searchForm.submit();
-		}
-	});
-	}
-	
-} */
-
-/* function exportField(){
-	if(){
-		$("#exportmould2").val($("#exportmould").val());
-		$("#btnval").attr("disabled","disabled"); 
-	 	$("#btnval").val("请稍后……");
-		$("#searchForm2").submit();	
-	}else{
-		alert("没有做查询操作，不能导出！");
-	}
-} */
-
 function check(){
 	var len=$.trim($("#cwb").val()).length;
  	if(len>0)
@@ -173,31 +132,6 @@ function Days(){
 	}        
 	return true;
 }
-
-
-$("#serchcwb").click(function(){
-	$.ajax({
-		type:"post",		
-		url:"<%=request.getContextPath()%>/applyeditdeliverystate/resetFeedbackList",
-		data:{cwb:$("#cwb").val(),
-			cwbtypeid:$("#cwbtypeid").val(),
-			cwbresultid:$("#cwbresultid").val(),
-			isdo:$("#isdo").val(),
-			cwbstate:$("#cwbstate").val(),
-			feedbackbranchid:$("#feedbackbranchid").val(),
-			begindate:$("#begindate").val(),
-			enddate:$("#enddate").val()
-		},
-		datatype:"html",
-		success:function(data){
-			alert("查询完成！");
-			searchForm.submit();
-		}
-	});
-} );
-
-
-
 
 //重置反馈通过
 function resetfeedbackPass(){
@@ -259,7 +193,10 @@ function resetfeedbackNoPass(){
 		});
 	}
 }
-
+function exportExcel(){
+	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/rfbExportExcel");
+	$("#searchForm").submit();
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5;overflow: hidden;"  marginwidth="0" marginheight="0">
@@ -272,15 +209,6 @@ function resetfeedbackNoPass(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<%if(applyeditlist!=null){ %><span>
-								<select name ="exportmould" id ="exportmould">
-									<option  value ="0">导出模板</option>
-									<%for(Exportmould e:exportmouldlist){%>
-									<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-									<%} %>
-								</select>
-									<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
-								</span><%} %> 
 								<table style="font-size: 12px;">
 									<tr>
 										<td rowspan="2">
@@ -381,13 +309,10 @@ function resetfeedbackNoPass(){
 											<input type="button" onclick="resetfeedbackNoPass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;&nbsp;&nbsp;
 										</td>
 										<td  width="40" align="right">
-											<input type="button" onclick="" value="导出" class="input_button2">
+											<input type="button" onclick="exportExcel();" value="导出" class="input_button2">
 										</td>
 									</tr>
 								</table>
-							</form>
-							<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
-								<input type="hidden" name="exportmould2" id="exportmould2" />
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">

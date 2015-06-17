@@ -3040,4 +3040,50 @@ public class ExportService {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
+
+	public void SetEditPIMCheckOrderFields(String[] cloumnName1,String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "客户名称";
+		cloumnName2[1] = "Customername";
+		cloumnName1[2] = "申请类型";
+		cloumnName2[2] = "Applytype";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "OldnewCwbordertypename";
+		cloumnName1[4] = "订单金额[元]";
+		cloumnName2[4] = "OldnewReceivablefee";
+		cloumnName1[5] = "订单支付方式";
+		cloumnName2[5] = "OldnewPaytype";
+		cloumnName1[6] = "订单当前状态";
+		cloumnName2[6] = "NowState";
+		cloumnName1[7] = "订单当前机构";
+		cloumnName2[7] = "Branchname";
+		
+	}
+
+	public void SetResetFeedbackOrderFields(String[] cloumnName1,
+			String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "配送结果";
+		cloumnName2[2] = "Deliveryname";
+		cloumnName1[3] = "订单状态";
+		cloumnName2[3] = "Cwbstatename";
+		cloumnName1[4] = "结算状态";
+		cloumnName2[4] = "Remark1";
+		cloumnName1[5] = "反馈站点";
+		cloumnName2[5] = "Branchname";
+		cloumnName1[6] = "反馈人";
+		cloumnName2[6] = "Resetfeedusername";
+		cloumnName1[7] = "反馈时间";
+		cloumnName2[7] = "Resetfeedtime";
+		cloumnName1[8] = "操作人";
+		cloumnName2[8] = "Donepeople";
+		cloumnName1[9] = "操作时间";
+		cloumnName2[9] = "Donetime";
+		cloumnName1[10] = "审核状态";
+		cloumnName2[10] = "NowState";
+	}
 }

@@ -253,6 +253,34 @@ public class ApplyEditDeliverystateDAO {
 		sql += " limit " +(page-1) * Page.ONE_PAGE_NUMBER + ","+Page.ONE_PAGE_NUMBER ;
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
+	
+	//根据条件查询获取信息-分页
+		public List<ApplyEditDeliverystate> getAppliedEditDeliverystate(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
+			String sql = "select * from express_ops_applyeditdeliverystate";
+			if(!cwbs.equals("")){
+				sql += " where cwb in("+cwbs+")";
+			}else{
+				sql += " where 1=1";
+				StringBuffer sb = new StringBuffer();
+				if(cwbordertypeid>0){
+					sb.append(" and cwbordertypeid="+cwbordertypeid);
+				}
+				if(cwbresult>0){
+					sb.append(" and nowdeliverystate="+cwbresult);
+				}
+				if(shenhestate>0){
+					sb.append(" and ishandle="+shenhestate);
+				}
+				if(cwbstate>0){
+					sb.append(" and cwbstate="+cwbstate);
+				}
+				if(feedbackbranch>0){
+					sb.append(" and applybranchid="+feedbackbranch);
+				}
+				sql += sb;
+			}
+			return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+		}
 	//根据条件查询获取信息-分页
 	public long getAppliedEditDeliverystateCount(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
 		String sql = "select count(1) from express_ops_applyeditdeliverystate";
