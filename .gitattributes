@@ -1259,7 +1259,6 @@ src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
-src/main/java/cn/explink/enumutil/coutracManagementEnum/ContracStateEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContracTypeEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContractStateEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/InvoiceTypeEnum.java -text
