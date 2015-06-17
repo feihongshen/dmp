@@ -145,8 +145,7 @@ public class WorkOrderDAO {
 		}		
 		sql+=sb.toString();
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println(sql);
-			return jt.query(sql, new WorkOrderRowMapper());
+		return jt.query(sql, new WorkOrderRowMapper());
 	}
 	
 	public List<CsConsigneeInfo> queryAllCsConsigneeInfo1(String name,String phone,int type){
@@ -199,7 +198,6 @@ public class WorkOrderDAO {
 	public void savequeryworkorderForm(CsComplaintAccept c){
 		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,querycontent,complaint_state,accpet_time,phone_one,province,customerid,cuijian_num) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getQueryContent(),c.getComplaintState(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum());
-		System.out.println(c.getQueryContent());
 	}
 	
 	public void saveComplainWorkOrderF(CsComplaintAccept c){
@@ -262,9 +260,6 @@ public class WorkOrderDAO {
 				sb.append(" where accept_no='"+c.getAcceptNo()+"'");
 			}
 			sql=sql+sb.toString();
-			
-	
-				System.out.println(sql);
 			this.jt.update(sql);
 	}
 	
@@ -371,7 +366,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		}
 		if(cv.getComplaintTwoLevel()>0){
 			sb.append(" and complaint_two_level="+cv.getComplaintTwoLevel());	
-				}
+		}
 		if(cv.getBeginRangeTime()!=null&&cv.getBeginRangeTime().length()>0&&cv.getEndRangeTime()!=null&&cv.getEndRangeTime().length()>0){
 			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
 		}

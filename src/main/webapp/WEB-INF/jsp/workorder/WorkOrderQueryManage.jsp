@@ -462,7 +462,11 @@ function CurentTime()   //计算当天时间
 				<td><%=customernameList.get(c.getCustomerid())%> 
 				</td>	
 				<td>
-					<label>催件次数</label>
+					<%if(c.getCuijianNum()>0) {%>
+					<%=c.getCuijianNum() %>
+					<%}else{ %>
+					<label>0</label>
+					<%} %>
 				</td>
 		</tr>
 			<%} }}%>

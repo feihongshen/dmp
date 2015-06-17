@@ -319,8 +319,17 @@ function SelectPhone(){
 						$('#sex').attr("checked","true");
 					}
 					$('#savecallerinfo').attr("disabled","disabled");
-				 }else{
+					 }else{
 					 $('#savecallerinfo').removeAttr("disabled");
+					 $('#dname').val("");
+					 $('#consigneeType').val(""); 
+					$('#city').val("");
+					$('#province').val("");
+					$('#contactNum').val("");
+					$('#contactLastTime').val("");
+					$('#sex').removeAttr("checked");
+					$('#sex1').removeAttr("checked");
+					 
 				 	}
 				  }
 			 });
