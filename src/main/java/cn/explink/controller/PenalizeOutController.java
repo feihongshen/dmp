@@ -339,6 +339,7 @@ public class PenalizeOutController {
 			if (punishdescribe.trim().length() > 100) {
 				return "{\"errorCode\":1,\"error\":\"对内扣罚说明不能超过100个字\"}";
 			}
+			penalizeInside.setPunishNo("P"+System.currentTimeMillis()+"");
 			penalizeInside.setCwb(out.getCwb());
 			penalizeInside.setCreateBySource(1);
 			penalizeInside.setSourceNo(out.getCwb());
@@ -355,7 +356,7 @@ public class PenalizeOutController {
 			}
 			penalizeInside.setPunishbigsort(out.getPenalizeOutbig());
 			penalizeInside.setPunishsmallsort(out.getPenalizeOutsmall());
-			penalizeInside.setCreateuserid(this.getSessionUser().getUsercustomerid());
+			penalizeInside.setCreateuserid(this.getSessionUser().getUserid());
 			penalizeInside.setPunishdescribe(punishdescribe);
 			penalizeInside.setPunishcwbstate(PunishInsideStateEnum.daiqueren.getValue());
 			penalizeInside.setCreDate(DateTimeUtil.getNowTime());
