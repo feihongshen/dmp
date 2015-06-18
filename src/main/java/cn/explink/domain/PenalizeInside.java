@@ -40,7 +40,36 @@ public class PenalizeInside {
 	private String shensudate;//申诉时间
 	private String punishbigsortname;//扣罚大类中文名
 	private String punishsmallsortname;//扣罚小类中文名
+	private BigDecimal creategoodpunishprice;//创建时的货物扣罚金额
+	private BigDecimal createqitapunishprice;//创建时的其它扣罚金额
+	private BigDecimal lastgoodpunishprice;//审核时确定的货物扣罚金额
+	private BigDecimal lastqitapunishprice;//审核时的确定的其他扣罚金额
 	
+	
+	public BigDecimal getCreategoodpunishprice() {
+		return creategoodpunishprice;
+	}
+	public void setCreategoodpunishprice(BigDecimal creategoodpunishprice) {
+		this.creategoodpunishprice = creategoodpunishprice;
+	}
+	public BigDecimal getCreateqitapunishprice() {
+		return createqitapunishprice;
+	}
+	public void setCreateqitapunishprice(BigDecimal createqitapunishprice) {
+		this.createqitapunishprice = createqitapunishprice;
+	}
+	public BigDecimal getLastgoodpunishprice() {
+		return lastgoodpunishprice;
+	}
+	public void setLastgoodpunishprice(BigDecimal lastgoodpunishprice) {
+		this.lastgoodpunishprice = lastgoodpunishprice;
+	}
+	public BigDecimal getLastqitapunishprice() {
+		return lastqitapunishprice;
+	}
+	public void setLastqitapunishprice(BigDecimal lastqitapunishprice) {
+		this.lastqitapunishprice = lastqitapunishprice;
+	}
 	public String getCreUserName() {
 		return creUserName;
 	}
