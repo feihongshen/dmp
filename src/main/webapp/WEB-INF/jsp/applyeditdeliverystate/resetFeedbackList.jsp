@@ -196,6 +196,7 @@ function resetfeedbackNoPass(){
 function exportExcel(){
 	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/rfbExportExcel");
 	$("#searchForm").submit();
+	$("#searchForm").attr("action","1");
 }
 </script>
 </HEAD>

@@ -1,6 +1,5 @@
 package cn.explink.controller;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,8 +20,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
 import org.slf4j.Logger;
@@ -37,7 +34,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.b2c.amazon.AmazonService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
@@ -84,7 +80,6 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
-import cn.explink.service.OrgBillAdjustmentRecordService;
 
 @Controller
 @RequestMapping("/delivery")
@@ -758,9 +753,9 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		List<Reason> firstlist = this.reasonDao.add();
+		List<Reason> firstlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.BeHelpUp.getValue());
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
-		List<Reason> firstchangereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
+		List<Reason> firstchangereasonlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.ChangeTrains.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());

@@ -24,13 +24,11 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 		               <option value ="<%=ry.getValue()%>"><%=ry.getText() %></option>
 		               <%} %>
 		           </select>*</li>
-		              <div hidden="true" id="divs">
-		           <li><span id=which style="margin-left: 50px" align="left">
-			           <input type="radio" name="whichreason" id="radio1" checked="checked" onclick="to_change(1)" value='1'>一级
-			           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2),getReasonByFirstReason('<%=request.getContextPath()%>/reason/getfirstreason','parentid',0)" value='2'>二级 
-		           </span></li>
-		           
-		          
+		           <div hidden="true" id="divs">
+			           <li><span id=which style="margin-left: 50px" align="left">
+				           <input type="radio" name="whichreason" id="radio1" checked="checked" onclick="to_change(1)" value='1'>一级
+				           <input type="radio" id="radio2" name="whichreason"  onclick="to_change(2),getReasonByFirstReason('<%=request.getContextPath()%>/reason/getfirstreason','parentid',0)" value='2'>二级 
+			           </span></li>
 		           </div>
 		            <div hidden="true" id="div_changealowflag">
 			            <li><span id="changealowflag" style="margin-left: 50px;" align="left">

@@ -204,7 +204,8 @@ function exportField(){
  		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
 		$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwborder/toGonghuoshangExport');	
-		$("#searchForm").submit();	
+		$("#searchForm").submit();
+		$("#searchForm").attr("action","1");
  	}else{
 		alert("没有做查询操作，不能导出！");
 	} 

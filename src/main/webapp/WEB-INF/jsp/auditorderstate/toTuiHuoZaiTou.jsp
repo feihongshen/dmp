@@ -116,6 +116,7 @@ function exportField(){
 	 	$("#btnval").val("请稍后……");
 	 	$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwborder/tuihuozaitouexport');
 		$("#searchForm").submit();	
+		$("#searchForm").attr("action","1");
  }else{
 		alert("没有做查询操作，不能导出！");
 	} 

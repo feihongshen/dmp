@@ -115,6 +115,7 @@ function changeTag(id){
 	}else if(id==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>){
 		$("#leavedreasonid").parent().show();
 		$("#firstlevelreasonid").parent().show();
+		$("#firstchangereasonid").parent().hide();
 		$("#resendtime").parent().show();
 		$("#zhiliuremark").parent().show();
 		$("#backreasonid").parent().hide();
@@ -155,8 +156,9 @@ function changeTag(id){
 		<%}%>
 	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
 		$("#firstchangereasonid").parent().show();
+		$("#firstlevelreasonid").parent().hide();
 		$("#changereasonid").parent().show();
-		
+		$("#resendtime").parent().hide();
 		$("#backreasonid").parent().hide();
 		$("#deliverstateremark").parent().hide();
 		$("#paytype").parent().hide();
@@ -364,7 +366,7 @@ function resub(form){
 						
 						<em style="display:none">
 							一级原因：
-							 <select name="firstchangereasonid" id="firstchangereasonid" class="select1"  onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)">
+							 <select name="firstchangereasonid" id="firstchangereasonid" class="select1"  onchange="updatechangelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)">
 					        	<option value ="0">请选择</option>
 					        	<%for(Reason r : firstchangereasonlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>

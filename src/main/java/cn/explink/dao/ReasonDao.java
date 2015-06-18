@@ -168,11 +168,11 @@ public class ReasonDao {
 	}
 	
 	//查出所有的一级原因
-		public List<Reason> getFirstReasonByType(long reasontype){
-			String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=?";
-			List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),reasontype);
-			return list;
-		}
+	public List<Reason> getFirstReasonByType(long reasontype){
+		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=?";
+		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),reasontype);
+		return list;
+	}
 		
 	//查出所有的二级原因
 	public List<Reason> getAllSecondLevelReason(long firstreasonid){

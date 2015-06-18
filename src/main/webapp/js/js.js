@@ -4951,7 +4951,7 @@ function validate(id){
 
 
 
-function updaterelatelevel(URL, firstchangereasonid) {
+function updatechangelevel(URL, firstchangereasonid) {
 	$.ajax({
 		url : URL, // 后台处理程序
 		type : "POST",// 数据发送方式
@@ -5068,7 +5068,7 @@ function whenhidden(){
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
 	$("#div_changealowflag").attr('hidden','true');
-	if($("#reasontype").val()==2)
+	if($("#reasontype").val()==2||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
 		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
@@ -5077,7 +5077,7 @@ function whenhidden(){
 	}
 	
 	$("#div_changealowflag").attr('hidden');
-	if($("#reasontype").val()==1||$("#reasontype").val()==13)
+	if($("#reasontype").val()==1)
 	{
 		$("#divs").removeAttr('hidden');
 		$("#div_changealowflag").removeAttr('hidden');
@@ -5094,7 +5094,7 @@ function whenhidden(){
 
 
 function to_change(flag){
-	if($("#reasontype").val()==1||$("#reasontype").val()==13)
+	/*if($("#reasontype").val()==1||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
 			if(flag==1){
@@ -5104,13 +5104,27 @@ function to_change(flag){
 			{
 				$("#div_2").removeAttr('hidden');
 			}
-	}
+	}*/
 	
-	if($("#reasontype").val()==1||$("#reasontype").val()==13)
+	if($("#reasontype").val()==1||$("#reasontype").val()==2||$("#reasontype").val()==13)
 	{
 	
 		$("#divs").removeAttr('hidden');
-		if(flag==1){
+		if($("#reasontype").val()==2||$("#reasontype").val()==13){
+			if(flag==1){
+				$("#div_2").attr('hidden','true');
+			}else{
+				$("#div_2").removeAttr('hidden');
+			}
+		}else{
+			if(flag==1){
+				$("#div_2").attr('hidden','true');
+				$("#div_changealowflag").removeAttr('hidden');
+			}else{
+				$("#div_2").removeAttr('hidden');
+			}
+		}
+		/*if(flag==1){
 			$("#div_2").attr('hidden','true');
 			$("#div_changealowflag").removeAttr('hidden');
 		}
@@ -5118,7 +5132,7 @@ function to_change(flag){
 		{
 			$("#div_2").removeAttr('hidden');
 			$("#div_changealowflag").attr('hidden','true');
-		}
+		}*/
 	}
 	
 }
@@ -5157,6 +5171,8 @@ function updaterelatelevel2(URL, firstlevelreasonid) {
 		}
 	});
 }
+
+
 function getfirstlevel(flag){
 	$("#first").attr('hidden',true); 
 	if(flag==2){

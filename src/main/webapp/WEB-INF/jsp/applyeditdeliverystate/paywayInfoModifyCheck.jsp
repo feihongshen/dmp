@@ -135,6 +135,7 @@ function applynopass(){
 function exportExcel(){
 	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
 	$("#searchForm").submit();
+	$("#searchForm").attr("action","1");
 }
 
 </script>
