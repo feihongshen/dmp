@@ -267,7 +267,7 @@ public class PenalizeOutController {
 	public @ResponseBody
 	String addpenalizeOutData(PenalizeOut out, Model model) throws Exception {
 		if (out != null) {
-			PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(out.getCwb(), out.getPenalizeOutsmall(), out.getPenalizeOutfee());
+			PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(out.getCwb(), out.getPenalizeOutsmall(), out.getPenalizeOutGoodsfee(),out.getPenalizeOutOtherfee());
 			if (penalizeOut != null) {
 				return "{\"errorCode\":1,\"error\":\"该记录已经存在！\"}";
 			}
