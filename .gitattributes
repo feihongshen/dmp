@@ -2245,6 +2245,7 @@ src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeIn/createbycwb.jsp -text
+src/main/webapp/WEB-INF/jsp/penalize/penalizeIn/createbyshixiaokaohe.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeIn/finddetail.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeIn/list.jsp -text
 src/main/webapp/WEB-INF/jsp/penalize/penalizeIn/shenhe.jsp -text

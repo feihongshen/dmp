@@ -144,6 +144,7 @@ public class PunishInsideController {
 			model.addAttribute("sitetype", this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype());
 			model.addAttribute("userid", user.getUserid());
 			model.addAttribute("roleid", user.getRoleid());
+			model.addAttribute("currentbranchid", user.getBranchid());
 			model.addAttribute("penalizeInsides", penalizeInsides);
 			model.addAttribute("abnormalTypeList", atlist);
 			model.addAttribute("lr", lr);
@@ -602,4 +603,55 @@ public class PunishInsideController {
 			return new ArrayList<PunishGongdanView>();
 		}		
 	}
+	@RequestMapping("/findinpunishbyShixiao")
+	public String findinpunishbyShixiao(Model model,
+			@RequestParam(value="celuename",defaultValue="0",required=false)long celuename,
+			@RequestParam(value="kaoheproject",defaultValue="0",required=false)long kaoheproject,
+			@RequestParam(value="cwb",defaultValue="",required=false)String cwb,
+			@RequestParam(value="isshow",defaultValue="0",required=false)long isshow
+			){
+		//从查询页面查询过来的数据
+		if (isshow==1) {
+			
+		}
+		
+		return "penalize/penalizeIn/createbyshixiaokaohe";
+
+	} 
+	/**
+	 * 不带文件的根据时效创建对内扣罚单
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/createbyshixiao")
+	public @ResponseBody String createbyshixiao(HttpServletRequest request){
+		try{
+		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type4"));
+		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
+		punishInsideDao.createPunishInside(penalizeInside);
+		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+		}
+	}
+	@RequestMapping("/createbyshixiaofile")
+	public @ResponseBody String createbyshixiaofile(HttpServletRequest request,
+			@RequestParam(value = "Filedata", required = false) MultipartFile file
+			){
+		try {
+			String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type4"));
+			
+			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
+			String filepath=punishInsideService.loadexceptfile(file);
+			penalizeInside.setFileposition(filepath);
+			punishInsideDao.createPunishInside(penalizeInside);
+
+			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+		} catch (Exception e) {
+			this.logger.error("根据工单创建对内扣罚单的时候出现异常", e);
+		return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+		}
+		
+	}
 }
+

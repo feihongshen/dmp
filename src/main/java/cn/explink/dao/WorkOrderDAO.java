@@ -344,7 +344,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		sb.append(" and order_no in(").append(ncwbs).append(")");
 	}
 	if (!gongdancwb.equals("")) {
-		sb.append("  accept_no='"+gongdancwb+"'");
+		sb.append(" and  accept_no='"+gongdancwb+"'");
 	}
 	if(gongdanstate>0){
 		sb.append(" and complaint_state="+gongdanstate);

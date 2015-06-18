@@ -71,7 +71,7 @@ public class PunishInsideDao {
 	private JdbcTemplate jdbcTemplate;
 	//根据订单号创建对内扣罚单
 	public void createPunishInside(final PenalizeInside penalizeInside){
-		this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition,creategoodpunishprice,createqitapunishprice) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				// TODO Auto-generated method stub
@@ -91,6 +91,8 @@ public class PunishInsideDao {
 				ps.setLong(14, penalizeInside.getPunishcwbstate());
 				ps.setString(15, penalizeInside.getPunishdescribe());
 				ps.setString(16, penalizeInside.getFileposition());
+				ps.setBigDecimal(17, penalizeInside.getCreategoodpunishprice());
+				ps.setBigDecimal(18, penalizeInside.getCreateqitapunishprice());
 
 			}
 		});
@@ -219,7 +221,7 @@ public class PunishInsideDao {
 		});
 	}
 	public void updatePunishShenhe(final PenalizeInsideShenhe penalizeInsideShenhe){
-		this.jdbcTemplate.update("update express_ops_punishInside_detail set shenhepunishprice=?,shenhetype=?,shenhedescribe=?,shenhefileposition=?,shenheuserid=?,punishcwbstate=?,shenhedate=? where id=?", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("update express_ops_punishInside_detail set shenhepunishprice=?,shenhetype=?,shenhedescribe=?,shenhefileposition=?,shenheuserid=?,punishcwbstate=?,shenhedate=?,lastgoodpunishprice=?,lastqitapunishprice=? where id=?", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 					ps.setBigDecimal(1, penalizeInsideShenhe.getShenhepunishprice());
@@ -229,7 +231,10 @@ public class PunishInsideDao {
 					ps.setLong(5, penalizeInsideShenhe.getShenheuserid());
 					ps.setLong(6, penalizeInsideShenhe.getPunishcwbstate());
 					ps.setString(7, punishInsideService.getNowtime());
-					ps.setLong(8, penalizeInsideShenhe.getId());
+					ps.setBigDecimal(8, penalizeInsideShenhe.getResultgoodprice());
+					ps.setBigDecimal(9, penalizeInsideShenhe.getResultqitaprice());
+					ps.setLong(10, penalizeInsideShenhe.getId());
+
 			}
 		});
 	}

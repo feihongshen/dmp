@@ -10,10 +10,25 @@ public class PenalizeInsideShenhe {
 	private String shenheposition;
 	private long shenheuserid;
 	private long punishcwbstate;
+	private BigDecimal resultqitaprice;//最终其它扣罚金额
+	private BigDecimal resultgoodprice;//最终货物扣罚金额
 	
 	
 	
 	
+	
+	public BigDecimal getResultqitaprice() {
+		return resultqitaprice;
+	}
+	public void setResultqitaprice(BigDecimal resultqitaprice) {
+		this.resultqitaprice = resultqitaprice;
+	}
+	public BigDecimal getResultgoodprice() {
+		return resultgoodprice;
+	}
+	public void setResultgoodprice(BigDecimal resultgoodprice) {
+		this.resultgoodprice = resultgoodprice;
+	}
 	public long getPunishcwbstate() {
 		return punishcwbstate;
 	}

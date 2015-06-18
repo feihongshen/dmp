@@ -95,8 +95,14 @@ String id=request.getAttribute("id").toString();
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						扣罚金额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine"/>
+						最终货物扣罚金额<font color="red">*</font>:<input type="text" id="resultgoodprice" name="resultgoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'resultqitaprice','koufajine');"/>
+						&nbsp;&nbsp;最终其它扣罚金额<font color="red">*</font>:<input type="text" id="resultqitaprice" name="resultqitaprice" onkeyup="alculateSumprice(this,'resultgoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
 						</td></tr>
+						<tr class="font_1">
+							<td colspan="2" align="left" valign="top">
+							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1"/>
+							</td>
+						</tr>
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">审核备注<font color="red">*</font>：<textarea  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" name="describe" id="describe" cols="40" rows="4" id="textfield">最多100个字</textarea></td>
 						</tr>

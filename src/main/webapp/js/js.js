@@ -5435,12 +5435,15 @@ function check_createbycwb(){
 	}else if($("#dutybranchid").val()==0){
 		alert("请输入责任机构！！");
 		return false;
-	}else if($("#punishprice").val()==""){
-		alert("请输入扣罚金额！！");
-		return false;
 	}
 	if($("#punishdescribe").val().length>100){
 		alert("扣罚说明不能超过100个字噢！！");
+		return false;
+	}
+	if($("#punishprice").val()==""||$("#punishprice").val()=="0"||$("#punishprice").val()=="0.00"){
+		if(confirm("当前扣罚金额为0元，您确定要继续创建吗")){
+			return true;
+		}
 		return false;
 	}
 	return true;
@@ -5469,6 +5472,8 @@ function submitPunishInsideByCwb(){
 	$('#swfupload-control').swfupload('addPostParam', 'punishdescribe', $("#punishdescribe", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'punishinsidetype', $("#punishinsidetype", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'flowordertype', $("#flowordertype", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbgoodprice', $("#cwbgoodprice", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbqitaprice', $("#cwbqitaprice", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
 /*function btnswd(ev){
@@ -5826,12 +5831,15 @@ function check_createbygongdan(){
 		alert("请选择责任机构！！");
 		return false;
 	}
-	if($("#punishprice2").val()==""){
-		alert("请输入扣罚金额！！");
-		return false;
-	}
+	
 	if($("#describe2").val().length>100){
 		alert("扣罚说明不能超过100个字！！");
+		return false;
+	}
+	if($("#punishprice2").val()==""||$("#punishprice2").val()=="0"||$("#punishprice2").val()=="0.00"){
+		if(confirm("当前扣罚金额为0元，您确定要继续创建吗")){
+			return true;
+		}
 		return false;
 	}
 	return true;
@@ -5862,12 +5870,15 @@ function check_createbywentijian(){
 		alert("请选择责任机构！！");
 		return false;
 	}
-	if($("#punishprice3").val()==""){
-		alert("请输入扣罚金额！！");
-		return false;
-	}
+	
 	if($("#describe3").val().length>100){
 		alert("扣罚说明不能超过100个字！！");
+		return false;
+	}
+	if($("#punishprice3").val()==""||$("#punishprice3").val()=="0"||$("#punishprice3").val()=="0.00"){
+		if(confirm("当前扣罚金额为0元，您确定要继续创建吗")){
+			return true;
+		}
 		return false;
 	}
 	return true;
@@ -6152,10 +6163,7 @@ function getComplaintUserValue(){
 
 //对内扣罚审核的判断
 function check_punishinsideshenhe(){
-	if($("#koufajine").val()==""){
-		alert("请输入扣罚金额！！");
-		return false;
-	}
+
 /*	console.info($("#describe").val());
 	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
 		alert("请输入对内扣罚审核说明！！");
@@ -6163,6 +6171,12 @@ function check_punishinsideshenhe(){
 	}*/
 	if($("#describe").val().length>100){
 		alert("输入的对内扣罚审核说明不能 超过100个字！！");
+		return false;
+	}
+	if($("#koufajine").val()==""||$("#koufajine").val()=="0"||$("#koufajine").val()=="0.00"){
+		if(confirm("当前扣罚金额为0元，您确定要继续创建吗")){
+			return true;
+		}
 		return false;
 	}
 	return true;
@@ -6179,6 +6193,8 @@ function koufachengli(){
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
 		$("#koufajine").val("");
+		$("#resultgoodprice").val("");
+		$("#resultqitaprice").val("0.00");
 		$("#describe").val("最多100个字");
 		$("#update")[0].contentWindow.chuShihuatiaojian();
 
@@ -6196,8 +6212,10 @@ function chexiaokoufa(){
 			return;
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
-		$("#update")[0].contentWindow.submitShenheLoad();
-		$("#koufajine").val("");
+/*		$("#update")[0].contentWindow.submitShenheLoad();
+*/		$("#koufajine").val("");
+		$("#resultgoodprice").val("");
+		$("#resultqitaprice").val("0.00");
 		$("#describe").val("最多100个字");
 		$("#update")[0].contentWindow.chuShihuatiaojian();
 	}
@@ -6208,6 +6226,8 @@ function submitShenheLoad(){
 	$('#swfupload-control').swfupload('addPostParam', 'describe', $("#describe", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'shenheresult', $("#shenheresult", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'resultgoodprice', $("#resultgoodprice", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'resultqitaprice', $("#resultqitaprice", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
 
@@ -6416,7 +6436,7 @@ function isChineseValue(str){
 	   }
 	}
 function isChineseValue1(str){
-	var re1 = /^[\u4e00-\u9fa5]{2,10}$/ 
+	var re1 = /^[\u4e00-\u9fa5]{2,10}$/
 	   if(!re1.test(str)){
 		   alert('请输入正确的城市');
 			$('#city').val("");	
@@ -6434,4 +6454,123 @@ function isnum(str){
 }
 function chuShihuatiaojian(){
 	$("#wavText").val("");
+}
+//验证通过工单创建对内扣罚单的参数
+function check_createbyshixiaokaohe(){
+	 if (selectedTr != null) {  
+	    	var str=$(selectedTr).find("td:first").text();
+	    	var str1=$(selectedTr).children('td').eq(1).text();
+	    	$("#availablecwb4").val(str);
+			$("#cwbhhh4").val(str1);
+	       /* alert(str);*/
+	    } else {  
+	        alert("请选择一条要创建的时效的记录！！"); 
+	        return false;
+	    }  
+	if($("#availablecwb4").val()==""){
+		alert("请选择需要创建的工单！！");
+		return false;
+	}
+	if($("#punishbigsort4").val()==0){
+		alert("请选择扣罚大类！！");
+		return false;
+	}
+	
+	if($("#dutybranchid4").val()==0){
+		alert("请选择责任机构！！");
+		return false;
+	}
+	if($("#punishprice4").val()==""){
+		alert("请输入扣罚金额！！");
+		return false;
+	}
+	if($("#describe4").val().length>100){
+		alert("扣罚说明不能超过100个字！！");
+		return false;
+	}
+	return true;
+}
+//根据时效弹出框中的查询的判断条件
+function check_CreatepunishByShixiao(){
+	if($("#celuename").val()==0&&$("#kaoheproject").val()==0&&$("#cwb").val()==""){
+		alert("请至少选择一个条件进行查询噢！！");
+		return false;
+	}
+	return true;
+}
+
+function createinpunishbycwb(form){
+	$.ajax({
+		type : "POST",
+		url:$(form).attr("action"),
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+}
+//根据时效创建对内扣罚单
+function submitPunishCreateByshixiaokoahe(form){
+	console.info("hhh");
+	if ($("#update").contents().find("#wavText").val() == "") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", "inpunish/createbyshixiao");
+		submitCreateForm(form);
+		return;
+	}
+
+	$("#update")[0].contentWindow.submitPunishInsideByShixiao();
+}
+function submitPunishInsideByShixiao(){
+	$('#swfupload-control1').swfupload('addPostParam', 'punishbigsort4', $("#punishbigsort4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'punishsmallsort4', $("#punishsmallsort4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'dutybranchid4', $("#dutybranchid4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'dutypersoname4', $("#dutypersoname4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'punishprice4', $("#punishprice4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'describe4', $("#describe4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'type4', $("#type4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'availablecwb4', $("#availablecwb4", parent.document).val());
+	$('#swfupload-control1').swfupload('addPostParam', 'cwbhhh4', $("#cwbhhh4", parent.document).val());
+	$('#swfupload-control1').swfupload('startUpload');
+}
+function alculateSumprice(selfObject,addObject,sumPrice){
+	var selfdata=$(selfObject);
+	var addData=$("#"+addObject);
+	var sumSP=$("#"+sumPrice);
+	 
+         var num1 = selfdata.val();// 取得first对象的值  
+         var num2 = addData.val();// 取得second对象的值  
+         var sum = sumPriceAdd(num1,num2); 
+
+         console.info(isNaN($(sumSP).val()));
+         if(isNaN(sum)){
+        	 $(selfObject).val("");
+        	 var num3 = selfdata.val();
+             var num4 = addData.val();
+             var sum1 = sumPriceAdd(num3,num4);
+             sumSP.val(sum1);
+        	alert("亲，只能输入数字类型的噢,请重新输入！！");
+         }else{
+        	 sumSP.val(sum);
+
+         }
+         
+}
+
+function sumPriceAdd(arg1,arg2){
+	 var a1,a2,m;  
+     try{  
+         a1 = arg1.toString().split(".")[1].length;  
+     }catch(e){  
+         a1 = 0;  
+     }  
+     try{  
+         a2 = arg2.toString().split(".")[1].length;  
+     }catch(e){  
+         a2 = 0;  
+     }  
+     m = Math.pow(10, Math.max(a1,a2));  
+     return (arg1*m+arg2*m)/m;  
 }

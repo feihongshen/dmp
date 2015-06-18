@@ -6790,6 +6790,15 @@ CREATE TABLE `cs_complaint_accept` (
     	       	ALTER TABLE express_ops_punishInside_detail ADD COLUMN `isinvalid` INT(10) DEFAULT '1';
    			</sql>
     </changeSet>
+
+    <changeSet id="wukong-2015-06-18-01" author="wukong">
+    		<sql>
+ 			ALTER TABLE express_ops_punishInside_detail ADD COLUMN    `creategoodpunishprice` DECIMAL(19,2) DEFAULT '0.00',
+					ADD COLUMN `createqitapunishprice` DECIMAL(19,2) DEFAULT '0.00',
+					ADD COLUMN `lastgoodpunishprice` DECIMAL(19,2) DEFAULT '0.00',
+					ADD COLUMN `lastqitapunishprice` DECIMAL(19,2) DEFAULT '0.00';   			</sql>
+    </changeSet>
+
     <changeSet id="wuyonghe-2015-06-18-01" author="wangyonghe">
     		<sql>
     	       	ALTER TABLE `express_ops_penalizeout_detail`
@@ -6798,6 +6807,7 @@ CREATE TABLE `cs_complaint_accept` (
 		ADD COLUMN `penalizeOutOtherfee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '对外赔付其它金额' AFTER `penalizeOutGoodsfee`;
 		   			</sql>
     </changeSet>
+
     
 
 </databaseChangeLog>

@@ -98,14 +98,18 @@ public class PunishInsideService {
 		PenalizeInside penalizeInside=new PenalizeInside();
 		String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
 		String cwbstate = StringUtil.nullConvertToEmptyString(request.getParameter("cwbstate")).trim();
-		String cwbprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbprice")).trim();
+		String cwbprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbprice")==""?"0.00":request.getParameter("cwbprice")).trim();
 		String cwpunishbigsort = StringUtil.nullConvertToEmptyString(request.getParameter("punishbigsort")).trim();
 		String punishsmallsort = StringUtil.nullConvertToEmptyString(request.getParameter("punishsmallsort")).trim();
 		String dutybranchid = StringUtil.nullConvertToEmptyString(request.getParameter("dutybranchid")).trim();
 		String dutypersoname = StringUtil.nullConvertToEmptyString(request.getParameter("dutyname")).trim();
-		String punishprice = StringUtil.nullConvertToEmptyString(request.getParameter("punishprice")).trim();
+		String punishprice = StringUtil.nullConvertToEmptyString(request.getParameter("punishprice")==""?"0.00":request.getParameter("punishprice")).trim();
 		String punishdescribe = StringUtil.nullConvertToEmptyString(request.getParameter("punishdescribe")).trim();
 		String createBySource = StringUtil.nullConvertToEmptyString(request.getParameter("punishinsidetype")).trim();
+		String cwbgoodprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbgoodprice")==""?"0.00":request.getParameter("cwbgoodprice")).trim();
+		String cwbqitaprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbqitaprice")==""?"0.00":request.getParameter("cwbqitaprice")).trim();
+		penalizeInside.setCreategoodpunishprice(new BigDecimal(cwbgoodprice));
+		penalizeInside.setCreateqitapunishprice(new BigDecimal(cwbqitaprice));
 		penalizeInside.setCreateBySource(Integer.valueOf(createBySource));//根据订单创建的来源标识为1
 		long userid=this.getSessionUser().getUserid();
 		penalizeInside.setCwb(cwb);
@@ -139,8 +143,12 @@ public class PunishInsideService {
 		String describe1=StringUtil.nullConvertToEmptyString(request.getParameter("describe"+type1));
 		String availablecwb1=StringUtil.nullConvertToEmptyString(request.getParameter("availablecwb"+type1));
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
+		String cwbgoodprice=StringUtil.nullConvertToEmptyString(request.getParameter("cwbgoodprice"+type1));
+		String cwbqitaprice=StringUtil.nullConvertToEmptyString(request.getParameter("cwbqitaprice"+type1));
 		long userid=this.getSessionUser().getUserid();
 		PenalizeInside penalizeInside=new PenalizeInside();
+		penalizeInside.setCreategoodpunishprice(new BigDecimal(cwbgoodprice==""?"0.00":cwbgoodprice));
+		penalizeInside.setCreateqitapunishprice(new BigDecimal(cwbqitaprice==""?"0.00":cwbqitaprice));
 		penalizeInside.setCreateBySource(Integer.parseInt(type1));
 		penalizeInside.setCreateuserid(userid);
 		penalizeInside.setCreDate(this.getNowtime());
@@ -152,7 +160,7 @@ public class PunishInsideService {
 		penalizeInside.setPunishbigsort(Long.parseLong(punishbigsort1));
 		penalizeInside.setPunishcwbstate(punishinsidetype);
 		penalizeInside.setPunishdescribe(this.switchDescribe(describe1));
-		penalizeInside.setPunishInsideprice(new BigDecimal(punishprice1));
+		penalizeInside.setPunishInsideprice(new BigDecimal(punishprice1==""?"0.00":punishprice1));
 		penalizeInside.setPunishNo(punishNO);
 		penalizeInside.setSourceNo(availablecwb1);
 		penalizeInside.setPunishsmallsort(Integer.parseInt(punishsmallsort1));
@@ -177,7 +185,7 @@ public class PunishInsideService {
 					abnormalPunishView.setCreuser(this.getCreUser(abnormalOrder.getCreuserid()));
 					abnormalPunishView.setCustomername(this.getCustomename(abnormalOrder.getCustomerid()));
 					abnormalPunishView.setCwb(abnormalOrder.getCwb());
-					String cwbprice="";
+					String cwbprice="0.00";
 					CwbOrder cwbOrder=cwbDAO.getCwbByCwb(abnormalOrder.getCwb());
 					if (cwbOrder!=null) {
 						cwbprice=cwbOrder.getReceivablefee()+"";
@@ -234,6 +242,10 @@ public class PunishInsideService {
 			String koufajine=StringUtil.nullConvertToEmptyString(request.getParameter("koufajine"));
 			String describe=StringUtil.nullConvertToEmptyString(request.getParameter("describe"));
 			String id=StringUtil.nullConvertToEmptyString(request.getParameter("id")).trim();
+			String resultgoodprice=StringUtil.nullConvertToEmptyString(request.getParameter("resultgoodprice")).trim();
+			String resultqitaprice=StringUtil.nullConvertToEmptyString(request.getParameter("resultqitaprice")).trim();
+			penalizeInsideShenhe.setResultgoodprice(new BigDecimal(resultgoodprice==""?"0.00":resultgoodprice));
+			penalizeInsideShenhe.setResultqitaprice(new BigDecimal(resultqitaprice==""?"0.00":resultqitaprice));
 			if (shenheresult.equals("1")) {
 				long koufachengli=PunishInsideStateEnum.koufachengli.getValue();
 				penalizeInsideShenhe.setPunishcwbstate(koufachengli);
@@ -242,7 +254,7 @@ public class PunishInsideService {
 				penalizeInsideShenhe.setPunishcwbstate(koufachexiao);
 			}
 			penalizeInsideShenhe.setShenhedescribe(this.switchDescribe(describe));
-			penalizeInsideShenhe.setShenhepunishprice(new BigDecimal(koufajine));
+			penalizeInsideShenhe.setShenhepunishprice(new BigDecimal(koufajine==""?"0.00":koufajine));
 			penalizeInsideShenhe.setShenheresult(Long.parseLong(shenheresult));
 			penalizeInsideShenhe.setId(Long.parseLong(id));
 			return penalizeInsideShenhe;
@@ -272,10 +284,10 @@ public class PunishInsideService {
 				for (CsComplaintAccept csComplaintAccept : csComplaintAccepts) {
 					PunishGongdanView punishGongdanView=new PunishGongdanView();
 					punishGongdanView.setCuijianNum(String.valueOf(csComplaintAccept.getCuijianNum()));
-					punishGongdanView.setCustomername(this.getBranchName(csComplaintAccept.getCustomerid()));
+					punishGongdanView.setCustomername(this.getCustomename(csComplaintAccept.getCustomerid()));
 					punishGongdanView.setCwb(csComplaintAccept.getOrderNo());
 					punishGongdanView.setGongdanNo(csComplaintAccept.getAcceptNo());
-					punishGongdanView.setGongdanShouliName(csComplaintAccept.getHandleUser());
+					punishGongdanView.setGongdanShouliName(this.getRealName(csComplaintAccept.getHandleUser()));
 					punishGongdanView.setGongdanState(this.getGongdanState(csComplaintAccept.getComplaintState()));
 					punishGongdanView.setGongdanType(this.getGongdanType(csComplaintAccept.getComplaintType()));
 					punishGongdanView.setPhoneNumber(csComplaintAccept.getPhoneOne());
@@ -283,7 +295,7 @@ public class PunishInsideService {
 					punishGongdanView.setTousudealresult(this.getGongdanDealresult(csComplaintAccept.getComplaintResult()));
 					punishGongdanView.setTousuonesort(this.getTousuOneSort(csComplaintAccept.getComplaintOneLevel()));
 					punishGongdanView.setTousuOrganization(this.getBranchName(csComplaintAccept.getCodOrgId()));
-					punishGongdanView.setToususecondsort(this.getTousuOneSort(csComplaintAccept.getComplaintTwoLevel()));
+					punishGongdanView.setToususecondsort(this.getTousuTwoSort(csComplaintAccept.getComplaintTwoLevel()));
 					punishGongdanViews.add(punishGongdanView);
 				}
 				return punishGongdanViews;
@@ -291,10 +303,30 @@ public class PunishInsideService {
 				return new ArrayList<PunishGongdanView>();
 			}
 		}
-		
+		public String getRealName(String username){
+			
+			try {
+				User user= userDAO.getUserByUsername(username);
+				return user.getRealname();
+			} catch (Exception e) {
+				return "";
+			}
+			
+		}
+		public String getTousuTwoSort(long tousuonesort){
+			String tousuonesorting="";
+			List<Reason> lr=reasonDao.getAllTwoLevelReason();
+			for (Reason reason : lr) {
+				if (reason.getReasonid()==tousuonesort) {
+					tousuonesorting=reason.getReasoncontent();
+					break;
+				}
+			}
+			return tousuonesorting;
+		}
 		public String getTousuOneSort(long tousuonesort){
 			String tousuonesorting="";
-			List<Reason> lr=reasonDao.addWO();
+			List<Reason> lr=reasonDao.add();
 			for (Reason reason : lr) {
 				if (reason.getReasonid()==tousuonesort) {
 					tousuonesorting=reason.getReasoncontent();
@@ -447,7 +479,7 @@ public class PunishInsideService {
 			return dealresultString;
 		}
 		public String getCwbprice(String cwb){
-			String cwbprice="";
+			String cwbprice="0.00";
 			CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
 			if (cwbOrder!=null) {
 				cwbprice=cwbOrder.getReceivablefee()+"";
@@ -503,7 +535,7 @@ public class PunishInsideService {
 		}
 		public boolean checkisshenhe(long id){
 			PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
-			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()) {
+			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.daishenhe.getValue()) {
 				return true;
 			}
 		

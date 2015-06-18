@@ -25,6 +25,7 @@
   String sitetype = request.getAttribute("sitetype")==null?"":request.getAttribute("sitetype").toString();
   long roleid = Long.parseLong(request.getAttribute("roleid").toString());
   long userid = Long.parseLong(request.getAttribute("userid").toString());
+  long currentbranchid = Long.parseLong(request.getAttribute("currentbranchid").toString());
   String url=request.getContextPath()+"/abnormalOrder/getbranchusers";
   List<PenalizeInside> penalizeInsides=(List<PenalizeInside>) request.getAttribute("penalizeInsides");
   List<PenalizeType> penalizebigList=(List<PenalizeType>)request.getAttribute("penalizebigList");
@@ -150,6 +151,8 @@ $(function(){
 		$("#punishprice3").val("");
 		$("#txtFileName").val("");
 		$("#describe3").val("最多100个字");
+		$("#cwbgoodprice3").val("");
+		$("#cwbqitaprice3").val("0.00");
 		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
 	}).bind('uploadComplete', function(event, file) {
@@ -194,6 +197,8 @@ $(function(){
 		$("#punishprice2").val("");
 		$("#txtFileName1").val("");
 		$("#describe2").val("最多100个字");
+		$("#cwbgoodprice2").val("");
+		$("#cwbqitaprice2").val("0.00");
 		$(form)[0].reset();
 		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
@@ -277,13 +282,29 @@ function createinpunishbycwb(){
 	});
 }
 function shensuopteration(){
+/* 	if($("#checkshenhe"+id).val()==2){
+		alert("已经申诉过的单号不能申诉！！");
+		return;
+	}
+	if($("#checkshenhe"+id).val()==3||$("#checkshenhe"+id).val()==4){
+		alert("已经审核过的单号不能申诉！！");
+		return;
+	} */
+	var count=0;
 	var ids="";
 	$('input[name="wentid"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($.trim(id).length!=0){
+			if($("#checkdutybranch"+id).val()!=$("#currentbranchid").val()){
+				count++;
+			}
 		ids+=id+",";
 		}
 		});
+	if(count>0){
+		alert("您所选择的单号里面有不是您是当事责任机构所在的范围，不允许执行该操作，请重新选择单号范围！！");
+		return;
+	}
 	if(ids.length==0){
 		alert("请选择要操作的记录！");
 		return;
@@ -301,6 +322,14 @@ function shensuopteration(){
 	});
 }
 function shenheopteration(id){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
+	if($("#checkshenhe"+id).val()==3||$("#checkshenhe"+id).val()==4){
+		alert("已经审核过的单号不能再次审核！！");
+		return;
+	}
 	$.ajax({
 		type : "POST",
 		url:"<%=request.getContextPath()%>/inpunish/shenhepage",
@@ -353,6 +382,8 @@ function submitPunishCreateBygongdan(form){
 	$('#swfupload-control1').swfupload('addPostParam', 'type2', $("#type2").val());
 	$('#swfupload-control1').swfupload('addPostParam', 'availablecwb2', $("#availablecwb2").val());
 	$('#swfupload-control1').swfupload('addPostParam', 'cwbhhh2', $("#cwbhhh2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'cwbgoodprice2', $("#cwbgoodprice2").val());
+	$('#swfupload-control1').swfupload('addPostParam', 'cwbqitaprice2', $("#cwbqitaprice2").val());
 	$('#swfupload-control1').swfupload('startUpload');
 	//submitPunishCreateBygongdanLoad();
 }
@@ -373,6 +404,8 @@ function submitPunishCreateBywentijian(form){
 	$('#swfupload-control').swfupload('addPostParam', 'type1', $("#type1").val());
 	$('#swfupload-control').swfupload('addPostParam', 'availablecwb3', $("#availablecwb3").val());
 	$('#swfupload-control').swfupload('addPostParam', 'cwbhhh3', $("#cwbhhh3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbgoodprice3', $("#cwbgoodprice3").val());
+	$('#swfupload-control').swfupload('addPostParam', 'cwbqitaprice3', $("#cwbqitaprice3").val());
 	$('#swfupload-control').swfupload('startUpload');
 	//submitPunishCreateBygongdanLoad();
 }
@@ -580,12 +613,19 @@ function closeBox1() {
 						</tr >
 						<tr class="font_1">
 						<td align="left" valign="top">
+							货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice3" name="cwbgoodprice3" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'cwbqitaprice3','punishprice3');"/>
+						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice3" name="cwbqitaprice3" onkeyup="alculateSumprice(this,'cwbgoodprice3','punishprice3');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
+							
 						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice3" name="punishprice3" class="input_text1" style="height:15px;width: 120px;"/>
-						&nbsp;&nbsp;上传附件：
-						<label for="fileField"></label>
-						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*
+						
 						</td>
 						</tr>
+						 <tr class="font_1">
+							<td  align="left" valign="top"> 
+							上传附件：
+						<label for="fileField"></label>
+						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*							</td>
+						</tr>  
 						 <tr class="font_1">
 							<td  align="left" valign="top"> 
 							扣罚说明：<textarea name="describe3" id="describe3" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
@@ -750,12 +790,17 @@ function closeBox1() {
 						</tr >
 						<tr class="font_1">
 						<td align="left" valign="top">
-						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;"/>
-						&nbsp;&nbsp;上传附件：
-						<label for="fileField"></label>
-						<span id="swfupload-control1"><input type="text" id="txtFileName1" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button1" /></span>*
+						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice2" name="cwbgoodprice2" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'cwbqitaprice2','punishprice2');"/>
+						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice2" name="cwbqitaprice2" onkeyup="alculateSumprice(this,'cwbgoodprice2','punishprice2');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
+						&nbsp;&nbsp;总扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;"/>
 						</td>
 						</tr>
+						 <tr class="font_1">
+							<td  align="left" valign="top"> 
+						上传附件：
+						<label for="fileField"></label>
+						<span id="swfupload-control1"><input type="text" id="txtFileName1" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button1" /></span>*							</td>
+						</tr>  
 						 <tr class="font_1">
 							<td  align="left" valign="top"> 
 							扣罚说明：<textarea name="describe2" id="describe2" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
@@ -851,6 +896,8 @@ function closeBox1() {
 									<strong id="chulidown">到</strong>
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 									<input type="hidden" name="isshow" value="1"/>
+									<input type="hidden" name="roleid" id="roleid" value="<%=roleid %>"/>
+									<input type="hidden" name="currentbranchid" id="currentbranchid" value="<%=currentbranchid %>"/>
 									</td>
 									</tr>
 									<tr>
@@ -928,6 +975,8 @@ function closeBox1() {
 						<a href="javascript:shenheopteration('<%=view.getId() %>');" ><font color="blue">审核</font></a>
 						<a href="javascript:findthisValue('<%=view.getId() %>');" ><font color="blue">查看</font></a>
 						</td>
+						<input type="hidden" id="checkshenhe<%=view.getId() %>" value="<%=view.getPunishcwbstate() %>"/>
+						<input type="hidden" id="checkdutybranch<%=view.getId() %>" value="<%=view.getDutybranchid() %>"/>
 					</tr>
 					<%} %>
 						<tr>
