@@ -10,8 +10,9 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.domain.User"%>	
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
+	List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 	List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
  	List<Reason> alltworeason =request.getAttribute("alltworeason")==null?null:(List<Reason>)request.getAttribute("alltworeason");
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
@@ -458,7 +459,11 @@ function CurentTime()   //计算当天时间
 				</td>
 				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
 				<td>
-					<label>是</label>					
+					<%if(c.getIfpunish()==1){ %>
+					<label>是</label>
+					<%}else{ %>		
+					<label>否</label>
+					<%} %>			
 				</td>
 				<td><%=customernameList.get(c.getCustomerid())%> 
 				</td>	
