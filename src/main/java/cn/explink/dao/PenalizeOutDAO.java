@@ -44,6 +44,8 @@ public class PenalizeOutDAO {
 			out.setFlowordertype(rs.getLong("flowordertype"));
 			out.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			out.setPenalizeOutfee(rs.getBigDecimal("penalizeOutfee"));
+			out.setPenalizeOutGoodsfee(rs.getBigDecimal("penalizeOutGoodsfee"));
+			out.setPenalizeOutOtherfee(rs.getBigDecimal("penalizeOutOtherfee"));
 			out.setPenalizeOutbig(rs.getInt("penalizeOutbig"));
 			out.setPenalizeOutsmall(rs.getInt("penalizeOutsmall"));
 			out.setPenalizeOutContent(StringUtil.nullConvertToEmptyString(rs.getString("penalizeOutContent")));
@@ -146,9 +148,9 @@ public class PenalizeOutDAO {
 
 	public int crePenalizeOut(PenalizeOut out) throws Exception {
 
-			String sql = "insert into express_ops_penalizeOut_detail(cwb,customerid,flowordertype,receivablefee,penalizeOutfee,penalizeOutbig,penalizeOutsmall,penalizeOutContent,createruser,createrdate,penalizeOutstate,state)"
-					+ "values(?,?,?,?,?,?,?,?,?,NOW(),?,?) ";
-			return this.jdbcTemplate.update(sql, out.getCwb(), out.getCustomerid(), out.getFlowordertype(), out.getReceivablefee(), out.getPenalizeOutfee(), out.getPenalizeOutbig(),
+			String sql = "insert into express_ops_penalizeOut_detail(penalizeOutNO,cwb,customerid,flowordertype,receivablefee,penalizeOutfee,penalizeOutGoodsfee,penalizeOutOtherfee,penalizeOutbig,penalizeOutsmall,penalizeOutContent,createruser,createrdate,penalizeOutstate,state)"
+					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?) ";
+			return this.jdbcTemplate.update(sql,out.getPenalizeOutNO(), out.getCwb(), out.getCustomerid(), out.getFlowordertype(), out.getReceivablefee(), out.getPenalizeOutfee(),out.getPenalizeOutGoodsfee(),out.getPenalizeOutOtherfee(), out.getPenalizeOutbig(),
 					out.getPenalizeOutsmall(), out.getPenalizeOutContent(), out.getCreateruser(), out.getPenalizeOutstate(), 1);
 
 	}
