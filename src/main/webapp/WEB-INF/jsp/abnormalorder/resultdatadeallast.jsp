@@ -81,7 +81,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 							</td>
 						</tr>
 						<tr class="font_1">
-						<td align="left" valign="top">责任机构确认:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers();">
+						<td align="left" valign="top">责任机构确认:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutyname','dutybranchid');">
 							<option value="0">请选择责任机构</option>
 							<%if(branchList!=null){for(Branch branch:branchList){ %>
 							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>

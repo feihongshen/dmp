@@ -78,7 +78,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 				
 				<%}else{ %>
 						<tr class="font_1" <%if(isfind==1){ %> style="display: none"  <%} %>>
-						<td align="left" valign="top">责任机构初判:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers();">
+						<td align="left" valign="top">责任机构初判:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutyname','dutybranchid');">
 							<option value="0" selected="selected">请选择责任机构</option>
 							<%if(branchList!=null){for(Branch branch:branchList){ %>
 							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
