@@ -209,7 +209,7 @@ public class PenalizeOutController {
 
 	@RequestMapping("/addpenalizeIn/{id}")
 	public String addpenalizeIn(@PathVariable("id") int penalizeOutId, Model model) throws Exception {
-		List<Branch> branchList = this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "," + BranchEnum.KeFu.getValue());
+		List<Branch> branchList = this.branchDAO.getAllBranches();
 		PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<PenalizeType> penalizeTypeList = this.penalizeTypeDAO.getAllPenalizeType();
@@ -277,8 +277,21 @@ public class PenalizeOutController {
 			if (out.getPenalizeOutfee() == null) {
 				return "{\"errorCode\":1,\"error\":\"赔付金额不能为空！\"}";
 			}
+			if (out.getPenalizeOutGoodsfee() == null) {
+				return "{\"errorCode\":1,\"error\":\"货物赔付金额不能为空！\"}";
+			}
+			if (out.getPenalizeOutGoodsfee().compareTo(new BigDecimal(0)) == -1) {
+				return "{\"errorCode\":1,\"error\":\"货物赔付金额必须大于0.00！\"}";
+			}
+			if (out.getPenalizeOutOtherfee()==null) {
+				out.setPenalizeOutOtherfee(new BigDecimal(0));
+			}
+			if (out.getPenalizeOutOtherfee().compareTo(new BigDecimal(0)) == -1) {
+				return "{\"errorCode\":1,\"error\":\"其它赔付金额必须大于0.00！\"}";
+			}
+			out.setPenalizeOutfee(out.getPenalizeOutGoodsfee().add(out.getPenalizeOutOtherfee()));
 			if (out.getPenalizeOutfee().compareTo(new BigDecimal(0)) == -1) {
-				return "{\"errorCode\":1,\"error\":\"赔付金额必须大于0.00！\"}";
+				return "{\"errorCode\":1,\"error\":\"总赔付金额必须大于0.00！\"}";
 			}
 			/*	if (out.getReceivablefee().compareTo(out.getPenalizeOutfee()) == -1) {
 				return "{\"errorCode\":1,\"error\":\"赔付金额不能大于订单金额！\"}";
@@ -299,6 +312,7 @@ public class PenalizeOutController {
 			out.setPenalizeOutstate(PenalizeSateEnum.Successful.getValue());
 			int count = 0;
 			try {
+				out.setPenalizeOutNO(System.currentTimeMillis());
 				count = this.penalizeOutDAO.crePenalizeOut(out);
 			} catch (Exception e) {
 				return "{\"errorCode\":1,\"error\":\"对外赔付信息导入异常:" + e.getMessage() + "\"}";
@@ -316,6 +330,8 @@ public class PenalizeOutController {
 			@RequestParam(value = "dutybranchid", required = false, defaultValue = "") int dutybranchid,
 			@RequestParam(value = "punishdescribe", required = false, defaultValue = "") String punishdescribe,
 			@RequestParam(value = "punishInsideprice", required = false, defaultValue = "0") BigDecimal punishInsideprice,
+			@RequestParam(value = "creategoodpunishprice", required = false, defaultValue = "0") BigDecimal creategoodpunishprice,
+			@RequestParam(value = "createqitapunishprice", required = false, defaultValue = "0") BigDecimal createqitapunishprice,
 			@RequestParam(value = "dutypersonname", required = false, defaultValue = "0") String dutypersonname, Model model) throws Exception {
 		PenalizeOut out = this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
 		if (out != null) {
@@ -347,9 +363,19 @@ public class PenalizeOutController {
 			penalizeInside.setCwbstate(out.getFlowordertype());
 			penalizeInside.setCwbPrice(out.getReceivablefee());
 			try {
+
+				if (creategoodpunishprice.compareTo(new BigDecimal(0)) == -1) {
+					return "{\"errorCode\":1,\"error\":\"对内扣罚金额必须大于0.00！\"}";
+				}
+				if (createqitapunishprice==null) {
+					createqitapunishprice=new BigDecimal(0);
+				}
+				punishInsideprice=createqitapunishprice.add(creategoodpunishprice);
 				if (punishInsideprice.compareTo(new BigDecimal(0)) == -1) {
 					return "{\"errorCode\":1,\"error\":\"对内扣罚金额必须大于0.00！\"}";
 				}
+				penalizeInside.setCreategoodpunishprice(creategoodpunishprice);
+				penalizeInside.setCreateqitapunishprice(createqitapunishprice);
 				penalizeInside.setPunishInsideprice(punishInsideprice);
 			} catch (Exception e) {
 				return "{\"errorCode\":1,\"error\":\"对内扣罚金额有误！\"}";
