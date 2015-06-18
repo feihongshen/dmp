@@ -764,6 +764,7 @@ src/main/java/cn/explink/controller/ReasonController.java -text
 src/main/java/cn/explink/controller/ResultCollectorController.java -text
 src/main/java/cn/explink/controller/ReturnCwbsController.java -text
 src/main/java/cn/explink/controller/RoleController.java -text
+src/main/java/cn/explink/controller/SalaryFixedController.java -text
 src/main/java/cn/explink/controller/SetDefaultExportController.java -text
 src/main/java/cn/explink/controller/SetExportCwbController.java -text
 src/main/java/cn/explink/controller/SettlementContractController.java -text
@@ -2286,6 +2287,7 @@ src/main/webapp/WEB-INF/jsp/sMSConf/setsmsview.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/save.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/smsModelview.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/smsSetModel.jsp -text
+src/main/webapp/WEB-INF/jsp/salary/salaryFixed/list.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/add.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/editM.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/listM.jsp -text
