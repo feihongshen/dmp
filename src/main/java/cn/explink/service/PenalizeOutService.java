@@ -49,30 +49,32 @@ public class PenalizeOutService {
 	PenalizeOutDAO penalizeOutDAO;
 
 	public void setExcelstyle(String[] cloumnName1, String[] cloumnName2) {
-		cloumnName1[0] = "订单号";
-		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "供货商";
-		cloumnName2[1] = "Customerid";
-		cloumnName1[2] = "订单状态";
-		cloumnName2[2] = "Flowordertype";
-		cloumnName1[3] = "订单金额";
-		cloumnName2[3] = "Receivablefee";
-		cloumnName1[4] = "赔付金额";
-		cloumnName2[4] = "PenalizeOutfee";
-		cloumnName1[5] = "赔付大类";
-		cloumnName2[5] = "PenalizeOutbig";
-		cloumnName1[6] = "赔付小类";
-		cloumnName2[6] = "PenalizeOutsmall";
-		cloumnName1[7] = "创建人";
-		cloumnName2[7] = "Createruser";
-		cloumnName1[8] = "创建日期";
-		cloumnName2[8] = "Createrdate";
-		cloumnName1[9] = "撤销人";
-		cloumnName2[9] = "Canceluser";
-		cloumnName1[10] = "撤销时间";
-		cloumnName2[10] = "Canceldate";
-		cloumnName1[11] = "赔付单状态";
-		cloumnName2[11] = "PenalizeOutstate";
+		cloumnName1[0] = "赔付单号";
+		cloumnName2[0] = "PenalizeOutNO";
+		cloumnName1[1] = "订单号";
+		cloumnName2[1] = "Cwb";
+		cloumnName1[2] = "供货商";
+		cloumnName2[2] = "Customerid";
+		cloumnName1[3] = "订单状态";
+		cloumnName2[3] = "Flowordertype";
+		cloumnName1[4] = "订单金额";
+		cloumnName2[4] = "Receivablefee";
+		cloumnName1[5] = "赔付金额";
+		cloumnName2[5] = "PenalizeOutfee";
+		cloumnName1[6] = "赔付大类";
+		cloumnName2[6] = "PenalizeOutbig";
+		cloumnName1[7] = "赔付小类";
+		cloumnName2[7] = "PenalizeOutsmall";
+		cloumnName1[8] = "创建人";
+		cloumnName2[8] = "Createruser";
+		cloumnName1[9] = "创建日期";
+		cloumnName2[9] = "Createrdate";
+		cloumnName1[10] = "撤销人";
+		cloumnName2[10] = "Canceluser";
+		cloumnName1[11] = "撤销时间";
+		cloumnName2[11] = "Canceldate";
+		cloumnName1[12] = "赔付单状态";
+		cloumnName2[12] = "PenalizeOutstate";
 	}
 	/**
 	 * @param response
@@ -87,8 +89,8 @@ public class PenalizeOutService {
 	 */
 	public  void exportExcels(HttpServletResponse response, String cwbs, long customerid, int penalizeOutbig, int penalizeOutsmall, int penalizeState, long flowordertype, String starttime,
 			String endtime) {
-		String[] cloumnName1 = new String[12]; // 导出的列名
-		String[] cloumnName2 = new String[12]; // 导出的英文列名
+		String[] cloumnName1 = new String[13]; // 导出的列名
+		String[] cloumnName2 = new String[13]; // 导出的英文列名
 
 		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
@@ -116,7 +118,7 @@ public class PenalizeOutService {
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
-							if((i==8)||(i==10)){
+							if((i==9)||(i==11)){
 								sheet.setColumnWidth(i, 25 * 256);
 								style.setDataFormat(HSSFDataFormat.getBuiltinFormat("yyyy/MM/dd hh:mm:ss"));
 							}
@@ -129,10 +131,10 @@ public class PenalizeOutService {
 					Row row=sheet.createRow(penalizeOutlList.size()+1);
 
 
-					Cell cell0=row.createCell(0);
+					Cell cell0=row.createCell(1);
 					cell0.setCellStyle(style);
 					cell0.setCellValue("赔付总额");
-					Cell cell4=row.createCell(4);
+					Cell cell4=row.createCell(5);
 					cell4.setCellStyle(style);
 					cell4.setCellValue(penalizeOutfeetotal+"");
 
