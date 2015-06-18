@@ -6790,6 +6790,14 @@ CREATE TABLE `cs_complaint_accept` (
     	       	ALTER TABLE express_ops_punishInside_detail ADD COLUMN `isinvalid` INT(10) DEFAULT '1';
    			</sql>
     </changeSet>
+    <changeSet id="wuyonghe-2015-06-18-01" author="wangyonghe">
+    		<sql>
+    	       	ALTER TABLE `express_ops_penalizeout_detail`
+		ADD COLUMN `penalizeOutNO`  bigint(50) NULL COMMENT '赔付单号' AFTER `penalizeOutId`,
+		ADD COLUMN `penalizeOutGoodsfee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '对外赔付货物金额' AFTER `penalizeOutfee`,
+		ADD COLUMN `penalizeOutOtherfee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '对外赔付其它金额' AFTER `penalizeOutGoodsfee`;
+		   			</sql>
+    </changeSet>
     
 
 </databaseChangeLog>
