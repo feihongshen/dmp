@@ -11,11 +11,14 @@ import java.math.BigDecimal;
  */
 public class PenalizeOut {
 	private int penalizeOutId; //对外赔付id
+	private long penalizeOutNO; //对外赔付单号
 	private String cwb;//订单号
 	private Long customerid;//客户名称id
 	private Long flowordertype;//订单状态
 	private BigDecimal receivablefee;//订单金额
 	private BigDecimal penalizeOutfee;//对外赔付金额
+	private BigDecimal penalizeOutGoodsfee;//对外赔付货物金额
+	private BigDecimal penalizeOutOtherfee;//对外赔付其它金额
 	private int penalizeOutbig;//赔付大类
 	private int penalizeOutsmall;//赔付小类
 	private String penalizeOutContent;//赔付说明
@@ -37,6 +40,19 @@ public class PenalizeOut {
 	 */
 	public void setPenalizeOutId(int penalizeOutId) {
 		this.penalizeOutId = penalizeOutId;
+	}
+
+	/**
+	 * @return the penalizeOutNO
+	 */
+	public long getPenalizeOutNO() {
+		return this.penalizeOutNO;
+	}
+	/**
+	 * @param penalizeOutNO the penalizeOutNO to set
+	 */
+	public void setPenalizeOutNO(long penalizeOutNO) {
+		this.penalizeOutNO = penalizeOutNO;
 	}
 	/**
 	 * @return the cwb
@@ -97,6 +113,31 @@ public class PenalizeOut {
 	 */
 	public void setPenalizeOutfee(BigDecimal penalizeOutfee) {
 		this.penalizeOutfee = penalizeOutfee;
+	}
+
+	/**
+	 * @return the penalizeOutGoodsfee
+	 */
+	public BigDecimal getPenalizeOutGoodsfee() {
+		return this.penalizeOutGoodsfee;
+	}
+	/**
+	 * @param penalizeOutGoodsfee the penalizeOutGoodsfee to set
+	 */
+	public void setPenalizeOutGoodsfee(BigDecimal penalizeOutGoodsfee) {
+		this.penalizeOutGoodsfee = penalizeOutGoodsfee;
+	}
+	/**
+	 * @return the penalizeOutOtherfee
+	 */
+	public BigDecimal getPenalizeOutOtherfee() {
+		return this.penalizeOutOtherfee;
+	}
+	/**
+	 * @param penalizeOutOtherfee the penalizeOutOtherfee to set
+	 */
+	public void setPenalizeOutOtherfee(BigDecimal penalizeOutOtherfee) {
+		this.penalizeOutOtherfee = penalizeOutOtherfee;
 	}
 	/**
 	 * @return the penalizeOutbig
