@@ -29,8 +29,12 @@
             <td ><input id="penalizeOutsmall" name="penalizeOutsamll" value="${penalizeOutsmallStr}" readonly="readonly" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
-            <td nowrap="nowrap" align="right">赔付金额<span style="color: red">*</span>：</td>
-            <td colspan="5"><input id="penalizeOutfee" name="penalizeOutfee"  value="${penalizeOut.penalizeOutfee}" readonly="readonly" type="text" style="width: 24.5%;border-style:none"/></td>
+            <td nowrap="nowrap" align="right">货物赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="penalizeOutfee" name="penalizeOutfee"  value="${penalizeOut.penalizeOutGoodsfee}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
+            <td nowrap="nowrap" align="right">其它赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="penalizeOutfee" name="penalizeOutfee"  value="${penalizeOut.penalizeOutOtherfee}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
+            <td nowrap="nowrap" align="right">总赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="penalizeOutfee" name="penalizeOutfee"  value="${penalizeOut.penalizeOutfee}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
             <td nowrap="nowrap" align="right">撤销说明<span style="color: red">*</span>：</td>

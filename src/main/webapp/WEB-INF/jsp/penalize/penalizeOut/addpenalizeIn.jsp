@@ -48,8 +48,12 @@
             <td > <input type="text" style="width: 100%;" name="dutypersonname"/></td>
            	</tr>
           	<tr>
-           	<td align="right" nowrap="nowrap">扣罚金额<span style="color: red">*</span>：</td>
-            <td ><input  type="text" id="fee" name="punishInsideprice" style="width: 100%;" onkeyup="if(this.value<'0'){ this.value=''}" /></td>
+          	<td align="right" nowrap="nowrap">货物扣罚金额<span style="color: red">*</span>：</td>
+            <td ><input id="fee1" onblur="javascript:$('[name=punishInsideprice]').val(($('[name=createqitapunishprice]').val()-0)+(this.value-0))"  onkeyup="if(this.value<'0'){ this.value=''}" value="${penalizeOut.receivablefee}" name="creategoodpunishprice" type="text" style="width:100%;"/></td>
+            <td align="right" nowrap="nowrap">其它扣罚金额<span style="color: red">*</span>：</td>
+            <td ><input id="fee2" onblur="javascript:$('[name=punishInsideprice]').val(($('[name=creategoodpunishprice]').val()-0)+(this.value-0))" onkeyup="if(this.value<'0'){ this.value=''}" name="createqitapunishprice" type="text" style="width: 100%;"/></td>
+           	<td align="right" nowrap="nowrap">总扣罚金额<span style="color: red">*</span>：</td>
+            <td ><input  type="text" id="fee3" name="punishInsideprice" style="width: 100%;border-style:none" readonly="readonly" /></td>
           	</tr>
             <tr>
             <td align="right" nowrap="nowrap">扣罚说明：</td>

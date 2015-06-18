@@ -49,8 +49,12 @@
             </td>
             </tr>
             <tr>
-            <td align="right" nowrap="nowrap">赔付金额<span style="color: red">*</span>：</td>
-            <td colspan="5"><input id="fee" onkeyup="if(this.value<'0'){ this.value=''}" name="penalizeOutfee" type="text" style="width: 24.5%;"/></td>
+            <td align="right" nowrap="nowrap">货物赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="fee1" onblur="javascript:$('[name=penalizeOutfee]').val(($('[name=penalizeOutOtherfee]').val()-0)+(this.value-0))" onkeyup="if(this.value<'0'){ this.value=''}" name="penalizeOutGoodsfee" type="text" style="width:100%;"/></td>
+            <td align="right" nowrap="nowrap">其它赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="fee2" onblur="javascript:$('[name=penalizeOutfee]').val(($('[name=penalizeOutGoodsfee]').val()-0)+(this.value-0))"  onkeyup="if(this.value<'0'){ this.value='0.00'}" name="penalizeOutOtherfee" type="text" style="width: 100%;"/></td>
+            <td align="right" nowrap="nowrap">总赔付金额<span style="color: red">*</span>：</td>
+            <td ><input id="fee3" readonly="readonly" name="penalizeOutfee" type="text" style="width: 100%;border-style:none"/></td>
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">赔付说明<span style="color: red">*</span>：</td>
