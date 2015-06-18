@@ -298,6 +298,7 @@ function showUp()
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
 	<td height="30px"  valign="middle"> </td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 赔付单号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 订单号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 客户名称 </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 订单状态</td>
@@ -314,6 +315,7 @@ function showUp()
 	<c:forEach items="${penalizeOutList}" var="out">
 	<tr>
 	<td height="30px"  valign="middle"><input type="radio" name="penalizeOutId" onclick="checkRdio()" id="penalizeOutId" value="${out.penalizeOutId}"/> </td>
+	<td align="center" valign="middle"> ${out.penalizeOutNO}</td>
 	<td align="center" valign="middle"> ${out.cwb}</td>
 	<td align="center" valign="middle"> 
 	<c:forEach items="${customerList}" var="customer">
@@ -357,6 +359,7 @@ function showUp()
 	</tr>
 	</c:forEach>
 	<tr>
+	<td></td>
 	<td></td>
 	<td align="center" valign="middle" style="color: red;font-weight: bold;">赔付总计</td>
 	<td></td>
