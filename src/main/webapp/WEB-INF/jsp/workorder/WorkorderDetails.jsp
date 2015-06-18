@@ -12,13 +12,13 @@
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%@page import="cn.explink.domain.User"%>	
 <%
-List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
-CsComplaintAccept cca=(CsComplaintAccept)request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
-CwbOrder co=(CwbOrder)request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
-CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
-List<Branch> lb = (List<Branch>)request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
-String oneleave=request.getAttribute("OneLevel")==null?null:(String)request.getAttribute("OneLevel");
-String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getAttribute("TwoLevel");
+	List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
+	CsComplaintAccept cca=request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
+	CwbOrder co=request.getAttribute("co")==null?null:(CwbOrder)request.getAttribute("co");
+	CsConsigneeInfo cci=(CsConsigneeInfo)request.getAttribute("cci")==null?null:(CsConsigneeInfo)request.getAttribute("cci");
+	List<Branch> lb = request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
+	String oneleave=request.getAttribute("OneLevel")==null?null:(String)request.getAttribute("OneLevel");
+	String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getAttribute("TwoLevel");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -51,14 +51,14 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<td>一级类型:<%=oneleave%></td>
 						<td>二级类型:<%=twoleave%></td>
 					</tr>
-					<tr>
+				<tr>
 						<td><span>被投诉机构:</span>
 						<%for(Branch b:lb){ %>
 						<%if(b.getBranchid()==cca.getCodOrgId()) {%>
 								<%=b.getBranchname() %>
 						<%} }%></td>
 						
-						<td><span>被投诉人:</span>
+					<td><span>被投诉人:</span>
 							<%for(User u:alluser){ %>
 							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
@@ -71,23 +71,19 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<td><span>当前机构:</span><%=cca.getCurrentBranch() %></td>
 						<td><span>客户名称:</span><%=co.getConsigneename() %></td>
 						<%if(cci!=null){ %>
-						<span>来电人姓名:</span><%=cci.getName()==null?"":cci.getName() %>						
-						<%}else{ %>
-						<span>来电人姓名:</span>
-						<%} %>
+						<td><span>来电人姓名:</span><%=cci.getName()==null?"":cci.getName()%></td>	
 					</tr>
-					<tr>					
-						<%if(cci!=null){ %>						
-						<span>来电号码:</span><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%>
-						<%}else{ %>					
-						<span>来电号码:</span>
+					<tr>									
+						<td><span>来电号码:</span><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%></td>
 						<%} %>
-						<td colspan="2"><span>收件人手机:</span><%=co.getConsigneemobile() %></td>
-						
+						<td colspan="1"><span>收件人手机:</span><%=co.getConsigneemobile()==null?"": co.getConsigneemobile()%></td>
+						<td></td>
 					</tr>
 					<tr>
+						<%if(cca!=null){ %>
 						<td><span>投诉内容:</span><%=cca.getContent()%></td>
 						<td><span>受理时间:</span><%=cca.getAcceptTime() %></td>
+						<%} %>
 						<td><span>受理人:</span>
 						<%for(User u:alluser){ %>
 							<%if(cca.getHandleUser().equals(u.getUsername())){ %>
@@ -97,7 +93,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						
 					</tr>
 					<tr>
-						<td colspan="3">
+					<%if(cca!=null){ %>
+						<td colspan="3">			
 							<span>核实内容:</span><%=cca.getRemark() %>
 						</td>
 					</tr>
@@ -106,6 +103,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<td>
 							<span>核实时间:</span><%=cca.getHeshiTime() %>
 						</td>
+						<%} %>
 						<td>
 							<span>核实人:</span>
 							<%for(User u:alluser){ %>
@@ -114,7 +112,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<%} }%>
 						</td>
 						<td>
-							<%for(cca.getDownloadshensupath()!=null){ %>
+							<%if(cca.getDownloadshensupath()!=null){ %>
 							<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>"><b>附件下载</b></a></span>
 							<%} %>
 						</td>
@@ -137,9 +135,12 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</tr>
 					<tr>
 								<td colspan="2"><span>结案备注:</span><%=cca.getJieanremark() %></td>
+									<%if(cca.getDownloadjieanpath()!=null){ %>
 								<td><span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>"><b>附件下载</b></a></span></td>
+									<%} %>
 					</tr>
 						<tr>
+								<%if(cca!=null){ %>
 								<td colspan="3">
 									<span>申诉内容:</span><%=cca.getShensuremark() %>
 								</td>
@@ -148,6 +149,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<td>
 									<span>申诉时间:</span><%=cca.getComplaintTime() %>
 								</td>
+								<%}%>
 								<td>
 									<span>申诉人:</span>
 									<%for(User u:alluser){ %>
@@ -157,7 +159,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								</td>							
 								<td>
 									<span>
+										<%if(cca.getDownloadshensupath()!=null){ %>
 										<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadshensupath()%>"><b>附件下载</b></a>
+										<%} %>
 									</span>
 								</td>
 						</tr>
@@ -177,7 +181,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<td colspan="2"><span>结案重审备注:</span><%=cca.getJieanchongshenremark()%></td>						
 								<td>
 									<span>
+									<%if(cca.getDownloadchongshenpath()!=null){ %>
 										<a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadchongshenpath()%>"><b>附件下载</b></a>
+									<%} %>
 									</span>
 								</td>							
 						</tr>

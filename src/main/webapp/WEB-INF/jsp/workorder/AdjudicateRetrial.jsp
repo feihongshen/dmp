@@ -88,7 +88,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
 						<%} }%>
+						<%if(cca.getDownloadheshipath()!=null){%>
 						<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
+						<%} %>
 					</li>
 					
 					<li>
@@ -105,7 +107,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 						<li>
 								<span>结案备注:</span><%=cca.getJieanremark() %>
+								<%if(cca.getDownloadjieanpath()!=null){%>
 								<span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>"><b>附件下载</b></a></span>
+								<%} %>
 						</li>
 						<li>
 								<span>申诉内容:</span><%=cca.getShensuremark() %>
@@ -117,7 +121,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 							<%if(cca.getShensuUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
 							<%} }%>
-						<%for(cca.getDownloadshensupath()!=null){ %>
+						<%if(cca.getDownloadshensupath()!=null){%>
 								<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadshensupath()%>"><b>附件下载</b></a></span>
 						<%} %>
 						</li>

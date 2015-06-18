@@ -766,6 +766,7 @@ src/main/java/cn/explink/controller/ReturnCwbsController.java -text
 src/main/java/cn/explink/controller/RoleController.java -text
 src/main/java/cn/explink/controller/SetDefaultExportController.java -text
 src/main/java/cn/explink/controller/SetExportCwbController.java -text
+src/main/java/cn/explink/controller/SettlementContractController.java -text
 src/main/java/cn/explink/controller/SmsConfigController.java -text
 src/main/java/cn/explink/controller/SmsConfigModelController.java -text
 src/main/java/cn/explink/controller/SmsSendController.java -text

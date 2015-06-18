@@ -83,7 +83,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 						<span>核实时间:</span>
-						<span>核实人:</span> %>
+						<span>核实人:</span>
 						<%for(User u:alluser){ %>
 							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>

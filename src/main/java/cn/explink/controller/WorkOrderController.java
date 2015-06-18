@@ -658,7 +658,7 @@ public class WorkOrderController {
 	public String Workorderdetail(Model model,@PathVariable(value="acceptNo") String acceptNo){
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
+		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchDao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
@@ -671,6 +671,7 @@ public class WorkOrderController {
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
+		model.addAttribute("alluser",userDao.getAllUser());
 		return "workorder/WorkorderDetails";
 	}
 	

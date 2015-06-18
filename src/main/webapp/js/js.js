@@ -5767,7 +5767,7 @@ function clickonenum(obj){
 
 function heshiremarkV(){
 	if($('#remark').val()==""){
-		alert('please input content');
+		alert('请输入内容');
 		return false;
 	}	
 	return true;
@@ -5902,7 +5902,7 @@ function submitsubmitHeShiLoad() {
 
 function jieanremarkV(){
 	if($('#jieanremark').val()==""){
-		alert('please input content');
+		alert('请输入内容');
 		return false;
 	}	
 	return true;
@@ -5935,7 +5935,7 @@ function decideV(){
 
 function IfShenSu(){
 	if($('#shensuremark').val()==""){
-		alert('please input content')
+		alert('请输入内容');
 		return false;
 	}	
 	return true;
@@ -5961,7 +5961,7 @@ function submitsubmitShenSuLoad() {
 
 function JieAnChongShen(){
 	if($('#jieanchongshenremark').val()==""){
-		alert('please input content');
+		alert('请输入内容');
 		return false;
 	}	
 	return true;

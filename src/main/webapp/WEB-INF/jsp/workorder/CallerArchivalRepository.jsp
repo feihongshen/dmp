@@ -56,7 +56,6 @@ $(function(){
 					   $(".tishi_box").show();
 					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 					   if (data.errorCode == 0){
-						 <%--   window.location.href="<%=request.getContextPath()%>/workorder/CallerArchivalRepository/1" --%>
 						   $('#PageFromW').submit();
 					   } 					
 				}
@@ -73,7 +72,7 @@ function deleteidValue(){
 </script>
 </head>
 <body>
-	<div>	<%-- <%=request.getContextPath()%>/workorder/QueryCallerInfo/ --%>
+	<div>
 		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" id=PageFromW><%-- action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" --%>
 			<table>
 				<tr>
@@ -121,7 +120,7 @@ function deleteidValue(){
 				<%if(ccilist!=null){ %>
 				<%for(CsConsigneeInfo ccf:ccilist){ %>
 				<tr onclick="getPhoneonOne('<%=ccf.getPhoneonOne() %>','<%=ccf.getId()%>')">
-					<td><%=ccf.getName() %><%--  ${ccilist[0].name}</td>--%>
+					<td><%=ccf.getName() %>
 					<%if(ccf.getSex()==1){ %>
 					<td>男</td>
 					<%}else{%>

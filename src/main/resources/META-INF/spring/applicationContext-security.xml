@@ -116,6 +116,7 @@
 		<intercept-url pattern="/location/**" access="permitAll" />
 		<intercept-url pattern="/GoodsStatusNum/**" access="permitAll" />
 		<intercept-url pattern="/workorder/**" access="permitAll" />
+		<intercept-url pattern="/SettlementContract/**" access="permitAll" />
 		
 
 
