@@ -6036,6 +6036,8 @@ function init(cwb)
 		$("#flowordertype").val(data.flowordertyleValue);
 		$("#flowordertypeText").val(data.flowordertyleText);
 		$("#receivablefee").val(data.receivablefee);
+		$("#penalizeOutGoodsfee").val(data.receivablefee);
+		$("#fee1").val(data.receivablefee);
 		$("#customername").val(data.customername);
 		$("#customerid").val(data.customerid);
 		}});
@@ -6225,7 +6227,19 @@ function checkLen(obj) {
 } 
 
 function checke_fee(){
-	if(!isFloat($("#fee").val()))
+	if(!isFloat($("#fee1").val()))
+	{
+		alert("金额输入有误！");
+		$("#fee").val('');
+		return false;
+	}
+	if(!isFloat($("#fee2").val()))
+	{
+		alert("金额输入有误！");
+		$("#fee").val('');
+		return false;
+	}
+	if(!isFloat($("#fee3").val()))
 	{
 		alert("金额输入有误！");
 		$("#fee").val('');
