@@ -154,10 +154,10 @@ public class PenalizeOutDAO {
 					out.getPenalizeOutsmall(), out.getPenalizeOutContent(), out.getCreateruser(), out.getPenalizeOutstate(), 1);
 
 	}
-	public PenalizeOut getPenalizeOutByIsNull(String cwb,int penalizeOutsmall,BigDecimal penalizeOutfee)  {
+	public PenalizeOut getPenalizeOutByIsNull(String cwb,int penalizeOutsmall,BigDecimal penalizeOutGoodsfee,BigDecimal penalizeOutOtherfee)  {
 		try {
-			String sql = "select * from express_ops_penalizeOut_detail where cwb =? and  penalizeOutsmall=? and penalizeOutfee=? and state=1 limit 1";
-			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(), cwb, penalizeOutsmall,penalizeOutfee);
+			String sql = "select * from express_ops_penalizeOut_detail where cwb =? and  penalizeOutsmall=? and penalizeOutGoodsfee=? penalizeOutOtherfee=? and and state=1 limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(), cwb, penalizeOutsmall,penalizeOutGoodsfee,penalizeOutOtherfee);
 		} catch (Exception e) {
 			return null;
 		}
