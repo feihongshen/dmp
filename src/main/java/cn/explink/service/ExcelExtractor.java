@@ -737,11 +737,13 @@ public abstract class ExcelExtractor {
 			out.setCwb(cwb);
 		}
 		BigDecimal penalizeOutfee = null;
+		BigDecimal penalizeOutGoodsfee = null;
+		BigDecimal penalizeOutOtherfee = null;
 		try {
 
-			penalizeOutfee = new BigDecimal(this.getXRowCellData(row, 2));
-			if(penalizeOutfee.compareTo(new BigDecimal(0))==-1){
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额必须大于0.00！");
+			penalizeOutGoodsfee = new BigDecimal(this.getXRowCellData(row, 2));
+			if(penalizeOutGoodsfee.compareTo(new BigDecimal(0))==-1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物赔付金额必须大于0.00！");
 				return null;
 			}
 			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){
@@ -749,11 +751,28 @@ public abstract class ExcelExtractor {
 				return null;
 			}*/
 		} catch (Exception e) {
-			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额有误！");
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物赔付金额有误！");
 			return null;
 		}
+		try {
 
-		String penalizeOutsmallText = this.getXRowCellData(row, 3);
+			penalizeOutOtherfee = new BigDecimal(this.getXRowCellData(row, 3));
+			if(penalizeOutOtherfee.compareTo(new BigDecimal(0))==-1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它赔付金额必须大于0.00！");
+				return null;
+			}
+			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额不能大于订单金额有误！");
+				return null;
+			}*/
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它赔付金额有误！");
+			return null;
+		}
+		out.setPenalizeOutGoodsfee(penalizeOutGoodsfee);
+		out.setPenalizeOutOtherfee(penalizeOutOtherfee);
+		penalizeOutfee=penalizeOutOtherfee.add(penalizeOutGoodsfee);
+		String penalizeOutsmallText = this.getXRowCellData(row, 4);
 		int penalizeOutsmall=0;
 		try {
 			penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
@@ -762,7 +781,7 @@ public abstract class ExcelExtractor {
 			return null;
 		}
 
-		PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(cwb, penalizeOutsmall, penalizeOutfee);
+		PenalizeOut penalizeOut = this.penalizeOutDAO.getPenalizeOutByIsNull(cwb, penalizeOutsmall, penalizeOutGoodsfee,penalizeOutOtherfee);
 		if (penalizeOut != null) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
 			return null;
