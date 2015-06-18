@@ -39,6 +39,7 @@ public class PenalizeOutDAO {
 		public PenalizeOut mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PenalizeOut out = new PenalizeOut();
 			out.setPenalizeOutId(rs.getInt("penalizeOutId"));
+			out.setPenalizeOutNO(rs.getLong("penalizeOutNO"));
 			out.setCwb(rs.getString("cwb"));
 			out.setCustomerid(rs.getLong("customerid"));
 			out.setFlowordertype(rs.getLong("flowordertype"));
