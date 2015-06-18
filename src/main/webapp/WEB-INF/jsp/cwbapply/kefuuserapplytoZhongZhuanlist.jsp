@@ -1,3 +1,4 @@
+<%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
@@ -7,13 +8,10 @@
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.util.Page"%>
 <%
-	String hiddenCwb = request.getAttribute("cwb")==null?"":request.getAttribute("cwb").toString();
 	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
-	List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = (List<CwbApplyZhongZhuan>)request.getAttribute("cwbApplyZhongZhuanlist");
-	Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
+	List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("cwbApplyZhongZhuanlist");
 	Page page_obj = (Page)request.getAttribute("page_obj");
-	
 	String cwbs=request.getParameter("cwbs")==null?"":request.getParameter("cwbs");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -162,7 +160,7 @@ function reset(){
 	};	
 
 function exportField(){
- 	if(<%=cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()%>){
+ 	if(<%=covList!=null&&!covList.isEmpty()%>){
  		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
 		$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwbapply/zhongzhuanchuzhanshenhexport');	
@@ -221,9 +219,9 @@ $(function() {
 											订单类型:
 											<select name ="cwbtypeid" id ="cwbtypeid">
 												<option  value ="0">全部</option>
-													<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
-													<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
-													<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
 											</select>
 										</td>
 										<td>
@@ -275,23 +273,16 @@ $(function() {
 											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td>
-											<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"> 
 											<input type="button" onclick="subPass()" value="审核通过" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="subNopass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;
-											<%-- <%if(cwbApplyZhongZhuanlist!=null&&!cwbApplyZhongZhuanlist.isEmpty()){%> --%>
-								
-									<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-								
-								<%-- <%} %> --%>
-										
+											<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 										</td>
 									</tr>
 								</table>
-							
 							</form>
 						</div>
-						
-								<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
+
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
@@ -308,20 +299,19 @@ $(function() {
 					<br>
 					<br>
 					<br>
-					<br>
-					<div style="height:108px"></div> 
+					<div style="height:104px"></div> 
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
-							<% if(cwbApplyZhongZhuanlist!=null){
-							for(CwbApplyZhongZhuan cwb :cwbApplyZhongZhuanlist){ %>
+							<% if(covList!=null){
+							for(CwbOrderView cwb :covList){ %>
 								<tr>
 									<td  width="40" align="center" valign="middle">
-										<input type="checkbox" name="checkbox" id="checkbox" value="<%=cwb.getId()%>"/>
+										<input type="checkbox" name="checkbox" id="checkbox" value="<%=cwb.getOpscwbid()%>"/>
 									</td>
 									<td width="100" align="center" valign="middle"><%=cwb.getCwb()%></td>
-									<td width="100" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue(Integer.parseInt(String.valueOf(cwb.getCwbordertypeid())))%></td>
-									<td width="100" align="center" valign="middle"><%=customerMap.get(cwb.getCustomerid())%></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getApplyzhongzhuanbranchid() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getCustomername()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getBranchname() %></td>
 									<td width="100" align="center" valign="middle"></td>
 									<td width="100" align="center" valign="middle"></td>
 								</tr>
@@ -353,10 +343,6 @@ $(function() {
 		</div>
 	</div>
 </div>
-<form action="<%=request.getContextPath() %>/orderBackCheck/export" method="post" id="exportForm">
-	<textarea style="display:none" name="cwb" id="cwb"><%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%></textarea>
-	<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"/>
-</form>
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);

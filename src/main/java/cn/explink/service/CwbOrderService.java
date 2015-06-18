@@ -6420,6 +6420,7 @@ public class CwbOrderService {
 				for (CwbApplyZhongZhuan ot :cwbApplyZhongZhuanlist ){
 					if (ot.getCwb().equals(c.getCwb())) {
 						CwbOrderView cwbOrderView = new CwbOrderView();
+						cwbOrderView.setOpscwbid(ot.getId());//中转id
 						cwbOrderView.setCwb(ot.getCwb());
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称

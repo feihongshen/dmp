@@ -9,7 +9,6 @@
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 	List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 	//List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
-	List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 	Page page_obj = (Page)request.getAttribute("page_obj");
 	String cwbStr = request.getParameter("cwbStr")==null?"":request.getParameter("cwbStr");
 %>
@@ -201,11 +200,10 @@ $(function() {
 		<div class="kfsh_tabbtn">
 		</div>
 		<div class="tabbox">
-				<div style="position:relative; z-index:0 " >
-					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
-						<div class="kfsh_search">
-							<form action="1" method="POST" id="searchForm">
-
+			<div style="position:relative; z-index:0 " >
+				<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
+					<div class="kfsh_search">
+						<form action="1" method="POST" id="searchForm">
 							<table>
 								<tr>
 									<td rowspan="2">
@@ -282,12 +280,11 @@ $(function() {
 										<input type="button" id="submitZ" value="站点滞留" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td>
-										<%-- <%if(orderbackList!=null&&!orderbackList.isEmpty()){%> --%><span>
-											<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
-										</span><%--  <%} %> --%>
+										<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 									</td>
 								</tr>
 							</table>
+						</form>
 						</div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 						<tbody>
@@ -304,9 +301,7 @@ $(function() {
 					</div>
 					<br>
 					<br>
-					<br>
-					
-					<div style="height:109px"></div>
+					<div style="height:104px"></div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 							<%if(orderbackList!=null&&!orderbackList.isEmpty()){%> 
@@ -350,11 +345,6 @@ $(function() {
 		</div>
 	</div>
 </div>
-<form action="<%=request.getContextPath() %>/orderBackCheck/export" method="post" id="exportForm">
-	<textarea style="display:none" name="cwb" id="cwb"><%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%></textarea>
-	<input type="hidden" value="<%=request.getParameter("searchType")==null?"":request.getParameter("searchType")%>" id="searchType" name="searchType"/>
-</form>
-
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);

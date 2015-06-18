@@ -53,7 +53,6 @@ import cn.explink.domain.CwbApplyTuiHuo;
 import cn.explink.domain.CwbApplyZhongZhuan;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
-import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.User;
@@ -560,61 +559,6 @@ public class CwbApplyController {
 	}
 
 	/**
-	 * 客服审核为中转页面
-	 * 
-	 * @param model
-	 * @param page
-	 * @param begindate
-	 * @param enddate
-	 * @param ishandle
-	 * @param isshow
-	 * @param response
-	 * @param request
-	 * @return
-	 */
-
-	/*@RequestMapping("/kefuuserapplytoZhongZhuanlist-no/{page}")
-	public String kefuuserapplytoZhongZhuanlist-no(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", required = false, defaultValue = "0") long ishandle,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) {
-		Page pageparm = new Page();
-		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
-		List<CwbOrderView> cwbViewList = new ArrayList<CwbOrderView>();
-		// 需要返回页面的前10条订单List
-		List<CwbOrder> orderlist = new ArrayList<CwbOrder>();
-		if (isshow != 0) {
-			cwbApplyZhongZhuanlist = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanPage(page, begindate, enddate, ishandle);
-			pageparm = new Page(this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanCount(begindate, enddate, ishandle), page, Page.ONE_PAGE_NUMBER);
-
-			if ((cwbApplyZhongZhuanlist != null) && (cwbApplyZhongZhuanlist.size() > 0)) {
-				String cwbs = "";
-				for (CwbApplyZhongZhuan cwbApplyZhongZhuan : cwbApplyZhongZhuanlist) {
-					cwbs += "'" + cwbApplyZhongZhuan.getCwb() + "',";
-				}
-				cwbs = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
-				if (cwbs.length() > 0) {
-					List<Branch> branchList = this.branchDAO.getAllBranches();
-					List<Customer> customerList = this.customerDao.getAllCustomers();
-					List<User> userList = this.userDAO.getAllUser();
-					orderlist = this.cwbDAO.getCwbOrderByCwbs(cwbs);
-					cwbViewList = this.getZhongZhuanCwbOrderViewCount10(orderlist, cwbApplyZhongZhuanlist, customerList, branchList, userList);
-				}
-			}
-		}
-		model.addAttribute("cwbViewList", cwbViewList);
-		model.addAttribute("page_obj", pageparm);
-		model.addAttribute("page", page);
-		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
-		model.addAttribute("amazonIsOpen", isOpenFlag);
-		List<Branch> tuihuobranchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + "");
-		model.addAttribute("zhongzhuanbranchList", tuihuobranchList);
-		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
-		model.addAttribute("isUseAuditTuiHuo", isUseAuditTuiHuo);
-		return "cwbapply/kefuuserapplytoZhongZhuanlist";
-	}*/
-	
-	
-	/**
 	 * 审核为中转页面
 	 * 
 	 * @param model
@@ -635,15 +579,8 @@ public class CwbApplyController {
 			
 			) {
 		Page pag = new Page();
-		
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
-		model.addAttribute("branchList", branchList);
-		model.addAttribute("customerList", customerList);
-		Map<Long, String> customerMap = new HashMap<Long, String>();
-		for (Customer cu : customerList) {
-			customerMap.put(cu.getCustomerid(), cu.getCustomername());
-		}
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
@@ -666,11 +603,11 @@ public class CwbApplyController {
 			
 			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
 		}
-		model.addAttribute("page_obj",pag);
-		model.addAttribute("customerMap", customerMap);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
-		model.addAttribute("cwbApplyZhongZhuanlist",covList);
 		model.addAttribute("page",page);
+		model.addAttribute("page_obj",pag);
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("customerList", customerList);
+		model.addAttribute("cwbApplyZhongZhuanlist",covList);
 		return "cwbapply/kefuuserapplytoZhongZhuanlist";
 	}
 	
@@ -1107,10 +1044,6 @@ public class CwbApplyController {
 			){
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
-		Map<Long, String> customerMap = new HashMap<Long, String>();
-		for (Customer cu : customerList) {
-			customerMap.put(cu.getCustomerid(), cu.getCustomername());
-		}
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
