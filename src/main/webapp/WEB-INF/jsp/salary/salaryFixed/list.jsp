@@ -20,74 +20,6 @@
 <script src="${pageContext.request.contextPath}/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/js.js" type="text/javascript"></script>
 <script type="text/javascript">
-$(function() {
-	$("#starttime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	
-});
-function check(){
-	var len=$.trim($("#cwbs").val()).length;
- 	if(len>0)
-		{
- 		 $("#searchForm").submit();
-		return true;
-		} 
-
-	if($("#starttime").val()==""){
-		alert("请选择开始时间");
-		return false;
-	}
-	if($("#endtime").val()==""){
-		alert("请选择结束时间");
-		return false;
-	}
-	if($("#starttime").val()>$("#endtime").val()){
-		alert("开始时间不能大于结束时间");
-		return false;
-	}
-	if(!Days()||($("#starttime").val()=='' &&$("#endtime").val()!='')||($("#starttime").val()!='' &&$("#endtime").val()=='')){
-		alert("时间跨度不能大于30天！");
-		return false;
-	}
-
-   $("#searchForm").submit();
-	return true;
-}
-function Days(){     
-	var day1 = $("#starttime").val();   
-	var day2 = $("#endtime").val(); 
-	var y1, y2, m1, m2, d1, d2;//year, month, day;   
-	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
-	day2=new Date(Date.parse(day2.replace(/-/g,"/")));
-	y1=day1.getFullYear();
-	y2=day2.getFullYear();
-	m1=parseInt(day1.getMonth())+1 ;
-	m2=parseInt(day2.getMonth())+1;
-	d1=day1.getDate();
-	d2=day2.getDate();
-	var date1 = new Date(y1, m1, d1);            
-	var date2 = new Date(y2, m2, d2);   
-	var minsec = Date.parse(date2) - Date.parse(date1);          
-	var days = minsec / 1000 / 60 / 60 / 24;  
-	if(days>30){
-		return false;
-	}        
-	return true;
-}
 function showButton()
 { 	if($("#filename").val().indexOf(".xlsx")==-1&&$("#filename").val().indexOf(".xls")==-1)
 	{
@@ -113,6 +45,49 @@ function showUp()
 	$("#imp").attr('disabled','disabled');
 
 	}
+	
+function allchecked()
+{ var ids="";
+	$("[id=id]").each(
+			function()
+			{
+				if($(this).attr('checked')=='true'||$(this).attr('checked')=='checked')
+					{
+					ids+=","+$(this).val();
+					}
+			});
+	if(ids.indexOf(',')!=-1)
+		{
+		ids=ids.substr(1);
+		}
+	
+	var dmpurl=$("#dmpurl").val();
+	if(window.confirm("确定要移除吗！")&&ids.length>0){
+	$.ajax({
+		type:"post",
+		url:dmpurl+"/salaryFixed/delete",
+		data:{"ids":ids},
+		dataType:"json",
+		success:function(data){
+			if(data.counts>0){
+				alert("成功移除"+data.counts+"记录");
+				}
+			$("#searchForm").submit();
+			}
+		});
+	}
+}
+function checkall()
+{ var checked=$("#all").attr('checked');
+	$("[id=id]").each(
+			function()
+			{if(checked=='true'||checked=='checked')
+				{$(this).attr('checked',checked);}
+			else {
+				$(this).removeAttr('checked');
+			}
+			});
+}
 </script>
 </head>
 
@@ -120,24 +95,25 @@ function showUp()
 
 <div class="right_box">
 	<div class="inputselect_box">
-<form action="${pageContext.request.contextPath}/penalizeOut/list/1" method="post" id="searchForm">
-<table  >
-    <tr>
-    <td colspan="4" height="25px">
-    <input class="input_button2" type="button" onclick="check()" value="查询"/>
-    <input type="button" <%-- ${importFlag>0?'disabled="disabled"':''} --%>  class="input_button2" value="固定值导入" id="imp"  onclick="showUp()"/> 
-    </td>
-    </tr>
-    <tr>
-    <td  align="right" height="25px">姓名：</td>
-    <td  align="left"><input type="text" name="realname"/></td>
-    <td  align="right">身份证号：</td>
-    <td  align="left"><input type="text" name="idcard"/></td>
-    </tr>
+<table>
+	<form action="1" method="post" id="searchForm">
+	    <tr>
+	    <td colspan="4" height="25px">
+	    <input class="input_button2" type="submit"  value="查询"/>
+	    <input type="button" <%-- ${importFlag>0?'disabled="disabled"':''} --%>  class="input_button2" value="固定值导入" id="imp"  onclick="showUp()"/> 
+	    </td>
+	    </tr>
+	    <tr>
+	    <td  align="right" height="25px">姓名：</td>
+	    <td  align="left"><input type="text" name="realname" value="${realname}"/></td>
+	    <td  align="right">身份证号：</td>
+	    <td  align="left"><input type="text" name="idcard" value="${idcard}"/></td>
+	    </tr>
+    <form action="1" method="post" id="searchForm">
 	<tr>
 		<td colspan="4" height="25px">
 		<div id="fileup"  style="display: none;" <%-- ${importFlag>0?'':'style="display: none;"' } --%>>
-			<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+		<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
 			<table>
 				<tr>
 					<td>
@@ -163,8 +139,8 @@ function showUp()
 				 </td>
 		 </c:if>
 		 </tr>
+		</table>
 	</form>
-	</table>
 	</div>
 	</td>
 		</tr>
@@ -180,7 +156,7 @@ function showUp()
 	<div style="overflow: auto;">
 	<table width="200%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
-	<td height="30px"  valign="middle"> </td>
+	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 姓名</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 身份证号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 基本工资 </td>
@@ -215,7 +191,51 @@ function showUp()
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款5</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款6</td>
 	</tr>
+	<c:forEach items="${salaryList}" var="salary">
+	<tr> 
+		<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
+		<td align="center" valign="middle">${salary.realname}</td>
+		<td align="center" valign="middle">${salary.idcard}</td>
+		<%-- <td align="center" valign="middle">${salary.accountSingle}</td> --%>
+		<td align="center" valign="middle">${salary.salarybasic}</td>
+		<td align="center" valign="middle">${salary.salaryjob}</td>
+		<%-- <td align="center" valign="middle">${salary.salarypush}</td> --%>
+		<td align="center" valign="middle">${salary.agejob}</td>
+		<td align="center" valign="middle">${salary.bonusfuel}</td>
+		<td align="center" valign="middle">${salary.bonusfixed}</td>
+		<td align="center" valign="middle">${salary.bonusphone}</td>
+		<td align="center" valign="middle">${salary.bonusweather}</td>
+		<%-- <td align="center" valign="middle">${salary.penalizecancel}</td> --%>
+		<td align="center" valign="middle">${salary.bonusother1}</td>
+		<td align="center" valign="middle">${salary.bonusother2}</td>
+		<td align="center" valign="middle">${salary.bonusother3}</td>
+		<td align="center" valign="middle">${salary.bonusother4}</td>
+		<td align="center" valign="middle">${salary.bonusother5}</td>
+		<td align="center" valign="middle">${salary.bonusother6}</td>
+		<td align="center" valign="middle">${salary.overtimework}</td>
+		<td align="center" valign="middle">${salary.attendance}</td>
+		<td align="center" valign="middle">${salary.security}</td>
+		<td align="center" valign="middle">${salary.gongjijin}</td>
+		<%-- <td align="center" valign="middle">${salary.foul}</td> --%>
+		<%-- <td align="center" valign="middle">${salary.goods}</td> --%>
+		<td align="center" valign="middle">${salary.dorm}</td>
+		<td align="center" valign="middle">${salary.penalizeother1}</td>
+		<td align="center" valign="middle">${salary.penalizeother2}</td>
+		<td align="center" valign="middle">${salary.penalizeother3}</td>
+		<td align="center" valign="middle">${salary.penalizeother4}</td>
+		<td align="center" valign="middle">${salary.penalizeother5}</td>
+		<td align="center" valign="middle">${salary.penalizeother6}</td>
+		<td align="center" valign="middle">${salary.imprestgoods}</td>
+		<td align="center" valign="middle">${salary.imprestother1}</td>
+		<td align="center" valign="middle">${salary.imprestother2}</td>
+		<td align="center" valign="middle">${salary.imprestother3}</td>
+		<td align="center" valign="middle">${salary.imprestother4}</td>
+		<td align="center" valign="middle">${salary.imprestother5}</td>
+		<td align="center" valign="middle">${salary.imprestother6}</td>
+	</tr>
+	</c:forEach>
 	</table>
+	<input type="button" onclick="allchecked()" value="移除"/>
 	</div>
 	</div>
 	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
@@ -232,7 +252,7 @@ function showUp()
 					id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-					<option value='${i}'>${i}</option>
+					<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 					</c:forEach>
 				</select>页
 		</td>
@@ -240,7 +260,6 @@ function showUp()
 	</table>
 	</div>
 	</c:if>
-	
 </body>
 </html>
 
