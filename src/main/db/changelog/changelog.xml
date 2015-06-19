@@ -6807,6 +6807,15 @@ CREATE TABLE `cs_complaint_accept` (
 		ADD COLUMN `penalizeOutOtherfee`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '对外赔付其它金额' AFTER `penalizeOutGoodsfee`;
 		   			</sql>
     </changeSet>
+    <changeSet id="wukong-2015-06-19-01" author="wukong">
+    		<sql>
+    	    ALTER TABLE express_ops_punishInside_detail 
+			ADD INDEX `creDate_index` (`creDate`),
+			ADD INDEX `dutypersonid_index` (`dutypersonid`),
+			ADD INDEX  `punishcwbstate` (`punishcwbstate`),
+			ADD INDEX  `cwbstate` (`cwbstate`);  
+		   	</sql>
+    </changeSet>
 
     
 
