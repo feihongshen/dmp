@@ -2451,6 +2451,7 @@ src/main/webapp/WEB-INF/jsp/workorder/CreateComplainWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateGoOnAcceptWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateGoonAcceptQueryWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CreateQueryWorkOrder.jsp -text
+src/main/webapp/WEB-INF/jsp/workorder/CsPushSmsList.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CustomerServiceAdjudicate.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/CustomerServicesAcceptWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/EditMaintain.jsp -text
@@ -2460,7 +2461,6 @@ src/main/webapp/WEB-INF/jsp/workorder/OrgVerify.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/WaitManageWorkOrder.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/WorkOrderQueryManage.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/WorkorderDetails.jsp -text
-src/main/webapp/WEB-INF/jsp/workorder/rushSmsList.jsp -text
 src/main/webapp/WEB-INF/jsp/workorder/update.jsp -text
 src/main/webapp/WEB-INF/jsp/xiazai/test.jsp -text
 src/main/webapp/WEB-INF/jsp/xiazai/test1.jsp -text
@@ -9537,7 +9537,7 @@ src/main/webapp/js/swfupload/swfupload.queue.js -text
 src/main/webapp/js/swfupload/swfupload.swf -text
 src/main/webapp/js/temp.js -text
 src/main/webapp/js/tuihuoLog.js -text
-src/main/webapp/js/workorder/rushSmsList.js -text
+src/main/webapp/js/workorder/csPushSmsList.js -text
 src/main/webapp/js/yahoo-dom-event.js -text
 src/main/webapp/js/zTree/css/demo.css -text
 src/main/webapp/js/zTree/css/zTreeStyle/img/diy/1_close.png -text

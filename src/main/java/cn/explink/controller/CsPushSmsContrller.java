@@ -35,7 +35,7 @@ public class CsPushSmsContrller {
 	
 	@RequestMapping("/rushSmsList")
 	public String sendList(){
-		return "/workorder/rushSmsList";
+		return "/workorder/csPushSmsList";
 	}
 	
 	/**
