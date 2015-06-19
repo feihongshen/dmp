@@ -391,7 +391,7 @@ function showUp()
 					id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-					<option value='${i}'>${i}</option>
+					<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 					</c:forEach>
 				</select>页
 		</td>
