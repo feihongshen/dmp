@@ -165,7 +165,7 @@ function  search(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
 									<!-- <td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td> -->
-									<td width="170" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td width="175" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
 							</tbody>
@@ -181,41 +181,41 @@ function  search(){
 						%>
 							<tr height="30" >
 								<td width="120" align="center" valign="middle"><%=cwb.getCwb() %></td>
-									<td width="100" align="center" valign="middle"><%for(CwbOrderTypeIdEnum coti : CwbOrderTypeIdEnum.values()){if(cwb.getCwbordertypeid()==coti.getValue()){ %><%=coti.getText() %><%}} %></td>
-									<td width="120" align="center" valign="middle"><%for(Branch b : branchlist){if(cwb.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-									<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(cwb.getDeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
-									<td width="100" align="center" valign="middle"><%for(User u : userList){if(cwb.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-									<td width="100" align="center" valign="middle"><%if(aeds.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
-									<td width="100" align="center" valign="middle"><%for(User u : userList){if(aeds.getEdituserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-									<%-- <td align="center" valign="middle">
-										<select name="editnowdeliverystate<%=aeds.getId() %>" id="editnowdeliverystate<%=aeds.getId() %>">
-											<option value ="-1">==请选择==</option>
-						                   <%if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()){%>
-						                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
-						                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
-						                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
-						                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-						                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
-						                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
-						                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
-						                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-						                   <%} %>
-										</select>
+								<td width="100" align="center" valign="middle"><%for(CwbOrderTypeIdEnum coti : CwbOrderTypeIdEnum.values()){if(cwb.getCwbordertypeid()==coti.getValue()){ %><%=coti.getText() %><%}} %></td>
+								<td width="120" align="center" valign="middle"><%for(Branch b : branchlist){if(cwb.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+								<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(cwb.getDeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
+								<td width="100" align="center" valign="middle"><%for(User u : userList){if(cwb.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
+								<td width="100" align="center" valign="middle"><%if(aeds.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
+								<td width="100" align="center" valign="middle"><%for(User u : userList){if(aeds.getEdituserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
+								<%-- <td align="center" valign="middle">
+									<select name="editnowdeliverystate<%=aeds.getId() %>" id="editnowdeliverystate<%=aeds.getId() %>">
+										<option value ="-1">==请选择==</option>
+					                   <%if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()){%>
+					                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+					                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+					                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+					                   <%} %>
+									</select>
 								</td> --%>
-								<td width="170" align="center" valign="middle"><input name="editreason<%=aeds.getId() %>" id="editreason<%=aeds.getId() %>" type="text" value="<%=aeds.getEditreason()%>"></td>
-									<td width="80" align="center" valign="middle">
-										<%if(aeds.getEditnowdeliverystate()==0){ %>
-										<input name="提交" type="button" class="input_button2" onclick="sub1(<%=aeds.getId() %>);" value="提交">
-										<%}else if(aeds.getNowdeliverystate()==1){ %>
-										<input type="button"  value="已提交" onclick="sub2('<%=aeds.getCwb() %>',<%=aeds.getId() %>);">
-										<%} %>
-									</td>
+								<td width="175" align="center" valign="middle"><input name="editreason<%=aeds.getId() %>" id="editreason<%=aeds.getId() %>" type="text" value="<%=aeds.getEditreason()%>"></td>
+								<td width="80" align="center" valign="middle">
+									<%if(aeds.getEditnowdeliverystate()==0){ %>
+									<input name="提交" type="button" class="input_button2" onclick="sub1(<%=aeds.getId() %>);" value="提交">
+									<%}else if(aeds.getNowdeliverystate()==1){ %>
+									<input type="button"  value="已提交" onclick="sub2('<%=aeds.getCwb() %>',<%=aeds.getId() %>);">
+									<%} %>
+								</td>
 							</tr>
 							<%} %>
 						

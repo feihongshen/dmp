@@ -153,7 +153,7 @@ function sub(){
 	if(datavalue.length>2){
 	$.ajax({
 		type: "POST",
-		url:$("#SubFrom").attr("action"),
+		url:"<%=request.getContextPath()%>/cwborder/auditTuiGongHuoShangSuccess",
 		data:{cwbs:datavalue},
 		dataType:"html",
 		success : function(data) {
@@ -195,7 +195,7 @@ function sub2(){
 }
 
 function btnClick(){
-	$("[name='checkbox']").attr("checked",'true');
+	$("[name='ischeck']").attr("checked",'true');
 }
 
 
@@ -307,13 +307,7 @@ function exportField(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退客户出库时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认状态</td>
 								</tr>
-							</tbody>
-						</table> 
-					</div>
-					<div style="height:100px"></div>
-					<from action="<%=request.getContextPath()%>/cwborder/auditTuiGongHuoShangSuccess" method="post" id="SubFrom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
-						<tbody>
+								
 						<%if(cwbList!=null){ %>
 							<%for(CwbOrderView cwb :cwbList){ %>
 							<tr class="font_1" height="30" >
@@ -327,19 +321,20 @@ function exportField(){
 								<td width="100" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCreatetime() %></td>
 								<td width="100" align="center" valign="middle">
-								<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){%>
-									<input id="flowordertype" name="flowordertype" value="退客户成功" />
-								<%}else if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()){%>
-									<input id="flowordertype" name="flowordertype" value="拒收退货" />
-								<%}else{ %>	
-									<input id="flowordertype" name="flowordertype" value="" />
-								<%} %>									
+								<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){
+									out.print("退客户成功");
+								}else if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()){
+									out.print("拒收退货");
+								}else{	
+									out.print("");
+								} %>									
 								</td>
 							</tr>
 						<%} }%>
-						</tbody>
-					</table>
-					</from>
+						
+							</tbody>
+						</table> 
+					</div>
 				</div>
 				
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>

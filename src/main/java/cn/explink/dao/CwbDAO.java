@@ -5837,6 +5837,15 @@ public class CwbDAO {
 */
 	public void updateFlowordertype(long flowordertypeid,String cwb) {
 		String sql = "update express_ops_cwb_detail set flowordertype=? where cwb=?";
-		jdbcTemplate.update(sql, new CwbMapper(),flowordertypeid,cwb);
+		jdbcTemplate.update(sql,flowordertypeid,cwb);
+	}
+	public CwbOrder getCwborder(String cwb) {
+		try{
+			String sql = "select * from  express_ops_cwb_detail  where cwb=?";
+			return jdbcTemplate.queryForObject(sql, new CwbMapper(),cwb);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 }	

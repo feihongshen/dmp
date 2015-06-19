@@ -70,11 +70,10 @@ public class OrderbackRecordDao {
 	}
 	//分页查询退供货商订单
 	public List<OrderbackRecord> getCwbOrdersByCwbspage(long page,String cwb, int cwbtypeid,long customerid, long shenhestate, String begindate, String enddate) {
-		String sql = " select * from express_ops_orderback_record ";
+		String sql = " select * from express_ops_orderback_record where shenhestate=" + shenhestate;
 		if(!cwb.equals("")){
-			sql += " where cwb in("+cwb+")";
+			sql += " and cwb in("+cwb+")";
 		}else{
-			sql += " where 1=1 ";
 			StringBuffer w = new StringBuffer("");
 			if (cwbtypeid > 0) {
 				w.append(" and cwbordertypeid=" + cwbtypeid);
@@ -84,9 +83,6 @@ public class OrderbackRecordDao {
 			}
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
-			}
-			if (shenhestate > 0) {
-				w.append(" and shenhestate=" + shenhestate);
 			}
 			if (begindate.length() > 0) {
 				w.append(" and createtime >= '" + begindate + "' ");
@@ -104,11 +100,10 @@ public class OrderbackRecordDao {
 	}
 	
 	public long getCwbOrdersByCwbsCount(String cwb, int cwbtypeid,long customerid, long shenhestate, String begindate, String enddate) {
-		String sql = " select count(1) from express_ops_orderback_record ";
+		String sql = " select count(1) from express_ops_orderback_record where shenhestate=" + shenhestate;
 		if(!cwb.equals("")){
-			sql += " where cwb in("+cwb+")";
+			sql += " and cwb in("+cwb+")";
 		}else{
-			sql += " where 1=1 ";
 			StringBuffer w = new StringBuffer("");
 			if (cwbtypeid > 0) {
 				w.append(" and cwbordertypeid=" + cwbtypeid);
@@ -118,9 +113,6 @@ public class OrderbackRecordDao {
 			}
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
-			}
-			if (shenhestate > 0) {
-				w.append(" and shenhestate=" + shenhestate);
 			}
 			if (begindate.length() > 0) {
 				w.append(" and createtime >= '" + begindate + "' ");

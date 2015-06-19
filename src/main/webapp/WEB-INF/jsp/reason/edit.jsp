@@ -30,7 +30,7 @@ Reason reason = (Reason)request.getAttribute("reason");
 		          
 			     	     <%if(reason.getReasontype()==1&&reason.getWhichreason()==1){ %>        	
 				       <p id="selectapply" style="margin-left: 70px;" align="left"> 			      
-				       <input type="checkbox" id="checkbox1" name="changealowflag"  value="1" <%if(reason.getChangealowflag()==1){ %> checked<%} %> />中转是否要申请
+				       <input type="checkbox" id="checkbox1" name="changealowflag"  value="1" <%if(reason.getChangealowflag()==1){ %> checked<%} %> />中转是否要审核
 				       </p>	           	   
 			   			<%} %>
 		           

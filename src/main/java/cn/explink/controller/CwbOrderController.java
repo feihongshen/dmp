@@ -1644,28 +1644,18 @@ public class CwbOrderController {
 		long failureCount = rJson.size();
 		for (int i = 0; i < rJson.size(); i++) {
 			String reason = rJson.getString(i);
-			if (reason.equals("") || reason.indexOf("_s_") == -1) {
+			if (reason.equals("")) {
 				continue;
 			}
-			String[] cwb_reasonid = reason.split("_s_");
-			if (cwb_reasonid.length == 2) {
+			if (reason.length()>0) {
 				// TODO 所有订单号均向订单所在负责人发送短信
-				try {
-					if (!cwb_reasonid[1].equals("0")) {
-						String scancwb = cwb_reasonid[0];
-						cwborderService.supplierBackSuccess(getSessionUser(), cwb_reasonid[0], scancwb, 0);
-						orderbackRecordDao.updateShenheState(1,cwb_reasonid[0]);//修改成退供货商成功shenhestate为1
-						successCount++;
-						failureCount--;
-					}
-					logger.info("{} 成功", reason);
-				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error("{} 失败", reason);
-				}
-			} else {
-				logger.info("{} 失败，格式不正确", reason);
-			}
+				String scancwb = reason;
+				cwborderService.supplierBackSuccess(getSessionUser(), reason, scancwb, 0);
+				orderbackRecordDao.updateShenheState(1,reason);//修改成退供货商成功shenhestate为1
+				successCount++;
+				failureCount--;
+				logger.info("{} 成功", reason);
+			} 
 		}
 
 		return successCount + "_s_" + failureCount;
@@ -1691,28 +1681,17 @@ public class CwbOrderController {
 		long failureCount = rJson.size();
 		for (int i = 0; i < rJson.size(); i++) {
 			String reason = rJson.getString(i);
-			if (reason.equals("") || reason.indexOf("_s_") == -1) {
+			if (reason.equals("")) {
 				continue;
 			}
-			String[] cwb_reasonid = reason.split("_s_");
-			if (cwb_reasonid.length == 2) {
-				try {
-					if (!cwb_reasonid[1].equals("0")) {
-						cwbDao.updateFlowordertype(FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(),cwb_reasonid[0]);
-						orderbackRecordDao.updateShenheState(2, cwb_reasonid[0]);//退货拒收修改shenhestate为2
-						successCount++;
-						failureCount--;
-					}
-					logger.info("{} 成功", reason);
-				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error("{} 失败", reason);
-				}
-			} else {
-				logger.info("{} 失败，格式不正确", reason);
-			}
+			if (reason.length()>0) {
+				cwbDao.updateFlowordertype(FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(),reason);
+				orderbackRecordDao.updateShenheState(2, reason);//退货拒收修改shenhestate为2
+				successCount++;
+				failureCount--;
+				logger.info("{} 成功", reason);
+			} 
 		}
-
 		return successCount + "_s_" + failureCount;
 	}
 

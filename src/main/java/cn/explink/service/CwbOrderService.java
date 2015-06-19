@@ -6319,7 +6319,6 @@ public class CwbOrderService {
 		return cwbOrderViewList;
 	}
 	
-	
 	//新增退货再投view
 	public List<CwbOrderView> getTuigongSuccessCwbOrderView(List<CwbOrder> orderlist, List<OrderbackRecord> orList, List<Customer> customerList
 				) {
@@ -6332,8 +6331,8 @@ public class CwbOrderService {
 						cwbOrderView.setCwb(ot.getCwb());
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
-						cwbOrderView.setReceivablefee(ot.getReceivablefee());//收件人
-						cwbOrderView.setEmaildate(ot.getEmaildate());;//收件人地址
+						cwbOrderView.setReceivablefee(ot.getReceivablefee());
+						cwbOrderView.setEmaildate(ot.getEmaildate());
 						cwbOrderView.setCreatetime(ot.getCreatetime());
 						cwbOrderViewList.add(cwbOrderView);
 					}

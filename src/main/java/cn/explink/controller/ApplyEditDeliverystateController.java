@@ -7,13 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import cn.explink.b2c.tools.ObjectUnMarchal;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -38,7 +31,6 @@ import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
-import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -53,8 +45,6 @@ import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
@@ -68,7 +58,6 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.util.DateTimeUtil;
-import cn.explink.util.ExcelUtils;
 import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
@@ -673,6 +662,10 @@ public class ApplyEditDeliverystateController {
 					continue;
 				}
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
+				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
+				if(corder == null){
+					errorCwbs.append(cwbStr + ":无此单号!");
+				}
 				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
 				if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
