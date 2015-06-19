@@ -106,9 +106,9 @@ function sub2(cwbstr,id){
 		dataType:"html",
 		success : function(data) {
 			if(data.errorCode==0){
-				alert("问题件成功提交：1单");
+				alert("提交成功：1单");
 			}else{
-				alert("问题件成功提交：1单");
+				alert("提交成功：1单");
 			}
 			//searchForm.submit();
 		}

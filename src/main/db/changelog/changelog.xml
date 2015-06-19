@@ -6816,8 +6816,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ADD INDEX  `cwbstate` (`cwbstate`);  
 		   	</sql>
     </changeSet>
-
-    
+	 <changeSet id="liuxiao-2015-06-19-01" author="liuxiao">
+    		<sql>
+    	       	ALTER TABLE op_cwbapplyzhongzhuan add COLUMN `arrivebranchtime` varchar(225) default '';
+   			</sql>
+    </changeSet>
 
 </databaseChangeLog>
  

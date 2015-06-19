@@ -13,7 +13,6 @@
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
-List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 String cwbStr = request.getParameter("cwbs")==null?"":request.getParameter("cwbs");
 Page page_obj = (Page)request.getAttribute("page_obj");
@@ -257,16 +256,11 @@ $(function() {
 										</td>
 										<td width="20%">
 											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
-											<%-- <%if(covList!=null&&!covList.isEmpty()){%> --%><span>
-												<input name="" type="button" id="btnval" value="导出" class="input_button2"  onclick="exportField();"/>
-											</span> <%-- <%} %> --%>
+											<input name="" type="button" id="btnval" value="导出" class="input_button2"  onclick="exportField();"/>
 										</td>
 									</tr>
 								</table>
 							</form>
-						<form action="<%=request.getContextPath()%>/cwborder/exportExcle" method="post" id="searchForm2">
-							<input type="hidden" name="exportmould2" id="exportmould2"  class="input_button2" />
-						</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>

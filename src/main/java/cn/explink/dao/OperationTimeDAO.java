@@ -619,10 +619,10 @@ public class OperationTimeDAO {
 				w.append(" and branchid=" + branchid);
 			}
 			if (begindate> 0) {
-				w.append(" and credate >= '" + begindate+"'");
+				w.append(" and credate >=" + begindate);
 			}
 			if (enddate> 0) {
-				w.append(" and credate <= '" + enddate+"'");
+				w.append(" and credate <=" + enddate);
 			}
 			sql += w;
 		}

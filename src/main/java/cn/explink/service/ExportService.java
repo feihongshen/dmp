@@ -3059,16 +3059,16 @@ public class ExportService {
 		}
 		// 退货出站view
 		public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "供货商名";
-			cloumnName2[0] = "Customername";
-			cloumnName1[1] = "订单状态";
-			cloumnName2[1] = "Flowordertypename";
-			cloumnName1[2] = "订单类型";
-			cloumnName2[2] = "Cwbordertypename";
-			cloumnName1[3] = "反馈状态";
-			cloumnName2[3] = "Cwbstatename";
-			cloumnName1[4] = "匹配站点";
-			cloumnName2[4] = "Branchname";
+			cloumnName1[0] = "订单号";
+			cloumnName2[0] = "Cwb";
+			cloumnName1[1] = "订单类型";
+			cloumnName2[1] = "Cwbordertypename";
+			cloumnName1[2] = "客户名称";
+			cloumnName2[2] = "Customername";
+			cloumnName1[3] = "配送站点";
+			cloumnName2[3] = "Branchname";
+			cloumnName1[4] = "归班反馈时间";
+			cloumnName2[4] = "Createtime";
 			
 		}
 		// 中转出站view

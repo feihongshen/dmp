@@ -46,6 +46,7 @@ public class CwbApplyZhongZhuanDAO {
 			CwbApplyZhongZhuan.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			CwbApplyZhongZhuan.setApplyzhongzhuanremark(StringUtil.nullConvertToEmptyString(rs.getString("applyzhongzhuanremark")));
 			CwbApplyZhongZhuan.setHandleremark(StringUtil.nullConvertToEmptyString(rs.getString("handleremark")));
+			CwbApplyZhongZhuan.setArrivebranchtime(StringUtil.nullConvertToEmptyString(rs.getString("arrivebranchtime")));
 
 			return CwbApplyZhongZhuan;
 		}
@@ -68,7 +69,7 @@ public class CwbApplyZhongZhuanDAO {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into op_cwbapplyzhongzhuan (cwb,customerid,cwbordertypeid,applyzhongzhuanbranchid"
-						+ ",applytime,applyuserid,applybranchid,applyzhongzhuanremark,receivablefee,paybackfee,isnow) " + "values(?,?,?,?,?,?,?,?,?,?,1)", new String[] { "id" });
+						+ ",applytime,applyuserid,applybranchid,applyzhongzhuanremark,receivablefee,paybackfee,isnow,arrivebranchtime) " + "values(?,?,?,?,?,?,?,?,?,?,1,?)", new String[] { "id" });
 				ps.setString(1, CwbApplyZhongZhuan.getCwb());
 				ps.setLong(2, CwbApplyZhongZhuan.getCustomerid());
 				ps.setLong(3, CwbApplyZhongZhuan.getCwbordertypeid());
@@ -79,6 +80,7 @@ public class CwbApplyZhongZhuanDAO {
 				ps.setString(8, CwbApplyZhongZhuan.getApplyzhongzhuanremark());
 				ps.setBigDecimal(9, CwbApplyZhongZhuan.getReceivablefee());
 				ps.setBigDecimal(10, CwbApplyZhongZhuan.getPaybackfee());
+				ps.setString(11, CwbApplyZhongZhuan.getArrivebranchtime());
 				return ps;
 			}
 		}, key);
@@ -202,11 +204,10 @@ public class CwbApplyZhongZhuanDAO {
 		return jdbcTemplate.queryForInt(sql);
 	}
 	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanList(long page,String cwbs,int cwbordertype,long customerid,long applyzhongzhuanbranchid,int ishandle,String begindate, String enddate) {
-		String sql = " select * from op_cwbapplyzhongzhuan ";
+		String sql = " select * from op_cwbapplyzhongzhuan where ishandle=" + ishandle;
 		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
+			sql += " and cwb in("+cwbs+")";
 		}else{
-			sql += " where 1=1 ";
 			StringBuffer w = new StringBuffer("");
 			if (cwbordertype > 0) {
 				w.append(" and cwbordertypeid=" + cwbordertype);
@@ -216,9 +217,6 @@ public class CwbApplyZhongZhuanDAO {
 			}
 			if (applyzhongzhuanbranchid > 0) {
 				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
-			}
-			if (ishandle > 0) {
-				w.append(" and ishandle=" + ishandle);
 			}
 			if (begindate.length() > 0) {
 				w.append(" and applytime >= '" + begindate + "' ");
@@ -235,11 +233,10 @@ public class CwbApplyZhongZhuanDAO {
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
 	public long getCwbApplyZhongZhuanCount(String cwbs,int cwbordertype,long customerid,long applyzhongzhuanbranchid,int ishandle, String begindate, String enddate) {
-		String sql = "select count(1) from op_cwbapplyzhongzhuan";
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where ishandle=" + ishandle;
 		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
+			sql += " and cwb in("+cwbs+")";
 		}else{
-			sql += " where 1=1";
 			StringBuffer w = new StringBuffer("");
 			if (cwbordertype > 0) {
 				w.append(" and cwbordertypeid=" + cwbordertype);
@@ -249,9 +246,6 @@ public class CwbApplyZhongZhuanDAO {
 			}
 			if (applyzhongzhuanbranchid > 0) {
 				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
-			}
-			if (ishandle > 0) {
-				w.append(" and ishandle=" + ishandle);
 			}
 			if (begindate.length() > 0) {
 				w.append(" and applytime >= '" + begindate + "' ");
@@ -267,11 +261,11 @@ public class CwbApplyZhongZhuanDAO {
 	
 	
 	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanByids(String ids) {
-		String sql = "select * from op_cwbapplyzhongzhuan where cwb in("+ids+") and ishandle=0 and isnow=1";
+		String sql = "select * from op_cwbapplyzhongzhuan where id in("+ids+") and ishandle=0 and isnow=1";
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
 	public void updateCwbApplyZhongZhuanResultSuc(String handletime, long handleuserid, long ishandle, long applyzhongzhuanbranchid, String cwb) {
-		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=?,isnow=0,shenhestate=? where cwb=? and isnow=1";
+		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=?,isnow=0  where cwb=? and isnow=1";
 		jdbcTemplate.update(sql, handletime, handleuserid, ishandle, applyzhongzhuanbranchid, cwb);
 	}
 	

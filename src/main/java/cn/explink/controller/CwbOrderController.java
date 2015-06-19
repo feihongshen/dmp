@@ -966,7 +966,6 @@ public class CwbOrderController {
 	@RequestMapping("/toTuiHuoZaiTou/{page}")
 	public String toTuiHuoZaiTou(Model model,HttpServletRequest request,
 			@PathVariable(value = "page") long page,
-			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
 			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
 			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
@@ -997,7 +996,6 @@ public class CwbOrderController {
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		model.addAttribute("reasonList", reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZaiTou.getValue()));
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("customerList", customerList);
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();

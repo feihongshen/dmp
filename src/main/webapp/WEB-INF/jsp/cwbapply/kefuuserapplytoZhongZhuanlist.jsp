@@ -46,7 +46,9 @@ function subPass(){
 		alert("请勾选订单");
 		return false;
 	}
-	
+	if(ids.length>0){
+		ids = ids.substring(0, ids.length-1);
+	}
 	if(confirm("确认选择审核的结果吗？")){
     	$.ajax({
     		type: "POST",
@@ -56,10 +58,12 @@ function subPass(){
     		success : function(data) {
     			if(data.errorCode==0){
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuantrueAuditByCwb";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuantrueAuditByCwb"; --%>
     			}else{
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuantrueAuditByCwb";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuantrueAuditByCwb"; --%>
     			}
     		}
     	});
@@ -79,7 +83,9 @@ function subNopass(){
 		alert("请勾选订单");
 		return false;
 	}
-	
+	if(ids.length>0){
+		ids = ids.substring(0, ids.length-1);
+	}
 	if(confirm("确认选择审核的结果吗？")){
     	$.ajax({
     		type: "POST",
@@ -89,10 +95,12 @@ function subNopass(){
     		success : function(data) {
     			if(data.errorCode==0){
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuanrefuseAuditByCwb";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuanrefuseAuditByCwb"; --%>
     			}else{
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuanrefuseAuditByCwb";
+    				$("#searchForm").submit();
+    		        <%-- location.href="<%=request.getContextPath()%>/cwbapply/zhongZhuanrefuseAuditByCwb"; --%>
     			}
     		}
     	});
@@ -252,8 +260,7 @@ $(function() {
 											&nbsp;&nbsp;
 											审核状态:
 											<select name ="ishandle" id ="ishandle">
-												<option  value ="0">全部</option>
-												<option value ="<%=ShenHeStateEnum.daishenhe.getValue()%>"><%=ShenHeStateEnum.daishenhe.getText() %></option>
+												<option  value ="0">待审核</option>
 												<option value ="<%=ShenHeStateEnum.shenhebutongguo.getValue() %>"><%=ShenHeStateEnum.shenhebutongguo.getText()%></option>
 												<option value ="<%=ShenHeStateEnum.shenhetongguo.getValue() %>"><%=ShenHeStateEnum.shenhetongguo.getText()%></option>
 											</select>
@@ -269,11 +276,11 @@ $(function() {
 								</table>
 								<table>
 									<tr>
-										<td>
+										<td width="20%">
 											<input type="button" onclick="check();" id="serch" value="查询" class="input_button2">&nbsp;&nbsp;
 											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
-										<td>
+										<td width="20%">
 											<input type="button" onclick="subPass()" value="审核通过" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="subNopass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;
 											<input name="btnval" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
@@ -313,8 +320,8 @@ $(function() {
 									<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getCustomername()%></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getBranchname() %></td>
-									<td width="100" align="center" valign="middle"></td>
-									<td width="100" align="center" valign="middle"></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getMatchbranchname() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getInSitetime() %></td>
 								</tr>
 							<%} }%> 
 							</tbody>

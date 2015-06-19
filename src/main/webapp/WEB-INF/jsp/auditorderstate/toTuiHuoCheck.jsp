@@ -44,21 +44,26 @@ function sub(){
 		alert("无提交数据");
 		return false;
 	}
+	if(ids.length>0){
+		ids = ids.substring(0, ids.length-1);
+	}
 	if(confirm("确认审核吗？")){
 		$("#submitF").attr("disabled","disabled");
     	$("#submitF").val("请稍候");
     	$.ajax({
     		type: "POST",
     		url:'<%=request.getContextPath()%>/orderBackCheck/save',
-    		data:"ids="+ids.substring(0,ids.lastIndexOf(",")),
+    		data:"ids="+ids,
     		dataType : "json",
     		success : function(data) {
     			if(data.errorCode==0){
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1"; --%>
     			}else{
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1"; --%>
     			}
     		}
     	});
@@ -78,21 +83,26 @@ function sub2(){
 		alert("无提交数据");
 		return false;
 	}
+	if(ids.length>0){
+		ids = ids.substring(0, ids.length-1);
+	}
 	if(confirm("确认审核吗？")){
 		$("#submitZ").attr("disabled","disabled");
     	$("#submitZ").val("请稍候");
     	$.ajax({
     		type: "POST",
     		url:'<%=request.getContextPath()%>/orderBackCheck/resultZhiliu',
-    		data:"ids="+ids.substring(0,ids.lastIndexOf(",")),
+    		data:"ids="+ids,
     		dataType : "json",
     		success : function(data) {
     			if(data.errorCode==0){
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1"; --%>
     			}else{
     				alert(data.error);
-    				location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1";
+    				$("#searchForm").submit();
+    				<%-- location.href="<%=request.getContextPath()%>/orderBackCheck/toTuiHuoCheck/1"; --%>
     			}
     		}
     	});
@@ -247,9 +257,8 @@ $(function() {
 										&nbsp;&nbsp;
 										审核状态:
 										<select name ="shenhestate" id ="shenhestate">
-											<option  value ="0">全部</option>
-												<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
-												<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
+											<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
+											<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 										</select>
 									</td>
 									<td>
@@ -279,8 +288,6 @@ $(function() {
 									<td width="20%">
 										<input type="button" id="submitF" value="确认退货" onclick="sub()" class="input_button2">&nbsp;&nbsp;
 										<input type="button" id="submitZ" value="站点滞留" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
-									</td>
-									<td>
 										<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 									</td>
 								</tr>
@@ -342,7 +349,6 @@ $(function() {
 					</table>
 				</div>
 			    <%} %>
-				<div style="height:40px"></div>
 		</div>
 	</div>
 </div>
@@ -356,6 +362,5 @@ $(function() {
 	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
 	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
 </script>
-
 </BODY>
 </HTML>

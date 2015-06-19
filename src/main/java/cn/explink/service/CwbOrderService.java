@@ -4428,7 +4428,7 @@ public class CwbOrderService {
 			 */
 			int changealowflag = getChangealowflagById(co);
 			if(changealowflag==1){// 要中转申请，就自动插入一条数据
-				
+				OrderFlow of = orderFlowDAO.getOrderFlowCwb(cwb);
 				CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
 				cwbApplyZhongZhuan.setApplybranchid(user.getBranchid());
 				cwbApplyZhongZhuan.setApplytime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -4440,6 +4440,8 @@ public class CwbOrderService {
 				cwbApplyZhongZhuan.setReceivablefee(co.getReceivablefee());
 				cwbApplyZhongZhuan.setCwb(co.getCwb());
 				cwbApplyZhongZhuan.setApplyzhongzhuanremark("申请中转");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				cwbApplyZhongZhuan.setArrivebranchtime(sdf.format(of.getCredate()));
 
 				this.cwbApplyZhongZhuanDAO.creAndUpdateCwbApplyZhongZhuan(cwbApplyZhongZhuan);
 			}
@@ -4508,6 +4510,14 @@ public class CwbOrderService {
 		return "{\"errorCode\":0,\"error\":\"处理成功\"}";
 	}
 
+	/*public static void main(String[] args) {
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String str = sdf.format(date);
+		System.out.println(str);
+	}*/
+	
+	
 	/**
 	 * 退供货商出库
 	 *
@@ -6425,8 +6435,8 @@ public class CwbOrderService {
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
 						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getApplyzhongzhuanbranchid()));//当前站点
-						cwbOrderView.setMatchbranchname("");//匹配站点名称
-						cwbOrderView.setInSitetime("");//到站时间
+						cwbOrderView.setMatchbranchname(c.getExcelbranch());//匹配站点名称
+						cwbOrderView.setInSitetime(ot.getArrivebranchtime());//到站时间
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}

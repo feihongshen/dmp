@@ -21,13 +21,14 @@ public class CwbApplyZhongZhuan {
 	private String handleremark; // 处理备注
 	private long isnow; // 标记为是否为最后一次申请(0不是，1是）
 	
-	private long shenhestate;//审核结果
+	private String arrivebranchtime;
 	
-	public long getShenhestate() {
-		return shenhestate;
+	public String getArrivebranchtime() {
+		return arrivebranchtime;
 	}
-	public void setShenhestate(long shenhestate) {
-		this.shenhestate = shenhestate;
+
+	public void setArrivebranchtime(String arrivebranchtime) {
+		this.arrivebranchtime = arrivebranchtime;
 	}
 
 	public long getId() {

@@ -3,7 +3,6 @@ package cn.explink.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +55,7 @@ import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.User;
+import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -106,7 +106,6 @@ public class CwbApplyController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
-
 	@Autowired
 	ExportService exportService;
 	@Autowired
@@ -576,7 +575,6 @@ public class CwbApplyController {
 			@RequestParam(value = "ishandle", defaultValue = "0", required = false) int ishandle,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
-			
 			) {
 		Page pag = new Page();
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
@@ -600,7 +598,6 @@ public class CwbApplyController {
 				strs = sb.substring(0, sb.length()-1);
 				coList = cwbDAO.getListbyCwbs(strs);
 			}
-			
 			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
 		}
 		model.addAttribute("page",page);

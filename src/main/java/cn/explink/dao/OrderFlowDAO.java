@@ -210,6 +210,7 @@ public class OrderFlowDAO {
 		}
 	}
 
+	
 	public OrderFlow getOrderFlowByCwbAndStateAll(String cwb, long isnow) {
 		try {
 			String sql = "select * from express_ops_order_flow where cwb='" + cwb + "' and isnow=" + isnow;
@@ -1203,6 +1204,15 @@ public class OrderFlowDAO {
 	public List<OrderFlow> getOrderByCredate(int flowordertype, String begindate,String enddate){
 		String sql = "select * from express_ops_order_flow where flowordertype=? and credate>=? and credate<=?";
 		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(),flowordertype,begindate,enddate);
+	}
+	
+	public OrderFlow getOrderFlowCwb(String cwb) {
+		try {
+			String sql = "select * from express_ops_order_flow where cwb=? and flowordertype=7 order by floworderid desc limit 1" ;
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper(),cwb);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 }

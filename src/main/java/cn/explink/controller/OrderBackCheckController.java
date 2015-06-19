@@ -4,13 +4,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -276,14 +271,12 @@ public class OrderBackCheckController {
 		if(!(cwbs.equals("")&&begindate.equals(""))){	
 			List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(page,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 			orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
-			List<OrderBackCheck> obcAllList = this.orderBackCheckDAO.getOrderBackChecks(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
-			long count = this.orderBackCheckService.getOrderBackCheckList2(obcAllList, customerList,branchList).size();
+			long count = this.orderBackCheckDAO.getOrderBackChecksCount(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
 		}
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("page",page);
 		model.addAttribute("orderbackList", orderbackList);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		return "auditorderstate/toTuiHuoCheck";
@@ -656,7 +649,7 @@ public class OrderBackCheckController {
 			final String[] cloumnName3 = cloumnName2;
 			String sheetName = "退货出站审核"; // sheet的名称
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-			String fileName = "tuihuochuzhanshenhe_" + df.format(new Date()) + ".xlsx"; // 文件名
+			String fileName = "Order_tuihuochuzhanCheck_" + df.format(new Date()) + ".xlsx"; // 文件名
 			ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, orderbackList);
 		}
 }
