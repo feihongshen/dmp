@@ -929,6 +929,7 @@ src/main/java/cn/explink/dao/ReasonDao.java -text
 src/main/java/cn/explink/dao/RemarkDAO.java -text
 src/main/java/cn/explink/dao/ReturnCwbsDAO.java -text
 src/main/java/cn/explink/dao/RoleDAO.java -text
+src/main/java/cn/explink/dao/SalaryDAO.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
 src/main/java/cn/explink/dao/ServiceAreaDAO.java -text
 src/main/java/cn/explink/dao/SetExcelColumnDAO.java -text
@@ -1113,6 +1114,7 @@ src/main/java/cn/explink/domain/Reason.java -text
 src/main/java/cn/explink/domain/Remark.java -text
 src/main/java/cn/explink/domain/ReturnCwbs.java -text
 src/main/java/cn/explink/domain/Role.java -text
+src/main/java/cn/explink/domain/Salary.java -text
 src/main/java/cn/explink/domain/ScheduledTask.java -text
 src/main/java/cn/explink/domain/SearcheditInfo.java -text
 src/main/java/cn/explink/domain/ServiceArea.java -text
