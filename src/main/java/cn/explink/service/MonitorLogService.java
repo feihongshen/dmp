@@ -64,7 +64,7 @@ public class MonitorLogService {
 		return monitorKucunDAO.getMonitorLogByBranchid(branchids,wheresql);
 	}
 	
-	public  List<CwbOrderView> getMonitorLogByType(String branchids,String customerid,String type,long page) {
+	public  List<CwbOrderView> getMonitorLogByType(String branchids,String branchids1,String branchids2,String customerid,String type,long page) {
 		
 		
 		List<String>  cwbList = new ArrayList<String>();
@@ -110,13 +110,21 @@ public class MonitorLogService {
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ", page);
 		}
 		if("zhandianzaizhanzijin".equals(type)){
-			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(7,8,9,35,36) ", page);
+			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, page);
+			String cwbs ="";
+			if (cwbList.size() > 0) {
+				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs = "'--'";
+			}
+			clist = cwbDAO.getCwbOrderByCwbs(cwbs);
+		
 		}
 		if("zhongzhuankuyichuweidaozhan".equals(type)){
-			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=14", page);//flowordertype=6 and `startbranchid` IN("+branchids1+") or 
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and `startbranchid` IN("+branchids1+") or flowordertype=14", page);
 		}
 		if("tuihuokutuihuozaitouweidaozhan".equals(type)){
-			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,40) AND `startbranchid` IN("+branchids+") ", page);
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and startbranchid IN("+branchids2+") ", page);
 		}
 		if("tuikehuweishoukuan".equals(type)){
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " fncustomerbillverifyflag=0 ", page);
@@ -132,10 +140,13 @@ public class MonitorLogService {
 				cwbs = "'--'";
 			}
 			
-			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
+			String wheresql = " (flowordertype IN(1,2,6,12,14,15,27) " +
 					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
 					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
 					" OR cwb IN("+cwbs+")" +
+					" OR flowordertype=6 and `startbranchid` IN("+branchids1+")" +
+					" OR flowordertype=6 and startbranchid IN("+branchids2+") " +
+					" OR fncustomerbillverifyflag=0" +
 					") ";
 			
 			clist =   cwbDAO.getMonitorLogByBranchid(branchids, customerid+"",wheresql, page);
@@ -155,7 +166,7 @@ public class MonitorLogService {
 
 		return cwbOrderView;
 	}
-	public  long getMonitorLogByTypeCount(String branchids,String customerid,String type) {
+	public  long getMonitorLogByTypeCount(String branchids,String branchids1,String branchids2,String customerid,String type) {
 		
 		long count = 0;
 		if("weidaohuo".equals(type)){
@@ -197,10 +208,10 @@ public class MonitorLogService {
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(7,8,9,29,38) ");
 		}
 		if("zhongzhuankuyichuweidaozhan".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,12) AND `startbranchid` IN("+branchids+")");
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and `startbranchid` IN("+branchids1+") or flowordertype=14");
 		}
 		if("tuihuokutuihuozaitouweidaozhan".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,40) AND `startbranchid` IN("+branchids+") ");
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and startbranchid IN("+branchids2+") ");
 		}
 		if("tuikehuweishoukuan".equals(type)){
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " fncustomerbillverifyflag=0 ");
@@ -211,6 +222,9 @@ public class MonitorLogService {
 			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
 					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
 					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
+					" OR flowordertype=6 and `startbranchid` IN("+branchids1+")" +
+					" OR flowordertype=6 and startbranchid IN("+branchids2+") " +
+					" OR fncustomerbillverifyflag=0" +
 					") ";
 			
 			count +=   cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", wheresql);;

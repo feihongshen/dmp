@@ -141,7 +141,7 @@ public class MonitorLogController {
 				branchids += ","+branch.getBranchid();
 			}
 		}
-		/*List<Branch>  blist1 = branchDAO.getBranchAllzhandian(BranchEnum.ZhongZhuan.getValue()+""); //获取所有库房的信息
+		List<Branch>  blist1 = branchDAO.getBranchAllzhandian(BranchEnum.ZhongZhuan.getValue()+""); //获取所有库房的信息
 		String branchids1 ="-1";
 		if(blist1 != null && blist1.size()>0){               //把中转库的站点id存储成in()所需格式
 			for (Branch branch : blist1) {
@@ -154,7 +154,7 @@ public class MonitorLogController {
 			for (Branch branch : blist2) {
 				branchids2 += ","+branch.getBranchid();
 			}
-		}*/
+		}
 		String customerids =getStrings(customeridStr); //把供货商id存储成in()所需格式
 		if(customerids.length()>0){
 			List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids); //获取所有选中的供货商信息
@@ -256,14 +256,14 @@ public class MonitorLogController {
 				}
 			}
 			//中转库已出未到站
-			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=14");
+			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=6 and startbranchid IN("+branchids1+")  or flowordertype=14");
 			if(zhongzhuankuyichuweidaozhanList != null && zhongzhuankuyichuweidaozhanList.size()>0){
 				for (MonitorLogSim mon: zhongzhuankuyichuweidaozhanList) {
 					zhongzhuankuyichuweidaozhanMap.put(mon.getCustomerid(), mon);
 				}
 			}
 			//退货库退货再投未到站
-			List<MonitorLogSim> tuihuokutuihuozaitouweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids,"flowordertype IN(40) AND startbranchid IN("+branchids+")");
+			List<MonitorLogSim> tuihuokutuihuozaitouweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids,"flowordertype=6 and startbranchid IN("+branchids2+")");
 			if(tuihuokutuihuozaitouweidaozhanList != null && tuihuokutuihuozaitouweidaozhanList.size()>0){
 				for (MonitorLogSim mon: tuihuokutuihuozaitouweidaozhanList) {
 					tuihuokutuihuozaitouweidaozhanMap.put(mon.getCustomerid(), mon);
@@ -318,14 +318,28 @@ public class MonitorLogController {
 				branchids += ","+branch.getBranchid();
 			}
 		}
+		List<Branch>  blist1 = branchDAO.getBranchAllzhandian(BranchEnum.ZhongZhuan.getValue()+""); //获取所有库房的信息
+		String branchids1 ="-1";
+		if(blist1 != null && blist1.size()>0){               //把中转库的站点id存储成in()所需格式
+			for (Branch branch : blist1) {
+				branchids1 += ","+branch.getBranchid();
+			}
+		}
+		List<Branch>  blist2 = branchDAO.getBranchAllzhandian(BranchEnum.TuiHuo.getValue()+""); //获取所有库房的信息
+		String branchids2 ="-1";
+		if(blist2 != null && blist2.size()>0){               //把退货库的站点id存储成in()所需格式
+			for (Branch branch : blist2) {
+				branchids2 += ","+branch.getBranchid();
+			}
+		}
 		if(customerid.equals("-3")){
 			customerid ="";
 		}
-		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorLogByType(branchids,customerid,type,page);
+		List<CwbOrderView>  cwborderList =   monitorLogService.getMonitorLogByType(branchids,branchids1,branchids2,customerid,type,page);
 		
 		model.addAttribute("cwborderList", cwborderList);
 		
-		long count = monitorLogService.getMonitorLogByTypeCount(branchids,customerid,type);
+		long count = monitorLogService.getMonitorLogByTypeCount(branchids,branchids1,branchids2,customerid,type);
 		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		
 		model.addAttribute("page_obj", pageparm);
