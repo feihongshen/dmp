@@ -23,9 +23,12 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
-
 </head>
 <%
+Map<Long ,MonitorLogSim> zhandianzaizhanzijinMap = (Map<Long,MonitorLogSim>)request.getAttribute("zhandianzaizhanzijinMap");
+Map<Long ,MonitorLogSim> zhongzhuankuyichuweidaozhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("zhongzhuankuyichuweidaozhanMap");
+Map<Long ,MonitorLogSim> tuihuokutuihuozaitouweidaozhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("tuihuokutuihuozaitouweidaozhanMap");
+Map<Long ,MonitorLogSim> tuikehuweishoukuanMap = (Map<Long,MonitorLogSim>)request.getAttribute("tuikehuweishoukuanMap");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 Map<Long,String> customerMap = (Map<Long,String>)request.getAttribute("customerMap");
 Map<Long ,MonitorLogSim> weidaohuoMap = (Map<Long,MonitorLogSim>)request.getAttribute("weidaohuoMap");
@@ -33,7 +36,8 @@ Map<Long ,MonitorLogSim> tihuoMap = (Map<Long,MonitorLogSim>)request.getAttribut
 Map<Long ,MonitorLogSim> rukuMap = (Map<Long,MonitorLogSim>)request.getAttribute("rukuMap");
 Map<Long ,MonitorLogSim> chukuMap = (Map<Long,MonitorLogSim>)request.getAttribute("chukuMap");
 Map<Long ,MonitorLogSim> daozhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("daozhanMap");
-Map<Long ,MonitorLogSim> yichuzhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("yichuzhanMap");
+Map<Long ,MonitorLogSim> tuihuoyichuzhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("tuihuoyichuzhanMap");
+Map<Long ,MonitorLogSim> zhongzhuanyichuzhanMap = (Map<Long,MonitorLogSim>)request.getAttribute("zhongzhuanyichuzhanMap");
 Map<Long ,MonitorLogSim> zhongzhanrukuMap = (Map<Long,MonitorLogSim>)request.getAttribute("zhongzhanrukuMap");
 Map<Long ,MonitorLogSim> tuihuorukuMap = (Map<Long,MonitorLogSim>)request.getAttribute("tuihuorukuMap");
 Map<Long ,MonitorLogSim> tuigonghuoshangMap = (Map<Long,MonitorLogSim>)request.getAttribute("tuigonghuoshangMap");
@@ -134,13 +138,28 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle"  colspan="2" >已入分拣库未出库</td>
 			   		<td  align="center" valign="middle"  colspan="2" >已出库未到站</td>
 			   		<td  align="center" valign="middle"  colspan="2" >站点在站货物</td>
-			   		<td  align="center" valign="middle"  colspan="2" >已出站在途</td>
+			   		<td  align="center" valign="middle"  colspan="2" >站点退货出站在途</td>
+			   		<td  align="center" valign="middle"  colspan="2" >站点中转出站在途</td>
 			   		<td  align="center" valign="middle"  colspan="2" >已入中转库未出库</td>
 			   		<td  align="center" valign="middle"  colspan="2" >已入退货库未出库</td>
 			   		<td  align="center" valign="middle"  colspan="2" >退客户在途</td>
+			   		<td  align="center" valign="middle"  colspan="2" >站点在站资金</td>
+			   		<td  align="center" valign="middle"  colspan="2" >中转站已出未到站</td>
+			   		<td  align="center" valign="middle"  colspan="2" >退货库退货再投未到站</td>
+			   		<td  align="center" valign="middle"  colspan="2" >退客户未收款</td>
 			   		<td  align="center" valign="middle"  colspan="2" >汇总</td>
 				</tr>
 			   	<tr class="font_1" height="30" >
+			   		<td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td>
+			   		<td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td>
+			   		<td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td>
+			   		<td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td>
+			   		<td  align="center" valign="middle" >票数</td>
+			   		<td  align="center" valign="middle" >金额</td>
 			   		<td  align="center" valign="middle" >票数</td>
 			   		<td  align="center" valign="middle" >金额</td>
 			   		<td  align="center" valign="middle" >票数</td>
@@ -174,14 +193,24 @@ $("#right_hideboxbtn").click(function(){
 				 BigDecimal	chukuCaramountsum = BigDecimal.ZERO;
 				 long	daozhanCountsum =0;
 				 BigDecimal	daozhanCaramountsum = BigDecimal.ZERO;
-				 long	yichuzhanCountsum =0;
-				 BigDecimal	yichuzhanCaramountsum = BigDecimal.ZERO;
+				 long	tuihuoyichuzhanCountsum =0;
+				 BigDecimal	tuihuoyichuzhanCaramountsum = BigDecimal.ZERO;
+				 long	zhongzhuanyichuzhanCountsum =0;
+				 BigDecimal	zhongzhuanyichuzhanCaramountsum = BigDecimal.ZERO;
 				 long	zhongzhanrukuCountsum =0;
 				 BigDecimal	zhongzhuanrukuCaramountsum = BigDecimal.ZERO;
 				 long	tuihuorukuCountsum =0;
 				 BigDecimal	tuihuorukuCaramountsum = BigDecimal.ZERO;
 				 long	tuigonghuoshangCountsum =0;
 				 BigDecimal	tuigonghuoshangCaramountsum = BigDecimal.ZERO;
+				 long	zhandianzaizhanzijinCountsum =0;
+				 BigDecimal	zhandianzaizhanzijinCaramountsum = BigDecimal.ZERO;
+				 long	zhongzhuankuyichuweidaozhanCountsum =0;
+				 BigDecimal	zhongzhuankuyichuweidaozhanCaramountsum = BigDecimal.ZERO;
+				 long	tuihuokutuihuozaitouweidaozhanCountsum =0;
+				 BigDecimal	tuihuokutuihuozaitouweidaozhanCaramountsum = BigDecimal.ZERO;
+				 long	tuikehuweishoukuanCountsum =0;
+				 BigDecimal	tuikehuweishoukuanCaramountsum = BigDecimal.ZERO;
 				%> 
 				<%for(Map.Entry<Long ,String> mo : customerMap.entrySet()){ %>
 				<%
@@ -195,14 +224,24 @@ $("#right_hideboxbtn").click(function(){
 				BigDecimal chukuCaramountsum1 = chukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:chukuMap.get(mo.getKey()).getDsum();
 				long	 daozhanCountsum1 = daozhanMap.get(mo.getKey()) == null?0:daozhanMap.get(mo.getKey()).getDcount();
 				BigDecimal daozhanCaramountsum1 = daozhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:daozhanMap.get(mo.getKey()).getDsum();
-				long	 yichuzhanCountsum1 = yichuzhanMap.get(mo.getKey()) == null?0:yichuzhanMap.get(mo.getKey()).getDcount();
-				BigDecimal yichuzhanCaramountsum1 = yichuzhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:yichuzhanMap.get(mo.getKey()).getDsum();
+				long	 tuihuoyichuzhanCountsum1 = tuihuoyichuzhanMap.get(mo.getKey()) == null?0:tuihuoyichuzhanMap.get(mo.getKey()).getDcount();
+				BigDecimal tuihuoyichuzhanCaramountsum1 = tuihuoyichuzhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuihuoyichuzhanMap.get(mo.getKey()).getDsum();
+				long	 zhongzhuanyichuzhanCountsum1 = zhongzhuanyichuzhanMap.get(mo.getKey()) == null?0:zhongzhuanyichuzhanMap.get(mo.getKey()).getDcount();
+				BigDecimal zhongzhuanyichuzhanCaramountsum1 = zhongzhuanyichuzhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:zhongzhuanyichuzhanMap.get(mo.getKey()).getDsum();
 				long	 zhongzhanrukuCountsum1 = zhongzhanrukuMap.get(mo.getKey()) == null?0:zhongzhanrukuMap.get(mo.getKey()).getDcount();
 				BigDecimal zhongzhuanrukuCaramountsum1 = zhongzhanrukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:zhongzhanrukuMap.get(mo.getKey()).getDsum();
 				long	 tuihuorukuCountsum1 = tuihuorukuMap.get(mo.getKey()) == null?0:tuihuorukuMap.get(mo.getKey()).getDcount();
 				BigDecimal tuihuorukuCaramountsum1 = tuihuorukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuihuorukuMap.get(mo.getKey()).getDsum();
 				long	 tuigonghuoshangCountsum1 = tuigonghuoshangMap.get(mo.getKey()) == null?0:tuigonghuoshangMap.get(mo.getKey()).getDcount();
-				BigDecimal tuigonghuoshangCaramountsum1 = tuigonghuoshangMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuigonghuoshangMap.get(mo.getKey()).getDsum();
+				BigDecimal tuigonghuoshangCaramountsum1 = tuigonghuoshangMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuigonghuoshangMap.get(mo.getKey()).getDsum();		
+				long	 zhandianzaizhanzijinCountsum1 = zhandianzaizhanzijinMap.get(mo.getKey()) == null?0:zhandianzaizhanzijinMap.get(mo.getKey()).getDcount();
+				BigDecimal zhandianzaizhanzijinCaramountsum1 = zhandianzaizhanzijinMap.get(mo.getKey()) == null? BigDecimal.ZERO:zhandianzaizhanzijinMap.get(mo.getKey()).getDsum();				
+				long	 zhongzhuankuyichuweidaozhanCountsum1 = zhongzhuankuyichuweidaozhanMap.get(mo.getKey()) == null?0:zhongzhuankuyichuweidaozhanMap.get(mo.getKey()).getDcount();
+				BigDecimal zhongzhuankuyichuweidaozhanCaramountsum1 = zhongzhuankuyichuweidaozhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:zhongzhuankuyichuweidaozhanMap.get(mo.getKey()).getDsum();				
+				long	 tuihuokutuihuozaitouweidaozhanCountsum1 = tuihuokutuihuozaitouweidaozhanMap.get(mo.getKey()) == null?0:tuihuokutuihuozaitouweidaozhanMap.get(mo.getKey()).getDcount();
+				BigDecimal tuihuokutuihuozaitouweidaozhanCaramountsum1 = tuihuokutuihuozaitouweidaozhanMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuihuokutuihuozaitouweidaozhanMap.get(mo.getKey()).getDsum();
+				long	 tuikehuweishoukuanCountsum1 = tuikehuweishoukuanMap.get(mo.getKey()) == null?0:tuikehuweishoukuanMap.get(mo.getKey()).getDcount();
+				BigDecimal tuikehuweishoukuanCaramountsum1 = tuikehuweishoukuanMap.get(mo.getKey()) == null? BigDecimal.ZERO:tuikehuweishoukuanMap.get(mo.getKey()).getDsum();
 				
 				%>
 			   	<tr height="30">
@@ -217,24 +256,40 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="right" valign="middle" ><%=chukuCaramountsum1%></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/daozhan/1"> <%=daozhanCountsum1%></a></td>
 			   		<td  align="right" valign="middle" ><%=daozhanCaramountsum1 %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/yichuzhan/1"> <%=yichuzhanCountsum1 %></a></td>
-			   		<td  align="right" valign="middle" ><%=yichuzhanCaramountsum1  %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/yichuzhan/1"> <%=tuihuoyichuzhanCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuihuoyichuzhanCaramountsum1  %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/zhongzhuanyichuzhan/1"><%=zhongzhuanyichuzhanCountsum1 %></a></td>		   		
+			   		<td  align="right" valign="middle" ><%=zhongzhuanyichuzhanCaramountsum1  %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/Zhongzhanruku/1"> <%=zhongzhanrukuCountsum1%></a></td>
 			   		<td  align="right" valign="middle" ><%=zhongzhuanrukuCaramountsum1 %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/tuihuoruku/1"> <%=tuihuorukuCountsum1%></a></td>
 			   		<td  align="right" valign="middle" ><%=tuihuorukuCaramountsum1 %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/tuigonghuoshang/1"> <%=tuigonghuoshangCountsum1%></a></td>
-			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum1  %></td>
+			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum1  %></td>  		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/zhandianzaizhanzijin/1"><%=zhandianzaizhanzijinCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhandianzaizhanzijinCaramountsum1 %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/zhongzhuankuyichuweidaozhan/1"><%=zhongzhuankuyichuweidaozhanCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhongzhuankuyichuweidaozhanCaramountsum1 %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/tuihuokutuihuozaitouweidaozhan/1"><%=tuihuokutuihuozaitouweidaozhanCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuihuokutuihuozaitouweidaozhanCaramountsum1 %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/tuikehuweishoukuan/1"><%=tuikehuweishoukuanCountsum1 %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuikehuweishoukuanCaramountsum1 %></td>				   		
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/all/1"> <%= weidaohuoCountsum1 +tihuoCountsum1 +rukuCountsum1
 					   		+chukuCountsum1 +daozhanCountsum1+ 
-					   		yichuzhanCountsum1+zhongzhanrukuCountsum1
-					   		+tuihuorukuCountsum1+tuigonghuoshangCountsum1  %></a></td>
+					   		tuihuoyichuzhanCountsum1+zhongzhuanyichuzhanCountsum1+zhongzhanrukuCountsum1
+					   		+tuihuorukuCountsum1+tuigonghuoshangCountsum1
+					   		+zhandianzaizhanzijinCountsum1+zhongzhuankuyichuweidaozhanCountsum1
+					   		+tuihuokutuihuozaitouweidaozhanCountsum1+tuikehuweishoukuanCountsum1
+					   		%></a></td>
 			   		<td  align="right" valign="middle" >
 			   		<%= weidaohuoCaramountsum1.add(tihuoCaramountsum1).
 					   		add(tihuoCaramountsum1).add(rukuCaramountsum1).add(chukuCaramountsum1).
-					   		add(daozhanCaramountsum1).add(yichuzhanCaramountsum1)
+					   		add(daozhanCaramountsum1).add(tuihuoyichuzhanCaramountsum1).add(zhongzhuanyichuzhanCaramountsum1)
 					   		.add(zhongzhuanrukuCaramountsum1).add(tuihuorukuCaramountsum1).
-					   		add(tuigonghuoshangCaramountsum1)%>
+					   		add(tuigonghuoshangCaramountsum1).add(zhandianzaizhanzijinCaramountsum1).
+					   		add(zhongzhuankuyichuweidaozhanCaramountsum1).
+					   		add(tuihuokutuihuozaitouweidaozhanCaramountsum1).add(tuikehuweishoukuanCaramountsum1)			   		
+					   		%>
 			   		</td>
 				</tr>
 				<%
@@ -248,15 +303,24 @@ $("#right_hideboxbtn").click(function(){
 				 chukuCaramountsum = chukuCaramountsum.add(chukuCaramountsum1);
 				 daozhanCountsum += daozhanCountsum1;
 				 daozhanCaramountsum = daozhanCaramountsum.add(daozhanCaramountsum1);
-				 yichuzhanCountsum += yichuzhanCountsum1;
-				 yichuzhanCaramountsum = yichuzhanCaramountsum.add(yichuzhanCaramountsum1);
+				 tuihuoyichuzhanCountsum += tuihuoyichuzhanCountsum1;
+				 tuihuoyichuzhanCaramountsum = tuihuoyichuzhanCaramountsum.add(tuihuoyichuzhanCaramountsum1);
+				 zhongzhuanyichuzhanCountsum += zhongzhuanyichuzhanCountsum1;
+				 zhongzhuanyichuzhanCaramountsum = zhongzhuanyichuzhanCaramountsum.add(zhongzhuanyichuzhanCaramountsum1);
 				 zhongzhanrukuCountsum += zhongzhanrukuCountsum1;
 				 zhongzhuanrukuCaramountsum = zhongzhuanrukuCaramountsum.add(zhongzhuanrukuCaramountsum1);
 				 tuihuorukuCountsum += tuihuorukuCountsum1;
 				 tuihuorukuCaramountsum = tuihuorukuCaramountsum.add(tuihuorukuCaramountsum1);
 				 tuigonghuoshangCountsum += tuigonghuoshangCountsum1;
 				 tuigonghuoshangCaramountsum = tuigonghuoshangCaramountsum.add(tuigonghuoshangCaramountsum1);
-				
+				 zhandianzaizhanzijinCountsum +=zhandianzaizhanzijinCountsum1;
+				 zhandianzaizhanzijinCaramountsum=zhandianzaizhanzijinCaramountsum.add(zhandianzaizhanzijinCaramountsum1);
+				 zhongzhuankuyichuweidaozhanCountsum +=zhongzhuankuyichuweidaozhanCountsum1;
+				 zhongzhuankuyichuweidaozhanCaramountsum=zhongzhuankuyichuweidaozhanCaramountsum.add(zhongzhuankuyichuweidaozhanCaramountsum1);
+				 tuihuokutuihuozaitouweidaozhanCountsum +=tuihuokutuihuozaitouweidaozhanCountsum1;
+				 tuihuokutuihuozaitouweidaozhanCaramountsum=tuihuokutuihuozaitouweidaozhanCaramountsum.add(tuihuokutuihuozaitouweidaozhanCaramountsum1);
+				 tuikehuweishoukuanCountsum += tuikehuweishoukuanCountsum1;
+				 tuikehuweishoukuanCaramountsum=tuikehuweishoukuanCaramountsum.add(tuikehuweishoukuanCaramountsum1);
 				%>
 				<%} %>
 				<tr height="30">
@@ -271,24 +335,39 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="right" valign="middle" ><%=chukuCaramountsum %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/daozhan/1"><%=daozhanCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=daozhanCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/yichuzhan/1"><%=yichuzhanCountsum %></a></td>
-			   		<td  align="right" valign="middle" ><%=yichuzhanCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuihuoyichuzhan/1"><%=tuihuoyichuzhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuihuoyichuzhanCaramountsum %></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/zhongzhuanyichuzhan/1"><%=zhongzhuanyichuzhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhongzhuanyichuzhanCaramountsum %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/Zhongzhanruku/1"><%=zhongzhanrukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=zhongzhuanrukuCaramountsum %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuihuoruku/1"><%=tuihuorukuCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuihuorukuCaramountsum %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuigonghuoshang/1"><%=tuigonghuoshangCountsum %></a></td>
-			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/all/1"><%=weidaohuoCountsum +tihuoCountsum +rukuCountsum
-			   		+chukuCountsum +daozhanCountsum+ 
-			   		yichuzhanCountsum+zhongzhanrukuCountsum
-			   		+tuihuorukuCountsum+tuigonghuoshangCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuigonghuoshangCaramountsum %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/zhandianzaizhanzijin/1"><%=zhandianzaizhanzijinCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhandianzaizhanzijinCaramountsum %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/zhongzhuankuyichuweidaozhan/1"><%=zhongzhuankuyichuweidaozhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=zhongzhuankuyichuweidaozhanCaramountsum %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuihuokutuihuozaitouweidaozhan/1"><%=tuihuokutuihuozaitouweidaozhanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuihuokutuihuozaitouweidaozhanCaramountsum %></td>			   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuikehuweishoukuan/1"><%=tuikehuweishoukuanCountsum %></a></td>
+			   		<td  align="right" valign="middle" ><%=tuikehuweishoukuanCaramountsum %></td>		   		
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/all/1"><%= weidaohuoCountsum+tihuoCountsum+rukuCountsum
+					   		+chukuCountsum+daozhanCountsum+ 
+					   		tuihuoyichuzhanCountsum+zhongzhuanyichuzhanCountsum+zhongzhanrukuCountsum
+					   		+tuihuorukuCountsum+tuigonghuoshangCountsum
+					   		+zhandianzaizhanzijinCountsum+zhongzhuankuyichuweidaozhanCountsum
+					   		+tuihuokutuihuozaitouweidaozhanCountsum+tuikehuweishoukuanCountsum %></a></td>
 			   		<td  align="right" valign="middle" >
 			   		<%=weidaohuoCaramountsum.add(tihuoCaramountsum).
-			   		add(tihuoCaramountsum).add(rukuCaramountsum).add(chukuCaramountsum).
-			   		add(daozhanCaramountsum).add(yichuzhanCaramountsum)
-			   		.add(zhongzhuanrukuCaramountsum).add(tuihuorukuCaramountsum).
-			   		add(tuigonghuoshangCaramountsum) %>
+					   		add(tihuoCaramountsum).add(rukuCaramountsum).add(chukuCaramountsum).
+					   		add(daozhanCaramountsum).add(tuihuoyichuzhanCaramountsum).add(zhongzhuanyichuzhanCaramountsum)
+					   		.add(zhongzhuanrukuCaramountsum).add(tuihuorukuCaramountsum).
+					   		add(tuigonghuoshangCaramountsum).add(zhandianzaizhanzijinCaramountsum).
+					   		add(zhongzhuankuyichuweidaozhanCaramountsum).
+					   		add(tuihuokutuihuozaitouweidaozhanCaramountsum).add(tuikehuweishoukuanCaramountsum)
+					 %>
 			   		</td>
 				</tr>
 				<%} %>

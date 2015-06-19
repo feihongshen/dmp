@@ -81,10 +81,7 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					</li>
 						<input type="hidden" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>" name="complaintState" id="complaintState">
 						<input type="hidden" value="<%=cca.getId()%>" name="id" id="id">
-						
-						<%-- <input type="hidden" value="<%=cca.getHeshiTime()%>" name="heshiTime">
-						<input type="hidden" value="<%=cca.getHeshiUser()%>" name="heshiUser"> --%>
-					   
+
 					 </ul> 
 					 <table>
 					 	<tr class="font_1"><td colspan="2" align="left" valign="top"><span>上传文件：</span>
@@ -93,8 +90,8 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					 </table>
 			</div>
 					<div align="center" >
-				 	<input type="submit" value="核实提交" class="button" <%-- onclick="AlreadyVerify('<%=ComplaintStateEnum.YiHeShi.getValue()%>')" --%>/>
-				 <!-- 	<input type="button" value="取消" class="button" onclick="closeBox()"/> -->
+				 	<input type="submit" value="核实提交" class="button" />
+				
 				 </div>	 	
 		</div>	
 		

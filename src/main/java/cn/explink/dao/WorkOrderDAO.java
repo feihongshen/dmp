@@ -344,7 +344,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		sb.append(" and order_no in(").append(ncwbs).append(")");
 	}
 	if (!gongdancwb.equals("")) {
-		sb.append(" and  accept_no='"+gongdancwb+"'");
+		sb.append("and accept_no='"+gongdancwb+"'");
 	}
 	if(gongdanstate>0){
 		sb.append(" and complaint_state="+gongdanstate);
@@ -417,10 +417,10 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		if(cca.getRemark()!=null&&cca.getRemark().length()>0){
 			sb.append(" remark='"+cca.getRemark()+"',");
 		}
-		if(cca.getComplaintState()>=0){
+		if(cca.getComplaintState()>0){
 			sb.append(" complaint_state="+cca.getComplaintState()+",");
 		}
-		if(cca.getComplaintResult()>=0){
+		if(cca.getComplaintResult()>0){
 			sb.append(" complaint_result="+cca.getComplaintResult()+",");
 		}
 		if(cca.getHeshiTime()!=null&&cca.getHeshiTime().length()>0){

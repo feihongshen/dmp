@@ -14,7 +14,7 @@ public class CsComplaintAcceptExportVO {
 	private String complaintResult;
 	private String name;
 	private String phoneOne;
-	private int ifpunish;
+	private String ifpunish;
 	private int cuijianNum;
 	private String customername;
 	private String complaintState;
@@ -87,10 +87,11 @@ public class CsComplaintAcceptExportVO {
 	public void setPhoneOne(String phoneOne) {
 		this.phoneOne = phoneOne;
 	}
-	public int getIfpunish() {
+	
+	public String getIfpunish() {
 		return ifpunish;
 	}
-	public void setIfpunish(int ifpunish) {
+	public void setIfpunish(String ifpunish) {
 		this.ifpunish = ifpunish;
 	}
 	public int getCuijianNum() {

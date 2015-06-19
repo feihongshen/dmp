@@ -69,7 +69,7 @@ public class MonitorDAO {
 	 */
 	public List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" GROUP BY customerid");
-
+		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;

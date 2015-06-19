@@ -126,27 +126,41 @@ public class MonitorLogController {
 	public String monitorloglist(Model model,@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customeridStr,
 			HttpServletRequest request) {
 		
-		List<Customer> clist =  this.customerDAO.getAllCustomers();
-		model.addAttribute("customerlist",clist);
-		Map<Long,String> cmap =new HashMap<Long , String>();
-		for (Customer cut : clist) {
+		List<Customer> clist =  this.customerDAO.getAllCustomers();//获取所有供货商属性值
+		model.addAttribute("customerlist",clist); 
+		Map<Long,String> cmap =new HashMap<Long , String>();   //把供货商id 和 供货商名称对应存入map集合
+		for (Customer cut : clist) {                             
 			cmap.put(cut.getCustomerid(), cut.getCustomername());
 		}
-		List<String> customeridList = this.dataStatisticsService.getList(customeridStr);
+		List<String> customeridList = this.dataStatisticsService.getList(customeridStr); //把前台传入的供货商ID字符串数组储存成集合形式
 		model.addAttribute("customeridStr", customeridList);
-		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+"");
+		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+""); //获取所有库房的信息
 		String branchids ="-1";
-		if(blist != null && blist.size()>0){
+		if(blist != null && blist.size()>0){               //把库房的站点id存储成in()所需格式
 			for (Branch branch : blist) {
 				branchids += ","+branch.getBranchid();
 			}
 		}
-		String customerids =getStrings(customeridStr);
+		/*List<Branch>  blist1 = branchDAO.getBranchAllzhandian(BranchEnum.ZhongZhuan.getValue()+""); //获取所有库房的信息
+		String branchids1 ="-1";
+		if(blist1 != null && blist1.size()>0){               //把中转库的站点id存储成in()所需格式
+			for (Branch branch : blist1) {
+				branchids1 += ","+branch.getBranchid();
+			}
+		}
+		List<Branch>  blist2 = branchDAO.getBranchAllzhandian(BranchEnum.TuiHuo.getValue()+""); //获取所有库房的信息
+		String branchids2 ="-1";
+		if(blist2 != null && blist2.size()>0){               //把退货库的站点id存储成in()所需格式
+			for (Branch branch : blist2) {
+				branchids2 += ","+branch.getBranchid();
+			}
+		}*/
+		String customerids =getStrings(customeridStr); //把供货商id存储成in()所需格式
 		if(customerids.length()>0){
-			List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids);
+			List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids); //获取所有选中的供货商信息
 			cmap =new HashMap<Long , String>();
 			for (Customer cut : cPlist) {
-				cmap.put(cut.getCustomerid(), cut.getCustomername());
+				cmap.put(cut.getCustomerid(), cut.getCustomername());  //把所有选中的供货商id 和 供货商名称对应存入map集合
 			}
 		}
 		Map<Long ,MonitorLogSim> weidaohuoMap = new HashMap<Long,MonitorLogSim>();
@@ -154,14 +168,19 @@ public class MonitorLogController {
 		Map<Long ,MonitorLogSim> rukuMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> chukuMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> daozhanMap = new HashMap<Long,MonitorLogSim>();
-		Map<Long ,MonitorLogSim> yichuzhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tuihuoyichuzhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> zhongzhuanyichuzhanMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> zhongzhanrukuMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> tuihuorukuMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> tuigonghuoshangMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> zhandianzaizhanzijinMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> zhongzhuankuyichuweidaozhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tuihuokutuihuozaitouweidaozhanMap = new HashMap<Long,MonitorLogSim>();
+		Map<Long ,MonitorLogSim> tuikehuweishoukuanMap = new HashMap<Long,MonitorLogSim>();
 		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
 			//未到货
 			List<MonitorLogSim> weidaohuoList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=1 ");
-			if(weidaohuoList != null && weidaohuoList.size()>0){
+			if(weidaohuoList != null && weidaohuoList.size()>0){    //获取订单是该供货商总数以及receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
 				for (MonitorLogSim mon: weidaohuoList) {
 					weidaohuoMap.put(mon.getCustomerid(), mon);
 				}
@@ -194,11 +213,18 @@ public class MonitorLogController {
 					daozhanMap.put(mon.getCustomerid(), mon);
 				}
 			}
-			//已出站
-			List<MonitorLogSim> yichuzhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ");
-			if(yichuzhanList != null && yichuzhanList.size()>0){
-				for (MonitorLogSim mon: yichuzhanList) {
-					yichuzhanMap.put(mon.getCustomerid(), mon);
+			//退货已出站
+				List<MonitorLogSim> tuihuoyichuzhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(40) AND startbranchid NOT IN("+branchids+") ");
+				if(tuihuoyichuzhanList != null && tuihuoyichuzhanList.size()>0){
+					for (MonitorLogSim mon: tuihuoyichuzhanList) {
+						tuihuoyichuzhanMap.put(mon.getCustomerid(), mon);
+					}
+			}
+			//中转已出站
+			List<MonitorLogSim> zhongzhuanyichuzhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(6,14) AND startbranchid NOT IN("+branchids+") ");
+			if(zhongzhuanyichuzhanList != null && zhongzhuanyichuzhanList.size()>0){
+				for (MonitorLogSim mon: zhongzhuanyichuzhanList) {
+					zhongzhuanyichuzhanMap.put(mon.getCustomerid(), mon);
 				}
 			}
 			//中转入库
@@ -215,17 +241,50 @@ public class MonitorLogController {
 					tuihuorukuMap.put(mon.getCustomerid(), mon);
 				}
 			}
-			//未到货
+			//未到货 
 			List<MonitorLogSim> tuigonghuoshangList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=27 ");
 			if(tuigonghuoshangList != null && tuigonghuoshangList.size()>0){
 				for (MonitorLogSim mon: tuigonghuoshangList) {
 					tuigonghuoshangMap.put(mon.getCustomerid(), mon);
 				}
 			}
+			//站点在站资金
+			List<MonitorLogSim> zhandianzaizhanzijinList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
+			if(zhandianzaizhanzijinList != null && zhandianzaizhanzijinList.size()>0){
+				for (MonitorLogSim mon: zhandianzaizhanzijinList) {
+					zhandianzaizhanzijinMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//中转库已出未到站
+			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=14");
+			if(zhongzhuankuyichuweidaozhanList != null && zhongzhuankuyichuweidaozhanList.size()>0){
+				for (MonitorLogSim mon: zhongzhuankuyichuweidaozhanList) {
+					zhongzhuankuyichuweidaozhanMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//退货库退货再投未到站
+			List<MonitorLogSim> tuihuokutuihuozaitouweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids,"flowordertype IN(40) AND startbranchid IN("+branchids+")");
+			if(tuihuokutuihuozaitouweidaozhanList != null && tuihuokutuihuozaitouweidaozhanList.size()>0){
+				for (MonitorLogSim mon: tuihuokutuihuozaitouweidaozhanList) {
+					tuihuokutuihuozaitouweidaozhanMap.put(mon.getCustomerid(), mon);
+				}
+			}
+			//退客户未收款
+			List<MonitorLogSim> tuikehuweishoukuanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," fncustomerbillverifyflag=0 ");
+			if(tuikehuweishoukuanList != null && tuikehuweishoukuanList.size()>0){
+				for (MonitorLogSim mon: tuikehuweishoukuanList) {
+					tuikehuweishoukuanMap.put(mon.getCustomerid(), mon);
+				}
+			}
 		}else{
 			cmap =new HashMap<Long , String>();
 		}
-		
+		model.addAttribute("tuihuoyichuzhanMap", tuihuoyichuzhanMap);
+		model.addAttribute("zhongzhuanyichuzhanMap", zhongzhuanyichuzhanMap);
+		model.addAttribute("zhandianzaizhanzijinMap",zhandianzaizhanzijinMap);
+		model.addAttribute("zhongzhuankuyichuweidaozhanMap",zhongzhuankuyichuweidaozhanMap);
+		model.addAttribute("tuihuokutuihuozaitouweidaozhanMap",tuihuokutuihuozaitouweidaozhanMap);
+		model.addAttribute("tuikehuweishoukuanMap",tuikehuweishoukuanMap);
 		model.addAttribute("customerids",customerids);
 		model.addAttribute("customerMap",cmap);
 		model.addAttribute("weidaohuoMap", weidaohuoMap);
@@ -233,7 +292,6 @@ public class MonitorLogController {
 		model.addAttribute("rukuMap", rukuMap);
 		model.addAttribute("chukuMap", chukuMap);
 		model.addAttribute("daozhanMap", daozhanMap);
-		model.addAttribute("yichuzhanMap", yichuzhanMap);
 		model.addAttribute("zhongzhanrukuMap", zhongzhanrukuMap);
 		model.addAttribute("tuihuorukuMap", tuihuorukuMap);
 		model.addAttribute("tuigonghuoshangMap", tuigonghuoshangMap);

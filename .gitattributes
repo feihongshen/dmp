@@ -1682,6 +1682,10 @@ src/main/resources/dbsqlserver.properties -text
 src/main/resources/filepath.properties -text
 src/main/resources/logback.xml -text
 src/main/webapp/META-INF/MANIFEST.MF -text
+src/main/webapp/WEB-INF/jsp/SettlementContract/AddSettlementContract.jsp -text
+src/main/webapp/WEB-INF/jsp/SettlementContract/CriteriaQuery.jsp -text
+src/main/webapp/WEB-INF/jsp/SettlementContract/EditSettlementContract.jsp -text
+src/main/webapp/WEB-INF/jsp/SettlementContract/SettlementContractList.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/abnormaldataMove.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/createabnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/abnormalorder/handleabnormallist.jsp -text

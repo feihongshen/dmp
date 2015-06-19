@@ -531,7 +531,7 @@ function submitselect2(){    //通过手机号查询工单
 					<td><font color="red">*</font>来电号码:<input type="text" name="phoneonOne" 
 					id="phoneonOne" 
 					onkeypress="if (event.keyCode == 13){verifyphoneonOne();}"  
-					class="input_text1" />
+					class="input_text1" maxlength="11"/>
 					</td>
 					<td><font color="red">*</font>客户分类:
 					<select name="consigneeType" id="consigneeType" class="select1">
@@ -550,7 +550,7 @@ function submitselect2(){    //通过手机号查询工单
 				<tr>									
 					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
 					<td><font color="red">*</font>最后联系时间:<input type="text" name="contactLastTime" id="contactLastTime" class="input_text1"></td>
-					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum" onblur="isnum(this.value)"></td>
+					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum" onblur="isnum(this.value)" maxlength="4"></td>
 					
 					</td>
 				</tr>	

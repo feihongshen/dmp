@@ -94,8 +94,11 @@ public class MonitorLogService {
 			clist = cwbDAO.getCwbOrderByCwbs(cwbs);
 		}
 		
-		if("yichuzhan".equals(type)){
-			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ", page);
+		if("tuihuoyichuzhan".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(40) AND startbranchid NOT IN("+branchids+") ", page);
+		}
+		if("zhongzhuanyichuzhan".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14) AND startbranchid NOT IN("+branchids+") ", page);
 		}
 		if("Zhongzhanruku".equals(type)){
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=12 ", page);
@@ -105,6 +108,18 @@ public class MonitorLogService {
 		}
 		if("tuigonghuoshang".equals(type)){
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ", page);
+		}
+		if("zhandianzaizhanzijin".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(7,8,9,35,36) ", page);
+		}
+		if("zhongzhuankuyichuweidaozhan".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=14", page);//flowordertype=6 and `startbranchid` IN("+branchids1+") or 
+		}
+		if("tuihuokutuihuozaitouweidaozhan".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,40) AND `startbranchid` IN("+branchids+") ", page);
+		}
+		if("tuikehuweishoukuan".equals(type)){
+			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " fncustomerbillverifyflag=0 ", page);
 		}
 		
 		if("all".equals(type)){
@@ -162,8 +177,11 @@ public class MonitorLogService {
 			
 		}
 		
-		if("yichuzhan".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14,40) AND startbranchid NOT IN("+branchids+") ");
+		if("tuihuoyichuzhan".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(40) AND startbranchid NOT IN("+branchids+") ");
+		}
+		if("zhongzhuanyichuzhan".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,14) AND startbranchid NOT IN("+branchids+") ");
 		}
 		if("Zhongzhanruku".equals(type)){
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=12 ");
@@ -173,6 +191,19 @@ public class MonitorLogService {
 		}
 		if("tuigonghuoshang".equals(type)){
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ");
+		}
+		
+		if("zhandianzaizhanzijin".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(7,8,9,29,38) ");
+		}
+		if("zhongzhuankuyichuweidaozhan".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,12) AND `startbranchid` IN("+branchids+")");
+		}
+		if("tuihuokutuihuozaitouweidaozhan".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(6,40) AND `startbranchid` IN("+branchids+") ");
+		}
+		if("tuikehuweishoukuan".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " fncustomerbillverifyflag=0 ");
 		}
 		
 		if("all".equals(type)){
