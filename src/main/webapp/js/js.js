@@ -6164,11 +6164,10 @@ function getComplaintUserValue(){
 //对内扣罚审核的判断
 function check_punishinsideshenhe(){
 
-/*	console.info($("#describe").val());
 	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
 		alert("请输入对内扣罚审核说明！！");
 		return false;
-	}*/
+	}
 	if($("#describe").val().length>100){
 		alert("输入的对内扣罚审核说明不能 超过100个字！！");
 		return false;
