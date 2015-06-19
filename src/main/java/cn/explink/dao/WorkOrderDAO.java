@@ -312,21 +312,27 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 			sb.append(" and order_no in(").append(cwbs).append(")");
 		}
 		
-		if(cv.getComplaintState()>0){
+		if(cv.getComplaintState()>-1){
 			sb.append(" and complaint_state="+cv.getComplaintState());
 		}
-		if(cv.getComplaintType()>0){
+		if(cv.getComplaintType()!=-1){
 			sb.append(" and complaint_type="+cv.getComplaintType());
 		}
-		if(cv.getComplaintOneLevel()>0){
+		if(cv.getComplaintOneLevel()!=-1){
 			sb.append(" and complaint_one_level="+cv.getComplaintOneLevel());
 		}
-		if(cv.getCodOrgId()>0){
+		if(cv.getCodOrgId()!=-1){
 			sb.append(" and cod_org_id="+cv.getCodOrgId());
-		}if(cv.getComplaintResult()>0){
+		}if(cv.getComplaintResult()!=-1){
 			sb.append(" and complaint_result="+cv.getComplaintResult());
 		}
-		if(cv.getComplaintTwoLevel()>0){
+		if(cv.getIfpunish()!=-1){
+			sb.append(" and ifpunish="+cv.getIfpunish());
+		}
+		if(cv.getHandleUser()!=null&&cv.getHandleUser().length()>0){
+			sb.append(" and handle_user='"+cv.getHandleUser()+"'");
+		}
+		if(cv.getComplaintTwoLevel()>-1){
 			sb.append(" and complaint_two_level="+cv.getComplaintTwoLevel());	
 		}
 		if(cv.getBeginRangeTime()!=null&&cv.getBeginRangeTime().length()>0&&cv.getEndRangeTime()!=null&&cv.getEndRangeTime().length()>0){
@@ -417,10 +423,10 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		if(cca.getRemark()!=null&&cca.getRemark().length()>0){
 			sb.append(" remark='"+cca.getRemark()+"',");
 		}
-		if(cca.getComplaintState()>0){
+		if(cca.getComplaintState()>-1){
 			sb.append(" complaint_state="+cca.getComplaintState()+",");
 		}
-		if(cca.getComplaintResult()>0){
+		if(cca.getComplaintResult()>-1){
 			sb.append(" complaint_result="+cca.getComplaintResult()+",");
 		}
 		if(cca.getHeshiTime()!=null&&cca.getHeshiTime().length()>0){
@@ -482,5 +488,74 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 	public void updateMsgNum(String workOrderNo) {
 		String sql = "UPDATE `cs_complaint_accept` SET cuijian_num = cuijian_num + 1 WHERE accept_no=?";
 		this.jt.update(sql,workOrderNo);
+	}
+	
+	//机构核实，机构申诉专用
+	public void OrgChangecomplaintState(CsComplaintAccept cca){
+		String sql="update cs_complaint_accept set";
+		StringBuilder sb = new StringBuilder();
+		if(null != cca.getComplaintTime() && cca.getComplaintTime().length()>0){
+			sb.append(" complaint_time='"+cca.getComplaintTime()+"',");
+		}
+		if(cca.getJieanTime()!=null&&cca.getJieanTime().length()>0){
+			sb.append(" jiean_time='"+cca.getJieanTime()+"',");
+		}
+		if(cca.getJieanchongshenremark()!=null&&cca.getJieanchongshenremark().length()>0){
+			sb.append(" jieanchongshen_remark='"+cca.getJieanchongshenremark()+"',");
+		}
+		if(cca.getShensuremark()!=null&&cca.getShensuremark().length()>0){
+			sb.append(" shensu_remark='"+cca.getShensuremark()+"',");
+		}
+		if(cca.getJieanremark()!=null&&cca.getJieanremark().length()>0){
+			sb.append(" jiean_remark='"+cca.getJieanremark()+"',");
+		}
+		if(cca.getRemark()!=null&&cca.getRemark().length()>0){
+			sb.append(" remark='"+cca.getRemark()+"',");
+		}
+		if(cca.getComplaintState()>0){
+			sb.append(" complaint_state="+cca.getComplaintState()+",");
+		}
+		/*	if(cca.getComplaintResult()>-1){
+			sb.append(" complaint_result="+cca.getComplaintResult()+",");
+		}*/
+		if(cca.getHeshiTime()!=null&&cca.getHeshiTime().length()>0){
+			sb.append(" heshi_time='"+cca.getHeshiTime()+"',");
+		}
+		if(cca.getJieanchongshenTime()!=null&&cca.getJieanchongshenTime().length()>0){
+			sb.append(" jieanchongshen_time='"+cca.getJieanchongshenTime()+"',");
+		}
+		if(cca.getDownloadchongshenpath()!=null&&cca.getDownloadchongshenpath().length()>0){
+			sb.append(" downloadchongshenpath='"+cca.getDownloadchongshenpath()+"',");
+		}
+		if(cca.getDownloadheshipath()!=null&&cca.getDownloadheshipath().length()>0){
+			sb.append(" downloadheshipath='"+cca.getDownloadheshipath()+"',");
+		}
+		if(cca.getDownloadshensupath()!=null&&cca.getDownloadshensupath().length()>0){
+			sb.append(" downloadshensupath='"+cca.getDownloadshensupath()+"',");
+		}
+		if(cca.getDownloadjieanpath()!=null&&cca.getDownloadjieanpath().length()>0){
+			sb.append(" downloadjieanpath='"+cca.getDownloadjieanpath()+"',");
+		}
+		if(cca.getHandleUser()!=null&&cca.getHandleUser().length()>0){
+			sb.append(" handle_user='"+cca.getHandleUser()+"'");
+		}
+		if(cca.getHeshiUser()!=null&&cca.getHeshiUser().length()>0){
+			sb.append(" heshi_user='"+cca.getHeshiUser()+"'");
+		}
+		if(cca.getJieanUser()!=null&&cca.getJieanUser().length()>0){
+			sb.append(" jiean_user='"+cca.getJieanUser()+"'");
+		}
+		if(cca.getShensuUser()!=null&&cca.getShensuUser().length()>0){
+			sb.append(" shensu_user='"+cca.getShensuUser()+"'");
+		}
+		if(cca.getChongshenUser()!=null&&cca.getChongshenUser().length()>0){
+			sb.append(" chongshen_user='"+cca.getChongshenUser()+"'");
+		}
+		if(cca.getId()>=0){
+			sb.append(" where id="+cca.getId());
+		}
+		sql+=sb.toString();
+		
+		this.jt.update(sql);
 	}
 }

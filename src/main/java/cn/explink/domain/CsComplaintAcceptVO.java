@@ -62,8 +62,16 @@ public class CsComplaintAcceptVO {
 			private String showcomplaintTypeName;
 			private String city;
 			private int cuijianNum;
+			private int ifpunish; //是否扣罚
 			
 			
+			
+			public int getIfpunish() {
+				return ifpunish;
+			}
+			public void setIfpunish(int ifpunish) {
+				this.ifpunish = ifpunish;
+			}
 			public int getCuijianNum() {
 				return cuijianNum;
 			}

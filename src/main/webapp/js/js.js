@@ -5950,6 +5950,7 @@ function submitJieAnLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'jieanremark', $("#jieanremark", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintResult', $("#acceptresult", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
 
@@ -6011,6 +6012,7 @@ function submitJieAnChongShenLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'jieanchongshenremark', $("#jieanchongshenremark", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'complaintState', $("#complaintState", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'id', $("#id", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'complaintResult', $("#complaintResult", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
 }
 

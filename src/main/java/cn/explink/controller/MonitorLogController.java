@@ -271,7 +271,7 @@ public class MonitorLogController {
 			}
 			//退客户未收款
 			List<MonitorLogSim> tuikehuweishoukuanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," fncustomerbillverifyflag=0 ");
-			if(tuikehuweishoukuanList != null && tuikehuweishoukuanList.size()>0){
+			if(tuikehuweishoukuanList    != null && tuikehuweishoukuanList.size()>0){
 				for (MonitorLogSim mon: tuikehuweishoukuanList) {
 					tuikehuweishoukuanMap.put(mon.getCustomerid(), mon);
 				}

@@ -566,6 +566,7 @@ public class WorkOrderController {
 			ca.setHandleUser(c.getHandleUser());
 			ca.setJieanTime(c.getJieanTime());
 			ca.setCuijianNum(c.getCuijianNum());
+			ca.setIfpunish(c.getIfpunish());
 			lc.add(ca);			
 			String cname=workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName();
 			connameList.put(c.getPhoneOne(), cname);
@@ -631,7 +632,7 @@ public class WorkOrderController {
 		User user=this.getSessionUser();
 		cca.setHeshiUser(user.getUsername());
 		cca.setHeshiTime(DateTimeUtil.getNowTime());
-		workorderdao.ChangecomplaintState(cca);
+		workorderdao.OrgChangecomplaintState(cca);
 		
 		return "{\"errorCode\":0,\"error\":\"核实成功\"}";	
 	}
@@ -647,7 +648,7 @@ public class WorkOrderController {
 		cca.setComplaintState(Integer.valueOf(AlreadyVerifycomplaintState));
 		cca.setHeshiUser(getSessionUser().getUsername());
 		cca.setHeshiTime(DateTimeUtil.getNowTime());
-		workorderdao.ChangecomplaintState(cca);
+		workorderdao.OrgChangecomplaintState(cca);
 		
 		return "{\"errorCode\":0,\"error\":\"核实成功\"}";	
 	}
@@ -804,7 +805,7 @@ public class WorkOrderController {
 			ca.setAcceptTime(c.getAcceptTime());
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername()==null?"":customerDAO.findcustomername(c.getCustomerid()).getCustomername());
-			ca.setName(workorderdao.queryByPhoneone(c.getPhoneOne()).getName());
+			ca.setName(workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName());
 			ca.setIfpunish(c.getIfpunish()>0?"是":"否");
 			ca.setCuijianNum(c.getCuijianNum()>0?c.getCuijianNum():0);
 			ca.setHandleUser(userDao.getUserByUsername(c.getHandleUser()).getRealname());
@@ -846,6 +847,7 @@ public class WorkOrderController {
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String JieAnChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
 		String downloadname=workorderservice.loadexceptfile(file);
+		String JieAncomplaintResult=StringUtil.nullConvertToEmptyString(req.getParameter("complaintResult"));
 		CsComplaintAccept cca = new CsComplaintAccept();
 		cca.setDownloadjieanpath(downloadname);
 		cca.setJieanremark(jieanremark);
@@ -853,6 +855,7 @@ public class WorkOrderController {
 		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
 		cca.setJieanUser(getSessionUser().getUsername());
 		cca.setJieanTime(DateTimeUtil.getNowTime());
+		cca.setComplaintResult(Integer.valueOf(JieAncomplaintResult));
 		workorderdao.ChangecomplaintState(cca);
 		
 		return "{\"errorCode\":0,\"error\":\"结案处理成功\"}";	
@@ -863,7 +866,9 @@ public class WorkOrderController {
 		String jieanremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanremark"));
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String JieAnChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String JieAncomplaintResult=StringUtil.nullConvertToEmptyString(req.getParameter("complaintResult"));
 		CsComplaintAccept cca = new CsComplaintAccept();
+		cca.setComplaintResult(Integer.valueOf(JieAncomplaintResult));
 		cca.setJieanremark(jieanremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
@@ -890,7 +895,7 @@ public class WorkOrderController {
 		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
 		cca.setShensuUser(getSessionUser().getUsername());
 		cca.setComplaintTime(DateTimeUtil.getNowTime());
-		workorderdao.ChangecomplaintState(cca);
+		workorderdao.OrgChangecomplaintState(cca);
 		
 		return "{\"errorCode\":0,\"error\":\"申诉处理成功\"}";	
 	}
@@ -901,12 +906,13 @@ public class WorkOrderController {
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String shensuChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
 		CsComplaintAccept cca = new CsComplaintAccept();
+		
 		cca.setShensuremark(shensuremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
 		cca.setShensuUser(getSessionUser().getUsername());
 		cca.setComplaintTime(DateTimeUtil.getNowTime());
-		workorderdao.ChangecomplaintState(cca);
+		workorderdao.OrgChangecomplaintState(cca);
 		
 		return "{\"errorCode\":0,\"error\":\"申诉处理成功\"}";	
 	}
@@ -918,16 +924,10 @@ public class WorkOrderController {
 		String jieanchongshenremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanchongshenremark"));
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String JieAnChongShenChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
-		/*String downloadjieanpath =workorderdao.getCsComplaintAccept(Integer.valueOf(jid)).getDownloadjieanpath();*/
 		String downloadname=workorderservice.loadexceptfile(file);
+		String JieAncomplaintResult=StringUtil.nullConvertToEmptyString(req.getParameter("complaintResult"));
 		CsComplaintAccept cca = new CsComplaintAccept();
-		/*StringBuilder sb = new StringBuilder();
-		if(downloadjieanpath==null){
-			cca.setDownloadchongshenpath(downloadname);
-		}else{
-			sb.append(downloadjieanpath).append(",").append(downloadname);
-			cca.setDownloadchongshenpath(sb.toString());
-		}*/
+		cca.setComplaintResult(Integer.valueOf(JieAncomplaintResult));
 		cca.setDownloadchongshenpath(downloadname);
 		cca.setJieanchongshenremark(jieanchongshenremark);
 		cca.setId(Integer.valueOf(jid));
@@ -944,8 +944,9 @@ public class WorkOrderController {
 		String jieanchongshenremark=StringUtil.nullConvertToEmptyString(req.getParameter("jieanchongshenremark"));
 		String jid= StringUtil.nullConvertToEmptyString(req.getParameter("id"));
 		String JieAnChongShenChangeComplaintState=StringUtil.nullConvertToEmptyString(req.getParameter("complaintState"));
+		String JieAncomplaintResult=StringUtil.nullConvertToEmptyString(req.getParameter("complaintResult"));
 		CsComplaintAccept cca = new CsComplaintAccept();
-		
+		cca.setComplaintResult(Integer.valueOf(JieAncomplaintResult));
 		cca.setJieanchongshenremark(jieanchongshenremark);
 		cca.setId(Integer.valueOf(jid));
 		cca.setComplaintState(Integer.valueOf(JieAnChongShenChangeComplaintState));

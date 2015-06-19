@@ -3,9 +3,9 @@ package cn.explink.enumutil;
 import cn.explink.exception.ExplinkException;
 
 public enum ComplaintResultEnum {
-	ChengLi(0,"成立"),
+	WeiChuLi(0,"待定"),
 	BuChengLi(1,"不成立"),
-	WeiChuLi(2,"待定");
+	ChengLi(2,"成立");
 	
 	private Integer value;
 	private String text;

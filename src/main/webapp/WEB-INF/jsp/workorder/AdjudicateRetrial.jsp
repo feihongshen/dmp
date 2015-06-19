@@ -127,7 +127,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						</li>
 						<li>
 								<span>结案重审*:</span>
-									<select class="select1" name="complaintResult">
+									<select class="select1" name="complaintResult" id="complaintResult">
 										<option value="<%=ComplaintResultEnum.ChengLi.getValue() %>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
 										<option value="<%=ComplaintResultEnum.BuChengLi.getValue() %>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>
 										<option value="<%=ComplaintResultEnum.WeiChuLi.getValue() %>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
