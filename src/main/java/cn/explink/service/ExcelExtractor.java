@@ -746,7 +746,7 @@ public abstract class ExcelExtractor {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物赔付金额必须大于0.00！");
 				return null;
 			}
-			if(penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l))==-1){
+			if(penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l))==1){
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物赔付金额有误");
 				return null;
 			}
@@ -765,7 +765,7 @@ public abstract class ExcelExtractor {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它赔付金额必须大于0.00！");
 				return null;
 			}
-			if(penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l))==-1){
+			if(penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l))==1){
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物赔付金额有误");
 				return null;
 			}
