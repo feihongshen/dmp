@@ -522,7 +522,7 @@ public class PunishInsideController {
 		try {
 			// 查询出数据
 			String cwb = request.getParameter("cwbStrs") == null ? "" : request.getParameter("cwbStrs").toString();
-			String begindate = request.getParameter("bedindate1") == null ? "" : request.getParameter("bedindate1").toString();
+			String begindate = request.getParameter("begindate1") == null ? "" : request.getParameter("begindate1").toString();
 			String enddate = request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1").toString();
 			long dutybranchid = request.getParameter("dutybranchid1") == null ? 0 : Long.parseLong(request.getParameter("dutybranchid1").toString());
 			long dutynameid = request.getParameter("dutyname1") == null ? 0 : Long.parseLong(request.getParameter("dutyname1").toString());

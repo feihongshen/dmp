@@ -1035,7 +1035,7 @@ function closeBox1() {
 	<input type="hidden" name="cwbstate1" id="cwbstate1" value="<%=request.getParameter("cwbstate")==null?"0":request.getParameter("cwbstate")%>"/>
 	<input type="hidden" name="punishbigsort1" id="punishbigsort1" value="<%=request.getParameter("punishbigsort")==null?"0":request.getParameter("punishbigsort")%>"/>
 	<input type="hidden" name="punishsmallsort1" id="punishsmallsort1" value="<%=request.getParameter("punishsmallsort")==null?"0":request.getParameter("punishsmallsort")%>"/>
-	<input type="hidden" name="begindate1" id="bedindate1" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
+	<input type="hidden" name="begindate1" id="begindate1" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
 	<input type="hidden" name="enddate1" id="enddate1" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
 </form>
 <script type="text/javascript">
