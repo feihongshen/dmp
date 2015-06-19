@@ -6265,9 +6265,14 @@ function maxCheck(fee){
 		{
 		return false;
 		}
-	if(fee.split('.').length>0)
+	if(fee.indexOf('.')!=-1)
 	{
-		return false;
+		if(fee.split('.')[1].length>0)
+		{
+		
+			return false;
+	
+		}
 	}
 	else {
 		return true;
