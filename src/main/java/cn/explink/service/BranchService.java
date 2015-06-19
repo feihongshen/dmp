@@ -9,9 +9,11 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.dao.BranchDAO;
 import cn.explink.domain.Branch;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -20,6 +22,9 @@ import cn.explink.util.StringUtil;
 @Service
 public class BranchService {
 
+	@Autowired
+	private BranchDAO branchDao;
+	
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
 		if ((file != null) && !file.isEmpty()) {
@@ -187,6 +192,15 @@ public class BranchService {
 			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
 		} catch (Exception e) {
 		}
+	}
+
+	/**
+	 * 获取页面数据渲染缓存
+	 * @return
+	 */
+	public List<Branch> getPageCash() {
+
+		return this.branchDao.getAllBranches();
 	}
 
 }

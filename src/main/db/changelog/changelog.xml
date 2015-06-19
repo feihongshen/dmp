@@ -6822,5 +6822,28 @@ CREATE TABLE `cs_complaint_accept` (
    			</sql>
     </changeSet>
 
+	  <!-- 催件短信  -->
+    <changeSet id="gaoll-2015-06-19-01" author="gaoll">
+    	<sql>
+    		CREATE TABLE `cs_push_sms` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+			  `cwb_order_no` varchar(50) DEFAULT NULL COMMENT '订单号',
+			  `work_order_no` varchar(50) DEFAULT NULL COMMENT '工单号',
+			  `complaint_type` bigint(11) DEFAULT NULL COMMENT '工单类型',
+			  `handler` varchar(50) DEFAULT NULL COMMENT '受理人',
+			  `complian_branch_id` bigint(11) DEFAULT NULL COMMENT '被投诉机构',
+			  `complian_user_name` varchar(50) DEFAULT NULL COMMENT '被投诉人',
+			  `send_time` varchar(50) DEFAULT NULL COMMENT '短信发送时间',
+			  `sms_content` varchar(500) DEFAULT NULL COMMENT '催件短信内容',
+			  `mobile_no` varchar(50) DEFAULT NULL COMMENT '收信人手机号',
+			  KEY `id` (`id`),
+			  KEY `cwbOrderNo_idx` (`cwb_order_no`),
+			  KEY `workOrderNo_idx` (`work_order_no`),
+			  KEY `complaintType_idx` (`complaint_type`),
+			  KEY `sendTime_idx` (`send_time`)
+			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    	</sql>
+    </changeSet>
+
 </databaseChangeLog>
  

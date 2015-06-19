@@ -32,13 +32,11 @@ http://cxf.apache.org/schemas/jaxws.xsd
 		support. These annotations allow you to use common Spring and Java Enterprise Edition annotations in 
 		your classes without needing to do any special configuration. The most commonly used annotation is @Autowired, 
 		which instructs Spring to dependency inject an object into your class. -->
-	<context:component-scan base-package="cn.explink">
-	</context:component-scan>
-
+	<context:component-scan base-package="cn.explink"></context:component-scan>
 
 	<context:spring-configured />
 
-	<!-- <aop:aspectj-autoproxy proxy-target-class="true" /> -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${drivers}" />

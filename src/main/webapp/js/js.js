@@ -4092,7 +4092,10 @@ function getcontents() {
 $(function() {
 	$("#add_button").click(function() {
 		getAddBox();
-
+		if(afterInit != undefined){
+			afterInit();
+		}
+		
 	});
 
 });
@@ -4121,7 +4124,6 @@ function getAddBox() {
 $(function() {
 	$("#add_buttonn").click(function() {
 		getAddBox1();
-
 	});
 
 });

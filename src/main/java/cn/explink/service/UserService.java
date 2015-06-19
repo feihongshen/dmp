@@ -254,4 +254,14 @@ public class UserService {
 
 	}
 
+	/**
+	 * 获取页面数据渲染缓存
+	 * @return
+	 */
+	public List<User> getPageCash() {
+		
+		return this.userDAO.getAllUser();
+	}
+	
+
 }

@@ -32,16 +32,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.core.pager.Pager;
+import cn.explink.core.pager.PropertyFilter;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CsPushSmsDao;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SmsConfigDAO;
+import cn.explink.dao.SmsManageDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.WorkOrderDAO;
@@ -58,6 +63,7 @@ import cn.explink.domain.SmsConfig;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.entity.CsPushSms;
 import cn.explink.enumutil.ComplaintResultEnum;
 import cn.explink.enumutil.ComplaintStateEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
@@ -112,6 +118,10 @@ public class WorkOrderController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	ExportService es;
+	@Autowired
+	SmsManageDao smsManageDao;
+	@Autowired
+	private CsPushSmsDao csPushSmsDao;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -1016,15 +1026,19 @@ public class WorkOrderController {
 		//构建数据
 		String cwbScan = request.getParameter("cwbNo");
 		String workOrderNo = request.getParameter("acceptNo");
+		CsComplaintAccept workOrderObj = this.workorderdao.getMsgByWorkOrderNo(workOrderNo);
 		String cwb = cos.translateCwb(cwbScan);
 		CwbOrder cwbOrder = cwbdao.getCwbByCwb(cwb);
 		FlowOrderTypeEnum cwbOrderFlow = FlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
 		DeliveryStateEnum cwbDeliverState = DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate());
-
-		//构建短信数据
 		String smsSendMobile = null;
-		SystemInstall reminderMessage = systeminstalldao.getSystemInstallByName("ReminderMessage");
-		String message = reminderMessage == null? "" : reminderMessage.getValue() ;
+		String message = null;
+		//构建短信数据
+		if(ComplaintTypeEnum.CuijianTousu.getValue() == workOrderObj.getComplaintType() ){
+			message = workOrderObj == null? null : workOrderObj.getContent();
+		}else{
+			message = workOrderObj == null? null : workOrderObj.getQueryContent();
+		}
 		/** 短信逻辑  */
 		//分站领货、反馈为
 		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
@@ -1041,8 +1055,6 @@ public class WorkOrderController {
 		int j = 0;
 		int i = 0;
 		String errorMsg = "";
-		//系统设置短信模板
-		SmsConfig smsConf = this.smsConfigDAO.getAllSmsConfig(0);
 		//发送短信
 		try {
 			if(StringUtils.isEmpty(smsSendMobile)){
@@ -1055,8 +1067,10 @@ public class WorkOrderController {
 						continue;
 					}
 					if(StringUtils.isEmpty(message)){
-						errorMsg += "未设置催件短信内容，请前往系统设置页面进行设置！";
+						errorMsg += "催件短信内容为空，请确认工单内容！";
 						continue;
+					}else{
+						message = "订单号：" + cwbScan + "；催件内容：" + message;
 					}
 					if (!isMobileNO(mobile)) {
 						logger.info("短信发送，手机号：{}", mobile.trim());
@@ -1068,7 +1082,7 @@ public class WorkOrderController {
 						logger.info("短信发送，手机号：{}", mobile.trim());
 						try {
 //							msg = smsSendService.sendSmsInterface(mobile, message, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request), smsConf.getName(), smsConf.getPassword());
-							msg = smsSendService.sendSms(mobile, message, 1, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request));
+							msg = smsSendService.sendSms(mobile, message, 1, 0, "催件短信", getSessionUser().getUserid(), HttpUtil.getUserIp(request));
 							logger.info("短信发送，手机号：{}  结果：{}", mobile.trim(), msg);
 							if ("发送短信成功".equals(msg)) {
 								i++;
@@ -1097,6 +1111,12 @@ public class WorkOrderController {
 		
 		if( StringUtils.isEmpty(errorMsg) && "发送短信成功".equals(msg)){
 			this.workorderdao.updateMsgNum(workOrderNo);
+			CsPushSms csPushSms = new CsPushSms(cwbScan, workOrderNo, Long.valueOf(workOrderObj.getComplaintType()), workOrderObj.getHandleUser(), DateTimeUtil.getNowTime(), message, smsSendMobile);
+			if( workOrderObj.getCodOrgId() != 0){
+				csPushSms.setComplianBranchId(Long.valueOf(workOrderObj.getCodOrgId()));
+				csPushSms.setComplianUserName(workOrderObj.getComplaintUser());
+			}
+			this.csPushSmsDao.createReId(csPushSms);
 			return "{\"errorCode\":0,\"error\":\"催件短信发送成功！\"}";
 		}else{
 			return "{\"errorCode\":1,\"error\":\"催件短信发送失败："+ errorMsg +"\"}";

@@ -482,12 +482,22 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 	}
 
 	/**
-	 * 跟新工单催件次数
+	 * 更新工单催件次数
 	 * @param workOrderNo
 	 */
 	public void updateMsgNum(String workOrderNo) {
 		String sql = "UPDATE `cs_complaint_accept` SET cuijian_num = cuijian_num + 1 WHERE accept_no=?";
 		this.jt.update(sql,workOrderNo);
+	}
+	
+	/**
+	 * 根据工单号，查询工单记录
+	 * @param workOrderNo
+	 * @return
+	 */
+	public CsComplaintAccept getMsgByWorkOrderNo(String workOrderNo){
+		String sql = "SELECT * FROM cs_complaint_accept cca WHERE cca.`accept_no`=?";
+		return this.jt.queryForObject(sql,new CsComplaintAcceptRowMapper(),workOrderNo);
 	}
 	
 	//机构核实，机构申诉专用
