@@ -270,6 +270,8 @@ function isgetallcheck(){
 	}
 }
 function createinpunishbycwb(){
+	console.info($("#roleid").val());
+
 	if($("#roleid").val()!=1){
 		alert("当前操作只有客服有权限噢！！");
 		return;
@@ -326,7 +328,7 @@ function shensuopteration(){
 	}
 	console.info($("#roleid").val());
 	if(rolecount>0){
-			if($("#roleid").val()!=0){
+			if($("#roleid").val()!=4&&$("#roleid").val()!=7){
 				alert("您所选择的订单里面含有您不是责任机构当事人或管理员，没有该操作权限，请重新选择订单！！");
 				return;
 			}
@@ -987,7 +989,9 @@ function closeBox1() {
 					</tbody>
 				</table>
 				</div>
-			
+			<br>
+			<br>
+			<br>
 			<div style="height: 500px;overflow:auto; ">
 		    <div style="height: 140px;"></div>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
