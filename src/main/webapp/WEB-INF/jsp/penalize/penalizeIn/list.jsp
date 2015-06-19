@@ -270,6 +270,10 @@ function isgetallcheck(){
 	}
 }
 function createinpunishbycwb(){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
 	$.ajax({
 		type : "POST",
 		url:"<%=request.getContextPath()%>/inpunish/createinpunishbycwb",
@@ -290,24 +294,43 @@ function shensuopteration(){
 		alert("已经审核过的单号不能申诉！！");
 		return;
 	} */
-	var count=0;
+	console.info($("#currentbranchid").val());
 	var ids="";
+	var branchcount=0;
+	var rolecount=0;
 	$('input[name="wentid"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($.trim(id).length!=0){
-			if($("#checkdutybranch"+id).val()!=$("#currentbranchid").val()){
-				count++;
+			console.info($("#checkdutybranch"+id).val());
+			if($("#checkdutybranch"+id).val()!==$("#currentbranchid").val()){
+				branchcount++;
+				console.info(branchcount);
 			}
+			console.info($("#dutyperson"+id).val()+"user");
+			console.info($("#userid").val());
+			if($("#dutyperson"+id).val()!=$("#userid").val()){
+				rolecount++;
+			}
+			
 		ids+=id+",";
 		}
 		});
-	if(count>0){
-		alert("您所选择的单号里面有不是您是当事责任机构所在的范围，不允许执行该操作，请重新选择单号范围！！");
-		return;
-	}
+	console.info(rolecount);
 	if(ids.length==0){
 		alert("请选择要操作的记录！");
 		return;
+	}
+	if(branchcount>0){
+		alert("您所选择的订单里面含有您不是责任机构当事人的订单，没有权限执行此操作！！");
+		return;
+	}
+	console.info($("#roleid").val());
+	if(rolecount>0){
+			if($("#roleid").val()!=0){
+				alert("您所选择的订单里面含有您不是责任机构当事人或管理员，没有该操作权限，请重新选择订单！！");
+				return;
+			}
+		
 	}
 	$.ajax({
 		type : "POST",
@@ -356,14 +379,29 @@ function findthisValue(id){
 	});
 }
 function createinpunishbygogdan(){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
 	$("#appendhtmlid2").html("");
 	$("#alert_box").show();
 	centerBox();
 }
 function createinpunishbyquestionno(){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
 	$("#appendhtmlid3").html("");
 	$("#alert_box1").show();
 	centerBox1();
+}
+function inserexceldata(){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
+	//执行导入操作
 }
 //根据工单创建对内扣罚单
 function submitPunishCreateBygongdan(form){
@@ -897,6 +935,7 @@ function closeBox1() {
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="hidden" name="roleid" id="roleid" value="<%=roleid %>"/>
+									<input type="hidden" name="userid" id="userid" value="<%=userid %>"/>
 									<input type="hidden" name="currentbranchid" id="currentbranchid" value="<%=currentbranchid %>"/>
 									</td>
 									</tr>
@@ -908,6 +947,7 @@ function closeBox1() {
 									<td>
 									<input type="button"  onclick="createinpunishbyquestionno()" value="根据问题件创建" class="input_button1"/>
 									<input type="button"  onclick="createbyshixiaokaohe()" value="根据时效考核" class="input_button1"/>
+									<input type="button"  onclick="inserexceldata()" value="导入生成扣罚单" class="input_button1"/>
 									</td>
 									<td>
 <!-- 									<input type="button"  onclick="shenheopteration()" value="审核" class="input_button2"/>
@@ -962,7 +1002,7 @@ function closeBox1() {
 						<td width="100" align="center" valign="middle"><%=view.getSourceNo() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwb() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDutybranchname() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getDutypersonname() %></td>
+						<td width="100" align="center"  valign="middle"><%=view.getDutypersonname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbstatename() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbPrice() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishInsideprice()==null?"":view.getPunishInsideprice() %></td>
@@ -977,6 +1017,7 @@ function closeBox1() {
 						</td>
 						<input type="hidden" id="checkshenhe<%=view.getId() %>" value="<%=view.getPunishcwbstate() %>"/>
 						<input type="hidden" id="checkdutybranch<%=view.getId() %>" value="<%=view.getDutybranchid() %>"/>
+						<input type="hidden" id="dutyperson<%=view.getId() %>" value="<%=view.getDutypersonid() %>"/>
 					</tr>
 					<%} %>
 						<tr>
