@@ -6277,19 +6277,19 @@ function checke_fee(){
 	if(!isFloat($("#fee1").val())||!maxCheck($("#fee1").val()))
 	{
 		alert("金额输入有误！");
-		$("#fee").val('');
+		$("#fee1").val('');
 		return false;
 	}
 	if(!isFloat($("#fee2").val())||!maxCheck($("#fee2").val()))
 	{
 		alert("金额输入有误！");
-		$("#fee").val('');
+		$("#fee2").val('');
 		return false;
 	}
 	if(!isFloat($("#fee3").val())||!maxCheck($("#fee3").val()))
 	{
 		alert("金额输入有误！");
-		$("#fee").val('');
+		$("#fee3").val('');
 		return false;
 	}
 	return true;
