@@ -6260,21 +6260,33 @@ function checkLen(obj) {
 	var curr = maxChars - obj.value.length;  
 	document.getElementById("count").innerHTML = curr.toString(); 
 } 
-
+function maxCheck(fee){
+	if(fee-0>1000000000000000)
+		{
+		return false;
+		}
+	if(fee.split('.').length>0)
+	{
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 function checke_fee(){
-	if(!isFloat($("#fee1").val()))
+	if(!isFloat($("#fee1").val())||!maxCheck($("#fee1").val()))
 	{
 		alert("金额输入有误！");
 		$("#fee").val('');
 		return false;
 	}
-	if(!isFloat($("#fee2").val()))
+	if(!isFloat($("#fee2").val())||!maxCheck($("#fee2").val()))
 	{
 		alert("金额输入有误！");
 		$("#fee").val('');
 		return false;
 	}
-	if(!isFloat($("#fee3").val()))
+	if(!isFloat($("#fee3").val())||!maxCheck($("#fee3").val()))
 	{
 		alert("金额输入有误！");
 		$("#fee").val('');
