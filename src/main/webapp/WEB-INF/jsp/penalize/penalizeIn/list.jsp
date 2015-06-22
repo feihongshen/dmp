@@ -543,7 +543,10 @@ function getReasonValueVh(){
 }
 
 function checkwithdiferenttype(type){
-	
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
 	if(type==1){
 				$("#alert_box").html(
 						'<div id="box_contant" >'+
@@ -870,6 +873,7 @@ function checkwithdiferenttype(type){
 		);
 	}
 	$("#appendhtmlid2").html("");
+	$("#appendhtmlid3").html("");
 	$("#wenticjbegintime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
