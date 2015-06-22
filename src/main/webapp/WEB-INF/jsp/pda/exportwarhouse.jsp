@@ -215,15 +215,15 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 								//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
 							}
 							if(data.body.cwbOrder.sendcarnum>1){
-								playWav("'"+data.body.successCount+"'");
+								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 								//document.ypdj.play();
 							}
 							if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
-								playWav("'"+data.body.successCount+"'");
+								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 								//$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
 							}else{
 								$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-								playWav("'"+data.body.successCount+"'");
+								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 							}
 						}else{
 							$("#branchid").val(data.body.cwbOrder.nextbranchid);
@@ -642,7 +642,8 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
-				playWav("'"+data.body.successCount+"'");
+				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+				/* playWav("'"+data.body.successCount+"'"); */
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);

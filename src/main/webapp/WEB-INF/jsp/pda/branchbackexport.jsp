@@ -137,7 +137,7 @@ function exportUntreadWarehouse(pname,scancwb,branchid,driverid,truckid,requestb
 					if(data.statuscode=="000000"){
 						if(data.body.packageCode!=""){
 							$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
-							playWav("'"+data.body.successCount+"'");
+							numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 						}
 							$("#tuihuo").show();
 							$("#showcwb").html("订 单 号："+scancwb);
@@ -487,7 +487,7 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
-				playWav("'"+data.body.successCount+"'");
+				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);

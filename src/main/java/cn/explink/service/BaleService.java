@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -1065,7 +1066,7 @@ public class BaleService {
 	 * 订单的包验证（库房出库扫描、中转站出库扫描、退货出站）
 	 */
 	public void validateCwbBaleCheck(User user, String baleno, String cwb, CwbOrder co, long branchid, long flowOrderTypeEnum) {
-		if (!"".equals(co.getPackagecode())) {
+		if (!"".equals(co.getPackagecode()) && co.getPackagecode() != null) {
 			Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 			Branch userbranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 			Branch balebranch = this.branchDAO.getBranchByBranchid(coBale.getBranchid());
@@ -1355,10 +1356,10 @@ public class BaleService {
 	 */
 	@Transactional
 	public void baleaddcwb(User user, String baleno, String cwb, long branchid) {
-		if (!"".equals(baleno) && !"".equals(cwb)) {
+		if ( !StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
 			// 如果订单存在原来的包号 包号表的订单数-1
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-			if ((co != null) && !"".equals(co.getPackagecode())) {
+			if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
 				Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 				this.baleDAO.updateSubBaleCount(co.getPackagecode());
 				// 删除包号订单关系表数据

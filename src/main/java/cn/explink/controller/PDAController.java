@@ -2699,7 +2699,13 @@ public class PDAController {
 					}
 				}
 			}
+			/*
+			 * 单票成功订单，有站点提示语音的，忽略通用提示音 
+			 */
+			//通用提示音
 			String wavPath = null;
+			//一票多件提示音乐
+			String multiTipPath = null;
 			if (resp.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.OK.getVediourl());
 			} else {
@@ -2708,11 +2714,13 @@ public class PDAController {
 			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
 				resp.setErrorinfo(resp.getErrorinfo() + "\n一票多件");
 				if (this.isPlayYPDJSound()) {
-					wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					multiTipPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					resp.addLongWav(multiTipPath);
 				}
 			}
-			resp.addLongWav(wavPath);
+			//添加前台提示音播放列表(前台按照声音顺序进行播放)
 			if (cwbOrder.getDeliverybranchid() != 0) {
+				//如果存在站点声音，忽略通用提示音
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
 				obj.put("cwbdeliverybranchname", branch.getBranchname());
 				if (!this.isStringEmpty(branch.getBranchwavfile())) {
@@ -2721,6 +2729,8 @@ public class PDAController {
 					obj.put("cwbdeliverybranchnamewav", fullPath);
 				}
 			} else {
+				//如果不存在站点声音，忽略通用提示音
+				resp.addLongWav(wavPath);
 				obj.put("cwbdeliverybranchname", "");
 				obj.put("cwbdeliverybranchnamewav", "");
 			}
@@ -3262,7 +3272,7 @@ public class PDAController {
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
 		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 			obj.put("cwbgaojia", "true");
-			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+			explinkResponse.addLongWav(this.getErrorWavFullPath(request, WavFileName.GJ));
 		} else {
 			obj.put("cwbgaojia", "");
 		}
@@ -3296,19 +3306,21 @@ public class PDAController {
 		// 加入货物类型声音.
 		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
 		String wavPath = null;
+		//一票多件提示音乐
+		String multiTipPath = null;
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
 		} else {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
-
+		explinkResponse.addLongWav(wavPath);
 		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
 			explinkResponse.setErrorinfo(explinkResponse.getErrorinfo() + "\n一票多件");
 			if (this.isPlayYPDJSound()) {
-				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+				multiTipPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+				explinkResponse.addLongWav(multiTipPath);
 			}
 		}
-		explinkResponse.addLongWav(wavPath);
 
 		return explinkResponse;
 	}

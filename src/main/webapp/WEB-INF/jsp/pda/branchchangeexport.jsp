@@ -124,7 +124,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
 							$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 							if(data.body.packageCode!=""){
-								playWav("'"+data.body.successCount+"'");
+								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 							}
 							if(data.body.showRemark!=null){
 							$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
@@ -256,7 +256,7 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
-				playWav("'"+data.body.successCount+"'");
+				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);

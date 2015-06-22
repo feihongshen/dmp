@@ -112,7 +112,7 @@ function cwbbacktocustomer(scancwb,baleno){
 					if(data.statuscode=="000000"){
 						if( baleno!="" ){
 							$("#msg").html(baleno+"　（"+data.errorinfo+"）");
-							playWav("'"+data.body.successCount+"'");
+							numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 							/*if(data.body.cwbOrder.scannum==1){
 								if(Cwbs.indexOf("|"+scancwb+"|")==-1){
 									Cwbs += "|"+scancwb+"|";
@@ -341,7 +341,7 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
-				playWav("'"+data.body.successCount+"'");
+				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);

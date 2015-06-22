@@ -505,7 +505,8 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 			$("#msg").html("");
 			$("#msg").html(data.body.errorinfo);
 			$("#scancwb").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			newPlayWav(data.wavPath);
+			<%-- errorvedioplay("<%=request.getContextPath()%>",data); --%>
 		}
 	});
 }
