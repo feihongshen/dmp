@@ -51,6 +51,7 @@
 	<mvc:view-controller path="/abnormalorder/update" />
 
 	<mvc:view-controller path="/penalize/penalizeIn/update" />
+	<mvc:view-controller path="/penalize/penalizeIn/update1" />
 	<mvc:view-controller path="/penalize/penalizeIn/qianrushijian" />
 
 	<mvc:view-controller path="/workorder/update" />

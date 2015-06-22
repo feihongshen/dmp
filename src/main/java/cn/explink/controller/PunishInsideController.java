@@ -1,5 +1,7 @@
 package cn.explink.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +31,7 @@ import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.PenalizeOutImportErrorRecordDAO;
 import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.ReasonDao;
@@ -41,12 +44,16 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeInsideShenhe;
+import cn.explink.domain.PenalizeOutImportErrorRecord;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.PunishGongdanView;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.AbnormalService;
+import cn.explink.service.Excel2003Extractor;
+import cn.explink.service.Excel2007Extractor;
+import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.PunishInsideService;
@@ -57,6 +64,13 @@ import cn.explink.util.StringUtil;
 @Controller
 @RequestMapping("/inpunish")
 public class PunishInsideController {
+	
+	@Autowired
+	PenalizeOutImportErrorRecordDAO penalizeOutImportErrorRecordDAO; 
+	@Autowired
+	Excel2007Extractor excel2007Extractor;
+	@Autowired
+	Excel2003Extractor excel2003Extractor;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
@@ -105,7 +119,8 @@ public class PunishInsideController {
 			@RequestParam(value="punishsmallsort",defaultValue="0",required=false)long punishsmallsort,
 			@RequestParam(value="begindate",defaultValue="",required=false)String begindate,
 			@RequestParam(value="enddate",defaultValue="",required=false)String enddate,
-			@RequestParam(value="isshow",defaultValue="0",required=false)long isshow
+			@RequestParam(value="isshow",defaultValue="0",required=false)long isshow,
+			@RequestParam(value="importFlag",defaultValue="0",required=false)long importFlag
 			){
 			List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 			List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -151,6 +166,7 @@ public class PunishInsideController {
 			model.addAttribute("punishsumprice", punishsumprice);
 			model.addAttribute("penalizebigList", penalizebigList);
 			model.addAttribute("penalizesmallList", penalizesmallList);
+			model.addAttribute("importFlag", importFlag);
 			return "penalize/penalizeIn/list";
 	}
 	//进入根据订单创建对内扣罚单的弹出框
@@ -178,7 +194,7 @@ public class PunishInsideController {
 			PenalizeInside penalizeInside=punishInsideService.changePageValue(request);
 			penalizeInside.setFileposition("");
 			//将相关的信息存入表中
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 			} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -199,7 +215,7 @@ public class PunishInsideController {
 			//获得上传文件的文件名
 			String filename=abnormalService.loadexceptfile(file);
 			penalizeInside.setFileposition(filename);
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 			} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -223,7 +239,7 @@ public class PunishInsideController {
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
@@ -243,7 +259,7 @@ public class PunishInsideController {
 			return "{\"errorCode\":0,\"error\":\"该工单已经创建过对内扣罚单，不能再次创建\"}";
 		}*/
 		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
-		punishInsideDao.createPunishInside(penalizeInside);
+		punishInsideDao.createPunishInside(penalizeInside,0);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -386,7 +402,7 @@ public class PunishInsideController {
 				return "{\"errorCode\":0,\"error\":\"该问题件已经创建过对内扣罚单，不能再次创建\"}";
 			}*/
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 		return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -408,7 +424,7 @@ public class PunishInsideController {
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("根据问题创建对内扣罚单的时候出现异常", e);
@@ -474,6 +490,13 @@ public class PunishInsideController {
 		pennishinsideShenhe.setShenheuserid(user.getUserid());
 		try {
 			punishInsideDao.updatePunishShenhe(pennishinsideShenhe);
+			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==3) {
+				if (pennishinsideShenhe.getShenheresult()==1) {
+					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
+				}else if (pennishinsideShenhe.getShenheresult()==2) {
+					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+				}
+			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("对内扣罚审核带文件的失败", e);
@@ -502,6 +525,11 @@ public class PunishInsideController {
 
 		try {
 			punishInsideDao.updatePunishShenhe(pennishinsideShenhe);
+			if (pennishinsideShenhe.getShenheresult()==1) {
+				abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
+			}else if (pennishinsideShenhe.getShenheresult()==2) {
+				abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("对内扣罚审核带文件的失败", e);
@@ -628,7 +656,7 @@ public class PunishInsideController {
 		try{
 		String type1=StringUtil.nullConvertToEmptyString(request.getParameter("type4"));
 		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
-		punishInsideDao.createPunishInside(penalizeInside);
+		punishInsideDao.createPunishInside(penalizeInside,0);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -644,7 +672,7 @@ public class PunishInsideController {
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
-			punishInsideDao.createPunishInside(penalizeInside);
+			punishInsideDao.createPunishInside(penalizeInside,0);
 
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
@@ -652,6 +680,59 @@ public class PunishInsideController {
 		return "{\"errorCode\":1,\"error\":\"操作失败\"}";
 		}
 		
+	}
+	@RequestMapping("/exceldaorupage")
+	public String exceldaorupage(){
+		return "penalize/penalizeIn/exceldaorupage";
+	}
+	@RequestMapping("/submitPunishCreateByExcel")
+	public @ResponseBody String submitPunishCreateByExcel(
+			@RequestParam(value = "Filedata", required = false) MultipartFile file
+			) throws Exception{
+		
+		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
+		final InputStream inputStream = file.getInputStream();
+		final User user = this.getSessionUser();
+		final Long systemTime = System.currentTimeMillis();
+		String successAndFail="";
+		if (excelExtractor != null) {
+			successAndFail=PunishInsideController.this.processFile(excelExtractor, inputStream, user, systemTime);
+		} else {
+			return "{\"errorCode\":1,\"error\":\"文件格式异常\"}";
+		}
+		if (successAndFail.equals("")) {
+			return "{\"errorCode\":1,\"error\":\"导入异常\"}";
+
+		}else {
+			return "{\"errorCode\":0,\"error\":\""+successAndFail.split(",")[0]+"\",\"emaildate\":"+systemTime+",\"success\":\""+successAndFail.split(",")[1]+"\"}";
+
+		}
+	}
+	
+	private ExcelExtractor getExcelExtractor(MultipartFile file) {
+		String originalFilename = file.getOriginalFilename();
+		if (originalFilename.endsWith("xlsx")) {
+			return this.excel2007Extractor;
+		} else if (originalFilename.endsWith(".xls")) {
+			return this.excel2003Extractor;
+		}
+		return null;
+	}
+
+	protected String processFile(ExcelExtractor excelExtractor, InputStream inputStream, User user, Long systemTime) {
+		return excelExtractor.extractPenalizeIn(inputStream, user, systemTime);
+
+	}
+	@RequestMapping("/importFlagError/{id}")
+	public @ResponseBody List<PenalizeOutImportErrorRecord> importFlagError(@PathVariable("id") long importFlag, Model model) throws Exception {
+
+		List<PenalizeOutImportErrorRecord> errorRecords=this.penalizeOutImportErrorRecordDAO.getPenalizeOutImportRecordByImportFlag(importFlag);
+		return errorRecords;
+	}
+	@RequestMapping("/importFlagSuccess/{id}")
+	public @ResponseBody List<String> importFlagSuccess(@PathVariable("id") long importFlag){
+		List<String> successimport=punishInsideDao.findImportExcelSuccess(importFlag);
+		return successimport;
 	}
 }
 

@@ -25,6 +25,7 @@ import cn.explink.dao.PenalizeOutImportErrorRecordDAO;
 import cn.explink.dao.PenalizeOutImportRecordDAO;
 import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishDAO;
+import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.ServiceAreaDAO;
 import cn.explink.dao.SetExcelColumnDAO;
@@ -37,6 +38,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelColumnSet;
 import cn.explink.domain.ImportValidationManager;
+import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeOut;
 import cn.explink.domain.PenalizeOutImportRecord;
 import cn.explink.domain.PenalizeType;
@@ -48,6 +50,7 @@ import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
+import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
@@ -97,6 +100,8 @@ public abstract class ExcelExtractor {
 	PenalizeTypeDAO penalizeTypeDAO;
 	@Autowired
 	PenalizeOutDAO penalizeOutDAO;
+	@Autowired
+	PunishInsideDao punishInsideDao;
 	@Autowired
 	PenalizeOutImportErrorRecordDAO penalizeOutImportErrorRecordDAO;
 	@Autowired
@@ -820,4 +825,192 @@ public abstract class ExcelExtractor {
 		}
 		return map;
 	}
+	
+	
+	
+	/**
+	 * 对内扣罚
+	 * @param row
+	 * @param userMap
+	 * @param penalizeTypeMap
+	 * @param customerMap
+	 * @return
+	 */
+	private PenalizeInside getPenalizeInAccordingtoConf(Object row, Map<String, Integer> penalizeTypeMap, User user, long systemTime)
+			throws Exception
+	{
+		PenalizeInside out = new PenalizeInside();
+		String cwb = this.getXRowCellData(row, 1);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co == null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在！");
+			return null;
+		} else {
+			out.setCwb(cwb);
+		}
+		BigDecimal penalizeOutfee = null;
+		BigDecimal penalizeOutGoodsfee = null;
+		BigDecimal penalizeOutOtherfee = null;
+		try {
+
+			penalizeOutGoodsfee = new BigDecimal(this.getXRowCellData(row, 2));
+			if(penalizeOutGoodsfee.compareTo(new BigDecimal(0))==-1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额必须大于0.00！");
+				return null;
+			}
+			if(penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l))==1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额有误");
+				return null;
+			}
+			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额不能大于订单金额有误！");
+				return null;
+			}*/
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额有误！");
+			return null;
+		}
+		try {
+
+			penalizeOutOtherfee = new BigDecimal(this.getXRowCellData(row, 3));
+			if(penalizeOutOtherfee.compareTo(new BigDecimal(0))==-1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额必须大于0.00！");
+				return null;
+			}
+			if(penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l))==1){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额有误");
+				return null;
+			}
+			/*if(penalizeOutfee.compareTo(co.getReceivablefee())>0){
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "赔付金额不能大于订单金额有误！");
+				return null;
+			}*/
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额有误！");
+			return null;
+		}
+		out.setCreategoodpunishprice(penalizeOutGoodsfee);
+		out.setCreateqitapunishprice(penalizeOutOtherfee);
+		penalizeOutfee=penalizeOutOtherfee.add(penalizeOutGoodsfee);
+		String penalizeOutsmallText = this.getXRowCellData(row, 4);
+		int penalizeOutsmall=0;
+		try {
+			penalizeOutsmall = penalizeTypeMap.get(penalizeOutsmallText);
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "扣罚类型不存在！");
+			return null;
+		}
+		String dutybranchname = this.getXRowCellData(row, 5);
+		long branchid=0;
+		try {
+			List<Branch> branchs=branchDAO.getBranchByBranchnameCheck(dutybranchname);
+			if (branchs==null||branchs.size()==0) {
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录责任机构不存在！");
+				return null;
+			}else {
+				branchid=branchs.get(0).getBranchid();
+			}
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录责任机构不存在！");
+			return null;
+		}
+		String dutypersonname = this.getXRowCellData(row, 6);
+		long dutypersonid=0;
+		if (dutypersonname.equals("")) {
+			
+		}else {
+			try {
+				User user2=userDAO.getUserByRealname(dutypersonname);
+				if (user2==null) {
+					//this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录责任机构人不存在！");
+				}else {
+					dutypersonid=user2.getUserid();
+				}
+			} catch (Exception e) {
+				//this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录责任机构人不存在！");
+				//return null;
+			}
+		}
+		
+		PenalizeInside penalizeInside=punishInsideDao.getPenalizeInsideIsNullCheck(cwb,branchid,dutypersonid,penalizeOutsmall,penalizeOutGoodsfee,penalizeOutOtherfee);
+		if (penalizeInside != null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
+			return null;
+		}
+		out.setPunishNo("P"+System.currentTimeMillis()+"");
+		out.setSourceNo(co.getCwb());
+		out.setCwb(co.getCwb());
+		out.setCreateBySource(1);
+		out.setDutybranchid(branchid);
+		out.setDutypersonid(dutypersonid);
+		out.setCreDate(DateTimeUtil.getNowTime());
+		out.setPunishdescribe("");
+		out.setFileposition("");
+		out.setCwbstate(co.getFlowordertype());
+		out.setCwbPrice(co.getReceivablefee());
+		out.setPunishInsideprice(penalizeOutfee);
+		out.setCreateuserid(user.getUserid());
+		out.setPunishsmallsort(penalizeOutsmall);
+		out.setPunishcwbstate(PunishInsideStateEnum.daiqueren.getValue());
+		PenalizeType type = this.penalizeTypeDAO.getPenalizeTypeById(penalizeOutsmall);
+		out.setPunishbigsort(type == null ? 0 : type.getParent());
+		return out;
+	}
+	
+	
+	
+	public String extractPenalizeIn(InputStream f, User user, Long systemTime) {
+		List<PenalizeType> penalizeTypelList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
+
+		Map<String, Integer> penalizeTypeMap = this.SetMapPenalizeTypeMap(penalizeTypelList);
+
+		List<PenalizeInside> penalizeIns = new ArrayList<PenalizeInside>();
+		int successCounts=0;
+		int failCounts=0;
+		int totalCounts=0;//this.getRows(f).size();
+		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
+		for (Object row : this.getRows(f)) {
+			totalCounts++;
+			try {
+				PenalizeInside out = this.getPenalizeInAccordingtoConf(row, penalizeTypeMap, user, systemTime);
+				if (out != null) {
+					penalizeIns.add(out);
+				}
+				else{
+					failCounts++;
+				}
+			} catch (Exception e) {
+				//e.printStackTrace();
+				failCounts++;
+				ExcelExtractor.logger.info("对内扣罚导入异常：cwb={},message={}",this.getXRowCellData(row, 1),e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
+
+				// 失败订单数+1 前台显示
+
+				// 存储报错订单，以便统计错误记录和处理错误订单
+
+			}
+		}
+		for (PenalizeInside out : penalizeIns) {
+			try {
+				int nums=punishInsideDao.createPunishInside(out,systemTime);
+				successCounts+=nums;
+			} catch (Exception e) {
+				failCounts++;
+				ExcelExtractor.logger.info("对内扣罚导入异常：cwb={},message={}",out.getCwb(),e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(out.getCwb(), systemTime, "未知异常");
+
+			}
+
+		}
+
+		record.setImportFlag(systemTime);
+		record.setUserid(user.getUserid());
+		record.setTotalCounts(totalCounts);
+		record.setSuccessCounts(successCounts);
+		record.setFailCounts(failCounts);
+		this.penalizeOutImportRecordDAO.crePenalizeOutImportRecord(record);
+		return failCounts+","+successCounts;
+	}
+
 }

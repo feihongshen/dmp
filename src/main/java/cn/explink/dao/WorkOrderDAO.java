@@ -344,13 +344,13 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
 	}
 public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gongdancwb,long gongdantype,long gongdanstate,long complainresultcontent,long complainedmechanism,String begindateh,String enddateh,long tousuonesort,long tousutwosort){
-	String sql="select * from cs_complaint_accept where id>0";
+	String sql="select * from cs_complaint_accept where id>0  ";
 	StringBuilder sb = new StringBuilder();	
 	if(ncwbs.trim()!=null&&ncwbs.trim().length()>0){
 		sb.append(" and order_no in(").append(ncwbs).append(")");
 	}
 	if (!gongdancwb.equals("")) {
-		sb.append("and accept_no='"+gongdancwb+"'");
+		sb.append("  and accept_no='"+gongdancwb+"'");
 	}
 	if(gongdanstate>0){
 		sb.append(" and complaint_state="+gongdanstate);

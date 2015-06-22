@@ -76,10 +76,10 @@ function centerBox1() {
 	$("#box_contant1,.box_contant").css("top", ($see_height / 2) - ($tcbox_height / 2));
 	$("#box_contant1,.box_contant").css("left", ($see_width / 2) - ($tcbox_width / 2));
 	
-	$tcbox_height = $(".box_contant2").height();
+/*	$tcbox_height = $(".box_contant2").height();
 	$tcbox_width = $(".box_contant2").width();
 	$(".box_contant2").css("top", ($see_height / 2) - ($tcbox_height / 2));
-	$(".box_contant2").css("left", ($see_width / 2) - ($tcbox_width / 2));
+	$(".box_contant2").css("left", ($see_width / 2) - ($tcbox_width / 2));*/
 }
 // 根据滚动条滚动时间刷新漂浮框的xy轴
 function reIframeTopAndBottomXY() {
@@ -6563,14 +6563,14 @@ function alculateSumprice(selfObject,addObject,sumPrice){
 	 
          var num1 = selfdata.val();// 取得first对象的值  
          var num2 = addData.val();// 取得second对象的值  
-         var sum = sumPriceAdd(num1,num2); 
+         var sum = sumPriceAdd(num1,num2,selfdata,addData); 
 
          console.info(isNaN($(sumSP).val()));
          if(isNaN(sum)){
         	 $(selfObject).val("");
         	 var num3 = selfdata.val();
              var num4 = addData.val();
-             var sum1 = sumPriceAdd(num3,num4);
+             var sum1 = sumPriceAdd(num3,num4,selfdata,addData,sumSP);
              sumSP.val(sum1);
         	alert("亲，只能输入数字类型的噢,请重新输入！！");
          }else{
@@ -6579,19 +6579,172 @@ function alculateSumprice(selfObject,addObject,sumPrice){
          }
          
 }
-
-function sumPriceAdd(arg1,arg2){
+function changeSumhh(selfObject,addData,sumSP){
+	 $(selfObject).val("");
+	 var num3 = selfdata.val();
+     var num4 = addData.val();
+     var sum1 = sumPriceAdd(num3,num4,selfdata,addData);
+     sumSP.val(sum1);
+}
+function sumPriceAdd(arg1,arg2,selfdata,addData,sumSP){
 	 var a1,a2,m;  
      try{  
-         a1 = arg1.toString().split(".")[1].length;  
+    	 if(arg1.toString().length>14){
+    		 alert("输入的金额位数不能超过14位噢！！");
+        	 $(selfdata).val("");
+        	 arg1="";
+    	 }
+         a1 = arg1.toString().split(".")[1].length;
+         if(a1>2){
+        	 alert("输入的金额小数点后只能输入两位,请重新输入！！");
+        	 $(selfdata).val("");
+        	 arg1="";
+        	 
+         }
      }catch(e){  
          a1 = 0;  
      }  
      try{  
-         a2 = arg2.toString().split(".")[1].length;  
+    	 if(arg2.toString().length>14){
+    		 alert("输入的金额位数不能超过14位噢！！");
+        	 $(addData).val("");
+        	 arg2="";
+    	 }
+         a2 = arg2.toString().split(".")[1].length; 
+         if(a2>2){
+        	 alert("输入的金额小数点后只能输入两位,请重新输入！！");
+        	 $(addData).val("");
+        	 arg2="";
+         }
      }catch(e){  
          a2 = 0;  
      }  
      m = Math.pow(10, Math.max(a1,a2));  
      return (arg1*m+arg2*m)/m;  
+}
+//上传文件初始化上传组件
+function uploadFormInitAddhh(form, contextPath) {
+	$('#swfupload-control').swfupload({
+		upload_url : $("#" + form, parent.document).attr("action"),
+		file_size_limit : "10240",
+		file_types : "*.xls;*.xlsx",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : contextPath + "/js/swfupload/swfupload.swf",
+		button_image_url : contextPath + "/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#upbutton")[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#wavText").val(file.name);
+		$("#wavText").attr("selectedUploadFile", true);
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+		
+		/* * 进度条 var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+		 * $("#progressbar").progressbar({ value : percent });
+		 * $("#progressstatus").text(percent);*/
+		 
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		if(dataObj.errorCode==1){
+			$(".tishi_box", parent.document).html(dataObj.error);
+			$(".tishi_box", parent.document).show();
+			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		}
+		/*$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);*/
+	/*	$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);*/
+		// $("#wavText").val("");
+		if (dataObj.errorCode == 0) {
+			console.info(dataObj.success);
+			alert(dataObj.success);
+			$("#successCount111",parent.document).html(dataObj.success);
+			$("#emaildate",parent.document).val(dataObj.emaildate);
+			console.info(dataObj.error);
+			$("#failCount111",parent.document).html(dataObj.error);
+			alert(dataObj.error);
+/*			$("#errorName",parent.document).val(dataObj.emailid);
+*/			
+			alert("导入完成");
+/*			$("#appendhtmlid3",parent.document).html("dsadsaf");
+*/		}
+//		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+//		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+		// setTimeout(queryProgress, 10);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+}
+
+//excel导入
+function submitPunishCreateByExcel(form){
+	$("#importdaorubutton").attr("disabled","disabled");
+	$("#importdaorubutton").val("正在导入...");
+	$("#update")[0].contentWindow.submitPunishInsideByExcel();
+}
+function submitPunishInsideByExcel(){
+	$('#swfupload-control').swfupload('startUpload');
+}
+
+function punishExcelImport(systemflag,contextPath,appendObject){
+	if($("#emaildate").val()==""){
+		alert("当前没有导入失败的订单！！");
+		return;
+	}
+	var showhtml="";
+	$.ajax({
+		url:contextPath+"/inpunish/importFlagError/"+$("#"+systemflag).val(),
+		dataType:'json',
+		success:function (data){
+			$("#importdaorubutton").attr("disabled","disabled");
+			$("#importdaorubutton").val("正在导入...");
+			$.each(data,function (i,a){
+				showhtml+="<tr height=\"30\" onclick=\"clickonenum(this);\" bgcolor=\"#cccccc\">"+
+				"<td align=\"center\" valign=\"middle\"><strong>"+a.cwb+"</strong></td>"+
+				"<td align=\"center\" valign=\"middle\"><strong>"+a.error+"</strong></td>"+
+				+"</tr>";
+			});
+			$("#gd_table4").show();
+			$("#"+appendObject).html("");
+			$("#"+appendObject).html(showhtml);
+		}
+	});
+}
+function punishExcelImportClear(){
+	$("#gd_table4").hide();
+}
+function punishExcelImportSuccess(systemflag,contextPath,appendObject){
+	if($("#emaildate").val()==""){
+		alert("当前没有导入成功的订单！！");
+		return;
+	}
+	var showhtml="";
+	$.ajax({
+		url:contextPath+"/inpunish/importFlagSuccess/"+$("#"+systemflag).val(),
+		dataType:'json',
+		success:function (data){
+			$("#importdaorubutton").attr("disabled","disabled");
+			$("#importdaorubutton").val("正在导入...");
+			$.each(data,function (i,a){
+				showhtml+="<tr height=\"30\" onclick=\"clickonenum(this);\" bgcolor=\"#cccccc\">"+
+				"<td align=\"center\" valign=\"middle\"><strong>"+a+"</strong></td>"+
+				"<td align=\"center\" valign=\"middle\"><strong>成功</strong></td>"+
+				+"</tr>";
+			});
+			$("#gd_table4").show();
+			$("#"+appendObject).html("");
+			$("#"+appendObject).html(showhtml);
+		}
+	});
 }

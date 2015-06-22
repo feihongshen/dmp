@@ -15,6 +15,7 @@
 <%@page import="cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+	long importFlag=Long.parseLong(request.getAttribute("importFlag").toString());
 	String punishsumprice=request.getAttribute("punishsumprice")==null?"0.00":request.getAttribute("punishsumprice").toString();
 	List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
 	List<AbnormalType> abnormalTypeList = (List<AbnormalType>)request.getAttribute("abnormalTypeList");
@@ -323,13 +324,13 @@ function shensuopteration(){
 		return;
 	}
 	if(branchcount>0){
-		alert("您所选择的订单里面含有您不是责任机构当事人的订单，没有权限执行此操作！！");
+		alert("所选订单包含您不能操作的订单，没有权限执行此操作！！");
 		return;
 	}
 	console.info($("#roleid").val());
 	if(rolecount>0){
 			if($("#roleid").val()!=4&&$("#roleid").val()!=7){
-				alert("您所选择的订单里面含有您不是责任机构当事人或管理员，没有该操作权限，请重新选择订单！！");
+				alert("您不是当事人或管理员，没有该操作权限，请重新选择订单！！");
 				return;
 			}
 		
@@ -403,7 +404,18 @@ function inserexceldata(){
 		alert("当前操作只有客服有权限噢！！");
 		return;
 	}
+	
 	//执行导入操作
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/inpunish/exceldaorupage",
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
 }
 //根据工单创建对内扣罚单
 function submitPunishCreateBygongdan(form){
@@ -529,341 +541,471 @@ function getReasonValueVh(){
 	
 	});	
 }
-function closeBox1() {
-	$("#alert_box1").hide(300);
-	$("#dress_box").css("visibility", "");
-	$(".alert_box").hide(300);
-	$(".dress_box").css("visibility", "");
+
+function checkwithdiferenttype(type){
+	
+	if(type==1){
+				$("#alert_box").html(
+						'<div id="box_contant" >'+
+						'	<div id="box_top_bg"></div>'+
+						'	<div id="box_in_bg" style="width: 800px;height: 600px;overflow: auto;">'+
+						'		<h1><div id="close_box" onclick="closeBox()"></div>根据工单创建对内扣罚单</h1>'+
+						'		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/querygogdan" onsubmit="if(check_findBygongdan())revisefindWithByCreateGongdan(this,\'appendhtmlid2\');return false;">'+
+						'			<table  width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">'+
+						'				<tr>'+
+						'					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">'+
+						'						<tr class="font_1">'+
+						'							<td colspan="2" align="left" valign="top">订单号：'+
+						'							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;"/>'+
+						'							&nbsp;&nbsp;工单号：'+
+						'							<input type="text" id="gongdancwb" name="gongdancwb" class="input_text1" style="height:15px;width: 120px;"/>'+
+						'							&nbsp;&nbsp;工单类型：'+
+						'							<select id="gongdantype" name="gongdantype" class="select1">'+
+						'							<option value="0" selected="selected">请选择工单类型</option>'+
+						'							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>'+
+						'							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>'+
+						'							</select>'+
+						'							&nbsp;&nbsp;工单状态：'+
+						'							<select id="gongdanstate" name="gongdanstate" class="select1">'+
+						'							<option value="-1">全部</option>'+
+						'							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	'+
+						'							<%if(c.getValue()!=0){ %>'+
+						'							<option value="<%=c.getValue()%>"><%=c.getText()%></option>'+
+						'						<%} }%>'+
+						'							</select>						</tr>'+
+						'						<tr class="font_1">'+
+						'							<td  align="left" valign="top">被投诉机构： '+
+						'							<select  id="complainedmechanism" name="complainedmechanism" class="select1">'+
+						'							<option value="0" selected="selected">请选择责任机构</option>'+
+						'							<%if(branchList!=null){for(Branch branch:branchList){ %>'+
+						'							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>'+
+						'							<% }}%>'+
+						'						</select>'+
+						'							&nbsp;&nbsp;投诉处理结果：'+
+						'							<select id="complainresultcontent" name="complainresultcontent" class="select1">'+
+						'								<option value="-1">全部</option>'+
+						'								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>'+
+						'								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>'+
+						'								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								'+
+						'							</select>'+
+						'						'+
+						'							&nbsp;&nbsp;受理时间：'+
+						'									<input type ="text" name ="begindateh" id="gongdanshoulibegintime"  value="<%=request.getParameter("begindateh")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:15px;width: 120px;"/>'+
+						'									到'+
+						'									<input type ="text" name ="enddateh" id="gongdanshouliendtime"  value="<%=request.getParameter("enddateh")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:15px;width: 120px;"/>'+
+						'						</td>'+
+						'						</tr>'+
+						'						<tr  class="font_1">'+
+						'						<td align="left" valign="top">'+
+						'						投诉一级分类:'+
+						'						<select id="tousuonesort" name="tousuonesort" class="select1" onchange="getReasonValueVh()">'+
+						'							<option value="-1">全部</option>'+
+						'								<%if(r!=null){%>'+
+						'								<%for(Reason reason:r){ %>'+
+						'								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>'+
+						'								<%} }%>'+
+						'						</select>'+
+						'						&nbsp;&nbsp;投诉二级分类:'+
+						'						<select id="tousutwosort" name="tousutwosort" class="select1">'+
+						'							<option value="0">==请选择投诉二级分类==</option>'+
+						'						</select>'+
+						'						</td>'+
+						'						</tr>'+
+						'						<tr class="font_1">'+
+						'						<td align="left" valign="top">'+
+						'							<input type="submit"   value="查询" class="input_button2"/>'+
+						'							<input type="reset"    value="重置" class="input_button2" >'+
+						'						</td>'+
+						'						</tr>'+
+						'			</table>'+
+						'			</td>'+
+						'			</tr>'+
+						'			</table>'+
+						'			</form>'+
+						'			<tr class="font_1">'+
+						'				<td  align="left" valign="top">'+
+						'				 <div class="right_title">'+
+						'        	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table4">'+
+						'        		<tbody>'+
+						'        			<tr class="font_1" height="30">'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单号</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单类型</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单状态</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">来电号码</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">被投诉机构</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单受理人</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">受理事时间</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉一级分类</td>'+
+						'        				'+
+						'        				'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉二级分类</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉处理结果</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>'+
+						'        				<td align="center" valign="middle" bgcolor="#E7F4E3">催件次数</td>'+
+						'        				</tr>'+
+						'                        </tbody>'+
+						'                         <tbody  id="appendhtmlid2" style="width: 100px;height:100px; ">'+
+						'                        </tbody>'+
+						'                    </table>'+
+						'            </div>'+
+						'				</td>'+
+						'						</tr>'+
+						'		<form method="post" id="form3" onSubmit="if(check_createbygongdan()){submitPunishCreateBygongdan(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBygongdanLoadfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">'+
+						'			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">'+
+						'				<tr>'+
+						'					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">'+
+						'						<tr class="font_1">'+
+						'							<td align="left" valign="top">'+
+						'							扣罚大类：<font color="red">*</font>'+
+						'							<select id="punishbigsort2" name="punishbigsort2" class="select1" onchange="findsmallAdd(\'<%=request.getContextPath() %>\',this,\'punishsmallsort1\');">'+
+						'								<option value="0">请选择扣罚大类</option>'+
+						'								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>'+
+						'								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>'+
+						'								<%}} %>'+
+						'							</select>'+
+						'							&nbsp;&nbsp;扣罚小类：'+
+						'							<select id="punishsmallsort2" name="punishsmallsort2" class="select1" onchange="findbigAdd(this,\'punishbigsort1\');">'+
+						'								<option value="0">请选择扣罚小类</option>'+
+						'								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>'+
+						'								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>'+
+						'								<%}} %>'+
+						'							</select>'+
+						'							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid2" name="dutybranchid2" class="select1" onchange="selectbranchUsers(\'dutypersoname2\',\'dutybranchid2\');">'+
+						'							<option value="0" selected="selected">请选择责任机构</option>'+
+						'							<%if(branchList!=null){for(Branch branch:branchList){ %>'+
+						'							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>'+
+						'							<% }}%>'+
+						'						</select>'+
+						'						&nbsp;&nbsp;责任人:<!-- <input type="text" id="dutypersoname2" name="dutypersoname2" class="input_text1" style="height:15px;width: 120px;"/> -->'+
+						'							<select id="dutypersoname2" name="dutypersoname2" class="select1" >'+
+						'							<option value =\'0\' selected="selected">请选择机构责任人</option>'+
+						'							</select>'+
+						'							</td>'+
+						'						'+
+						'						</tr >'+
+						'						<tr class="font_1">'+
+						'						<td align="left" valign="top">'+
+						'						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice2" name="cwbgoodprice2" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,\'cwbqitaprice2\',\'punishprice2\');"/>'+
+						'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice2" name="cwbqitaprice2" onkeyup="alculateSumprice(this,\'cwbgoodprice2\',\'punishprice2\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
+						'						&nbsp;&nbsp;总扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;" readonly="readonly"/>'+
+						'						</td>'+
+						'						</tr>'+
+						'						 <tr class="font_1">'+
+						'							<td  align="left" valign="top"> '+
+						'						上传附件：'+
+						'						<label for="fileField"></label>'+
+						'						<span id="swfupload-control1"><input type="text" id="txtFileName1" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button1" /></span>*							</td>'+
+						'						</tr>  '+
+						'						 <tr class="font_1">'+
+						'							<td  align="left" valign="top"> '+
+						'							扣罚说明：<textarea name="describe2" id="describe2" cols="40" rows="4"  onfocus="if(this.value == \'最多100个字\') this.value = \'\'" onblur="if(this.value == \'\') this.value = \'最多100个字\'">最多100个字</textarea>'+
+						'							</td>'+
+						'						</tr>  '+
+						'					</table>'+
+						'					'+
+						'					</td>'+
+						'				</tr>'+
+						'			</table>'+
+						'			<input type="hidden" id="type2" name="type2" value="2"/>'+
+						'			<input type="hidden" id="availablecwb2" name="availablecwb2" value=""/>'+
+						'			<input type="hidden" id="cwbhhh2" name="cwbhhh2" value=""/>'+
+						'			<div align="center">'+
+						'				<input type="submit" value="提交" class="button">'+
+						'				<input type="button" onclick="closeBox()"  value="取消" class="button">'+
+						'			</div>'+
+						'		</form>'+
+						'	</div>'+
+						'</div>'		
+				
+				);
+	}
+	if(type==2){
+		$("#alert_box").html(
+				'<div id="box_contant" >'+
+				'	<div id="box_top_bg"></div>'+
+				'	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 600px;">'+
+				'		<h1><div id="close_box" onclick="closeBox()"></div>根据问题件创建对内扣罚单</h1>'+
+				'		<form method="post" id="wentiform"  action="<%=request.getContextPath()%>/inpunish/createinpunishbyQuestNo" onsubmit="if(check_revisefindWithByCreateQuestionNo())createinpunishbyQuestNo(this,\'appendhtmlid3\');return false;">'+
+				'			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">'+
+				'				<tr>'+
+				'					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">'+
+				'						<tr class="font_1">'+
+				'							<td colspan="1" align="left" valign="top">订单号：'+
+				'							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;"/>'+
+				'							&nbsp;&nbsp;问题件单号：'+
+				'							<input type="text" id="wenticwb" name="wenticwb" class="input_text1" style="height:15px;width: 120px;"/>'+
+				'							&nbsp;&nbsp;问题件类型：'+
+				'							<select id="wentitype" name="wentitype" class="select1">'+
+				'							<option value="0" selected="selected">请选择问题件类型</option>'+
+				'										<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>'+
+				'										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>'+
+				'										<%} %>'+
+				'							</select>'+
+				'							&nbsp;&nbsp;处理状态：'+
+				'							<select id="wentistate" name="wentistate" class="select1">'+
+				'									<option value="0">请选择处理状态</option>'+
+				'									<option value="<%=AbnormalOrderHandleEnum.weichuli.getValue()%>"><%=AbnormalOrderHandleEnum.weichuli.getText() %></option>'+
+				'										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>'+
+				'										<option value="<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>"><%=AbnormalOrderHandleEnum.jieanchuli.getText() %></option>'+
+				'							</select>						'+
+				'							</tr>'+
+				'						<tr class="font_1">'+
+				'							<td  align="left" valign="top">'+
+				'							&nbsp;&nbsp;创建时间：'+
+				'									<input type ="text" name ="wentibegindateh" id="wenticjbegintime"  value="<%=request.getParameter("begindateh")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:15px;width: 120px;"/>'+
+				'									到'+
+				'									<input type ="text" name ="wentienddateh" id="wenticjendtime"  value="<%=request.getParameter("enddateh")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:15px;width: 120px;"/>'+
+				'						</td>'+
+				'						</tr>'+
+				'						<tr class="font_1">'+
+				'						<td align="left" valign="top">'+
+				'							<input type="submit"   value="查询" class="input_button2"/>'+
+				'							<input type="reset"    value="重置" class="input_button2" >'+
+				'<!-- 							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >'+
+				' -->						</td>'+
+				'						</tr>'+
+				'			</table>'+
+				'			</td>'+
+				'			</tr>'+
+				'			</table>'+
+				'			</form>'+
+				'			<tr class="font_1">'+
+				'				<td  align="left" valign="top">'+
+				'				 <div class="right_title">'+
+				'        	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table4">'+
+				'        		<tbody >'+
+				'        			<tr class="font_1" height="30">'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">问题件单号</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">创建人</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">创建时间</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">处理状态</td>'+
+				'        				'+
+				'        				'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">处理结果</td>'+
+				'        				<td align="center" valign="middle" bgcolor="#E7F4E3">丢失找回</td>'+
+				'        				</tr>'+
+				'                        </tbody>'+
+				'                        <tbody  id="appendhtmlid3" style="width: 100px;height:100px; ">'+
+				'                        </tbody>'+
+				'                        '+
+				'                    </table>'+
+				'            </div>'+
+				'				</td>'+
+				'						</tr>'+
+				'		<form method="post" id="form2" onSubmit="if(check_createbywentijian()){submitPunishCreateBywentijian(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBywentijianfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">'+
+				'			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">'+
+				'				<tr>'+
+				'					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">'+
+				'						<tr class="font_1">'+
+				'							<td align="left" valign="top">'+
+				'							扣罚大类<font color="red">*</font>：'+
+				'							<select id="punishbigsort3" name="punishbigsort3" class="select1" onchange="findbigAdd(this,\'punishbigsort2\');">'+
+				'								<option value="0">==请选择扣罚大类==</option>'+
+				'								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>'+
+				'								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>'+
+				'								<%}} %>'+
+				'							</select>'+
+				'							&nbsp;&nbsp;扣罚小类：'+
+				'							<select id="punishsmallsort3" name="punishsmallsort3" class="select1" onchange="findbigAdd(this,\'punishbigsort2\');">'+
+				'								<option value="0">==请选择扣罚小类==</option>'+
+				'								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>'+
+				'								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>'+
+				'								<%}} %>'+
+				'							</select>'+
+				'							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid3" name="dutybranchid3" class="select1" onchange="selectbranchUsers(\'dutypersoname3\',\'dutybranchid3\');">'+
+				'							<option value="0" selected="selected">请选择责任机构</option>'+
+				'							<%if(branchList!=null){for(Branch branch:branchList){ %>'+
+				'							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>'+
+				'							<% }}%>'+
+				'						</select>'+
+				'						&nbsp;&nbsp;责任人:'+
+				'							<select id="dutypersoname3" name="dutypersoname3" class="select1" >'+
+				'							<option value =\'0\' selected="selected">请选择机构责任人</option>'+
+				'							</select>'+
+				'						'+
+				'							</td>'+
+				'						'+
+				'						</tr >'+
+				'						<tr class="font_1">'+
+				'						<td align="left" valign="top">'+
+				'							货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice3" name="cwbgoodprice3" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,\'cwbqitaprice3\',\'punishprice3\');"/>'+
+				'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice3" name="cwbqitaprice3" onkeyup="alculateSumprice(this,\'cwbgoodprice3\',\'punishprice3\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
+				'							'+
+				'						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice3" name="punishprice3" class="input_text1" style="height:15px;width: 120px;" readonly="readonly"/>'+
+				'						'+
+				'						</td>'+
+				'						</tr>'+
+				'						 <tr class="font_1">'+
+				'							<td  align="left" valign="top"> '+
+				'							上传附件：'+
+				'						<label for="fileField"></label>'+
+				'						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*							</td>'+
+				'						</tr>  '+
+				'						 <tr class="font_1">'+
+				'							<td  align="left" valign="top"> '+
+				'							扣罚说明：<textarea name="describe3" id="describe3" cols="40" rows="4"  onfocus="if(this.value == \'最多100个字\') this.value = \'\'" onblur="if(this.value == \'\') this.value = \'最多100个字\'">最多100个字</textarea>'+
+				'							</td>'+
+				'						</tr>  '+
+				'					</table>'+
+				'					'+
+				'					</td>'+
+				'				</tr>'+
+				'			</table>'+
+				'			<input type="hidden" id="type1" name="type1" value="3"/>'+
+				'			<input type="hidden" id="availablecwb3" name="availablecwb3" value=""/>'+
+				'			<input type="hidden" id="cwbhhh3" name="cwbhhh3" value=""/>'+
+				'			<div align="center">'+
+				'				<input type="submit" value="提交" class="button">'+
+				'				<input type="button" onclick="closeBox()"  value="取消" class="button">'+
+				'			</div>'+
+				'		</form>'+
+				'	</div>'+
+				'</div>'	
+		);
+	}
+	$("#appendhtmlid2").html("");
+	$("#wenticjbegintime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#wenticjendtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#gongdanshoulibegintime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#gongdanshouliendtime").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	//上传附件使用
+	$('#swfupload-control').swfupload({
+		upload_url : $("#form2").attr("action"),
+		file_size_limit : "10240",
+		file_types : "*.img;*.txt",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : "<%=request.getContextPath()%>/js/swfupload/swfupload.swf",
+		button_image_url :"<%=request.getContextPath()%>/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#button")[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#txtFileName").val(file.name);
+		file_id = $('#swfupload-control');
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$("#punishbigsort3").val(0);
+		$("#punishsmallsort3").val(0);
+		$("#dutybranchid3").val(0);
+		$("#dutypersoname3").val(0);
+		$("#punishprice3").val("");
+		$("#txtFileName").val("");
+		$("#describe3").val("最多100个字");
+		$("#cwbgoodprice3").val("");
+		$("#cwbqitaprice3").val("0.00");
+		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+	
+	//上传附件使用
+	$('#swfupload-control1').swfupload({
+		upload_url : $("#form3").attr("action"),
+		file_size_limit : "10240",
+		file_types : "*.img;*.txt",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : "<%=request.getContextPath()%>/js/swfupload/swfupload.swf",
+		button_image_url :"<%=request.getContextPath()%>/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#button1")[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#txtFileName1").val(file.name);
+		file_id = $('#swfupload-control1');
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		$("#punishbigsort2").val(0);
+		$("#punishsmallsort2").val(0);
+		$("#dutybranchid2").val(0);
+		$("#dutypersoname2").val(0);
+		$("#punishprice2").val("");
+		$("#txtFileName1").val("");
+		$("#describe2").val("最多100个字");
+		$("#cwbgoodprice2").val("");
+		$("#cwbqitaprice2").val("0.00");
+		$(form)[0].reset();
+		$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+		$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+
+	$("#alert_box").show();
+	centerBox();
+	
 }
+
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
+		<div id="alert_box" style="display:none; " align="center" >
+		</div>
 
-	<!-- 2弹出框开始 -->
-	<div id="alert_box1" style="display:none; " align="center" tip="1">
-	<div id="box_contant1" >
-	<div id="box_top_bg"></div>
-	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 600px;">
-		<h1><div id="close_box" onclick="closeBox1()"></div>根据问题件创建对内扣罚单</h1>
-		<form method="post" id="wentiform"  action="<%=request.getContextPath()%>/inpunish/createinpunishbyQuestNo" onsubmit="if(check_revisefindWithByCreateQuestionNo())createinpunishbyQuestNo(this,'appendhtmlid3');return false;">
-			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
-				<tr>
-					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
-						<tr class="font_1">
-							<td colspan="1" align="left" valign="top">订单号：
-							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;"/>
-							&nbsp;&nbsp;问题件单号：
-							<input type="text" id="wenticwb" name="wenticwb" class="input_text1" style="height:15px;width: 120px;"/>
-							&nbsp;&nbsp;问题件类型：
-							<select id="wentitype" name="wentitype" class="select1">
-							<option value="0" selected="selected">请选择问题件类型</option>
-										<%if(abnormalTypeList!=null||abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
-										<option title="<%=at.getName() %>" value="<%=at.getId()%>"><%if(at.getName().length()>25){%><%=at.getName().substring(0,25)%><%}else{%><%=at.getName() %><%} %></option>
-										<%} %>
-							</select>
-							&nbsp;&nbsp;处理状态：
-							<select id="wentistate" name="wentistate" class="select1">
-									<option value="0">请选择处理状态</option>
-									<option value="<%=AbnormalOrderHandleEnum.weichuli.getValue()%>"><%=AbnormalOrderHandleEnum.weichuli.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.chulizhong.getValue()%>"><%=AbnormalOrderHandleEnum.chulizhong.getText() %></option>
-										<option value="<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>"><%=AbnormalOrderHandleEnum.jieanchuli.getText() %></option>
-							</select>						
-							</tr>
-						<tr class="font_1">
-							<td  align="left" valign="top">
-							&nbsp;&nbsp;创建时间：
-									<input type ="text" name ="wentibegindateh" id="wenticjbegintime"  value="<%=request.getParameter("begindateh")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:15px;width: 120px;"/>
-									到
-									<input type ="text" name ="wentienddateh" id="wenticjendtime"  value="<%=request.getParameter("enddateh")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:15px;width: 120px;"/>
-						</td>
-						</tr>
-						<tr class="font_1">
-						<td align="left" valign="top">
-							<input type="submit"   value="查询" class="input_button2"/>
-							<input type="reset"    value="重置" class="input_button2" >
-<!-- 							<input type="button" onclick="checkCreateGongdan();"   value="选中的值" class="input_button2" >
- -->						</td>
-						</tr>
-			</table>
-			</td>
-			</tr>
-			</table>
-			</form>
-			<tr class="font_1">
-				<td  align="left" valign="top">
-				 <div class="right_title">
-        	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table4">
-        		<tbody >
-        			<tr class="font_1" height="30">
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">问题件单号</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">创建人</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">创建时间</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">处理状态</td>
-        				
-        				
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">处理结果</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">丢失找回</td>
-        				</tr>
-                        </tbody>
-                        <tbody  id="appendhtmlid3" style="width: 100px;height:100px; ">
-                        </tbody>
-                        
-                    </table>
-            </div>
-				</td>
-						</tr>
-		<form method="post" id="form2" onSubmit="if(check_createbywentijian()){submitPunishCreateBywentijian(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBywentijianfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">
-			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
-				<tr>
-					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
-						<tr class="font_1">
-							<td align="left" valign="top">
-							扣罚大类<font color="red">*</font>：
-							<select id="punishbigsort3" name="punishbigsort3" class="select1" onchange="findbigAdd(this,'punishbigsort2');">
-								<option value="0">==请选择扣罚大类==</option>
-								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>
-								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>
-								<%}} %>
-							</select>
-							&nbsp;&nbsp;扣罚小类：
-							<select id="punishsmallsort3" name="punishsmallsort3" class="select1" onchange="findbigAdd(this,'punishbigsort2');">
-								<option value="0">==请选择扣罚小类==</option>
-								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>
-								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>
-								<%}} %>
-							</select>
-							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid3" name="dutybranchid3" class="select1" onchange="selectbranchUsers('dutypersoname3','dutybranchid3');">
-							<option value="0" selected="selected">请选择责任机构</option>
-							<%if(branchList!=null){for(Branch branch:branchList){ %>
-							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
-							<% }}%>
-						</select>
-						&nbsp;&nbsp;责任人:
-							<select id="dutypersoname3" name="dutypersoname3" class="select1" >
-							<option value ='0' selected="selected">请选择机构责任人</option>
-							</select>
-						
-							</td>
-						
-						</tr >
-						<tr class="font_1">
-						<td align="left" valign="top">
-							货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice3" name="cwbgoodprice3" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'cwbqitaprice3','punishprice3');"/>
-						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice3" name="cwbqitaprice3" onkeyup="alculateSumprice(this,'cwbgoodprice3','punishprice3');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
-							
-						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice3" name="punishprice3" class="input_text1" style="height:15px;width: 120px;"/>
-						
-						</td>
-						</tr>
-						 <tr class="font_1">
-							<td  align="left" valign="top"> 
-							上传附件：
-						<label for="fileField"></label>
-						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*							</td>
-						</tr>  
-						 <tr class="font_1">
-							<td  align="left" valign="top"> 
-							扣罚说明：<textarea name="describe3" id="describe3" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
-							</td>
-						</tr>  
-					</table>
-					
-					</td>
-				</tr>
-			</table>
-			<input type="hidden" id="type1" name="type1" value="3"/>
-			<input type="hidden" id="availablecwb3" name="availablecwb3" value=""/>
-			<input type="hidden" id="cwbhhh3" name="cwbhhh3" value=""/>
-			<div align="center">
-				<input type="submit" value="提交" class="button">
-				<input type="button" onclick="closeBox1()"  value="取消" class="button">
-			</div>
-		</form>
-	</div>
-</div>
-</div>
-	<!-- 2弹出框结束 --> 
-<!-- 弹出框开始 -->
-	<div id="alert_box" style="display:none; " align="center" tip="2">
-	<div id="box_contant" >
-	<div id="box_top_bg"></div>
-	<div id="box_in_bg" style="width: 800px;height: 600px;overflow: auto;">
-		<h1><div id="close_box" onclick="closeBox()"></div>根据工单创建对内扣罚单</h1>
-		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/querygogdan" onsubmit="if(check_findBygongdan())revisefindWithByCreateGongdan(this,'appendhtmlid2');return false;">
-			<table  width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
-				<tr>
-					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
-						<tr class="font_1">
-							<td colspan="2" align="left" valign="top">订单号：
-							<input type="text" id="cwb" name="cwb" class="input_text1" style="height:15px;width: 120px;"/>
-							&nbsp;&nbsp;工单号：
-							<input type="text" id="gongdancwb" name="gongdancwb" class="input_text1" style="height:15px;width: 120px;"/>
-							&nbsp;&nbsp;工单类型：
-							<select id="gongdantype" name="gongdantype" class="select1">
-							<option value="0" selected="selected">请选择工单类型</option>
-							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>
-							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>
-							</select>
-							&nbsp;&nbsp;工单状态：
-							<select id="gongdanstate" name="gongdanstate" class="select1">
-							<option value="-1">全部</option>
-							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	
-							<%if(c.getValue()!=0){ %>
-							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
-						<%} }%>
-							</select>						</tr>
-						<tr class="font_1">
-							<td  align="left" valign="top">被投诉机构： 
-							<select  id="complainedmechanism" name="complainedmechanism" class="select1">
-							<option value="0" selected="selected">请选择责任机构</option>
-							<%if(branchList!=null){for(Branch branch:branchList){ %>
-							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
-							<% }}%>
-						</select>
-							&nbsp;&nbsp;投诉处理结果：
-							<select id="complainresultcontent" name="complainresultcontent" class="select1">
-								<option value="-1">全部</option>
-								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
-								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
-								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								
-							</select>
-						
-							&nbsp;&nbsp;受理时间：
-									<input type ="text" name ="begindateh" id="gongdanshoulibegintime"  value="<%=request.getParameter("begindateh")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:15px;width: 120px;"/>
-									到
-									<input type ="text" name ="enddateh" id="gongdanshouliendtime"  value="<%=request.getParameter("enddateh")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:15px;width: 120px;"/>
-						</td>
-						</tr>
-						<tr  class="font_1">
-						<td align="left" valign="top">
-						投诉一级分类:
-						<select id="tousuonesort" name="tousuonesort" class="select1" onchange="getReasonValueVh()">
-							<option value="-1">全部</option>
-								<%if(r!=null){%>
-								<%for(Reason reason:r){ %>
-								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
-								<%} }%>
-						</select>
-						&nbsp;&nbsp;投诉二级分类:
-						<select id="tousutwosort" name="tousutwosort" class="select1">
-							<option value="0">==请选择投诉二级分类==</option>
-						</select>
-						</td>
-						</tr>
-						<tr class="font_1">
-						<td align="left" valign="top">
-							<input type="submit"   value="查询" class="input_button2"/>
-							<input type="reset"    value="重置" class="input_button2" >
-						</td>
-						</tr>
-			</table>
-			</td>
-			</tr>
-			</table>
-			</form>
-			<tr class="font_1">
-				<td  align="left" valign="top">
-				 <div class="right_title">
-        	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table4">
-        		<tbody>
-        			<tr class="font_1" height="30">
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单号</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单类型</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单状态</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">来电号码</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">被投诉机构</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">工单受理人</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">受理事时间</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉一级分类</td>
-        				
-        				
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉二级分类</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">投诉处理结果</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-        				<td align="center" valign="middle" bgcolor="#E7F4E3">催件次数</td>
-        				</tr>
-                        </tbody>
-                         <tbody  id="appendhtmlid2" style="width: 100px;height:100px; ">
-                        </tbody>
-                    </table>
-            </div>
-				</td>
-						</tr>
-		<form method="post" id="form3" onSubmit="if(check_createbygongdan()){submitPunishCreateBygongdan(this);}return false;" action="<%=request.getContextPath()%>/inpunish/submitPunishCreateBygongdanLoadfile;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">
-			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
-				<tr>
-					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
-						<tr class="font_1">
-							<td align="left" valign="top">
-							扣罚大类：<font color="red">*</font>
-							<select id="punishbigsort2" name="punishbigsort2" class="select1" onchange="findsmallAdd('<%=request.getContextPath() %>',this,'punishsmallsort1');">
-								<option value="0">请选择扣罚大类</option>
-								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>
-								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>
-								<%}} %>
-							</select>
-							&nbsp;&nbsp;扣罚小类：
-							<select id="punishsmallsort2" name="punishsmallsort2" class="select1" onchange="findbigAdd(this,'punishbigsort1');">
-								<option value="0">请选择扣罚小类</option>
-								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>
-								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>
-								<%}} %>
-							</select>
-							&nbsp;&nbsp;责任机构<font color="red">*</font>:<select  id="dutybranchid2" name="dutybranchid2" class="select1" onchange="selectbranchUsers('dutypersoname2','dutybranchid2');">
-							<option value="0" selected="selected">请选择责任机构</option>
-							<%if(branchList!=null){for(Branch branch:branchList){ %>
-							<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
-							<% }}%>
-						</select>
-						&nbsp;&nbsp;责任人:<!-- <input type="text" id="dutypersoname2" name="dutypersoname2" class="input_text1" style="height:15px;width: 120px;"/> -->
-							<select id="dutypersoname2" name="dutypersoname2" class="select1" >
-							<option value ='0' selected="selected">请选择机构责任人</option>
-							</select>
-							</td>
-						
-						</tr >
-						<tr class="font_1">
-						<td align="left" valign="top">
-						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice2" name="cwbgoodprice2" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'cwbqitaprice2','punishprice2');"/>
-						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice2" name="cwbqitaprice2" onkeyup="alculateSumprice(this,'cwbgoodprice2','punishprice2');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
-						&nbsp;&nbsp;总扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;"/>
-						</td>
-						</tr>
-						 <tr class="font_1">
-							<td  align="left" valign="top"> 
-						上传附件：
-						<label for="fileField"></label>
-						<span id="swfupload-control1"><input type="text" id="txtFileName1" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button1" /></span>*							</td>
-						</tr>  
-						 <tr class="font_1">
-							<td  align="left" valign="top"> 
-							扣罚说明：<textarea name="describe2" id="describe2" cols="40" rows="4"  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'">最多100个字</textarea>
-							</td>
-						</tr>  
-					</table>
-					
-					</td>
-				</tr>
-			</table>
-			<input type="hidden" id="type2" name="type2" value="2"/>
-			<input type="hidden" id="availablecwb2" name="availablecwb2" value=""/>
-			<input type="hidden" id="cwbhhh2" name="cwbhhh2" value=""/>
-			<div align="center">
-				<input type="submit" value="提交" class="button">
-				<input type="button" onclick="closeBox()"  value="取消" class="button">
-			</div>
-		</form>
-	</div>
-</div>
-</div>
-	<!-- 弹出框结束 -->
-	
+
 	
 <div class="right_box">
 	<div style="background:#FFF">
@@ -944,12 +1086,12 @@ function closeBox1() {
 									<tr>
 									<td align="left">
 									<input type="button"   onclick="createinpunishbycwb()" value="根据订单创建" class="input_button1"/>
-									<input type="button"  onclick="createinpunishbygogdan()" value="根据工单创建" class="input_button1"/>
+									<input type="button"  onclick="checkwithdiferenttype(1)" value="根据工单创建" class="input_button1"/>
 									</td>
 									<td>
-									<input type="button"  onclick="createinpunishbyquestionno()" value="根据问题件创建" class="input_button1"/>
+									<input type="button"  onclick="checkwithdiferenttype(2)" value="根据问题件创建" class="input_button1"/>
 									<input type="button"  onclick="createbyshixiaokaohe()" value="根据时效考核" class="input_button1"/>
-									<input type="button"  onclick="inserexceldata()" value="导入生成扣罚单" class="input_button1"/>
+									<input type="button" id="excelimport" onclick="inserexceldata()" value="导入生成扣罚单" class="input_button1"/>
 									</td>
 									<td>
 <!-- 									<input type="button"  onclick="shenheopteration()" value="审核" class="input_button2"/>
@@ -961,7 +1103,8 @@ function closeBox1() {
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(penalizeInsides.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
 									</td>
 								</tr>
-								
+								<tr>
+								</tr>
 								</table>
 								<input type="hidden" name="getbranchusers" id="getbranchusers" value="<%=url %>">
 							</form>

@@ -392,7 +392,7 @@ public class PenalizeOutController {
 					return "{\"errorCode\":1,\"error\":\"对内扣罚创建失败！ 对内扣罚已经创建\"}";
 				} else {
 
-					this.punishInsideDao.createPunishInside(penalizeInside);
+					this.punishInsideDao.createPunishInside(penalizeInside,0);
 					return "{\"errorCode\":0,\"error\":\"创建对内扣罚成功！\"}";
 				}
 			} catch (Exception e) {

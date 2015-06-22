@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeInsideShenhe;
+import cn.explink.domain.PenalizeOut;
 import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 
@@ -22,6 +24,15 @@ public class PunishInsideDao {
 	
 	@Autowired
 	PunishInsideService punishInsideService;
+	private final class  Cwbrowmapper implements RowMapper<String>{
+
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String cwbString=rs.getString("cwb");
+			return cwbString;
+		}
+		
+	}
 	private final class PenalizeInsideRowMapper implements RowMapper<PenalizeInside>{
 		@Override
 		public PenalizeInside mapRow(ResultSet rs, int rowNum)
@@ -70,8 +81,8 @@ public class PunishInsideDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	//根据订单号创建对内扣罚单
-	public void createPunishInside(final PenalizeInside penalizeInside){
-		this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition,creategoodpunishprice,createqitapunishprice) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+	public int createPunishInside(final PenalizeInside penalizeInside,final long importFlag){
+		return this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition,creategoodpunishprice,createqitapunishprice,importFlag) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				// TODO Auto-generated method stub
@@ -93,10 +104,12 @@ public class PunishInsideDao {
 				ps.setString(16, penalizeInside.getFileposition());
 				ps.setBigDecimal(17, penalizeInside.getCreategoodpunishprice());
 				ps.setBigDecimal(18, penalizeInside.getCreateqitapunishprice());
+				ps.setLong(19, importFlag);
 
 			}
 		});
 	}
+	
 	//查询所有的对内扣罚单
 	public List<PenalizeInside> getAllPunishInside(){
 		String sql="select * from express_ops_punishInside_detail";
@@ -186,6 +199,15 @@ public class PunishInsideDao {
 		}
 		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
 
+	}
+	public PenalizeInside getPenalizeInsideIsNullCheck(String cwb,long dutybranchid,long personid,long punishsmallsort,BigDecimal goodsprice,BigDecimal otherPrice){
+		try {
+			String sql="select * from express_ops_punishInside_detail where cwb=? and dutybranchid=? and dutypersonid=? and punishsmallsort=? and creategoodpunishprice=? and createqitapunishprice=? ";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), cwb,dutybranchid,personid,punishsmallsort,goodsprice,otherPrice);
+		} catch (DataAccessException e) {
+			return null;
+		}
+		
 	}
 	public PenalizeInside getInsidebycwb(String cwb){
 		try {
@@ -278,5 +300,9 @@ public class PunishInsideDao {
 			// TODO Auto-generated catch block
 			return null;
 		}
+	}
+	public List<String> findImportExcelSuccess(long importflag){
+		String sql="select cwb from express_ops_punishInside_detail where importFlag=?";
+		return this.jdbcTemplate.query(sql, new Cwbrowmapper(),importflag);
 	}
 }

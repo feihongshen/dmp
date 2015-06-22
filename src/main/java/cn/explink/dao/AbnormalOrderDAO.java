@@ -20,6 +20,7 @@ import cn.explink.b2c.lefeng.result;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.Function;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -1015,6 +1016,14 @@ public class AbnormalOrderDAO {
 			return null;
 		}
 		
+	}
+	public void updateWentijianIsFine(String punishNo,long state){
+		try {
+			String sqlString="update express_ops_abnormal_order set isfine=? where questionno=?";
+			this.jdbcTemplate.update(sqlString,state,punishNo);
+		} catch (DataAccessException e) {
+			
+		}
 	}
 	
 }

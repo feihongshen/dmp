@@ -100,7 +100,7 @@ String id=request.getAttribute("id").toString();
 						</td></tr>
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">
-							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1"/>
+							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1" readonly="readonly"  style="height:15px;width: 120px;"/>
 							</td>
 						</tr>
 						<tr class="font_1">
