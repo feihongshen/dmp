@@ -50,7 +50,7 @@ function getReasonValueV(){
 		url:"<%=request.getContextPath()%>/workorder/getTwoValueByOneReason",
 		dataType:'json',
 		success:function(data){
-			var Str = "<option value='-1'>全部</option>";
+			var Str = "<option value="-1">全部</option>";
 			$.each(data,function(ind,ele){
 				var dataTrStr = "<option value='" + ele.reasonid + "'>" + ele.reasoncontent+ "</option>";
 				Str+=dataTrStr;
@@ -363,7 +363,7 @@ function CurentTime()   //计算当天时间
 					<td>
 							
 				受理人:		<select class="select1" name="handleUser">
-							<option value="-1">全部</option>
+							<option value="">全部</option>
 							<%if(lcsa!=null){ %>
 							<%for(CsComplaintAccept c:lcsa) {%>
 							<option value="<%=c.getHandleUser() %>"><%=c.getHandleUser() %></option>

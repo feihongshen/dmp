@@ -309,10 +309,10 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		String sql="select * from cs_complaint_accept where id>0";
 		StringBuilder sb = new StringBuilder();	
 		if(cwbs.trim()!=null&&cwbs.trim().length()>0){
-			sb.append(" and order_no in(").append(cwbs).append(")");
+			sb.append(" and order_no in("+cwbs+")");
 		}
 		
-		if(cv.getComplaintState()>-1){
+		if(cv.getComplaintState()!=-1){
 			sb.append(" and complaint_state="+cv.getComplaintState());
 		}
 		if(cv.getComplaintType()!=-1){
@@ -329,10 +329,10 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		if(cv.getIfpunish()!=-1){
 			sb.append(" and ifpunish="+cv.getIfpunish());
 		}
-		if(cv.getHandleUser()!=null&&cv.getHandleUser().length()>0){
+		if(cv.getHandleUser()!=""&&cv.getHandleUser().length()>0){
 			sb.append(" and handle_user='"+cv.getHandleUser()+"'");
 		}
-		if(cv.getComplaintTwoLevel()>-1){
+		if(cv.getComplaintTwoLevel()>0){
 			sb.append(" and complaint_two_level="+cv.getComplaintTwoLevel());	
 		}
 		if(cv.getBeginRangeTime()!=null&&cv.getBeginRangeTime().length()>0&&cv.getEndRangeTime()!=null&&cv.getEndRangeTime().length()>0){
@@ -340,7 +340,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		}
 		
 		sql+=sb.toString();
-		
+		System.out.println(sql);
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
 	}
 public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gongdancwb,long gongdantype,long gongdanstate,long complainresultcontent,long complainedmechanism,String begindateh,String enddateh,long tousuonesort,long tousutwosort){
