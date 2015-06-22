@@ -463,6 +463,8 @@ function CurentTime()   //计算当天时间
 					<label>否</label>
 					<%}else if(c.getIfpunish()==2){ %>		
 					<label>是</label>
+					<%}else{ %>
+					<label></label>
 					<%} %>			
 				</td>
 				<td><%=customernameList.get(c.getCustomerid())%> 
