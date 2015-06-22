@@ -50,7 +50,7 @@ function getReasonValueV(){
 		url:"<%=request.getContextPath()%>/workorder/getTwoValueByOneReason",
 		dataType:'json',
 		success:function(data){
-			var Str = "<option value="-1">全部</option>";
+			var Str = "<option value='-1'>全部</option>";
 			$.each(data,function(ind,ele){
 				var dataTrStr = "<option value='" + ele.reasonid + "'>" + ele.reasoncontent+ "</option>";
 				Str+=dataTrStr;
