@@ -41,13 +41,10 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script type="text/javascript">
 
 $(function(){
-
-	$("#form1").hide();
-	
 	$("#cwbnohide").click(function(){
 		
 		$("#cwbno").toggle();
-		$("#form1").toggle();
+		$("#div0011").toggle();
 		
 	});
 	
@@ -916,10 +913,10 @@ function openLogin(){
 				%> 					
 					<input type="checkbox" id="cwbnohide" />
 					<span>入库标签补签</span>
-					<form action="" id="form1" method="post">
+					<div style="display: none" id="div0011">
 					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" />			
 					<input type="button" value="生成" onclick="javascript:BuprintTag();"/> 
-					</form>
+					</div>
 					<%
 					}
 					%>

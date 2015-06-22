@@ -6846,7 +6846,7 @@ CREATE TABLE `cs_complaint_accept` (
     </changeSet>
     <changeSet id="wangzhiyong-2015-06-22-1" author="wangzhiyong">
     	<sql>
-    		INSERT INTO `express_set_system_install` VALUES ('99', 'ifshowbudatag', 'yes', '是否显示补打标签');
+    		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('ifshowbudatag', 'yes', '是否显示补打标签');
     	</sql>
     </changeSet>
 
