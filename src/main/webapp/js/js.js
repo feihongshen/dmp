@@ -1507,6 +1507,7 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 	var leavereasonid = parseInt($("#leavedreasonid").val());
 	var firstchangereasonid = parseInt($("#firstchangereasonid").val());
 	var changereasonid = parseInt($("#changereasonid").val());
+	var firstlevelreasonid=parseInt($("#firstlevelreasonid").val());
 	if (!checkTime($("#deliverytime").val())) {
 		return false;
 	}
