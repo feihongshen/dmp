@@ -252,9 +252,11 @@ function callfunction(cwb){//getEmailDateByIds
 	$.ajax({
 		type: "POST",
 		url:"<%=request.getContextPath()%>/PDA/getEmaildateid/"+cwb,
-		data:{customerids:$("#customerid").val(),state:'0'},
+		data:{emaildate:$("#emaildate").val(),state:'0'},
 		success:function(data){
+			if(data.tip==1){
 			alert(data.cwb+"订单号不在本批次中，请选择"+data.emaildatename+"的批次");
+			}
 		}
 	});
 }
@@ -300,10 +302,10 @@ function BuprintTag(){
 							flag=true;
 						}
 					} )
-					if(!flag){
-						callfunction(scancwb);
+/* 					if(!flag){
+						 callfunction(scancwb);
 						return;
-					}
+					} */
 				}
 				$.ajax({
 							type : "POST",
@@ -689,6 +691,7 @@ function orderbyyiruku(type){
 			if(data.length>0){
 				var optionstring = "";
 				for ( var i = 0; i < data.length; i++) {
+					
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
