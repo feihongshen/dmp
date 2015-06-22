@@ -497,6 +497,13 @@ public class PunishInsideController {
 					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
 				}
 			}
+			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==2) {
+				if (pennishinsideShenhe.getShenheresult()==1) {
+					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
+				}else if (pennishinsideShenhe.getShenheresult()==2) {
+					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+				}
+			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("对内扣罚审核带文件的失败", e);
@@ -525,10 +532,19 @@ public class PunishInsideController {
 
 		try {
 			punishInsideDao.updatePunishShenhe(pennishinsideShenhe);
-			if (pennishinsideShenhe.getShenheresult()==1) {
-				abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
-			}else if (pennishinsideShenhe.getShenheresult()==2) {
-				abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==3) {
+				if (pennishinsideShenhe.getShenheresult()==1) {
+					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
+				}else if (pennishinsideShenhe.getShenheresult()==2) {
+					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+				}
+			}
+			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==2) {
+				if (pennishinsideShenhe.getShenheresult()==1) {
+					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
+				}else if (pennishinsideShenhe.getShenheresult()==2) {
+					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
+				}
 			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {

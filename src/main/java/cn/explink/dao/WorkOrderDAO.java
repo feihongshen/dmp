@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.neo4j.cypher.internal.compiler.v2_1.mutation.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -567,5 +568,9 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		sql+=sb.toString();
 		
 		this.jt.update(sql);
+	}
+	public void updateIsfine(String accept_no,long isfine){
+		String sql="update cs_complaint_accept set if_punish=? where accept_no=?";
+		this.jt.update(sql,isfine,accept_no);
 	}
 }
