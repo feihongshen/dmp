@@ -406,6 +406,7 @@ public class PDAController {
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
+		model.addAttribute("ifshowtag", this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
 		return "pda/intowarhouse";
 	}
 

@@ -18,7 +18,7 @@ String  showMassage=(String)request.getAttribute("showMassage");
 boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 String isprintnew = request.getAttribute("isprintnew").toString();
-
+String ifshowtag=(String)request.getAttribute("ifshowtag");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -39,6 +39,19 @@ String isprintnew = request.getAttribute("isprintnew").toString();
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+
+$(function(){
+
+	$("#form1").hide();
+	
+	$("#cwbnohide").click(function(){
+		
+		$("#cwbno").toggle();
+		$("#form1").toggle();
+		
+	});
+	
+});
 var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
 
 var data;
@@ -244,6 +257,14 @@ function callfunction(cwb){//getEmailDateByIds
 			alert(data.cwb+"订单号不在本批次中，请选择"+data.emaildatename+"的批次");
 		}
 	});
+}
+
+function BuprintTag(){
+
+	var scancwb=$("#scancwbprint").val();
+	if(scancwb!=null){
+		$("#printcwb",parent.document).attr("src","<%=request.getContextPath()%>"+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
+	}		
 }
 	
 	/**
@@ -882,10 +903,24 @@ function openLogin(){
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 						<span>&nbsp;</span>
 					</p>
-					<p><span>订单号：</span>
+					<p id="cwbno"><span>订单号：</span>
 						<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
 					</p>
 					<input type="hidden" id="youhuowudanflag" name="youhuowudanflag" value="0" />
+					<p>
+				<%				
+					if(ifshowtag.equals("yes")){			
+				%> 					
+					<input type="checkbox" id="cwbnohide" />
+					<span>入库标签补签</span>
+					<form action="" id="form1" method="post">
+					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" />			
+					<input type="button" value="生成" onclick="javascript:BuprintTag();"/> 
+					</form>
+					<%
+					}
+					%>
+				</p>	
 				</div>
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>

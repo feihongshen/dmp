@@ -6844,6 +6844,11 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     	</sql>
     </changeSet>
+    <changeSet id="wangzhiyong-2015-06-22-1" author="wangzhiyong">
+    	<sql>
+    		INSERT INTO `express_set_system_install` VALUES ('99', 'ifshowbudatag', 'yes', '是否显示补打标签');
+    	</sql>
+    </changeSet>
 
 </databaseChangeLog>
  
