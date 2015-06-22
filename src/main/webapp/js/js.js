@@ -3508,6 +3508,12 @@ function errorvedioplay(pname, data) {
 	var url = pname + "/images/waverror/fail.wav";
 	newPlayWav(url);
 }
+function numbervedioplay(pname, numStr) {
+	// $("#wavPlay", parent.document).attr("src",
+	// pname + "/wavPlay?wavPath=" + data.wavPath + "&a=" + Math.random());
+	var url = pname + "/images/wavnums/" + numStr + ".wav";
+	newPlayWav(url);
+}
 
 function successvedioplay(pname, data) {
 	// $("#wavPlay", parent.document).attr("src",
