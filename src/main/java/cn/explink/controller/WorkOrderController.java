@@ -816,7 +816,7 @@ public class WorkOrderController {
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername()==null?"":customerDAO.findcustomername(c.getCustomerid()).getCustomername());
 			ca.setName(workorderdao.queryByPhoneone(c.getPhoneOne())==null?"":workorderdao.queryByPhoneone(c.getPhoneOne()).getName());
-			ca.setIfpunish(c.getIfpunish()>0?"是":"否");
+			ca.setIfpunish(c.getIfpunish()==2?"是":"否");
 			ca.setCuijianNum(c.getCuijianNum()>0?c.getCuijianNum():0);
 			ca.setHandleUser(userDao.getUserByUsername(c.getHandleUser()).getRealname());
 			lc.add(ca);				

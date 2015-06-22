@@ -6475,7 +6475,16 @@ function isnum(str){
 	 var reg = new RegExp("^[0-9]*$");
 	    if(!/^[0-9]*$/.test(str)){
 	        alert("请输入数字!");
+	        $('this').val('');
 	        $('#contactNum').val("");	
+	        return false;
+	    }
+}
+function isbranchnum(str){
+	 var reg = new RegExp("^[0-9]*$");
+	    if(!/^[0-9]*$/.test(str.value)){
+	       alert("请输入数字!");
+	        $('#'+str.id).val('');	
 	        return false;
 	    }
 }

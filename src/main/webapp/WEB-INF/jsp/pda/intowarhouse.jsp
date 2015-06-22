@@ -363,27 +363,6 @@ function BuprintTag(){
 										}
 									}
 
-									<%--if (data.body.cwbbranchnamewav != ""&&data.body.cwbbranchnamewav != pname+ "/wav/") {
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ data.body.cwbbranchnamewav
-															+ "&a="+ Math.random());
-									}else{
-										$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-									}
-
-									if (data.body.cwbgaojia != undefined && data.body.cwbgaojia != '') {
-										$("#cwbgaojia").parent().show();
-										try {
-											document.gaojia.Play();
-										} catch (e) {
-										}
-									}
-									if (<%=RUKUPCandPDAaboutYJDPWAV.equals("yes")%>&&data.body.cwbOrder.sendcarnum > 1) {
-										try {
-											document.ypdj.Play();
-										} catch (e) {
-										}
-									} --%>
-
 									$("#scansuccesscwb").val(scancwb);
 									$("#showcwb").html("订 单 号：" + scancwb);
 									$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
@@ -393,16 +372,7 @@ function BuprintTag(){
 									if(data.body.cwbOrder.emaildateid==0){
 										$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
 									}
-									//getcwbsdataForCustomer($("#customerid").val(),scancwb);
-									//getcwbsquejiandataForCustomer($("#customerid").val());
-									//getrukucwbquejiandataList($("#customerid").val());
-
-								} /* else if (data.statuscode == "13") {
-									$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-									errorvedioplay(pname, data);
-									//将有货无单扫描的订单放到有货无单明细中
-									//addAndRemoval(cwb,"youhuowudanTable");
-								} */ else {
+									} else {
 									$("#excelbranch").hide();
 									$("#customername").hide();
 									$("#cwbgaojia").hide();
@@ -432,8 +402,6 @@ function BuprintTag(){
 										$("#scancwb").val("");
 									}else{
 										$("#msg").html("（异常扫描）" + data.errorinfo);
-										
-										//errorvedioplay(pname, data);
 									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
 									
@@ -446,30 +414,6 @@ function BuprintTag(){
 			}
 		}
 	}
-	/**
-	 * 入库扫描（包）
-	 */
-	/* function submitIntoWarehouseforbale(pname, driverid, baleno) {
-		if (scancwb.length == 0 && baleno.length == 0) {
-			$("#pagemsg").html("请先扫描");
-			return;
-		}
-		if (baleno.length > 0) {
-			$.ajax({
-				type : "POST",
-				url : pname + "/PDA/cwbintowarhouseByPackageCode/" + baleno
-						+ "?driverid=" + driverid,
-				dataType : "json",
-				success : function(data) {
-					$("#bale").val("");
-					$("#msg")
-							.html(
-									data.body.packageCode + "　（"
-											+ data.errorinfo + "）");
-				}
-			});
-		}
-	} */
 	/**
 	 * 入库备注提交
 	 */
@@ -1002,7 +946,7 @@ function openLogin(){
 												<td width="100"><%=co.getConsigneename() %></td>
 												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 												<%if(showCustomerSign){ %>
-													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView().toString() %></td>
+												<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView().toString() %></td>
 												<%} %>
 												<td align="left"><%=co.getConsigneeaddress() %></td>
 												</tr>

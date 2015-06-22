@@ -326,10 +326,10 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcc
 		}if(cv.getComplaintResult()!=-1){
 			sb.append(" and complaint_result="+cv.getComplaintResult());
 		}
-		if(cv.getIfpunish()!=-1){
-			sb.append(" and ifpunish="+cv.getIfpunish());
+		if(cv.getIfpunish()>0){
+			sb.append(" and if_punish="+cv.getIfpunish());
 		}
-		if(cv.getHandleUser()!=""&&cv.getHandleUser().length()>0){
+		if(cv.getHandleUser()!=null&&cv.getHandleUser().length()>0){
 			sb.append(" and handle_user='"+cv.getHandleUser()+"'");
 		}
 		if(cv.getComplaintTwoLevel()>0){

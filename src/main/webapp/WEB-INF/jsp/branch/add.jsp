@@ -48,9 +48,9 @@
 					
 					
            		<li><span>机构名称：</span><input type="text" name="branchname" id="branchname" maxlength="50"/>*</li>
-           		<li><span>机构编号：</span><input type="text" name="branchcode" id="branchcode" maxlength="50"/>*</li>
+           		<li><span>机构编号：</span><input type="text" name="branchcode" id="branchcode" maxlength="50" onblur="isbranchnum(this)"/>*</li>
            		<li><span>负 责 人：</span><input type="text" name="branchcontactman"  id="branchcontactman" maxlength="50"/>*</li>
-		        <li><span>固定电话：</span><input type="text" name="branchphone" id="branchphone" maxlength="50"/></li>
+		        <li><span>固定电话：</span><input type="text" name="branchphone" id="branchphone" maxlength="50" onblur="isbranchnum(this)"/></li>
 			    
 			    <li><span>省份：</span><input type="text" name="branchprovince" id="branchprovince"  maxlength="50"/></li>
 			    <li><span>城市：</span><input type="text" name="branchcity" id="branchcity"  maxlength="50"/></li>
@@ -63,7 +63,7 @@
 				     <option value ="<%=accountarea.getAreaid()%>"><%=accountarea.getAreaname() %></option>
 				    <%} %>
 				  </select></li> --%>
-				 <li><span>站点手机：</span><input type="text" name="branchmobile" id="branchmobile" maxlength="50"/></li>
+				 <li><span>站点手机：</span><input type="text" name="branchmobile" id="branchmobile" maxlength="50" onblur="isbranchnum(this)"/></li>
 				 <li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
 				 <!-- <li><span>预付款后缴款设置：</span><input type="hidden" name="" class ="zhandian" /></li> -->
 				 
@@ -86,20 +86,20 @@
 		            </select>
 				 </li>
 		         <li><span>超额设置：</span>
-		           <input type="text" name="accountexcessfee" id="accountexcessfee" value="0" class ="zhandian" />
+		           <input type="text" name="accountexcessfee" id="accountexcessfee" value="0" class ="zhandian" onblur="isbranchnum(this)"/>
 		           <select id ="accountexcesstype" name ="accountexcesstype">
 		             <option value ="1">元</option> 
 		             <option value ="2">%</option>
 		           </select>*
 		         </li>
 		         <li><span>信誉额度：</span>
-		           <input type="text" name="credit" id="credit" value="0" class ="zhandian" />元*
+		           <input type="text" name="credit" id="credit" value="0" class ="zhandian" onblur="isbranchnum(this)"/>元*
 		         </li>
 		         <li><span>24小时时效：</span>
-		           <input type="text" name="prescription24" id="prescription24" value="0" class ="zhandian" />小时
+		           <input type="text" name="prescription24" id="prescription24" value="0" class ="zhandian" onblur="isbranchnum(this)"/>小时
 		         </li>
 		         <li><span>48小时时效：</span>
-		           <input type="text" name="prescription48" id="prescription48" value="0" class ="zhandian" />小时
+		           <input type="text" name="prescription48" id="prescription48" value="0" class ="zhandian" onblur="isbranchnum(this)"/>小时
 		         </li>
 		         <li><span>退货出站超时时效：</span>
 		           	<select id ="backtime" name ="backtime" class ="zhandian"  style="width:150px;">
@@ -143,7 +143,7 @@
 		        	 </li>
 		        <%} %>
 		       
-		        <li><span>银行卡号：</span><input type="text" name="bankcard" id="bankcard" maxlength="50"/></li>
+		        <li><span>银行卡号：</span><input type="text" name="bankcard" id="bankcard" maxlength="50" onblur="isbranchnum(this)"/></li>
 				<li><span>中转站：</span><select id ="zhongzhuanid" name ="zhongzhuanid" >
 		             <option value ="0">==请选择==</option> 
 		             <%for(Branch b : zhongzhuanList){ %>

@@ -356,8 +356,8 @@ function CurentTime()   //计算当天时间
 					<td>
 				是否扣罚:		<select class="select1" name="ifpunish">
 							<option value="-1">全部</option>
-							<option value="1">是</option>
-							<option value="0">否</option>
+							<option value="1">否</option>
+							<option value="2">是</option>
 							</select>
 					</td>			
 					<td>
@@ -460,9 +460,9 @@ function CurentTime()   //计算当天时间
 				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
 				<td>
 					<%if(c.getIfpunish()==1){ %>
-					<label>是</label>
-					<%}else{ %>		
 					<label>否</label>
+					<%}else if(c.getIfpunish()==2){ %>		
+					<label>是</label>
 					<%} %>			
 				</td>
 				<td><%=customernameList.get(c.getCustomerid())%> 
