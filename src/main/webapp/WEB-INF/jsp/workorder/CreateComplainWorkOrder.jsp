@@ -17,13 +17,13 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>创建投诉工单</h1>		
+		<h1><div id="close_box" onclick="closeBox()"></div>创建工单</h1>		
 		<div id="box_form">
 			<form action="<%=request.getContextPath()%>/workorder/saveComplainWorkOrderF" id="ComplainWorkOrderF">
 				<table>
 					<tr>
-						<td>受理类型:<span style="color:orange;">催件投诉</span>
-						<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>">
+						<td><span style="color:orange;">创建工单</span>
+					<%-- 	<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"> --%>
 						</td>
 						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
 						<td>订单号:<%=a.getOrderNo() %><input type="hidden" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
@@ -83,7 +83,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 				</tr>		
 							<td>
 							<span>处理结果:</span>
-							<select class="select1" name="complaintResult" id="acceptresultC" onblur="getSV(this.value)">
+							<select class="select1" name="complaintResult" id="acceptresultC">  <!-- onblur="getSV(this.value)" -->
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								
@@ -105,13 +105,13 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 				</form>					
 			</div>
 			<div align="center">
-			<button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')}">保存待处理</button>
+			<%-- <button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')}">保存待处理</button> --%>
+			<button class="button" onclick="smsSend()">发送催件短信</button>
 			<button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')}">待机构核实</button>
-			<button class="button" onclick="if(decidecomplain()){btnccwo()}">结案</button>
+			<button class="button" onclick="if(decidecomplain()){btnccwo(<%=ComplaintStateEnum.YiJieAn.getValue()%>)}">结案</button>
 			<button class="button" onclick="closeBox()">取消</button>
 			<input type="hidden" id="stateNum">
 			<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yja">
-			<input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="yjs">
 			<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="bcl">
 			</div>
 	</div>

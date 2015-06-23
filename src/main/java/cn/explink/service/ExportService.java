@@ -124,32 +124,32 @@ public class ExportService {
 		cloumnName2[0] = "acceptNo";
 		cloumnName1[1] = "订单号";
 		cloumnName2[1] = "orderNo";
-		cloumnName1[2] = "工单类型";
-		cloumnName2[2] = "complaintType";
-		cloumnName1[3] = "工单状态";
-		cloumnName2[3] = "complaintState";
-		cloumnName1[4] = "来电人姓名";
-		cloumnName2[4] = "name";
-		cloumnName1[5] = "来电号码";
-		cloumnName2[5] = "phoneOne";
-		cloumnName1[6] = "被投诉机构";
-		cloumnName2[6] = "codOrgId";
-		cloumnName1[7] = "工单受理人";
-		cloumnName2[7] = "handleUser";
-		cloumnName1[8] = "受理时间";
-		cloumnName2[8] = "acceptTime";
-		cloumnName1[9] = "投诉一级分类";
-		cloumnName2[9] = "complaintOneLevel";
-		cloumnName1[10] = "投诉二级分类";
-		cloumnName2[10] = "complaintTwoLevel";
-		cloumnName1[11] = "投诉处理结果";
-		cloumnName2[11] = "complaintResult";
-		cloumnName1[12] = "是否扣罚";
-		cloumnName2[12] = "ifpunish";
-		cloumnName1[13] = "客户名称";
-		cloumnName2[13] = "customername";
-		cloumnName1[14] = "催件次数";
-		cloumnName2[14] = "cuijianNum";
+		/*cloumnName1[2] = "工单类型";
+		cloumnName2[2] = "complaintType";*/
+		cloumnName1[2] = "工单状态";
+		cloumnName2[2] = "complaintState";
+		cloumnName1[3] = "来电人姓名";
+		cloumnName2[3] = "name";
+		cloumnName1[4] = "来电号码";
+		cloumnName2[4] = "phoneOne";
+		cloumnName1[5] = "被投诉机构";
+		cloumnName2[5] = "codOrgId";
+		cloumnName1[6] = "工单受理人";
+		cloumnName2[6] = "handleUser";
+		cloumnName1[7] = "受理时间";
+		cloumnName2[7] = "acceptTime";
+		cloumnName1[8] = "投诉一级分类";
+		cloumnName2[8] = "complaintOneLevel";
+		cloumnName1[9] = "投诉二级分类";
+		cloumnName2[9] = "complaintTwoLevel";
+		cloumnName1[10] = "投诉处理结果";
+		cloumnName2[10] = "complaintResult";
+		cloumnName1[11] = "是否扣罚";
+		cloumnName2[11] = "ifpunish";
+		cloumnName1[12] = "客户名称";
+		cloumnName2[12] = "customername";
+		cloumnName1[13] = "催件次数";
+		cloumnName2[13] = "cuijianNum";
 	
 	}
 
@@ -707,9 +707,7 @@ public class ExportService {
 				a = lc.get(k).getAcceptNo();
 			} else if (cloumnName3[i].equals("orderNo")) {
 				a = lc.get(k).getOrderNo();
-			} else if (cloumnName3[i].equals("complaintType")) {
-				a = lc.get(k).getComplaintType();
-			} else if (cloumnName3[i].equals("complaintState")) {
+			}else if (cloumnName3[i].equals("complaintState")) {
 				a = lc.get(k).getComplaintState();
 			} else if (cloumnName3[i].equals("name")) {
 				a = lc.get(k).getName();

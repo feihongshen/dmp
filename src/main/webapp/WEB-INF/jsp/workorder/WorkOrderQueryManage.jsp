@@ -18,9 +18,9 @@
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
 	List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");	
 	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
-	List<CwbOrder> co=request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); 
+	/* List<CwbOrder> co=request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); */ 
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
-	Integer shensuendTime =(Integer)request.getAttribute("shensuendTime");
+	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
 %> 
@@ -84,9 +84,23 @@ $(function() {
 	});
 	
 	$("#add_OrgVerify").click(function() {
-		if($('#FormV').val()==""){
-			alert('请选择一条记录');
+		var str =$('#ShouLiTimeValue').val();
+		/*var str ='2015-05-12 23:13:15'; */
+		str = str.replace(/-/g,"/");
+		var date1 = new Date(str);	
+		var str1=CurentTime();
+		str1 = str1.replace(/-/g,"/");
+		var date2 = new Date(str1);
+		var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
+		//计算出相差天数
+		var days=Math.floor(date3/(24*3600*1000));
+		var heshiTime=$('#heshiTime').val();
+		if(days>heshiTime){
+			alert("抱歉，已经过了可核实时间！ ");
 			return false;
+		}else if($('#FormV').val()==""){
+				alert('请选择一条记录');
+				return false;
 		}else if($('#ComStateV').val()!=$('#DaiHeShi').val()){
 			alert('本条数据状态不是待核实状态不能核实');
 			return false;
@@ -208,7 +222,7 @@ function addInit(){
 }
 
 function getFomeV(v,l,timev){
-	$('#JieAnTimeValue').val(timev);
+	$('#ShouLiTimeValue').val(timev);
 	$('#FormV').val("");
 	$('#FormV').val(v);	
 	
@@ -217,18 +231,14 @@ function getFomeV(v,l,timev){
 }
 
 function testCwbsIfNull(){
-	if($('#orderNo').val()==""){
-		alert('请输入至少一个订单号');
-		return;
-	}
 	if($("#beginRangeTime").val()>$("#endRangeTime").val()){
 		alert("开始时间不能大于结束时间");
 		return;
 	}
 }
-function decideShenSudate(){
-	var str =$('#JieAnTimeValue').val();
-	/*var str ='2015-05-12 23:13:15'; */
+/* function decideHeShidate(){
+	var str =$('#ShouLiTimeValue').val();
+	var str ='2015-05-12 23:13:15';
 	str = str.replace(/-/g,"/");
 	var date1 = new Date(str);	
 	var str1=CurentTime();
@@ -237,20 +247,20 @@ function decideShenSudate(){
 	var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
 	//计算出相差天数
 	var days=Math.floor(date3/(24*3600*1000));
-	var shensuendTime=$('#shensuendTime').val();
-	if(days>shensuendTime){
-		alert("抱歉，已经过了可申诉时间！");
+	var heshiTime=$('#heshiTime').val();
+	if(days>heshiTime){
+		alert("抱歉，已经过了可核实时间！ ");
 		return false;
 	}else if($('#FormV').val()==""){
 			alert('请选择一条记录');
 			return false;
-		}else if($('#ComStateV').val()!=$('#YiJieAn').val()){
-			alert('本条数据状态未结案不能申诉');
+		}else if($('#ComStateV').val()!=$('#DaiHeShi').val()){
+			alert('本条数据状态未结案不能核实');
 			return false;
 		}
 		getAddBox3();
 	
-}
+} */
 function CurentTime()   //计算当天时间
 { 
     var now = new Date();
@@ -298,23 +308,24 @@ function CurentTime()   //计算当天时间
 				<tr>
 					<td>
 						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"></textarea>
-					</td>		
+					</td>	
 					<td>
+						工单号:<textarea rows="3" cols="16" name="acceptNo" id="acceptNo" ></textarea>
+					</td>	
+					<%-- <td>
 				工单类型:<select name="complaintType" class="select1">				
 							<option value="-1">全部</option>									
 							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>
 							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>
 						</select>
 						
-					</td>
+					</td> --%>
 					<td>
 				工单状态:<select name="complaintState" class="select1">				
 							<option value="-1">全部</option>
-							<%for(ComplaintStateEnum c:ComplaintStateEnum.values()){ %>	
-							<%if(c.getValue()!=0){ %>
-							<%if(c.getValue()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
-							<option value="<%=c.getValue()%>"><%=c.getText()%></option>
-						<%} }}%>
+							<option value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"><%=ComplaintStateEnum.DaiHeShi.getText()%></option>
+							<option value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"><%=ComplaintStateEnum.YiHeShi.getText()%></option>
+							<option value="<%=ComplaintStateEnum.YiJieAn.getValue()%>"><%=ComplaintStateEnum.YiJieAn.getText()%></option>
 						</select>
 					</td>
 				</tr>	
@@ -388,10 +399,10 @@ function CurentTime()   //计算当天时间
 				<td>
 				<%if(currentuser==1){ %>
 					<button id="add_CUSA" class="input_button2">客服结案</button>
-					<button id="add_AdjudicateRetrial" class="input_button2">结案重审</button>
+					<!-- <button id="add_AdjudicateRetrial" class="input_button2">结案重审</button> -->
 					 <%}else{ %>
 					<button id="add_OrgVerify" class="input_button2">机构核实</button>
-					<button id="add_OrgAppeal" class="input_button2" onclick="decideShenSudate()">机构申诉</button>
+				<!-- 	<button id="add_OrgAppeal" class="input_button2" onclick="decideShenSudate()">机构申诉</button> -->
 					 <%} %>
 					<button class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo">导出</button>
 				</td>
@@ -403,7 +414,7 @@ function CurentTime()   //计算当天时间
 			<tr class="font_1">
 				<th bgcolor="#eef6ff">工单号</th>
 				<th bgcolor="#eef6ff">订单号</th>
-				<th bgcolor="#eef6ff">工单类型</th>
+				<!-- <th bgcolor="#eef6ff">工单类型</th> -->
 				<th bgcolor="#eef6ff">工单状态</th>
 				<th bgcolor="#eef6ff">来电人姓名</th>
 				<th bgcolor="#eef6ff">来电号码</th>
@@ -413,21 +424,21 @@ function CurentTime()   //计算当天时间
 				<th bgcolor="#eef6ff">投诉一级分类</th>
 				<th bgcolor="#eef6ff">投诉二级分类</th>
 				<th bgcolor="#eef6ff">投诉处理结果</th>
-				<th bgcolor="#eef6ff">是否扣罚</th>
+				<th bgcolor="#eef6ff">是否关联扣罚单</th>
 				<th bgcolor="#eef6ff">客户名称</th>	
 				<th bgcolor="#eef6ff">催件次数</th>			
 			</tr>
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
 			<%if(c.getComplaintState()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
-			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getJieanTime()%>')" id="getFomeV">
-				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()) {%>
-				<td><a href="<%=request.getContextPath()%>/workorder/WorkorderDetail/<%=c.getAcceptNo() %>" target='_Blank'><%=c.getAcceptNo() %></a></td>
+			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">
+				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%>
+				<td><a href="javascript:getAddBox3()"><%=c.getAcceptNo() %></a></td>
 				<%}else{ %>
 				<td><%=c.getAcceptNo() %></td>
 				<%} %>
 				<td><%=c.getOrderNo() %></td>
-				<td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td>
+				<%-- <td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td> --%>
 				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
 				<td><%=connameList.get(c.getPhoneOne())%>
 				</td>				
@@ -459,12 +470,10 @@ function CurentTime()   //计算当天时间
 				</td>
 				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
 				<td>
-					<%if(c.getIfpunish()==1){ %>
-					<label>否</label>
-					<%}else if(c.getIfpunish()==2){ %>		
+					<%if(c.getIfpunish()==2){ %>
 					<label>是</label>
-					<%}else{ %>
-					<label></label>
+					<%}else{%>
+					<label>否</label>
 					<%} %>			
 				</td>
 				<td><%=customernameList.get(c.getCustomerid())%> 
@@ -493,15 +502,15 @@ function CurentTime()   //计算当天时间
 	<input type="hidden" id="ComStateV"/>
 	<input type="hidden" id="add_OrgVerifyV" value="<%=request.getContextPath()%>/workorder/OrgVerify"/>
 	<input type="hidden" id="add_CSA" value="<%=request.getContextPath()%>/workorder/CustomerServiceAdjudicate">
-	<input type="hidden" id="JieAnTimeValue"/>
-	<input type="hidden" id="shensuendTime" value="<%=shensuendTime%>"/>
+	<input type="hidden" id="ShouLiTimeValue"/>
+	<input type="hidden" id="heshiTime" value="<%=heshiTime%>"/>
 	
 		
 	
 	
 	
 	<form action="<%=request.getContextPath()%>/workorder/exportWorkOrderExcle" id="WorkorderInfo">
-		<input type="hidden" value="<%=request.getParameter("complaintType")%>" name="complaintType"/>
+		<%-- <input type="hidden" value="<%=request.getParameter("complaintType")%>" name="complaintType"/> --%>
 		<input type="hidden" value="<%=request.getParameter("orderNo")%>" name="orderNo"/>
 		<input type="hidden" value="<%=request.getParameter("complaintState") %>" name="complaintState"/>
 		<input type="hidden" value="<%=request.getParameter("complaintOneLevel")==null?"-1":request.getParameter("complaintOneLevel") %>" name="complaintOneLevel"/>
@@ -512,7 +521,7 @@ function CurentTime()   //计算当天时间
 		<input type="hidden" value="<%=request.getParameter("endRangeTime") %>" name="endRangeTime"/>
 		<input type="hidden" value="<%=request.getParameter("handleUser") %>" name="handleUser"/>
 		<input type="hidden" value="<%=request.getParameter("ifpunish")%>" name="ifpunish"/>	
-		<input type="hidden" value="<%=request.getParameter("orderNo")%>" name="orderNo"/>
+		<input type="hidden" value="<%=request.getParameter("acceptNo")%>" name="acceptNo"/>
 	</form>
 	
 	<script type="text/javascript">

@@ -1,19 +1,16 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@page import="cn.explink.domain.CsConsigneeInfo"%>
-<%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
-<%
-		List<CsConsigneeInfo> ccilist=request.getAttribute("ccilist")==null?null:(List<CsConsigneeInfo>)request.getAttribute("ccilist");
-		Page page_obj =request.getAttribute("page_obj")==null?null:(Page)request.getAttribute("page_obj");
-%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <!DOCTYPE html PUBLIC "-//W3C//Dth HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dth">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css" type="text/css"  />
+<script src="${pageContext.request.contextPath}/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="${pageContext.request.contextPath}/js/js.js"></script>
+
 <script type="text/javascript">
 
 
@@ -49,7 +46,7 @@ $(function(){
 			$.ajax({
 				type:'POST',
 				data:'phoneone='+$('#callerphone').val(),
-				url:'<%=request.getContextPath()%>/workorder/removeCallerArchival',
+				url:'${pageContext.request.contextPath}/workorder/removeCallerArchival',
 				dataType:'json',
 				success:function(data){
 					   $(".tishi_box").html(data.error);
@@ -73,7 +70,7 @@ function deleteidValue(){
 </head>
 <body>
 	<div>
-		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" id=PageFromW><%-- action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" --%>
+		<form action="${ requestScope.page == null ? '1' : requestScope.page }" id=PageFromW>
 			<table>
 				<tr>
 					<td>姓名:<input type="text" name="name" id="name"/></td>
@@ -117,75 +114,84 @@ function deleteidValue(){
 					<th bgcolor="#eef6ff">最后联系时间</th>
 					<th bgcolor="#eef6ff">联系次数</th>
 				</tr>
-				<%if(ccilist!=null){ %>
-				<%for(CsConsigneeInfo ccf:ccilist){ %>
-				<tr onclick="getPhoneonOne('<%=ccf.getPhoneonOne() %>','<%=ccf.getId()%>')">
-					<td><%=ccf.getName() %>
-					<%if(ccf.getSex()==1){ %>
-					<td>男</td>
-					<%}else{%>
-					<td>女</td>
-					<%} %>
-					<td><%=ccf.getPhoneonOne() %></td>
-					<td><%=ccf.getPhoneonTwo()==null?"": ccf.getPhoneonTwo()%></td>
-					<td><%=ccf.getMailBox()==null?"":ccf.getMailBox() %></td>				
-					<td><%=ccf.getProvince()==null?"":ccf.getProvince() %></td>
-					<td><%=ccf.getCity()==null?"": ccf.getCity()%></td>
-					<%if(ccf.getConsigneeType()==2){ %>
-					<td><label>VIP客户</label></td>
-					<%}else if(ccf.getConsigneeType()==1){ %>
-					<td><label>普通客户</label></td>
-					<%}else if(ccf.getConsigneeType()==-1){  %>
-					<td></td>
-					<%} %>
-					<td><%=ccf.getContactLastTime()==null?"":ccf.getContactLastTime() %></td>
-					<td><%=ccf.getContactNum()%></td>				
+				<!--  -->
+				<c:forEach items="${ccilist}" var="cv">
+				<tr onclick="getPhoneonOne('${cv.phoneonOne}','${cv.id}')">
+					
+							<td>${cv.name}</td>
+							<c:choose> 
+							  <c:when test="${cv.sex==1}">  
+							   		<td>男</td>				
+							  </c:when> 							
+							  <c:when test="${cv.sex==2}"> 
+							    	<td>女</td>					
+							  </c:when> 							
+							  <c:otherwise>   
+							  		<td></td>							
+							  </c:otherwise> 							
+							</c:choose> 
+							<td>${cv.phoneonOne == null ? "" : cv.phoneonOne}</td>	
+							<td>${cv.phoneonTwo == null ? "" : cv.phoneonTwo}</td>
+							<td>${cv.mailBox == null ? "" : cv.mailBox}</td>
+							<td>${cv.province == null ? "" : cv.province}</td>
+							<td>${cv.city == null ? "" :  cv.city}</td>
+							<c:if test="${cv.consigneeType==1}">
+								<td>普通客户</td>
+							</c:if>
+							<c:if test="${cv.consigneeType==2}">
+							<td>VIP客户</td>
+							</c:if>
+							<td>${cv.contactLastTime == null ? "" : cv.contactLastTime}</td>
+							<td>${cv.contactNum == null ? "" : cv.contactNum}</td>					
 				</tr>
-				<%} }%>
+				</c:forEach>
 			</table>
 		</div>
-<input type="hidden" id="add" value="<%=request.getContextPath()%>/workorder/NewAddMaintain"/>
-<input type="hidden" id="edit" value="<%=request.getContextPath()%>/workorder/EditEditMaintain/"/>
-<input type="hidden" id="callerphone" value=""/>
-<input type="hidden" id="callerphoneid" value=""/>
+<input type="hidden" id="add" value="${pageContext.request.contextPath}/workorder/NewAddMaintain"/>
+<input type="hidden" id="edit" value="${pageContext.request.contextPath}/workorder/EditEditMaintain/"/>
+<input type="hidden" id="callerphone"/>
+<input type="hidden" id="callerphoneid"/>
 
-	<form action="<%=request.getContextPath()%>/workorder/exportExcle" id="CallerInfoForm">
-		<input type="hidden" name="name" value="<%=request.getParameter("name")==null?"":request.getParameter("name")%>">
-		<input type="hidden" name="phoneonOne" value="<%=request.getParameter("phoneonOne")==null?"":request.getParameter("phoneonOne")%>">
-		<input type="hidden" name="consigneeType" value="<%=request.getParameter("consigneeType")==null?"-1":request.getParameter("consigneeType")%>">	
+	<form action="${pageContext.request.contextPath}/workorder/exportExcle" id="CallerInfoForm">
+		<input type="hidden" name="name" value="${param.name == null  ? '' : param.name}">
+		<input type="hidden" name="phoneonOne" value="${param.phoneonOne == null  ? '' : param.phoneonOne}">
+		<input type="hidden" name="consigneeType" value="${param.consigneeType == null  ? '' : param.consigneeType}">
 	</form>
 	
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
 		<tr>
 			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
 				<a href="javascript:$('#PageFromW').attr('action','1');$('#PageFromW').submit();" >第一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#PageFromW').submit();">上一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#PageFromW').submit();" >下一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#PageFromW').submit();" >最后一页</a>
-				　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第
+				<a href="javascript:$('#PageFromW').attr('action','${page_obj.previous < 1 ? 1 : page_obj.previous}');$('#PageFromW').submit();">上一页</a>　
+				<a href="javascript:$('#PageFromW').attr('action','${page_obj.next < 1 ? 1 : page_obj.next}');$('#PageFromW').submit();" >下一页</a>　
+				<a href="javascript:$('#PageFromW').attr('action','${page_obj.maxpage < 1 ? 1 : page_obj.maxpage}');$('#PageFromW').submit();" >最后一页</a>
+				　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 					<select
 						id="selectPg"
 						onchange="$('#PageFromW').attr('action',$(this).val());$('#PageFromW').submit()">
-						<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
-						<option value="<%=i %>"><%=i %></option>
-						<% } %>
+						<c:forEach begin="1" end="${page_obj.maxpage}" var="i">
+							<option value="${i}">${i}</option>
+						</c:forEach>
 					</select>页
 			</td>
 		</tr>
 	</table>
-	
 	<script type="text/javascript">
-			
+		
 		function exportInFoExcle(){
-			if(<%=ccilist != null && ccilist.size()>0 %>){
-			 	$("#exinfo").val("请稍后……");
-			 	$("#CallerInfoForm").submit();
+			var listsize='${fn:length(ccilist)}';
+			if(listsize==0){		 
+			 	alert("没有做查询操作，不能导出！");
+			 	return false;
 			}else{
-				alert("没有做查询操作，不能导出！");
+				$("#exinfo").val("请稍后……");
+			 	$("#CallerInfoForm").submit();
 			};
 			
+			
 		}	
-		$("#selectPg").val(<%=request.getAttribute("page") %>);
+		var sv='${requestScope.page}';
+		$("#selectPg").val(sv);
 	</script>
 	<div class="tishi_box"></div>
 </body>

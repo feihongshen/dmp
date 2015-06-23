@@ -35,7 +35,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					订单号:<%=cca.getOrderNo() %>&nbsp;
 					</li>
 					<li>
-						受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %>&nbsp;
+						<%-- 受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %>&nbsp; --%>
 						一级类型:<%=oneleave%>&nbsp;
 						二级类型:<%=twoleave%>&nbsp;
 					</li>
@@ -116,8 +116,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					<li>
 							<span>处理结果:</span>
-							<select class="select1" name="complaintResult" id="acceptresult" onblur="decideV()">
-								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
+							<select class="select1" name="complaintResult" id="acceptresult">
+								<%-- <option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option> --%>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.BuChengLi.getValue()%>"><%=ComplaintResultEnum.BuChengLi.getText() %></option>								
 							</select>

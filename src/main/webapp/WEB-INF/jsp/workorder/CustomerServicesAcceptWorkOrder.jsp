@@ -25,8 +25,8 @@
 <%-- <script language="javascript" src="<%=request.getContextPath()%>/js/temp.js"></script> --%>
 <script type="text/javascript">
 /* Userflag */
-function getGoonacceptWO(GV,GS,uf){
-	$('#Userflag').val(uf);
+function getGoonacceptWO(GV,GS){
+	/* $('#Userflag').val(uf); */
 	$('#GoonacceptWO').show();
 	$('#GV').val(GV);
 	$('#GS').val(GS);
@@ -56,30 +56,30 @@ function gettrValue(cwbId){
 			"<th bgcolor='#eef6ff'>来电号码</th>" +
 			"<th bgcolor='#eef6ff'>归属地</th>"	 +			
 			"<th bgcolor='#eef6ff'>受理时间</th>" +
-			"<th bgcolor='#eef6ff'>工单类型</th>" +
+			/* "<th bgcolor='#eef6ff'>工单类型</th>" + */
 			"<th bgcolor='#eef6ff'>受理内容</th>" +
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
 			$.each(data,function(ind,ele){
 				var dataTrStr1 = "";
-				if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){
+				/* if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){ */
 					var contentTemp = ele.content;								
 					contentTemp = contentTemp.substring(0,10);
 					
-					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
+					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\")'>" +
 							"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
 							"<td>"+ele.orderNo+"</td>" +
 							"<td>"+ele.phoneOne+"</td>" +
 							"<td>"+ele.provence+"</td>" +
 							"<td>"+ele.acceptTime+"</td>" +
-							"<td>"+ele.showcomplaintTypeName+"</td>" +
+							/* "<td>"+ele.showcomplaintTypeName+"</td>" + */
 							"<td>"+contentTemp+"</td>" +
 							"<td>"+ele.showComplaintStateName+"</td></tr>";
-					}else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
+					/*} else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
 						
 						var contentTemp = ele.queryContent;								
 						contentTemp = contentTemp.substring(0,10);
 						dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-						"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+						"<td>"+ele.acceptNo+"</td>" + 
 						"<td>"+ele.orderNo+"</td>" +
 						"<td>"+ele.phoneOne+"</td>" +
 						"<td>"+ele.provence+"</td>" +
@@ -87,7 +87,7 @@ function gettrValue(cwbId){
 						"<td>"+ele.showcomplaintTypeName+"</td>" +
 						"<td>"+contentTemp+"</td>" +
 						"<td>"+ele.showComplaintStateName+"</td></tr>";
-					}	
+					}*/ /* order/queckSelectOrder/123 */
 				thStr1 += dataTrStr1;
 				
 			});
@@ -145,11 +145,11 @@ $(function(){
 			return false;
 		} */
 		
-		 if($('#Userflag').val()==$('#ComplaintTypeEnumChaXun').val()){
+/* 		 if($('#Userflag').val()==$('#ComplaintTypeEnumChaXun').val()){
 			 getAddBoxGoOnAcceptQueryWo($('#GV').val());
-		}else if($('#Userflag').val()==$('#ComplaintTypeEnumTouSu').val()){						
+		}else if($('#Userflag').val()==$('#ComplaintTypeEnumTouSu').val()){	 */					
 			getAddBoxx2($('#GV').val());
-		} 
+	/* 	}  */
 		/* getAddBoxGoOnAcceptQueryWo($('#GV').val()); */
 		
 		
@@ -439,32 +439,29 @@ function submitselect2(){    //通过手机号查询工单
 						+ "<th bgcolor='#eef6ff'>来电号码</th>"
 						+ "<th bgcolor='#eef6ff'>归属地</th>"
 						+ "<th bgcolor='#eef6ff'>受理时间</th>"
-						+ "<th bgcolor='#eef6ff'>工单类型</th>"
+						/* + "<th bgcolor='#eef6ff'>工单类型</th>" */
 						+ "<th bgcolor='#eef6ff'>受理内容</th>"
 						+ "<th bgcolor='#eef6ff'>工单状态</th></tr>";
-				$.each(data,
-						function(ind, ele) {
-
+				$.each(data,function(ind, ele) {
 							var dataTrStr1 = "";
-							if (ele.complaintType == $(
-									'#ComplaintTypeEnumTouSu').val()) {
+							/* if (ele.complaintType == $(
+									'#ComplaintTypeEnumTouSu').val()) { */
 								var contentTemp = ele.content;								
 								contentTemp = contentTemp.substring(0,10);
 								
 								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
 										+ ele.acceptNo + "\",\""
-										+ ele.complaintState + "\",\""
-										+ ele.complaintType + "\")'>" + "<td>"
+										+ ele.complaintState + "\")'>" + "<td>"
 										+ ele.acceptNo + "</td>" + /* order/queckSelectOrder/123 */
 										"<td>" + ele.orderNo + "</td>" + "<td>"
 										+ ele.phoneOne + "</td>" + "<td>"
-										+ ele.provence + "</td>" + "<td>"
-										+ ele.acceptTime + "</td>" + "<td>"
-										+ ele.showcomplaintTypeName + "</td>"
+										+ ele.provence + "</td>" 
+										+ "<td>"+ ele.acceptTime + "</td>" /*  + "<td>"
+										+ ele.showcomplaintTypeName + "</td>" */
 										+ "<td>" + contentTemp + "</td>"
 										+ "<td>" + ele.showComplaintStateName
 										+ "</td></tr>";
-							} else if (ele.complaintType == $(
+								/*}  else if (ele.complaintType == $(
 									'#ComplaintTypeEnumChaXun').val()) {
 								var contentTemp = ele.queryContent;								
 									contentTemp = contentTemp.substring(0,10);
@@ -472,7 +469,7 @@ function submitselect2(){    //通过手机号查询工单
 										+ ele.acceptNo + "\",\""
 										+ ele.complaintState + "\",\""
 										+ ele.complaintType + "\")'>" + "<td>"
-										+ ele.acceptNo + "</td>" + /* order/queckSelectOrder/123 */
+										+ ele.acceptNo + "</td>" + 
 										"<td>" + ele.orderNo + "</td>" + "<td>"
 										+ ele.phoneOne + "</td>" + "<td>"
 										+ ele.provence + "</td>" + "<td>"
@@ -481,7 +478,7 @@ function submitselect2(){    //通过手机号查询工单
 										+ "<td>" + contentTemp + "</td>"
 										+ "<td>" + ele.showComplaintStateName
 										+ "</td></tr>";
-							}
+							} */ /* order/queckSelectOrder/123 */
 							thStr1 += dataTrStr1;
 
 						});
@@ -579,8 +576,8 @@ function submitselect2(){    //通过手机号查询工单
 									
 				</form>	
 						<td><button class="input_button2" id="submitselect" onclick="submitselect()">查询</td> 
-						<td><button id="createquerywo_button"  class="input_button1">创建查询工单</button></td>							
-						<td><button id="createcomplain_buttonn"   class="input_button1">创建投诉工单</button></td>						
+						<!-- <td><button id="createquerywo_button"  class="input_button1">创建查询工单</button></td>	 -->						
+						<td><button id="createcomplain_buttonn"   class="input_button1">创建工单</button></td>						
 					</tr>
 			</table>
 			<hr>

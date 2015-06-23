@@ -198,8 +198,8 @@ public class WorkOrderDAO {
 	}
 	
 	public void saveComplainWorkOrderF(CsComplaintAccept c){
-		String sql="insert into cs_complaint_accept(handle_user,complaint_type,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid,cuijian_num) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jt.update(sql,c.getHandleUser(),c.getComplaintType(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum());
+		String sql="insert into cs_complaint_accept(handle_user,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid,cuijian_num) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jt.update(sql,c.getHandleUser(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum());
 	}
 	
 	
@@ -212,9 +212,9 @@ public class WorkOrderDAO {
 			if(c.getComplaintState()>=0){
 				sb.append(" ,complaint_state="+c.getComplaintState());
 			}
-			if(c.getComplaintResult()>=0){
+			/*if(c.getComplaintResult()>=0){
 				sb.append(" ,complaint_result="+c.getComplaintResult());
-			}
+			}*/
 			if(c.getContent()!=null&&c.getContent().length()>0){
 				sb.append(" ,content='"+c.getContent()+"'");
 			}
@@ -306,19 +306,21 @@ public class WorkOrderDAO {
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),cwb);		
 	} 
 
-public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcceptVO cv){
+public List<CsComplaintAccept> findGoOnacceptWOByCWBs(String cwbs,CsComplaintAcceptVO cv,String workorders){
 		String sql="select * from cs_complaint_accept where id>0";
 		StringBuilder sb = new StringBuilder();	
-		if(cwbs.trim()!=null&&cwbs.trim().length()>0){
+		if(!cwbs.equals("")){
 			sb.append(" and order_no in("+cwbs+")");
 		}
-		
+		if(!workorders.equals("")){
+			sb.append(" and accept_no in("+workorders+")");
+		}
 		if(cv.getComplaintState()!=-1){
 			sb.append(" and complaint_state="+cv.getComplaintState());
 		}
-		if(cv.getComplaintType()!=-1){
+		/*if(cv.getComplaintType()!=-1){
 			sb.append(" and complaint_type="+cv.getComplaintType());
-		}
+		}*/
 		if(cv.getComplaintOneLevel()!=-1){
 			sb.append(" and complaint_one_level="+cv.getComplaintOneLevel());
 		}

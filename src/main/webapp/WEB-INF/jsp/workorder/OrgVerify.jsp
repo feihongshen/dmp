@@ -3,7 +3,7 @@
 <%@page import="cn.explink.domain.CsComplaintAccept"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
-<%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
+<%-- <%@page import="cn.explink.enumutil.ComplaintTypeEnum"%> --%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.enumutil.ComplaintResultEnum"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -36,7 +36,7 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 					订单号:<%=cca.getOrderNo() %>&nbsp;
 					</li>
 					<li>
-						受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %>&nbsp;
+						<%-- 受理类型:<%=ComplaintTypeEnum.getByValue(cca.getComplaintType()).getText() %>&nbsp; --%>
 						一级类型:<%=oneleave%>&nbsp;
 						二级类型:<%=twoleave%>&nbsp;
 					</li>

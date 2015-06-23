@@ -5499,19 +5499,12 @@ function submitPunishInsideByCwb(){
 	});
 	closeBox();
 }*/
-
+/*
 function getSV(v){
 	$('#stateNum').val(v);
-}
+}*/
 function btnccwo(Val){
-	if($('#stateNum').val()==$('#bcl').val()){
-		$('#cwo').val($('#yjs').val());	
-			
-	}else{
-		$('#cwo').val(Val);	
-		
-	}
-	
+	$('#cwo').val(Val);		
 	$.ajax({
 				type:'POST',
 				data:$('#ComplainWorkOrderF').serialize(),
@@ -5964,11 +5957,11 @@ function submitJieAnLoad() {
 }
 
 
-function decideV(){
+/*function decideV(){
 	if($('#acceptresult').val()==$('#acceptresultVl').val()){
 		$('#complaintState').val($('#acceptresultV').val())
 	}
-}
+}*/
 
 function IfShenSu(){
 	if($('#shensuremark').val()==""){

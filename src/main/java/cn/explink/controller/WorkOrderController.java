@@ -324,7 +324,7 @@ public class WorkOrderController {
 	public String add(CsConsigneeInfo cci){
 		List<CsConsigneeInfo> cs=workorderdao.queryListCsConsigneeInfo(cci.getPhoneonOne());
 		
-		if(cs.size()<=1){
+		if(cs.size()<1){
 			workorderservice.addcsconsigneeInfo(cci);
 		}
 			
@@ -454,11 +454,11 @@ public class WorkOrderController {
 			ca.setOrderNo(c.getOrderNo());
 			ca.setPhoneOne(c.getPhoneOne());
 			ca.setAcceptTime(c.getAcceptTime());
-			ca.setComplaintType(c.getComplaintType());
+		/*	ca.setComplaintType(c.getComplaintType());*/
 			ca.setContent(c.getContent());
 			ca.setComplaintState(c.getComplaintState());
 			ca.setProvence(c.getProvence());
-			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			/*ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());*/
 			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
 			ca.setComplaintUser(c.getComplaintUser());
 			ca.setQueryContent(c.getQueryContent());
@@ -482,9 +482,9 @@ public class WorkOrderController {
 			ca.setPhoneOne(c.getPhoneOne());
 			ca.setProvence(c.getProvence());
 			ca.setAcceptTime(c.getAcceptTime());
-			ca.setComplaintType(c.getComplaintType());
+			/*ca.setComplaintType(c.getComplaintType());*/
 			ca.setComplaintState(c.getComplaintState());
-			ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
+			/*ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());*/
 			ca.setContent(c.getContent());
 			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
 			ca.setComplaintUser(c.getComplaintUser());
@@ -549,14 +549,28 @@ public class WorkOrderController {
 	投诉处理结果 	是否扣罚 	客户名称	催件次数*/
 	@RequestMapping("/WorkOrderManageQuery")
 	public String WorkOrderManageQuery(HttpServletRequest req,Model model,CsComplaintAcceptVO cv) throws Exception{
-		String cwb1 = cos.translateCwb(cv.getOrderNo());
-		String cwb[]=cwb1.trim().split("\r\n");
+		List<CsComplaintAccept> lcs=null;
 		StringBuffer sb = new StringBuffer();
-		for(String str:cwb){
-			sb=sb.append("'"+str+"',");
+		String ncwbs="";
+		if(!StringUtils.isEmpty(cv.getOrderNo())){
+			String cwb1 = cos.translateCwb(cv.getOrderNo());
+			String cwb[]=cwb1.trim().split("\r\n");			
+			for(String str:cwb){
+				sb=sb.append("'"+str+"',");
+			}
+			ncwbs=sb.substring(0, sb.length()-1);	
+		}	
+		StringBuffer sb1 = new StringBuffer();
+		String workorders="";
+		if(!StringUtils.isEmpty(cv.getAcceptNo())){		
+		String workorder[]=cv.getAcceptNo().trim().split("\r\n");		
+		for(String str1:workorder){
+			sb1=sb1.append("'"+str1+"',");
 		}
-		String ncwbs=sb.substring(0, sb.length()-1);		
-	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv);		
+		workorders=sb1.substring(0, sb1.length()-1);
+		}
+		lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv,workorders);
+		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
@@ -564,7 +578,7 @@ public class WorkOrderController {
 			CsComplaintAccept ca = new CsComplaintAccept();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
-			ca.setComplaintType(c.getComplaintType());
+			/*ca.setComplaintType(c.getComplaintType());*/
 			ca.setComplaintState(c.getComplaintState());
 			ca.setCodOrgId(c.getCodOrgId());
 			ca.setComplaintOneLevel(c.getComplaintOneLevel());
@@ -583,12 +597,12 @@ public class WorkOrderController {
 			String customerName=customerDAO.findcustomername(c.getCustomerid()).getCustomername();
 			customerList.put(c.getCustomerid(),customerName);			
 	}	
-		List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);
+		/*List<CwbOrder> co=cwbdao.getCwbByCwbs(ncwbs);*/
 		List<Reason> alltworeason=reasondao.getAllTwoLevelReason();
 		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
-		model.addAttribute("shensuendTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("shensuendTime").getValue()));
+		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr==null?null:lr);
 		model.addAttribute("lcsa", lcsa);
@@ -596,7 +610,7 @@ public class WorkOrderController {
 		model.addAttribute("lb", lb==null?null:lb); 
 		model.addAttribute("lc", lc==null?null:lc);
 		model.addAttribute("connameList", connameList);
-		model.addAttribute("co", co==null?null:co);
+		/*model.addAttribute("co", co==null?null:co);*/
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
@@ -750,8 +764,8 @@ public class WorkOrderController {
 	@RequestMapping("/exportWorkOrderExcle")
 	public void exportWorkOrderExcle(Model model, HttpServletResponse response, HttpServletRequest request,CsComplaintAccept cca) {
 
-		String[] cloumnName1 = new String[15]; // 导出的列名
-		String[] cloumnName2 = new String[15]; // 导出的英文列名
+		String[] cloumnName1 = new String[14]; // 导出的列名
+		String[] cloumnName2 = new String[14]; // 导出的英文列名
 		es.setCsComplaintAcceptVO(cloumnName1,cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
@@ -760,7 +774,7 @@ public class WorkOrderController {
 		String fileName = "CsComplaintAccept_" + df.format(new Date()) + ".xlsx"; // 文件名
 	 try{	
 		String cwbs=request.getParameter("orderNo");
-		String complaintType = request.getParameter("complaintType")==null?"-1":request.getParameter("complaintType");
+		/*String complaintType = request.getParameter("complaintType")==null?"-1":request.getParameter("complaintType");*/
 		String orderNo = request.getParameter("orderNo")==null?"":request.getParameter("orderNo");
 		String complaintState = request.getParameter("complaintState")==null?"-1":request.getParameter("complaintState");
 		String complaintOneLevel = request.getParameter("complaintOneLevel")==null?"-1":request.getParameter("complaintOneLevel");
@@ -771,8 +785,9 @@ public class WorkOrderController {
 		String endRangeTime = request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime");
 		/*String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
 		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");*/
+		String acceptNo = request.getParameter("acceptNo");
 		CsComplaintAcceptVO cc = new CsComplaintAcceptVO();
-		cc.setComplaintType(Integer.valueOf(complaintType));
+		/*cc.setComplaintType(Integer.valueOf(complaintType));*/
 		cc.setOrderNo(orderNo);
 		cc.setComplaintState(Integer.valueOf(complaintState));
 		cc.setComplaintOneLevel(Integer.valueOf(complaintOneLevel));
@@ -782,22 +797,37 @@ public class WorkOrderController {
 		cc.setBeginTime(beginRangeTime);
 		cc.setEndTime(endRangeTime);
 		
+		
 		/**
 		 * 下面是查询
 		 */
-		String cwb[]=cwbs.trim().split("\r\n");
+		
+		List<CsComplaintAccept> lcs=null;
 		StringBuffer sb = new StringBuffer();
-		for(String str:cwb){
-			sb=sb.append("'"+str+"',");
+		String ncwbs="";
+		if(!StringUtils.isEmpty(cwbs)){
+			String cwb1 = cos.translateCwb(cwbs);
+			String cwb[]=cwb1.trim().split("\r\n");			
+			for(String str:cwb){
+				sb=sb.append("'"+str+"',");
+			}
+			ncwbs=sb.substring(0, sb.length()-1);	
+		}	
+		StringBuffer sb1 = new StringBuffer();
+		String workorders="";
+		if(!StringUtils.isEmpty(acceptNo)){		
+		String workorder[]=acceptNo.trim().split("\r\n");		
+		for(String str1:workorder){
+			sb1=sb1.append("'"+str1+"',");
 		}
-		String ncwbs=sb.substring(0, sb.length()-1);		
-	List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cc);		
+		workorders=sb1.substring(0, sb1.length()-1);
+		}
+		lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cc,workorders);
 	final List<CsComplaintAcceptExportVO> lc=new ArrayList<CsComplaintAcceptExportVO>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
-			ca.setComplaintType(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());
 			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
 			ca.setCodOrgId(branchDao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
 			if(c.getComplaintOneLevel()!=0){
