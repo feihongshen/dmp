@@ -305,4 +305,8 @@ public class PunishInsideDao {
 		String sql="select cwb from express_ops_punishInside_detail where importFlag=?";
 		return this.jdbcTemplate.query(sql, new Cwbrowmapper(),importflag);
 	}
+	public void updateIsfine(String cwbstr,long isfine){
+		String sql="update express_ops_punishInside_detail set isfine=? where cwb=?";
+		this.jdbcTemplate.update(sql, isfine,cwbstr);
+	}
 }

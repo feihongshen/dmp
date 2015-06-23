@@ -525,7 +525,7 @@ function resultdatadeal(id)
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理结果</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">责任机构</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">责任人</td>
-							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">是否扣罚</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">是否关联扣罚单</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">丢失找回</td>
 							<td width="160" align="center" valign="middle" bgcolor="#E7F4E3">操作</td>
 						</tr>

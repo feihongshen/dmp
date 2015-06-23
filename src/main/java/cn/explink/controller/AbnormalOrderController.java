@@ -53,6 +53,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MissPieceDao;
+import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -65,12 +66,14 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Function;
 import cn.explink.domain.MissPiece;
 import cn.explink.domain.MissPieceView;
+import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.Role;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AbnormalService;
 import cn.explink.service.ExplinkUserDetail;
@@ -86,6 +89,8 @@ import cn.explink.util.StringUtil;
 @RequestMapping("/abnormalOrder")
 public class AbnormalOrderController {
 	@Autowired
+	PunishInsideDao  punishInsideDao;
+	@Autowired 
 	MissPieceDao missPieceDao;
 	@Autowired
 	UserService userService;
@@ -274,8 +279,14 @@ public class AbnormalOrderController {
 						/*	if (ab != null) {
 								action = AbnormalWriteBackEnum.XiuGai.getValue();
 							}*/
+						
 							this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch,name,abnormalinfo,questionNo,isfind,ishandle);
-							
+							PenalizeInside penalizeInside=punishInsideDao.getInsidebycwb(cwbStr);
+							if (penalizeInside!=null) {
+								punishInsideDao.updateIsfine(cwbStr,2);
+							}else {
+								punishInsideDao.updateIsfine(cwbStr, 1);
+							}
 						}
 					} catch (Exception e) {
 						logger.error("问题件创建失败", e);

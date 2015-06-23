@@ -195,6 +195,7 @@ public class PunishInsideController {
 			penalizeInside.setFileposition("");
 			//将相关的信息存入表中
 			punishInsideDao.createPunishInside(penalizeInside,0);
+			punishInsideService.changeFineField(penalizeInside,1);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 			} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -216,6 +217,7 @@ public class PunishInsideController {
 			String filename=abnormalService.loadexceptfile(file);
 			penalizeInside.setFileposition(filename);
 			punishInsideDao.createPunishInside(penalizeInside,0);
+			punishInsideService.changeFineField(penalizeInside,1);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 			} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -240,7 +242,7 @@ public class PunishInsideController {
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
 			punishInsideDao.createPunishInside(penalizeInside,0);
-
+			punishInsideService.changeFineField(penalizeInside,2);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("根据工单创建对内扣罚单的时候出现异常", e);
@@ -260,6 +262,7 @@ public class PunishInsideController {
 		}*/
 		PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 		punishInsideDao.createPunishInside(penalizeInside,0);
+		punishInsideService.changeFineField(penalizeInside,2);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -403,6 +406,7 @@ public class PunishInsideController {
 			}*/
 			PenalizeInside penalizeInside=punishInsideService.switchTowantDataWithQuestion(request,type1);
 			punishInsideDao.createPunishInside(penalizeInside,0);
+			punishInsideService.changeFineField(penalizeInside,3);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 		return "{\"errorCode\":1,\"error\":\"操作失败\"}";
@@ -425,6 +429,7 @@ public class PunishInsideController {
 			String filepath=punishInsideService.loadexceptfile(file);
 			penalizeInside.setFileposition(filepath);
 			punishInsideDao.createPunishInside(penalizeInside,0);
+			punishInsideService.changeFineField(penalizeInside,3);
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("根据问题创建对内扣罚单的时候出现异常", e);
@@ -490,20 +495,6 @@ public class PunishInsideController {
 		pennishinsideShenhe.setShenheuserid(user.getUserid());
 		try {
 			punishInsideDao.updatePunishShenhe(pennishinsideShenhe);
-			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==3) {
-				if (pennishinsideShenhe.getShenheresult()==1) {
-					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
-				}else if (pennishinsideShenhe.getShenheresult()==2) {
-					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
-				}
-			}
-			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==2) {
-				if (pennishinsideShenhe.getShenheresult()==1) {
-					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
-				}else if (pennishinsideShenhe.getShenheresult()==2) {
-					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
-				}
-			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("对内扣罚审核带文件的失败", e);
@@ -532,20 +523,6 @@ public class PunishInsideController {
 
 		try {
 			punishInsideDao.updatePunishShenhe(pennishinsideShenhe);
-			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==3) {
-				if (pennishinsideShenhe.getShenheresult()==1) {
-					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
-				}else if (pennishinsideShenhe.getShenheresult()==2) {
-					abnormalOrderDAO.updateWentijianIsFine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
-				}
-			}
-			if (punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getCreateBySource()==2) {
-				if (pennishinsideShenhe.getShenheresult()==1) {
-					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),2);
-				}else if (pennishinsideShenhe.getShenheresult()==2) {
-					this.workOrderDAO.updateIsfine(punishInsideDao.getInsidebyid(pennishinsideShenhe.getId()).getSourceNo(),1);
-				}
-			}
 			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 		} catch (Exception e) {
 			this.logger.error("对内扣罚审核带文件的失败", e);

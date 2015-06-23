@@ -164,11 +164,12 @@ function cwbexport(){
 				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="input_text1"/>
 				（未打印订单只保留15天）
 				<br/>
+				<br/>
 				<!-- 添加包号查询 -->
-				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>"/>&nbsp;&nbsp;
+				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>" class="input_text1"/>&nbsp;&nbsp;
 				<!-- 添加驾驶员-->
 				驾驶员：
-				<select id="driverid" name="driverid" style="width: 160px">
+				<select id="driverid" name="driverid" style="width: 160px" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
 						<option value="<%=u.getUserid() %>"><%=u.getRealname() %></option>
@@ -176,7 +177,7 @@ function cwbexport(){
 		        </select>
 		        <!--添加车辆  -->
 				车辆：
-				<select id="truckid" name="truckid" style="width: 160px">
+				<select id="truckid" name="truckid" style="width: 160px" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(Truck t : tList){ %>
 						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
@@ -188,7 +189,7 @@ function cwbexport(){
 		      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />
 		      <%} %>
 		      <div style="float:right">   
-				     	 打印模版：<select name="templateid" id="templateid">
+				     	 打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
 					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
 					  			<%} %>
@@ -199,7 +200,7 @@ function cwbexport(){
 				</form>
 				</div>
 				<div class="right_title">
-				<div style="height:88px;"></div>
+				<div style="height:30px;"></div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
