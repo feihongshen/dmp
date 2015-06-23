@@ -153,6 +153,7 @@ import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
+import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.ApplyStateEnum;
 import cn.explink.enumutil.BaleStateEnum;
@@ -6305,7 +6306,8 @@ public class CwbOrderService {
 					if (ot.getCwb().equals(c.getCwb())) {
 						CwbOrderView cwbOrderView = new CwbOrderView();
 						cwbOrderView.setCwb(c.getCwb());
-						cwbOrderView.setCwbordertypeid(CwbOrderTypeIdEnum.getByValue(c.getCwbordertypeid()).getText());// 订单类型
+						cwbOrderView.setCwbstate(c.getCwbstate());
+						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(c.getCwbordertypeid()));// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, c.getCustomerid()));// 供货商的名称
 						cwbOrderView.setConsigneename(c.getConsigneename());//收件人
 						cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());//收件人地址
@@ -6466,6 +6468,33 @@ public class CwbOrderService {
 			}
 		}
 		return cwbOrderViewList;
+	}
+
+	public List<CwbOrderView> getCwborderviewList(List<CwbOrder> coList,
+			List<ApplyEditDeliverystate> aedsList, List<User> userList,
+			List<Branch> branchList) {
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(coList.size()>0&&aedsList.size()>0){
+			for(CwbOrder co : coList){
+				CwbOrderView cov = new CwbOrderView();
+				int index = coList.indexOf(co);
+				ApplyEditDeliverystate aeds = aedsList.get(index);
+				cov.setOpscwbid(aeds.getId());
+				cov.setCwb(aeds.getCwb());//订单号
+				cov.setCwbordertypeid(String.valueOf(co.getCwbordertypeid()));//订单类型id
+				cov.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(co.getCwbordertypeid()));//订单类型
+				cov.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, co.getStartbranchid()));//当前站点
+				cov.setDeliveryname(DeliveryStateEnum.getByValue(co.getDeliverystate()).getText());
+				cov.setDelivername(this.dataStatisticsService.getQueryUserName(userList, co.getDeliverid()));//小件员
+				cov.setRemark1(ApplyEditDeliverystateIshandleEnum.getByValue((int)aeds.getIshandle()).getText());//审核状态
+				cov.setRemark2(this.dataStatisticsService.getQueryUserName(userList, aeds.getEdituserid()));//处理人
+				cov.setRemark3(aeds.getEditreason());//原因备注
+				cov.setDeliverystate(aeds.getEditnowdeliverystate());//申请修改配送结果
+				cov.setState(aeds.getState());
+				covList.add(cov);
+			}
+		}
+		return covList;
 	}
 	
 	/*public String getCwbsBydate(long flowordertypeid, String begindate,

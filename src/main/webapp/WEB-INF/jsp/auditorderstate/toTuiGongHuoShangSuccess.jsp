@@ -315,7 +315,7 @@ function exportField(){
 									<input type="checkbox" name="ischeck" id="ischeck" value="<%=cwb.getCwb()%>"/>
 								</td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypeid() %></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCustomername()%></td>
 								<td width="100" align="right" valign="middle"><strong><%=cwb.getReceivablefee() %></strong></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getEmaildate() %></td>

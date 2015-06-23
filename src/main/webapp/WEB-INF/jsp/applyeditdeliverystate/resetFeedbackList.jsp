@@ -151,14 +151,19 @@ function resetfeedbackPass(){
 		$.ajax({
 			type:"post",
 			url:"<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass",
-			data:{cwbdata:cwbdata},
-			datatype:"json",
+			data:{"cwbdata":cwbdata},
+			dataType:"json",
 			success:function(data){
 				if(data.errorCode==0){
-					location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass";
+					//$("#searchForm").attr("action","1");
+					alert(data.error);
+					$("#searchForm").submit();
+					//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass";
 				}else{
 					alert(data.error);
-    				location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass";
+					//$("#searchForm").attr("action","1");
+					$("#searchForm").submit();
+    				//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealPass";
 				}
 			}
 		});
@@ -180,13 +185,16 @@ function resetfeedbackNoPass(){
 			type:"post",
 			url:"<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass",
 			data:{cwbdata:cwbdata},
-			datatype:"json",
+			dataType:"json",
 			success:function(data){
+				alert(data);
 				if(data.errorCode==0){
 					alert(data.error);
+					$("#searchForm").submit();
 					//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass";
 				}else{
 					alert(data.error);
+					$("#searchForm").submit();
     				//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass";
 				}
 			}
@@ -194,9 +202,13 @@ function resetfeedbackNoPass(){
 	}
 }
 function exportExcel(){
-	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/rfbExportExcel");
-	$("#searchForm").submit();
-	$("#searchForm").attr("action","1");
+	if(<%=applyeditlist!=null%>){
+		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/rfbExportExcel");
+		$("#searchForm").submit();
+		$("#searchForm").attr("action","1");
+	}else{
+		alert("未做查询,无法导出！");
+	}
 }
 </script>
 </HEAD>
@@ -283,7 +295,7 @@ function exportExcel(){
 											反馈站点:
 										</td>
 										<td>	
-											<select style="width: 140px;" name ="feedbackbranchid" id =""feedbackbranchid"">
+											<select style="width: 140px;" name ="feedbackbranchid" id ="feedbackbranchid">
 												<option  value ="0">全部</option>
 												<%for(Branch br:branchList){ %>
 													<option value ="<%=br.getBranchid() %>"><%=br.getBranchname() %></option>

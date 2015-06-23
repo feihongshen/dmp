@@ -3085,6 +3085,29 @@ public class ExportService {
 			cloumnName2[5] = "InSitetime";
 			
 		}
+		
+		
+		//反馈状态修改申请
+		public void SetResetFeedBackFields(String[] cloumnName1, String[] cloumnName2) {
+			cloumnName1[0] = "订单号";
+			cloumnName2[0] = "Cwb";
+			cloumnName1[1] = "订单类型";
+			cloumnName2[1] = "Cwbordertypename";
+			cloumnName1[2] = "当前站点";
+			cloumnName2[2] = "Branchname";
+			cloumnName1[3] = "配送结果";
+			cloumnName2[3] = "Deliveryname";
+			cloumnName1[4] = "小件员";
+			cloumnName2[4] = "Delivername";
+			cloumnName1[5] = "处理状态";
+			cloumnName2[5] = "Remark1";
+			cloumnName1[6] = "处理人";
+			cloumnName2[6] = "Remark2";
+			cloumnName1[7] = "原因备注";
+			cloumnName2[7] = "Remark3";
+			
+		}
+		
 		// 中转出站view
 		public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
 			cloumnName1[0] = "订单号";

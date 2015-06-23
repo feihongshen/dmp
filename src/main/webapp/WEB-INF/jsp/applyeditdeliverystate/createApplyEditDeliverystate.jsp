@@ -1,3 +1,4 @@
+<%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.User"%>
 <%@page import="cn.explink.domain.ApplyEditDeliverystate"%>
 <%@page import="cn.explink.enumutil.*"%>
@@ -15,7 +16,7 @@ List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliver
   List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
   List<User> userList = (List<User>)request.getAttribute("userList");
   Page page_obj = (Page)request.getAttribute("page_obj");
-  
+  List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
   ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
 %>
 
@@ -62,7 +63,7 @@ function sub1(id){
 		success : function(data) {
 			if(data.errorCode==0){
 				alert("问题件成功提交：1单");
-				parent.refreshState();
+				//parent.refreshState();
 			}else{
 				alert(data.error);
 			}
@@ -93,32 +94,18 @@ function sub2(cwbstr,id){
 	});
 	
 }
-//处理之前已经修改过之后产生新状态
-function sub2(cwbstr,id){
-	
-	$.ajax({
-		type: "POST",
-		url:'<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystateAgin',
-		data:{cwbss:cwbstr,
-			  editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
-			  editreason:$("#editreason"+id).val()
-		     },
-		dataType:"html",
-		success : function(data) {
-			if(data.errorCode==0){
-				alert("提交成功：1单");
-			}else{
-				alert("提交成功：1单");
-			}
-			//searchForm.submit();
-		}
-	});
-	
+
+function exportField(){
+ 	if(<%=covList!=null&&!covList.isEmpty()%>){
+ 		$("#btnval").attr("disabled","disabled"); 
+	 	$("#btnval").val("请稍后……");
+		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/createApplyeditExportExcel");	
+		$("#searchForm").submit();
+		$("#searchForm").attr("action","1");
+	}else{
+		alert("没有做申请操作，不能导出！");
+	} 
 }
-
-
-
-
 
 function  search(){
 	if($("#cwb").val()=='查询多个订单用回车隔开' || $("#cwb").val()=='' ){
@@ -143,15 +130,20 @@ function  search(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								<span>
-								<select name="" class="select1">
-									<option>导出模板</option>
-								</select>
-								<input name="" type="button" value="导出Excel" class="input_button2">
-								</span> 订单号：
-								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb"><%=request.getParameter("cwb")==null?"查询多个订单用回车隔开":request.getParameter("cwb")%></textarea>
-								
-								<input type="button" value="申请" class="input_button2" onclick="search();">
+								<table>
+									<tr>
+										<td>
+											订单号：
+										</td>
+										<td>
+											<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb"><%=request.getParameter("cwb")==null?"查询多个订单用回车隔开":request.getParameter("cwb")%></textarea>
+											<input type="button" value="申请" class="input_button2" onclick="search();">
+										</td>
+										<td>
+											<input id="btnval" type="button" value="导出" onclick="exportField();" class="input_button2">
+										</td>
+									</tr>
+								</table>
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
@@ -164,60 +156,57 @@ function  search(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<!-- <td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td> -->
+									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
 									<td width="175" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<div style="height:100px"></div>
-					
+					<div style="height:105px"></div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 						<tbody>
-						<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ %>
-						<%int index = cwbList.indexOf(cwb); 
-							ApplyEditDeliverystate aeds = applyEditDeliverystateList.get(index);
-						%>
+						<%if(covList!=null&&covList.size()>0){
+							for(CwbOrderView cwb : covList){ %>
 							<tr height="30" >
 								<td width="120" align="center" valign="middle"><%=cwb.getCwb() %></td>
-								<td width="100" align="center" valign="middle"><%for(CwbOrderTypeIdEnum coti : CwbOrderTypeIdEnum.values()){if(cwb.getCwbordertypeid()==coti.getValue()){ %><%=coti.getText() %><%}} %></td>
-								<td width="120" align="center" valign="middle"><%for(Branch b : branchlist){if(cwb.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(cwb.getDeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%for(User u : userList){if(cwb.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%if(aeds.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()){ %>未处理<%}else{ %>已处理<%} %></td>
-								<td width="100" align="center" valign="middle"><%for(User u : userList){if(aeds.getEdituserid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-								<%-- <td align="center" valign="middle">
-									<select name="editnowdeliverystate<%=aeds.getId() %>" id="editnowdeliverystate<%=aeds.getId() %>">
+								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
+								<td width="120" align="center" valign="middle"><%=cwb.getBranchname()%></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getDeliveryname() %></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getDelivername() %></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getRemark1()%></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getRemark2()%></td>
+								<td align="center" valign="middle">
+									<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>">
 										<option value ="-1">==请选择==</option>
-					                   <%if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()){%>
-					                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
-					                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-					                   <%}else if(cwb.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(aeds.getEditnowdeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+					                   <%if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Peisong.getValue()){%>
+					                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
+					                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
 					                   <%} %>
 									</select>
-								</td> --%>
-								<td width="175" align="center" valign="middle"><input name="editreason<%=aeds.getId() %>" id="editreason<%=aeds.getId() %>" type="text" value="<%=aeds.getEditreason()%>"></td>
+								</td>
+								<td width="175" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
 								<td width="80" align="center" valign="middle">
-									<%if(aeds.getEditnowdeliverystate()==0){ %>
-									<input name="提交" type="button" class="input_button2" onclick="sub1(<%=aeds.getId() %>);" value="提交">
-									<%}else if(aeds.getNowdeliverystate()==1){ %>
-									<input type="button"  value="已提交" onclick="sub2('<%=aeds.getCwb() %>',<%=aeds.getId() %>);">
-									<%} %>
+								<%if(cwb.getState()==0){ %>
+								<input name="提交" type="button" class="input_button2" onclick="sub1(<%=cwb.getOpscwbid() %>);" value="提交">
+								<%}else{ %>
+								<input type="button"  value="已提交" onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>);">
+								<%} %>
 								</td>
 							</tr>
-							<%} %>
+							<%} }%>
 						
 					</table>
 				</div>

@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -329,8 +332,8 @@ public class ApplyEditDeliverystateController {
 		if(cwbdata.length()>0){
 			for(String cwb:cwbdata.split(",")){
 				applyEditDeliverystateDAO.updateShenheStateNoPass(cwb);
-				return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 			}
+			return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 		}
 		return "{\"errorCode\":1,\"error\":\"审核为不通过失败\"}";
 	}
@@ -663,20 +666,18 @@ public class ApplyEditDeliverystateController {
 				}
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
+				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
 				if(corder == null){
 					errorCwbs.append(cwbStr + ":无此单号!");
-				}
-				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
-				if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
+				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
 					CwbOrder co = cwbDAO.getCwbByCwbLock(cwbStr);
-					List<ApplyEditDeliverystate> aedsList = applyEditDeliverystateDAO.getApplyEditDeliverystateByCwb(cwbStr, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
-
+					long aedsLong = applyEditDeliverystateDAO.getApplyEditCount(cwbStr, 1);
 					DeliveryState ds = deliveryStateDAO.getDeliveryByCwb(cwbStr);
 					ApplyEditDeliverystate aeds = new ApplyEditDeliverystate();
-					if (co != null && aedsList.size() == 0) {
+					if (co != null && aedsLong == 0) {
 						aeds.setCwb(cwbStr);
 						aeds.setOpscwbid(co.getOpscwbid());
 						aeds.setDeliverystateid(ds.getId());
@@ -702,19 +703,84 @@ public class ApplyEditDeliverystateController {
 			}
 			String cwbs1 = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "'--'";
 			count = cwbDAO.getCwbOrderCwbsCount(cwbs1);
-
-			model.addAttribute("cwbList", cwbDAO.getCwbByCwbsPage(page, cwbs1));
-			model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateDAO.getApplyEditDeliverystateByCwbsPage(page, cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()));
-			model.addAttribute("branchList", branchDAO.getAllEffectBranches());
-			model.addAttribute("userList", userDAO.getAllUser());
+			List<CwbOrder> coList =cwbDAO.getCwbByCwbsPage(page, cwbs1);
+			List<ApplyEditDeliverystate> aedsList = applyEditDeliverystateDAO.getApplyEditDeliverystateByCwbsPage(page, cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
+			/*StringBuffer sb = new StringBuffer();
+			for(ApplyEditDeliverystate aeds:aedsList){
+				sb.append("'").append(aeds.getCwb()).append("',");
+			}
+			String cwbss = "";
+			if(sb.length()>0){
+				cwbss = sb.substring(0,sb.length()-1);
+				
+			}
+			coList = cwbDAO.getCwbByCwbsPage(page, cwbss);*/
+			List<User> userList = userDAO.getAllUser();
+			List<Branch> branchList = branchDAO.getAllEffectBranches();
+			List<CwbOrderView> covList = this.cwborderService.getCwborderviewList(coList,aedsList,userList,branchList);
+			model.addAttribute("cwbList",coList);
+			model.addAttribute("applyEditDeliverystateList",aedsList);
+			model.addAttribute("branchList", branchList);
+			model.addAttribute("userList", userList);
 			model.addAttribute("errorCwbs", errorCwbs.toString());
+			model.addAttribute("covList",covList);
 		}
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/createApplyEditDeliverystate";
 	}
 
-	@RequestMapping("/toCreateApplyEditDeliverystateAgin")
+	//反馈状态修改申请导出
+	@RequestMapping("/createApplyeditExportExcel")
+	public void createApplyeditExportExcel(HttpServletRequest request,HttpServletResponse response,
+			 @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb
+			){
+		String quot = "'", quotAndComma = "',";
+		if (cwb.length() > 0) {
+			StringBuffer cwbs = new StringBuffer();
+			StringBuffer errorCwbs = new StringBuffer();
+
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
+				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
+				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
+				if(corder == null){
+					errorCwbs.append(cwbStr + ":无此单号!");
+				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
+					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
+				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
+					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
+				}
+			}	
+			String cwbs1 = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "'--'";
+			
+			List<ApplyEditDeliverystate> aedsList = applyEditDeliverystateDAO.getApplyEditDeliverystates(cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
+			StringBuffer sb = new StringBuffer();
+			for(ApplyEditDeliverystate aeds:aedsList){
+				sb.append("'").append(aeds.getCwb()).append("',");
+			}
+			String strss = "";
+			if(sb.length()>0){
+				strss = sb.substring(0,sb.length()-1);
+			}
+			List<CwbOrder> coList = cwbDAO.getcwborderList(strss);
+			List<User> userList = userDAO.getAllUser();
+			List<Branch> branchList = branchDAO.getAllEffectBranches();
+			List<CwbOrderView> covList = this.cwborderService.getCwborderviewList(coList,aedsList,userList,branchList);
+			
+			String[] cloumnName1 = new String[8]; // 导出的列名
+			String[] cloumnName2 = new String[8]; // 导出的英文列名
+			this.exportService.SetResetFeedBackFields(cloumnName1, cloumnName2);
+			String sheetName = "反馈状态修改申请"; // sheet的名称
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String fileName = "fankuizhuangtai_order_" + sdf.format(new Date()) + ".xlsx"; // 文件名
+			ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
+		}
+	}
+	/*@RequestMapping("/toCreateApplyEditDeliverystateAgin")
 	public @ResponseBody String toCreateApplyEditDeliverystateAgin(Model model,
 			//处理在修改时应该
 			@RequestParam(value="cwbss",defaultValue = "", required = false) String cwbss,
@@ -764,7 +830,7 @@ public class ApplyEditDeliverystateController {
 				}
 			
 		return "{\"errorCode\":0,\"error\":\"再次提交申请\"}";
-	}
+	}*/
 	
 	/**
 	 * 提交申请的每个订单的修改后的配送结果和原因
@@ -784,7 +850,7 @@ public class ApplyEditDeliverystateController {
 			ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
 			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
 			if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
-				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id, editreason);
+				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id,editnowdeliverystate, editreason);
 				return "{\"errorCode\":0,\"error\":\"提交成功\"}";
 			} else {
 				if (deliverystate == null || deliverystate.getPayupid() > 0) {

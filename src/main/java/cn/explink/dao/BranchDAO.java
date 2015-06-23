@@ -944,6 +944,9 @@ public class BranchDAO {
 		}
 		return b;
 	}
+	public List<Branch> getQueryBranchs(long sitetype) {
+		String sql = "SELECT * from express_set_branch  WHERE sitetype=?  and brancheffectflag='1' ";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
+	}
 	
-
 }

@@ -1043,6 +1043,7 @@ public class CwbOrderController {
 		return scancwblist;
 	}
 	
+	
 	/**
 	 * 审为退货再投
 	 * 
@@ -1246,7 +1247,6 @@ public class CwbOrderController {
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("cwbList",covList);
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		return "auditorderstate/toTuiGongHuoShangSuccess";
 	}
 

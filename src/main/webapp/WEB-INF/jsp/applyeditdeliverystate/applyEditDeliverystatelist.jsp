@@ -18,11 +18,10 @@ List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliver
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
 Page page_obj = (Page)request.getAttribute("page_obj");
-  
-  ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
-  CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
-  String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
-  String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
+ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
+CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
+String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
+String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
 %>
 
 
@@ -115,8 +114,10 @@ function sub(){
 		//applyeditdeliverystate
 		$("#searchForm").submit();
 	}
-	
 }
+
+
+
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
