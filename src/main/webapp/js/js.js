@@ -5163,6 +5163,8 @@ function updaterelatelevel(URL, firstlevelreasonid) {
 			}
 		}
 	});
+	
+	
 }
 
 function updaterelatelevel2(URL, firstlevelreasonid) {
@@ -5180,7 +5182,6 @@ function updaterelatelevel2(URL, firstlevelreasonid) {
 		}
 	});
 }
-
 
 function getfirstlevel(flag){
 	$("#first").attr('hidden',true); 

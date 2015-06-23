@@ -197,6 +197,12 @@ function checkResult(){
 }
 
 function sub(){
+	if($('#firstlevelreasonid').val!=-1){
+		if($('#leavedreasonid').val()==0){
+			alert("请选择滞留原因");
+			return false;
+			}
+		}
 	if($("#cwbs").val()==""){
 		alert("请扫描订单号");
 		return false;
