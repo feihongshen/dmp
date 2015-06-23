@@ -977,7 +977,7 @@ public class CwbOrderController {
 		long begintime = 0;
 		long endtime = 0;
 		if(!begindate.equals("")&&!enddate.equals("")){
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
 				Date date1 = sdf.parse(begindate);
 				begintime = date1.getTime();
