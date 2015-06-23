@@ -6854,5 +6854,10 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     </changeSet>
 
+ <changeSet id="wangzhiyong-2015-06-23-1" author="wangzhiyong">
+    	<sql>
+    		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '可核实时间是否过期');
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  
