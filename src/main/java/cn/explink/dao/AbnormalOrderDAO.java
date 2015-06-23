@@ -1017,10 +1017,10 @@ public class AbnormalOrderDAO {
 		}
 		
 	}
-	public void updateWentijianIsFine(String punishNo,long state){
+	public void updateWentijianIsFine(String cwb,long state){
 		try {
-			String sqlString="update express_ops_abnormal_order set isfine=? where questionno=?";
-			this.jdbcTemplate.update(sqlString,state,punishNo);
+			String sqlString="update express_ops_abnormal_order set isfine=? where cwb=?";
+			this.jdbcTemplate.update(sqlString,state,cwb);
 		} catch (DataAccessException e) {
 			
 		}

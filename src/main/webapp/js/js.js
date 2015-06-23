@@ -6674,13 +6674,13 @@ function uploadFormInitAddhh(form, contextPath) {
 	/*	$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);*/
 		// $("#wavText").val("");
 		if (dataObj.errorCode == 0) {
-			console.info(dataObj.success);
-			alert(dataObj.success);
+		/*	console.info(dataObj.success);
+			alert(dataObj.success);*/
 			$("#successCount111",parent.document).html(dataObj.success);
 			$("#emaildate",parent.document).val(dataObj.emaildate);
-			console.info(dataObj.error);
+			/*console.info(dataObj.error);*/
 			$("#failCount111",parent.document).html(dataObj.error);
-			alert(dataObj.error);
+		/*	alert(dataObj.error);*/
 /*			$("#errorName",parent.document).val(dataObj.emailid);
 */			
 			alert("导入完成");

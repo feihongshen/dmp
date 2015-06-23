@@ -331,11 +331,11 @@ public class PunishInsideService {
 		}
 		//改变问题件里面的是否扣罚关联的状态
 		public void changeWentijianIsfine(PenalizeInside penalizeInside){
-			abnormalOrderDAO.updateWentijianIsFine(penalizeInside.getSourceNo(),2);
+			abnormalOrderDAO.updateWentijianIsFine(penalizeInside.getCwb(),2);
 		}
 		//改变工单里面的是否扣罚关联的状态
 		public void changeGongdanIsfine(PenalizeInside penalizeInside){
-			this.workOrderDAO.updateIsfine(penalizeInside.getSourceNo(),2);
+			this.workOrderDAO.updateIsfine(penalizeInside.getCwb(),2);
 		}
 		public String getRealName(String username){
 			

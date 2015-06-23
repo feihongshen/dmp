@@ -283,9 +283,9 @@ public class AbnormalOrderController {
 							this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch,name,abnormalinfo,questionNo,isfind,ishandle);
 							PenalizeInside penalizeInside=punishInsideDao.getInsidebycwb(cwbStr);
 							if (penalizeInside!=null) {
-								punishInsideDao.updateIsfine(cwbStr,2);
+								abnormalOrderDAO.updateWentijianIsFine(questionNo, 2);
 							}else {
-								punishInsideDao.updateIsfine(cwbStr, 1);
+								abnormalOrderDAO.updateWentijianIsFine(questionNo, 1);
 							}
 						}
 					} catch (Exception e) {
