@@ -71,6 +71,27 @@ function checkall()
 		}
 	});
 }
+function showUp()
+{
+	$("#fileup").removeAttr('style');
+	$("#top").removeAttr('style');
+	$("#br").attr('style','display: none;');
+	$("#imp").attr('disabled','disabled');
+//	$("#box_form").removeAttr('style');
+	}
+function showButton()
+{ 	if($("#filename").val().indexOf(".xlsx")==-1&&$("#filename").val().indexOf(".xls")==-1)
+	{
+	alert("文件类型必须为xls或者xlsx");
+	$("#filename").val('');
+	$("#subfile").attr('disabled','disabled');
+	return false;
+	}
+	if($("#filename").val().length>0)
+	{
+	$("#subfile").removeAttr('disabled');
+	}
+}
 </script>
 </head>
 
@@ -140,12 +161,13 @@ function checkall()
 	</table>
 	</div>
 	</div>
+	</div>
 	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
 	<c:if test='${page_obj.maxpage>1}'>
 	<div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 	<tr>
-		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+		<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
 			<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#searchForm').submit();">上一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#searchForm').submit();" >下一页</a>　
@@ -186,12 +208,21 @@ function checkall()
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         		<select name="branchid" style="width: 100%">
+         		<%-- <select name="branchid" style="width: 100%">
          		 <option value="-1"></option>
          		 <c:forEach items="${ branchList}" var="branch">
          		 <option value="${branch.branchid }">${branch.branchname }</option>
          		 </c:forEach>
-         		</select>
+         		</select> --%>
+         		    <input type="text" name="branchid" class="easyui-validatebox" 
+					initDataType="TABLE" 
+					initDataKey="Branch" 
+					viewField="branchname" 
+      	        	saveField="branchid"
+      	        	filterField="sitetype" 
+					filterVal="2"  
+					data-options="width:150,prompt: '站点'"
+			/>
          		 </td>
          	</tr>
          	<tr>
@@ -226,8 +257,34 @@ function checkall()
 	         	<input type="button" class="input_button2" value="保存" onclick="$('#save').dialog('close');"/>
 	         	<input type="submit" class="input_button2" value="核销完成"/>
 	         	</td>
-	         	<td><input type="submit" class="input_button2" value="人事数据导入"/></td>
+	         	<td><input type="button" class="input_button2" id="imp"  onclick="showUp()" value="人事数据导入"/></td>
 	         	</tr>
+	         	<tr><td colspan="6">
+<div id="fileup"  style="display: none;" }>
+<table>
+	<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+		<tr>
+		<td>
+		<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
+		 </td>
+		 <td>
+		 <input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
+		 </td>
+		 	<td>
+			 <span style="font-weight: bold;font-size: 10px"> 成功:</span> 
+			 </td>
+			 <td>
+			 </td> 
+			 <td>
+			 <span style="font-weight: bold;font-size: 10px"> 失败:</span>
+			 </td>
+			 <td>
+			 </td>
+		 </tr>
+	</form>
+	</table>
+	</div></td>
+	</tr>
          		<tr>
          		<td align="right" nowrap="nowrap" style="width: 10%;">批次编号：</td>
          		<td nowrap="nowrap" style="width: 20%;">
@@ -244,12 +301,22 @@ function checkall()
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         		<select name="branchid" style="width: 100%" disabled="disabled">
+         	<%-- 	<select name="branchid" style="width: 100%" disabled="disabled">
          		 <option value="-1"></option>
          		 <c:forEach items="${branchList}" var="branch">
          		 <option value="${branch.branchid}" ${salary.branchid==branch.branchid?'selected=selected':'' }>${branch.branchname }</option>
          		 </c:forEach>
-         		</select>
+         		</select> --%>
+         		<input type="text" name="branchid" class="easyui-validatebox" 
+					initDataType="TABLE" 
+					initDataKey="Branch" 
+					viewField="branchname" 
+      	        	saveField="branchid"
+      	        	filterField="sitetype" 
+					filterVal="2"  
+					data-options="width:150,prompt: '站点'"
+					value="${salary.branchid}"
+			/>
          		 </td>
          	</tr>
          	<tr>
@@ -281,56 +348,66 @@ function checkall()
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 15%;">批次编号：</td>
          		<td nowrap="nowrap" style="width: 30%;">
-         		<input name="batchid" type="text" style="width: 100%;" /> 
+         		<input name="batchid" type="text" style="width: 100%;" value="${batchid }" /> 
          		</td>
-         		<td nowrap="nowrap" align="right" style="width: 15%;" >批次状态：</td>
+         		<td nowrap="nowrap" align="right" style="width: 15%;" value="${batchstate }" >批次状态：</td>
          		<td nowrap="nowrap" style="width: 30%;">
 	         		<select name="batchstate" style="width: 100%;" >
 	         		<%-- <c:forEach  items="${batchStateEnum}" var="batch">
 	         			<option vaule="${batch.value}">${batch.text}</option>
 	         			</c:forEach> --%>
 	         			<option value="-1"></option>
-	         			<option value="1">已核销</option>
-	         			<option value="0">未核销</option>
+	         			<option value="1" ${batchstate==1?'selected=selected':'' } >已核销</option>
+	         			<option value="0" ${batchstate==0?'selected=selected':'' }>未核销</option>
 	         		</select>
          		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right" >站点：</td> 
          		<td nowrap="nowrap">
-         		<select name="branchid" style="width: 100%">
+         		<%-- <select name="branchid" style="width: 100%">
          		 <option value="-1"></option>
          		 <c:forEach items="${ branchList}" var="branch">
          		 <option value="${branch.branchid }">${branch.branchname }</option>
          		 </c:forEach>
-         		</select>
+         		</select> --%>
+         			<input type="text" name="branchid" class="easyui-validatebox" 
+					initDataType="TABLE" 
+					initDataKey="Branch" 
+					viewField="branchname" 
+      	        	saveField="branchid"
+      	        	filterField="sitetype" 
+					filterVal="2"  
+					data-options="width:150,prompt: '站点'"
+					value="${branchid}"
+			/>
          		</td>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">
-	         	 <input type="text" name="starttime" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-   	       		 <input type="text" name="endtime" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+	         	 <input type="text" name="starttime" value="${starttime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
+   	       		 <input type="text" name="endtime"   value="${endtime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right" >核销人：</td>
          		<td nowrap="nowrap">
-         		<input type="text" style="width: 100%;" name="realname"/> 
+         		<input type="text" style="width: 100%;" name="realname" value="${realname}"/> 
          		</td>
          		<td nowrap="nowrap" align="right" >核销日期：</td>
          		<td nowrap="nowrap">
-         		<input type="text" name="operationTime" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:150,prompt: '核销日起'"/>
+         		<input type="text" name="operationTime" value="${operationTime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:150,prompt: '核销日起'"/>
          		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right">排序：</td>
          		<td nowrap="nowrap">
 			    	<select style="width:70%;" name="orderbyname">
-			    	<option value="batchid">批次编号</option>
-			    	<option value="operationTime">核销日期</option>
+			    	<option value="batchid" ${orderbyname=='batchid'?'selected=selected':'' }>批次编号</option>
+			    	<option value="operationTime" ${orderbyname=='operationTime'?'selected=selected':'' }>核销日期</option>
 			    	</select>
 			    	<select style="width:30%;" name="orderbyway">
-			    	<option value="asc">升序</option>
-			    	<option value="desc">降序</option>
+			    	<option value="asc" ${orderbyway=='asc'?'selected=selected':'' }>升序</option>
+			    	<option value="desc" ${orderbyway=='desc'?'selected=selected':'' } >降序</option>
 			    	</select>
 		        </td>
          	</tr>
