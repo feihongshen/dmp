@@ -21,17 +21,20 @@ import cn.explink.core.interceptor.PageControl;
 import cn.explink.core.pager.Pager;
 import cn.explink.core.pager.PropertyFilter;
 import cn.explink.core.utils.StringUtils;
-import cn.explink.dao.SmsManageDao;
 import cn.explink.service.CsPushSmsService;
 
+/**
+ * 催件短信controller
+ * 
+ * @author gaoll
+ *
+ */
 @Controller
 @RequestMapping("/csPushSms")
-public class CsPushSmsContrller {
+public class CsPushSmsController {
 	
 	@Autowired
 	private CsPushSmsService csPushSmsService;
-	@Autowired
-	private SmsManageDao smsManageDao;
 	
 	@RequestMapping("/rushSmsList")
 	public String sendList(){
@@ -52,7 +55,6 @@ public class CsPushSmsContrller {
 		//查询条件
 		List<PropertyFilter> filters = PropertyFilter.buildFromHttpRequest(request);
 		//执行查询
-		//service.queryData(pager,filters);
 		this.csPushSmsService.queryData(pager,filters);
 		return this.getPageData(PageControl.getPager());
 	}
@@ -95,13 +97,6 @@ public class CsPushSmsContrller {
 		return pager;
 	}
 
-	// 验证手机号码的合法性
-	private static boolean isMobileNO(String mobiles) {
-		Pattern p = Pattern.compile("^1\\d{10}$");
-		Matcher m = p.matcher(mobiles);
-		return m.matches();
-	}
-	
 	@ModelAttribute
 	public void getCsPushSms(@RequestParam(value = "id", defaultValue = "-1") Integer id,Model model) {
 		if (id != -1) {

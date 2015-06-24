@@ -22,7 +22,7 @@
 	        <span class="toolbar-item dialog-tool-separator"></span>
    	        <input type="text" name="filter_EQS_workOrderNo" class="easyui-validatebox" data-options="width:150,prompt: '工单号'"/>
 	        <span class="toolbar-item dialog-tool-separator"></span>
-   	        <input type="text" name="filter_EQS_complianUserName" class="easyui-validatebox" 
+   	       <!--  <input type="text" name="filter_EQS_complianUserName" class="easyui-validatebox" 
 					initDataType="TABLE" 
 					initDataKey="User" 
 					viewField="realname" 
@@ -37,26 +37,27 @@
       	        	saveField="branchid"
 					data-options="width:150,prompt: '责任机构'"
 			/>
-	        <span class="toolbar-item dialog-tool-separator"></span>
-   	        <input type="text" name="filter_EQL_complaintType" class="easyui-validatebox" 
+	        <span class="toolbar-item dialog-tool-separator"></span> -->
+   	        <input type="text" name="filter_EQL_complaintState" class="easyui-validatebox" 
       	        	initDataType="ENUM" 
-      	        	initDataKey="cn.explink.enumutil.ComplaintTypeEnum"
+      	        	initDataKey="cn.explink.enumutil.ComplaintStateEnum"
       	        	viewField="text" 
       	        	saveField="value"
 	      	        data-options="width:150,prompt: '工单状态'"
    	        />
-	        <span class="toolbar-item dialog-tool-separator"></span>
-		</form>
 			
 		<!-- dataGrid工具条区域  -->
    		
         <a href="javascript(0)" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="cx()">查询</a>
   		<span class="toolbar-item dialog-tool-separator"></span>
-  		<!-- <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="add();">添加</a>
+  		
+  		<!-- 
+  		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="add();">添加</a>
   		<span class="toolbar-item dialog-tool-separator"></span>
       	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" data-options="disabled:false" onclick="del()">删除</a>
         <span class="toolbar-item dialog-tool-separator"></span>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="upd()">修改</a>  -->
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="upd()">修改</a>  
+        -->
             
 	</div>
 	

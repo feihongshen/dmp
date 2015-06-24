@@ -683,7 +683,7 @@ src/main/java/cn/explink/controller/CommonModelController.java -text
 src/main/java/cn/explink/controller/ComplaintController.java -text
 src/main/java/cn/explink/controller/ComplaintView.java -text
 src/main/java/cn/explink/controller/ContactController.java -text
-src/main/java/cn/explink/controller/CsPushSmsContrller.java -text
+src/main/java/cn/explink/controller/CsPushSmsController.java -text
 src/main/java/cn/explink/controller/CustomerController.java -text
 src/main/java/cn/explink/controller/CustomerWareHouseController.java -text
 src/main/java/cn/explink/controller/CwbALLStateControlController.java -text

@@ -1141,7 +1141,7 @@ public class WorkOrderController {
 		
 		if( StringUtils.isEmpty(errorMsg) && "发送短信成功".equals(msg)){
 			this.workorderdao.updateMsgNum(workOrderNo);
-			CsPushSms csPushSms = new CsPushSms(cwbScan, workOrderNo, Long.valueOf(workOrderObj.getComplaintType()), workOrderObj.getHandleUser(), DateTimeUtil.getNowTime(), message, smsSendMobile);
+			CsPushSms csPushSms = new CsPushSms(cwbScan, workOrderNo, Long.valueOf(workOrderObj.getComplaintType()), Integer.valueOf(workOrderObj.getComplaintState()), workOrderObj.getHandleUser(), DateTimeUtil.getNowTime(), message, smsSendMobile);
 			if( workOrderObj.getCodOrgId() != 0){
 				csPushSms.setComplianBranchId(Long.valueOf(workOrderObj.getCodOrgId()));
 				csPushSms.setComplianUserName(workOrderObj.getComplaintUser());

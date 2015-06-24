@@ -26,7 +26,7 @@ $(function(){
 			{field:'id',title:'id',hidden:true},  
 			{field:'cwbOrderNo',title:'订单号',sortable:true,width:25},
 			{field:'workOrderNo',title:'工单号',sortable:true,width:25},
-	        {field:'complaintType',title:'工单状态',sortable:true,width:10,formatter:complaintTypeFormatter},    
+	        {field:'complaintState',title:'工单状态',sortable:true,width:10,formatter:complaintStateFormatter},    
 	        {field:'handler',title:'工单创建人',sortable:15,formatter:useridFormatter},
 	        {field:'complianBranchId',title:'责任机构',sortable:true,width:15,formatter:branchFormatter},
 	        {field:'complianUserName',title:'责任人',sortable:true,width:15,formatter:usernameFormatter},
@@ -122,14 +122,13 @@ function cx(){
 }
 
 /**
- * 工单状态Formatter
- * @param value
- * @param row
- * @param index
- * @returns
+ * dataGrid数据Formatter
  */
 function complaintTypeFormatter(value, row, index){
 	return enumFormatter("cn.explink.enumutil.ComplaintTypeEnum", value, "text" , "value");
+}
+function complaintStateFormatter(value, row, index){
+	return enumFormatter("cn.explink.enumutil.ComplaintStateEnum", value, "text" , "value");
 }
 function usernameFormatter(value, row, index){
 	return entityFormatter("User", value, "realname", "username");

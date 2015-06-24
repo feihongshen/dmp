@@ -14,6 +14,7 @@ public class CsPushSms extends Pageable{
 	private String cwbOrderNo;
 	private String workOrderNo;
 	private Long complaintType;//ComplaintTypeEnum
+	private Integer complaintState;//ComplaintStateEnum
 	private String handler;
 	private Long complianBranchId;
 	private String complianUserName;
@@ -37,12 +38,13 @@ public class CsPushSms extends Pageable{
 	 * @param sendTime
 	 * @param smsContent
 	 */
-	public CsPushSms(String cwbOrderNo, String workOrderNo, Long complaintType,
+	public CsPushSms(String cwbOrderNo, String workOrderNo, Long complaintType,Integer complaintState,
 			String handler, String sendTime, String smsContent, String mobileNo) {
 		super();
 		this.cwbOrderNo = cwbOrderNo;
 		this.workOrderNo = workOrderNo;
 		this.complaintType = complaintType;
+		this.complaintState = complaintState;
 		this.handler = handler;
 		this.sendTime = sendTime;
 		this.smsContent = smsContent;
@@ -72,6 +74,14 @@ public class CsPushSms extends Pageable{
 	public void setComplaintType(Long complaintType) {
 		this.complaintType = complaintType;
 	}
+	public Integer getComplaintState() {
+		return complaintState;
+	}
+
+	public void setComplaintState(Integer complaintState) {
+		this.complaintState = complaintState;
+	}
+
 	public String getHandler() {
 		return handler;
 	}

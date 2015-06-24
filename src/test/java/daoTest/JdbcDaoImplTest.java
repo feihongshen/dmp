@@ -13,6 +13,7 @@ import cn.explink.core.interceptor.PageControl;
 import cn.explink.core.pager.Pager;
 import cn.explink.dao.CsPushSmsDao;
 import cn.explink.entity.CsPushSms;
+import cn.explink.enumutil.ComplaintStateEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.util.DateTimeUtil;
 
@@ -32,7 +33,7 @@ public class JdbcDaoImplTest extends BaseTest {
         user.setUserAge(20);
         user.setGmtCreate(new Date());
         
-        csPushSms = new CsPushSms("cwbOrderNO", "workOrderNo", ComplaintTypeEnum.CuijianTousu.getValue(), "操作人", DateTimeUtil.getNowDate(), "工单内容","123211121");
+        csPushSms = new CsPushSms("cwbOrderNO", "workOrderNo", ComplaintTypeEnum.CuijianTousu.getValue(),ComplaintStateEnum.YiHeShi.getValue(), "操作人", DateTimeUtil.getNowDate(), "工单内容","123211121");
     }
     
     @Test
