@@ -51,6 +51,12 @@ function initEnumSelect(data){
 	    textField:viewField,
 	    data:enumData
 	});  
+	s.combobox({
+		filter: function(q, row){
+			var opts = $(this).combobox('options');
+			return row[opts.textField].indexOf(q) >= 0;
+		}
+	});
 }
 
 function initTABLESelect(data){
@@ -88,10 +94,20 @@ function initTABLESelect(data){
 	});
 	if( isNull(linkageEleId) && isNull(linkageEleId) ){
 			s.combobox({
+				filter: function(q, row){
+					var opts = $(this).combobox('options');
+					return row[opts.textField].indexOf(q) >= 0;
+				},
 				valueField:'id',
 				textField:'value',
 				data:viewData
-			});  
+			});
+			s.combobox({
+				filter: function(q, row){
+					var opts = $(this).combobox('options');
+					return row[opts.textField].indexOf(q) >= 0;
+				}
+			});
 	}else{
 		s.combobox({
 			onSelect:function(selectObj){
@@ -102,7 +118,14 @@ function initTABLESelect(data){
 			valueField:'id',
 			textField:'value',
 			data:viewData
-		});  
+		});
+		s.combobox({
+			filter: function(q, row){
+				var opts = $(this).combobox('options');
+				return row[opts.textField].indexOf(q) >= 0;
+			}
+		});
+
 	}
 }
 
