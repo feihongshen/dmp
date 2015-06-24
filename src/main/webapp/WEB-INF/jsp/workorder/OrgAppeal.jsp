@@ -64,7 +64,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<span>来电人姓名:</span>
 						<span>来电号码:</span>
 						<%} %>
-						<span>收件人手机:<%=co.getConsigneemobile() %></span>
+						<span>收件人手机:</span><%=co.getConsigneemobile() %>
 					</li>
 					<li>
 						<span>工单内容:</span><%=cca.getContent()%>
@@ -78,22 +78,28 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<%} }%>
 						
 					</li>
-					<li>
+					<li><%if(cca.getRemark()!=null){ %>
 						<span>核实内容:</span><%=cca.getRemark() %>
+						<%} %>
 					</li>
 					<li>
+						<%if(cca.getHeshiTime()!=null){ %>
 						<span>核实时间:</span>
+						<%=cca.getHeshiTime()%>
+						<%} %>
+						<%if(cca.getHeshiUser()!=null){ %>
 						<span>核实人:</span>
 						<%for(User u:alluser){ %>
 							<%if(cca.getHeshiUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
-						<%} }%>
+						<%} }}%>
 						<%if(cca.getDownloadheshipath()!=null){ %>
 						
 						<span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
 						<%} %>
 					</li>
-					<li>
+					<%if(cca.getHeshiTime()!=null&&cca.getHeshiUser()!=null&&cca.getRemark()!=null) {%>
+					<li>					
 					<span>结案处理结果:</span>
 						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %>
 						<span>结案时间:</span>
@@ -111,7 +117,26 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<%if(cca.getDownloadjieanpath()!=null){ %>
 					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
 					<%}%>
+				</li>
+				<%}else{ %>
+					<li>					
+					<span>结案处理结果:</span>
+						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %>
+						<span>结案时间:</span>
+						<%=cca.getAcceptTime()%>						
 					</li>
+					<li>
+					<span>结案人:</span>
+					<%for(User u:alluser){ %>
+							<%if(cca.getHandleUser().equals(u.getUsername())){ %>
+								<%=u.getRealname()%>
+						<%} }%>
+					<span>结案备注:</span>客服直接结案			
+					<%if(cca.getDownloadjieanpath()!=null){ %>
+					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
+					<%}%>
+				</li>
+				<%} %>
 					<!-- <li>
 						<label>申诉内容*:</label>					
 						<textarea  onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark" id="shensuremark"></textarea>																	
