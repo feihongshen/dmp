@@ -206,15 +206,12 @@ public class WorkOrderDAO {
 	public void updateComplainWorkOrderF(CsComplaintAccept c){
 		String sql="update cs_complaint_accept set";	
 		StringBuilder sb = new StringBuilder();
-			if(c.getComplaintType()>0){
-				sb.append(" complaint_type="+c.getComplaintType());
-			}
 			if(c.getComplaintState()>=0){
-				sb.append(" ,complaint_state="+c.getComplaintState());
+				sb.append(" complaint_state="+c.getComplaintState());
 			}
-			/*if(c.getComplaintResult()>=0){
+			if(c.getComplaintResult()>=0){
 				sb.append(" ,complaint_result="+c.getComplaintResult());
-			}*/
+			}
 			if(c.getContent()!=null&&c.getContent().length()>0){
 				sb.append(" ,content='"+c.getContent()+"'");
 			}
