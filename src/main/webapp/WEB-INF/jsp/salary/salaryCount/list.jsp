@@ -2,19 +2,19 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
-
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css" type="text/css"  />
-<script src="${ctx}/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
-<script src="${ctx}/js/commonUtil.js" type="text/javascript"></script>
-<script src="${ctx}/js/workorder/csPushSmsList.js" type="text/javascript"></script>
-
+<jsp:useBean id="now" class="java.util.Date" scope="page"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 <title>工资计算</title>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css" type="text/css"  />
+<script src="${ctx}/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="${ctx}/js/commonUtil.js" type="text/javascript"></script>
+<script src="${ctx}/js/workorder/csPushSmsList.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
 	$('#find').dialog('close');
@@ -77,7 +77,6 @@ function checkall()
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<form action="1" method="post" id="searchForm">
 		<table style="width: 60%">
 			    <tr>
 			    <td>
@@ -88,7 +87,6 @@ function checkall()
 			    </td>
 			    </tr>
 		 </table>
-	    </form>
 
 	</div>
 
@@ -114,7 +112,7 @@ function checkall()
 	<td align="center" valign="middle" >${salary.batchid}</td>
 	<td align="center" valign="middle" >
 	<c:forEach items="${batchStateEnum}" var="state">
-	<c:if test="${salary.bacthstate==state.value}">${state.text }</c:if>
+	<c:if test="${salary.batchstate==state.value}">${state.text }</c:if>
 	</c:forEach>
 	</td>
 	<td align="center" valign="middle" >
@@ -143,7 +141,7 @@ function checkall()
 	</div>
 	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
 	<c:if test='${page_obj.maxpage>1}'>
-	<div class="iframe_bottom">
+	<div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 	<tr>
 		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
@@ -165,6 +163,7 @@ function checkall()
 	</c:if>
 <!-- 新增层显示 -->
 <div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
+<form action="${ctx}/salaryCount/credata" method="post">
 <table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr>
 	         	<td colspan="2"  align="center" valign="bottom">
@@ -174,27 +173,37 @@ function checkall()
 	         	</tr>
          		<tr>
          		<td align="right" nowrap="nowrap" style="width: 10%;">批次编号：</td>
-         		<td nowrap="nowrap" style="width: 20%;"><input type="text" style="width: 100%;"/> </td>
+         		<td nowrap="nowrap" style="width: 20%;">
+         		<input name="batchid" type="text" style="width: 100%;" readonly="readonly" value="${now.time}"/> 
+         		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;">批次状态：</td>
          		<td nowrap="nowrap" style="width: 20%;">
-	         		<select style="width: 100%;">
-	         			<option>全部</option>
+	         		<select name="batchstate" style="width: 100%;">
+	         			<option value="0">未核销</option>
+	         			<option value="1">已核销</option>
 	         		</select>
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
-         		<td nowrap="nowrap" style="width: 20%;"><input type="text" style="width: 100%;"/> </td>
+         		<td nowrap="nowrap" style="width: 20%;">
+         		<select name="branchid" style="width: 100%">
+         		 <option value="-1"></option>
+         		 <c:forEach items="${ branchList}" var="branch">
+         		 <option value="${branch.branchid }">${branch.branchname }</option>
+         		 </c:forEach>
+         		</select>
+         		 </td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">
-	         	 <input type="text"  class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '起始时间'"/> 到 
-   	       		 <input type="text"  class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '终止时间'"/>
+	         	 <input type="text" name="starttime"  class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '起始时间'"/> 到 
+   	       		 <input type="text" name="endtime" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right" rowspan="2">备注：</td>
          		<td nowrap="nowrap" colspan="6" rowspan="3">
-			    <textarea rows="3"  style="width: 100%;resize: none;"></textarea>
+			    <textarea rows="3"  name="remark" style="width: 100%;resize: none;"></textarea>
 		        </td>
          	</tr>
          	<tr>
@@ -203,21 +212,27 @@ function checkall()
          	</td>
          	</tr>
          	</table>
+         	</form>
 </div>
 <!-- 查看/修改层显示 -->
 <!-- 查询层显示 -->
 	<div  id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
-
+	<form action="1" method="post" id="searchForm">
          	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 15%;">批次编号：</td>
-         		<td nowrap="nowrap" style="width: 30%;"><input type="text" style="width: 100%;" name="batchid"/> </td>
+         		<td nowrap="nowrap" style="width: 30%;">
+         		<input name="batchid" type="text" style="width: 100%;" /> 
+         		</td>
          		<td nowrap="nowrap" align="right" style="width: 15%;" >批次状态：</td>
          		<td nowrap="nowrap" style="width: 30%;">
-	         		<select style="width: 100%;"name="bacthstate">
-	         		   <c:forEach  items="${batchStateEnum}" var="batch">
-	         			<option ${batch.text}>${batch.text}</option>
-	         			</c:forEach>
+	         		<select name="batchstate" style="width: 100%;" >
+	         		<%-- <c:forEach  items="${batchStateEnum}" var="batch">
+	         			<option vaule="${batch.value}">${batch.text}</option>
+	         			</c:forEach> --%>
+	         			<option value="-1"></option>
+	         			<option value="1">已核销</option>
+	         			<option value="0">未核销</option>
 	         		</select>
          		</td>
          	</tr>
@@ -225,7 +240,8 @@ function checkall()
          		<td nowrap="nowrap" align="right" >站点：</td> 
          		<td nowrap="nowrap">
          		<select name="branchid" style="width: 100%">
-         		 <c:forEach items="${ branchlList}" var="branch">
+         		 <option value="-1"></option>
+         		 <c:forEach items="${ branchList}" var="branch">
          		 <option value="${branch.branchid }">${branch.branchname }</option>
          		 </c:forEach>
          		</select>
@@ -238,16 +254,20 @@ function checkall()
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right" >核销人：</td>
-         		<td nowrap="nowrap"><input type="text" style="width: 100%;" name="realname"/> </td>
-         		<td nowrap="nowrap" align="right" name="operationTime">核销日期：</td>
-         		<td nowrap="nowrap"><input type="text"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:150,prompt: '核销日起'"/></td>
+         		<td nowrap="nowrap">
+         		<input type="text" style="width: 100%;" name="realname"/> 
+         		</td>
+         		<td nowrap="nowrap" align="right" >核销日期：</td>
+         		<td nowrap="nowrap">
+         		<input type="text" name="operationTime" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:150,prompt: '核销日起'"/>
+         		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right">排序：</td>
          		<td nowrap="nowrap">
 			    	<select style="width:70%;" name="orderbyname">
 			    	<option value="batchid">批次编号</option>
-			    	<option value="opreationTime">核销日期</option>
+			    	<option value="operationTime">核销日期</option>
 			    	</select>
 			    	<select style="width:30%;" name="orderbyway">
 			    	<option value="asc">升序</option>
@@ -262,11 +282,12 @@ function checkall()
          	</tr>
          	<tr>
          	<td colspan="4" rowspan="2" align="center" valign="bottom">
-         	<input type="submit" class="input_button2" value="查询"/>
+         	<input type="submit" class="input_button2" value="查询" />
          	<input type="button" class="input_button2" value="关闭" onclick="$('#find').dialog('close');"/>
          	</td>
          	</tr>
          	</table>
+         	</form>
 	</div>
 
 </body>

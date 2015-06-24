@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * @author Administrator
  *
  */
-public class Salary {
+public class SalaryFixed {
 /**主键id**/
 private long id;
 /**站点id**/

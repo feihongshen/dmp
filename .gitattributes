@@ -765,6 +765,7 @@ src/main/java/cn/explink/controller/ReasonController.java -text
 src/main/java/cn/explink/controller/ResultCollectorController.java -text
 src/main/java/cn/explink/controller/ReturnCwbsController.java -text
 src/main/java/cn/explink/controller/RoleController.java -text
+src/main/java/cn/explink/controller/SalaryCountController.java -text
 src/main/java/cn/explink/controller/SalaryFixedController.java -text
 src/main/java/cn/explink/controller/SetDefaultExportController.java -text
 src/main/java/cn/explink/controller/SetExportCwbController.java -text
@@ -965,7 +966,8 @@ src/main/java/cn/explink/dao/ReasonDao.java -text
 src/main/java/cn/explink/dao/RemarkDAO.java -text
 src/main/java/cn/explink/dao/ReturnCwbsDAO.java -text
 src/main/java/cn/explink/dao/RoleDAO.java -text
-src/main/java/cn/explink/dao/SalaryDAO.java -text
+src/main/java/cn/explink/dao/SalaryCountDAO.java -text
+src/main/java/cn/explink/dao/SalaryFixedDAO.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
 src/main/java/cn/explink/dao/ServiceAreaDAO.java -text
 src/main/java/cn/explink/dao/SetExcelColumnDAO.java -text
@@ -1150,7 +1152,8 @@ src/main/java/cn/explink/domain/Reason.java -text
 src/main/java/cn/explink/domain/Remark.java -text
 src/main/java/cn/explink/domain/ReturnCwbs.java -text
 src/main/java/cn/explink/domain/Role.java -text
-src/main/java/cn/explink/domain/Salary.java -text
+src/main/java/cn/explink/domain/SalaryCount.java -text
+src/main/java/cn/explink/domain/SalaryFixed.java -text
 src/main/java/cn/explink/domain/ScheduledTask.java -text
 src/main/java/cn/explink/domain/SearcheditInfo.java -text
 src/main/java/cn/explink/domain/ServiceArea.java -text
@@ -1232,6 +1235,7 @@ src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
+src/main/java/cn/explink/enumutil/BatchSateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text
 src/main/java/cn/explink/enumutil/BranchRouteEnum.java -text

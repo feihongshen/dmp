@@ -3,16 +3,18 @@
  */
 package cn.explink.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.Salary;
+import cn.explink.domain.SalaryFixed;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -21,11 +23,11 @@ import cn.explink.util.StringUtil;
  *
  */
 @Component
-public class SalaryDAO {
-	private final class SalaryRowMapper implements RowMapper<Salary> {
+public class SalaryFixedDAO {
+	private final class SalaryFixedRowMapper implements RowMapper<SalaryFixed> {
 		@Override
-		public Salary mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Salary salary = new Salary();
+		public SalaryFixed mapRow(ResultSet rs, int rowNum) throws SQLException {
+			SalaryFixed salary = new SalaryFixed();
 			salary.setId(rs.getLong("id"));
 			salary.setBranchid(rs.getLong("branchid"));
 			salary.setAgejob(rs.getLong("agejob"));
@@ -74,17 +76,69 @@ public class SalaryDAO {
 	}
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	public int creSalaryByRealname(final SalaryFixed salary){
+		return this.jdbcTemplate.update("INSERT INTO `express_ops_salaryFixed_detail` "
+				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",new PreparedStatementSetter(){
 
-	public List<Salary> getSalaryByRealnameAndIdcard(long page,String realname,String idcard)
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setLong(1, salary.getBranchid());
+				ps.setString(2, salary.getRealname());
+				ps.setString(3, salary.getIdcard());
+				ps.setBigDecimal(4,salary.getAccountSingle());
+				ps.setBigDecimal(5,salary.getSalarybasic());
+				ps.setBigDecimal(6,salary.getSalaryjob());
+				ps.setBigDecimal(7,salary.getSalarypush());
+				ps.setLong(8,salary.getAgejob());
+				ps.setBigDecimal(9,salary.getBonusfuel());
+				ps.setBigDecimal(10,salary.getBonusfixed());
+				ps.setBigDecimal(11,salary.getBonusphone());
+				ps.setBigDecimal(12,salary.getBonusweather());
+				ps.setBigDecimal(13,salary.getPenalizecancel());
+				ps.setBigDecimal(14,salary.getBonusother1());
+				ps.setBigDecimal(15,salary.getBonusother2());
+				ps.setBigDecimal(16,salary.getBonusother3());
+				ps.setBigDecimal(17,salary.getBonusother4());
+				ps.setBigDecimal(18,salary.getBonusother5());
+				ps.setBigDecimal(19,salary.getBonusother6());
+				ps.setBigDecimal(20,salary.getOvertimework());
+				ps.setBigDecimal(21,salary.getAttendance());
+				ps.setBigDecimal(22,salary.getSecurity());
+				ps.setBigDecimal(23,salary.getGongjijin());
+				ps.setBigDecimal(24,salary.getFoul());
+				ps.setBigDecimal(25,salary.getGoods());
+				ps.setBigDecimal(26,salary.getDorm());
+				ps.setBigDecimal(27,salary.getPenalizeother1());
+				ps.setBigDecimal(28,salary.getPenalizeother2());
+				ps.setBigDecimal(29,salary.getPenalizeother3());
+				ps.setBigDecimal(30,salary.getPenalizeother4());
+				ps.setBigDecimal(31,salary.getPenalizeother5());
+				ps.setBigDecimal(32,salary.getPenalizeother6());
+				ps.setBigDecimal(33,salary.getImprestgoods());
+				ps.setBigDecimal(34,salary.getImprestother1());
+				ps.setBigDecimal(35,salary.getImprestother2());
+				ps.setBigDecimal(36,salary.getImprestother3());
+				ps.setBigDecimal(37,salary.getImprestother4());
+				ps.setBigDecimal(38,salary.getImprestother5());
+				ps.setBigDecimal(39,salary.getImprestother6());
+				ps.setBigDecimal(40,salary.getSalaryaccrual());
+				ps.setBigDecimal(41,salary.getTax());
+				ps.setBigDecimal(42,salary.getSalary());
+			}
+
+		});
+	}
+	public List<SalaryFixed> getSalaryByRealnameAndIdcard(long page,String realname,String idcard)
 	{
-		String sql="select * from express_ops_salary_detail where 1=1 ";
+		String sql="select * from express_ops_salaryFixed_detail where 1=1 ";
 		sql +=this.creConditions(realname,idcard);
 		sql += "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		return this.jdbcTemplate.query(sql, new SalaryRowMapper());
+		return this.jdbcTemplate.query(sql, new SalaryFixedRowMapper());
 	}
 	public int getSalaryByRealnameAndIdcardCounts(String realname,String idcard)
 	{
-		String sql="select count(1) from express_ops_salary_detail where 1=1 ";
+		String sql="select count(1) from express_ops_salaryFixed_detail where 1=1 ";
 		sql+=this.creConditions(realname,idcard);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
@@ -112,7 +166,7 @@ public class SalaryDAO {
 	 * @return
 	 */
 	public long deleteSalaryByids(String ids) {
-		String sql="delete from express_ops_salary_detail where id in("+ids+")";
+		String sql="delete from express_ops_salaryFixed_detail where id in("+ids+")";
 		return this.jdbcTemplate.update(sql);
 	}
 }
