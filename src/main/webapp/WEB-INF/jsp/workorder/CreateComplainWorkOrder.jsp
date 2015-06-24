@@ -22,39 +22,42 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 			<form action="<%=request.getContextPath()%>/workorder/saveComplainWorkOrderF" id="ComplainWorkOrderF">
 				<table>
 					<tr>
-						<td><span style="color:orange;">创建工单</span>
-					<%-- 	<input type="hidden" name="complaintType" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"> --%>
-						</td>
 						<td>工单号:<%=a.getAcceptNo()%><input type="hidden" value="<%=a.getAcceptNo()%>" name="acceptNo"/></td>
 						<td>订单号:<%=a.getOrderNo() %><input type="hidden" value="<%=a.getOrderNo() %>" name="orderNo"/></td>
-					</tr>
-					<tr>	
 						<%for(CwbStateEnum c:CwbStateEnum.values()) {%>
-						<%if(c.getValue()==a.getCwbstate()) {%>							
-					<td>订单状态:<%=c.getText()%>
-						<input type="hidden" value="<%=a.getCwbstate()%>"  name="cwbstate">
-					</td>	
-					<%}} %>
-					<%for(CwbFlowOrderTypeEnum cf : CwbFlowOrderTypeEnum.values()){ %>
-					<%if(cf.getValue()==a.getFlowordertype()) {%>
-					<td>订单操作状态:<%=cf.getText()%>
-					<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype">
-					</td>
+							<%if(c.getValue()==a.getCwbstate()) {%>							
+								<td>订单状态:<%=c.getText()%>
+									<input type="hidden" value="<%=a.getCwbstate()%>"  name="cwbstate">
+								</td>	
 						<%}} %>
-						<td><span>当前机构:<%=a.getCurrentBranch() %></span><input type="hidden" value="<%=a.getCurrentBranch() %>" name="currentBranch"/></td>
+					</tr>
+					<tr>
+						
+					<%for(CwbFlowOrderTypeEnum cf : CwbFlowOrderTypeEnum.values()){ %>
+						<%if(cf.getValue()==a.getFlowordertype()) {%>
+							
+								<td>订单操作状态:<%=cf.getText()%></td>
+									<input type="hidden" value="<%=a.getFlowordertype()%>"  name="flowordertype">
+							
+						<%}} %>
+						
+						<td>
+							当前机构:<%=a.getCurrentBranch() %>
+							<input type="hidden" value="<%=a.getCurrentBranch() %>" name="currentBranch"/>
+						</td>
 					</tr>	
 					<tr>
 						<td>
-							<span>被投诉机构:</span>
+							<span>责任机构:</span>
 							<select class="select1" name="codOrgId" onchange="getComplaintUserValue()" id="codOrgIdValue">
-								<option value="-1">全部</option>
+								<option value="-1">请选择</option>
 							<%for(Branch br:b){ %>
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
 							<%} %>	
 							</select>
 						</td>
 						<td>
-						<span>被投诉人:</span>
+						<span>责任人:</span>
 						
 						<select name="ComplaintUser" id="ComplaintUseridValue" class="select1">
 									
@@ -67,7 +70,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 						<td>
 							<span>一级分类:</span> 
 							<select class="select1" name="complaintOneLevel" id="olreason" onchange="getReasonValue()">
-							<option value="-1">全部</option>
+							<option value="-1">请选择</option>
 							<%if(r!=null){%>
 							<%for(Reason reason:r){ %>
 								<option value="<%=reason.getReasonid()%>"><%=reason.getReasoncontent()%></option>
@@ -91,8 +94,8 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent"></textarea>
-					<div>您还可以输入<font id="count" color="red">150</font>个文字</div> 
+					<span>工单内容:</span><textarea onfocus="this.value='' style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent">订单号+工单内容</textarea>
+					<div>您还可以输入<font id="count" color="red">150</font>个文字</div> <!-- onkeyup="checkLen(this)" --> 
 					</td>
 				</tr>
 					

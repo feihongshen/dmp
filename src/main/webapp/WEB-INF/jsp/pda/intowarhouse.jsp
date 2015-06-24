@@ -258,14 +258,6 @@ function callfunction(cwb){//getEmailDateByIds
 	});
 }
 
-function BuprintTag(){
-
-	var scancwb=$("#scancwbprint").val();
-	if(scancwb!=null){
-		$("#printcwb",parent.document).attr("src","<%=request.getContextPath()%>"+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
-	}		
-}
-	
 	/**
 	 * 入库扫描
 	 */
@@ -859,7 +851,7 @@ function openLogin(){
 					<span>入库标签补签</span>
 					<div style="display: none" id="div0011">
 					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" />			
-					<input type="button" value="生成" onclick="javascript:BuprintTag();"/> 
+					<input type="button" value="生成" onclick="javascript:BuprintTag('<%=request.getContextPath()%>');"/> 
 					</div>
 					<%
 					}

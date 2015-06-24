@@ -92,11 +92,10 @@ $(function() {
 		str1 = str1.replace(/-/g,"/");
 		var date2 = new Date(str1);
 		var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
-		//计算出相差天数
-		var days=Math.floor(date3/(24*3600*1000));
+		var hours=Math.floor((date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 		var heshiTime=$('#heshiTime').val();
-		if(days>heshiTime){
-			alert("抱歉，已经过了可核实时间！ ");
+		if(hours>heshiTime){
+			alert("此工单已经过了可核实时间 ！ ");
 			return false;
 		}else if($('#FormV').val()==""){
 				alert('请选择一条记录');
@@ -109,16 +108,33 @@ $(function() {
 
 	});
 	$("#add_CUSA").click(function() {
+		var str =$('#ShouLiTimeValue').val();
+		/*var str ='2015-05-12 23:13:15'; */
+		str = str.replace(/-/g,"/");
+		var date1 = new Date(str);	
+		var str1=CurentTime();
+		str1 = str1.replace(/-/g,"/");
+		var date2 = new Date(str1);
+		var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
+		//计算出相差hours
+		var hours=Math.floor((date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var heshiTime=$('#heshiTime').val();
+		if(hours>heshiTime){
+			if($('#FormV').val()==""){
+				alert('请选择一条记录');
+				return false;
+			}
+			getAddBox2();
+		}else{
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
 			return false;
 		}else if($('#ComStateV').val()==$('#JieAnChongShenZhong').val()||$('#ComStateV').val()==$('#YiJieShu').val()||$('#ComStateV').val()==$('#YiJieAn').val()||$('#ComStateV').val()==$('#DaiHeShi').val()){
-			alert('本条数据状态不能结案');
+			alert('本条数据未核实不能结案');
 			return false;
 		}
-	
 		getAddBox2();
-
+		}
 	});
 	
 	$("#add_AdjudicateRetrial").click(function() {

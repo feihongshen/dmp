@@ -6146,7 +6146,7 @@ function getComplaintUserValue(){
 		url:'workorder/getBeiTouSuRenValue',
 		dataType:'json',
 		success:function(data){
-			var Str = "<option value='-1'>全部</option>";
+			var Str = "<option value='-1'>请选择</option>";
 			$.each(data,function(ind,ele){
 				var dataTrStr = "<option value='" + ele.username + "'>" + ele.realname + "</option>";
 				Str+=dataTrStr;
@@ -6245,7 +6245,7 @@ function getReasonValue(){
 		dataType:'json',
 		success:function(data){
 			if(data!=null){
-			var Str = "<option value='-1'>全部</option>";
+			var Str = "<option value='-1'>请选择</option>";
 			$.each(data,function(ind,ele){
 				var dataTrStr = "<option value='" + ele.reasonid + "'>" + ele.reasoncontent+ "</option>";
 				Str+=dataTrStr;
@@ -6758,8 +6758,19 @@ function punishExcelImportSuccess(systemflag,contextPath,appendObject){
 	});
 }
 
+function BuprintTag(scpath){
 
-
+	var scancwb=$("#scancwbprint").val();
+	if(scancwb==null){
+		alert("请输入单号！");
+		return false;
+	}else{
+		$("#printcwb",parent.document).attr("src",scpath+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
+		alert(scpath+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
+		return true;
+	}		
+}
+	
 /************************ 加盟商合同Begin ********************/
 var rowCount = 0;
 function addContract() {

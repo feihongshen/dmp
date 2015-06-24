@@ -70,7 +70,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					</li>
 					
 					<li>
-						<span>投诉内容:</span><%=cca.getContent()%>
+						<span>工单内容:</span><%=cca.getContent()%>
 					</li>
 					<li>
 						<span>受理时间:</span><%=cca.getAcceptTime() %>
@@ -80,6 +80,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 								<%=u.getRealname()%>
 						<%} }%>
 					</li>
+					<%if(cca.getRemark()!=null&&cca.getHeshiTime()!=null&&cca.getHeshiUser()!=null){ %>
 					<li>
 						<span>核实内容:</span><%=cca.getRemark() %>
 					</li>
@@ -114,6 +115,7 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 							<%} %>
 						</span>
 					</li>
+						<%} %>
 					<li>
 							<span>处理结果:</span>
 							<select class="select1" name="complaintResult" id="acceptresult">

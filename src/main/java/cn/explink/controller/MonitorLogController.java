@@ -256,14 +256,14 @@ public class MonitorLogController {
 				}
 			}
 			//中转库已出未到站
-			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=6 and startbranchid IN("+branchids1+")  or flowordertype=14");
+			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids1,customerids," flowordertype=6 and startbranchid IN("+branchids1+")  or flowordertype=14");
 			if(zhongzhuankuyichuweidaozhanList != null && zhongzhuankuyichuweidaozhanList.size()>0){
 				for (MonitorLogSim mon: zhongzhuankuyichuweidaozhanList) {
 					zhongzhuankuyichuweidaozhanMap.put(mon.getCustomerid(), mon);
 				}
 			}
 			//退货库退货再投未到站
-			List<MonitorLogSim> tuihuokutuihuozaitouweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids,"flowordertype=6 and startbranchid IN("+branchids2+")");
+			List<MonitorLogSim> tuihuokutuihuozaitouweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids2,customerids,"flowordertype=6 and startbranchid IN("+branchids2+")");
 			if(tuihuokutuihuozaitouweidaozhanList != null && tuihuokutuihuozaitouweidaozhanList.size()>0){
 				for (MonitorLogSim mon: tuihuokutuihuozaitouweidaozhanList) {
 					tuihuokutuihuozaitouweidaozhanMap.put(mon.getCustomerid(), mon);
