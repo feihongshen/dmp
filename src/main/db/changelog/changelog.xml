@@ -6870,7 +6870,7 @@ CREATE TABLE `cs_complaint_accept` (
     <changeSet id="wangyonghe-2015-06-24-01" author="wangyonghe">
     	<sql>
 		CREATE TABLE `express_ops_salaryFixed_detail` (
-			`id`  varchar(50) NOT NULL AUTO_INCREMENT COMMENT '主键id' ,
+			`id`  bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键id' ,
 			`branchid`  bigint(50) NULL COMMENT '站点id' ,
 			`realname`  varchar(100) NULL DEFAULT '' COMMENT '姓名' ,
 			`idcard`  varchar(100) NULL DEFAULT '' COMMENT '身份证号码' ,
@@ -6924,7 +6924,7 @@ CREATE TABLE `cs_complaint_accept` (
      <changeSet id="wangyonghe-2015-06-24-02" author="wangyonghe">
     	<sql>
     CREATE TABLE `express_ops_salaryCount_detail` (
-			`batchid`  bigint(50) NOT NULL COMMENT '批次id' ,
+			`batchid`  varchar(50) NOT NULL COMMENT '批次id' ,
 			`branchid`  bigint(50) NULL COMMENT '站点id' ,
 			`starttime`  date NULL COMMENT '起始时间' ,
 			`endtime`  date NULL COMMENT '结束期间' ,
