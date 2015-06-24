@@ -6411,7 +6411,7 @@ public class CwbOrderService {
 	
 	public String getStringDate(long datetime){	
 		Date date = new Date(datetime);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(date);
 	}
 	
