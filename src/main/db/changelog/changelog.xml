@@ -6859,5 +6859,14 @@ CREATE TABLE `cs_complaint_accept` (
     		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '可核实时间是否过期');
     	</sql>
     </changeSet>
+    
+    <!-- 催件短信修改 -->
+    <changeSet id="gaoll-2015-06-24-01" author="gaoll">
+    	<sql>
+    		ALTER TABLE `cs_push_sms` ADD COLUMN `complaint_state` int(11) DEFAULT NULL COMMENT '工单状态' AFTER `complaint_type`,
+    		ADD INDEX  `complaintState_idx` (`complaint_state`);
+    	</sql>
+    </changeSet>
+    
 </databaseChangeLog>
  
