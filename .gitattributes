@@ -672,6 +672,7 @@ src/main/java/cn/explink/controller/BackSummaryController.java -text
 src/main/java/cn/explink/controller/BackimportprintController.java -text
 src/main/java/cn/explink/controller/BaleController.java -text
 src/main/java/cn/explink/controller/BatchSelectCwbController.java -text
+src/main/java/cn/explink/controller/BranchContractController.java -text
 src/main/java/cn/explink/controller/BranchController.java -text
 src/main/java/cn/explink/controller/BranchPayamountController.java -text
 src/main/java/cn/explink/controller/BranchRouteControlController.java -text
@@ -877,6 +878,8 @@ src/main/java/cn/explink/dao/BackMiddleDAO.java -text
 src/main/java/cn/explink/dao/BackSummaryDAO.java -text
 src/main/java/cn/explink/dao/BaleCwbDao.java -text
 src/main/java/cn/explink/dao/BaleDao.java -text
+src/main/java/cn/explink/dao/BranchContractDAO.java -text
+src/main/java/cn/explink/dao/BranchContractDetailDAO.java -text
 src/main/java/cn/explink/dao/BranchDAO.java -text
 src/main/java/cn/explink/dao/BranchHisteryLogDAO.java -text
 src/main/java/cn/explink/dao/BranchRouteDAO.java -text
@@ -1085,6 +1088,8 @@ src/main/java/cn/explink/domain/ExcelImportEdit.java -text
 src/main/java/cn/explink/domain/ExceptionCwb.java -text
 src/main/java/cn/explink/domain/Exportmould.java -text
 src/main/java/cn/explink/domain/Exportwarhousesummary.java -text
+src/main/java/cn/explink/domain/ExpressSetBranchContract.java -text
+src/main/java/cn/explink/domain/ExpressSetBranchContractDetail.java -text
 src/main/java/cn/explink/domain/ExpressSysMonitor.java -text
 src/main/java/cn/explink/domain/FeeWayTypeRemark.java -text
 src/main/java/cn/explink/domain/FinanceAudit.java -text
@@ -1189,6 +1194,8 @@ src/main/java/cn/explink/domain/TuihuoSiteTodaylog.java -text
 src/main/java/cn/explink/domain/User.java -text
 src/main/java/cn/explink/domain/UserBranch.java -text
 src/main/java/cn/explink/domain/UserDeleteCwb.java -text
+src/main/java/cn/explink/domain/VO/ExpressSetBranchContractDetailVO.java -text
+src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
 src/main/java/cn/explink/domain/WarehouseKey.java -text
 src/main/java/cn/explink/domain/WarehouseToBranch.java -text
 src/main/java/cn/explink/domain/WarehouseToCommen.java -text
@@ -1304,6 +1311,7 @@ src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
+src/main/java/cn/explink/enumutil/YesOrNoStateEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContracTypeEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContractStateEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/InvoiceTypeEnum.java -text
@@ -1538,6 +1546,7 @@ src/main/java/cn/explink/service/BackDetailService.java -text
 src/main/java/cn/explink/service/BackSummaryService.java -text
 src/main/java/cn/explink/service/BaleService.java -text
 src/main/java/cn/explink/service/BranchAutoWarhouseService.java -text
+src/main/java/cn/explink/service/BranchContractService.java -text
 src/main/java/cn/explink/service/BranchPayamountService.java -text
 src/main/java/cn/explink/service/BranchService.java -text
 src/main/java/cn/explink/service/ColumnService.java -text
@@ -1654,10 +1663,12 @@ src/main/java/cn/explink/system/charging/On_Off.java -text
 src/main/java/cn/explink/test/TestController.java -text
 src/main/java/cn/explink/util/ApplicationContextUtil.java -text
 src/main/java/cn/explink/util/BeanInvokingJobDetailFactoryBean.java -text
+src/main/java/cn/explink/util/BeanUtilsSelfDef.java -text
 src/main/java/cn/explink/util/DatabaseCronTriggerBean.java -text
 src/main/java/cn/explink/util/DatabaseInitCronTriggerBean.java -text
 src/main/java/cn/explink/util/DateDayUtil.java -text
 src/main/java/cn/explink/util/DateTimeUtil.java -text
+src/main/java/cn/explink/util/DeCodeURLUtil.java -text
 src/main/java/cn/explink/util/Dom4jParseUtil.java -text
 src/main/java/cn/explink/util/EmailUtil.java -text
 src/main/java/cn/explink/util/EncryptData.java -text
@@ -1887,6 +1898,8 @@ src/main/webapp/WEB-INF/jsp/branch/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/branch/list.jsp -text
 src/main/webapp/WEB-INF/jsp/branch/nextStop.jsp -text
 src/main/webapp/WEB-INF/jsp/branch/update.jsp -text
+src/main/webapp/WEB-INF/jsp/branchContract/branchContractList.jsp -text
+src/main/webapp/WEB-INF/jsp/branchContract/list.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/add.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/list.jsp -text
@@ -5533,6 +5546,8 @@ src/main/webapp/js/Validform/plugin/swfupload/thanks.php -text
 src/main/webapp/js/Validform/plugin/swfupload/upload.php -text
 src/main/webapp/js/address/getZAddress.js -text
 src/main/webapp/js/ajaxfileupload.js -text
+src/main/webapp/js/branchContract.js -text
+src/main/webapp/js/branchContract/editTable.js -text
 src/main/webapp/js/branchLog.js -text
 src/main/webapp/js/branchLogAll.js -text
 src/main/webapp/js/commonUtil.js -text

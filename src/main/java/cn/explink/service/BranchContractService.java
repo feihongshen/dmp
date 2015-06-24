@@ -1,0 +1,376 @@
+package cn.explink.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import cn.explink.dao.BranchContractDAO;
+import cn.explink.dao.BranchContractDetailDAO;
+import cn.explink.domain.Branch;
+import cn.explink.domain.ExpressSetBranchContract;
+import cn.explink.domain.ExpressSetBranchContractDetail;
+import cn.explink.domain.VO.ExpressSetBranchContractDetailVO;
+import cn.explink.domain.VO.ExpressSetBranchContractVO;
+import cn.explink.util.BeanUtilsSelfDef;
+import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.ServiceUtil;
+import cn.explink.util.StringUtil;
+
+@Service
+public class BranchContractService {
+
+	@Autowired
+	BranchContractDAO branchContractDAO;
+	@Autowired
+	BranchContractDetailDAO branchContractDetailDAO;
+
+	public ExpressSetBranchContractVO getBranchContractVO(int id) {
+		// 返回值
+		List<ExpressSetBranchContractVO> rtnVOList = new ArrayList<ExpressSetBranchContractVO>();
+		ExpressSetBranchContractVO rtnVO = null;
+		List<ExpressSetBranchContractDetailVO> rtnDetailVOList = null;
+		ExpressSetBranchContractDetailVO rtnDetailVO = null;
+
+		List<ExpressSetBranchContract> branchContractList = this.branchContractDAO
+				.getBranchContractListById(id);
+		if (branchContractList != null && !branchContractList.isEmpty()) {
+			ExpressSetBranchContract branchContract = null;
+			List<ExpressSetBranchContractDetail> branchContractDetailList = null;
+			ExpressSetBranchContractDetail branchContractDetail = null;
+			for (int i = 0; i < branchContractList.size(); i++) {
+				branchContract = branchContractList.get(i);
+				if (branchContract != null) {
+					rtnVO = new ExpressSetBranchContractVO();
+					BeanUtilsSelfDef.copyPropertiesIgnoreException(rtnVO,
+							branchContract);
+					branchContractDetailList = this.branchContractDetailDAO
+							.getBranchContractDetailListByBranchId(branchContract
+									.getId());
+					if (branchContractDetailList != null
+							&& !branchContractDetailList.isEmpty()) {
+						rtnDetailVOList = new ArrayList<ExpressSetBranchContractDetailVO>();
+						for (int j = 0; j < branchContractDetailList.size(); j++) {
+							branchContractDetail = branchContractDetailList
+									.get(j);
+							if (branchContractDetail != null) {
+								rtnDetailVO = new ExpressSetBranchContractDetailVO();
+								BeanUtilsSelfDef.copyPropertiesIgnoreException(
+										rtnDetailVO, branchContractDetail);
+								rtnDetailVOList.add(rtnDetailVO);
+							}
+						}
+						rtnVO.setBranchContractDetailVOList(rtnDetailVOList);
+					}
+					rtnVOList.add(rtnVO);
+				}
+			}
+		}
+
+		if (rtnVOList != null && !rtnVOList.isEmpty()
+				&& rtnVOList.get(0) != null) {
+			return rtnVOList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	@Transactional
+	public void updateBranchContractVO(
+			ExpressSetBranchContractVO branchContractVO) {
+		ExpressSetBranchContract branchContract = new ExpressSetBranchContract();
+		if (branchContractVO != null) {
+			BeanUtilsSelfDef.copyPropertiesIgnoreException(branchContract,
+					branchContractVO);
+			this.branchContractDAO.updateBranchContract(branchContract);
+			this.branchContractDetailDAO
+					.deleteBranchContractDetailByBranchId(branchContract
+							.getId());
+			
+			String branchContractDetailVOStr = branchContractVO.getBranchContractDetailVOStr();
+			JSONArray jsonArray = JSONArray.fromObject(branchContractDetailVOStr);
+			List<ExpressSetBranchContractDetail> branchContractDetailList = (List<ExpressSetBranchContractDetail>)JSONArray.toCollection(jsonArray, ExpressSetBranchContractDetail.class);
+			
+			ExpressSetBranchContractDetail branchContractDetail = null;
+			if (branchContractDetailList != null
+					&& !branchContractDetailList.isEmpty()) {
+				for (int i = 0; i < branchContractDetailList.size(); i++) {
+					branchContractDetail = branchContractDetailList.get(i);
+					if (branchContractDetail != null) {
+						branchContractDetail.setCreator(branchContractVO.getModifyPerson());
+						branchContractDetail.setCreateTime(branchContractVO.getModifyTime());
+						branchContractDetail.setModifyPerson(branchContractVO.getModifyPerson());
+						branchContractDetail.setModifyTime(branchContractVO.getModifyTime());
+						this.branchContractDetailDAO
+								.createBranchContractDetail(branchContractDetail);
+					}
+				}
+			}
+		}
+	}
+
+	@Transactional
+	public void deleteBranchContract(int id) {
+		this.branchContractDetailDAO.deleteBranchContractDetailByBranchId(id);
+		this.branchContractDAO.deleteBranchContract(id);
+	}
+
+	public Branch loadFormForBranch(HttpServletRequest request,
+			MultipartFile file, List<String> functionids) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
+			String filePath = ResourceBundleUtil.WAVPATH;
+			String name = System.currentTimeMillis() + ".wav";
+			ServiceUtil.uploadWavFile(file, filePath, name);
+			bh.setBranchwavfile(name);
+		}
+		if (functionids != null) {
+			StringBuffer str = new StringBuffer();
+			for (String function : functionids) {
+				str.append(function).append(",");
+			}
+			String functions = str.substring(0, str.length() - 1);
+			bh.setFunctionids(functions);
+		}
+		return bh;
+	}
+
+	public Branch loadFormForBranch(HttpServletRequest request,
+			MultipartFile file, String wavh, List<String> functionids) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
+			String filePath = ResourceBundleUtil.WAVPATH;
+			String name = System.currentTimeMillis() + ".wav";
+			ServiceUtil.uploadWavFile(file, filePath, name);
+			bh.setBranchwavfile(name);
+		} else {
+			String name = wavh;
+			bh.setBranchwavfile(name);
+		}
+		if (functionids != null) {
+			StringBuffer str = new StringBuffer();
+			for (String function : functionids) {
+				str.append(function).append(",");
+			}
+			String functions = str.substring(0, str.length() - 1);
+			bh.setFunctionids(functions);
+		}
+
+		return bh;
+	}
+
+	public Branch loadFormForBranch(HttpServletRequest request,
+			MultipartFile file) {
+		Branch bh = this.loadFormForBranch(request);
+		if ((file != null) && !file.isEmpty()) {
+			String filePath = ResourceBundleUtil.WAVPATH;
+			String name = System.currentTimeMillis() + ".wav";
+			ServiceUtil.uploadWavFile(file, filePath, name);
+			bh.setBranchwavfile(name);
+		}
+
+		return bh;
+	}
+
+	public Branch loadFormForBranch(HttpServletRequest request) {
+		Branch branch = new Branch();
+		branch.setBranchname(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchname")));
+		branch.setBranchprovince(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchprovince")));
+		branch.setBranchcity(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchcity")));
+		branch.setBrancharea(StringUtil.nullConvertToEmptyString(request
+				.getParameter("brancharea")));
+		branch.setBranchstreet(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchstreet")));
+		branch.setBranchaddress(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchaddress")));
+		branch.setBranchcontactman(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchcontactman")));
+		branch.setBranchphone(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchphone")));
+		branch.setBranchmobile(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchmobile")));
+		branch.setBranchfax(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchfax")));
+		branch.setBranchemail(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchemail")));
+		branch.setContractflag(StringUtil.nullConvertToEmptyString(request
+				.getParameter("contractflag")));
+		branch.setBankcard(StringUtil.nullConvertToEmptyString(request
+				.getParameter("bankcard")));
+		branch.setCwbtobranchid(StringUtil.nullConvertToEmptyString(request
+				.getParameter("cwbtobranchid")));
+		branch.setPayfeeupdateflag(StringUtil.nullConvertToEmptyString(request
+				.getParameter("payfeeupdateflag")));
+		branch.setBacktodeliverflag(StringUtil.nullConvertToEmptyString(request
+				.getParameter("backtodeliverflag")));
+		branch.setBranchpaytoheadflag(StringUtil
+				.nullConvertToEmptyString(request
+						.getParameter("branchpaytoheadflag")));
+		branch.setBranchfinishdayflag(StringUtil
+				.nullConvertToEmptyString(request
+						.getParameter("branchfinishdayflag")));
+		branch.setBranchinsurefee(BigDecimal.valueOf(Double.parseDouble(request
+				.getParameter("branchinsurefee") == null ? "0" : request
+				.getParameter("branchinsurefee"))));
+		branch.setBranchwavfile(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchwavfile")));
+		branch.setCreditamount(BigDecimal.valueOf(Float.parseFloat(request
+				.getParameter("creditamount") == null ? "0" : request
+				.getParameter("creditamount"))));
+		branch.setBrancheffectflag(StringUtil.nullConvertToEmptyString(request
+				.getParameter("brancheffectflag")));
+		branch.setContractrate(BigDecimal.valueOf(Float.parseFloat(request
+				.getParameter("contractrate") == null ? "0" : request
+				.getParameter("contractrate"))));
+		branch.setBranchcode(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchcode")));
+		branch.setNoemailimportflag(StringUtil.nullConvertToEmptyString(request
+				.getParameter("noemailimportflag")));
+		branch.setErrorcwbdeliverflag(StringUtil
+				.nullConvertToEmptyString(request
+						.getParameter("errorcwbdeliverflag")));
+		branch.setErrorcwbbranchflag(StringUtil
+				.nullConvertToEmptyString(request
+						.getParameter("errorcwbbranchflag")));
+		branch.setBranchcodewavfile(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchcodewavfile")));
+		branch.setImportwavtype(StringUtil.nullConvertToEmptyString(request
+				.getParameter("importwavtype")));
+		branch.setExportwavtype(StringUtil.nullConvertToEmptyString(request
+				.getParameter("exportwavtype")));
+		branch.setNoemaildeliverflag(StringUtil
+				.nullConvertToEmptyString(request
+						.getParameter("noemaildeliverflag")));
+		branch.setSendstartbranchid(Integer.parseInt(request
+				.getParameter("sendstartbranchid") == null ? "0" : request
+				.getParameter("sendstartbranchid")));
+		branch.setFunctionids(StringUtil.nullConvertToEmptyString(request
+				.getParameter("functionids")));
+		branch.setSitetype(Integer
+				.parseInt(request.getParameter("sitetype") == null ? "0"
+						: request.getParameter("sitetype")));
+		branch.setCheckremandtype(Integer.parseInt(request
+				.getParameter("remandtype") == null ? "0" : request
+				.getParameter("remandtype")));
+		branch.setBranchmatter(StringUtil.nullConvertToEmptyString(request
+				.getParameter("branchmatter")));
+		// branch.setAccountareaid(Integer.parseInt((request.getParameter("accountarea")==null||"".equals(request.getParameter("accountarea")))?"0":request.getParameter("accountarea")));
+		branch.setBranchid(Integer
+				.parseInt(request.getParameter("branchid") == null ? "0"
+						: request.getParameter("branchid")));
+
+		branch.setZhongzhuanid(Integer.parseInt(request
+				.getParameter("zhongzhuanid") == null ? "0" : request
+				.getParameter("zhongzhuanid")));
+		branch.setTuihuoid(Integer
+				.parseInt(request.getParameter("tuihuoid") == null ? "0"
+						: request.getParameter("tuihuoid")));
+		branch.setCaiwuid(Integer
+				.parseInt(request.getParameter("caiwuid") == null ? "0"
+						: request.getParameter("caiwuid")));
+		branch.setBindmsksid(Integer.parseInt(request
+				.getParameter("bindmsksid") == null ? "0" : request
+				.getParameter("bindmsksid")));
+		// 结算业务设置
+		branch.setAccounttype(Integer.parseInt(request
+				.getParameter("accounttype") == null ? "0" : request
+				.getParameter("accounttype")));
+		branch.setAccountexcesstype(Integer.parseInt(request
+				.getParameter("accountexcesstype") == null ? "0" : request
+				.getParameter("accountexcesstype")));
+		if ((request.getParameter("accountexcessfee") == null)
+				|| request.getParameter("accountexcessfee").toString()
+						.equals("")) {
+			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat("0")));
+		} else {
+			branch.setAccountexcessfee(BigDecimal.valueOf(Float
+					.parseFloat(request.getParameter("accountexcessfee"))));
+		}
+
+		branch.setAccountbranch(Long.parseLong(request
+				.getParameter("accountbranch") == null ? "0" : request
+				.getParameter("accountbranch")));
+
+		if ((request.getParameter("credit") == null)
+				|| request.getParameter("credit").toString().equals("")) {
+			branch.setCredit(BigDecimal.valueOf(Float.parseFloat("0")));
+		} else {
+			branch.setCredit(BigDecimal.valueOf(Float.parseFloat(request
+					.getParameter("credit"))));
+		}
+
+		if ((request.getParameter("prescription24") == null)
+				|| request.getParameter("prescription24").toString().equals("")) {
+			branch.setPrescription24(Long.parseLong("0"));
+		} else {
+			branch.setPrescription24(Long.parseLong(request
+					.getParameter("prescription24")));
+		}
+
+		if ((request.getParameter("prescription48") == null)
+				|| request.getParameter("prescription48").toString().equals("")) {
+			branch.setPrescription48(Long.parseLong("0"));
+		} else {
+			branch.setPrescription48(Long.parseLong(request
+					.getParameter("prescription48")));
+		}
+
+		branch.setBacktime(Long
+				.parseLong(request.getParameter("backtime") == null ? "0"
+						: request.getParameter("backtime")));
+
+		return branch;
+	}
+
+	@Produce(uri = "jms:topic:addzhandian")
+	ProducerTemplate addzhandian;
+	@Produce(uri = "jms:topic:savezhandian")
+	ProducerTemplate savezhandian;
+
+	public void addzhandianToAddress(long branchid, Branch branch) {
+		try {
+			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
+			JSONObject branchToJson = new JSONObject();
+			branchToJson.put("branchid", branchid);
+			branchToJson.put("branchname", branch.getBranchname());
+			branchToJson.put("branchphone", branch.getBranchphone());
+			branchToJson.put("branchmobile", branch.getBranchmobile());
+			branchToJson.put("branchcontactman", branch.getBranchcontactman());
+			branchToJson.put("caiwuid", branch.getCaiwuid());
+			branchToJson.put("contractflag", branch.getContractflag());
+			branchToJson.put("bankcard", branch.getBankcard());
+			branchToJson.put("branchcity", branch.getBranchcity());
+			branchToJson.put("branchprovince", branch.getBranchprovince());
+			branchToJson.put("brancharea", branch.getBrancharea());
+
+			this.savezhandian.sendBodyAndHeader(null, "branch",
+					branchToJson.toString());
+		} catch (Exception e) {
+		}
+	}
+
+	// @Produce(uri = "jms:topic:delzhandian")
+	// ProducerTemplate delzhandian;
+	//
+	// public void delBranch(long branchid) {
+	// try {
+	// this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
+	// } catch (Exception e) {
+	// }
+	// }
+
+}
