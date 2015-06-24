@@ -117,5 +117,13 @@ public class SalaryCountDAO {
 		return this.jdbcTemplate.update(sql,salaryCount.getBatchid(),salaryCount.getBranchid(),salaryCount.getStarttime(),salaryCount.getEndtime(),salaryCount.getUsercount(),salaryCount.getUserid(),salaryCount.getOperationTime(),salaryCount.getRemark(),salaryCount.getBatchstate());
 
 	}
+	/**
+	 * @param batchid
+	 * @return
+	 */
+	public SalaryCount getSalaryCountBybatchid(String batchid) {
+		String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
+		return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
+	}
 
 }
