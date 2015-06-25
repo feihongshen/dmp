@@ -11,6 +11,8 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang3.StringUtils;
+import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import cn.explink.domain.ExpressSetBranchContractDetail;
 import cn.explink.domain.VO.ExpressSetBranchContractDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchContractVO;
 import cn.explink.util.BeanUtilsSelfDef;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
@@ -126,6 +129,32 @@ public class BranchContractService {
 		this.branchContractDAO.deleteBranchContract(id);
 	}
 
+	public String generateContractNo(){
+		String contractNo = "";
+		List<ExpressSetBranchContract> contractList = this.branchContractDAO.getMaxContractNo();
+		if(contractList != null && !contractList.isEmpty()){
+			for(int i = 0; i < contractList.size(); i++){
+				ExpressSetBranchContract contract = contractList.get(i);
+				String maxContractNo = contract.getContractNo();
+				if(maxContractNo.length() == 14 && "C_J".equals(maxContractNo.substring(0, 3))){
+					String partContractNo = maxContractNo.substring(0, 11);
+					String maxOrderStr = maxContractNo.substring(11);
+					int maxOrderInt = Integer.valueOf(maxOrderStr);
+					maxOrderInt++;
+					contractNo = partContractNo + maxOrderInt;
+					break;
+				}
+			}
+		}
+		if(StringUtils.isBlank(contractNo)){
+			String rule = "C_J";
+			String date = DateTimeUtil.getNowDate();
+			String orderStr = "001";
+			contractNo = rule + date + orderStr;
+		}
+		return contractNo;
+	}
+	
 	public Branch loadFormForBranch(HttpServletRequest request,
 			MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
@@ -372,5 +401,26 @@ public class BranchContractService {
 	// } catch (Exception e) {
 	// }
 	// }
+	
+	
+	public String loadexceptfile(MultipartFile file) {
+		String name = "";
+		try {
+			if ((file != null) && !file.isEmpty()) {
+				String filePath = ResourceBundleUtil.FILEPATH;
+				name = file.getOriginalFilename();
+				if (name.indexOf(".") != -1) {
+					String suffix = name.substring(name.lastIndexOf("."));
+					name =System.currentTimeMillis() + suffix;
+				} else {
+					name = System.currentTimeMillis() + "";
+				}
+				ServiceUtil.uploadWavFile(file, filePath, name);
+			}
+		} catch (Exception e) {
+			// this.logger.error("问题件添加到指定路径下出现错误");
+		}
+		return name;
+	}
 
 }

@@ -1,10 +1,17 @@
 package cn.explink.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,6 +50,7 @@ import cn.explink.service.SystemInstallService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.Page;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.StringUtil;
 
 @Controller
@@ -112,11 +120,6 @@ public class BranchContractController {
 		return "branchContract/branchContractList";
 	}
 
-	@RequestMapping("/addBranchContractPage")
-	public String addBranchContractPage() {
-		return "branchContract/addBranchContractPage";
-	}
-
 	@RequestMapping("/addBranchContract")
 	@ResponseBody
 	public String addBranchContract(ExpressSetBranchContract branchContract){
@@ -127,6 +130,33 @@ public class BranchContractController {
 			branchContract.setCreator(new Long(userId).intValue());
 		}
 		branchContract.setCreateTime(DateTimeUtil.getNowTime());
+		
+		if("[自动生成]".equals(branchContract.getContractNo())){
+			String contractNo = this.branchContractService.generateContractNo();
+			branchContract.setContractNo(contractNo);
+		}
+		
+		this.branchContractDAO.createBranchContract(branchContract);
+		return "{\"errorCode\":0,\"error\":\"添加成功\"}";
+	}
+	
+	@RequestMapping("/addBranchContractfile")
+	@ResponseBody
+	public String addBranchContractfile(@RequestParam(value = "Filedata", required = false) MultipartFile file,ExpressSetBranchContract branchContract){
+		String filepath = this.branchContractService.loadexceptfile(file);
+		branchContract.setContractAttachment(filepath);
+		User user = getSessionUser();
+		if(user != null){
+			long userId = user.getUserid();
+			branchContract.setCreator(new Long(userId).intValue());
+		}
+		branchContract.setCreateTime(DateTimeUtil.getNowTime());
+		
+		if("[自动生成]".equals(branchContract.getContractNo())){
+			String contractNo = this.branchContractService.generateContractNo();
+			branchContract.setContractNo(contractNo);
+		}
+		
 		this.branchContractDAO.createBranchContract(branchContract);
 		return "{\"errorCode\":0,\"error\":\"添加成功\"}";
 	}
@@ -608,5 +638,37 @@ public class BranchContractController {
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
+	@RequestMapping("/download")
+	public void download(HttpServletRequest request, HttpServletResponse response){
+		try {
+			String filePath = request.getParameter("filepathurl");
+			if(StringUtils.isNotBlank(filePath)){
+				String filePathaddress = ResourceBundleUtil.FILEPATH + filePath;
+				File file = new File(filePathaddress);
+				// 取得文件名。
+				String filename = file.getName();
+				// 以流的形式下载文件。
+				InputStream fis;
+				fis = new BufferedInputStream(new FileInputStream(filePathaddress));
+				byte[] buffer = new byte[fis.available()];
+				fis.read(buffer);
+				fis.close();
+				// 清空response
+				response.reset();
+				// 设置response的Header
+				response.setContentType("application/ms-excel");
+				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+				response.addHeader("Content-Length", "" + file.length());
+				OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+				toClient.write(buffer);
+				toClient.flush();
+				toClient.close();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 
 }

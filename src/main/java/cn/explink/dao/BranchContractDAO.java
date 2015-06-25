@@ -51,6 +51,8 @@ public class BranchContractDAO {
 					.getString("contractDescription"));
 			branchContract.setContractAttachment(rs
 					.getString("contractAttachment"));
+			branchContract.setQualityControlClause(rs
+					.getString("qualityControlClause"));
 			branchContract.setCreator(rs.getInt("creator"));
 			branchContract.setCreateTime(rs.getString("createTime"));
 			branchContract.setModifyPerson(rs.getInt("modifyPerson"));
@@ -75,7 +77,7 @@ public class BranchContractDAO {
 								+ "contractNo,contractState,contractBeginDate,contractEndDate,branchName,"
 								+ "siteChief,chiefIdentity,areaManager,isDeposit,depositCollectDate,"
 								+ "depositCollectAmount,depositCollector,depositPayor,contractDescription,"
-								+ "contractAttachment,creator,createTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								+ "contractAttachment,qualityControlClause,creator,createTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 						new String[] { "id" });
 				int i = 1;
 
@@ -94,6 +96,7 @@ public class BranchContractDAO {
 				ps.setString(i++, branchContract.getDepositPayor());
 				ps.setString(i++, branchContract.getContractDescription());
 				ps.setString(i++, branchContract.getContractAttachment());
+				ps.setString(i++, branchContract.getQualityControlClause());
 				ps.setInt(i++, branchContract.getCreator());
 				ps.setString(i++, branchContract.getCreateTime());
 
@@ -111,7 +114,7 @@ public class BranchContractDAO {
 						+ "contractEndDate=?,branchName=?,siteChief=?,chiefIdentity=?,"
 						+ "areaManager=?,isDeposit=?,depositCollectDate=?,depositCollectAmount=?,"
 						+ "depositCollector=?,depositPayor=?,contractDescription=?,contractAttachment=?,"
-						+ "modifyPerson=?,modifyTime=? where id=?", new PreparedStatementSetter() {
+						+ "qualityControlClause=?,modifyPerson=?,modifyTime=? where id=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						// TODO Auto-generated method stub
@@ -132,6 +135,7 @@ public class BranchContractDAO {
 						ps.setString(i++, branchContract.getDepositPayor());
 						ps.setString(i++, branchContract.getContractDescription());
 						ps.setString(i++, branchContract.getContractAttachment());
+						ps.setString(i++, branchContract.getQualityControlClause());
 						ps.setInt(i++, branchContract.getModifyPerson());
 						ps.setString(i++, branchContract.getModifyTime());
 						ps.setInt(i++, branchContract.getId());
@@ -205,6 +209,10 @@ public class BranchContractDAO {
 		return jdbcTemplate.query(sql, new BranchContractMapper());
 	}
 	
+	public List<ExpressSetBranchContract> getMaxContractNo(){
+		String sql = "select * from express_set_branch_contract order by contractNo desc ";
+		return jdbcTemplate.query(sql, new BranchContractMapper());
+	}
 //	public long create(final String baleno) {
 //		KeyHolder key = new GeneratedKeyHolder();
 //		jdbcTemplate.update(new PreparedStatementCreator() {
@@ -220,109 +228,6 @@ public class BranchContractDAO {
 //		}, key);
 //		return key.getKey().longValue();
 //	}
-
-	public ExpressSetBranchContract getBranchContractByBranchContractstateAndBranchid(
-			String baleno, long balestate, long branchid) {
-		try {
-			String sql = "select * from express_ops_bale where baleno=? and balestate=? and branchid=?";
-			return jdbcTemplate.queryForObject(sql, new BranchContractMapper(),
-					baleno, balestate, branchid);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	
-
-	public List<ExpressSetBranchContract> getBranchContractByBranchContractstate(
-			String baleno, long balestate) {
-		String sql = "select * from express_ops_bale where baleno=? and balestate=?";
-		return jdbcTemplate.query(sql, new BranchContractMapper(), baleno,
-				balestate);
-	}
-
-	public List<ExpressSetBranchContract> getBranchContractByBranchContractnoAndBranchContractstate(
-			String baleno, String balestates) {
-		String sql = "select * from express_ops_bale where baleno=? and balestate in("
-				+ balestates + ")";
-		return jdbcTemplate.query(sql, new BranchContractMapper(), baleno);
-	}
-
-	public List<ExpressSetBranchContract> getBranchContractByBranchContractstate(
-			long balestate) {
-		String sql = "select * from express_ops_bale where balestate=?";
-		return jdbcTemplate.query(sql, new BranchContractMapper(), balestate);
-	}
-
-	public void saveForBranchid(long id, long branchid, long groupid,
-			long balestate) {
-		String sql = "update express_ops_bale set branchid=?,groupid=?,balestate=? where id=?";
-		jdbcTemplate.update(sql, branchid, groupid, balestate, id);
-	}
-
-	public ExpressSetBranchContract getBranchContractByBranchContractno(
-			String baleno, long balestate) {
-		try {
-			String sql = "select * from express_ops_bale where baleno=? and balestate=?";
-			return jdbcTemplate.queryForObject(sql, new BranchContractMapper(),
-					baleno, balestate);
-		} catch (DataAccessException e) {
-			return null;
-		}
-	}
-
-	/*
-	 * public void saveForBranchContractState(long balestate,long groupid,long
-	 * branchid){ String sql =
-	 * "update express_ops_bale set balestate="+balestate+
-	 * " where id in(select baleid from express_ops_groupdetail where groupid="
-	 * +groupid
-	 * +") and branchid="+branchid+" and balestate="+ContractStateEnum.SaoMiaoZhong
-	 * .getValue(); jdbcTemplate.update(sql); }
-	 */
-
-//	public void saveForState(String baleno, long branchid, long balestate) {
-//		String sql = "update express_ops_bale set balestate=? where branchid=? and baleno=? and balestate=? ";
-//		jdbcTemplate.update(sql, balestate, branchid, baleno,
-//				ContractStateEnum.WeiDaoZhan.getValue());
-//	}
-
-	public void saveForBranchContractstate(String baleno, long balestate,
-			long oldbalestate) {
-		String sql = "update express_ops_bale set balestate=? where baleno=? and balestate=? ";
-		jdbcTemplate.update(sql, balestate, baleno, oldbalestate);
-	}
-
-//	public void saveForBranchidAndState(String baleno, long branchid,
-//			long balestate) {
-//		String sql = "update express_ops_bale set branchid=?,balestate=? where baleno=? and balestate=? ";
-//		jdbcTemplate.update(sql, branchid, balestate, baleno,
-//				ContractStateEnum.WeiDaoZhan.getValue());
-//	}
-
-//	public void saveForBranchidAndGroupid(long branchid, long balestate,
-//			long groupid) {
-//		String sql = "update express_ops_bale set balestate=? where branchid=? and groupid=? and balestate=?";
-//		jdbcTemplate.update(sql, balestate, branchid, groupid,
-//				ContractStateEnum.WeiDaoZhan.getValue());
-//	}
-
-	public void saveById(long balestate, long id) {
-		String sql = "update express_ops_bale set balestate=? where id=?";
-		jdbcTemplate.update(sql, balestate, id);
-	}
-
-	public List<ExpressSetBranchContract> getBranchContractByBranchContractno(
-			String baleno) {
-		String sql = "select * from express_ops_bale where baleno=?";
-		return jdbcTemplate.query(sql, new BranchContractMapper(), baleno);
-
-	}
-
-	public void saveForBranchContractCount(long id, long cwbcount) {
-		String sql = "update express_ops_bale set cwbcount=?  where id=? ";
-		jdbcTemplate.update(sql, cwbcount, id);
-	}
 
 	public List<ExpressSetBranchContract> getBranchContractByChukuDate(
 			String begindate, String enddate, long page) {

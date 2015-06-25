@@ -32,6 +32,7 @@ public class ExpressSetBranchContractVO {
 	private List<ExpressSetBranchContractDetailVO> branchContractDetailVOList;
 	private String contractColumn;
 	private String contractColumnOrder;
+	private String qualityControlClause;
 
 	public ExpressSetBranchContractVO() {
 
@@ -43,7 +44,8 @@ public class ExpressSetBranchContractVO {
 			String chiefIdentity, String areaManager, int isDeposit,
 			String depositCollectDate, BigDecimal depositCollectAmount,
 			String depositCollector, String depositPayor,
-			String contractDescription, String contractAttachment, int creator,
+			String contractDescription, String contractAttachment,
+			String qualityControlClause, int creator,
 			String createTime, int modifyPerson, String modifyTime,
 			List<ExpressSetBranchContractDetailVO> branchContractDetailVOList) {
 		super();
@@ -63,6 +65,7 @@ public class ExpressSetBranchContractVO {
 		this.depositPayor = depositPayor;
 		this.contractDescription = contractDescription;
 		this.contractAttachment = contractAttachment;
+		this.qualityControlClause = qualityControlClause;
 		this.creator = creator;
 		this.createTime = createTime;
 		this.modifyPerson = modifyPerson;
@@ -293,6 +296,14 @@ public class ExpressSetBranchContractVO {
 
 	public void setContractColumnOrder(String contractColumnOrder) {
 		this.contractColumnOrder = contractColumnOrder;
+	}
+
+	public String getQualityControlClause() {
+		return qualityControlClause;
+	}
+
+	public void setQualityControlClause(String qualityControlClause) {
+		this.qualityControlClause = qualityControlClause;
 	}
 
 }

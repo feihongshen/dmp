@@ -28,6 +28,7 @@ public class ExpressSetBranchContract {
 	private String createTime;
 	private int modifyPerson;
 	private String modifyTime;
+	private String qualityControlClause;
 
 	public ExpressSetBranchContract() {
 
@@ -40,8 +41,8 @@ public class ExpressSetBranchContract {
 			String depositCollectDate, BigDecimal depositCollectAmount,
 			String depositCollector, String depositPayor,
 			String contractDescription, String contractAttachment,
-			int creator, String createTime, int modifyPerson,
-			String modifyTime) {
+			String qualityControlClause, int creator, String createTime,
+			int modifyPerson, String modifyTime) {
 		super();
 		this.id = id;
 		this.contractNo = contractNo;
@@ -59,6 +60,7 @@ public class ExpressSetBranchContract {
 		this.depositPayor = depositPayor;
 		this.contractDescription = contractDescription;
 		this.contractAttachment = contractAttachment;
+		this.qualityControlClause = qualityControlClause;
 		this.creator = creator;
 		this.createTime = createTime;
 		this.modifyPerson = modifyPerson;
@@ -224,4 +226,13 @@ public class ExpressSetBranchContract {
 	public String getModifyTime() {
 		return modifyTime;
 	}
+
+	public String getQualityControlClause() {
+		return qualityControlClause;
+	}
+
+	public void setQualityControlClause(String qualityControlClause) {
+		this.qualityControlClause = qualityControlClause;
+	}
+
 }
