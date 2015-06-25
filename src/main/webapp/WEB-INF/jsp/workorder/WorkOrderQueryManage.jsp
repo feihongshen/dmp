@@ -310,6 +310,8 @@ function CurentTime()   //计算当天时间
 }
 
 </script>
+
+
 </head>
 <body>  
  
@@ -443,11 +445,11 @@ function CurentTime()   //计算当天时间
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">
-				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%>
+				<%-- <%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%> --%>
 				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
-				<%}else{ %>
-				<td><%=c.getAcceptNo() %></td>
-				<%} %>
+			<%-- 	<%}else{ %>
+				<td><%=c.getAcceptNo() %></td> --%>
+				<%-- <%} %> --%>
 				<td><%=c.getOrderNo() %></td>
 				<%-- <td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td> --%>
 				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>

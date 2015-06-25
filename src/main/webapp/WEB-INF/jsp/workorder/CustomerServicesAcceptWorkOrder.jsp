@@ -35,7 +35,23 @@ function getGoonacceptWO(GV,GS){
 	
 }
 
+function showWorkOrderDetailBox(V) {
+	$.ajax({
+		type : "POST",
+		data:{"acceptNo":V},	
+		url :"<%=request.getContextPath()%>/workorder/OrgAppeal",
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
 
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面
+			viewBox();
+		}
+	});
+}
 
 function gettrValue(cwbId){
 	//$('#GV').val("");
@@ -68,7 +84,7 @@ function gettrValue(cwbId){
 					contentTemp = contentTemp.substring(0,10);
 					
 					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\")'>" +
-							"<td>"+ele.acceptNo+"</td>" +  /* order/queckSelectOrder/123 */
+							"<td><a href='javascript:showWorkOrderDetailBox(\""+ele.acceptNo+"\")'>"+ele.acceptNo+"</a></td>" +  /* order/queckSelectOrder/123 */
 							"<td>"+ele.orderNo+"</td>" +
 							"<td>"+ele.phoneOne+"</td>" +
 							"<td>"+ele.provence+"</td>" +
@@ -444,12 +460,12 @@ function submitselect2(){    //通过手机号查询工单
 							/* if (ele.complaintType == $(
 									'#ComplaintTypeEnumTouSu').val()) { */
 								var contentTemp = ele.content;								
-								contentTemp = contentTemp.substring(0,10);
+								contentTemp = contentTemp.substring(0,10); /* onclick='getGoonacceptWO(\""
+								+ ele.acceptNo + "\",\""
+								+ ele.complaintState + "\")' "+ele.acceptNo+"*/
 								
-								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
-										+ ele.acceptNo + "\",\""
-										+ ele.complaintState + "\")'>" + "<td>"
-										+ ele.acceptNo + "</td>" + /* order/queckSelectOrder/123 */
+								dataTrStr1 = "<tr><td><a href='javascript:showWorkOrderDetailBox(\""+ele.acceptNo+"\")'>"
+										+ ele.acceptNo + "</a></td>" + 
 										"<td>" + ele.orderNo + "</td>" + "<td>"
 										+ ele.phoneOne + "</td>" + "<td>"
 										+ ele.provence + "</td>" 
@@ -567,23 +583,7 @@ function submitselect2(){    //通过手机号查询工单
     }
 */
 
-function showWorkOrderDetailBox(FormV) {
-	$.ajax({
-		type : "POST",
-		data:{"acceptNo":FormV},	
-		url :"<%=request.getContextPath()%>/workorder/OrgAppeal",
-		dataType : "html",
-		success : function(data) {
-			// alert(data);
-			$("#alert_box", parent.document).html(data);
 
-		},
-		complete : function() {
-			addInit();// 初始化某些ajax弹出页面
-			viewBox();
-		}
-	});
-}
 </script>
 
 

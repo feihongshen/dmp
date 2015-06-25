@@ -39,17 +39,19 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						二级类型:<%=twoleave%>&nbsp;
 					</li>
 					<li>
-						<span>责任机构:</span>
+					<%if(cca.getCodOrgId()!=-1){ %>
+						<span>责任机构:</span>						
 						<%for(Branch b:lb){ %>
 						<%if(b.getBranchid()==cca.getCodOrgId()) {%>
 								<%=b.getBranchname() %>
 						<%} }%>
-						
-						<span>责任人:</span>
+						<%if(cca.getComplaintUser()!=null){ %>
+						<span>责任人:</span>						
 						<%for(User u:alluser){ %>
 							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
-						<%} }%>
+						<%} }}%>
+						<%} %>
 					</li>
 					<li>
 						<span>订单操作状态:</span><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%>
@@ -95,10 +97,10 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						<%} }}%>
 						<%if(cca.getDownloadheshipath()!=null){ %>
 						
-						<span><a  href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
-						<%} %>
+						<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadheshipath()%>">附件下载</a></span>
+						<%} %> <!--cca.getHeshiTime()!=null&&cca.getHeshiUser()!=null&&cca.getRemark()!=null&&  -->
 					</li>
-					<%if(cca.getHeshiTime()!=null&&cca.getHeshiUser()!=null&&cca.getRemark()!=null) {%>
+					<%if(cca.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()&&cca.getJieanTime()!=null&&cca.getJieanUser()!=null){%>
 					<li>					
 					<span>结案处理结果:</span>
 						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %>
@@ -118,8 +120,9 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
 					<%}%>
 				</li>
-				<%}else{ %>
-					<li>					
+				<%}else{%>
+					<%if(cca.getComplaintState()!=ComplaintStateEnum.DaiHeShi.getValue()){ %>
+					 <li>					
 					<span>结案处理结果:</span>
 						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %>
 						<span>结案时间:</span>
@@ -136,7 +139,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
 					<%}%>
 				</li>
-				<%} %>
+				<%} } %> 
+				
 					<!-- <li>
 						<label>申诉内容*:</label>					
 						<textarea  onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="shensuremark" id="shensuremark"></textarea>																	
@@ -159,6 +163,8 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 						 <input type="submit" value="申诉" class="button" onclick="acceptcloseDiv()"onclick="AlreadyVerify('<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>')"/>
 						
 					</div> --%>
+					<input type="hidden" value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>" id="dhsv"/>
+					<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yjav"/>
 		</div>
 	</form>	
 </div>
