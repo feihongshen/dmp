@@ -6325,7 +6325,7 @@ function  decidecomplain(){
 		alert('请输入二级分类');
 		return false;
 	}
-	if($('#acceptresultC').val==$('#cwclv').val()){
+	if($('#acceptresultC').val()==$('#cwclv').val()){
 		alert('请将处理结果设置为成立/不成立的状态');
 		return false;
 	}
@@ -6353,7 +6353,8 @@ function  decidecomplain1(){
 			alert('请输入二级分类');
 			return false;
 		}
-		if($('#acceptresultC').val!=$('#cwclv').val()){
+		if($('#acceptresultC').val()!=$('#cwclv').val()){
+		
 			alert('请将处理结果设置为待定');
 			return false;
 		}

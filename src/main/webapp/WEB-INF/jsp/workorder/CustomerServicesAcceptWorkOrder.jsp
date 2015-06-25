@@ -41,7 +41,7 @@ function gettrValue(cwbId){
 	//$('#GV').val("");
 	$('#GoonacceptWO').hide();
 	$('#createquerywo_button').show();
-		$('#createcomplain_buttonn').show();
+		$('#createcomplain_buttonn').removeAttr('disabled');
 	$('#trid').val(cwbId);
 	var cwbStr = 'cwb'+cwbId;
 	WOcwb=$('#'+cwbStr).text();
@@ -109,7 +109,7 @@ $(function(){
 	
 	if($('#trid').val()==""){
 		$('#createquerywo_button').hide();
-		$('#createcomplain_buttonn').hide();
+		$('#createcomplain_buttonn').attr('disabled','disabled');
 	}
 	
 	
@@ -305,8 +305,8 @@ function SelectPhone(){
 			 url:'<%=request.getContextPath()%>/workorder/selectByPhoneNum',
 			 success:function(data){
 				 if(data!=null){	
-						 $('#cs111').show();
-						 $('#cs222').show();
+						 $('#contactLastTime').show();
+						 $('#contactNum').show();
 					$('#dname').val(data.name);
 					 $('#consigneeType').val(data.consigneeType); 
 					$('#city').val(data.city);
@@ -320,8 +320,8 @@ function SelectPhone(){
 					}
 					$('#savecallerinfo').attr("disabled","disabled");
 					 }else{
-						 $('#cs111').hide();
-						 $('#cs222').hide();
+						 $('#contactLastTime').hide();
+						 $('#contactNum').hide();
 					 $('#savecallerinfo').removeAttr("disabled");
 					 $('#dname').val("");
 					 $('#consigneeType').val(""); 
@@ -377,8 +377,8 @@ function SelectdetailForm(){
 
 	
 function submitselect(){
-	$('#createquerywo_button').hide();
-	$('#createcomplain_buttonn').hide();
+	/* $('#createquerywo_button').hide(); */
+	$('#createcomplain_buttonn').attr('disabled','disabled');
 	if($('#cwb123').val()==""&&$('#emaildate123').val()==""&&$('#consigneename123').val()==""&&$('#consigneemobile123').val()==""){
 		alert('请输入查询条件');
 		return false;
@@ -493,8 +493,8 @@ function submitselect2(){    //通过手机号查询工单
 	function verifyphoneonOne() {
 		$('#CallerPhoneValue').val($('#phoneonOne').val());
 	
-		$('#createquerywo_button').hide();
-		$('#createcomplain_buttonn').hide();
+/* 		$('#createquerywo_button').hide(); */
+		$('#createcomplain_buttonn').attr('disabled','disabled');
 		var reg = /^1\d{10}$/  //电话号码验证是否为空和是否为数字
 		var obj = document.getElementById("phoneonOne");
 		if (!reg.test(obj.value)) {
@@ -566,6 +566,24 @@ function submitselect2(){    //通过手机号查询工单
         return(clock); 
     }
 */
+
+function showWorkOrderDetailBox(FormV) {
+	$.ajax({
+		type : "POST",
+		data:{"acceptNo":FormV},	
+		url :"<%=request.getContextPath()%>/workorder/OrgAppeal",
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
+
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面
+			viewBox();
+		}
+	});
+}
 </script>
 
 
@@ -598,8 +616,8 @@ function submitselect2(){    //通过手机号查询工单
 				</tr>
 				<tr>									
 					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
-					<td style="display: none" id="cs111"><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled"/></td>
-					<td style="display: none" id="cs222"><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled"></td>
+					<td><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled" style="display: none"/></td>
+					<td><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled" style="display: none"></td>
 					
 					</td>
 				</tr>	
@@ -629,7 +647,7 @@ function submitselect2(){    //通过手机号查询工单
 				</form>	
 						<td><button class="input_button2" id="submitselect" onclick="submitselect()">查询</td> 
 						<!-- <td><button id="createquerywo_button"  class="input_button1">创建查询工单</button></td>	 -->						
-						<td><button id="createcomplain_buttonn"   class="input_button1">创建工单</button></td>						
+						<td><button id="createcomplain_buttonn"  class="input_button1">创建工单</button></td>						
 					</tr>
 			</table>
 			<hr>
@@ -651,7 +669,7 @@ function submitselect2(){    //通过手机号查询工单
 				</table>				
 		</div>	
 	<hr></br>
-			<button id="GoonacceptWO" class="input_button2">继续受理</button>
+			<button id="GoonacceptWO" class="input_button2" style="display: none;">继续受理</button>
 	<hr>	
 	
 		<div>

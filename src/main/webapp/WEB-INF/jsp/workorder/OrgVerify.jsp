@@ -41,13 +41,13 @@ String twoleave=request.getAttribute("TwoLevel")==""?null:(String)request.getAtt
 						二级类型:<%=twoleave%>&nbsp;
 					</li>
 					<li>
-					<span>被投诉机构:</span>	
+					<span>责任机构:</span>	
 						<%for(Branch b:lb){ %>
 						<%if(b.getBranchid()==cca.getCodOrgId()) {%>
 								<%=b.getBranchname() %>
 						<%} }%>
 						
-						<span>被投诉人:</span>
+						<span>责任人:</span>
 						<%for(User u:alluser){ %>
 							<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>

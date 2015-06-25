@@ -61,7 +61,23 @@ function getReasonValueV(){
 	
 	});	
 }
+function getAddBox3(FormV) {
+	$.ajax({
+		type : "POST",
+		data:{"acceptNo":FormV},	
+		url :"<%=request.getContextPath()%>/workorder/OrgAppeal",
+		dataType : "html",
+		success : function(data) {
+			// alert(data);
+			$("#alert_box", parent.document).html(data);
 
+		},
+		complete : function() {
+			addInit();// 初始化某些ajax弹出页面
+			viewBox();
+		}
+	});
+}
 
 $(function() {
 	
@@ -196,27 +212,7 @@ function getAddBox2() {
 		}
 	});
 }
-function getAddBox3() {
-	if($('#FormV').val()==""){
-		alert('请选择一条记录');
-		return false;
-	}
-	$.ajax({
-		type : "POST",
-		data:'acceptNo='+$('#FormV').val(),
-		url :"<%=request.getContextPath()%>/workorder/OrgAppeal",
-		dataType : "html",
-		success : function(data) {
-			// alert(data);
-			$("#alert_box", parent.document).html(data);
 
-		},
-		complete : function() {
-			addInit();// 初始化某些ajax弹出页面
-			viewBox();
-		}
-	});
-}
 function getAddBox4() {
 	$.ajax({
 		type : "POST",
@@ -448,7 +444,7 @@ function CurentTime()   //计算当天时间
 			<%for(CsComplaintAccept c:a){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">
 				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%>
-				<td><a href="javascript:getAddBox3()"><%=c.getAcceptNo() %></a></td>
+				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
 				<%}else{ %>
 				<td><%=c.getAcceptNo() %></td>
 				<%} %>
