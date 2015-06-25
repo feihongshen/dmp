@@ -3,8 +3,8 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -254,7 +254,7 @@ public class AbnormalOrderDAO {
 		return key.getKey().longValue();
 	}
 	public long creAbnormalOrderLongAdd(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch,final String name,final String questionNo,final long isfind,final long ishandle) {
-		this.saveAbnormalOrderByOpscwb(co.getCwb());
+		/*this.saveAbnormalOrderByOpscwb(co.getCwb());*/
 		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`,`fileposition`,`questionno`,`cwbordertypeid`,`isfind`,`ishandle`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -453,11 +453,11 @@ public class AbnormalOrderDAO {
 	 * @param id
 	 * @return
 	 */
-	public AbnormalOrder getAbnormalOrderByOCwb(String cwb) {
+	public List<AbnormalOrder> getAbnormalOrderByOCwb(String cwb) {
 		String sql = "select * from express_ops_abnormal_order where cwb=? ";
-		AbnormalOrder ab = new AbnormalOrder();
+		List<AbnormalOrder> ab = new ArrayList<AbnormalOrder>();
 		try {
-			ab = this.jdbcTemplate.queryForObject(sql, new AbnormalOrderRowMapper(), cwb);
+			ab = this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), cwb);
 		} catch (Exception e) {
 			ab = null;
 		}
@@ -591,7 +591,7 @@ public class AbnormalOrderDAO {
 
 	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle, long customerid,
 			long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
-		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' ";
+		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' and isnow=1";
 		//查询到与自身有关的，自己可以是负责人或者是创建人
 		boolean iskefu=false;
 		if (handleBranch==BranchEnum.KeFu.getValue()) {
@@ -1019,11 +1019,11 @@ public class AbnormalOrderDAO {
 	}
 	public void updateWentijianIsFine(String cwb,long state){
 		try {
-			String sqlString="update express_ops_abnormal_order set isfine=? where cwb=?";
+			String sqlString="update express_ops_abnormal_order set isfine=? where questionno=?";
 			this.jdbcTemplate.update(sqlString,state,cwb);
 		} catch (DataAccessException e) {
 			
 		}
 	}
-	
+
 }

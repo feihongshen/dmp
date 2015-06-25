@@ -209,10 +209,10 @@ public class PunishInsideDao {
 		}
 		
 	}
-	public PenalizeInside getInsidebycwb(String cwb){
+	public List<PenalizeInside> getInsidebycwb(String cwb){
 		try {
 			String sql="select * from express_ops_punishInside_detail where cwb=?";
-			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), cwb);
+			return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper(), cwb);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return null;

@@ -570,7 +570,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 	}
 	public void updateIsfine(String order_no,long isfine){
 		try {
-			String sql="update cs_complaint_accept set if_punish=? where order_no=?";
+			String sql="update cs_complaint_accept set if_punish=? where accept_no=?";
 			this.jt.update(sql,isfine,order_no);
 		} catch (DataAccessException e) {
 			

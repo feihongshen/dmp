@@ -200,7 +200,7 @@ public class AbnormalService {
 				String filePath = ResourceBundleUtil.EXCEPTPATH;
 				name=file.getOriginalFilename();
 				if (name.indexOf(".")!=-1) {
-					String suffix=name.substring(name.indexOf("."));
+					String suffix=name.substring(name.lastIndexOf("."));
 					 name = System.currentTimeMillis() + suffix;
 				}else {
 					 name = System.currentTimeMillis()+"";
@@ -224,6 +224,7 @@ public class AbnormalService {
             while(iter.hasNext()){  
             	 //取得上传文件  
                 MultipartFile file = multiRequest.getFile(iter.next());  
+                file.getOriginalFilename();
                 name=this.loadexceptfile(file)+",";
             }
         }
@@ -231,6 +232,31 @@ public class AbnormalService {
 			name=name.substring(0, name.length()-1);
 		}
         return name;
+	}
+	//文件批量上传的路径（新增）
+	public List<String> getExceptnameAdd(HttpServletRequest request){
+		List<String> filepaths=new ArrayList<String>();
+		String name="";
+		 //创建一个通用的多部分解析器  
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());  
+        if(multipartResolver.isMultipart(request)){  
+        	 //转换成多部分request    
+            MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest)request;  
+            //取得request中的所有文件名  
+            Iterator<String> iter = multiRequest.getFileNames(); 
+            while(iter.hasNext()){  
+            	 //取得上传文件  
+                MultipartFile file = multiRequest.getFile(iter.next());  
+                file.getOriginalFilename();
+                name=this.loadexceptfile(file)+",";
+                if (name!="") {
+        			name=name.substring(0, name.length()-1);
+        		}
+                filepaths.add(name);
+            }
+        }
+        
+        return filepaths;
 	}
 	//结案处理修改两张表的信息
 	public void reviseAbnormalAndwritebackLast(AbnormalOrder co,String describe,long dealresult,long dutybranchid,long dutyname,String filepathsum,long action,User user,String nowtime,String filepath,long ishandle){
@@ -245,6 +271,7 @@ public class AbnormalService {
 		if (missPieces.size()>0&&missPieces!=null) {
 			for(MissPiece missPiece:missPieces){
 				MissPieceView missPieceView=new MissPieceView();
+				missPieceView.setId(missPiece.getId());
 				missPieceView.setCwb(missPiece.getCwb());
 				missPieceView.setCreatetime(missPiece.getCreatetime());
 				missPieceView.setDescribe(missPiece.getDescribeinfo());

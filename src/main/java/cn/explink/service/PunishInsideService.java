@@ -311,19 +311,21 @@ public class PunishInsideService {
 		}
 		//在创建对内扣罚的时候判断该订单是否已经创建为问题件或者工单，是的话改变其扣罚字段
 		public void changeFineField(PenalizeInside penalizeInside,int type){
-				if (type==1) {
-					AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(penalizeInside.getCwb());
+			/*	if (type==1) {
+					List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.getAbnormalOrderByOCwb(penalizeInside.getCwb());
 					 List<CsComplaintAccept> csComplaintAccepts=workOrderDAO.findGoOnacceptWOByCWB(penalizeInside.getCwb());
-					if (abnormalOrder!=null) {
+					if (abnormalOrders.size()>0) {
 						this.changeWentijianIsfine(penalizeInside);
 					}
 					if (csComplaintAccepts!=null&&csComplaintAccepts.size()>0) {
 					this.changeGongdanIsfine(penalizeInside);
 					}
-				}
+				}*/
+			//工单创建
 				if (type==2) {
 					this.changeGongdanIsfine(penalizeInside);
 				}
+				//问题件创建
 				if (type==3) {
 					this.changeWentijianIsfine(penalizeInside);
 				}
@@ -331,11 +333,11 @@ public class PunishInsideService {
 		}
 		//改变问题件里面的是否扣罚关联的状态
 		public void changeWentijianIsfine(PenalizeInside penalizeInside){
-			abnormalOrderDAO.updateWentijianIsFine(penalizeInside.getCwb(),2);
+			abnormalOrderDAO.updateWentijianIsFine(penalizeInside.getSourceNo(),2);
 		}
 		//改变工单里面的是否扣罚关联的状态
 		public void changeGongdanIsfine(PenalizeInside penalizeInside){
-			this.workOrderDAO.updateIsfine(penalizeInside.getCwb(),2);
+			this.workOrderDAO.updateIsfine(penalizeInside.getSourceNo(),2);
 		}
 		public String getRealName(String username){
 			

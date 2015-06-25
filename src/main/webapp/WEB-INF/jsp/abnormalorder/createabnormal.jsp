@@ -20,6 +20,9 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
   Page page_obj = (Page)request.getAttribute("page_obj");
   Map<Long,JSONObject> mapForAb=(Map<Long,JSONObject>)request.getAttribute("mapForAbnormal");
   Boolean iszhandian=(Boolean)request.getAttribute("iszhandian");
+  String message=request.getAttribute("message")==null?"":request.getAttribute("message").toString();
+  String abnormalinfo=request.getAttribute("abnormalinfo")==null?"":request.getAttribute("abnormalinfo").toString();
+  long abnormaltypeid=request.getAttribute("abnormaltypeid")==null?0:Long.parseLong(request.getAttribute("abnormaltypeid").toString());
 %>
 
 
@@ -39,6 +42,9 @@ List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/ajaxfileupload.js"></script>
 
 <script language="javascript">
+
+
+
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
 	var $menulilink = $(".kfsh_tabbtn ul li a");
@@ -48,13 +54,15 @@ $(function(){
 		var index = $menuli.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
-	
+	if(<%=!message.equals("")%>){
+		alert("<%=message%>");
+	}
 });
 function sub(){
 	var datavalue = "[";
 	var noMsg = 0;
-	<%
 	
+	<%
 	if(cwbList!=null&&cwbList.size()>0)
 		{
 		for(CwbOrder cwb : cwbList){
@@ -67,7 +75,8 @@ function sub(){
 			var describe=$("#describe<%=cwb.getOpscwbid()%>").val();
 			var abnormaltypeid=$("#abnormaltypeid<%=cwb.getOpscwbid()%>").val();
 			var cwb="<%=cwb.getCwb()%>";
-			datavalue=  datavalue +  "\""+opscwbid+"_s_"+describe+"_s_"+abnormaltypeid+"_s_"+cwb+" \",";
+			var filename=$("#file<%=cwb.getOpscwbid()%>").val();
+			datavalue=  datavalue +  "\""+opscwbid+"_s_"+describe+"_s_"+abnormaltypeid+"_s_"+cwb+"_s_"+filename+" \",";
 		}
 		
 	<%}}%>
@@ -79,16 +88,12 @@ function sub(){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 	}
 	datavalue= datavalue + "]";
-	$.ajax({
-		type: "POST",
-		url:'<%=request.getContextPath()%>/abnormalOrder/submitCreateabnormal',
-		data:{cwbdetails:datavalue},
-		dataType:"html",
-		success : function(data) {
-			alert("问题件成功提交："+data+"单");
-			searchForm.submit();
-		}
-	});
+/* 	alert(datavalue);
+ */	$("#cwbdetails").val(datavalue);
+	$("#searchform2").submit();
+	
+
+	
 	
 }
 function createabnormalData(){
@@ -112,6 +117,7 @@ function ajaxFileUpload()
     $('#loading').show();  
     uploadProcessTimer = window.setInterval(getFileUploadProcess, 20);  
  */
+ 
  	var dataInit = {};
  	dataInit['cwb'] = $('#cwb').val();
  	dataInit['abnormaltypeid'] = $("#abnormaltypeid").val();
@@ -145,6 +151,9 @@ function ajaxFileUpload()
 
     return false;  
 }  
+function subChexiao(){
+	$("#searchForm3").submit();
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -160,7 +169,7 @@ function ajaxFileUpload()
 				<div style="position:relative; z-index:0; " >
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
-							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreateabnormalAdd" method="post" onsubmit="if(createabnormalData())ajaxFileUpload();return false;" enctype="multipart/form-data">
+							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/submitoCheck" method="post" onsubmit="createabnormalData()" enctype="multipart/form-data">
 							<div class="menucontant">
 							<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" align="left">
 							<tr>
@@ -196,9 +205,9 @@ function ajaxFileUpload()
 								<td >
 								问题件说明:<textarea id="abnormalinfo" name="abnormalinfo" onblur="if(this.value==''){this.value='最多输入100个字'}" onfocus="if(this.value=='最多输入100个字'){this.value=''}">最多输入100个字</textarea><br>
 								</td>
-								<td align="left">
+								<!-- <td align="left">
 								上传附件:<input type="file" name="file" id="file"/>
-								</td>
+								</td> -->
 								<td>
 								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
 								</td>
@@ -209,7 +218,8 @@ function ajaxFileUpload()
 								</div>	
 							</form>
 						</div>
-						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" style="display: none;">
+						
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="tijiaoshow">
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
@@ -218,7 +228,8 @@ function ajaxFileUpload()
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
 									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
-									<td align="center" valign="middle" bgcolor="#E7F4E3">问题说明</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">问题说明</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">附件上传</td>
 								</tr>
 							</tbody>
 						</table>
@@ -229,31 +240,36 @@ function ajaxFileUpload()
 					<br>
 					<div style="height:100px"></div>
 					<div style="height:400px;overflow-y:scroll">
+					<form id="searchform2"  action="<%=request.getContextPath()%>/abnormalOrder/submitCreateabnormal" method="post" enctype="multipart/form-data">
+					<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ 
+							%>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 						<tbody>
-							<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ 
-							%>
 							<tr height="30" >
-								<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
+								<td width="200" align="center" valign="middle"><%=cwb.getCwb() %></td>
 								<td width="120" align="center" valign="middle"><%for(Customer c : customerlist){if(cwb.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
 								<td width="120" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 								<td width="100" align="center" valign="middle"><%for(Branch b : branchlist){if(cwb.getDeliverybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
 								<td width="100" align="center" valign="middle"><%for(FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()){if(cwb.getFlowordertype()==ft.getValue()){ %><%=ft.getText() %><%}} %></td>
 								<td width="200" align="center" valign="middle">
-								<select name="abnormaltypeid<%=cwb.getOpscwbid()%>" id="abnormaltypeid<%=cwb.getOpscwbid()%>">
+								<select name="abnormaltypeid<%=cwb.getOpscwbid()%>" id="abnormaltypeid<%=cwb.getOpscwbid()%>" style="width: 200;">
 									<option value="0">请选择</option>
 									<%if(abnormalTypeList.size()>0)for(AbnormalType at : abnormalTypeList){ %>
-											<option  title="<%=at.getName() %>" value="<%=at.getId()%>_<%= Long.parseLong(mapForAb.get(cwb.getOpscwbid()).getString("abnormalorderid"))%>"
-											<%if(Long.parseLong(mapForAb.get(cwb.getOpscwbid()).getString("abnormalordertype"))==at.getId()){ %>selected<%} %>><%if(at.getName().length()>12){%><%=at.getName().substring(0,12)%><%}else{ %><%=at.getName() %><%} %>
+											<option value="<%=at.getId() %>" <%if(abnormaltypeid==at.getId()){ %>selected="selected" <%} %>  >
+											<%=at.getName() %>
 											</option>
 									<%} %>
 								</select></td>
-								<td valign="middle"><input type="text" name="describe<%=cwb.getOpscwbid()%>" id="describe<%=cwb.getOpscwbid()%>" style="width:95%" /></td>
-								
+								<td width="200" align="center" valign="middle"><input type="text" name="describe<%=cwb.getOpscwbid()%>" id="describe<%=cwb.getOpscwbid()%>" style="width:95%" value="<%=abnormalinfo.equals("最多输入100个字")?"":abnormalinfo %>"/></td>
+								<td width="200" align="center"  valign="middle">
+								<input type="file" id="file<%=cwb.getOpscwbid() %>" name="file<%=cwb.getOpscwbid() %>" width="200"/>
+								</td>
 							</tr>
 							<%} %>
+							<input type="hidden" id="cwbdetails" name="cwbdetails" value=""/>
 						</tbody>
 					</table>
+					</form>
 					</div>
 					
 
@@ -263,7 +279,11 @@ function ajaxFileUpload()
 						<table width="100%" border="0" cellspacing="1"  class="table_2" id="gd_table2">
 							<tbody>
 								<tr height="30" >
-									<td align="center"><input type="button" value="提交" class="button" onclick="sub();"></td>
+									<td align="center"><input type="button" value="提交" class="button" onclick="sub();">
+									<input type="button" value="取消" class="button" onclick="subChexiao();">
+									
+									</td>
+									
 								</tr>
 							</tbody>
 						</table>
@@ -272,6 +292,8 @@ function ajaxFileUpload()
 		</div>
 	</div>
 </div>
+<form id="searchForm3"  name="searchForm3" action="<%=request.getContextPath()%>/abnormalOrder/submitoCheck" method="post"  enctype="multipart/form-data">
+</form>
 <script type="text/javascript">
 $("#abnormaltypeid").val(<%=request.getParameter("abnormaltypeid")==null?0:Long.parseLong(request.getParameter("abnormaltypeid"))%>);
 </script>

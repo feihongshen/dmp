@@ -315,7 +315,7 @@ function resethence(){
 					<%if(misspieces!=null||misspieces.size()>0)for(MissPieceView misspiece: misspieces){ %>
 					<tr height="30" >
 						<td width="30" align="center" valign="middle" bgcolor="#eef6ff">
-						<input id="id" type="checkbox" value="<%=misspiece.getCwb()%>"  name="id"/>
+						<input id="id" type="checkbox" value="<%=misspiece.getId()%>"  name="id"/>
 						</td>
 						<td width="100" align="center" valign="middle"><a style="color: blue;" href="javascript:getThisBoxListAdd('<%=misspiece.getCwb() %>');"><%=misspiece.getCwb() %></a></td>
 						<td width="100" align="center" valign="middle"><%=misspiece.getCustomername() %></td>
@@ -324,7 +324,7 @@ function resethence(){
 						<td width="100" align="center" valign="middle"><%=misspiece.getCallbackbranchname() %></td>
 						<td width="100" align="center" valign="middle"><%=misspiece.getCreusername() %></td>
 						<td width="100" align="center" valign="middle"><%=misspiece.getCreatetime() %></td>
-						<td width="100" align="center" valign="middle"><%=misspiece.getQuestionno()==null?"":misspiece.getQuestionno() %></td>
+						<td width="100" align="center" valign="middle" title="<%=misspiece.getQuestionno()==null?"":misspiece.getQuestionno() %>"><%=misspiece.getQuestionno()==null?"":misspiece.getQuestionno().split(",").length>2?misspiece.getQuestionno().split(",")[0]+","+misspiece.getQuestionno().split(",")[1]+"...":misspiece.getQuestionno() %></td>
 						<td width="160" align="center" valign="middle"><a href="javascript:void(0)">处理<a/></td>
 					</tr>
 					<%} %>

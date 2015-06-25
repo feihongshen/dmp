@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -136,8 +137,8 @@ public class AbnormalOrderController {
 	 * @param cwb
 	 * @param abnormaltypeid
 	 * @return
-	 *//*
-	@RequestMapping("/toCreateabnormal")
+	 */
+	/*@RequestMapping("/toCreateabnormal")
 	public  String toCreateabnormal(
 			HttpServletRequest request,HttpServletResponse response,
 			Model model,
@@ -201,6 +202,59 @@ public class AbnormalOrderController {
 
 		return "/abnormalorder/createabnormal";
 	}*/
+	
+	
+	/**
+	 * 进入创建问题件页面
+	 * 
+	 * @param model
+	 * @param cwb
+	 * @param abnormaltypeid
+	 * @return
+	 */
+	@RequestMapping("/toCreateabnormalPage")
+	public  String toCreateabnormalPage(Model model) {
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		boolean iszhandian = false;
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			iszhandian = true;
+		}
+		model.addAttribute("iszhandian", iszhandian);
+
+		return "/abnormalorder/createabnormal";
+	}
+	//进入提交时的确认是否提交
+	@RequestMapping("/submitoCheck")
+	public String submitoCheck(Model model,
+			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
+			@RequestParam(value = "abnormalinfo", defaultValue = "", required = false) String abnormalinfo,
+			@RequestParam(value = "abnormaltypeid", defaultValue = "0", required = false) long abnormaltypeid
+			){
+		String quot = "'", quotAndComma = "',";
+		List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
+		if (cwb.length() > 0) {
+/*			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);*/
+			StringBuffer cwbs = new StringBuffer();
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
+			}
+			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
+		}
+		model.addAttribute("cwbList", cwbList);
+		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		model.addAttribute("abnormalinfo", abnormalinfo);
+		model.addAttribute("abnormaltypeid", abnormaltypeid);
+		return "/abnormalorder/createabnormal";
+	}
+	
 	/**
 	 * 创建问题件(主表中数据为未处理状态)
 	 * 
@@ -209,7 +263,7 @@ public class AbnormalOrderController {
 	 * @param abnormaltypeid
 	 * @return
 	 */
-	@RequestMapping("/toCreateabnormalAdd")
+/*	@RequestMapping("/toCreateabnormalAdd")
 	public @ResponseBody String toCreateabnormalAdd(
 			HttpServletRequest request,
 			@RequestParam("file") CommonsMultipartFile[] files,
@@ -220,7 +274,7 @@ public class AbnormalOrderController {
 			abnormalinfo="";
 		}
 		Map<String, String> errorCwbs=new HashMap<String, String>();
-		/*	//查看订单号是否存在，如果不存在不允许后进行创建问题件
+			//查看订单号是否存在，如果不存在不允许后进行创建问题件
 		CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
 		if (cwbOrder==null) {
 			return "{\"errorCode\":0,\"error\":\"该订单号'"+cwb+"'不存在，不允许创建！\"}";
@@ -229,7 +283,7 @@ public class AbnormalOrderController {
 		AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
 		if (abnormalOrder!=null) {
 			return "{\"errorCode\":0,\"error\":\"该订单号'"+cwb+"'已经创建过问题件，不允许再次创建！\"}";
-		}*/
+		}
 		//判断插入的问题件isfind是已经找到（1）还是未找到（0）
 		long isfind=0;
 		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
@@ -276,9 +330,9 @@ public class AbnormalOrderController {
 							long action = AbnormalWriteBackEnum.ChuangJian.getValue();
 							//abnormalOrder的状态为未处理
 							long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
-						/*	if (ab != null) {
+							if (ab != null) {
 								action = AbnormalWriteBackEnum.XiuGai.getValue();
-							}*/
+							}
 						
 							this.abnormalService.creAbnormalOrder(co, this.getSessionUser(), abnormaltypeid, nowtime, mapForAbnormalorder, action, handleBranch,name,abnormalinfo,questionNo,isfind,ishandle);
 							PenalizeInside penalizeInside=punishInsideDao.getInsidebycwb(cwbStr);
@@ -304,28 +358,8 @@ public class AbnormalOrderController {
 			}
 		
 		
-	}
-	/**
-	 * 进入创建问题件页面
-	 * 
-	 * @param model
-	 * @param cwb
-	 * @param abnormaltypeid
-	 * @return
-	 */
-	@RequestMapping("/toCreateabnormalPage")
-	public  String toCreateabnormalPage(Model model) {
-		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
-		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-		boolean iszhandian = false;
-		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-			iszhandian = true;
-		}
-		model.addAttribute("iszhandian", iszhandian);
-
-		return "/abnormalorder/createabnormal";
-	}
-
+	}*/
+	
 	/**
 	 * 创建问题件的form提交
 	 * 
@@ -333,64 +367,83 @@ public class AbnormalOrderController {
 	 * @param cwbdetails
 	 * @return
 	 */
-	/*@RequestMapping("/submitCreateabnormal")
-	public @ResponseBody
-	long submitCreateabnormal(Model model, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
-
+	@RequestMapping("/submitCreateabnormal")
+	public 
+	String submitCreateabnormal(
+		Model model,HttpServletRequest request, @RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails) {
+		//判断文件的位置
+		int k=0;
+		//上传的附件名
+		List<String> filepahs=abnormalService.getExceptnameAdd(request);
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		long successCount = 0;
-
+		Map<Long, JSONObject> mapForAbnormalorder = new HashMap<Long, JSONObject>();
 		if (cwbdetails == null) {
-			return successCount;
+			return successCount+"";
 		}
-
 		JSONArray rJson = JSONArray.fromObject(cwbdetails);
-
+		long action = AbnormalWriteBackEnum.ChuangJian.getValue();
+		//abnormalOrder的状态为未处理
+		long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
+		long isfind=0;
+		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		long handleBranch=0;//0为没有操作机构
+		if (branch!=null) {
+			handleBranch=branch.getSitetype();
+		}
 		for (int i = 0; i < rJson.size(); i++) {
 			String reason = rJson.getString(i);
 			if (reason.equals("") || (reason.indexOf("_s_") == -1)) {
 				continue;
 			}
+			String questionNo="Q"+System.currentTimeMillis();
 			String[] cwb_id = reason.split("_s_");
-			if (cwb_id.length == 4) {
-				try {
-					if (!cwb_id[3].equals("") && !cwb_id[0].equals("0") && (cwb_id[2].split("_").length == 2) && !cwb_id[2].split("_")[0].equals("0") && !cwb_id[2].split("_")[1].equals("0")) {
+			if (cwb_id.length == 5) {
+				
+					if (!cwb_id[3].equals("") && !cwb_id[0].equals("0")&&!cwb_id[2].split("_")[0].equals("0") && !cwb_id[2].equals("0")) {
 						SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date date = new Date();
 						String nowtime = df.format(date);
-
-						// AbnormalOrder
-						// ab=abnormalOrderDAO.getAbnormalOrderById(Long.parseLong(cwb_id[2].split("_")[1]));
-
-						this.abnormalOrderDAO.saveAbnormalOrderByid(Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]), cwb_id[1]);
-
-						// 改成修改 abnormalenum 添加新的类型
-
-						this.abnormalWriteBackDAO.creAbnormalOrder(Long.parseLong(cwb_id[0]), cwb_id[1], this.getSessionUser().getUserid(), AbnormalWriteBackEnum.XiuGai.getValue(), nowtime,
-								Long.parseLong(cwb_id[2].split("_")[1]), Long.parseLong(cwb_id[2].split("_")[0]), cwb_id[3],"");
-						AbnormalOrder abnormalOrder = this.abnormalOrderDAO.getAbnormalOrderByOId(Long.parseLong(cwb_id[2].split("_")[1]));
-						CwbOrder co = this.cwbDAO.getCwbOrderByOpscwbid(Long.parseLong(cwb_id[0]));
-						List<User> kefurole = this.userDAO.getUserByRole(1);
-						if (abnormalOrder != null) {
-							for (User user : kefurole) {
-								String json = "订单：" + co.getCwb() + "待处理";
-								this.appearWindowDao.creWindowTime(json, "3", user.getUserid(), "1");
-							}
+						String cwbStr=cwb_id[3];
+						String name="";
+						if (!cwb_id[4].trim().equals("")) {
+							name=filepahs.get(k);
+							k++;
+						}String abnormalinfo=cwb_id[1];
+						if (cwb_id[1].equals("最多输入100个字")) {
+							abnormalinfo="";
 						}
+						CwbOrder co = this.cwbDAO.getCwbOrderByOpscwbid(Long.parseLong(cwb_id[0]));
+						this.abnormalService.creAbnormalOrder(co, this.getSessionUser(),Long.parseLong(cwb_id[2]), nowtime, mapForAbnormalorder, action, handleBranch,name,abnormalinfo,questionNo,isfind,ishandle);
 						successCount++;
-					}
-					this.logger.info("{} 成功", reason);
-				} catch (Exception e) {
-					e.printStackTrace();
-					this.logger.error("{} 失败", reason);
-				}
+						List<PenalizeInside> penalizeInsides=punishInsideDao.getInsidebycwb(cwbStr);
+						if (penalizeInsides!=null&&penalizeInsides.size()>0) {
+							abnormalOrderDAO.updateWentijianIsFine(questionNo, 2);
+						}else {
+							abnormalOrderDAO.updateWentijianIsFine(questionNo, 1);
+						}
+						List<MissPiece> missPieces=missPieceDao.findMissPieceByCwb(cwbStr);
+						if (missPieces!=null&&missPieces.size()>0) {
+							abnormalOrderDAO.updateMisspieceState(1, cwbStr);
+							//改变丢失件的问题件单号
+							if (!missPieces.get(0).getQuestionno().equals("")) {
+								String questionNOSum=questionNo+","+missPieces.get(0).getQuestionno();
+								missPieceDao.updateQuestionNo(questionNOSum, cwbStr);
+							}
+							
+						}
+						
+						
 			} else {
 				this.logger.info("{} 失败，格式不正确", reason);
 			}
-		}
-
-		return successCount;
-	}*/
+			}
+			}
+		model.addAttribute("message","成功提交"+successCount+"单");
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		return "/abnormalorder/createabnormal";
+	}
 
 	/**
 	 * 问题件处理查询功能
@@ -1385,10 +1438,16 @@ public class AbnormalOrderController {
 						long flowordertype=cwbOrder.getFlowordertype();
 						User user=this.getSessionUser();
 						long userid=user.getUserid();
-						AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
-						if (abnormalOrder!=null) {
-							questionNo=abnormalOrder.getQuestionno();
-							//修改问题件的是否丢失状态
+						List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
+						if (abnormalOrders.size()>0) {
+							for (Iterator<AbnormalOrder> iterator = abnormalOrders
+									.iterator(); iterator.hasNext();) {
+								AbnormalOrder abnormalOrder2 = (AbnormalOrder) iterator
+										.next();
+								questionNo=questionNo+abnormalOrder2.getQuestionno()+",";
+							}
+							questionNo=questionNo.substring(0, questionNo.length()-1);
+
 							abnormalOrderDAO.updateMisspieceState(1,cwb);
 						}
 						missPieceDao.insertintoMissPiece(cwb,callbackbranchid,abnormalinfo,filepath,questionNo,nowtime,customerid,cwbtypeid,flowordertype,userid);
@@ -1533,15 +1592,27 @@ public class AbnormalOrderController {
 	public @ResponseBody String cancelMisspiece(
 			@RequestParam(value="ids",defaultValue="",required=false) String ids)
 		{
+/*		String questionNo="";
+*/		String cwb="";
 		long updatesum=0;
 		if(!ids.equals("")){
 			if (ids.split(",").length>0) {
-				for (String cwb : ids.split(",")) {
-					AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
-					if (abnormalOrder!=null) {
-						abnormalOrderDAO.updateMisspieceState(0, cwb);
+				for (String id : ids.split(",")) {
+					List<MissPiece> missPieces=missPieceDao.findMissPieceById(Long.parseLong(id));
+					if (missPieces!=null&&missPieces.size()>0) {
+						/*if (!missPieces.get(0).getQuestionno().equals("")) {
+							questionNo=missPieces.get(0).getQuestionno();
+						}*/
+						 cwb=missPieces.get(0).getCwb();
+						List<MissPiece> missPieces2=missPieceDao.findMissPieceByCwb(cwb);
+						if (missPieces2.size()==1) {
+							List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
+							if (abnormalOrders.size()>0) {
+								abnormalOrderDAO.updateMisspieceState(0, cwb);
+							}
+						}
 					}
-					missPieceDao.updateStateAdd(cwb);
+					missPieceDao.updateStateAdd(id);
 					updatesum++;
 				}
 			}
@@ -1594,4 +1665,106 @@ public class AbnormalOrderController {
 		model.addAttribute("filepathsum", missPiece.getFilepath());
 		return "/abnormalorder/losebackcwboutdetail";
 	}
+	//提交创建丢失件
+	@RequestMapping("/submitCreateLoseback")
+	public String submitCreateLoseback(
+			Model model,HttpServletRequest request, 
+			@RequestParam(value = "cwbdetails", defaultValue = "", required = false) String cwbdetails){
+				String questionNo="";
+				//判断文件的位置
+				int k=0;
+				//上传的附件名
+				List<String> filepahs=abnormalService.getExceptnameAdd(request);
+				long successCount = 0;
+				if (cwbdetails == null) {
+					return successCount+"";
+				}
+				JSONArray rJson = JSONArray.fromObject(cwbdetails);
+				for (int i = 0; i < rJson.size(); i++) {
+					String reason = rJson.getString(i);
+					if (reason.equals("") || (reason.indexOf("_s_") == -1)) {
+						continue;
+					}
+					String[] cwb_id = reason.split("_s_");
+					if (cwb_id.length == 5) {
+						
+							if (!cwb_id[3].equals("") && !cwb_id[0].equals("0")&&!cwb_id[2].split("_")[0].equals("0") && !cwb_id[2].equals("0")) {
+								String cwb=cwb_id[3];
+								CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
+								long customerid=cwbOrder.getCustomerid();
+								long cwbtypeid=cwbOrder.getCwbordertypeid();
+								long flowordertype=cwbOrder.getFlowordertype();
+								User user=this.getSessionUser();
+								long userid=user.getUserid();
+								
+								List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.getAbnormalOrderByOCwb(cwb);
+								if (abnormalOrders.size()>0) {
+									for (Iterator<AbnormalOrder> iterator = abnormalOrders
+											.iterator(); iterator.hasNext();) {
+										AbnormalOrder abnormalOrder2 = (AbnormalOrder) iterator
+												.next();
+										questionNo=questionNo+abnormalOrder2.getQuestionno()+",";
+									}
+									questionNo=questionNo.substring(0, questionNo.length()-1);
+									//修改问题件的是否丢失状态
+									abnormalOrderDAO.updateMisspieceState(1,cwb);
+								}
+								String abnormalinfo=cwb_id[1];
+								if (cwb_id[1].equals("最多输入100个字")) {
+									abnormalinfo="";
+								}
+								SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								Date date = new Date();
+								String nowtime = df.format(date);
+								String filepath="";
+								if (!cwb_id[4].trim().equals("")) {
+									filepath=filepahs.get(k);
+									k++;
+								}
+								try {
+									missPieceDao.insertintoMissPiece(cwb,Long.parseLong(cwb_id[2]),abnormalinfo,filepath,questionNo,nowtime,customerid,cwbtypeid,flowordertype,userid);
+									successCount++;
+								} catch (NumberFormatException e) {
+									this.logger.info("{} 失败，创建失败", reason);
+
+								}
+								
+					} else {
+						this.logger.info("{} 失败，格式不正确", reason);
+					}
+					}
+					}
+				model.addAttribute("message","成功提交"+successCount+"单");
+				model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+				model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		return "/abnormalorder/losebackcreate";
+	}
+	//显示下面的提交的丢失件
+	@RequestMapping("/toCreatMissPieceToCheck")
+	public String toCreatMissPieceToCheck(Model model,
+			@RequestParam(value="cwb",defaultValue="",required=false) String cwb,
+			@RequestParam(value="callbackbranchid",defaultValue="0",required=false) long callbackbranchid,
+			@RequestParam(value="abnormalinfo",defaultValue="",required=false) String abnormalinfo
+			){
+		String quot = "'", quotAndComma = "',";
+		List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
+		if (cwb.length() > 0) {
+
+			StringBuffer cwbs = new StringBuffer();
+			for (String cwbStr : cwb.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
+			}
+			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
+		}
+		model.addAttribute("cwbList", cwbList);
+		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		model.addAttribute("losebackbranchid", callbackbranchid);
+		model.addAttribute("losebackdescribe", abnormalinfo);
+		return "/abnormalorder/losebackcreate";
+	}
+	
 }

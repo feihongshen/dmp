@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -76,9 +77,26 @@ public class MissPieceDao {
 	public List<MissPiece> findMissPieceByCwb(String cwb){
 		String sql="select * from express_ops_lose_back where cwb=?";
 		
-			return this.jdbcTemplate.query(sql, new MissPieceMapper(), cwb);
+			try {
+				return this.jdbcTemplate.query(sql, new MissPieceMapper(), cwb);
+			} catch (DataAccessException e) {
+				return null;
+			}
 			
 
+		
+	}
+	//根据id号查询丢失
+	public List<MissPiece> findMissPieceById(long id){
+		String sql="select * from express_ops_lose_back where id=?";
+		
+		try {
+			return this.jdbcTemplate.query(sql, new MissPieceMapper(), id);
+		} catch (DataAccessException e) {
+			return null;
+		}
+		
+		
 		
 	}
 	//向表里面插入数据
@@ -120,7 +138,7 @@ public class MissPieceDao {
 	}*/
 	//修改丢失件的状态1为有效，0为无效
 	public long updateStateAdd(String cwbs){
-		String sql="delete  from  express_ops_lose_back  where cwb=?";
+		String sql="delete  from  express_ops_lose_back  where id=?";
 		try {
 			int k=this.jdbcTemplate.update(sql, cwbs);
 			return k;

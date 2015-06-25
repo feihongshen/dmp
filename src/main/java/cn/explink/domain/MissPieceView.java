@@ -1,6 +1,7 @@
 package cn.explink.domain;
 
 public class MissPieceView {
+	private long id;//丢失订单id
 	private String cwb;//订单号
 	private String customername;//供货商
 	private String ordertype;//订单类型
@@ -10,6 +11,13 @@ public class MissPieceView {
 	private String creusername;//创建人
 	private String questionno;//问题件号
 	private String describe;//丢失件说明
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getCwb() {
 		return cwb;
 	}

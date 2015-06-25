@@ -1,3 +1,5 @@
+<%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.User"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -8,6 +10,11 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<Branch> branchList=(List<Branch>)request.getAttribute("branchList");
+List<Customer> customerlist=(List<Customer>)request.getAttribute("customerList");
+List<CwbOrder> cwbList=(List<CwbOrder>)request.getAttribute("cwbList");
+String losebackdescribe=request.getAttribute("losebackdescribe")==null?"":request.getAttribute("losebackdescribe").toString();
+long losebackbranchid=request.getAttribute("losebackbranchid")==null?0:Long.parseLong(request.getAttribute("losebackbranchid").toString());
+String message=request.getAttribute("message")==null?"":request.getAttribute("message").toString();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -34,6 +41,9 @@ $(function(){
 		var index = $menuli.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
+	if(<%=!message.equals("")%>){
+		alert("<%=message%>");
+	}
 	
 });
 
@@ -91,6 +101,45 @@ function ajaxFileUpload()
 
     return false;  
 }  
+
+
+function sub(){
+	var datavalue = "[";
+	var noMsg = 0;
+	
+	<%
+	if(cwbList!=null&&cwbList.size()>0)
+		{
+		for(CwbOrder cwb : cwbList){
+%>	
+		if($("#losebackbranchid<%=cwb.getOpscwbid()%>").val()==0){
+		
+			noMsg +=1;
+		}else{
+			var opscwbid="<%=cwb.getOpscwbid()%>";
+			var describe=$("#describe<%=cwb.getOpscwbid()%>").val();
+			var losebackbranchid=$("#losebackbranchid<%=cwb.getOpscwbid()%>").val();
+			var cwb="<%=cwb.getCwb()%>";
+			var filename=$("#file<%=cwb.getOpscwbid()%>").val();
+			datavalue=  datavalue +  "\""+opscwbid+"_s_"+describe+"_s_"+losebackbranchid+"_s_"+cwb+"_s_"+filename+" \",";
+		}
+		
+	<%}}%>
+	if(noMsg>0){
+		alert("您还有"+noMsg+"单没选择找回机构，请先选择！");
+		return false;
+	}
+	if(datavalue.length>1){
+		datavalue= datavalue.substring(0, datavalue.length-1);
+	}
+	datavalue= datavalue + "]";
+/* 	alert(datavalue);
+ */	$("#cwbdetails").val(datavalue);
+	$("#searchform2").submit();
+}
+function subChexiao(){
+	$("#searchForm3").submit();
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -101,7 +150,7 @@ function ajaxFileUpload()
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<div class="menucontant">
-							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreatMissPiece" method="post" onsubmit="if(createabnormalData())ajaxFileUpload();return false;" enctype="multipart/form-data">
+							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreatMissPieceToCheck" method="post"  >
 							<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" align="left">
 							<tr>
 							<td>
@@ -124,9 +173,9 @@ function ajaxFileUpload()
 								<td >
 								找 回说 明：<textarea id="abnormalinfo" name="abnormalinfo" onblur="if(this.value==''){this.value='最多输入100个字'}" onfocus="if(this.value=='最多输入100个字'){this.value=''}">最多输入100个字</textarea><br>
 								</td>
-								<td align="left">
+								<!-- <td align="left">
 								上传附件:<input type="file" name="file" id="file"/>
-								</td>
+								</td> -->
 								<td >
 								<input type="submit" value="提交" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
 								</td>
@@ -141,13 +190,85 @@ function ajaxFileUpload()
 								</div>	
 							</form>
 						</div>
-						</div>
-						<br>
-				</div>		
+						
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="tijiaoshow">
+							<tbody>
+								<tr class="font_1" height="30" >
+									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
+									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">供货商</td>
+									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">找回机构</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">找回说明</td>
+									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">附件上传</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<br>
+					<br>
+					<br>
+					<br>
+					<div style="height:100px"></div>
+					<div style="height:400px;overflow-y:scroll">
+					<form id="searchform2"  action="<%=request.getContextPath()%>/abnormalOrder/submitCreateLoseback" method="post" enctype="multipart/form-data">
+					<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ 
+							%>
+					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
+						<tbody>
+							<tr height="30" >
+								<td width="200" align="center" valign="middle"><%=cwb.getCwb() %></td>
+								<td width="120" align="center" valign="middle"><%for(Customer c : customerlist){if(cwb.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
+								<td width="120" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
+								<td width="100" align="center" valign="middle"><%for(Branch b : branchList){if(cwb.getDeliverybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+								<td width="100" align="center" valign="middle"><%for(FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()){if(cwb.getFlowordertype()==ft.getValue()){ %><%=ft.getText() %><%}} %></td>
+								<td width="200" align="center" valign="middle">
+								<select name="losebackbranchid<%=cwb.getOpscwbid()%>" id="losebackbranchid<%=cwb.getOpscwbid()%>" style="width: 200;">
+									<option value="0">请选择</option>
+									<%if(branchList.size()>0)for(Branch at : branchList){ %>
+											<%-- <option  title="<%=at.getName() %>" value="<%=at.getId()%>_<%= Long.parseLong(mapForAb.get(cwb.getOpscwbid()).getString("abnormalorderid"))%>"
+											<%if(Long.parseLong(mapForAb.get(cwb.getOpscwbid()).getString("abnormalordertype"))==at.getId()){ %>selected<%} %>><%if(at.getName().length()>12){%><%=at.getName().substring(0,12)%><%}else{ %><%=at.getName() %><%} %>
+											</option> --%>
+											<option value="<%=at.getBranchid() %>" <%if(at.getBranchid()==losebackbranchid) {%> selected="selected"  <%} %>>
+											<%=at.getBranchname() %>
+											</option>
+									<%} %>
+								</select></td>
+								<td width="200" align="center" valign="middle"><input type="text" name="describe<%=cwb.getOpscwbid()%>" id="describe<%=cwb.getOpscwbid()%>" style="width:95%" value="<%=losebackdescribe.equals("最多输入100个字")?"":losebackdescribe %>"/></td>
+								<td width="200" align="center"  valign="middle">
+								<input type="file" id="file<%=cwb.getOpscwbid() %>" name="file<%=cwb.getOpscwbid() %>" width="200"/>
+								</td>
+							</tr>
+							<%} %>
+							<input type="hidden" id="cwbdetails" name="cwbdetails" value=""/>
+						</tbody>
+					</table>
+					</form>
+					</div>
+					
+
+				</div>
+				<%if(cwbList!=null&&cwbList.size()>0){ %>
+				<div class="iframe_bottom" >
+						<table width="100%" border="0" cellspacing="1"  class="table_2" id="gd_table2">
+							<tbody>
+								<tr height="30" >
+									<td align="center"><input type="button" value="提交" class="button" onclick="sub();">
+									<input type="button" value="取消" class="button" onclick="subChexiao();">
+									
+									</td>
+									
+								</tr>
+							</tbody>
+						</table>
+				</div>
+				<%} %>
 		</div>
 	</div>
 </div>
-
+<form id="searchForm3"  name="searchForm3" action="<%=request.getContextPath()%>/abnormalOrder/losebackcreate" method="post"  enctype="multipart/form-data">
+</form>
 </body>
 </html>
 
