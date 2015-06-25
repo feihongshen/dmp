@@ -576,4 +576,8 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 			
 		}
 	}
+	
+	public void updateConnum(int newcnnum){
+		jt.update("update cs_consignee_info set contact_num="+newcnnum);
+	}
 }

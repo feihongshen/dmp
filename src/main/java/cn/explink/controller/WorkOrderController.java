@@ -131,15 +131,15 @@ public class WorkOrderController {
 	}
 	
 	@RequestMapping("/CustomerServicesAcceptWorkOrder")
-	public String CustomerServicesAcceptWorkOrder(){
-		
+	public String CustomerServicesAcceptWorkOrder(Model model){	
+		model.addAttribute("KeHuLeiXingAllReason", reasondao.getKeHuLeiXingAllReason());
 		return "workorder/CustomerServicesAcceptWorkOrder";
 	}
-	@RequestMapping("/CustomerServicesAcceptWorkOrder01")
+/*	@RequestMapping("/CustomerServicesAcceptWorkOrder01")
 	public String CustomerServicesAcceptWorkOrder01(){
 		
 		return "workorder/CustomerServicesAcceptWorkOrder01";
-	}
+	}*/
 
 	
 	@RequestMapping("/CallerArchivalRepository/{page}")
@@ -147,13 +147,14 @@ public class WorkOrderController {
 			model.addAttribute("page", page);
 			model.addAttribute("page_obj", new Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()), page, Page.ONE_PAGE_NUMBER));			
 			model.addAttribute("ccilist", workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
-		return "workorder/CallerArchivalRepository";
+			model.addAttribute("KeHuLeiXingAllReason", reasondao.getKeHuLeiXingAllReason());
+			return "workorder/CallerArchivalRepository";
 	}
 	@RequestMapping("/EditEditMaintain/{id}")
 	public String EditEditMaintain(Model model,@PathVariable(value="id") int id) throws Exception{
 		CsConsigneeInfo ccf=workorderdao.queryById(id);
 		model.addAttribute("ccf", ccf);
-		
+		model.addAttribute("KeHuLeiXingAllReason", reasondao.getKeHuLeiXingAllReason());
 		return "workorder/EditMaintain";		
 	}
 	
@@ -167,6 +168,8 @@ public class WorkOrderController {
 	@RequestMapping("/addCallerArchival")
 	@ResponseBody
 	public String addCallerArchival(CsConsigneeInfo ccf){
+		ccf.setContactNum(1);
+		ccf.setContactLastTime(DateTimeUtil.getNowTime());
 		workorderdao.saveAllCsConsigneeInfo(ccf);
 		return "{\"errorCode\":0,\"error\":\"添加成功\"}";
 	}
@@ -234,9 +237,9 @@ public class WorkOrderController {
 	}
 	
 	@RequestMapping("/NewAddMaintain")
-	public String NewAddMaintain(){
+	public String NewAddMaintain(Model model){
 		
-		
+		model.addAttribute("KeHuLeiXingAllReason", reasondao.getKeHuLeiXingAllReason());
 		return "workorder/NewAddMaintain";
 	}
 	@RequestMapping("/OrgVerify")
@@ -321,14 +324,24 @@ public class WorkOrderController {
 	}
 	//添加客服收件人数据
 	@RequestMapping("/addCsConsigneeInfo")
-	public String add(CsConsigneeInfo cci){
+	public String add(CsConsigneeInfo cci,Model model){
 		List<CsConsigneeInfo> cs=workorderdao.queryListCsConsigneeInfo(cci.getPhoneonOne());
 		
 		if(cs.size()<1){
-			workorderservice.addcsconsigneeInfo(cci);
+			CsConsigneeInfo cf = new CsConsigneeInfo();
+			cf.setName(cci.getName());
+			cf.setSex(cci.getSex());
+			cf.setConsigneeType(cci.getConsigneeType());
+			cf.setContactNum(1);
+			cf.setContactLastTime(DateTimeUtil.getNowTime());
+			cf.setPhoneonOne(cci.getPhoneonOne());
+			cf.setCity(cci.getCity());
+			cf.setProvince(cci.getProvince());
+		
+			workorderservice.addcsconsigneeInfo(cf);
 		}
 			
-		
+		model.addAttribute("KeHuLeiXingAllReason", reasondao.getKeHuLeiXingAllReason());
 		return "workorder/CustomerServicesAcceptWorkOrder";	
 	}
 	
@@ -337,8 +350,16 @@ public class WorkOrderController {
 	public CsConsigneeInfo selectByPhoneNum(HttpServletRequest req){
 		String phone=req.getParameter("phoneonOne");		
 		CsConsigneeInfo cci=workorderservice.querycciByPhoneNum(phone);
-		
-		return cci;		
+		String nowtime=DateTimeUtil.getNowTime();
+		CsConsigneeInfo cci1=null;
+		if(cci!=null){
+		int newcn=cci.getContactNum()+1;
+		workorderdao.updateConnum(newcn);
+		cci1=workorderservice.querycciByPhoneNum(phone);
+		cci1.setContactLastTime(nowtime);
+		}
+
+		return cci1;		
 	}
 	
 	@RequestMapping("/SelectdetalForm")
@@ -729,7 +750,7 @@ public class WorkOrderController {
 			cv.setMailBox(c.getMailBox());
 			cv.setProvince(c.getProvince());
 			cv.setCity(c.getCity());
-			cv.setConsigneeType(c.getConsigneeType()==1?"普通客户":"VIP客户");
+			cv.setConsigneeType(reasondao.getReasonByReasonid(c.getConsigneeType()).getReasoncontent());
 			cv.setContactLastTime(c.getContactLastTime());
 			cv.setContactNum(c.getContactNum());
 			ccilist.add(cv);

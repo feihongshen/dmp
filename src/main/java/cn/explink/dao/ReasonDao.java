@@ -138,6 +138,10 @@ public class ReasonDao {
 	public List<Reason> getAllReason() {
 		return jdbcTemplate.query("select * from express_set_reason ", new ReasonRowMapper());
 	}
+	
+	public List<Reason> getKeHuLeiXingAllReason() {
+		return jdbcTemplate.query("select * from express_set_reason where reasontype=14", new ReasonRowMapper());
+	}
 
 	/**
 	 * 根据 异常编码id查询 异常类型

@@ -36,8 +36,14 @@ public class WorkOrderService {
 	}
 
 	public CsConsigneeInfo querycciByPhoneNum(String phoneonOne){
-		
-		return workorderdao.queryByPhoneNum(phoneonOne);
+		CsConsigneeInfo cc=null;
+		try {
+			cc=workorderdao.queryByPhoneNum(phoneonOne);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		return cc;
 	}
 
 	public List<CwbOrder> SelectCwbdetalForm(String phone) {

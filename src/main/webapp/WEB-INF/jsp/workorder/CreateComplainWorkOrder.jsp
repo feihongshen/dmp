@@ -42,8 +42,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 						<%}} %>
 						
 						<td>
-							当前机构:<%=a.getCurrentBranch() %>
-							<input type="hidden" value="<%=a.getCurrentBranch() %>" name="currentBranch"/>
+							当前机构:<%=a.getCurrentBranch() %><input type="hidden" value="<%=a.getCurrentBranch() %>" name="currentBranch"/>
 						</td>
 					</tr>	
 					<tr>
@@ -94,8 +93,8 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							</td>
 				<tr>
 					<td>
-					<span>工单内容:</span><textarea onfocus="this.value='' style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent">订单号+工单内容</textarea>
-					<div>您还可以输入<font id="count" color="red">150</font>个文字</div> <!-- onkeyup="checkLen(this)" --> 
+					<span>工单内容:</span><textarea onfocus="aabzc()"  onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent">订单号+工单内容</textarea>
+					<div>您还可以输入<font id="count" color="red">150</font>个文字</div> 
 					</td>
 				</tr>
 					
@@ -108,14 +107,14 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 				</form>					
 			</div>
 			<div align="center">
-			<%-- <button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiChuLi.getValue()%>')}">保存待处理</button> --%>
 			<button class="button" onclick="smsSend()">发送催件短信</button>
-			<button class="button" onclick="if(decidecomplain()){btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')}">待机构核实</button>
+			<button class="button" onclick="if(decidecomplain1()){btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')}">待机构核实</button>
 			<button class="button" onclick="if(decidecomplain()){btnccwo(<%=ComplaintStateEnum.YiJieAn.getValue()%>)}">结案</button>
 			<button class="button" onclick="closeBox()">取消</button>
 			<input type="hidden" id="stateNum">
 			<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yja">
 			<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="bcl">
+			<input type="hidden" value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>" id="cwclv">
 			</div>
 	</div>
 </div>

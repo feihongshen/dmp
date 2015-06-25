@@ -5530,8 +5530,6 @@ function btnccwo(Val){
 	
 	}
 
-
-
 function btnupdate(csv){
 	$('#cwo').val(csv);
 	$.ajax({
@@ -6256,8 +6254,11 @@ function getReasonValue(){
 		}
 	});	
 }
-
+function aabzc(){
+	$('#compaltecontent').val('');
+}
 function checkLen(obj) {  
+
 	var maxChars = 150;//最多字符数  
 	if (obj.value.length > maxChars){
 		obj.value = obj.value.substring(0,maxChars);  
@@ -6307,14 +6308,14 @@ function checke_fee(){
 }
 
 function  decidecomplain(){
-	if($('#codOrgIdValue').val()=='-1'){
+/*	if($('#codOrgIdValue').val()=='-1'){
 		alert('请选择机构');
 		return false;
 	}
 	if($('#ComplaintUseridValue').val()==-1){
 		alert('请选择被投诉人');
 		return false;
-	}
+	}*/
 	if($('#olreason').val()==-1){
 		alert('请输入一级分类');
 		return false;
@@ -6324,12 +6325,44 @@ function  decidecomplain(){
 		alert('请输入二级分类');
 		return false;
 	}
+	if($('#acceptresultC').val==$('#cwclv').val()){
+		alert('请将处理结果设置为成立/不成立的状态');
+		return false;
+	}
 	 if($('#compaltecontent').val()==""){
 		alert('请填写投诉内容');
 		return false;
 	}
 	return true;
 }	
+function  decidecomplain1(){
+		if($('#codOrgIdValue').val()=='-1'){
+			alert('请选择责任机构');
+			return false;
+		}
+		/*if($('#ComplaintUseridValue').val()==-1){
+			alert('请选择责任人');
+			return false;
+		}*/
+		if($('#olreason').val()==-1){
+			alert('请输入一级分类');
+			return false;
+		}
+		
+		if($('#tlreason').val()==-1){
+			alert('请输入二级分类');
+			return false;
+		}
+		if($('#acceptresultC').val!=$('#cwclv').val()){
+			alert('请将处理结果设置为待定');
+			return false;
+		}
+		 if($('#compaltecontent').val()==''){
+			alert('请填写投诉内容');
+			return false;
+		}
+		return true;
+	}	
 function  decidequery(){
 	 if($('#queryContentd').val()==""){
 		alert('请填写查询内容');

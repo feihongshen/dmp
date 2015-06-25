@@ -446,7 +446,6 @@ function CurentTime()   //计算当天时间
 			</tr>
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
-			<%if(c.getComplaintState()!=ComplaintStateEnum.DaiChuLi.getValue()){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">
 				<%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%>
 				<td><a href="javascript:getAddBox3()"><%=c.getAcceptNo() %></a></td>
@@ -502,13 +501,12 @@ function CurentTime()   //计算当天时间
 					<%} %>
 				</td>
 		</tr>
-			<%} }}%>
+			<%} }%>
 		</table>
 	</div>	
 
 <!-- 	DaiChuLi(0, "待处理"),  YiJieAn(1, "已结案"),DaiHeShi(2,"待核实"),YiHeShi(3,"已核实"),
 	YiJieShu(4,"已结束"),JieAnChongShenZhong(5,"结案重审中"); -->
-	<input type="hidden" id="DaiChuLi" value="<%=ComplaintStateEnum.DaiChuLi.getValue()%>"/>
 	<input type="hidden" id="YiJieAn" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>"/>
 	<input type="hidden" id="DaiHeShi" value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"/>
 	<input type="hidden" id="YiHeShi" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"/>

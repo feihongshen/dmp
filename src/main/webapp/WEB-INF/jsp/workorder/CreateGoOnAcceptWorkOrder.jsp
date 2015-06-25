@@ -103,7 +103,7 @@ List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)reques
 							</td>
 				<tr>
 					<td>
-					<span>投诉内容:</span><textarea onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content"><%=a.getContent() %></textarea>
+					<span>投诉内容:</span><textarea onfocus="aabzc()" onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content"><%=a.getContent() %></textarea>
 					
 				</tr>
 					</td>

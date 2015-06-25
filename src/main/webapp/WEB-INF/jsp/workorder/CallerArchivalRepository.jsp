@@ -1,6 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
+
 <!DOCTYPE html PUBLIC "-//W3C//Dth HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dth">
 <html>
 <head>
@@ -33,7 +34,8 @@ $(function(){
 		if($('#callerphoneid').val()==""){
 			alert('请选择一行数据' );
 		}	else{	
-		edit_button($('#callerphoneid').val());
+				edit_button($('#callerphoneid').val());
+				$('#PageFromW').submit();
 		}
 	});
 	
@@ -77,9 +79,12 @@ function deleteidValue(){
 					<td>电话:<input type="text" name="phoneonOne" id="phoneonOne"/></td>				
 					<td>
 						客户:<select name="consigneeType" id="svc" class="select1" >
-								<option value="-1">请选择</option>
-								<option value="1">普通客户</option>
-								<option value="2">VIP客户</option>								
+								<option value="-1">选择客户分类</option>
+								<c:forEach items="${KeHuLeiXingAllReason}" var="k">
+									<option value="${k.reasonid}">${k.reasoncontent}</option>	
+								</c:forEach>
+							
+											
 							</select>
 					</td>
 				</tr>
@@ -135,12 +140,13 @@ function deleteidValue(){
 							<td>${cv.mailBox == null ? "" : cv.mailBox}</td>
 							<td>${cv.province == null ? "" : cv.province}</td>
 							<td>${cv.city == null ? "" :  cv.city}</td>
-							<c:if test="${cv.consigneeType==1}">
-								<td>普通客户</td>
-							</c:if>
-							<c:if test="${cv.consigneeType==2}">
-							<td>VIP客户</td>
-							</c:if>
+							<td>
+							<c:forEach items="${KeHuLeiXingAllReason}" var="k">
+									<c:if test="${cv.consigneeType == k.reasonid}">
+										 ${k.reasoncontent}
+									</c:if>																																	
+							</c:forEach>
+							</td>
 							<td>${cv.contactLastTime == null ? "" : cv.contactLastTime}</td>
 							<td>${cv.contactNum == null ? "" : cv.contactNum}</td>					
 				</tr>

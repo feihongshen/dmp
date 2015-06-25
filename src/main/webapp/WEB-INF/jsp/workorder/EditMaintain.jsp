@@ -1,7 +1,9 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
-<% 
-		CsConsigneeInfo ccf=(CsConsigneeInfo)request.getAttribute("ccf")==null?null:(CsConsigneeInfo)request.getAttribute("ccf");
+<%@page import="cn.explink.domain.Reason"%>
+<%
+	List<Reason> reasonList=request.getAttribute("KeHuLeiXingAllReason")==null?null:(List<Reason>)request.getAttribute("KeHuLeiXingAllReason"); 
+	CsConsigneeInfo ccf=(CsConsigneeInfo)request.getAttribute("ccf")==null?null:(CsConsigneeInfo)request.getAttribute("ccf");
 %>
 
 <div id="box_bg"></div>
@@ -26,9 +28,10 @@
 					<tr>
 						<td><span><font color="red">*</font>客户分类:</span>
 						<select class="select1" name="consigneeType" id="skhfl">
-							<option value="-1">请选择客户分类</option>     
-							<option value="2">VIP用户</option>
-							<option value="1">普通客户</option>
+							<option value="-1">选择客户分类</option>
+								<%for(Reason r:reasonList) {%>
+								<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
+								<%} %>
 						</select></td>
 					</tr>				
 				</table>

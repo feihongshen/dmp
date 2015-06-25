@@ -1,12 +1,14 @@
 <%@page import="cn.explink.domain.CsConsigneeInfo"%>
 <%@page import="cn.explink.domain.CwbOrderAndCustomname"%>
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.DateTimeUtil"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-	List<CwbOrderAndCustomname> lco=(List<CwbOrderAndCustomname>)request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
+	List<CwbOrderAndCustomname> lco=request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
+	List<Reason> reasonList=request.getAttribute("KeHuLeiXingAllReason")==null?null:(List<Reason>)request.getAttribute("KeHuLeiXingAllReason");
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -269,7 +271,7 @@ function addCci(){
 		return false;
 	}
 
-	else if($('#contactLastTime').val()==""){
+	/* else if($('#contactLastTime').val()==""){
 		alert('请输入来电时间');
 		return false;
 	}
@@ -277,9 +279,8 @@ function addCci(){
 	else if($('#contactNum').val()==""){
 		alert('请填写联系次数');
 		return false;
-	}
+	} */
 	$('#CallerPhoneValue').val($('#phoneonOne').val());
-	
 	$.ajax({
 		type:'POST',
 		data:$('#cciForm').serialize(),
@@ -291,14 +292,11 @@ function addCci(){
 		
 	});
 	
-	
-	
 		$('#savecallerinfo').attr("disabled","disabled");
 
 	
 	
 }
-
 function SelectPhone(){
 		 $.ajax({			 
 			 type:'POST',
@@ -306,7 +304,9 @@ function SelectPhone(){
 			 dataType:'json',
 			 url:'<%=request.getContextPath()%>/workorder/selectByPhoneNum',
 			 success:function(data){
-				 if(data!=null){					 
+				 if(data!=null){	
+						 $('#cs111').show();
+						 $('#cs222').show();
 					$('#dname').val(data.name);
 					 $('#consigneeType').val(data.consigneeType); 
 					$('#city').val(data.city);
@@ -320,23 +320,20 @@ function SelectPhone(){
 					}
 					$('#savecallerinfo').attr("disabled","disabled");
 					 }else{
+						 $('#cs111').hide();
+						 $('#cs222').hide();
 					 $('#savecallerinfo').removeAttr("disabled");
 					 $('#dname').val("");
 					 $('#consigneeType').val(""); 
 					$('#city').val("");
 					$('#province').val("");
-					$('#contactNum').val("");
-					$('#contactLastTime').val("");
 					$('#sex').removeAttr("checked");
 					$('#sex1').removeAttr("checked");
 					 
 				 	}
 				  }
-			 });
-
-	
+		 });	
 }
-
 function SelectdetailForm(){
 	$.ajax({
 		type:'POST',
@@ -511,15 +508,69 @@ function submitselect2(){    //通过手机号查询工单
 			alert('手机号码不能为空');
 			return false;
 		}
-		
-	
-
 	}
+	
+	/*addTime 
+	var timerID = null;  
+    var timerRunning = false;  
+    function stopclock() {  
+        if (timerRunning)  
+            clearTimeout(timerID);  
+        timerRunning = false;  
+    }  
+    function startclock() {  
+        stopclock();  
+        showtime();  
+    }  
+  
+    function showtime() {  
+    	
+    	var str1=CurentTime();
+  		$('#contactLastTime').val(str1);
+        timerID = setTimeout("showtime()", 1000);  
+        timerRunning = true;  
+    } 
+    function CurentTime()   
+    { 
+        var now = new Date();
+        
+        var year = now.getFullYear();       //年
+        var month = now.getMonth() + 1;     //月
+        var day = now.getDate();            //日
+        
+        var hh = now.getHours();            //时
+        var mm = now.getMinutes();          //分
+        var ss = now.getSeconds();           //秒
+        
+        var clock = year + "-";
+        
+        if(month < 10)
+            clock += "0";
+        
+        clock += month + "-";
+        
+        if(day < 10)
+            clock += "0";
+            
+        clock += day + " ";
+        
+        if(hh < 10)
+            clock += "0";
+            
+        clock += hh + ":";
+        if (mm < 10) clock += '0'; 
+        clock += mm + ":"; 
+         
+        if (ss < 10) clock += '0'; 
+        clock += ss; 
+        return(clock); 
+    }
+*/
 </script>
 
 
 </head>
-<body>
+<body> <!--  onload="startclock()" -->
 <div>
 
 		<table width="100%">
@@ -533,8 +584,9 @@ function submitselect2(){    //通过手机号查询工单
 					<td><font color="red">*</font>客户分类:
 					<select name="consigneeType" id="consigneeType" class="select1">
 						<option value="-1">选择客户分类</option>
-						<option value="1" id="op0">普通客户</option>
-						<option value="2" id="op1">VIP客户</option>						
+						<%for(Reason r:reasonList) {%>
+						<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
+						<%} %>				
 					</select>
 					</td>				
 					<td><font color="red">*</font>性别:
@@ -546,8 +598,8 @@ function submitselect2(){    //通过手机号查询工单
 				</tr>
 				<tr>									
 					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
-					<td><font color="red">*</font>最后联系时间:<input type="text" name="contactLastTime" id="contactLastTime" class="input_text1"></td>
-					<td><font color="red">*</font>联系次数:<input type="text" name="contactNum" class="input_text1" id="contactNum" onblur="isnum(this.value)" maxlength="4"></td>
+					<td style="display: none" id="cs111"><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled"/></td>
+					<td style="display: none" id="cs222"><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled"></td>
 					
 					</td>
 				</tr>	
