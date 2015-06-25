@@ -6854,7 +6854,7 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     </changeSet>
 
- <changeSet id="wangzhiyong-2015-06-23-1" author="wangzhiyong">
+ 	<changeSet id="wangzhiyong-2015-06-23-1" author="wangzhiyong">
     	<sql>
     		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '可核实时间是否过期');
     	</sql>
@@ -6954,6 +6954,67 @@ CREATE TABLE `cs_complaint_accept` (
      <changeSet id="wangzhiyong-2015-06-24-2" author="wangzhiyong">
     	<sql>
     		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '工单可核实时间是否过期(小时)');
+    	</sql>
+    </changeSet>
+    
+     <changeSet id="liuxiao-2015-06-25-1" author="liuxiao">
+    	<sql>
+    		CREATE TABLE `express_set_salary` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `filename` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `filetext` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `whichvalue` int(4) DEFAULT '0',
+			  `ischecked` int(4) DEFAULT '1',
+			  `addordeduct` int(4) DEFAULT '1',
+			  PRIMARY KEY (`id`),
+			  KEY `salary_filename_idx` (`filename`),
+			  KEY `salary_filetext_idx` (`filetext`),
+			  KEY `salary_whichvalue_idx` (`whichvalue`),
+			  KEY `salary_ischecked_idx` (`ischecked`),
+			  KEY `salary_addordeduct_idx` (`addordeduct`)
+			) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    	</sql>
+    </changeSet>
+    
+    <changeSet id="liuxiao-2015-06-25-2" author="liuxiao">
+    	<sql>
+    		INSERT INTO `express_set_salary` VALUES ('1', 'salarybasic', '基本工资', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('2', 'salaryjob', '岗位工资', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('3', 'agejob', '工龄', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('4', 'bonusfuel', '油费补贴', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('5', 'bonusfixed', '固定补贴', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('6', 'bonusphone', '话费补助', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('7', 'bonusweather', '高温寒冷补贴', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('8', 'bonusother1', '其它补贴', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('9', 'bonusother2', '其它补贴2', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('10', 'bonusother3', '其它补贴3', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('11', 'bonusother4', '其它补贴4', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('12', 'bonusother5', '其它补贴5', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('13', 'bonusother6', '其它补贴6', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('14', 'overtimework', '加班费', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('15', 'accountSingle', '结算单量', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('16', 'salarypush', '提成', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('17', 'penalizecancel', '扣款撤销', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('18', 'attendance', '考勤扣款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('19', 'security', '个人社保扣款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('20', 'gongjijin', '个人公积金扣款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('21', 'dorm', '宿舍费用', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('22', 'imprestgoods', '货物预付款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('23', 'imprestother1', '其它预付款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('24', 'imprestother2', '其它预付款2', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('25', 'imprestother3', '其它预付款3', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('26', 'imprestother4', '其它预付款4', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('27', 'imprestother5', '其它预付款5', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('28', 'imprestother6', '其它预付款6', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('29', 'foul', '违纪违规扣款', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('30', 'goods', '货损赔偿', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('31', 'penalizeother1', '其他扣罚', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('32', 'penalizeother2', '其他扣罚2', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('33', 'penalizeother3', '其他扣罚3', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('34', 'penalizeother4', '其他扣罚4', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('35', 'penalizeother5', '其他扣罚5', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('36', 'penalizeother6', '其他扣罚6', '0', '1', '1');
+			INSERT INTO `express_set_salary` VALUES ('37', 'tax', '个税', '0', '1', '1');
     	</sql>
     </changeSet>
     

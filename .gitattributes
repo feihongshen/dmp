@@ -768,6 +768,8 @@ src/main/java/cn/explink/controller/ReturnCwbsController.java -text
 src/main/java/cn/explink/controller/RoleController.java -text
 src/main/java/cn/explink/controller/SalaryCountController.java -text
 src/main/java/cn/explink/controller/SalaryFixedController.java -text
+src/main/java/cn/explink/controller/SalaryImportController.java -text
+src/main/java/cn/explink/controller/SalarySheetController.java -text
 src/main/java/cn/explink/controller/SetDefaultExportController.java -text
 src/main/java/cn/explink/controller/SetExportCwbController.java -text
 src/main/java/cn/explink/controller/SettlementContractController.java -text
@@ -971,6 +973,7 @@ src/main/java/cn/explink/dao/ReturnCwbsDAO.java -text
 src/main/java/cn/explink/dao/RoleDAO.java -text
 src/main/java/cn/explink/dao/SalaryCountDAO.java -text
 src/main/java/cn/explink/dao/SalaryFixedDAO.java -text
+src/main/java/cn/explink/dao/SalaryImportDao.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
 src/main/java/cn/explink/dao/ServiceAreaDAO.java -text
 src/main/java/cn/explink/dao/SetExcelColumnDAO.java -text
@@ -1159,6 +1162,7 @@ src/main/java/cn/explink/domain/ReturnCwbs.java -text
 src/main/java/cn/explink/domain/Role.java -text
 src/main/java/cn/explink/domain/SalaryCount.java -text
 src/main/java/cn/explink/domain/SalaryFixed.java -text
+src/main/java/cn/explink/domain/SalaryImport.java -text
 src/main/java/cn/explink/domain/ScheduledTask.java -text
 src/main/java/cn/explink/domain/SearcheditInfo.java -text
 src/main/java/cn/explink/domain/ServiceArea.java -text
@@ -1311,6 +1315,7 @@ src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
+src/main/java/cn/explink/enumutil/WhichValueEnum.java -text
 src/main/java/cn/explink/enumutil/YesOrNoStateEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContracTypeEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/ContractStateEnum.java -text
@@ -2355,6 +2360,8 @@ src/main/webapp/WEB-INF/jsp/sMSSetModel/smsSetModel.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryCount/list.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryCount/showfind.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryFixed/list.jsp -text
+src/main/webapp/WEB-INF/jsp/salary/salaryImport/salaryimport.jsp -text
+src/main/webapp/WEB-INF/jsp/salary/salarySheet/salarysheet.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/add.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/editM.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/listM.jsp -text
