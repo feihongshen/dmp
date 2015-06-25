@@ -388,12 +388,14 @@ public class WorkOrderController {
 	
 	@RequestMapping("/selectDetalFormByCondition")
 	@ResponseBody
-	public List<CwbOrderAndCustomname> selectDetalFormByCondition(CwbOrderAndCustomname coc,Model model){
+	public List<CwbOrderAndCustomname> selectDetalFormByCondition(CwbOrderAndCustomname coc,Model model,
+			@RequestParam(value="staremaildate",defaultValue="",required=false) String staremaildate,
+			@RequestParam(value="endemaildate",defaultValue="",required=false) String endemaildate
+			){
 	
 		String cwb1 = cos.translateCwb(coc.getCwb());
-		coc.setCwb(cwb1);
-		List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc)==null?null:cwbdao.SelectDetalFormByCondition(coc);
-	
+		coc.setCwb(cwb1);	
+			List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc,staremaildate,endemaildate);
 		List<CwbOrderAndCustomname> lco= new ArrayList<CwbOrderAndCustomname>();
 		for(CwbOrder c:lc){
 			CwbOrderAndCustomname co = new CwbOrderAndCustomname();
@@ -568,8 +570,8 @@ public class WorkOrderController {
 	来电人姓名 	来电号码 	被投诉机构 	工单受理人 	
 	受理时间 	投诉一级分类 	投诉二级分类 	
 	投诉处理结果 	是否扣罚 	客户名称	催件次数*/
-	@RequestMapping("/WorkOrderManageQuery")
-	public String WorkOrderManageQuery(HttpServletRequest req,Model model,CsComplaintAcceptVO cv) throws Exception{
+	@RequestMapping("/WorkOrderQueryManage/{page}")  /*WorkOrderManageQuery*/
+	public String WorkOrderManageQuery(@PathVariable(value="page") long page,Model model,CsComplaintAcceptVO cv) throws Exception{
 		List<CsComplaintAccept> lcs=null;
 		StringBuffer sb = new StringBuffer();
 		String ncwbs="";
@@ -589,9 +591,8 @@ public class WorkOrderController {
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
-		}
-		lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cv,workorders);
-		
+		}		
+		lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
@@ -623,6 +624,8 @@ public class WorkOrderController {
 		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
+		model.addAttribute("page", page);		
+		model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr==null?null:lr);
@@ -637,7 +640,7 @@ public class WorkOrderController {
 		
 		return "workorder/WorkOrderQueryManage";		
 	}
-	@RequestMapping("/WorkOrderQueryManage")
+/*	@RequestMapping("/WorkOrderQueryManage")
 	public String WorkOrderQueryManage(Model model){
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		List<Reason> lr=reasondao.addWO();
@@ -650,7 +653,7 @@ public class WorkOrderController {
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";
-	}
+	}*/
 	
 	@RequestMapping("/ChangeComplaintState")
 	@ResponseBody
@@ -843,7 +846,7 @@ public class WorkOrderController {
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
 		}
-		lcs=workorderdao.findGoOnacceptWOByCWBs(ncwbs,cc,workorders);
+		lcs=workorderdao.findGoOnacceptWOByCWBs1(ncwbs,cc,workorders);
 	final List<CsComplaintAcceptExportVO> lc=new ArrayList<CsComplaintAcceptExportVO>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();

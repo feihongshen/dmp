@@ -139,7 +139,7 @@ $(function(){
 	    dateFormat: 'yy-mm-dd'
 	});
 	
-	$("#contactLastTime").datetimepicker({
+	$("#emaildate456").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
 	    hourGrid: 4,
@@ -639,7 +639,7 @@ function submitselect2(){    //通过手机号查询工单
 			<table>
 				<form action="<%=request.getContextPath()%>/workorder/selectDetalFormByCondition" id="selectF">
 					<tr>
-						<td>发货时间:<input type="text" name="emaildate"  id="emaildate123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
+						<td>发货时间:<input type="text" name="staremaildate"  id="emaildate123" class="input_text1"/>到<input type="text" name="endemaildate"  id="emaildate456" class="input_text1"/></td>
 						<td>订/运单号:<input type="text" name="cwb"  id="cwb123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
 						<td>收件人姓名:<input type="text" name="consigneename"  id="consigneename123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
 						<td>收件人手机:<input type="text" name="consigneemobile"  id="consigneemobile123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>

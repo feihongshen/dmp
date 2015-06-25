@@ -5765,12 +5765,15 @@ public class CwbDAO {
 
 	}	*/
 	
-	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc){
+	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc,String staremaildate,String endemaildate){
 		StringBuilder sb = new StringBuilder();
 		String sql="select * from express_ops_cwb_detail where state=1";
 				
 				if(coc.getCwb()!=null&&coc.getCwb().length()>0){
 					sb.append(" and cwb='"+coc.getCwb()+"'");
+				}
+				if(!staremaildate.equals("")&&!endemaildate.equals("")){
+					sb.append(" and emaildate>'"+staremaildate+"' and emaildate<'"+endemaildate+"'");
 				}
 				if(coc.getEmaildate()!=null&&coc.getEmaildate().length()>0){
 					sb.append(" and emaildate='"+coc.getEmaildate()+"'");

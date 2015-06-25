@@ -18,7 +18,6 @@
 	List<CsComplaintAccept> a= request.getAttribute("lc")==null?null: (List<CsComplaintAccept>)request.getAttribute("lc"); 
 	List<Branch> b =request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");	
 	Map<String,String> connameList=request.getAttribute("connameList")==null?null:(Map<String,String>)request.getAttribute("connameList");
-	/* List<CwbOrder> co=request.getAttribute("co")==null?null:(List<CwbOrder>)request.getAttribute("co"); */ 
 	Map<Long,String>  customernameList = (Map<Long,String>)request.getAttribute("customernameList");
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
@@ -317,8 +316,8 @@ function CurentTime()   //计算当天时间
  
 <div>		
 	<div style="margin-left: 10px;margin-top: 20px">
-		<table style="float: left">				
-			<form action="<%=request.getContextPath()%>/workorder/WorkOrderManageQuery" onsubmit="return testCwbsIfNull()">
+		<table style="float: left">	
+			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid">
 				<tr>
 					<td>
 						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"></textarea>
@@ -326,14 +325,6 @@ function CurentTime()   //计算当天时间
 					<td>
 						工单号:<textarea rows="3" cols="16" name="acceptNo" id="acceptNo" ></textarea>
 					</td>	
-					<%-- <td>
-				工单类型:<select name="complaintType" class="select1">				
-							<option value="-1">全部</option>									
-							<option value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"><%=ComplaintTypeEnum.DingDanChaXun.getText()%></option>
-							<option value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"><%=ComplaintTypeEnum.CuijianTousu.getText()%></option>
-						</select>
-						
-					</td> --%>
 					<td>
 				工单状态:<select name="complaintState" class="select1">				
 							<option value="-1">全部</option>
@@ -398,12 +389,12 @@ function CurentTime()   //计算当天时间
 				</tr>
 				<tr>			
 					<td>
-					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
+					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1" onblur="testCwbsIfNull() "/>
 					</td>
 
 				
 					<td>
-						<input type="submit" value="查询" class="input_button2">
+						<input type="submit" value="查询" class="input_button2" onclick="$('#workorderquerymanageid').attr('action',1);return true;">
 						<input type="reset" value="重置" class="input_button2"/>
 					</td>
 				</tr>
@@ -536,6 +527,25 @@ function CurentTime()   //计算当天时间
 		<input type="hidden" value="<%=request.getParameter("acceptNo")%>" name="acceptNo"/>
 	</form>
 	
+	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
+		<tr>
+			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+				<a href="javascript:$('#workorderquerymanageid').attr('action','1');$('#workorderquerymanageid').submit();" >第一页</a>　
+				<a href="javascript:$('#workorderquerymanageid').attr('action','${page_obj.previous < 1 ? 1 : page_obj.previous}');$('#workorderquerymanageid').submit();">上一页</a>　
+				<a href="javascript:$('#workorderquerymanageid').attr('action','${page_obj.next < 1 ? 1 : page_obj.next}');$('#workorderquerymanageid').submit();" >下一页</a>　
+				<a href="javascript:$('#workorderquerymanageid').attr('action','${page_obj.maxpage < 1 ? 1 : page_obj.maxpage}');$('#workorderquerymanageid').submit();" >最后一页</a>
+				　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
+					<select
+						id="selectPg"
+						onchange="$('#workorderquerymanageid').attr('action',$(this).val());$('#workorderquerymanageid').submit()">
+						<c:forEach begin="1" end="${page_obj.maxpage}" var="i">
+							<option value="${i}">${i}</option>
+						</c:forEach>
+					</select>页
+			</td>
+		</tr>
+	</table>
+	
 	<script type="text/javascript">
 	function exportWorkOrderInFoExcle(){
 		if(<%=a != null && a.size()>0 %>){
@@ -547,7 +557,8 @@ function CurentTime()   //计算当天时间
 		
 	}	
 	
-	
+	var sv='${requestScope.page}';
+	$("#selectPg").val(sv);
 	</script>
 	
 	
