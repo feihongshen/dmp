@@ -22,6 +22,7 @@
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
+	
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -79,6 +80,16 @@ function getAddBox3(FormV) {
 }
 
 $(function() {
+	
+	$('#complaintState').val($('#complaintStateVL').val());
+	$('#olreasonV').val($('#complaintOneLevelVL').val());
+	$('#tlreasonV').val($('#complaintTwoLevelVL').val());
+	$('#codOrgId').val($('#codOrgIdVL').val());
+	$('#complaintResult').val($('#complaintResultVL').val());
+	$('#ifpunish').val($('#ifpunishVL').val());
+	$('#handleUser').val($('#handleUserVL').val());
+	$('#beginRangeTime').val($('#beginRangeTimeVL').val());
+	$('#endRangeTime').val($('#endRangeTimeVL').val());
 	
 	$("#beginRangeTime").datetimepicker({
 	    changeMonth: true,
@@ -309,24 +320,22 @@ function CurentTime()   //计算当天时间
 }
 
 </script>
-
-
 </head>
 <body>  
  
 <div>		
 	<div style="margin-left: 10px;margin-top: 20px">
 		<table style="float: left">	
-			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid">
+			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid" method="post"/>
 				<tr>
 					<td>
-						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"></textarea>
+						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"><%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%></textarea>
 					</td>	
 					<td>
-						工单号:<textarea rows="3" cols="16" name="acceptNo" id="acceptNo" ></textarea>
+						工单号:<textarea rows="3" cols="16" name="acceptNo" id="acceptNo" ><%=request.getParameter("acceptNo")==null?"":request.getParameter("acceptNo")%></textarea>
 					</td>	
 					<td>
-				工单状态:<select name="complaintState" class="select1">				
+				工单状态:<select name="complaintState" class="select1" id="complaintState">				
 							<option value="-1">全部</option>
 							<option value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"><%=ComplaintStateEnum.DaiHeShi.getText()%></option>
 							<option value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"><%=ComplaintStateEnum.YiHeShi.getText()%></option>
@@ -347,7 +356,7 @@ function CurentTime()   //计算当天时间
 					</td>	
 					<td>
 							<span>被投诉机构:</span>
-							<select class="select1" name="codOrgId">
+							<select class="select1" name="codOrgId" id="codOrgId">
 								<option value="-1">全部</option>
 							<%for(Branch br:b){ %>
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
@@ -355,7 +364,7 @@ function CurentTime()   //计算当天时间
 							</select>
 					</td>			
 					<td>
-				投诉处理结果:<select class="select1" name="complaintResult">
+				投诉处理结果:<select class="select1" name="complaintResult" id="complaintResult">
 								<option value="-1">全部</option>
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
@@ -370,7 +379,7 @@ function CurentTime()   //计算当天时间
 							</select>
 					</td>						
 					<td>
-				是否扣罚:		<select class="select1" name="ifpunish">
+				是否扣罚:		<select class="select1" name="ifpunish" id="ifpunish">
 							<option value="-1">全部</option>
 							<option value="1">否</option>
 							<option value="2">是</option>
@@ -378,7 +387,7 @@ function CurentTime()   //计算当天时间
 					</td>			
 					<td>
 							
-				受理人:		<select class="select1" name="handleUser">
+				受理人:		<select class="select1" name="handleUser" id="handleUser">
 							<option value="">全部</option>
 							<%if(lcsa!=null){ %>
 							<%for(CsComplaintAccept c:lcsa) {%>
@@ -394,7 +403,7 @@ function CurentTime()   //计算当天时间
 
 				
 					<td>
-						<input type="submit" value="查询" class="input_button2" onclick="$('#workorderquerymanageid').attr('action',1);return true;">
+						<input type="submit" onclick="$('#workorderquerymanageid').attr('action',1);return true;" value="查 询" class="input_button2" />
 						<input type="reset" value="重置" class="input_button2"/>
 					</td>
 				</tr>
@@ -547,25 +556,28 @@ function CurentTime()   //计算当天时间
 	</table>
 	
 	<script type="text/javascript">
-	function exportWorkOrderInFoExcle(){
-		if(<%=a != null && a.size()>0 %>){
-		 	$("#exInfo").val("请稍后……");
-		 	$("#WorkorderInfo").submit();
-		}else{
-			alert("没有做查询操作，不能导出！");
-		};
-		
-	}	
-	
-	var sv='${requestScope.page}';
-	$("#selectPg").val(sv);
+			function exportWorkOrderInFoExcle(){
+				if(<%=a != null && a.size()>0 %>){
+				 	$("#exInfo").val("请稍后……");
+				 	$("#WorkorderInfo").submit();
+				}else{
+					alert("没有做查询操作，不能导出！");
+				};
+				
+			}	
+			
+			var sv='${requestScope.page}';
+			$("#selectPg").val(sv);
 	</script>
 	
-	
-	
-	
-	
-	
-	
-</body>
+		<input type="hidden" id="complaintStateVL" value="<%=request.getParameter("complaintState")==null?"":request.getParameter("complaintState") %>">
+		<input type="hidden" id="complaintOneLevelVL" value="<%=request.getParameter("complaintOneLevel")==null?"":request.getParameter("complaintOneLevel") %>">
+		<input type="hidden" id="complaintTwoLevelVL" value="<%=request.getParameter("complaintTwoLevel")==null?"":request.getParameter("complaintTwoLevel") %>">
+		<input type="hidden" id="codOrgIdVL" value="<%=request.getParameter("codOrgId")==null?"":request.getParameter("codOrgId") %>">
+		<input type="hidden" id="complaintResultVL" value="<%=request.getParameter("complaintResult")==null?"":request.getParameter("complaintResult") %>">
+		<input type="hidden" id="ifpunishVL" value="<%=request.getParameter("ifpunish")==null?"":request.getParameter("ifpunish") %>">
+		<input type="hidden" id="handleUserVL" value="<%=request.getParameter("handleUser")==null?"":request.getParameter("handleUser") %>">
+		<input type="hidden" id="beginRangeTimeVL" value="<%=request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime") %>">
+		<input type="hidden" id="endRangeTimeVL" value="<%=request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime") %>">
+	</body>
 </html>

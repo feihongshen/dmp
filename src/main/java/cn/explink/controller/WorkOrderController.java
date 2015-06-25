@@ -592,6 +592,8 @@ public class WorkOrderController {
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
 		}		
+		model.addAttribute("page", page);		
+		model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
 		lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
@@ -624,8 +626,6 @@ public class WorkOrderController {
 		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
-		model.addAttribute("page", page);		
-		model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr==null?null:lr);
