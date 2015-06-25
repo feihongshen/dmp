@@ -39,7 +39,7 @@ public class SalaryCountController {
 	public String list(@PathVariable("page") long page,
 			@RequestParam(value = "batchid", required = false, defaultValue = "") String batchid,
 			@RequestParam(value = "batchstate",required = false,defaultValue = "-1") int batchstate,
-			@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "starttime",required = false,defaultValue = "") String starttime,
 			@RequestParam(value = "endtime",required = false,defaultValue = "") String endtime,
 			@RequestParam(value = "realname",required = false,defaultValue = "") String realname,
@@ -72,11 +72,31 @@ public class SalaryCountController {
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("batchStateEnum", BatchSateEnum.values());
 		model.addAttribute("salaryCountList", salaryCountList);
+
+		model.addAttribute("batchid", batchid);
+		model.addAttribute("batchstate", batchstate);
+		model.addAttribute("branchid", branchid);
+		model.addAttribute("starttime", starttime);
+		model.addAttribute("endtime", endtime);
+		model.addAttribute("realname", realname);
+		model.addAttribute("operationTime", operationTime);
+		model.addAttribute("orderbyname", orderbyname);
+		model.addAttribute("orderbyway", orderbyway);
+
 		return "salary/salaryCount/list";
 	}
 	@RequestMapping("/credata")
-	public String credata(SalaryCount salaryCount) {
+	public String credata(SalaryCount salaryCount,Model model) {
+		salaryCount.setBatchid(System.currentTimeMillis()+"");
 		this.salaryCountDAO.cresalaryCount(salaryCount);
-		return "redirect:list/1";
+		SalaryCount salary=this.salaryCountDAO.getSalaryCountBybatchid(salaryCount.getBatchid());
+		List<Branch> branchList=this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<User> userList=this.userDAO.getAllUser();
+		model.addAttribute("salary", salary);
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("batchStateEnum", BatchSateEnum.values());
+		model.addAttribute("edit", 1);
+		model.addAttribute("userList", userList);
+		return "salary/salaryCount/list";
 	}
 }

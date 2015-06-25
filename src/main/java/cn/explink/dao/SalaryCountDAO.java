@@ -79,7 +79,7 @@ public class SalaryCountDAO {
 
 	private String creConditions(String batchid, int batchstate, long branchid, String starttime, String endtime, String userid, String operationTime, String orderbyname, String orderbyway) {
 		String sql = "";
-		if((null!=null)&&(batchid.length()>0))
+		if((null!=batchid)&&(batchid.length()>0))
 		{
 			sql+=" and batchid like '%"+batchid+"%' ";
 		}

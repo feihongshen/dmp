@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.SalaryFixedDAO;
 import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.User;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.ExcelExtractor;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ResultCollectorManager;
 import cn.explink.util.Page;
 
@@ -45,6 +48,12 @@ public class SalaryFixedController {
 	ResultCollectorManager resultCollectorManager;
 	@Autowired
 	SalaryFixedDAO salaryDAO;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
 
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page,
@@ -78,8 +87,10 @@ public class SalaryFixedController {
 			throws Exception {
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
+		final User user=this.getSessionUser();
 		if (excelExtractor != null) {
-			this.processFile(excelExtractor, inputStream);
+
+			this.processFile(excelExtractor, inputStream,System.currentTimeMillis(),user);
 
 		} else {
 			return "redirect:list/1";
@@ -97,8 +108,8 @@ public class SalaryFixedController {
 		return null;
 	}
 
-	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream) {
-		excelExtractor.extractSalary(inputStream);
+	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user) {
+		excelExtractor.extractSalary(inputStream,importflag,user);
 
 	}
 	@Test
@@ -106,7 +117,7 @@ public class SalaryFixedController {
 		Class class1 = SalaryFixed.class;
 		Field[] fields=class1.getDeclaredFields();
 		for (int i = 1; i < fields.length; i++) {
-			System.out.println("ps.setBigDecimal("+(i)+",salary.get"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1)+"());");
+			System.out.println("salary.set"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1)+"(new BigDecimal(this.getXRowCellData(row, "+(i-1)+")));");
 		}
 	}
 }

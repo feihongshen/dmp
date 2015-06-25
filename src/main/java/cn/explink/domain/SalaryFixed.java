@@ -24,10 +24,10 @@ private BigDecimal	accountSingle;
 private BigDecimal	salarybasic;
 /**岗位工资**/
 private BigDecimal	salaryjob;
-/**提成**/
+/**绩效奖金**/
 private BigDecimal	salarypush;
 /**工龄**/
-private long	agejob;
+private BigDecimal	agejob;
 /**油费补贴**/
 private BigDecimal	bonusfuel;
 /**固定补贴**/
@@ -96,6 +96,26 @@ private BigDecimal	salaryaccrual;
 private BigDecimal	tax;
 /**实发工资**/
 private BigDecimal	salary;
+/**导入人员**/
+private long	creuserid;
+/**导入标识**/
+private long	importflag;
+/**岗位津贴**/
+private BigDecimal	jobpush;
+/**住房补贴**/
+private BigDecimal	bonusroom;
+/**全勤补贴**/
+private BigDecimal	bonusallday;
+/**餐费补贴**/
+private BigDecimal	bonusfood;
+/**交通补贴**/
+private BigDecimal	bonustraffic;
+/**车子租用**/
+private BigDecimal	carrent;
+/**车子维修**/
+private BigDecimal	carmaintain;
+/**油/电费用**/
+private BigDecimal	carfuel;
 /**
  * @return the id
  */
@@ -195,13 +215,13 @@ public void setSalarypush(BigDecimal salarypush) {
 /**
  * @return the agejob
  */
-public long getAgejob() {
+public BigDecimal getAgejob() {
 	return this.agejob;
 }
 /**
  * @param agejob the agejob to set
  */
-public void setAgejob(long agejob) {
+public void setAgejob(BigDecimal agejob) {
 	this.agejob = agejob;
 }
 /**
@@ -612,6 +632,126 @@ public BigDecimal getSalary() {
  */
 public void setSalary(BigDecimal salary) {
 	this.salary = salary;
+}
+/**
+ * @return the creuserid
+ */
+public long getCreuserid() {
+	return this.creuserid;
+}
+/**
+ * @param creuserid the creuserid to set
+ */
+public void setCreuserid(long creuserid) {
+	this.creuserid = creuserid;
+}
+/**
+ * @return the importflag
+ */
+public long getImportflag() {
+	return this.importflag;
+}
+/**
+ * @param importflag the importflag to set
+ */
+public void setImportflag(long importflag) {
+	this.importflag = importflag;
+}
+/**
+ * @return the jobpush
+ */
+public BigDecimal getJobpush() {
+	return this.jobpush;
+}
+/**
+ * @param jobpush the jobpush to set
+ */
+public void setJobpush(BigDecimal jobpush) {
+	this.jobpush = jobpush;
+}
+/**
+ * @return the bonusroom
+ */
+public BigDecimal getBonusroom() {
+	return this.bonusroom;
+}
+/**
+ * @param bonusroom the bonusroom to set
+ */
+public void setBonusroom(BigDecimal bonusroom) {
+	this.bonusroom = bonusroom;
+}
+/**
+ * @return the bonusallday
+ */
+public BigDecimal getBonusallday() {
+	return this.bonusallday;
+}
+/**
+ * @param bonusallday the bonusallday to set
+ */
+public void setBonusallday(BigDecimal bonusallday) {
+	this.bonusallday = bonusallday;
+}
+/**
+ * @return the bonusfood
+ */
+public BigDecimal getBonusfood() {
+	return this.bonusfood;
+}
+/**
+ * @param bonusfood the bonusfood to set
+ */
+public void setBonusfood(BigDecimal bonusfood) {
+	this.bonusfood = bonusfood;
+}
+/**
+ * @return the bonustraffic
+ */
+public BigDecimal getBonustraffic() {
+	return this.bonustraffic;
+}
+/**
+ * @param bonustraffic the bonustraffic to set
+ */
+public void setBonustraffic(BigDecimal bonustraffic) {
+	this.bonustraffic = bonustraffic;
+}
+/**
+ * @return the carrent
+ */
+public BigDecimal getCarrent() {
+	return this.carrent;
+}
+/**
+ * @param carrent the carrent to set
+ */
+public void setCarrent(BigDecimal carrent) {
+	this.carrent = carrent;
+}
+/**
+ * @return the carmaintain
+ */
+public BigDecimal getCarmaintain() {
+	return this.carmaintain;
+}
+/**
+ * @param carmaintain the carmaintain to set
+ */
+public void setCarmaintain(BigDecimal carmaintain) {
+	this.carmaintain = carmaintain;
+}
+/**
+ * @return the carfuel
+ */
+public BigDecimal getCarfuel() {
+	return this.carfuel;
+}
+/**
+ * @param carfuel the carfuel to set
+ */
+public void setCarfuel(BigDecimal carfuel) {
+	this.carfuel = carfuel;
 }
 
 }

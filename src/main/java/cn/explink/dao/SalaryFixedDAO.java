@@ -30,7 +30,7 @@ public class SalaryFixedDAO {
 			SalaryFixed salary = new SalaryFixed();
 			salary.setId(rs.getLong("id"));
 			salary.setBranchid(rs.getLong("branchid"));
-			salary.setAgejob(rs.getLong("agejob"));
+			salary.setAgejob(rs.getBigDecimal("agejob"));
 			salary.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
 			salary.setIdcard(StringUtil.nullConvertToEmptyString(rs.getString("idcard")));
 			salary.setAccountSingle(rs.getBigDecimal("accountSingle"));
@@ -71,6 +71,14 @@ public class SalaryFixedDAO {
 			salary.setSalaryaccrual(rs.getBigDecimal("salaryaccrual"));
 			salary.setTax(rs.getBigDecimal("tax"));
 			salary.setSalary(rs.getBigDecimal("salary"));
+			salary.setJobpush(rs.getBigDecimal("jobpush"));
+			salary.setBonusroom(rs.getBigDecimal("bonusroom"));
+			salary.setBonusallday(rs.getBigDecimal("bonusallday"));
+			salary.setBonusfood(rs.getBigDecimal("bonusfood"));
+			salary.setBonustraffic(rs.getBigDecimal("bonustraffic"));
+			salary.setCarrent(rs.getBigDecimal("carrent"));
+			salary.setCarmaintain(rs.getBigDecimal("carmaintain"));
+			salary.setCarfuel(rs.getBigDecimal("carfuel"));
 			return salary;
 		}
 	}
@@ -78,8 +86,8 @@ public class SalaryFixedDAO {
 	JdbcTemplate jdbcTemplate;
 	public int creSalaryByRealname(final SalaryFixed salary){
 		return this.jdbcTemplate.update("INSERT INTO `express_ops_salaryFixed_detail` "
-				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`)"
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",new PreparedStatementSetter(){
+				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`,`jobpush`,`bonusroom`,`bonusallday`,`bonusfood`,`bonustraffic`,`carrent`,`carmaintain`,`carfuel`)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",new PreparedStatementSetter(){
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -90,7 +98,7 @@ public class SalaryFixedDAO {
 				ps.setBigDecimal(5,salary.getSalarybasic());
 				ps.setBigDecimal(6,salary.getSalaryjob());
 				ps.setBigDecimal(7,salary.getSalarypush());
-				ps.setLong(8,salary.getAgejob());
+				ps.setBigDecimal(8,salary.getAgejob());
 				ps.setBigDecimal(9,salary.getBonusfuel());
 				ps.setBigDecimal(10,salary.getBonusfixed());
 				ps.setBigDecimal(11,salary.getBonusphone());
@@ -125,6 +133,14 @@ public class SalaryFixedDAO {
 				ps.setBigDecimal(40,salary.getSalaryaccrual());
 				ps.setBigDecimal(41,salary.getTax());
 				ps.setBigDecimal(42,salary.getSalary());
+				ps.setBigDecimal(43,salary.getJobpush());
+				ps.setBigDecimal(44,salary.getBonusroom());
+				ps.setBigDecimal(45,salary.getBonusallday());
+				ps.setBigDecimal(46,salary.getBonusfood());
+				ps.setBigDecimal(47,salary.getBonustraffic());
+				ps.setBigDecimal(48,salary.getCarrent());
+				ps.setBigDecimal(49,salary.getCarmaintain());
+				ps.setBigDecimal(50,salary.getCarfuel());
 			}
 
 		});
@@ -168,5 +184,10 @@ public class SalaryFixedDAO {
 	public long deleteSalaryByids(String ids) {
 		String sql="delete from express_ops_salaryFixed_detail where id in("+ids+")";
 		return this.jdbcTemplate.update(sql);
+	}
+	public SalaryFixed getSalaryByIdcard(String idcard)
+	{
+		String sql="select * from express_ops_salaryFixed_detail where idcard="+idcard+" limit 1;";
+		return this.jdbcTemplate.queryForObject(sql,new SalaryFixedRowMapper());
 	}
 }

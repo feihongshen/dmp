@@ -972,6 +972,7 @@ src/main/java/cn/explink/dao/RemarkDAO.java -text
 src/main/java/cn/explink/dao/ReturnCwbsDAO.java -text
 src/main/java/cn/explink/dao/RoleDAO.java -text
 src/main/java/cn/explink/dao/SalaryCountDAO.java -text
+src/main/java/cn/explink/dao/SalaryErrorDAO.java -text
 src/main/java/cn/explink/dao/SalaryFixedDAO.java -text
 src/main/java/cn/explink/dao/SalaryImportDao.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
@@ -1161,6 +1162,7 @@ src/main/java/cn/explink/domain/Remark.java -text
 src/main/java/cn/explink/domain/ReturnCwbs.java -text
 src/main/java/cn/explink/domain/Role.java -text
 src/main/java/cn/explink/domain/SalaryCount.java -text
+src/main/java/cn/explink/domain/SalaryError.java -text
 src/main/java/cn/explink/domain/SalaryFixed.java -text
 src/main/java/cn/explink/domain/SalaryImport.java -text
 src/main/java/cn/explink/domain/ScheduledTask.java -text

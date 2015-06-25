@@ -11,6 +11,7 @@ import net.sf.json.JSONObject;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.BranchDAO;
@@ -27,7 +28,9 @@ import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
+import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
+import cn.explink.dao.SalaryImportDao;
 import cn.explink.dao.ServiceAreaDAO;
 import cn.explink.dao.SetExcelColumnDAO;
 import cn.explink.dao.SwitchDAO;
@@ -46,6 +49,7 @@ import cn.explink.domain.PenalizeType;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.SalaryImport;
 import cn.explink.domain.ServiceArea;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
@@ -109,10 +113,13 @@ public abstract class ExcelExtractor {
 	@Autowired
 	PenalizeOutImportRecordDAO penalizeOutImportRecordDAO;
 	@Autowired
-	SalaryFixedDAO salaryDAO;
-
+	SalaryFixedDAO salaryFixedDAO;
+	@Autowired
+	SalaryErrorDAO salaryErrorDAO;
 	@Autowired
 	ImportCwbErrorService importCwbErrorService;
+	@Autowired
+	SalaryImportDao salaryImportDao;
 
 	@Autowired
 	DataImportService dataImportService;
@@ -1020,39 +1027,198 @@ public abstract class ExcelExtractor {
 	}
 
 	/**
+	 * @param user
+	 * @param importflag
 	 * @param inputStream
 	 */
-	public void extractSalary(InputStream f) {
+	@Transactional
+	public void extractSalary(InputStream f, long importflag, User user) {
 		List<SalaryFixed> salaryList = new ArrayList<SalaryFixed>();
 		List<User> userList = this.userDAO.getAllUser();
+		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();
+		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
 		for (Object row : this.getRows(f)) {
 			try {
-				SalaryFixed salary = this.getSalaryAccordingtoConf(row, userMap);
+				SalaryFixed salary = this.getSalaryAccordingtoConf(row, userMap, importflag,improtMap);
+				if(salary!=null){
 				salaryList.add(salary);
+				}
 			} catch (Exception e) {
+				this.salaryErrorDAO.creSalaryError(this.getXRowCellData(row, 1), this.getXRowCellData(row, 1), "未知异常", importflag);
+				continue;
 			}
 		}
 		for (SalaryFixed salary : salaryList) {
 			try {
-				this.salaryDAO.creSalaryByRealname(salary);
+				SalaryFixed salary1 =this.salaryFixedDAO.getSalaryByIdcard(salary.getIdcard());
+				if(salary1!=null){
+					this.salaryFixedDAO.deleteSalaryByids(salary1.getId()+"");
+				}
+				this.salaryFixedDAO.creSalaryByRealname(salary);
 			} catch (Exception e) {
-
+				this.salaryErrorDAO.creSalaryError(salary.getRealname(), salary.getRealname(), "未知异常", importflag);
+				continue;
 			}
 
 		}
 	}
 
 	/**
-	 * @param row
-	 * @param userMap
+	 * @param salaryImports
 	 * @return
 	 */
-	private SalaryFixed getSalaryAccordingtoConf(Object row, Map<String, User> userMap) {
+	private Map<String, Integer> SetMapImport(List<SalaryImport> salaryImports) {
+		Map<String, Integer> map=new HashMap<String, Integer>();
+		for(SalaryImport sip:salaryImports)
+		{
+			map.put(sip.getFilename(), sip.getWhichvalue());
+		}
+		return map;
+	}
+
+	/**
+	 * @param row
+	 * @param userMap
+	 * @param importflag
+	 * @return
+	 */
+	private SalaryFixed getSalaryAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map) {
 		SalaryFixed salary = new SalaryFixed();
-		try {
-			salary.setAccountSingle(new BigDecimal(this.getXRowCellData(row, 3)));
-		} catch (Exception e) {
+		String realname = this.getXRowCellData(row, 1);
+		String idcard = this.getXRowCellData(row, 2);
+		User user = userMap.get(realname);
+		if (user == null) {
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送不存在！", importflag);
+			return null;
+		}
+		else {
+			if(!idcard.equals(user.getIdcardno()))
+			{
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码有误！", importflag);
+				return null;
+			}
+		}
+		salary.setBranchid(user.getBranchid());
+		salary.setRealname(realname);
+		salary.setIdcard(idcard);
+		try{
+		if(map.get("salarybasic")==0) {
+			salary.setSalarybasic(new BigDecimal(this.getXRowCellData(row, 3)));
+		}
+		if(map.get("salaryjob")==0) {
+		salary.setSalaryjob(new BigDecimal(this.getXRowCellData(row, 4)));
+		}
+		if(map.get("salarypush")==0) {
+		salary.setSalarypush(new BigDecimal(this.getXRowCellData(row, 5)));
+		}
+		if(map.get("jobpush")==0) {
+			salary.setJobpush(new BigDecimal(this.getXRowCellData(row, 6)));
+		}
+		if(map.get("agejob")==0) {
+			salary.setAgejob(new BigDecimal(this.getXRowCellData(row, 7)));
+		}
+		if(map.get("bonusroom")==0) {
+		salary.setBonusroom(new BigDecimal(this.getXRowCellData(row, 8)));
+		}
+		if(map.get("bonusallday")==0) {
+		salary.setBonusallday(new BigDecimal(this.getXRowCellData(row, 9)));
+		}
+		if(map.get("bonusfood")==0) {
+		salary.setBonusfood(new BigDecimal(this.getXRowCellData(row, 10)));
+		}
+		if(map.get("bonustraffic")==0) {
+		salary.setBonustraffic(new BigDecimal(this.getXRowCellData(row, 11)));
+		}
+		if(map.get("bonusphone")==0) {
+		salary.setBonusphone(new BigDecimal(this.getXRowCellData(row, 12)));
+		}
+		if(map.get("bonusweather")==0) {
+			salary.setBonusweather(new BigDecimal(this.getXRowCellData(row, 13)));
+		}
+		if(map.get("bonusother1")==0) {
+			salary.setBonusother1(new BigDecimal(this.getXRowCellData(row, 14)));
+		}
+		if(map.get("bonusother2")==0) {
+		salary.setBonusother2(new BigDecimal(this.getXRowCellData(row, 15)));
+		}
+		if(map.get("bonusother3")==0) {
+		salary.setBonusother3(new BigDecimal(this.getXRowCellData(row, 16)));
+		}
+		if(map.get("bonusother4")==0) {
+		salary.setBonusother4(new BigDecimal(this.getXRowCellData(row, 17)));
+		}
+		if(map.get("bonusother5")==0) {
+		salary.setBonusother5(new BigDecimal(this.getXRowCellData(row, 18)));
+		}
+		if(map.get("bonusother6")==0) {
+		salary.setBonusother6(new BigDecimal(this.getXRowCellData(row, 19)));
+		}
+		if(map.get("overtimework")==0) {
+		salary.setOvertimework(new BigDecimal(this.getXRowCellData(row, 20)));
+		}
+		if(map.get("attendance")==0) {
+		salary.setAttendance(new BigDecimal(this.getXRowCellData(row, 21)));
+		}
+		if(map.get("security")==0) {
+		salary.setSecurity(new BigDecimal(this.getXRowCellData(row, 22)));
+		}
+		if(map.get("gongjijin")==0) {
+		salary.setGongjijin(new BigDecimal(this.getXRowCellData(row, 23)));
+		}
+		if(map.get("dorm")==0) {
+		salary.setDorm(new BigDecimal(this.getXRowCellData(row, 24)));
+		}
+		if(map.get("penalizeother1")==0) {
+		salary.setPenalizeother1(new BigDecimal(this.getXRowCellData(row, 25)));
+		}
+		if(map.get("penalizeother2")==0) {
+		salary.setPenalizeother2(new BigDecimal(this.getXRowCellData(row, 26)));
+		}
+		if(map.get("penalizeother3")==0) {
+		salary.setPenalizeother3(new BigDecimal(this.getXRowCellData(row, 27)));
+		}
+		if(map.get("penalizeother4")==0) {
+		salary.setPenalizeother4(new BigDecimal(this.getXRowCellData(row, 28)));
+		}
+		if(map.get("penalizeother5")==0) {
+		salary.setPenalizeother5(new BigDecimal(this.getXRowCellData(row, 29)));
+		}
+		if(map.get("penalizeother6")==0) {
+		salary.setPenalizeother6(new BigDecimal(this.getXRowCellData(row, 30)));
+		}
+		if(map.get("carrent")==0) {
+		salary.setCarrent(new BigDecimal(this.getXRowCellData(row, 31)));
+		}
+		if(map.get("carmaintain")==0) {
+			salary.setCarmaintain(new BigDecimal(this.getXRowCellData(row, 32)));
+		}
+		if(map.get("carfuel")==0) {
+			salary.setCarfuel(new BigDecimal(this.getXRowCellData(row, 33)));
+		}
+		if(map.get("imprestother1")==0) {
+		salary.setImprestother1(new BigDecimal(this.getXRowCellData(row, 34)));
+		}
+		if(map.get("imprestother2")==0) {
+		salary.setImprestother2(new BigDecimal(this.getXRowCellData(row, 35)));
+		}
+		if(map.get("imprestother3")==0) {
+		salary.setImprestother3(new BigDecimal(this.getXRowCellData(row, 36)));
+		}
+		if(map.get("imprestother4")==0) {
+		salary.setImprestother4(new BigDecimal(this.getXRowCellData(row, 37)));
+		}
+		if(map.get("imprestother5")==0) {
+		salary.setImprestother5(new BigDecimal(this.getXRowCellData(row, 38)));
+		}
+		if(map.get("imprestother6")==0) {
+		salary.setImprestother6(new BigDecimal(this.getXRowCellData(row, 39)));
+		}
+	}
+		catch(Exception e)
+		{
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "数据格式有误", importflag);
+			ExcelExtractor.logger.error("配送员工资导入设置异常",e);
 			return null;
 		}
 		return salary;
