@@ -109,11 +109,11 @@ function checkall()
 	    <td  align="right">身份证号：</td>
 	    <td  align="left"><input type="text" name="idcard" value="${idcard}"/></td>
 	    </tr>
-    <form action="1" method="post" id="searchForm">
-	<tr>
+	    </form>
+		<tr>
 		<td colspan="4" height="25px">
 		<div id="fileup"  style="display: none;" <%-- ${importFlag>0?'':'style="display: none;"' } --%>>
-		<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
+		<form   action="${pageContext.request.contextPath}/salaryFixed/importData" method="post" enctype="multipart/form-data" >
 			<table>
 				<tr>
 					<td>
@@ -122,7 +122,7 @@ function checkall()
 				   <td>
 					   <input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
 				  </td>
-		 
+	<%-- 	 
 		     <c:if test="${importFlag>0 }" >
 					<td>
 						<span style="font-weight: bold;"> 成功:</span> 
@@ -137,7 +137,7 @@ function checkall()
 						<input type="hidden" id="importFlag" value="${importFlag}"/>
 						<span ${record.failCounts>0?'onclick="showError()"':''} style="font-weight: bold;color: red;cursor:pointer ;">${record.failCounts}</span>
 				 </td>
-		 </c:if>
+		 </c:if> --%>
 		 </tr>
 		</table>
 	</form>
@@ -154,17 +154,21 @@ function checkall()
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="right_title">
 	<div style="overflow: auto;">
-	<table width="200%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+	<table width="250%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
 	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 姓名</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 身份证号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 基本工资 </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 岗位工资</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 绩效奖金</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 岗位津贴</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 工龄</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 油费补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 固定补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 话费补助</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 住房补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 全勤补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 餐费补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 交通补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 通讯补贴</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 高温寒冷补贴</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴2</td>
@@ -183,7 +187,9 @@ function checkall()
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚4</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚5</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚6</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 货物预付款</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 租用车辆费用</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 车子维修费用</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 油/电费用</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款2</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款3</td>
@@ -199,10 +205,13 @@ function checkall()
 		<%-- <td align="center" valign="middle">${salary.accountSingle}</td> --%>
 		<td align="center" valign="middle">${salary.salarybasic}</td>
 		<td align="center" valign="middle">${salary.salaryjob}</td>
-		<%-- <td align="center" valign="middle">${salary.salarypush}</td> --%>
+		<td align="center" valign="middle">${salary.salarypush}</td>
+		<td align="center" valign="middle">${salary.jobpush}</td>
 		<td align="center" valign="middle">${salary.agejob}</td>
-		<td align="center" valign="middle">${salary.bonusfuel}</td>
-		<td align="center" valign="middle">${salary.bonusfixed}</td>
+		<td align="center" valign="middle">${salary.bonusroom}</td>
+		<td align="center" valign="middle">${salary.bonusallday}</td>
+		<td align="center" valign="middle">${salary.bonusfood}</td>
+		<td align="center" valign="middle">${salary.bonustraffic}</td>
 		<td align="center" valign="middle">${salary.bonusphone}</td>
 		<td align="center" valign="middle">${salary.bonusweather}</td>
 		<%-- <td align="center" valign="middle">${salary.penalizecancel}</td> --%>
@@ -225,7 +234,9 @@ function checkall()
 		<td align="center" valign="middle">${salary.penalizeother4}</td>
 		<td align="center" valign="middle">${salary.penalizeother5}</td>
 		<td align="center" valign="middle">${salary.penalizeother6}</td>
-		<td align="center" valign="middle">${salary.imprestgoods}</td>
+		<td align="center" valign="middle">${salary.carrent}</td>
+		<td align="center" valign="middle">${salary.carmaintain}</td>
+		<td align="center" valign="middle">${salary.carfuel}</td>
 		<td align="center" valign="middle">${salary.imprestother1}</td>
 		<td align="center" valign="middle">${salary.imprestother2}</td>
 		<td align="center" valign="middle">${salary.imprestother3}</td>
