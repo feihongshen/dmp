@@ -878,12 +878,12 @@ public abstract class ExcelExtractor {
 		try {
 
 			penalizeOutGoodsfee = new BigDecimal(this.getXRowCellData(row, 2));
-			if (penalizeOutGoodsfee.compareTo(new BigDecimal(0)) == -1) {
+			/*if (penalizeOutGoodsfee.compareTo(new BigDecimal(0)) == -1) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额必须大于0.00！");
 				return null;
-			}
-			if (penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1) {
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额有误");
+			}*/
+			if (penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1||String.valueOf(penalizeOutGoodsfee).length()>14) {
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额（超过14位长度）有误");
 				return null;
 			}
 			/*
@@ -899,12 +899,12 @@ public abstract class ExcelExtractor {
 		try {
 
 			penalizeOutOtherfee = new BigDecimal(this.getXRowCellData(row, 3));
-			if (penalizeOutOtherfee.compareTo(new BigDecimal(0)) == -1) {
+			/*if (penalizeOutOtherfee.compareTo(new BigDecimal(0)) == -1) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额必须大于0.00！");
 				return null;
-			}
-			if (penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1) {
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额有误");
+			}*/
+			if (penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1||String.valueOf(penalizeOutOtherfee).length()>14) {
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额（超过14位长度）有误");
 				return null;
 			}
 			/*
