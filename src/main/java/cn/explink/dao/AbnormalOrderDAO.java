@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.b2c.lefeng.result;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
-import cn.explink.domain.Function;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.enumutil.PunishInsideStateEnum;
+import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 
 @Component
@@ -100,7 +99,17 @@ public class AbnormalOrderDAO {
 			return obj;
 		}
 	}
+	@Autowired
+	PunishInsideService punishInsideService;
+	private final class  Cwbrowmapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String cwbString=rs.getString("cwb");
+			return cwbString;
+		}
+		
+	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -253,9 +262,9 @@ public class AbnormalOrderDAO {
 		}, key);
 		return key.getKey().longValue();
 	}
-	public long creAbnormalOrderLongAdd(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch,final String name,final String questionNo,final long isfind,final long ishandle) {
+	public long creAbnormalOrderLongAdd(final CwbOrder co, final String describe, final long creuserid, final long branchid, final long abnormaltypeid, final String credatetime, final long handleBranch,final String name,final String questionNo,final long isfind,final long ishandle,final long importflag) {
 		/*this.saveAbnormalOrderByOpscwb(co.getCwb());*/
-		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`,`fileposition`,`questionno`,`cwbordertypeid`,`isfind`,`ishandle`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String sql = "insert into express_ops_abnormal_order(`opscwbid`,`customerid`,`describe`,`creuserid`,`branchid`,`abnormaltypeid`,`credatetime`,`isnow`,`emaildate`,`flowordertype`,`deliverybranchid`,`cwb`,`handleBranch`,`fileposition`,`questionno`,`cwbordertypeid`,`isfind`,`ishandle`,`importFlag`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -280,6 +289,7 @@ public class AbnormalOrderDAO {
 				ps.setLong(16, co.getCwbordertypeid());
 				ps.setLong(17, isfind);
 				ps.setLong(18, ishandle);
+				ps.setLong(19, importflag);
 				return ps;
 			}
 		}, key);
@@ -1024,6 +1034,19 @@ public class AbnormalOrderDAO {
 		} catch (DataAccessException e) {
 			
 		}
+	}
+	public List<AbnormalOrder> checkexcelIsExist(String cwb,long abnormaltypeid,String abnormalinfo){
+		String sql="select * from express_ops_abnormal_order where cwb=?  and abnormaltypeid=? and  `describe`=?";
+		try {
+			return this.jdbcTemplate.query(sql, new AbnormalOrderRowMapper(), cwb,abnormaltypeid,abnormalinfo);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+	
+	public List<String> findImportExcelSuccess(long importFlag){
+		String sql="select * from express_ops_abnormal_order where importFlag=?";
+		return this.jdbcTemplate.query(sql, new Cwbrowmapper(),importFlag);
 	}
 
 }

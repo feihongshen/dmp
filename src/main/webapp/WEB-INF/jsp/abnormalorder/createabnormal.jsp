@@ -154,6 +154,19 @@ function ajaxFileUpload()
 function subChexiao(){
 	$("#searchForm3").submit();
 }
+function inserexceldata(){
+	//执行导入操作
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/abnormalOrder/exceldaorupage",
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -209,7 +222,7 @@ function subChexiao(){
 								上传附件:<input type="file" name="file" id="file"/>
 								</td> -->
 								<td>
-								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
+								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="button"  value="导入创建" id="createabnormalexcel" name="createabnormalexcel" onclick="inserexceldata();" class="input_button2">   <input type="reset" value="取消" class="input_button2">
 								</td>
 								
 								</tr>

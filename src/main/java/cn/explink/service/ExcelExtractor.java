@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.AbnormalOrderDAO;
+import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -35,6 +38,9 @@ import cn.explink.dao.ServiceAreaDAO;
 import cn.explink.dao.SetExcelColumnDAO;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.AbnormalImportView;
+import cn.explink.domain.AbnormalOrder;
+import cn.explink.domain.AbnormalType;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
@@ -52,6 +58,8 @@ import cn.explink.domain.SalaryFixed;
 import cn.explink.domain.SalaryImport;
 import cn.explink.domain.ServiceArea;
 import cn.explink.domain.User;
+import cn.explink.enumutil.AbnormalOrderHandleEnum;
+import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
@@ -123,6 +131,12 @@ public abstract class ExcelExtractor {
 
 	@Autowired
 	DataImportService dataImportService;
+	@Autowired
+	AbnormalTypeDAO abnormalTypeDAO;
+	@Autowired
+	AbnormalOrderDAO abnormalOrderDAO;
+	@Autowired
+	AbnormalService abnormalService;
 
 	public String strtovalid(String str) {
 		// 2013-8-6 需求： 收件人地址让显示中文符号。最终是替换所有的中文符号为中文即可
@@ -1223,5 +1237,112 @@ public abstract class ExcelExtractor {
 		}
 		return salary;
 	}
+	
+	
+	public String extractAbnormal(InputStream f, User user, Long systemTime) {
+		List<AbnormalImportView> abnormalImportViews=new ArrayList<AbnormalImportView>();
+		List<AbnormalType> abnormalTypes=this.abnormalTypeDAO.getAllAbnormalTypeByName();
+		Map<String, Long> abnormalMaps=this.getAbnormalTypeMaps(abnormalTypes);
+		int successCounts = 0;
+		int failCounts = 0;
+		int totalCounts = 0;// this.getRows(f).size();
+		PenalizeOutImportRecord record = new PenalizeOutImportRecord();
+		for (Object row : this.getRows(f)) {
+			totalCounts++;
+			try {
+				AbnormalImportView abnormalImportView = this.getAbnormalAccordingtoConf(row, abnormalMaps, user, systemTime);
+				if (abnormalImportView != null) {
+					abnormalImportViews.add(abnormalImportView);
+				} else {
+					failCounts++;
+				}
+			} catch (Exception e) {
+				// e.printStackTrace();
+				failCounts++;
+				ExcelExtractor.logger.info("问题件导入异常：cwb={},message={}", this.getXRowCellData(row, 1), e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
+
+				// 失败订单数+1 前台显示
+
+				// 存储报错订单，以便统计错误记录和处理错误订单
+
+			}
+		}
+		for (AbnormalImportView abnormalImportView : abnormalImportViews) {
+			try {
+				abnormalService.creAbnormalOrderExcel(abnormalImportView);
+				successCounts ++;
+			} catch (Exception e) {
+				failCounts++;
+				ExcelExtractor.logger.info("对内扣罚导入异常：cwb={},message={}", abnormalImportView.getCwbOrder().getCwb(), e.toString());
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(abnormalImportView.getCwbOrder().getCwb(), systemTime, "未知异常");
+
+			}
+
+		}
+
+		record.setImportFlag(systemTime);
+		record.setUserid(user.getUserid());
+		record.setTotalCounts(totalCounts);
+		record.setSuccessCounts(successCounts);
+		record.setFailCounts(failCounts);
+		this.penalizeOutImportRecordDAO.crePenalizeOutImportRecord(record);
+		return failCounts + "," + successCounts;
+	}
+	private AbnormalImportView getAbnormalAccordingtoConf(Object row, Map<String, Long> abnormalTypes, User user, long systemTime) throws Exception {
+		AbnormalImportView abnormalImportView=new AbnormalImportView();
+		String cwb = this.getXRowCellData(row, 1);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co == null) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "订单号不存在！");
+			return null;
+		} else {
+			abnormalImportView.setCwbOrder(co);
+		}
+		long abnormaltypeid=0;
+		String abnormalTypeString= this.getXRowCellData(row, 2);
+		try {
+			abnormaltypeid=abnormalTypes.get(abnormalTypeString);
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件类型不存在！");
+			return null;
+		}
+		String abnormalInfo= this.getXRowCellData(row, 3);
+		//判断问题件记录是否存在
+		List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
+		if (abnormalOrders != null&&abnormalOrders.size()>0) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
+			return null;
+		}
+		long action = AbnormalWriteBackEnum.ChuangJian.getValue();
+		//abnormalOrder的状态为未处理
+		long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
+		long isfind=0;
+		Branch branch=branchDAO.getBranchByBranchid(user.getBranchid());
+		long handleBranch=0;//0为没有操作机构
+		if (branch!=null) {
+			handleBranch=branch.getSitetype();
+		}
+		abnormalImportView.setAbnormalinfo(abnormalInfo);
+		abnormalImportView.setAbnormaltypeid(abnormaltypeid);
+		abnormalImportView.setAction(action);
+		abnormalImportView.setFilepath("");
+		abnormalImportView.setHandleBranch(handleBranch);
+		abnormalImportView.setIsfind(isfind);
+		abnormalImportView.setNowtime(DateTimeUtil.getNowTime());
+		abnormalImportView.setQuestionNo("Q"+System.currentTimeMillis());
+		abnormalImportView.setUser(user);
+		abnormalImportView.setIshandle(ishandle);
+		abnormalImportView.setSystemtime(systemTime);
+		return abnormalImportView;
+	}
+public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes){
+	Map<String, Long> abnormalMaps=new HashMap<String, Long>();
+	for (Iterator<AbnormalType> iterator = abnormalTypes.iterator(); iterator.hasNext();) {
+		AbnormalType abnormalType = (AbnormalType) iterator.next();
+		abnormalMaps.put(abnormalType.getName(), abnormalType.getId());
+	}
+	return abnormalMaps;
+}
 
 }

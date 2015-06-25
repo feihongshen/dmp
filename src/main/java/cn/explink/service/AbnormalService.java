@@ -24,6 +24,7 @@ import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.AbnormalWriteBackDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.AbnormalImportView;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalType;
 import cn.explink.domain.Branch;
@@ -185,12 +186,22 @@ public class AbnormalService {
 		// co.getCustomerid(), "", user.getUserid(), user.getBranchid(),
 		// abnormaltypeid, nowtime);
 		long abnormalorderid=0;
-		abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLongAdd(co, abnormalinfo, user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime, handleBranch,name,questionNo,isfind,ishandle);
+		abnormalorderid = this.abnormalOrderDAO.creAbnormalOrderLongAdd(co, abnormalinfo, user.getUserid(), user.getBranchid(), abnormaltypeid, nowtime, handleBranch,name,questionNo,isfind,ishandle,0);
 		this.abnormalWriteBackDAO.creAbnormalOrderAdd(co.getOpscwbid(), abnormalinfo, user.getUserid(), action, nowtime, abnormalorderid, abnormaltypeid, co.getCwb(),name);
 		JSONObject json = new JSONObject();
 		json.put("abnormalorderid", abnormalorderid);
 		json.put("abnormalordertype", abnormaltypeid);
 		mapForAbnormalorder.put(co.getOpscwbid(), json);
+	}
+	
+	
+	@Transactional
+	public void creAbnormalOrderExcel(AbnormalImportView abnormalImportView) {
+		User user=abnormalImportView.getUser();
+		CwbOrder cwbOrder=abnormalImportView.getCwbOrder();
+		long abnormalorderid=0;
+		abnormalorderid=this.abnormalOrderDAO.creAbnormalOrderLongAdd(abnormalImportView.getCwbOrder(), abnormalImportView.getAbnormalinfo(), user.getUserid(), user.getBranchid(), abnormalImportView.getAbnormaltypeid(), abnormalImportView.getNowtime(), abnormalImportView.getHandleBranch(),abnormalImportView.getFilepath(),abnormalImportView.getQuestionNo(),abnormalImportView.getIsfind(),abnormalImportView.getIshandle(),abnormalImportView.getSystemtime());
+		this.abnormalWriteBackDAO.creAbnormalOrderAdd(cwbOrder.getOpscwbid(), abnormalImportView.getAbnormalinfo(), user.getUserid(), abnormalImportView.getAction(), abnormalImportView.getNowtime(), abnormalorderid, abnormalImportView.getAbnormaltypeid(), cwbOrder.getCwb(),abnormalImportView.getFilepath());
 	}
 	//问题件添加到指定路径下
 	public  String loadexceptfile(MultipartFile file){

@@ -6732,22 +6732,33 @@ function uploadFormInitAddhh(form, contextPath) {
 
 //excel导入
 function submitPunishCreateByExcel(form){
+	if($("#update")[0].contentWindow.checkIsExistexcelData()){
+		alert("您还未选择导入的excel！！")
+		return;
+	}
 	$("#importdaorubutton").attr("disabled","disabled");
 	$("#importdaorubutton").val("正在导入...");
 	$("#update")[0].contentWindow.submitPunishInsideByExcel();
+}
+function checkIsExistexcelData(){
+	if($("#wavText").val()==""){
+		return true;
+	}else{
+		return false;
+	}
 }
 function submitPunishInsideByExcel(){
 	$('#swfupload-control').swfupload('startUpload');
 }
 
-function punishExcelImport(systemflag,contextPath,appendObject){
+function punishExcelImport(systemflag,contextPath,appendObject,pathurl){
 	if($("#emaildate").val()==""){
 		alert("当前没有导入失败的订单！！");
 		return;
 	}
 	var showhtml="";
 	$.ajax({
-		url:contextPath+"/inpunish/importFlagError/"+$("#"+systemflag).val(),
+		url:contextPath+$("#"+pathurl).val()+$("#"+systemflag).val(),
 		dataType:'json',
 		success:function (data){
 			$("#importdaorubutton").attr("disabled","disabled");
@@ -6767,14 +6778,14 @@ function punishExcelImport(systemflag,contextPath,appendObject){
 function punishExcelImportClear(){
 	$("#gd_table4").hide();
 }
-function punishExcelImportSuccess(systemflag,contextPath,appendObject){
+function punishExcelImportSuccess(systemflag,contextPath,appendObject,pathurl){
 	if($("#emaildate").val()==""){
 		alert("当前没有导入成功的订单！！");
 		return;
 	}
 	var showhtml="";
 	$.ajax({
-		url:contextPath+"/inpunish/importFlagSuccess/"+$("#"+systemflag).val(),
+		url:contextPath+$("#"+pathurl).val()+$("#"+systemflag).val(),
 		dataType:'json',
 		success:function (data){
 			$("#importdaorubutton").attr("disabled","disabled");

@@ -54,6 +54,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MissPieceDao;
+import cn.explink.dao.PenalizeOutImportErrorRecordDAO;
 import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -68,6 +69,7 @@ import cn.explink.domain.Function;
 import cn.explink.domain.MissPiece;
 import cn.explink.domain.MissPieceView;
 import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.PenalizeOutImportErrorRecord;
 import cn.explink.domain.Role;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -77,6 +79,9 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AbnormalService;
+import cn.explink.service.Excel2003Extractor;
+import cn.explink.service.Excel2007Extractor;
+import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.UserService;
@@ -89,6 +94,12 @@ import cn.explink.util.StringUtil;
 @Controller
 @RequestMapping("/abnormalOrder")
 public class AbnormalOrderController {
+	@Autowired
+	Excel2003Extractor excel2003Extractor;
+	@Autowired
+	Excel2007Extractor excel2007Extractor;
+	@Autowired
+	PenalizeOutImportErrorRecordDAO penalizeOutImportErrorRecordDAO;
 	@Autowired
 	PunishInsideDao  punishInsideDao;
 	@Autowired 
@@ -1766,5 +1777,58 @@ public class AbnormalOrderController {
 		model.addAttribute("losebackdescribe", abnormalinfo);
 		return "/abnormalorder/losebackcreate";
 	}
+	//进入根据问题件创建的问题件
+	@RequestMapping("/exceldaorupage")
+	public  String exceldaorupage(){
+		return "/abnormalorder/exceldaorupage";
+	}
+	@RequestMapping("/submitAbnormalCreateByExcel")
+	public @ResponseBody String submitPunishCreateByExcel(
+			@RequestParam(value = "Filedata", required = false) MultipartFile file
+			) throws Exception{
+		
+		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
+		final InputStream inputStream = file.getInputStream();
+		final User user = this.getSessionUser();
+		final Long systemTime = System.currentTimeMillis();
+		String successAndFail="";
+		if (excelExtractor != null) {
+			successAndFail=AbnormalOrderController.this.processFile(excelExtractor, inputStream, user, systemTime);
+		} else {
+			return "{\"errorCode\":1,\"error\":\"文件格式异常\"}";
+		}
+		if (successAndFail.equals("")) {
+			return "{\"errorCode\":1,\"error\":\"导入异常\"}";
+
+		}else {
+			return "{\"errorCode\":0,\"error\":\""+successAndFail.split(",")[0]+"\",\"emaildate\":"+systemTime+",\"success\":\""+successAndFail.split(",")[1]+"\"}";
+
+		}
+	}
 	
+	private ExcelExtractor getExcelExtractor(MultipartFile file) {
+		String originalFilename = file.getOriginalFilename();
+		if (originalFilename.endsWith("xlsx")) {
+			return this.excel2007Extractor;
+		} else if (originalFilename.endsWith(".xls")) {
+			return this.excel2003Extractor;
+		}
+		return null;
+	}
+
+	protected String processFile(ExcelExtractor excelExtractor, InputStream inputStream, User user, Long systemTime) {
+		return excelExtractor.extractAbnormal(inputStream, user, systemTime);
+
+	}
+	@RequestMapping("/importFlagError/{id}")
+	public @ResponseBody List<PenalizeOutImportErrorRecord> importFlagError(@PathVariable("id") long importFlag, Model model) throws Exception {
+
+		List<PenalizeOutImportErrorRecord> errorRecords=this.penalizeOutImportErrorRecordDAO.getPenalizeOutImportRecordByImportFlag(importFlag);
+		return errorRecords;
+	}
+	@RequestMapping("/importFlagSuccess/{id}")
+	public @ResponseBody List<String> importFlagSuccess(@PathVariable("id") long importFlag){
+		List<String> successimport=abnormalOrderDAO.findImportExcelSuccess(importFlag);
+		return successimport;
+	}
 }

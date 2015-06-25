@@ -13,8 +13,8 @@
 	<div id="box_contant" >
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 190px;">
-		<h1><div id="close_box" onclick="closeBox()"></div>excel对内扣罚导入窗口</h1>
-		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/submitPunishCreateByExcel;jsessionid=<%=session.getId()%>" onsubmit="submitPunishCreateByExcel(this);return false;" enctype="multipart/form-data">
+		<h1><div id="close_box" onclick="closeBox()"></div>excel问题件导入窗口</h1>
+		<form method="post" id="form1"  action="<%=request.getContextPath()%>/abnormalOrder/submitAbnormalCreateByExcel;jsessionid=<%=session.getId()%>" onsubmit="submitPunishCreateByExcel(this);return false;" enctype="multipart/form-data">
 			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:130px">
@@ -60,8 +60,8 @@
 			</td>
 			</tr>
 			</table>
-			<input type="hidden" id="pathurl" name="pathurl" value="/inpunish/importFlagSuccess/"/>
-			<input type="hidden" id="pathurl2" name="pathurl2" value="/inpunish/importFlagError/"/>
+			<input type="hidden" id="pathurl" name="pathurl" value="/abnormalOrder/importFlagSuccess/"/>
+			<input type="hidden" id="pathurl2" name="pathurl2" value="/abnormalOrder/importFlagError/"/>
 			</form>
 	</div>
 </div>
