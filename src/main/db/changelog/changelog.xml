@@ -6965,8 +6965,26 @@ CREATE TABLE `cs_complaint_accept` (
 			INDEX `operationTime_idx` (`operationTime`) ,
 			INDEX `bacthstate_idx` (`bacthstate`) 
 			);
-			</sql>
-			</changeSet>
+		</sql>
+   </changeSet>
+    <changeSet id="liuxiao-2015-06-25-1" author="liuxiao">
+    	<sql>
+    		CREATE TABLE `express_set_salary` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `filename` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `filetext` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `whichvalue` int(4) DEFAULT '0',
+			  `ischecked` int(4) DEFAULT '1',
+			  `addordeduct` int(4) DEFAULT '1',
+			  PRIMARY KEY (`id`),
+			  KEY `salary_filename_idx` (`filename`),
+			  KEY `salary_filetext_idx` (`filetext`),
+			  KEY `salary_whichvalue_idx` (`whichvalue`),
+			  KEY `salary_ischecked_idx` (`ischecked`),
+			  KEY `salary_addordeduct_idx` (`addordeduct`)
+			) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    	</sql>
+    </changeSet>
    <changeSet id="wangyonghe-2015-06-25-01" author="wangyonghe">
     	<sql>			
 			CREATE TABLE `express_set_salaryError` (
