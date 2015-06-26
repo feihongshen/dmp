@@ -222,7 +222,7 @@ function inserexceldata(){
 								上传附件:<input type="file" name="file" id="file"/>
 								</td> -->
 								<td>
-								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="button"  value="导入创建" id="createabnormalexcel" name="createabnormalexcel" onclick="inserexceldata();" class="input_button2">   <input type="reset" value="取消" class="input_button2">
+								<input type="submit" value="创建" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="button"  value="导入创建" id="createabnormalexcel" name="createabnormalexcel" onclick="inserexceldata();" class="input_button2">   <input type="reset" value="重置" class="input_button2">
 								</td>
 								
 								</tr>

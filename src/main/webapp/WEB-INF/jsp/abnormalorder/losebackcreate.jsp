@@ -177,7 +177,7 @@ function subChexiao(){
 								上传附件:<input type="file" name="file" id="file"/>
 								</td> -->
 								<td >
-								<input type="submit" value="提交" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="取消" class="input_button2">
+								<input type="submit" value="提交" id="createabnormal" name="createabnormal"  class="input_button2"> <input type="reset" value="重置" class="input_button2">
 								</td>
 								
 								</tr>
