@@ -6936,9 +6936,7 @@ CREATE TABLE `cs_complaint_accept` (
 			`carmaintain`   decimal(18,2)  NULL COMMENT '车子维修' ,
 			`carfuel`   decimal(18,2)  NULL COMMENT '油/电费用' ,
 			`penalizecancel_import`  decimal(18,2) NULL COMMENT '扣罚取消_导入' ,
-			`penalizecancel`  decimal(18,2) NULL COMMENT '扣罚取消' ,
-			`penalizefoul_import`  decimal(18,2) NULL COMMENT '违纪扣款扣罚(导入)' ,
-			`penalizefoul`  decimal(18,2) NULL COMMENT '违纪扣款扣罚' ,
+			`foul_import`  decimal(18,2) NULL COMMENT '违纪扣款扣罚(导入)' ,
 			INDEX `branchid_idx` (`branchid`) ,
 			INDEX `id_idx` (`id`) 
 			);
