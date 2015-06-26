@@ -390,6 +390,7 @@ function  demandContract(){
 			$("#paymentperson").val(data.depositpaymentperson);
 			$("#depositgatherperson").val(data.depositgatherperson);
 			$("#gatherperson").val(data.depositgatherperson);
+			$("#othercontractors").val(data.othercontractors);
 			if(data.contractaccessory != ""&&data.contractaccessory !=null){
 				$("#contractFile").css('display' ,'');  
 				$("#file").attr("href","<%=request.getContextPath()%>/customerContract/download?filepathurl=" +data.contractaccessory);
@@ -399,6 +400,10 @@ function  demandContract(){
 		        $("#secondDepositTr").css('display' ,'');
 		        $("#depositMessage").css('display' ,'');
 		        $("#depositButton").css('display' ,'');
+			}
+			if(data.contracttype == 2){
+				 $("#othercontractors").css('display' ,'');
+				 $("#contractors").css('display' ,'');
 			}
 			initDepositTable(data.depositInformationList);
 			/* if(data.contractstatus == 1){
@@ -585,7 +590,7 @@ function showBox(data){
 		'						<td><input type="text" style="display: none" name="othercontractors" value="" id="othercontractors" maxlength="20" style="width:150px"/></td>'+
 		'					</tr>'+			
 		'					<tr>'+
-		'						<th align="left">代收贷款结算周期:</th>'+
+		'						<th align="left">代收货款结算周期:</th>'+
 		'						<td>'+
 		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -593,7 +598,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">贷款结算方式:</th>'+
+		'						<th align="left">货款结算方式:</th>'+
 		'						<td>'+
 		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -639,11 +644,11 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">代收贷款银行:</th>'+
+		'						<th align="left">代收货款银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbank" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">代收贷款银行账户:</th>'+
+		'						<th align="left">代收货款银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbankaccount" onblur="account(\'bank\');" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
@@ -780,7 +785,7 @@ function showBox(data){
 		'						<td><input type="text" style="display: none" name="othercontractors"  id="othercontractors" maxlength="20" style="width:150px"/></td>'+
 		'					</tr>'+		
 		'					<tr>'+
-		'						<th align="left">代收贷款结算周期:</th>'+
+		'						<th align="left">代收货款结算周期:</th>'+
 		'						<td>'+
 		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -788,7 +793,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">贷款结算方式:</th>'+
+		'						<th align="left">货款结算方式:</th>'+
 		'						<td>'+
 		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -834,11 +839,11 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">代收贷款银行:</th>'+
+		'						<th align="left">代收货款银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbank" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">代收贷款银行账户:</th>'+
+		'						<th align="left">代收货款银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbankaccount" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
@@ -969,7 +974,7 @@ function showBox(data){
 		'			<td>'+
 		'				<input type="text" id="contractdescription" name="contractdescription"  style="width:150px"/>'+
 		'			</td>'+
-		'			<th align="left">贷款类型:</th>'+
+		'			<th align="left">货款类型:</th>'+
 		'			<td>'+
 		'				<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'					<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+

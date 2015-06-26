@@ -132,14 +132,18 @@ public class ContractManagementService {
 					String maxOrderStr = maxNumber.substring(11);
 					int maxOrderInt = Integer.valueOf(maxOrderStr);
 					maxOrderInt++;
-					number = partContractNo + maxOrderInt;
+					String orderStr = String.valueOf(maxOrderInt);
+					while (orderStr.length() != 3) {
+						orderStr = "0" + orderStr;
+					}
+					number = partContractNo + orderStr;
 					break;
 				}
 			}
 		}
 		if (StringUtils.isBlank(number)) {
 			String rule = "C_J";
-			String date = DateTimeUtil.getNowDate();
+			String date = DateTimeUtil.getCurrentDate();
 			String orderStr = "001";
 			number = rule + date + orderStr;
 		}

@@ -46,9 +46,9 @@ public class CustomerContractManagement {
 	private Integer invoicetype;
 	// 税率
 	private double taxrate;
-	// 代收贷款银行
+	// 代收货款银行
 	private String collectionloanbank;
-	// 代收贷款银行账户
+	// 代收货款银行账户
 	private String collectionloanbankaccount;
 	// 费用银行
 	private String expensebank;
@@ -312,7 +312,7 @@ public class CustomerContractManagement {
 	}
 
 	public String getDepositInformationStr() {
-		return depositInformationStr;
+		return this.depositInformationStr;
 	}
 
 	public void setDepositInformationStr(String depositInformationStr) {
@@ -320,7 +320,7 @@ public class CustomerContractManagement {
 	}
 
 	public List<DepositInformation> getDepositInformationList() {
-		return depositInformationList;
+		return this.depositInformationList;
 	}
 
 	public void setDepositInformationList(List<DepositInformation> depositInformationList) {
