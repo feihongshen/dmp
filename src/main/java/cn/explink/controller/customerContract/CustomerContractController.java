@@ -67,6 +67,21 @@ public class CustomerContractController {
 		// 客户信息
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		model.addAttribute("contractList", customerList);
+		model.addAttribute("number", contractManagement.getNumber());
+		model.addAttribute("contractstatus", contractManagement.getContractstatus());
+		model.addAttribute("customerid", contractManagement.getCustomerid());
+		model.addAttribute("partyaname", contractManagement.getPartyaname());
+		model.addAttribute("marketingprincipal", contractManagement.getMarketingprincipal());
+		model.addAttribute("othercontractors", contractManagement.getOthercontractors());
+		model.addAttribute("contractdescription", contractManagement.getContractdescription());
+		model.addAttribute("loansandsettlementway", contractManagement.getLoansandsettlementway());
+		model.addAttribute("createStatrtTime", createStatrtTime);
+		model.addAttribute("createEndTime", createEndTime);
+		model.addAttribute("overStartTime", overStartTime);
+		model.addAttribute("overEndTime", overEndTime);
+		model.addAttribute("whetherhavedeposit", contractManagement.getWhetherhavedeposit());
+		model.addAttribute("sort", sort);
+		model.addAttribute("method", method);
 		return "customerContract/customerContractList";
 	}
 

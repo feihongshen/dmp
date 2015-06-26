@@ -60,45 +60,26 @@ function setId(id,state){
 } 
 //查询
 function query(){
-	getQueryCondition();
 	$("#queryContract").submit();
 	closeBox();
 }
-//获取查询时条件
-function getQueryCondition(){
-	$("#number1").val($("#number").val());
-	$("#contractstatus1").val($("#contractstatus").val());
-	$("#customername1").val($("#customername").val());
-	$("#partyaname1").val($("#partyaname").val());
-	$("#marketingprincipal1").val($("#marketingprincipal").val());
-	$("#othercontractors1").val($("#othercontractors").val());
-	$("#contractdescription1").val($("#contractdescription").val());
-	$("#loansandsettlementway1").val($("#loansandsettlementway").val());
-	$("#createStatrtTime1").val($("#createStatrtTime").val());
-	$("#overStartTime1").val($("#overStartTime").val());
-	$("#whetherhavedeposit1").val($("#whetherhavedeposit").val());
-	$("#sort1").val($("#sort").val());
-	$("#method1").val($("#method").val());
-	$("#createEndTime1").val($("#createEndTime").val());
-	$("#overEndTime1").val($("#overEndTime").val());
-}
-//弹出查询框时将上次的查询条件回填
-function backfillQueryCondition(){
-	$("#number").val($("#number1").val());
-	$("#contractstatus").val($("#contractstatus1").val());
-	$("#customername").val($("#customername1").val());
-	$("#partyaname").val($("#partyaname1").val());
-	$("#marketingprincipal").val($("#marketingprincipal1").val());
-	$("#othercontractors").val($("#othercontractors1").val());
-	$("#contractdescription").val($("#contractdescription1").val());
-	$("#loansandsettlementway").val($("#loansandsettlementway1").val());
-	$("#createStatrtTime").val($("#createStatrtTime1").val());
-	$("#overStartTime").val($("#overStartTime1").val());
-	$("#whetherhavedeposit").val($("#whetherhavedeposit1").val());
-	$("#sort").val($("#sort1").val());
-	$("#method").val($("#method1").val());
-	$("#createEndTime").val($("#createEndTime1").val());
-	$("#overEndTime").val($("#overEndTime1").val());
+
+function setCondition(){
+	$("#number").val("${number}");
+	$("#contractstatus").val("${contractstatus}");
+	$("#customerid").val("${customerid}");
+	$("#partyaname").val("${partyaname}");
+	$("#marketingprincipal").val("${marketingprincipal}");
+	$("#othercontractors").val("${othercontractors}");
+	$("#contractdescription").val("${contractdescription}");
+	$("#loansandsettlementway").val("${loansandsettlementway}");
+	$("#createStatrtTime").val("${createStatrtTime}");
+	$("#createEndTime").val("${createEndTime}");
+	$("#overStartTime").val("${overStartTime}");
+	$("#overEndTime").val("${overEndTime}");
+	$("#whetherhavedeposit").val("${whetherhavedeposit}");
+	$("#sort").val("${sort}");
+	$("#method").val("${method}");
 }
 function addContract(form){
 	if(verify()){
@@ -925,9 +906,9 @@ function showBox(data){
 		'			<form action="<%=request.getContextPath()%>/customerContract/customerContractList" id="queryContract">'+
 		'		 	<table>'+
 		'					<tr>'+
-		'			<th align="left">编号:</th>'+
+		'				<th align="left">编号:</th>'+
 		'				<td>'+
-		'					<input type="text" value="[自动生成]" id="number" name="number" style="width:150px"/>'+
+		'					<input type="text"  id="number" name="number"  style="width:150px"/>'+
 		'				</td>'+
 		'				<th align="left">合同状态:</th>'+
 		'				<td>'+
@@ -966,7 +947,7 @@ function showBox(data){
 		'		<tr>'+
 		'			<th align="left">合同详细描述:</th>'+
 		'			<td>'+
-		'				<input type="text" id="contractdescription" name="contractdescription" style="width:150px"/>'+
+		'				<input type="text" id="contractdescription" name="contractdescription"  style="width:150px"/>'+
 		'			</td>'+
 		'			<th align="left">贷款类型:</th>'+
 		'			<td>'+
@@ -980,11 +961,11 @@ function showBox(data){
 		'		<tr>'+
 		'			<th align="left">合同开始时间:</th>'+
 		'			<td>'+
-		'				<input type="text" style="width:68px" id="createStatrtTime" name="createStatrtTime" />至<input type="text"style="width:67px" id="createEndTime" name="createEndTime" />'+
+		'				<input type="text" style="width:68px" id="createStatrtTime" name="createStatrtTime"  />至<input type="text"style="width:67px" id="createEndTime" name="createEndTime" value="${createEndTime}"/>'+
 		'			</td>'+
 		'			<th align="left">合同结束时间:</th>'+
 		'			<td>'+
-		'				<input type="text" style="width:68px" id="overStartTime" name="overStartTime" />至<input type="text"style="width:67px" id="overEndTime" name="overEndTime" />'+
+		'				<input type="text" style="width:68px" id="overStartTime" name="overStartTime" value="${overStartTime}"/>至<input type="text"style="width:67px" id="overEndTime" name="overEndTime" value="${overEndTime}"/>'+
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
@@ -1024,7 +1005,7 @@ function showBox(data){
 		$("#createEndTime").datepicker();
 		$("#overStartTime").datepicker();
 		$("#overEndTime").datepicker();
-		backfillQueryCondition();
+		setCondition();
 		$("#alert_box").show();
 		centerBox();
 	}
@@ -1095,20 +1076,5 @@ function showBox(data){
 	<div class="jg_10"></div>
 	<input type="hidden" id="contractid" value=""/>
 	<input type="hidden" id="customerContractState" value=""/>
-	<input type="hidden" id="number1" value=""/>
-	<input type="hidden" id="contractstatus1" value=""/>
-	<input type="hidden" id="customername1" value=""/>
-	<input type="hidden" id="partyaname1" value=""/>
-	<input type="hidden" id="marketingprincipal1" value=""/>
-	<input type="hidden" id="othercontractors1" value=""/>
-	<input type="hidden" id="contractdescription1" value=""/>
-	<input type="hidden" id="loansandsettlementway1" value=""/>
-	<input type="hidden" id="createStatrtTime1" value=""/>
-	<input type="hidden" id="createEndTime1" value=""/>
-	<input type="hidden" id="overEndTime1" value=""/>
-	<input type="hidden" id="overStartTime1" value=""/>
-	<input type="hidden" id="whetherhavedeposit1" value=""/>
-	<input type="hidden" id="sort1" value=""/>
-	<input type="hidden" id="method1" value=""/>
 </body>
 </html>

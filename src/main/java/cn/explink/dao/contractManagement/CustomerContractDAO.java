@@ -222,7 +222,7 @@ public class CustomerContractDAO {
 	}
 
 	/**
-	 * 查询结果
+	 * 查询合同表中所有记录
 	 *
 	 * @param page
 	 * @param contractManagement
@@ -266,7 +266,7 @@ public class CustomerContractDAO {
 			if ((contractManagement.getNumber() != null) && (contractManagement.getNumber() != "")) {
 				whereSql.append(" and number like '%" + contractManagement.getNumber() + "%'");
 			}
-			if (contractManagement.getContractstatus() == null) {
+			if ((contractManagement.getContractstatus() != null) && (contractManagement.getContractstatus() != 0)) {
 				whereSql.append(" and contractstatus =" + contractManagement.getContractstatus());
 			}
 			if ((contractManagement.getCustomerid() != null) && (contractManagement.getCustomerid() != 0)) {
@@ -317,6 +317,11 @@ public class CustomerContractDAO {
 		return this.jdbcTemplate.query(sql, new CustomerContractRowMapper());
 	}
 
+	/**
+	 * 查询合同表中的数据 并按编号大小排序
+	 *
+	 * @return
+	 */
 	public List<CustomerContractManagement> getMaxNumber() {
 		String sql = "select * from express_set_customer_contract_management order by number desc ";
 		return this.jdbcTemplate.query(sql, new CustomerContractRowMapper());
