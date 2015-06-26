@@ -7048,6 +7048,16 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO dmp40_function VALUES('808020','2','加盟商合同管理','808020','branchContract/branchContractList?','8080');
     	</sql>
     </changeSet>
-    
+        <changeSet id="wukong-2015-06-26-1" author="wukong">
+    	<sql>
+    	ALTER TABLE express_ops_lose_back MODIFY  COLUMN questionno VARCHAR(10000);
+    	</sql>
+    </changeSet>
+    <changeSet id="wukong-2015-06-26-2" author="wukong">
+    	<sql>
+    		ALTER TABLE express_ops_abnormal_order ADD COLUMN `importFlag`  BIGINT(50) DEFAULT '0' COMMENT '导入记录标识';
+    		ALTER TABLE express_ops_punishInside_detail  ADD INDEX `importFlag_index` (`importFlag`);  
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  
