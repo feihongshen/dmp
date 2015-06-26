@@ -79,6 +79,13 @@ public class DateTimeUtil {
 		java.util.Date d = new java.util.Date();
 		return df.format(d);
 	}
+	
+	// 获取当前系统日期
+	public static String getCurrentDate() {
+		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyyMMdd");
+		java.util.Date d = new java.util.Date();
+		return df.format(d);
+	}
 
 	// 获取当前时间指定小时后的时间
 	/**

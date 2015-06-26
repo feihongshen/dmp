@@ -176,7 +176,7 @@ function addContract() {
 			'						<th align="left"><font color="red">*</font>押金收取日期</th>'+
 			'						<td><input type="text" name="depositCollectDate" id="depositCollectDate" value="" class="input_text1"/></td>'+
 			'						<th align="left"><font color="red">*</font>押金收取金额</th>'+
-			'						<td><input type="text" name="depositCollectAmount" value="" id="depositCollectAmount" maxlength="20"/></td>'+
+			'						<td><input type="text" name="depositCollectAmount" value="" id="depositCollectAmount" maxlength="20"  onblur="isFloatVal(this)"/></td>'+
 			'						<th></th>'+
 			'						<td></td>'+
 			'					</tr>					'+
@@ -253,7 +253,7 @@ function updateContract(){
 			'						<td><input type="text" name="areaManager" value="" id="areaManager" maxlength="20"/></td>'+
 			'						<th align="left">是否有押金</th>'+
 			'						<td>'+
-			'							<select id ="isDeposit" name ="isDeposit"  onchange="changeUpdateDeposit();">'+
+			'							<select id ="isDeposit" name ="isDeposit">'+
 			'					        </select>'+
 			'						</td>'+
 			'						<th></th>'+
@@ -311,8 +311,8 @@ function updateContract(){
 			'					</tr>'+
 			'					<tr id="forthDepositTr" style="display: none">'+
 			'						<td colspan="6">'+
-			'							<input type="button" value="添加" class="input_button2" align="center" onclick="addTr()"/>'+
-			'							<input type="button" value="移除" class="input_button2" align="center" onclick="deleteTr()"/>'+
+			'							<input type="button" value="添加" class="input_button2" align="center"  onclick="addTr()"/>'+
+			'							<input type="button" value="移除" class="input_button2" align="center"  onclick="deleteTr()"/>'+
 			'						</td>'+
 			'					</tr>'+
 			'					</table>'+
@@ -326,25 +326,10 @@ function updateContract(){
 			'		</div>'+
 			'		</div>');
 	initSelect();
-	$("#contractBeginDate").datepicker();
+	/* $("#contractBeginDate").datepicker();
 	$("#contractEndDate").datepicker();
-	$("#depositCollectDate").datepicker();
+	$("#depositCollectDate").datepicker(); */
 	getEditData($("#branchId").val());
-	
-	var xinJianState = '<%=ContractStateEnum.XinJian.getValue()%>';
-	var zhiXingZhongState = '<%=ContractStateEnum.ZhiXingZhong.getValue()%>';
-	var heTongZhongZhiState = '<%=ContractStateEnum.HeTongZhongZhi.getValue()%>';
-	if($("#contractState").val() == xinJianState){
-		 $("#breakOffContract").css('display' ,'');  
-		 $("#finishContract").css('display' ,'');  
-		 $("#startContract").css('display' ,'');  
-	} else if($("#contractState").val() == zhiXingZhongState){
-		 $("#breakOffContract").css('display' ,'');  
-		 $("#finishContract").css('display' ,'');  
-	} else if($("#contractState").val() == heTongZhongZhiState){
-		 $("#finishContract").css('display' ,'');  
-		 $("#startContract").css('display' ,'');  
-	}  
 	
 	$("#contractState").attr("disabled","disabled");
 	$("#isDeposit").attr("disabled","disabled");
@@ -567,7 +552,7 @@ function changeDeposit(){
    }
 }
 
-function changeUpdateDeposit(){
+function initUpdateDeposit(){
 	if($('#isDeposit option:selected').text()=="是"){  
         $("#firstDepositTr").css('display' ,'');  
         $("#secondDepositTr").css('display' ,'');  
@@ -624,6 +609,8 @@ function getEditData(val){
 					$("#file").attr("href","<%=request.getContextPath()%>/branchContract/download?filepathurl=" +data.contractAttachment);
 				}
 				
+				initUpdateDeposit();
+				initUpdateContractPage();
 				initDepositTable(data.branchContractDetailVOList);
 			}
 		}
@@ -652,6 +639,7 @@ function updateContractData(){
 					   setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 					   if (data.errorCode == 0) { 
 					   /*  $('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true); */
+					   		alert("修改成功!");
 						   document.location.reload(true);
 					   }  
 						closeBox();
@@ -684,6 +672,33 @@ function getBranchContractDetailVOList(){
 		}
 	}
 	return list;
+}
+
+function initUpdateContractPage(){
+	var xinJianState = '<%=ContractStateEnum.XinJian.getValue()%>';
+	var zhiXingZhongState = '<%=ContractStateEnum.ZhiXingZhong.getValue()%>';
+	var heTongZhongZhiState = '<%=ContractStateEnum.HeTongZhongZhi.getValue()%>';
+	var heTongJieShuState = '<%=ContractStateEnum.HeTongJieShu.getValue()%>';
+	if($("#contractState").val() == xinJianState){
+		 $("#breakOffContract").css('display' ,'');  
+		 $("#finishContract").css('display' ,'');  
+		 $("#startContract").css('display' ,'');  
+	} else if($("#contractState").val() == zhiXingZhongState){
+		 $("#breakOffContract").css('display' ,'');  
+		 $("#finishContract").css('display' ,'');  
+	} else if($("#contractState").val() == heTongZhongZhiState){
+		 $("#finishContract").css('display' ,'');  
+		 $("#startContract").css('display' ,'');  
+	}  else if($("#contractState").val() == heTongJieShuState){
+		$("#areaManager").attr("readonly","readonly");
+		$("#qualityControlClause").attr("readonly","readonly");
+		$("#contractDescription").attr("readonly","readonly");
+		$("#depositPayor").attr("readonly","readonly");
+		
+		$("#editcallerForm input[type='button'][value='添加']").css('display' ,'none');  
+		$("#editcallerForm input[type='button'][value='移除']").css('display' ,'none');  
+		$("#editcallerForm input[type='button'][value='保存']").css('display' ,'none');  
+	}
 }
 
 //初始化押金table

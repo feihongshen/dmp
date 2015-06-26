@@ -7121,5 +7121,57 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     
     </changeSet>
+    
+    <changeSet id="lichongchong-2015-06-26-1" author="lichongchong">
+    	<sql>
+    		CREATE TABLE `express_set_branch_contract` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+			  `contractNo` varchar(255) DEFAULT '' COMMENT '加盟商合同编号',
+			  `contractState` int(4) DEFAULT '0' COMMENT '加盟商合同状态',
+			  `contractBeginDate` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '合同开始日期',
+			  `contractEndDate` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '合同结束日期',
+			  `branchName` varchar(255) DEFAULT '' COMMENT '加盟商名称',
+			  `siteChief` varchar(255) DEFAULT '' COMMENT '站点负责人',
+			  `chiefIdentity` varchar(255) DEFAULT '' COMMENT '负责人身份证',
+			  `areaManager` varchar(255) DEFAULT '' COMMENT '区域经理',
+			  `isDeposit` int(4) DEFAULT '0' COMMENT '是否有押金',
+			  `depositCollectDate` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '押金收取日期',
+			  `depositCollectAmount` decimal(18,2) DEFAULT '0.00' COMMENT '押金收取金额',
+			  `depositCollector` varchar(255) DEFAULT '' COMMENT '押金收取人',
+			  `depositPayor` varchar(255) DEFAULT '' COMMENT '押金付款人',
+			  `contractDescription` varchar(1000) DEFAULT '' COMMENT '合同详细描述',
+			  `contractAttachment` varchar(1000) DEFAULT '' COMMENT '合同附件',
+			  `creator` int(11) DEFAULT NULL COMMENT '创建人',
+			  `createTime` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+			  `modifyPerson` int(11) DEFAULT NULL COMMENT '修改人',
+			  `modifyTime` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '修改时间',
+			  `qualityControlClause` varchar(1000) DEFAULT '' COMMENT '质控条款',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='加盟商合同管理';
+			CREATE TABLE `express_set_branch_contract_detail` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+			  `branchId` int(11) NOT NULL COMMENT '加盟商合同id',
+			  `depositReturnTime` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '押金退换日期',
+			  `depositReturnAmount` decimal(18,2) DEFAULT NULL COMMENT '押金退还金额',
+			  `depositReturnPerson` varchar(255) DEFAULT '' COMMENT '退款人',
+			  `depositCollector` varchar(255) DEFAULT '' COMMENT '收款人',
+			  `remark` varchar(1000) DEFAULT '' COMMENT '备注',
+			  `creator` int(11) DEFAULT NULL COMMENT '创建人',
+			  `createTime` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+			  `modifyPerson` int(11) DEFAULT NULL COMMENT '修改人',
+			  `modifyTime` varchar(100) DEFAULT '0000-00-00 00:00:00' COMMENT '修改时间',
+			  PRIMARY KEY (`id`),
+			  KEY `branchId` (`branchId`)
+			) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8 COMMENT='加盟商合同管理明细';
+    	</sql>
+    </changeSet>
+    <changeSet id="lichongchong-2015-06-26-2" author="lichongchong">
+    	<sql>
+    		INSERT INTO dmp40_function VALUES('8080','1','派费结算','8080','','80');
+			INSERT INTO dmp40_function VALUES('808010','2','客户合同管理','808010','customerContract/customerContractList?','8080');
+			INSERT INTO dmp40_function VALUES('808020','2','加盟商合同管理','808020','branchContract/branchContractList?','8080');
+    	</sql>
+    </changeSet>
+    
 </databaseChangeLog>
  

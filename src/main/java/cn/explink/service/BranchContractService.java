@@ -148,7 +148,7 @@ public class BranchContractService {
 		}
 		if(StringUtils.isBlank(contractNo)){
 			String rule = "C_J";
-			String date = DateTimeUtil.getNowDate();
+			String date = DateTimeUtil.getCurrentDate();
 			String orderStr = "001";
 			contractNo = rule + date + orderStr;
 		}

@@ -17,7 +17,7 @@ public class ExpressSetBranchContractVO {
 	private String siteChief;
 	private String chiefIdentity;
 	private String areaManager;
-	private int isDeposit;
+	private Integer isDeposit;
 	private String depositCollectDate;
 	private BigDecimal depositCollectAmount;
 	private String depositCollector;
@@ -41,7 +41,7 @@ public class ExpressSetBranchContractVO {
 	public ExpressSetBranchContractVO(int id, String contractNo,
 			int contractState, String contractBeginDate,
 			String contractEndDate, String branchName, String siteChief,
-			String chiefIdentity, String areaManager, int isDeposit,
+			String chiefIdentity, String areaManager, Integer isDeposit,
 			String depositCollectDate, BigDecimal depositCollectAmount,
 			String depositCollector, String depositPayor,
 			String contractDescription, String contractAttachment,
@@ -145,11 +145,11 @@ public class ExpressSetBranchContractVO {
 		return areaManager;
 	}
 
-	public void setIsDeposit(int isDeposit) {
+	public void setIsDeposit(Integer isDeposit) {
 		this.isDeposit = isDeposit;
 	}
 
-	public int getIsDeposit() {
+	public Integer getIsDeposit() {
 		return isDeposit;
 	}
 

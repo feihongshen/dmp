@@ -183,8 +183,8 @@ public class BranchContractDAO {
 			if(StringUtils.isNotBlank(branchContractVO.getContractDescription())){
 				sql += " and contractDescription like '%" + branchContractVO.getContractDescription() + "%' ";
 			}
-			if(branchContractVO.getIsDeposit() != 2){
-				sql += " and isDeposit= '" + branchContractVO.getIsDeposit() + "' ";
+			if(branchContractVO.getIsDeposit() != null && branchContractVO.getIsDeposit().intValue() != 2){
+				sql += " and isDeposit= '" + branchContractVO.getIsDeposit().intValue() + "' ";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractBeginDateFrom())){
 				sql += " and contractBeginDate>= '" + branchContractVO.getContractBeginDateFrom() + "' ";
