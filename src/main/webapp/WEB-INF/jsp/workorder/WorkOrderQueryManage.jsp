@@ -345,7 +345,7 @@ function CurentTime()   //计算当天时间
 				</tr>	
 				<tr>			
 					<td>
-					<span>投诉一级分类:</span> 
+					<span>工单一级分类:</span> 
 							<select class="select1" name="complaintOneLevel" id="olreasonV" onchange="getReasonValueV()">
 								<option value="-1">全部</option>
 								<%if(r!=null){%>
@@ -355,7 +355,7 @@ function CurentTime()   //计算当天时间
 								</select>
 					</td>	
 					<td>
-							<span>被投诉机构:</span>
+							<span>责任机构:</span>
 							<select class="select1" name="codOrgId" id="codOrgId">
 								<option value="-1">全部</option>
 							<%for(Branch br:b){ %>
@@ -364,7 +364,7 @@ function CurentTime()   //计算当天时间
 							</select>
 					</td>			
 					<td>
-				投诉处理结果:<select class="select1" name="complaintResult" id="complaintResult">
+				工单处理结果:<select class="select1" name="complaintResult" id="complaintResult">
 								<option value="-1">全部</option>
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
@@ -373,7 +373,7 @@ function CurentTime()   //计算当天时间
 					</td>	
 				<tr>		
 					<td>
-							<span>投诉二级处理:</span>
+							<span>工单二级分类:</span>
 							<select class="select1" name="complaintTwoLevel" id="tlreasonV">
 							
 							</select>
@@ -430,14 +430,15 @@ function CurentTime()   //计算当天时间
 				<th bgcolor="#eef6ff">订单号</th>
 				<!-- <th bgcolor="#eef6ff">工单类型</th> -->
 				<th bgcolor="#eef6ff">工单状态</th>
+				<th bgcolor="#eef6ff">是否超期</th>
 				<th bgcolor="#eef6ff">来电人姓名</th>
 				<th bgcolor="#eef6ff">来电号码</th>
-				<th bgcolor="#eef6ff">被投诉机构</th>
+				<th bgcolor="#eef6ff">责任机构</th>
 				<th bgcolor="#eef6ff">工单受理人</th>
 				<th bgcolor="#eef6ff">受理时间</th>
-				<th bgcolor="#eef6ff">投诉一级分类</th>
-				<th bgcolor="#eef6ff">投诉二级分类</th>
-				<th bgcolor="#eef6ff">投诉处理结果</th>
+				<th bgcolor="#eef6ff">工单一级分类</th>
+				<th bgcolor="#eef6ff">工单二级分类</th>
+				<th bgcolor="#eef6ff">工单处理结果</th>
 				<th bgcolor="#eef6ff">是否关联扣罚单</th>
 				<th bgcolor="#eef6ff">客户名称</th>	
 				<th bgcolor="#eef6ff">催件次数</th>			
@@ -453,6 +454,7 @@ function CurentTime()   //计算当天时间
 				<td><%=c.getOrderNo() %></td>
 				<%-- <td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td> --%>
 				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
+				<td></td>
 				<td><%=connameList.get(c.getPhoneOne())%>
 				</td>				
 				<td><%=c.getPhoneOne() %></td>
