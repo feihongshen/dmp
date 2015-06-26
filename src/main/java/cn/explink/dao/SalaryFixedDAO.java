@@ -79,6 +79,9 @@ public class SalaryFixedDAO {
 			salary.setCarrent(rs.getBigDecimal("carrent"));
 			salary.setCarmaintain(rs.getBigDecimal("carmaintain"));
 			salary.setCarfuel(rs.getBigDecimal("carfuel"));
+			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
+			salary.setFoul_import(rs.getBigDecimal("foul_import"));
+			salary.setPushcash(rs.getBigDecimal("pushcash"));
 			return salary;
 		}
 	}
@@ -86,8 +89,8 @@ public class SalaryFixedDAO {
 	JdbcTemplate jdbcTemplate;
 	public int creSalaryByRealname(final SalaryFixed salary){
 		return this.jdbcTemplate.update("INSERT INTO `express_ops_salaryFixed_detail` "
-				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`,`jobpush`,`bonusroom`,`bonusallday`,`bonusfood`,`bonustraffic`,`carrent`,`carmaintain`,`carfuel`)"
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",new PreparedStatementSetter(){
+				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`,`jobpush`,`bonusroom`,`bonusallday`,`bonusfood`,`bonustraffic`,`carrent`,`carmaintain`,`carfuel`,`penalizecancel_import`,`foul_import`,`pushcash`)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?);",new PreparedStatementSetter(){
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -141,6 +144,9 @@ public class SalaryFixedDAO {
 				ps.setBigDecimal(48,salary.getCarrent());
 				ps.setBigDecimal(49,salary.getCarmaintain());
 				ps.setBigDecimal(50,salary.getCarfuel());
+				ps.setBigDecimal(51,salary.getPenalizecancel_import());
+				ps.setBigDecimal(52,salary.getFoul_import());
+				ps.setBigDecimal(53,salary.getPushcash());
 			}
 
 		});

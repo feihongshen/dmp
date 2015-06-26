@@ -258,7 +258,7 @@ public class PenalizeOutController {
 			map.put("flowordertyleText", FlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText());
 			map.put("customerid", cwbOrder.getCustomerid() + "");
 			map.put("customername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
-			map.put("receivablefee", cwbOrder.getReceivablefee() + "");
+			map.put("caramount", cwbOrder.getCaramount() + "");
 		}
 		return map;
 	}
@@ -293,7 +293,7 @@ public class PenalizeOutController {
 			if (out.getPenalizeOutfee().compareTo(new BigDecimal(0)) == -1) {
 				return "{\"errorCode\":1,\"error\":\"总赔付金额必须大于0.00！\"}";
 			}
-			/*	if (out.getReceivablefee().compareTo(out.getPenalizeOutfee()) == -1) {
+			/*	if (out.getcaramount().compareTo(out.getPenalizeOutfee()) == -1) {
 				return "{\"errorCode\":1,\"error\":\"赔付金额不能大于订单金额！\"}";
 			}*/
 			if (out.getPenalizeOutbig() == 0) {
@@ -361,7 +361,7 @@ public class PenalizeOutController {
 			penalizeInside.setSourceNo(out.getCwb());
 			penalizeInside.setDutybranchid(dutybranchid);
 			penalizeInside.setCwbstate(out.getFlowordertype());
-			penalizeInside.setCwbPrice(out.getReceivablefee());
+			penalizeInside.setCwbPrice(out.getCaramount());
 			try {
 
 				if (creategoodpunishprice.compareTo(new BigDecimal(0)) == -1) {

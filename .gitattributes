@@ -976,6 +976,7 @@ src/main/java/cn/explink/dao/SalaryCountDAO.java -text
 src/main/java/cn/explink/dao/SalaryErrorDAO.java -text
 src/main/java/cn/explink/dao/SalaryFixedDAO.java -text
 src/main/java/cn/explink/dao/SalaryImportDao.java -text
+src/main/java/cn/explink/dao/SalaryImportRecordDAO.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
 src/main/java/cn/explink/dao/ServiceAreaDAO.java -text
 src/main/java/cn/explink/dao/SetExcelColumnDAO.java -text

@@ -39,7 +39,7 @@ public class SalaryCountController {
 	public String list(@PathVariable("page") long page,
 			@RequestParam(value = "batchid", required = false, defaultValue = "") String batchid,
 			@RequestParam(value = "batchstate",required = false,defaultValue = "-1") int batchstate,
-			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
+			@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname,
 			@RequestParam(value = "starttime",required = false,defaultValue = "") String starttime,
 			@RequestParam(value = "endtime",required = false,defaultValue = "") String endtime,
 			@RequestParam(value = "realname",required = false,defaultValue = "") String realname,
@@ -49,21 +49,34 @@ public class SalaryCountController {
 			Model model) {
 		List<Branch> branchList=this.branchDAO.getAllBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList=this.userDAO.getAllUser();
-		String userid="";
+		String userids="";
+		String branchids="";
+		if((null!=branchList)&&(branchList.size()>0)&&(null!=branchname)&&(branchname.length()>0)){
+			for(Branch b:branchList)
+			{
+				if(b.getBranchname().contains(branchname)){
+					branchids+=b.getBranchid()+",";
+				}
+			}
+		}
+		if(branchids.contains(","))
+		{
+			branchids=branchids.substring(0,branchids.lastIndexOf(","));
+		}
 		if((null!=userList)&&(userList.size()>0)&&(null!=realname)&&(realname.length()>0)){
 			for(User user:userList)
 			{
 				if(user.getRealname().contains(realname)){
-				userid+=user.getUserid()+",";
+					userids+=user.getUserid()+",";
 				}
 			}
 		}
-		if(userid.contains(","))
+		if(userids.contains(","))
 		{
-			userid=userid.substring(0,userid.lastIndexOf(","));
+			userids=userids.substring(0,userids.lastIndexOf(","));
 		}
-		List<SalaryCount> salaryCountList=this.salaryCountDAO.getSalaryCountByPage(page,batchid,batchstate,branchid,starttime,endtime,userid,operationTime,orderbyname,orderbyway);
-		int count=this.salaryCountDAO.getSalaryCountByCount(batchid, batchstate, branchid, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
+		List<SalaryCount> salaryCountList=this.salaryCountDAO.getSalaryCountByPage(page,batchid,batchstate,branchids,starttime,endtime,userids,operationTime,orderbyname,orderbyway);
+		int count=this.salaryCountDAO.getSalaryCountByCount(batchid, batchstate, branchids, starttime, endtime, userids, operationTime, orderbyname, orderbyway);
 
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
@@ -75,7 +88,7 @@ public class SalaryCountController {
 
 		model.addAttribute("batchid", batchid);
 		model.addAttribute("batchstate", batchstate);
-		model.addAttribute("branchid", branchid);
+		model.addAttribute("branchname", branchname);
 		model.addAttribute("starttime", starttime);
 		model.addAttribute("endtime", endtime);
 		model.addAttribute("realname", realname);

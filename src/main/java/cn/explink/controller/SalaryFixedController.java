@@ -23,8 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
+import cn.explink.dao.SalaryImportRecordDAO;
+import cn.explink.domain.SalaryError;
 import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.SalaryImportRecord;
 import cn.explink.domain.User;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
@@ -49,6 +53,10 @@ public class SalaryFixedController {
 	@Autowired
 	SalaryFixedDAO salaryDAO;
 	@Autowired
+	SalaryErrorDAO salaryErrorDAO;
+	@Autowired
+	SalaryImportRecordDAO salaryImportRecordDAO;
+	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -60,15 +68,25 @@ public class SalaryFixedController {
 			@RequestParam(value = "realname", required = false, defaultValue = "") String realname,
 			@RequestParam(value = "idcard",required = false,defaultValue = "") String idcard,
 			@RequestParam(value = "isnow",required = false,defaultValue = "0") int isnow,
+			@RequestParam(value = "importflag", required = false, defaultValue = "0") long importflag,
 			Model model) {
 		List<SalaryFixed> salaryList=this.salaryDAO.getSalaryByRealnameAndIdcard(page, realname, idcard);
 		int count= this.salaryDAO.getSalaryByRealnameAndIdcardCounts(realname, idcard);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		SalaryImportRecord salaryImportRecord=new SalaryImportRecord();
+		if(importflag>0)
+		{
+
+			salaryImportRecord=this.salaryImportRecordDAO.getSalaryImportRecordByImportFlag(importflag);
+		}
+
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("salaryList", salaryList);
 		model.addAttribute("realname", realname);
 		model.addAttribute("idcard", idcard);
+		model.addAttribute("record", salaryImportRecord);
+		model.addAttribute("importflag", importflag);
 		return "salary/salaryFixed/list";
 	}
 	@RequestMapping("/delete")
@@ -88,15 +106,16 @@ public class SalaryFixedController {
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
 		final User user=this.getSessionUser();
+		final long importflag=System.currentTimeMillis();
 		if (excelExtractor != null) {
 
-			this.processFile(excelExtractor, inputStream,System.currentTimeMillis(),user);
+			this.processFile(excelExtractor, inputStream,importflag,user);
 
 		} else {
 			return "redirect:list/1";
 		}
 
-		return "redirect:list/1";
+		return "redirect:list/1?importflag=" + importflag;
 	}
 	private ExcelExtractor getExcelExtractor(MultipartFile file) {
 		String originalFilename = file.getOriginalFilename();
@@ -111,6 +130,13 @@ public class SalaryFixedController {
 	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user) {
 		excelExtractor.extractSalary(inputStream,importflag,user);
 
+	}
+	@RequestMapping("/importFlagError/{id}")
+	public String importFlagError(@PathVariable("id") long importflag, Model model) throws Exception {
+
+		List<SalaryError> salaryErrorList= this.salaryErrorDAO.getSalaryErrorByImportflag(importflag);
+		model.addAttribute("salaryError", salaryErrorList);
+		return "/salary/salaryFixed/errorRecords";
 	}
 	@Test
 	public void test() {

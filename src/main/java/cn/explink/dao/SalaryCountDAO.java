@@ -63,21 +63,21 @@ public class SalaryCountDAO {
 	 * @param orderbyway
 	 * @return
 	 */
-	public List<SalaryCount> getSalaryCountByPage(long page, String batchid, int batchstate, long branchid, String starttime, String endtime, String userid, String operationTime, String orderbyname,
+	public List<SalaryCount> getSalaryCountByPage(long page, String batchid, int batchstate, String branchids, String starttime, String endtime, String userid, String operationTime, String orderbyname,
 			String orderbyway) {
 		String sql="select * from express_ops_salaryCount_detail where 1=1 ";
-		sql +=this.creConditions(batchid, batchstate, branchid, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
+		sql +=this.creConditions(batchid, batchstate, branchids, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
 		sql += "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new SalaryCountRowMapper());
 	}
-	public int getSalaryCountByCount(String batchid, int batchstate, long branchid, String starttime, String endtime, String userid, String operationTime, String orderbyname,
+	public int getSalaryCountByCount(String batchid, int batchstate, String branchids, String starttime, String endtime, String userid, String operationTime, String orderbyname,
 			String orderbyway) {
 		String sql="select count(1) from express_ops_salaryCount_detail where 1=1 ";
-		sql +=this.creConditions(batchid, batchstate, branchid, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
+		sql +=this.creConditions(batchid, batchstate, branchids, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	private String creConditions(String batchid, int batchstate, long branchid, String starttime, String endtime, String userid, String operationTime, String orderbyname, String orderbyway) {
+	private String creConditions(String batchid, int batchstate, String branchids, String starttime, String endtime, String userid, String operationTime, String orderbyname, String orderbyway) {
 		String sql = "";
 		if((null!=batchid)&&(batchid.length()>0))
 		{
@@ -87,9 +87,9 @@ public class SalaryCountDAO {
 		{
 			sql+=" and batchstate ="+batchstate;
 		}
-		if(branchid>0)
+		if((null!=branchids)&&(branchids.length()>0))
 		{
-			sql+=" and branchid ="+branchid;
+			sql+=" and branchid in ("+branchids+")";
 		}
 		if(((null!=starttime)&&(starttime.length()>0))&&((null!=endtime)&&(endtime.length()>0)))
 		{
