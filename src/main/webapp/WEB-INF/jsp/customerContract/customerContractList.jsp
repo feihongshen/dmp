@@ -43,17 +43,9 @@ $(function(){
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 })
-
-//改变合同状态为中止	
-/* function discontinue(){
-	$("#contractstatus").val(3);
-}	
-function finish(){
-	$("#contractstatus").val(4);
-}	
-function execute(){
-	$("#contractstatus").val(2);
-}*/	
+function changeContractState(state){
+	 $("#contractstatus").val(state);
+} 
 function setId(id,state){
 	$("#contractid").val(id);
 	$("#customerContractState").val(state);
@@ -178,6 +170,9 @@ function submitCreateForm(form) {
 
 //******************************************************************
 function update(){
+	$("#contractstatus").removeAttr("disabled");
+	
+	
 		if(getBranchContractDetailVOList()){
 			var depositInformationStr = JSON.stringify(getBranchContractDetailVOList());
 			$('#depositInformationStr').val(depositInformationStr);
@@ -406,17 +401,22 @@ function  demandContract(){
 				 $("#contractors").css('display' ,'');
 			}
 			initDepositTable(data.depositInformationList);
-			/* if(data.contractstatus == 1){
-				$("#suspend").css('display','')
-				$("#end").css('display','')
-				$("#start").css('display','')
-			}else if(data.contractstatus == 2){
-				$("#end").css('display','')
-				$("#suspend").css('display','')
-			}else if(data.contractstatus == 3){
-				$("#end").css('display','')
-				$("#start").css('display','')
-			} */
+			 //根据合同的状态显示不同的按钮
+		 	var xinJianState = '<%=ContractStateEnum.XinJian.getValue()%>';
+			var zhiXingZhongState = '<%=ContractStateEnum.ZhiXingZhong.getValue()%>';
+			var heTongZhongZhiState = '<%=ContractStateEnum.HeTongZhongZhi.getValue()%>';
+			var heTongJieShuState = '<%=ContractStateEnum.HeTongJieShu.getValue()%>';
+			if($("#contractstatus").val() == xinJianState){
+				 $("#breakOffContract").css('display' ,'');  
+				 $("#finishContract").css('display' ,'');  
+				 $("#startContract").css('display' ,'');  
+			} else if($("#contractstatus").val() == zhiXingZhongState){
+				 $("#breakOffContract").css('display' ,'');  
+				 $("#finishContract").css('display' ,'');  
+			} else if($("#contractstatus").val() == heTongZhongZhiState){
+				 $("#finishContract").css('display' ,'');  
+				 $("#startContract").css('display' ,'');
+			}
 		}
 	});
 }
@@ -726,19 +726,19 @@ function showBox(data){
 		'		<h1><div id="close_box" onclick="closeBox()"></div>查看/修改合同</h1>'+
 		'			<form action="<%=request.getContextPath()%>/customerContract/update" id="updateContract">'+
 		'			<input type="hidden" name="depositInformationStr" id="depositInformationStr"/>'+
-		/*  '		<table>'+
-		'			<td><button id="suspend" onclick="discontinue();"  class="input_button2" style="display: none">中止</button></td>'+
-		'			<td><button id="end" onclick="finish(); "class="input_button2" style="display: none">结束</button></td>'+
-		'			<td><button id="start" onclick="execute(); "class="input_button2" style="display: none">开始执行</button></td>'+
-		'		</table>'+  */
+	  	'		<table>'+
+		'				<input type="button" value="中止" id="breakOffContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.HeTongZhongZhi.getValue()%>'+')"/>'+
+		'				<input type="button" value="结束" id="finishContract" style="display:none;" class="input_button2" align="center" onclick="changeContractState('+'<%=ContractStateEnum.HeTongJieShu.getValue()%>'+')"/>'+
+		'				<input type="button" value="开始执行" id="startContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.ZhiXingZhong.getValue()%>'+')"/>'+
+		'		</table>'+  
 		'		 	<table>'+
 		'					<tr>'+
 		'						<input type="hidden" name="id" id="id" >'+
 		'						<th align="left">编号:</th>'+
-		'						<td><input type="text" id="number" name="number" maxlength="20"  readonly="readonly"" style="background-color:#DCDCDC;width:150px"></input></td>'+
+		'						<td><input type="text" id="number" name="number" maxlength="20"  readonly="readonly" style="background-color:#DCDCDC;width:150px"></input></td>'+
 		'						<th align="left">合同状态:</th>'+
 		'						<td>'+
-		'							<select id="contractstatus" name ="contractstatus"  style="width:155px">'+
+		'							<select id="contractstatus" name ="contractstatus" disabled="disabled" style="background-color:#DCDCDC;width:155px" readonly="readonly">'+
 		'								<%for(ContractStateEnum br : ContractStateEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -746,7 +746,7 @@ function showBox(data){
 		'		           		</td>'+
 		'						<th align="left">合同日期范围:</th>'+
 		'						<td>'+
-		'							<input type="text" name="contractstartdate" id="contractstartdate" style="display: none"  maxlength="10">'+
+		'							<input type="text" name="contractstartdate"  id="contractstartdate" style="display: none"  maxlength="10">'+
 		'							<input type="text" name="contractenddate" id="contractenddate" style="display: none"  maxlength="10">'+
 		'							<input type="text" name="contractdate" id="contractdate"  maxlength="10" disabled="disabled" style="background-color:#DCDCDC;width:150px">'+
 		'						</td>'+
