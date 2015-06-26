@@ -938,6 +938,7 @@ function showBox(data){
 		'				<th align="left">合同状态:</th>'+
 		'				<td>'+
 		'					<select id="contractstatus" name ="contractstatus"  style="width:155px">'+
+		'				<option value="0" selected>----全部----</option>'+
 		'						<%for(ContractStateEnum br : ContractStateEnum.values()){ %>'+
 		'							<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'						<%} %>'+
@@ -977,6 +978,7 @@ function showBox(data){
 		'			<th align="left">货款类型:</th>'+
 		'			<td>'+
 		'				<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
+		'				<option value="0" selected>----全部----</option>'+
 		'					<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'						<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'					<%} %>'+
