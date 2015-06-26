@@ -3,7 +3,7 @@ package cn.explink.enumutil;
 import cn.explink.exception.ExplinkException;
 
 public enum ComplaintStateEnum {
-	YiJieAn(1, "已结案"),DaiHeShi(2,"待核实"),YiHeShi(3,"已核实"),
+	DaiHeShi(1,"待核实"),YiHeShi(2,"已核实"),YiJieAn(3, "已结案"),
 	YiJieShu(4,"已结束"),JieAnChongShenZhong(5,"结案重审中");
 
 	private int value;

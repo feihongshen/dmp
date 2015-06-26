@@ -294,11 +294,11 @@ public class WorkOrderDAO {
 	}
 	
 	public List<CsComplaintAccept> findGoOnacceptWO(String phone){
-		String sql="select * from cs_complaint_accept where phone_one=?";
+		String sql="select * from cs_complaint_accept where phone_one=? order by complaint_state,accpet_time asc";
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),phone);		
 	} 
 	public List<CsComplaintAccept> findGoOnacceptWOByCWB(String cwb){
-		String sql="select * from cs_complaint_accept where order_no=?";
+		String sql="select * from cs_complaint_accept where order_no=? order by complaint_state,accpet_time asc";
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),cwb);		
 	} 
 

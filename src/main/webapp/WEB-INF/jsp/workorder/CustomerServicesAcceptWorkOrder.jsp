@@ -669,7 +669,7 @@ function submitselect2(){    //通过手机号查询工单
 				</table>				
 		</div>	
 	<hr></br>
-			<button id="GoonacceptWO" class="input_button2" style="display: none;">继续受理</button>
+			<!-- <button id="GoonacceptWO" class="input_button2" style="display: none;">继续受理</button> -->
 	<hr>	
 	
 		<div>
