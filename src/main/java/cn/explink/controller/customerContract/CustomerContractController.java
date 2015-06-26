@@ -171,15 +171,6 @@ public class CustomerContractController {
 	}
 
 	/**
-	 * 修改指定合同状态为中止
-	 */
-	@RequestMapping("/alterSuspend")
-	@ResponseBody
-	public void alterSuspend(@RequestParam(value = "id", required = false) Long id) {
-		this.customerContractDAO.alterSuspend(id);
-	}
-
-	/**
 	 * 根据id查询合同信息
 	 */
 	@RequestMapping("/queryById")

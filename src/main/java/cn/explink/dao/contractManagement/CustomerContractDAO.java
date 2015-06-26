@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.domain.customerCoutract.DepositInformation;
-import cn.explink.enumutil.coutracManagementEnum.ContractStateEnum;
 
 /**
  * @author wangqiang
@@ -127,11 +126,6 @@ public class CustomerContractDAO {
 		String deleteDepositSql = "delete from express_set_deposit_information where contractid='" + id + "'";
 		this.jdbcTemplate.update(deleteDepositSql);
 		this.jdbcTemplate.update(deleteContractSql);
-	}
-
-	public void alterSuspend(Long id) {
-		String sql = "update express_set_customer_contract_management set  contractstatus='" + ContractStateEnum.HeTongZhongZhi.getValue() + "' where id='" + id + "'";
-		this.jdbcTemplate.update(sql);
 	}
 
 	/**

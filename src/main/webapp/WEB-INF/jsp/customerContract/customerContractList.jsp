@@ -749,7 +749,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left">客户名称:</th>'+
 		'						<td>'+
-		'							<select id="customerid" name="customerid"  readonly="readonly" style="background-color:#DCDCDC;width:155px">'+
+		'							<select id="customerid" name="customerid"  disabled="disabled" style="background-color:#DCDCDC;width:155px">'+
 		'								<%for(Customer br : customerList){ %>'+
 		'									<option value="<%=br.getCustomerid() %>" ><%=br.getCustomername()%></option>'+
 		'								<%} %>'+
