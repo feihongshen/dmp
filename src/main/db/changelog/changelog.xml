@@ -7059,5 +7059,58 @@ CREATE TABLE `cs_complaint_accept` (
     		ALTER TABLE express_ops_punishInside_detail  ADD INDEX `importFlag_index` (`importFlag`);  
     	</sql>
     </changeSet>
+    
+    <changeSet id="wangqiang-2015-06-26-1" author="wangqiang">
+    	<sql>
+    	CREATE TABLE `express_set_customer_contract_management` (
+		  `id` int(100) NOT NULL AUTO_INCREMENT COMMENT '主键',
+		  `number` varchar(100) DEFAULT NULL COMMENT '编号',
+		  `contractstatus` int(4) DEFAULT NULL COMMENT '合同状态',
+		  `contractstartdate` varchar(100) DEFAULT NULL COMMENT '合同开始日期',
+		  `contractenddate` varchar(100) DEFAULT NULL COMMENT '合同结束日期',
+		  `customerid` int(11) DEFAULT NULL COMMENT '客户id',
+		  `partyaname` varchar(255) DEFAULT NULL COMMENT '甲方全称',
+		  `yifangquancheng` varchar(255) DEFAULT NULL COMMENT '乙方全称',
+		  `contracttype` int(4) DEFAULT NULL COMMENT '合同类型',
+		  `loanssettlementcycle` int(4) DEFAULT NULL COMMENT '代收贷款结算周期',
+		  `loansandsettlementway` int(4) DEFAULT NULL COMMENT '贷款结算方式',
+		  `othercontractors` varchar(255) DEFAULT NULL COMMENT '其他合同商',
+		  `paifeisettlementcycle` int(4) DEFAULT NULL COMMENT '派费结算周期',
+		  `paifeisettlementtype` int(4) DEFAULT NULL COMMENT '派费结算方式',
+		  `whetherhavedeposit` int(4) DEFAULT NULL COMMENT '是否有押金',
+		  `marketingprincipal` varchar(255) DEFAULT NULL COMMENT '营销负责人',
+		  `invoicetype` int(4) DEFAULT NULL COMMENT '发票类型',
+		  `taxrate` decimal(4,0) DEFAULT NULL COMMENT '税率',
+		  `collectionloanbank` varchar(255) DEFAULT NULL COMMENT '代收贷款银行',
+		  `collectionloanbankaccount` varchar(255) DEFAULT NULL COMMENT '代收贷款银行账户',
+		  `expensebank` varchar(255) DEFAULT NULL COMMENT '费用银行',
+		  `expensebankaccount` varchar(255) DEFAULT NULL COMMENT '费用银行账户',
+		  `contractdescription` varchar(1000) DEFAULT NULL COMMENT '合同详细描述',
+		  `contractname` varchar(255) DEFAULT NULL COMMENT '合同名称',
+		  `contractaccessory` varchar(255) DEFAULT NULL COMMENT '合同附件',
+		  `depositpaymentdate` varchar(100) DEFAULT NULL COMMENT '押金支付日期',
+		  `depositpaymentamount` varchar(255) DEFAULT NULL COMMENT '押金支付金额',
+		  `depositpaymentperson` varchar(255) DEFAULT NULL COMMENT '押金支付人',
+		  `depositgatherperson` varchar(255) DEFAULT NULL COMMENT '押金收取人',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
+    	</sql>
+    </changeSet>
+    <changeSet id="wangqiang-2015-06-26-2" author="wangqiang">
+    	<sql>
+    		CREATE TABLE `express_set_deposit_information` (
+		  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+		  `contractid` int(11) DEFAULT NULL COMMENT '合同表主键',
+		  `depositreturndate` varchar(255) DEFAULT NULL COMMENT '押金退还日期',
+		  `depositreturnsum` varchar(255) DEFAULT NULL COMMENT '押金退还金额',
+		  `refundpeople` varchar(255) DEFAULT NULL COMMENT '退款人',
+		  `payee` varchar(255) DEFAULT NULL COMMENT '收款人',
+		  `remarks` varchar(500) DEFAULT NULL COMMENT '备注',
+		  PRIMARY KEY (`id`),
+		  KEY `contractid` (`contractid`),
+		  CONSTRAINT `contractid` FOREIGN KEY (`contractid`) REFERENCES `express_set_customer_contract_management` (`id`)
+		) ENGINE=InnoDB AUTO_INCREMENT=2642 DEFAULT CHARSET=utf8;
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  

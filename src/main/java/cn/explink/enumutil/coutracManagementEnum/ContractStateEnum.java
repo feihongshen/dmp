@@ -25,12 +25,11 @@ public enum ContractStateEnum {
 	public String getText() {
 		return this.text;
 	}
-	
-	public static ContractStateEnum getValue(long value) {
-		for (ContractStateEnum typeEnum : ContractStateEnum
-				.values()) {
+
+	public static String getByValue(long value) {
+		for (ContractStateEnum typeEnum : ContractStateEnum.values()) {
 			if (typeEnum.getValue() == value) {
-				return typeEnum;
+				return typeEnum.getText();
 			}
 		}
 		return null;

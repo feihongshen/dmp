@@ -26,4 +26,13 @@ public enum InvoiceTypeEnum {
 	public String getText() {
 		return this.text;
 	}
+
+	public static String getByValue(long value) {
+		for (InvoiceTypeEnum typeEnum : InvoiceTypeEnum.values()) {
+			if (typeEnum.getValue() == value) {
+				return typeEnum.getText();
+			}
+		}
+		return null;
+	}
 }

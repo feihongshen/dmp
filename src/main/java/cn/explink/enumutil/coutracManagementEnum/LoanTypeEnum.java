@@ -25,4 +25,13 @@ public enum LoanTypeEnum {
 	public String getText() {
 		return this.text;
 	}
+
+	public static String getByValue(long value) {
+		for (LoanTypeEnum typeEnum : LoanTypeEnum.values()) {
+			if (typeEnum.getValue() == value) {
+				return typeEnum.getText();
+			}
+		}
+		return null;
+	}
 }

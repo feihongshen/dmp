@@ -800,6 +800,7 @@ src/main/java/cn/explink/controller/WorkOrderController.java -text
 src/main/java/cn/explink/controller/XiazaiContronller.java -text
 src/main/java/cn/explink/controller/addresscontroller/AddressMappingController.java -text
 src/main/java/cn/explink/controller/addresscontroller/AddressSysController.java -text
+src/main/java/cn/explink/controller/customerContract/CustomerContractController.java -text
 src/main/java/cn/explink/controller/gotoClassAuditingView.java -text
 src/main/java/cn/explink/controller/monitor/MonitorInterfaceController.java -text
 src/main/java/cn/explink/controller/pda/BatchDeliverBody.java -text
@@ -1005,6 +1006,7 @@ src/main/java/cn/explink/dao/WarehouseToCommenDAO.java -text
 src/main/java/cn/explink/dao/WorkOrderDAO.java -text
 src/main/java/cn/explink/dao/YpdjHandleRecordDAO.java -text
 src/main/java/cn/explink/dao/ZhiFuApplyDao.java -text
+src/main/java/cn/explink/dao/contractManagement/CustomerContractDAO.java -text
 src/main/java/cn/explink/dao/searchEditCwbInfoDao.java -text
 src/main/java/cn/explink/dao/support/BasicJdbcTemplateDaoSupport.java -text
 src/main/java/cn/explink/dao/support/LockOptions.java -text
@@ -1226,6 +1228,8 @@ src/main/java/cn/explink/domain/addressvo/OrderVo.java -text
 src/main/java/cn/explink/domain/addressvo/ResultCodeEnum.java -text
 src/main/java/cn/explink/domain/addressvo/VendorVo.java -text
 src/main/java/cn/explink/domain/b2cdj/CwbOrderTemp.java -text
+src/main/java/cn/explink/domain/customerCoutract/CustomerContractManagement.java -text
+src/main/java/cn/explink/domain/customerCoutract/DepositInformation.java -text
 src/main/java/cn/explink/domain/lefengVo.java -text
 src/main/java/cn/explink/domain/logdto/TodayArrivalDTO.java -text
 src/main/java/cn/explink/domain/logdto/TodayDeliveryDTO.java -text
@@ -1638,6 +1642,7 @@ src/main/java/cn/explink/service/addressmatch/AddressQueryService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressSyncService.java -text
 src/main/java/cn/explink/service/addressmatch/KeyWordMatchProcessor.java -text
 src/main/java/cn/explink/service/addressmatch/MatchResult.java -text
+src/main/java/cn/explink/service/contractManagement/ContractManagementService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text
@@ -1952,6 +1957,7 @@ src/main/webapp/WEB-INF/jsp/customer/add.jsp -text
 src/main/webapp/WEB-INF/jsp/customer/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/customer/list.jsp -text
 src/main/webapp/WEB-INF/jsp/customer/update.jsp -text
+src/main/webapp/WEB-INF/jsp/customerContract/customerContractList.jsp -text
 src/main/webapp/WEB-INF/jsp/customerwarehouses/add.jsp -text
 src/main/webapp/WEB-INF/jsp/customerwarehouses/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/customerwarehouses/list.jsp -text

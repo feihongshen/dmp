@@ -303,18 +303,21 @@ public class CustomerDAO {
 		}
 		return para.substring(0, para.length() - 1);
 	}
-	
-	public Customer findcustomername(long customerid){
+
+	public Customer findcustomername(long customerid) {
 		try {
-			String sql="select * from express_set_customer_info where customerid=? limit 1";
-			
-			return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),customerid);
+			String sql = "select * from express_set_customer_info where customerid=? limit 1";
+
+			return this.jdbcTemplate.queryForObject(sql, new CustomerRowMapper(), customerid);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return null;
 		}
-		
-		
+
 	}
-	
+
+	public List<Customer> getAllCustomerss() {
+		String sql = "select * from express_set_customer_info ";
+		return this.jdbcTemplate.query(sql, new CustomerRowMapper());
+	}
 }

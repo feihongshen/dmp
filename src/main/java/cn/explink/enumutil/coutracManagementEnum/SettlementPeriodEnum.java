@@ -9,7 +9,7 @@ package cn.explink.enumutil.coutracManagementEnum;
  * @author wangqiang
  */
 public enum SettlementPeriodEnum {
-	YiZhouLiangCi(1, "一周两次");
+	YiZhouYiCi(1, "一周一次"), YiZhouLiangCi(2, "一周两次");
 	private int value;
 	private String text;
 
@@ -24,5 +24,14 @@ public enum SettlementPeriodEnum {
 
 	public String getText() {
 		return this.text;
+	}
+
+	public static String getByValue(long value) {
+		for (SettlementPeriodEnum typeEnum : SettlementPeriodEnum.values()) {
+			if (typeEnum.getValue() == value) {
+				return typeEnum.getText();
+			}
+		}
+		return null;
 	}
 }

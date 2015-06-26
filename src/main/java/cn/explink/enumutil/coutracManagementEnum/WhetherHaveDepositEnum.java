@@ -25,4 +25,13 @@ public enum WhetherHaveDepositEnum {
 	public String getText() {
 		return this.text;
 	}
+
+	public static String getByValue(long value) {
+		for (WhetherHaveDepositEnum typeEnum : WhetherHaveDepositEnum.values()) {
+			if (typeEnum.getValue() == value) {
+				return typeEnum.getText();
+			}
+		}
+		return null;
+	}
 }
