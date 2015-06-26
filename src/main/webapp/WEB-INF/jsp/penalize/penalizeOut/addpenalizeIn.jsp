@@ -30,7 +30,7 @@
             <input id="flowordertype" type="text" readonly="readonly" value="${flowordertypeText}" type="text" style="width: 100%;border-style:none"/>
             </td>
             <td align="right" nowrap="nowrap">订单金额：</td>
-            <td ><input id="receivablefee" readonly="readonly"  value="${penalizeOut.receivablefee}" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="caramount" readonly="readonly"  value="${penalizeOut.caramount}" type="text" style="width: 100%;border-style:none"/></td>
         	<td align="right" nowrap="nowrap">赔付金额：</td>
             <td ><input id="penalizeOutfee" readonly="readonly"  value="${penalizeOut.penalizeOutfee}" type="text" style="width: 100%;border-style:none"/></td>
             </tr>
@@ -49,7 +49,7 @@
            	</tr>
           	<tr>
           	<td align="right" nowrap="nowrap">货物扣罚金额<span style="color: red">*</span>：</td>
-            <td ><input id="fee1" onblur="javascript:$('[name=punishInsideprice]').val(($('[name=createqitapunishprice]').val()-0)+(this.value-0))"  onkeyup="if(this.value<'0'){ this.value=''}" value="${penalizeOut.receivablefee}" name="creategoodpunishprice" type="text" style="width:100%;"/></td>
+            <td ><input id="fee1" onblur="javascript:$('[name=punishInsideprice]').val(($('[name=createqitapunishprice]').val()-0)+(this.value-0))"  onkeyup="if(this.value<'0'){ this.value=''}" value="${penalizeOut.caramount}" name="creategoodpunishprice" type="text" style="width:100%;"/></td>
             <td align="right" nowrap="nowrap">其它扣罚金额<span style="color: red">*</span>：</td>
             <td ><input id="fee2" onblur="javascript:$('[name=punishInsideprice]').val(($('[name=creategoodpunishprice]').val()-0)+(this.value-0))" onkeyup="if(this.value<'0'){ this.value=''}" name="createqitapunishprice" type="text" style="width: 100%;"/></td>
            	<td align="right" nowrap="nowrap">总扣罚金额<span style="color: red">*</span>：</td>

@@ -34,6 +34,7 @@ import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
 import cn.explink.dao.SalaryImportDao;
+import cn.explink.dao.SalaryImportRecordDAO;
 import cn.explink.dao.ServiceAreaDAO;
 import cn.explink.dao.SetExcelColumnDAO;
 import cn.explink.dao.SwitchDAO;
@@ -56,6 +57,7 @@ import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.SalaryFixed;
 import cn.explink.domain.SalaryImport;
+import cn.explink.domain.SalaryImportRecord;
 import cn.explink.domain.ServiceArea;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
@@ -131,12 +133,17 @@ public abstract class ExcelExtractor {
 
 	@Autowired
 	DataImportService dataImportService;
+
+	@Autowired
+	SalaryImportRecordDAO salaryImportRecordDAO;
+
 	@Autowired
 	AbnormalTypeDAO abnormalTypeDAO;
 	@Autowired
 	AbnormalOrderDAO abnormalOrderDAO;
 	@Autowired
 	AbnormalService abnormalService;
+
 
 	public String strtovalid(String str) {
 		// 2013-8-6 需求： 收件人地址让显示中文符号。最终是替换所有的中文符号为中文即可
@@ -718,7 +725,7 @@ public abstract class ExcelExtractor {
 				failCounts++;
 				ExcelExtractor.logger.info("对外扣罚导入异常：cwb={},message={}", this.getXRowCellData(row, 1), e.toString());
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
-
+				continue;
 				// 失败订单数+1 前台显示
 
 				// 存储报错订单，以便统计错误记录和处理错误订单
@@ -733,7 +740,7 @@ public abstract class ExcelExtractor {
 				failCounts++;
 				ExcelExtractor.logger.info("对外扣罚导入异常：cwb={},message={}", out.getCwb(), e.toString());
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(out.getCwb(), systemTime, "未知异常");
-
+				continue;
 			}
 
 		}
@@ -828,7 +835,7 @@ public abstract class ExcelExtractor {
 		}
 		out.setCustomerid(co.getCustomerid());
 		out.setFlowordertype(co.getFlowordertype());
-		out.setReceivablefee(co.getReceivablefee());
+		out.setCaramount(co.getCaramount());
 		out.setPenalizeOutfee(penalizeOutfee);
 		out.setCreateruser(user.getUserid());
 		out.setPenalizeOutsmall(penalizeOutsmall);
@@ -882,7 +889,7 @@ public abstract class ExcelExtractor {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额必须大于0.00！");
 				return null;
 			}*/
-			if (penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1||String.valueOf(penalizeOutGoodsfee).length()>14) {
+			if ((penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1)||(String.valueOf(penalizeOutGoodsfee).length()>14)) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额（超过14位长度）有误");
 				return null;
 			}
@@ -903,7 +910,7 @@ public abstract class ExcelExtractor {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额必须大于0.00！");
 				return null;
 			}*/
-			if (penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1||String.valueOf(penalizeOutOtherfee).length()>14) {
+			if ((penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1)||(String.valueOf(penalizeOutOtherfee).length()>14)) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额（超过14位长度）有误");
 				return null;
 			}
@@ -1052,13 +1059,22 @@ public abstract class ExcelExtractor {
 		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();
 		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
+		int successCounts = 0;
+		int failCounts = 0;
+		int totalCounts = 0;
+		SalaryImportRecord record=new SalaryImportRecord();
 		for (Object row : this.getRows(f)) {
+			totalCounts++;
 			try {
 				SalaryFixed salary = this.getSalaryAccordingtoConf(row, userMap, importflag,improtMap);
 				if(salary!=null){
-				salaryList.add(salary);
+					salaryList.add(salary);
+				}
+				else {
+					failCounts++;
 				}
 			} catch (Exception e) {
+				failCounts++;
 				this.salaryErrorDAO.creSalaryError(this.getXRowCellData(row, 1), this.getXRowCellData(row, 1), "未知异常", importflag);
 				continue;
 			}
@@ -1069,13 +1085,21 @@ public abstract class ExcelExtractor {
 				if(salary1!=null){
 					this.salaryFixedDAO.deleteSalaryByids(salary1.getId()+"");
 				}
-				this.salaryFixedDAO.creSalaryByRealname(salary);
+				int nums=this.salaryFixedDAO.creSalaryByRealname(salary);
+				successCounts += nums;
 			} catch (Exception e) {
+				failCounts++;
 				this.salaryErrorDAO.creSalaryError(salary.getRealname(), salary.getRealname(), "未知异常", importflag);
 				continue;
 			}
 
 		}
+		record.setImportFlag(importflag);
+		record.setUserid(user.getUserid());
+		record.setTotalCounts(totalCounts);
+		record.setSuccessCounts(successCounts);
+		record.setFailCounts(failCounts);
+		this.salaryImportRecordDAO.creSalaryImportRecord(record);
 	}
 
 	/**
@@ -1103,7 +1127,7 @@ public abstract class ExcelExtractor {
 		String idcard = this.getXRowCellData(row, 2);
 		User user = userMap.get(realname);
 		if (user == null) {
-			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送不存在！", importflag);
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员不存在！", importflag);
 			return null;
 		}
 		else {
@@ -1123,8 +1147,8 @@ public abstract class ExcelExtractor {
 		if(map.get("salaryjob")==0) {
 		salary.setSalaryjob(new BigDecimal(this.getXRowCellData(row, 4)));
 		}
-		if(map.get("salarypush")==0) {
-		salary.setSalarypush(new BigDecimal(this.getXRowCellData(row, 5)));
+		if(map.get("pushcash")==0) {
+		salary.setPushcash(new BigDecimal(this.getXRowCellData(row, 5)));
 		}
 		if(map.get("jobpush")==0) {
 			salary.setJobpush(new BigDecimal(this.getXRowCellData(row, 6)));
@@ -1150,83 +1174,89 @@ public abstract class ExcelExtractor {
 		if(map.get("bonusweather")==0) {
 			salary.setBonusweather(new BigDecimal(this.getXRowCellData(row, 13)));
 		}
+		if(map.get("penalizecancel_import")==0) {
+			salary.setPenalizecancel_import(new BigDecimal(this.getXRowCellData(row, 14)));
+		}
 		if(map.get("bonusother1")==0) {
-			salary.setBonusother1(new BigDecimal(this.getXRowCellData(row, 14)));
+			salary.setBonusother1(new BigDecimal(this.getXRowCellData(row, 15)));
 		}
 		if(map.get("bonusother2")==0) {
-		salary.setBonusother2(new BigDecimal(this.getXRowCellData(row, 15)));
+		salary.setBonusother2(new BigDecimal(this.getXRowCellData(row, 16)));
 		}
 		if(map.get("bonusother3")==0) {
-		salary.setBonusother3(new BigDecimal(this.getXRowCellData(row, 16)));
+		salary.setBonusother3(new BigDecimal(this.getXRowCellData(row, 17)));
 		}
 		if(map.get("bonusother4")==0) {
-		salary.setBonusother4(new BigDecimal(this.getXRowCellData(row, 17)));
+		salary.setBonusother4(new BigDecimal(this.getXRowCellData(row, 18)));
 		}
 		if(map.get("bonusother5")==0) {
-		salary.setBonusother5(new BigDecimal(this.getXRowCellData(row, 18)));
+		salary.setBonusother5(new BigDecimal(this.getXRowCellData(row, 19)));
 		}
 		if(map.get("bonusother6")==0) {
-		salary.setBonusother6(new BigDecimal(this.getXRowCellData(row, 19)));
+		salary.setBonusother6(new BigDecimal(this.getXRowCellData(row, 20)));
 		}
 		if(map.get("overtimework")==0) {
-		salary.setOvertimework(new BigDecimal(this.getXRowCellData(row, 20)));
+		salary.setOvertimework(new BigDecimal(this.getXRowCellData(row, 21)));
 		}
 		if(map.get("attendance")==0) {
-		salary.setAttendance(new BigDecimal(this.getXRowCellData(row, 21)));
+		salary.setAttendance(new BigDecimal(this.getXRowCellData(row, 22)));
 		}
 		if(map.get("security")==0) {
-		salary.setSecurity(new BigDecimal(this.getXRowCellData(row, 22)));
+		salary.setSecurity(new BigDecimal(this.getXRowCellData(row, 23)));
 		}
 		if(map.get("gongjijin")==0) {
-		salary.setGongjijin(new BigDecimal(this.getXRowCellData(row, 23)));
+		salary.setGongjijin(new BigDecimal(this.getXRowCellData(row, 24)));
+		}
+		if(map.get("foul_import")==0) {
+		salary.setFoul_import(new BigDecimal(this.getXRowCellData(row, 25)));
 		}
 		if(map.get("dorm")==0) {
-		salary.setDorm(new BigDecimal(this.getXRowCellData(row, 24)));
+			salary.setDorm(new BigDecimal(this.getXRowCellData(row, 26)));
 		}
 		if(map.get("penalizeother1")==0) {
-		salary.setPenalizeother1(new BigDecimal(this.getXRowCellData(row, 25)));
+		salary.setPenalizeother1(new BigDecimal(this.getXRowCellData(row, 27)));
 		}
 		if(map.get("penalizeother2")==0) {
-		salary.setPenalizeother2(new BigDecimal(this.getXRowCellData(row, 26)));
+		salary.setPenalizeother2(new BigDecimal(this.getXRowCellData(row, 28)));
 		}
 		if(map.get("penalizeother3")==0) {
-		salary.setPenalizeother3(new BigDecimal(this.getXRowCellData(row, 27)));
+		salary.setPenalizeother3(new BigDecimal(this.getXRowCellData(row, 29)));
 		}
 		if(map.get("penalizeother4")==0) {
-		salary.setPenalizeother4(new BigDecimal(this.getXRowCellData(row, 28)));
+		salary.setPenalizeother4(new BigDecimal(this.getXRowCellData(row, 30)));
 		}
 		if(map.get("penalizeother5")==0) {
-		salary.setPenalizeother5(new BigDecimal(this.getXRowCellData(row, 29)));
+		salary.setPenalizeother5(new BigDecimal(this.getXRowCellData(row, 31)));
 		}
 		if(map.get("penalizeother6")==0) {
-		salary.setPenalizeother6(new BigDecimal(this.getXRowCellData(row, 30)));
-		}
-		if(map.get("carrent")==0) {
-		salary.setCarrent(new BigDecimal(this.getXRowCellData(row, 31)));
-		}
-		if(map.get("carmaintain")==0) {
-			salary.setCarmaintain(new BigDecimal(this.getXRowCellData(row, 32)));
-		}
-		if(map.get("carfuel")==0) {
-			salary.setCarfuel(new BigDecimal(this.getXRowCellData(row, 33)));
+		salary.setPenalizeother6(new BigDecimal(this.getXRowCellData(row, 32)));
 		}
 		if(map.get("imprestother1")==0) {
-		salary.setImprestother1(new BigDecimal(this.getXRowCellData(row, 34)));
+		salary.setImprestother1(new BigDecimal(this.getXRowCellData(row, 33)));
 		}
 		if(map.get("imprestother2")==0) {
-		salary.setImprestother2(new BigDecimal(this.getXRowCellData(row, 35)));
+		salary.setImprestother2(new BigDecimal(this.getXRowCellData(row, 34)));
 		}
 		if(map.get("imprestother3")==0) {
-		salary.setImprestother3(new BigDecimal(this.getXRowCellData(row, 36)));
+		salary.setImprestother3(new BigDecimal(this.getXRowCellData(row, 35)));
 		}
 		if(map.get("imprestother4")==0) {
-		salary.setImprestother4(new BigDecimal(this.getXRowCellData(row, 37)));
+		salary.setImprestother4(new BigDecimal(this.getXRowCellData(row, 36)));
 		}
 		if(map.get("imprestother5")==0) {
-		salary.setImprestother5(new BigDecimal(this.getXRowCellData(row, 38)));
+		salary.setImprestother5(new BigDecimal(this.getXRowCellData(row, 37)));
 		}
 		if(map.get("imprestother6")==0) {
-		salary.setImprestother6(new BigDecimal(this.getXRowCellData(row, 39)));
+		salary.setImprestother6(new BigDecimal(this.getXRowCellData(row, 38)));
+		}
+		if(map.get("carrent")==0) {
+			salary.setCarrent(new BigDecimal(this.getXRowCellData(row, 39)));
+		}
+		if(map.get("carmaintain")==0) {
+				salary.setCarmaintain(new BigDecimal(this.getXRowCellData(row, 40)));
+		}
+		if(map.get("carfuel")==0) {
+				salary.setCarfuel(new BigDecimal(this.getXRowCellData(row, 41)));
 		}
 	}
 		catch(Exception e)
@@ -1237,8 +1267,8 @@ public abstract class ExcelExtractor {
 		}
 		return salary;
 	}
-	
-	
+
+
 	public String extractAbnormal(InputStream f, User user, Long systemTime) {
 		List<AbnormalImportView> abnormalImportViews=new ArrayList<AbnormalImportView>();
 		List<AbnormalType> abnormalTypes=this.abnormalTypeDAO.getAllAbnormalTypeByName();
@@ -1270,7 +1300,7 @@ public abstract class ExcelExtractor {
 		}
 		for (AbnormalImportView abnormalImportView : abnormalImportViews) {
 			try {
-				abnormalService.creAbnormalOrderExcel(abnormalImportView);
+				this.abnormalService.creAbnormalOrderExcel(abnormalImportView);
 				successCounts ++;
 			} catch (Exception e) {
 				failCounts++;
@@ -1309,8 +1339,8 @@ public abstract class ExcelExtractor {
 		}
 		String abnormalInfo= this.getXRowCellData(row, 3);
 		//判断问题件记录是否存在
-		List<AbnormalOrder> abnormalOrders=abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
-		if (abnormalOrders != null&&abnormalOrders.size()>0) {
+		List<AbnormalOrder> abnormalOrders=this.abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
+		if ((abnormalOrders != null)&&(abnormalOrders.size()>0)) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
 			return null;
 		}
@@ -1318,7 +1348,7 @@ public abstract class ExcelExtractor {
 		//abnormalOrder的状态为未处理
 		long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
 		long isfind=0;
-		Branch branch=branchDAO.getBranchByBranchid(user.getBranchid());
+		Branch branch=this.branchDAO.getBranchByBranchid(user.getBranchid());
 		long handleBranch=0;//0为没有操作机构
 		if (branch!=null) {
 			handleBranch=branch.getSitetype();
@@ -1339,7 +1369,7 @@ public abstract class ExcelExtractor {
 public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes){
 	Map<String, Long> abnormalMaps=new HashMap<String, Long>();
 	for (Iterator<AbnormalType> iterator = abnormalTypes.iterator(); iterator.hasNext();) {
-		AbnormalType abnormalType = (AbnormalType) iterator.next();
+		AbnormalType abnormalType = iterator.next();
 		abnormalMaps.put(abnormalType.getName(), abnormalType.getId());
 	}
 	return abnormalMaps;

@@ -371,16 +371,7 @@ function showButton()
          		 <option value="${branch.branchid }">${branch.branchname }</option>
          		 </c:forEach>
          		</select> --%>
-         			<input type="text" name="branchid" class="easyui-validatebox" 
-					initDataType="TABLE" 
-					initDataKey="Branch" 
-					viewField="branchname" 
-      	        	saveField="branchid"
-      	        	filterField="sitetype" 
-					filterVal="2"  
-					data-options="width:150,prompt: '站点'"
-					value="${branchid}"
-			/>
+         			<input type="text" name="branchname" value="${branchname}"/>
          		</td>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">

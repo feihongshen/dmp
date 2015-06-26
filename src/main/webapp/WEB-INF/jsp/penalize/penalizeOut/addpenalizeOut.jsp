@@ -28,7 +28,7 @@
             </tr>
             <tr>
             <td align="right" nowrap="nowrap">订单金额：</td>
-            <td ><input id="receivablefee" readonly="readonly" name="receivablefee" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="caramount" readonly="readonly" name="caramount" type="text" style="width: 100%;border-style:none"/></td>
             <td align="right" nowrap="nowrap">赔付大类<span style="color: red">*</span>：</td>
             <td >
 			<select style="width: 100%" id="penalizebig" name="penalizeOutbig" onchange="findsmall($(this).val())">

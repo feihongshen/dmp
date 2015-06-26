@@ -15,7 +15,7 @@ public class PenalizeOut {
 	private String cwb;//订单号
 	private Long customerid;//客户名称id
 	private Long flowordertype;//订单状态
-	private BigDecimal receivablefee;//订单金额
+	private BigDecimal caramount;//订单金额
 	private BigDecimal penalizeOutfee;//对外赔付金额
 	private BigDecimal penalizeOutGoodsfee;//对外赔付货物金额
 	private BigDecimal penalizeOutOtherfee;//对外赔付其它金额
@@ -91,16 +91,16 @@ public class PenalizeOut {
 		this.flowordertype = flowordertype;
 	}
 	/**
-	 * @return the receivablefee
+	 * @return the caramount
 	 */
-	public BigDecimal getReceivablefee() {
-		return this.receivablefee;
+	public BigDecimal getCaramount() {
+		return this.caramount;
 	}
 	/**
-	 * @param receivablefee the receivablefee to set
+	 * @param caramount the caramount to set
 	 */
-	public void setReceivablefee(BigDecimal receivablefee) {
-		this.receivablefee = receivablefee;
+	public void setCaramount(BigDecimal caramount) {
+		this.caramount = caramount;
 	}
 	/**
 	 * @return the penalizeOutfee

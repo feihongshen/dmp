@@ -6065,8 +6065,8 @@ function init(cwb)
 		success:function(data){
 		$("#flowordertype").val(data.flowordertyleValue);
 		$("#flowordertypeText").val(data.flowordertyleText);
-		$("#receivablefee").val(data.receivablefee);
-		$("#penalizeOutGoodsfee").val(data.receivablefee);
+		$("#caramount").val(data.caramount);
+		$("#penalizeOutGoodsfee").val(data.caramount);
 		$("#fee1").val(data.receivablefee);
 		$("#customername").val(data.customername);
 		$("#customerid").val(data.customerid);

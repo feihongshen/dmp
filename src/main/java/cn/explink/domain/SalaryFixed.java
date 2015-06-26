@@ -116,6 +116,12 @@ private BigDecimal	carrent;
 private BigDecimal	carmaintain;
 /**油/电费用**/
 private BigDecimal	carfuel;
+/**扣款撤销(导入)**/
+private BigDecimal	penalizecancel_import;
+/**违纪扣款扣罚(导入)**/
+private BigDecimal	foul_import;
+/**绩效奖金**/
+private BigDecimal	pushcash;
 /**
  * @return the id
  */
@@ -752,6 +758,42 @@ public BigDecimal getCarfuel() {
  */
 public void setCarfuel(BigDecimal carfuel) {
 	this.carfuel = carfuel;
+}
+/**
+ * @return the penalizecancel_import
+ */
+public BigDecimal getPenalizecancel_import() {
+	return this.penalizecancel_import;
+}
+/**
+ * @param penalizecancel_import the penalizecancel_import to set
+ */
+public void setPenalizecancel_import(BigDecimal penalizecancel_import) {
+	this.penalizecancel_import = penalizecancel_import;
+}
+/**
+ * @return the foul_import
+ */
+public BigDecimal getFoul_import() {
+	return this.foul_import;
+}
+/**
+ * @param foul_import the foul_import to set
+ */
+public void setFoul_import(BigDecimal foul_import) {
+	this.foul_import = foul_import;
+}
+/**
+ * @return the pushcash
+ */
+public BigDecimal getPushcash() {
+	return this.pushcash;
+}
+/**
+ * @param pushcash the pushcash to set
+ */
+public void setPushcash(BigDecimal pushcash) {
+	this.pushcash = pushcash;
 }
 
 }

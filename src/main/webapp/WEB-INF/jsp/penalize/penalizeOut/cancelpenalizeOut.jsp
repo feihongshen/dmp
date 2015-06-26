@@ -22,7 +22,7 @@
             </tr>
             <tr>
             <td nowrap="nowrap" align="right">订单金额：</td>
-            <td ><input id="receivablefee" name="receivablefee" value="${penalizeOut.receivablefee}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
+            <td ><input id="caramount" name="caramount" value="${penalizeOut.caramount}" readonly="readonly" type="text" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">赔付大类<span style="color: red">*</span>：</td>
             <td ><input id="penalizeOutbig"  name="penalizeOutbig" value="${penalizeOutbigStr}" readonly="readonly" style="width: 100%;border-style:none"/></td>
             <td nowrap="nowrap" align="right">赔付小类：</td>

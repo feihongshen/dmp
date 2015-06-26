@@ -327,7 +327,7 @@ function showUp()
 	<c:if test="${flow.value==out.flowordertype}">${flow.text}</c:if>
 	</c:forEach>
 	</td>
-	<td align="center" valign="middle"> ${out.receivablefee}</td>
+	<td align="center" valign="middle"> ${out.caramount}</td>
 	<td align="center" valign="middle"> ${out.penalizeOutfee}</td>
 	<td align="center" valign="middle"> 
 	<c:forEach items="${penalizebigList}" var="type">
