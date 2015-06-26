@@ -76,8 +76,8 @@ function deleteidValue(){
 		<form action="${ requestScope.page == null ? '1' : requestScope.page }" id=PageFromW>
 			<table>
 				<tr>
-					<td>姓名:<input type="text" name="name" id="name" value="<%=request.getParameter("name")==null?"":request.getParameter("name") %>"/></td>
-					<td>电话:<input type="text" name="phoneonOne" id="phoneonOne" value="<%=request.getParameter("phoneonOne")==null?"":request.getParameter("phoneonOne") %>"/></td>				
+					<td>姓名:<input type="text" name="name" id="name" value="${param.name == null  ? '' : param.name}"/></td>
+					<td>电话:<input type="text" name="phoneonOne" id="phoneonOne" value="${param.phoneonOne == null  ? '' : param.phoneonOne}"/></td>				
 					<td>
 						客户:<select name="consigneeType" id="svc" class="select1" >
 								<option value="-1">选择客户分类</option>
@@ -202,6 +202,6 @@ function deleteidValue(){
 	</script>
 	<div class="tishi_box"></div>
 	
-	<input type="hidden" id="consigneeTypeVL" value="<%=request.getParameter("consigneeType")==null?"":request.getParameter("consigneeType") %>">
+	<input type="hidden" id="consigneeTypeVL" value="${param.consigneeType == null  ? '' : param.consigneeType}"/>
 </body>
 </html>

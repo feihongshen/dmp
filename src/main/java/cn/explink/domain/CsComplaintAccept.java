@@ -58,8 +58,7 @@ public class CsComplaintAccept {
 			private String phoneOne;
 			private String remark;
 			private String heshiTime;
-			private String jieanTime;
-		
+			private String jieanTime;	
 			private long customerid;
 			private String jieanremark;
 			private String shensuremark;
@@ -71,7 +70,16 @@ public class CsComplaintAccept {
 			private String shensuUser;
 			private String chongshenUser;
 			private int cuijianNum = 0;
+			private int ifOutofdate;
+			
+			
 
+			public int getIfOutofdate() {
+				return ifOutofdate;
+			}
+			public void setIfOutofdate(int ifOutofdate) {
+				this.ifOutofdate = ifOutofdate;
+			}
 			private String downloadheshipath;
 			public String getDownloadheshipath() {
 				return downloadheshipath;

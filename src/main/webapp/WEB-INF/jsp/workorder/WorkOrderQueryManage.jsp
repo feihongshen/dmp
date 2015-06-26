@@ -253,36 +253,23 @@ function getFomeV(v,l,timev){
 }
 
 function testCwbsIfNull(){
-	if($("#beginRangeTime").val()>$("#endRangeTime").val()){
-		alert("开始时间不能大于结束时间");
-		return;
-	}
+	 var beginTime = $("#beginRangeTime").val();
+	    var endTime = $("#endRangeTime").val();
+	    var beginTimes = beginTime.substring(0, 10).split('-');
+	    var endTimes = endTime.substring(0, 10).split('-');
+
+	    beginTime = beginTimes[1] + '-' + beginTimes[2] + '-' + beginTimes[0] + ' ' + beginTime.substring(10, 19);
+	    endTime = endTimes[1] + '-' + endTimes[2] + '-' + endTimes[0] + ' ' + endTime.substring(10, 19);
+		var e=Date.parse(endTime);
+		var s=Date.parse(beginTime);
+	    if (e<s) {
+	    	alert("结束时间不能小于开始时间！");
+	    	return false;
+	    }
+	    
+	    return true;
 }
-/* function decideHeShidate(){
-	var str =$('#ShouLiTimeValue').val();
-	var str ='2015-05-12 23:13:15';
-	str = str.replace(/-/g,"/");
-	var date1 = new Date(str);	
-	var str1=CurentTime();
-	str1 = str1.replace(/-/g,"/");
-	var date2 = new Date(str1);
-	var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
-	//计算出相差天数
-	var days=Math.floor(date3/(24*3600*1000));
-	var heshiTime=$('#heshiTime').val();
-	if(days>heshiTime){
-		alert("抱歉，已经过了可核实时间！ ");
-		return false;
-	}else if($('#FormV').val()==""){
-			alert('请选择一条记录');
-			return false;
-		}else if($('#ComStateV').val()!=$('#DaiHeShi').val()){
-			alert('本条数据状态未结案不能核实');
-			return false;
-		}
-		getAddBox3();
-	
-} */
+
 function CurentTime()   //计算当天时间
 { 
     var now = new Date();
@@ -326,7 +313,7 @@ function CurentTime()   //计算当天时间
 <div>		
 	<div style="margin-left: 10px;margin-top: 20px">
 		<table style="float: left">	
-			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid" method="post"/>
+			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid" method="post" onsubmit="testCwbsIfNull()"/>
 				<tr>
 					<td>
 						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"><%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%></textarea>
@@ -398,7 +385,7 @@ function CurentTime()   //计算当天时间
 				</tr>
 				<tr>			
 					<td>
-					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1" onblur="testCwbsIfNull() "/>
+					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
 					</td>
 
 				
@@ -428,7 +415,6 @@ function CurentTime()   //计算当天时间
 			<tr class="font_1">
 				<th bgcolor="#eef6ff">工单号</th>
 				<th bgcolor="#eef6ff">订单号</th>
-				<!-- <th bgcolor="#eef6ff">工单类型</th> -->
 				<th bgcolor="#eef6ff">工单状态</th>
 				<th bgcolor="#eef6ff">是否超期</th>
 				<th bgcolor="#eef6ff">来电人姓名</th>

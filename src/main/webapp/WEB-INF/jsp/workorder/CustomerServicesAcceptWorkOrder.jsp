@@ -5,6 +5,7 @@
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
+<%@page import="cn.explink.util.DateTimeUtil"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<CwbOrderAndCustomname> lco=request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
@@ -336,8 +337,8 @@ function SelectPhone(){
 					}
 					$('#savecallerinfo').attr("disabled","disabled");
 					 }else{
-						 $('#contactLastTime').hide();
-						 $('#contactNum').hide();
+						 $('#contactLastTime').val('<%=DateTimeUtil.getNowTime()%>');
+						 $('#contactNum').val('1');
 					 $('#savecallerinfo').removeAttr("disabled");
 					 $('#dname').val("");
 					 $('#consigneeType').val(""); 
