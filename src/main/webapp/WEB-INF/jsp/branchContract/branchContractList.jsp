@@ -227,33 +227,33 @@ function updateContract(){
 			'				<table>'+
 			'					<tr>'+
 			'						<th align="left">编号</th>'+
-			'						<td><input type="text" name="contractNo" value="" id="contractNo" maxlength="20" readonly="true"/></td>'+
+			'						<td><input type="text" name="contractNo" value="" id="contractNo" maxlength="20" readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th align="left">合同状态</th>'+
 			'						<td>'+
-			'							<select id="contractState" name="contractState">'+
+			'							<select id="contractState" name="contractState"  style="background-color:#DCDCDC">'+
 			'				         	</select>'+
 			'						</td>'+
 			'						<th align="left">合同日期范围</th>'+
 			'						<td>'+
-			'							<input type="text" name="contractBeginDate" id="contractBeginDate" value="" class="input_text1"  readonly="true"/>'+
+			'							<input type="text" name="contractBeginDate" id="contractBeginDate" value="" readonly="true" style="background-color:#DCDCDC"/>'+
 			'							至'+
-			'							<input type="text" name="contractEndDate" id="contractEndDate" value="" class="input_text1"  readonly="true"/>'+
+			'							<input type="text" name="contractEndDate" id="contractEndDate" value=""  readonly="true" style="background-color:#DCDCDC"/>'+
 			'						</td>'+
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">加盟商名称</th>'+
-			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"  readonly="true"/></td>'+
+			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"  readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th align="left">站点负责人</th>'+
-			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"  readonly="true"/></td>'+
+			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"  readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th align="left">负责人身份证</th>'+
-			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20" readonly="true"/></td>'+
+			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20" readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">区域经理</th>'+
 			'						<td><input type="text" name="areaManager" value="" id="areaManager" maxlength="20"/></td>'+
 			'						<th align="left">是否有押金</th>'+
 			'						<td>'+
-			'							<select id ="isDeposit" name ="isDeposit">'+
+			'							<select id ="isDeposit" name ="isDeposit"  style="background-color:#DCDCDC">'+
 			'					        </select>'+
 			'						</td>'+
 			'						<th></th>'+
@@ -279,15 +279,15 @@ function updateContract(){
 			'					</tr>'+
 			'					<tr id="firstDepositTr" style="display: none">'+
 			'						<th align="left">押金收取日期</th>'+
-			'						<td><input type="text" name="depositCollectDate" value="" id="depositCollectDate" maxlength="20"  readonly="true"/></td>'+
+			'						<td><input type="text" name="depositCollectDate" value="" id="depositCollectDate" maxlength="20"  readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th align="left">押金收取金额</th>'+
-			'						<td><input type="text" name="depositCollectAmount" value="" id="depositCollectAmount" maxlength="20"  readonly="true"/></td>'+
+			'						<td><input type="text" name="depositCollectAmount" value="" id="depositCollectAmount" maxlength="20"  readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th></th>'+
 			'						<td></td>'+
 			'					</tr>					'+
 			'					<tr id="secondDepositTr" style="display: none">'+
 			'						<th align="left">押金收取人</th>'+
-			'						<td><input type="text" name="depositCollector" value="" id="depositCollector" maxlength="20"  readonly="true"/></td>'+
+			'						<td><input type="text" name="depositCollector" value="" id="depositCollector" maxlength="20"  readonly="true" style="background-color:#DCDCDC"/></td>'+
 			'						<th align="left">押金付款人</th>'+
 			'						<td><input type="text" name="depositPayor" value="" id="depositPayor" maxlength="20"/></td>'+
 			'						<th></th>'+
@@ -326,14 +326,9 @@ function updateContract(){
 			'		</div>'+
 			'		</div>');
 	initSelect();
-	/* $("#contractBeginDate").datepicker();
-	$("#contractEndDate").datepicker();
-	$("#depositCollectDate").datepicker(); */
 	getEditData($("#branchId").val());
-	
 	$("#contractState").attr("disabled","disabled");
 	$("#isDeposit").attr("disabled","disabled");
-	
 	$("#alert_box").show();
 	centerBox();
 }
@@ -552,7 +547,7 @@ function changeDeposit(){
    }
 }
 
-function initUpdateDeposit(){
+function initUpdateDepositSelect(){
 	if($('#isDeposit option:selected').text()=="是"){  
         $("#firstDepositTr").css('display' ,'');  
         $("#secondDepositTr").css('display' ,'');  
@@ -609,9 +604,9 @@ function getEditData(val){
 					$("#file").attr("href","<%=request.getContextPath()%>/branchContract/download?filepathurl=" +data.contractAttachment);
 				}
 				
-				initUpdateDeposit();
-				initUpdateContractPage();
 				initDepositTable(data.branchContractDetailVOList);
+				initUpdateDepositSelect();
+				initUpdateContractPage();
 			}
 		}
 	});
@@ -694,6 +689,16 @@ function initUpdateContractPage(){
 		$("#qualityControlClause").attr("readonly","readonly");
 		$("#contractDescription").attr("readonly","readonly");
 		$("#depositPayor").attr("readonly","readonly");
+		
+		$("#areaManager").css('background-color','#DCDCDC');
+		$("#qualityControlClause").css('background-color','#DCDCDC');
+		$("#contractDescription").css('background-color','#DCDCDC');
+		$("#depositPayor").css('background-color','#DCDCDC');
+		
+		var depositTableCheckBox = $("#depositTable input[type='checkbox']");
+		$(depositTableCheckBox).each(function(){
+			$(this)[0].onclick=function(){return false;}; 
+		});
 		
 		$("#editcallerForm input[type='button'][value='添加']").css('display' ,'none');  
 		$("#editcallerForm input[type='button'][value='移除']").css('display' ,'none');  
