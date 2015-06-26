@@ -1818,9 +1818,19 @@ public class PDAController {
 	@RequestMapping("/branchdeliverBatch")
 	public String branchdeliverBatch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
-		String roleids = "2,4";
+		/*String roleids = "2,4";
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
-
+*/      String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+		roleids += "," + r.getRoleid();
+			}
+		}
+		
+		
+		
+		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 		model.addAttribute("userList", uList);// 获取用户列表
 
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);// 获取小件员
