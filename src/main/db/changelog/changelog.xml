@@ -6870,14 +6870,14 @@ CREATE TABLE `cs_complaint_accept` (
     
     <changeSet id="wangzhiyong-2015-06-24-1" author="wangzhiyong">
     	<sql>
-    		delete from express_set_system_install where name='heshiTime';
+    		 delete from express_set_system_install where name='heshiTime';
     	</sql>
     </changeSet>
     
     
      <changeSet id="wangzhiyong-2015-06-24-2" author="wangzhiyong">
     	<sql>
-    		insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '工单可核实时间是否过期(小时)');
+    		 insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('heshiTime', '1', '工单可核实时间是否过期(小时)');
     	</sql>
     </changeSet>
     
