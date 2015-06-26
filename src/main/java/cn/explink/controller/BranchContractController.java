@@ -117,6 +117,7 @@ public class BranchContractController {
 		// workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
 		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(branchContractVO);
 		model.addAttribute("branchContractList",list);
+		model.addAttribute("branchContractVO",branchContractVO);
 		return "branchContract/branchContractList";
 	}
 

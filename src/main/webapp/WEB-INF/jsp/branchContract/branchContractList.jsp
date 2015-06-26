@@ -11,7 +11,7 @@
 %> --%>
 <%
 	List<ExpressSetBranchContract> branchContractList=request.getAttribute("branchContractList")==null?null:(List<ExpressSetBranchContract>)request.getAttribute("branchContractList");
-	/* ExpressSetBranchContractVO branchContract=(ExpressSetBranchContractVO)request.getAttribute("bc")==null?null:(ExpressSetBranchContractVO)request.getAttribute("bc"); */
+	
 %>
 <!DOCTYPE html PUBLIC "-//W3C//Dth HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dth">
 <html>
@@ -93,6 +93,13 @@ function initSelect(){
 	
 	$("#isDeposit").append('<option value ="<%=YesOrNoStateEnum.No.getValue()%>"><%=YesOrNoStateEnum.No.getText()%></option>'); 
 	$("#isDeposit").append('<option value ="<%=YesOrNoStateEnum.Yes.getValue()%>"><%=YesOrNoStateEnum.Yes.getText()%></option>'); 
+}
+
+function initQueryCondition(){
+	$("#contractState").val("${branchContractVO.contractState}");
+	$("#isDeposit").val("${branchContractVO.isDeposit}");
+	$("#contractColumn").val("${branchContractVO.contractColumn}");
+	$("#contractColumnOrder").val("${branchContractVO.contractColumnOrder}");
 }
 function getPath(){
 	var path = "<%=request.getContextPath()%>";
@@ -343,7 +350,7 @@ function queryContract(){
 			'		 	<table>'+
 			'					<tr>'+
 			'						<th align="left">编号</th>'+
-			'						<td><input type="text" name="contractNo" value="" id="contractNo" maxlength="20"/></td>'+
+			'						<td><input type="text" name="contractNo" value="${branchContractVO.contractNo}" id="contractNo" maxlength="20"/></td>'+
 			'						<th align="left">合同状态</th>'+
 			'						<td>'+
 			'							<select id="contractState" name="contractState">'+
@@ -353,19 +360,19 @@ function queryContract(){
 			'					</tr>'+	
 			'					<tr>'+
 			'						<th align="left">加盟商名称</th>'+
-			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"/></td>'+
+			'						<td><input type="text" name="branchName" value="${branchContractVO.branchName}" id="branchName" maxlength="50"/></td>'+
 			'						<th align="left">区域经理</th>'+
-			'						<td><input type="text" name="areaManager" value="" id="areaManager" maxlength="20"/></td>'+
+			'						<td><input type="text" name="areaManager" value="${branchContractVO.areaManager}" id="areaManager" maxlength="20"/></td>'+
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">站点负责人</th>'+
-			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"/></td>'+
+			'						<td><input type="text" name="siteChief" value="${branchContractVO.siteChief}" id="siteChief" maxlength="20"/></td>'+
 			'						<th align="left">负责人身份证</th>'+
-			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20"/></td>'+
+			'						<td><input type="text" name="chiefIdentity" value="${branchContractVO.chiefIdentity}" id="chiefIdentity" maxlength="20"/></td>'+
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">合同详细描述</th>'+
-			'						<td><input type="text" name="contractDescription" id="contractDescription" maxlength="20"/></td>'+
+			'						<td><input type="text" name="contractDescription" value="${branchContractVO.contractDescription}" id="contractDescription" maxlength="20"/></td>'+
 			'						<th align="left">是否有押金</th>'+
 			'						<td>'+
 			'							<select id ="isDeposit" name ="isDeposit">'+
@@ -376,15 +383,15 @@ function queryContract(){
 			'					<tr>'+
 			'						<th align="left">合同开始日期</th>'+
 			'						<td>'+
-			'							<input type="text" name="contractBeginDateFrom" id="contractBeginDateFrom" value="" class="input_text1"/>'+
+			'							<input type="text" name="contractBeginDateFrom" id="contractBeginDateFrom" value="${branchContractVO.contractBeginDateFrom}" class="input_text1"/>'+
 			'							至'+
-			'							<input type="text" name="contractBeginDateTo" id="contractBeginDateTo" value="" class="input_text1"/>'+
+			'							<input type="text" name="contractBeginDateTo" id="contractBeginDateTo" value="${branchContractVO.contractBeginDateTo}" class="input_text1"/>'+
 			'						</td>'+
 			'						<th align="left">合同结束日期</th>'+
 			'						<td>'+
-			'							<input type="text" name="contractEndDateFrom" id="contractEndDateFrom" value="" class="input_text1"/>'+
+			'							<input type="text" name="contractEndDateFrom" id="contractEndDateFrom" value="${branchContractVO.contractEndDateFrom}" class="input_text1"/>'+
 			'							至'+
-			'							<input type="text" name="contractEndDateTo" id="contractEndDateTo" value="" class="input_text1"/>'+
+			'							<input type="text" name="contractEndDateTo" id="contractEndDateTo" value="${branchContractVO.contractEndDateTo}" class="input_text1"/>'+
 			'						</td>'+
 			'					</tr>'+
 			'					<tr>'+
@@ -422,6 +429,7 @@ function queryContract(){
 	$("#contractBeginDateTo").datepicker();
 	$("#contractEndDateFrom").datepicker();
 	$("#contractEndDateTo").datepicker();
+	initQueryCondition();
 	$("#alert_box").show();
 	centerBox();
 }
@@ -644,8 +652,18 @@ function updateContractData(){
 }
 
 function querycaller(){
-	 $("#querycallerForm").submit();
+	$("#querycallerForm").submit();
 	closeBox();
+	
+	 /* $.ajax({
+			type : "POST",
+			data : $('#querycallerForm').serialize(),
+			url : $("#querycallerForm").attr('action'),
+			dataType : "json",
+			success : function(data) {}
+			});
+	document.location.reload(true);
+	 closeBox(); */
 }
 
 function getBranchContractDetailVOList(){
