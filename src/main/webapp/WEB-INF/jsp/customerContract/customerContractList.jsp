@@ -60,8 +60,12 @@ function setId(id,state){
 } 
 //查询
 function query(){
-	$("#queryContract").submit();
-	closeBox();
+	if(!queryVerify()){
+		return;
+	}else{
+		$("#queryContract").submit();
+		closeBox();
+	}
 }
 
 function setCondition(){
@@ -506,6 +510,22 @@ function account(data){
 		}
 	}
 }
+
+function queryVerify(){
+	var flag = true;
+	var pattern = new RegExp("[`'~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&mdash;|{}【】‘；：”“'。，、？\"]");
+    var numberValue = $("#number").val();
+ 	var partyanameValue = $("#partyaname").val();
+ 	var marketingprincipal = $("#marketingprincipal").val();
+ 	var othercontractors = $("#othercontractors").val();
+ 	var contractdescription = $("#contractdescription").val();
+	if(pattern.test(numberValue)||pattern.test(partyanameValue)||pattern.test(marketingprincipal)||pattern.test(othercontractors)||pattern.test(contractdescription)){
+        alert("不允许输入特殊字符！")
+        return false;
+    }
+	return flag;
+}
+
  //打开对应的页面
 function showBox(data){
 	 $("#box_contant").html("");
