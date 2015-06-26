@@ -10,16 +10,53 @@ import cn.explink.core.pager.Pageable;
  */
 public class CsPushSms extends Pageable{
 	
+	/*
+	 * 主键
+	 */
 	private Long id;
+	/*
+	 * 订单号
+	 */
 	private String cwbOrderNo;
+	/*
+	 * 工单号
+	 */
 	private String workOrderNo;
+	/*
+	 * 工单类型
+	 */
 	private Long complaintType;//ComplaintTypeEnum
+	/*
+	 * 工单状态
+	 */
 	private Integer complaintState;//ComplaintStateEnum
+	/*
+	 * 工单受理人
+	 */
 	private String handler;
+	/*
+	 * 被投诉机构id
+	 */
 	private Long complianBranchId;
+	/*
+	 * 被投诉员工id
+	 */
 	private String complianUserName;
+	/*
+	 * 催件短信发送时间
+	 */
 	private String sendTime;
+	/*
+	 * 催件短信内容
+	 */
 	private String smsContent;
+	/*
+	 * 收件方类型：1：机构  2：派送员
+	 */
+	private Integer receiveType;
+	/*
+	 * 催件短信收件手机号
+	 */
 	private String mobileNo;
 	
 	/**

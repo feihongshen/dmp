@@ -563,23 +563,27 @@ function yunyingObj() {
 	gonggongObj_branch();
 	$("#branchmatter").parent().show();
 	$(".yunying").parent().show();
+	$("#branchmobile").parent().show();
 	$("#branchcode").val('');
 }
 function kefuObj() {
 	gonggongObj_branch();
 	$("#branchmatter").parent().show();
+	$("#branchmobile").parent().show();
 	$(".kefu").parent().show();
 	$("#branchcode").val('');
 }
 function caiwuObj() {
 	gonggongObj_branch();
 	$("#branchmatter").parent().show();
+	$("#branchmobile").parent().show();
 	// $("#swfupload-control").parent().show();
 	$("#branchcode").val('');
 }
 function qitaObj() {
 	gonggongObj_branch();
 	$("#branchprovince").parent().show();
+	$("#branchmobile").parent().show();
 	$("#branchaddress").parent().show();
 	$("#remandtype").parent().show();
 	$("#pda_title").show();
@@ -4099,9 +4103,6 @@ function getcontents() {
 $(function() {
 	$("#add_button").click(function() {
 		getAddBox();
-		if(afterInit != undefined){
-			afterInit();
-		}
 		
 	});
 

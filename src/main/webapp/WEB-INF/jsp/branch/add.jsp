@@ -51,6 +51,7 @@
            		<li><span>机构编号：</span><input type="text" name="branchcode" id="branchcode" maxlength="50" onblur="isbranchnum(this)"/>*</li>
            		<li><span>负 责 人：</span><input type="text" name="branchcontactman"  id="branchcontactman" maxlength="50"/>*</li>
 		        <li><span>固定电话：</span><input type="text" name="branchphone" id="branchphone" maxlength="50" onblur="isbranchnum(this)"/></li>
+				<li><span>机构手机：</span><input type="text" name="branchmobile" id="branchmobile" maxlength="50" onblur="isbranchnum(this)"/></li>
 			    
 			    <li><span>省份：</span><input type="text" name="branchprovince" id="branchprovince"  maxlength="50"/></li>
 			    <li><span>城市：</span><input type="text" name="branchcity" id="branchcity"  maxlength="50"/></li>
@@ -63,7 +64,6 @@
 				     <option value ="<%=accountarea.getAreaid()%>"><%=accountarea.getAreaname() %></option>
 				    <%} %>
 				  </select></li> --%>
-				 <li><span>站点手机：</span><input type="text" name="branchmobile" id="branchmobile" maxlength="50" onblur="isbranchnum(this)"/></li>
 				 <li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
 				 <!-- <li><span>预付款后缴款设置：</span><input type="hidden" name="" class ="zhandian" /></li> -->
 				 

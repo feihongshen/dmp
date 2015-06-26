@@ -3280,13 +3280,7 @@ public class PDAController {
 			obj.put("cwbbranchnamewav", "");
 		}
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
-		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
-			obj.put("cwbgaojia", "true");
-			explinkResponse.addLongWav(this.getErrorWavFullPath(request, WavFileName.GJ));
-		} else {
-			obj.put("cwbgaojia", "");
-		}
-
+		//站点机构声音
 		if (cwbOrder.getDeliverybranchid() != 0) {
 			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
 			obj.put("cwbdeliverybranchname", branch.getBranchname());
@@ -3315,6 +3309,7 @@ public class PDAController {
 		}
 		// 加入货物类型声音.
 		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+		//操作成功、失败声音
 		String wavPath = null;
 		//一票多件提示音乐
 		String multiTipPath = null;
@@ -3331,7 +3326,12 @@ public class PDAController {
 				explinkResponse.addLongWav(multiTipPath);
 			}
 		}
-
+		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
+			obj.put("cwbgaojia", "true");
+			explinkResponse.addLongWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+		} else {
+			obj.put("cwbgaojia", "");
+		}
 		return explinkResponse;
 	}
 
