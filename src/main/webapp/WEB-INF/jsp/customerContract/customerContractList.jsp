@@ -874,7 +874,7 @@ function showBox(data){
 		'						<th align="left">押金支付日期:</th>'+
 		'						<td><input type="text" name="depositpaymentdate" id="depositpaymentdate" style="background-color:#DCDCDC;width:150px" readonly="readonly"/></td>'+
 		'						<th align="left">押金支付金额:</th>'+
-		'						<td><input type="text" name="depositpaymentamount"  id="depositpaymentamount" maxlength="20" style="width:150px" /></td>'+
+		'						<td><input type="text" name="depositpaymentamount"  id="depositpaymentamount" maxlength="20" style="background-color:#DCDCDC;width:150px" readonly="readonly" /></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>					'+
@@ -882,7 +882,7 @@ function showBox(data){
 		'						<th align="left">押金支付人:</th>'+
 		'						<td><input type="text" name="depositpaymentperson" style="background-color:#DCDCDC;width:150px" id="depositpaymentperson" maxlength="20"  readonly="readonly"/></td>'+
 		'						<th align="left">押金收取人:</th>'+
-		'						<td><input type="text"  name="depositgatherperson" id="depositgatherperson" maxlength="20" style="background-color:#DCDCDC;width:150px" readonly="readonly"/></td>'+
+		'						<td><input type="text"  name="depositgatherperson" id="depositgatherperson" maxlength="20" style="width:150px"/></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>'+
