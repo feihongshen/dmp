@@ -385,12 +385,14 @@ function callfunction(cwb){//getEmailDateByIds
 										if(confirm("无数据，有货无单,确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+											data.wavList = [];
 										}
 										$("#scancwb").val("");
 									}else if(data.statuscode=="102"){
 										if(confirm("尚未匹配站点，确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+											data.wavList = [];
 										}
 										$("#scancwb").val("");
 									}else{
@@ -1016,8 +1018,8 @@ function openLogin(){
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
-											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('customerid',$("#customerid").val())">供货商</span></td>
-											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('emaildate',$("#customerid").val())">发货时间</span></td>
+											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('customerid',$('#customerid').val())">供货商</span></td>
+											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('emaildate',$('#customerid').val())">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 											<td align="center" bgcolor="#f1f1f1">地址</td>
