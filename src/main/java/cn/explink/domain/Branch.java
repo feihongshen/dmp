@@ -74,6 +74,8 @@ public class Branch {
 	private long prescription48;// 48小时时效
 
 	private long backtime;// 退货出站超时时效：
+	
+	private BigDecimal branchBail;//站点保证金
 
 	public long getBacktime() {
 		return backtime;
@@ -569,6 +571,14 @@ public class Branch {
 
 	public void setBranchstreet(String branchstreet) {
 		this.branchstreet = branchstreet;
+	}
+
+	public BigDecimal getBranchBail() {
+		return branchBail;
+	}
+
+	public void setBranchBail(BigDecimal branchBail) {
+		this.branchBail = branchBail;
 	}
 
 }

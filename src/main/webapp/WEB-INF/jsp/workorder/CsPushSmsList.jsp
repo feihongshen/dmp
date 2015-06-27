@@ -18,7 +18,7 @@
    	        <input type="text" name="filter_GTD_sendTime" class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:150,prompt: '短信起始时间'"/> - 
    	        <input type="text" name="filter_LTD_sendTime" class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:150,prompt: '短信终止时间'"/>
 	        <span class="toolbar-item dialog-tool-separator"></span>
-  	        <input type="text" name="filter_EQS_cwbOrderNo" class="easyui-validatebox" data-options="width:150,prompt: '订/运单号'"/>
+  	        <input type="text" name="filter_EQS_cwbOrderNo" class="easyui-validatebox" data-options="width:150,prompt: '订/运单号'"></input>
 	        <span class="toolbar-item dialog-tool-separator"></span>
    	        <input type="text" name="filter_EQS_workOrderNo" class="easyui-validatebox" data-options="width:150,prompt: '工单号'"/>
 	        <span class="toolbar-item dialog-tool-separator"></span>

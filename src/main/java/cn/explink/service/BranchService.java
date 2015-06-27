@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.domain.Branch;
 import cn.explink.util.ResourceBundleUtil;
@@ -154,7 +155,14 @@ public class BranchService {
 		}
 
 		branch.setBacktime(Long.parseLong(request.getParameter("backtime") == null ? "0" : request.getParameter("backtime")));
-
+		
+		//站点保证金
+		if(StringUtils.isEmpty(request.getParameter("branchBail"))){
+			branch.setBranchBail(BigDecimal.ZERO);
+		}else{
+			branch.setBranchBail(new BigDecimal(request.getParameter("branchBail")));
+		}
+		
 		return branch;
 	}
 

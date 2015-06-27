@@ -99,6 +99,7 @@ public class BranchDAO {
 			branch.setBrancharea(rs.getString("brancharea"));
 			branch.setBranchstreet(rs.getString("branchstreet"));
 			branch.setBacktime(rs.getLong("backtime"));
+			branch.setBranchBail(rs.getBigDecimal("branch_bail"));
 			return branch;
 		}
 	}
@@ -299,7 +300,7 @@ public class BranchDAO {
 				+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 				+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 				+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
-				+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=? "
+				+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? "
 				+ " where branchid=?", new PreparedStatementSetter() {
 
 			@Override
@@ -357,7 +358,8 @@ public class BranchDAO {
 				ps.setString(47, branch.getBrancharea());
 				ps.setString(48, branch.getBranchstreet());
 				ps.setLong(49, branch.getBacktime());
-				ps.setLong(50, branch.getBranchid());
+				ps.setBigDecimal(50, branch.getBranchBail());
+				ps.setLong(51, branch.getBranchid());
 			}
 		});
 
@@ -404,8 +406,8 @@ public class BranchDAO {
 						+ "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag,"
 						+ "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag,"
 						+ "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid,"
-						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -456,6 +458,7 @@ public class BranchDAO {
 				ps.setString(48, branch.getBrancharea());
 				ps.setString(49, branch.getBranchstreet());
 				ps.setLong(50, branch.getBacktime());
+				ps.setBigDecimal(51, branch.getBranchBail());
 				return ps;
 			}
 		}, key);

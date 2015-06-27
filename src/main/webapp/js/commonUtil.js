@@ -1,4 +1,3 @@
-
 /*
 <input type="text" name="filter_EQL_supplierUsageId" class="easyui-validatebox" 
 	initDataType="TABLE" 
@@ -23,13 +22,13 @@
 />
  */
 
+
 //前台全局枚举缓存
 var enumCache = {};
 var entityCache = {};
 var queryInfo = {};
 
 $(window).ready(function() {
-	
 	$("[initDataType='ENUM']").each(function() {
 		initEnumSelect(this);
 	});
@@ -41,6 +40,7 @@ $(window).ready(function() {
 });
 
 function initEnumSelect(data){
+	var clear = $('<a href="javascript:void(0)">清空</a>'); 
 	var s = $(data);
 	var enumName = s.attr("initDataKey");
 	var viewField = s.attr("viewField");
@@ -57,9 +57,14 @@ function initEnumSelect(data){
 			return row[opts.textField].indexOf(q) >= 0;
 		}
 	});
+	s.after(clear);
+	clear.bind('click',function(){
+		s.combobox("clear")
+	});
 }
 
 function initTABLESelect(data){
+	var clear = $('<a>清空</a>'); 
 	var s = $(data);
 	var entityName = s.attr("initDataKey");
 	var viewField = s.attr("viewField");
@@ -108,6 +113,10 @@ function initTABLESelect(data){
 					return row[opts.textField].indexOf(q) >= 0;
 				}
 			});
+			s.after(clear);
+			clear.bind('click',function(){
+				s.combobox("clear")
+			});
 	}else{
 		s.combobox({
 			onSelect:function(selectObj){
@@ -125,7 +134,10 @@ function initTABLESelect(data){
 				return row[opts.textField].indexOf(q) >= 0;
 			}
 		});
-
+		s.after(clear);
+		clear.bind('click',function(){
+			s.combobox("clear")
+		});
 	}
 }
 

@@ -1067,6 +1067,7 @@ public class WorkOrderController {
 		cca.setCustomerid(co.getCustomerid());
 		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
+		cca.setCuijianNum(cca.getCuijianNum()+1);
 		workorderdao.saveComplainWorkOrderF(cca);
 		
 		//构建数据
@@ -1083,9 +1084,8 @@ public class WorkOrderController {
 		Long receiveId = null;
 		Integer receiveType = null;
 		/** 短信逻辑  */
-		//分站领货、反馈为
-		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
-			FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow) && DeliveryStateEnum.ZhiLiuZiDongLingHuo.equals(cwbDeliverState)){
+		//分站领货、反馈
+		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) || FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow)){
 			User deliver = userDao.getUserByUserid(cwbOrder.getDeliverid());
 			smsSendMobile = deliver.getUsermobile();
 			receiveId = Long.valueOf(deliver.getUserid());
@@ -1093,9 +1093,14 @@ public class WorkOrderController {
 		}
 		//其他状态订单
 		else{
-			Branch currentBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
-			smsSendMobile = currentBranch.getBranchmobile();
-			receiveId = Long.valueOf(currentBranch.getBranchid());
+			Branch targetBranch = null;
+			if(cwbOrder.getCurrentbranchid()!=0 ){
+				targetBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
+			}else{
+				targetBranch = branchDao.getBranchByBranchid(cwbOrder.getStartbranchid());
+			}
+			smsSendMobile = targetBranch.getBranchmobile();
+			receiveId = Long.valueOf(targetBranch.getBranchid());
 			receiveType = Integer.valueOf(1);
 		}
 		

@@ -527,6 +527,7 @@ function init_branch() {
 	$("#insert").parent().hide();
 	$("#wav").hide();
 	$("#bindmsksid").parent().hide();
+	$("#branchBail").parent().hide();
 
 }
 function gonggongObj_branch() {
@@ -552,6 +553,7 @@ function zhandianObj() {
 	$("#zhongzhuanid").parent().show();
 	$("#tuihuoid").parent().show();
 	$("#caiwuid").parent().show();
+	$("#branchBail").parent().show();
 	// $("#remandtype").parent().show();
 	$("#pda_title").show();
 	$("#pda").show();

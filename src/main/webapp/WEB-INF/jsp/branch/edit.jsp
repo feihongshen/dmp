@@ -80,7 +80,11 @@
           			<span>机构编号：</span>
           			<input type="text" name="branchcode" id="branchcode" value ="<%=branch.getBranchcode() %>" maxlength="50"/>
           			*
-          			</li>
+       			</li>
+       			<li>
+          			<span>保证金：</span>
+          			<input type="text" name="branchBail" id="branchBail" value ="<%=branch.getBranchBail() %>" maxlength="50"/>元
+       			</li>
 		        <li>
 		        	<span>负 责 人：</span>
 		        	<input type="text" name="branchcontactman" id="branchcontactman" value ="<%=branch.getBranchcontactman() %>" maxlength="50"/>
