@@ -335,6 +335,10 @@ public class PenalizeOutController {
 			@RequestParam(value = "dutypersonname", required = false, defaultValue = "0") String dutypersonname, Model model) throws Exception {
 		PenalizeOut out = this.penalizeOutDAO.getPenalizeOutByPenalizeOutId(penalizeOutId);
 		if (out != null) {
+			if((null!=out.getCanceldate())&&(out.getCanceldate().length()>0))
+			{
+				return "{\"errorCode\":1,\"error\":\"已撤销的记录不能创建对内扣罚\"}";
+			}
 			User user = null;
 			PenalizeInside penalizeInside = new PenalizeInside();
 			if ((dutypersonname != null) && (dutypersonname.trim().length() > 0)) {
