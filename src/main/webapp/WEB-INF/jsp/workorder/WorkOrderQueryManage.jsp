@@ -251,22 +251,22 @@ function getFomeV(v,l,timev){
 	$('#ComStateV').val("");
 	$('#ComStateV').val(l);
 }
-
+/* yyyy-MM-dd hh:mm:ss */
 function testCwbsIfNull(){
-	 var beginTime = $("#beginRangeTime").val();
+		 var beginTime = $("#beginRangeTime").val();
 	    var endTime = $("#endRangeTime").val();
-	    var beginTimes = beginTime.substring(0, 10).split('-');
+	   /*  var beginTimes = beginTime.substring(0, 10).split('-');
 	    var endTimes = endTime.substring(0, 10).split('-');
 
 	    beginTime = beginTimes[1] + '-' + beginTimes[2] + '-' + beginTimes[0] + ' ' + beginTime.substring(10, 19);
 	    endTime = endTimes[1] + '-' + endTimes[2] + '-' + endTimes[0] + ' ' + endTime.substring(10, 19);
-		var e=Date.parse(endTime);
-		var s=Date.parse(beginTime);
-	    if (e<s) {
-	    	alert("结束时间不能小于开始时间！");
-	    	return false;
-	    }
-	    
+
+		var a =(Date.parse(endTime)-Date.parse(beginTime))/3600/1000;
+		  */
+		 if(endTime<beginTime){
+			alert("结束时间不能小于开始时间！");
+		 return false;
+		 }	
 	    return true;
 }
 
