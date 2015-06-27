@@ -97,6 +97,11 @@ function getcwbsdataForCustomer(){
 
 //退供应商出库
 function cwbbacktocustomer(scancwb,baleno){
+	if($("#customerid").val()<=0)
+	{
+		alert("请选择供货商！");
+		return ;
+	}
 	var pname="<%=request.getContextPath()%>/PDA/cwbbacktocustomer/";
 	if(scancwb.length>0){
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
