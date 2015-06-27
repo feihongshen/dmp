@@ -6953,7 +6953,7 @@ CREATE TABLE `cs_complaint_accept` (
 			`userid`  bigint(50) NULL COMMENT '核销人' ,
 			`operationTime`  date NULL COMMENT '核销日期' ,
 			`remark`  varchar(500) CHARACTER SET utf8 NULL COMMENT '备注' ,
-			`bacthstate`  int(10) NULL COMMENT '批次状态' ,
+			`batchstate`  int(10) NULL COMMENT '批次状态' ,
 			PRIMARY KEY (`batchid`),
 			INDEX `batchid_idx` (`batchid`) ,
 			INDEX `branchid_idx` (`branchid`) ,
@@ -7194,5 +7194,11 @@ CREATE TABLE `cs_complaint_accept` (
 				) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 			</sql>
     </changeSet>
+    <changeSet id="wangyonghe-2015-06-27-01" author="wangyonghe">
+		<sql>
+		    ALTER TABLE `express_ops_penalizeout_detail`
+			CHANGE COLUMN `receivablefee` `caramount`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '订单金额' AFTER `flowordertype`;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
  
