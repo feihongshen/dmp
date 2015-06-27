@@ -9865,6 +9865,7 @@ src/main/webapp/uppda/EXPOS30.exe -text
 src/main/webapp/uppda/expos30.xml -text
 src/main/webapp/wav/js.js -text
 src/test/java/AlipayConvertTest.java -text
+src/test/java/GenEntity.java -text
 src/test/java/HttpClientTest.java -text
 src/test/java/YeepayConvertTest.java -text
 src/test/java/cn/explink/controller/CwbOrderDTOTest.java -text
