@@ -10,7 +10,7 @@ package cn.explink.enumutil.coutracManagementEnum;
  */
 public enum InvoiceTypeEnum {
 	// 由于发票类型暂时未定，所以先这样显示
-	FaPiaoLeiXing1(1, "1"), FaPiaoLeiXing2(2, "2");
+	PuTongFaPiao(1, "普通发票"), ZengChiFaPiao(2, "增值税专用发票"), JiDaFaPiao(2, "机打发票"), DingEFaPiao(2, "定额发票");
 	private int value;
 	private String text;
 
