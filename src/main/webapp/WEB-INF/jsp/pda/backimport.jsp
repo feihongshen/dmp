@@ -521,7 +521,7 @@ function yiruku(){
  			clearMsg();
  			$("#msg").html(data.body.errorinfo);
  			$("#scancwb").val("");
- 			errorvedioplay("<%=request.getContextPath()%>",data);
+ 			newPlayWav(data.wavPath);
  		}
  	});
  }
