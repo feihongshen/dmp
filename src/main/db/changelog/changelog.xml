@@ -6961,7 +6961,7 @@ CREATE TABLE `cs_complaint_accept` (
 			INDEX `endtime_idx` (`endtime`) ,
 			INDEX `userid_idx` (`userid`) ,
 			INDEX `operationTime_idx` (`operationTime`) ,
-			INDEX `bacthstate_idx` (`bacthstate`) 
+			INDEX `batchstate_idx` (`batchstate`) 
 			);
 		</sql>
    </changeSet>
