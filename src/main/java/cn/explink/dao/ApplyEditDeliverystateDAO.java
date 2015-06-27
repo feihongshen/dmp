@@ -310,16 +310,16 @@ public class ApplyEditDeliverystateDAO {
 	
 	
 	//审核为通过
-	public void updateShenheStatePass(String cwb) {
+	public void updateShenheStatePass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
-		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,ishandle=1 where cwb=? ";
-		this.jdbcTemplate.update(sql,cwb);
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,  ishandle=1 where cwb=? ";
+		this.jdbcTemplate.update(sql,edituserid,edittime,cwb);
 	}
 	//审核为不通过
-	public void updateShenheStateNoPass(String cwb) {
+	public void updateShenheStateNoPass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
-		String sql = "update express_ops_applyeditdeliverystate set shenhestate=2,ishandle=1 where cwb=? ";
-		this.jdbcTemplate.update(sql,cwb);
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=2,edituserid=?,edittime=?,ishandle=1 where cwb=? ";
+		this.jdbcTemplate.update(sql,edituserid,edittime,cwb);
 	}
 	//根据订单查询单条信息
 	public ApplyEditDeliverystate getApplyED(String cwb){

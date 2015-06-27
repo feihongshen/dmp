@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sourceforge.jtds.jdbc.DateTime;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -251,6 +253,9 @@ public class ApplyEditDeliverystateController {
 		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		
+		List<Branch> branchViewList = branchDAO.getAllEffectBranches();
+		
 		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
 			for(String str:cwbs.split("\r\n")){
@@ -267,7 +272,7 @@ public class ApplyEditDeliverystateController {
 			applyeditlist = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(page,cwbss,cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
 			long count = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateCount(cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchList);
+			covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchViewList);
 		}
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
@@ -314,7 +319,9 @@ public class ApplyEditDeliverystateController {
 			){
 		if(cwbdata.length()>0){
 			for(String cwb:cwbdata.split(",")){
-				applyEditDeliverystateDAO.updateShenheStatePass(cwb);
+				long edituserid =  this.getSessionUser().getUserid();
+				String edittime = DateTimeUtil.getNowTime();
+				applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);
 				ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
 				//重置审核的最终方法
 				EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
@@ -331,7 +338,9 @@ public class ApplyEditDeliverystateController {
 			){
 		if(cwbdata.length()>0){
 			for(String cwb:cwbdata.split(",")){
-				applyEditDeliverystateDAO.updateShenheStateNoPass(cwb);
+				long edituserid =  this.getSessionUser().getUserid();
+				String edittime = DateTimeUtil.getNowTime();
+				applyEditDeliverystateDAO.updateShenheStateNoPass(cwb,edituserid,edittime);
 			}
 			return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 		}
