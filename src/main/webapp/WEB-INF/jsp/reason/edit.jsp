@@ -4,6 +4,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 Reason reason = (Reason)request.getAttribute("reason");
+String firstreason= request.getAttribute("firstreason")==null?null:(String)request.getAttribute("firstreason");
 
 %>
 <script type="text/javascript">
@@ -33,7 +34,9 @@ Reason reason = (Reason)request.getAttribute("reason");
 				       <input type="checkbox" id="checkbox1" name="changealowflag"  value="1" <%if(reason.getChangealowflag()==1){ %> checked<%} %> />中转是否要审核
 				       </p>	           	   
 			   			<%} %>
-		           
+			   			<%if(reason.getWhichreason()==2){%>
+		           		 <li><span>一级原因：</span><%=firstreason %> </li>
+		          	  <%} %>
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="<%=reason.getReasoncontent() %><%-- ${reason.reasoncontent} --%>" maxlength="30" class="input_text1"></li>
 		
 				</ul>

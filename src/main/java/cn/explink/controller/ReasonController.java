@@ -57,7 +57,14 @@ public class ReasonController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") long reasonid, Model model) {
+		Reason reason = reasonDao.getReasonByReasonid(reasonid);
+		if(reason.getParentid()>0){
+			String firstreason = reasonDao.getReasonByReasonid(reason.getParentid()).getReasoncontent();
+			model.addAttribute("firstreason",firstreason);
+		}
 		model.addAttribute("reason", reasonDao.getReasonByReasonid(reasonid));
+		
+		
 		return "reason/edit";
 	}
 

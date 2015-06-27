@@ -994,6 +994,8 @@ public class CwbOrderController {
 		
 		Page pag = new Page();
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		
+		List<Branch> branchviewList = this.branchDAO.getAllEffectBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		model.addAttribute("reasonList", reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZaiTou.getValue()));
 		model.addAttribute("branchList", branchList);
@@ -1017,7 +1019,7 @@ public class CwbOrderController {
 				coList = cwbDao.getListbyCwbs(strs);
 			}
 			
-			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchList);//获取分页查询的view
+			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchviewList);//获取分页查询的view
 		}
 		
 		model.addAttribute("page_obj",pag);
