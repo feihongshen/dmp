@@ -359,6 +359,7 @@ function exportExcel(){
 						</table>
 					</div>
 					<div style="height:130px"></div>
+					<br>
 					<from action="./auditTuiGongHuoShangSuccess" method="post" id="SubFrom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
