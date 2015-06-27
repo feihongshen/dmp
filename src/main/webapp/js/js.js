@@ -3550,11 +3550,12 @@ function testTemp(){
 }
 // obj=[{"time":1000,url:"/images/waverror/fail.wav"}];
 function batchPlayWav(obj) {
+	
 	var waitTime = 100;
 	for (var i = 0; i < obj.length; i++) {
 		var wavObj = obj[i];
 	
-		setTimeout(_play(wavObj.url), waitTime);
+		setTimeout(_play(wavObj.url,i), waitTime);
 		
 
 		waitTime += wavObj.time;
@@ -3562,7 +3563,7 @@ function batchPlayWav(obj) {
 	}
 }
 
-function _play(url) {
+function _play(url,i) {
 	return function() {
 
 /*		if ($.browser.msie && $.browser.version == "8.0") {
@@ -3582,7 +3583,7 @@ function _play(url) {
 //			$("#wav").remove();
 //			$("body").append("<embed id='wav' src='" + url + "' width='0' height='0'/>");
 //		}
-		doWavAudio(url);
+		doWavAudio(url,i);
 
 	};
 }
@@ -4935,12 +4936,12 @@ function hidelalast(){
 
 
 //报声
-function doWavAudio(wavPath){
+function doWavAudio(wavPath,name){
 	//console.info(wavPath);
 	//<audio id="wavPlay1"></audio>
-	$("#wav").remove();
-	$("body").append("<audio id='wav' src='" + wavPath + "'  />");
-	var audioElement = document.getElementById('wav');
+	$("#wav"+name).remove();
+	$("body").append("<audio id='wav"+name+"' src='" + wavPath + "'  />");
+	var audioElement = document.getElementById('wav'+name);
 	audioElement.load();
 	audioElement.play();
 }

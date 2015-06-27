@@ -7201,5 +7201,12 @@ CREATE TABLE `cs_complaint_accept` (
     		ADD COLUMN `receive_type` int(2) DEFAULT NULL COMMENT '短信接收对象类型' AFTER `receive_id`;
     	</sql>
     </changeSet>
+    
+    <!-- 机构添加保证金  -->
+    <changeSet id="gaoll-2015-06-27-02" author="gaoll">
+    	<sql>
+    		ALTER TABLE `express_set_branch` ADD COLUMN `branch_bail` decimal(19,2) DEFAULT 0.00 COMMENT '保证金' AFTER `backtime`;
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  
