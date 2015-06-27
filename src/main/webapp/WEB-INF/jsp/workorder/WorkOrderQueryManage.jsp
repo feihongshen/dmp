@@ -80,7 +80,6 @@ function getAddBox3(FormV) {
 }
 
 $(function() {
-	
 	$('#complaintState').val($('#complaintStateVL').val());
 	$('#olreasonV').val($('#complaintOneLevelVL').val());
 	$('#tlreasonV').val($('#complaintTwoLevelVL').val());
@@ -206,6 +205,7 @@ function getAddBox2() {
 		alert('请选择一条记录');
 		return false;
 	}
+	
 	$.ajax({
 		type : "POST",
 		data:'acceptNo='+$('#FormV').val(),
@@ -491,8 +491,6 @@ function CurentTime()   //计算当天时间
 		</table>
 	</div>	
 
-<!-- 	DaiChuLi(0, "待处理"),  YiJieAn(1, "已结案"),DaiHeShi(2,"待核实"),YiHeShi(3,"已核实"),
-	YiJieShu(4,"已结束"),JieAnChongShenZhong(5,"结案重审中"); -->
 	<input type="hidden" id="YiJieAn" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>"/>
 	<input type="hidden" id="DaiHeShi" value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"/>
 	<input type="hidden" id="YiHeShi" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"/>

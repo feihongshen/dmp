@@ -35,8 +35,7 @@ $('#svc').val($('#consigneeTypeVL').val());
 		if($('#callerphoneid').val()==""){
 			alert('请选择一行数据' );
 		}	else{	
-				edit_button($('#callerphoneid').val());
-				$('#PageFromW').submit();
+			edit_button($('#callerphoneid').val());
 		}
 	});
 	

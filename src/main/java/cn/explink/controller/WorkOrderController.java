@@ -629,27 +629,12 @@ public class WorkOrderController {
 		model.addAttribute("lb", lb==null?null:lb); 
 		model.addAttribute("lc", lc==null?null:lc);
 		model.addAttribute("connameList", connameList);
-		/*model.addAttribute("co", co==null?null:co);*/
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		
 		return "workorder/WorkOrderQueryManage";		
 	}
-/*	@RequestMapping("/WorkOrderQueryManage")
-	public String WorkOrderQueryManage(Model model){
-		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
-		List<Reason> lr=reasondao.addWO();
-		List<Branch> lb=branchDao.getAllBranches();
-		
-		model.addAttribute("lr", lr);
-		model.addAttribute("lcsa", lcsa);
-		model.addAttribute("lb", lb);
-		model.addAttribute("alluser",userDao.getAllUser());
-		model.addAttribute("currentuser", getSessionUser().getRoleid());
-		
-		return "workorder/WorkOrderQueryManage";
-	}*/
-	
+
 	@RequestMapping("/ChangeComplaintState")
 	@ResponseBody
 	public String ChangeComplaintState(CsComplaintAccept cca){
@@ -802,8 +787,8 @@ public class WorkOrderController {
 		String complaintTwoLevel = request.getParameter("complaintTwoLevel")==null?"-1":request.getParameter("complaintTwoLevel");
 		String beginRangeTime = request.getParameter("beginRangeTime")==null?"":request.getParameter("beginRangeTime");
 		String endRangeTime = request.getParameter("endRangeTime")==null?"":request.getParameter("endRangeTime");
-		/*String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
-		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");*/
+		String handleUser = request.getParameter("handleUser")==null?"":request.getParameter("handleUser");
+		String ifpunish = request.getParameter("ifpunish")==null?"-1":request.getParameter("ifpunish");
 		String acceptNo = request.getParameter("acceptNo");
 		CsComplaintAcceptVO cc = new CsComplaintAcceptVO();
 		/*cc.setComplaintType(Integer.valueOf(complaintType));*/
@@ -813,8 +798,10 @@ public class WorkOrderController {
 		cc.setCodOrgId(Integer.valueOf(codOrgId));
 		cc.setComplaintResult(Integer.valueOf(complaintResult));
 		cc.setComplaintTwoLevel(Integer.valueOf(complaintTwoLevel));
-		cc.setBeginTime(beginRangeTime);
-		cc.setEndTime(endRangeTime);
+		cc.setHandleUser(handleUser);
+		cc.setIfpunish(Integer.valueOf(ifpunish));
+		cc.setBeginRangeTime(beginRangeTime);
+		cc.setEndRangeTime(endRangeTime);
 		
 		
 		/**
