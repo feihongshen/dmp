@@ -315,6 +315,7 @@ function addCci(){
 	
 }
 function SelectPhone(){
+
 		 $.ajax({			 
 			 type:'POST',
 			 data:'phoneonOne='+$(phoneonOne).val(),
@@ -336,8 +337,11 @@ function SelectPhone(){
 						$('#sex').attr("checked","true");
 					}
 					$('#savecallerinfo').attr("disabled","disabled");
-					 }else{
-						 $('#contactLastTime').val('<%=DateTimeUtil.getNowTime()%>');
+					 }else if(data==null){
+						 var tm=CurentTime();
+						 $('#contactLastTime').show();
+						 $('#contactNum').show();
+						 $('#contactLastTime').val(tm);
 						 $('#contactNum').val('1');
 					 $('#savecallerinfo').removeAttr("disabled");
 					 $('#dname').val("");
@@ -547,6 +551,7 @@ function submitselect2(){    //通过手机号查询工单
         timerID = setTimeout("showtime()", 1000);  
         timerRunning = true;  
     } 
+    */
     function CurentTime()   
     { 
         var now = new Date();
@@ -582,7 +587,7 @@ function submitselect2(){    //通过手机号查询工单
         clock += ss; 
         return(clock); 
     }
-*/
+
 
 
 </script>

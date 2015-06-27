@@ -126,16 +126,15 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 					<span>结案处理结果:</span>
 						<%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %>
 						<span>结案时间:</span>
-						<%=cca.getAcceptTime()%>						
-					</li>
-					<li>
-					<span>结案人:</span>
+						<%=cca.getAcceptTime()%>
+						<span>结案人:</span>
 					<%for(User u:alluser){ %>
 							<%if(cca.getHandleUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
 						<%} }%>
-					<span>结案备注:</span>客服直接结案			
-					<%if(cca.getDownloadjieanpath()!=null){ %>
+					<%if(cca.getDownloadjieanpath()!=null){ %>						
+					</li>
+					<li>
 					<span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span>
 					<%}%>
 				</li>
