@@ -93,7 +93,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 							</td>
 				<tr>
 					<td>
-					<span>工单内容:</span><textarea onfocus="aabzc()"  onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent">订单号+工单内容</textarea>
+					<span>工单内容:</span><textarea onfocus="aabzc()" onblur="aabzc1() "  onkeyup="checkLen(this)" style="width: 80%;height: 150px;margin-left: 20px" name="content" id="compaltecontent">订单号+工单内容</textarea>
 					<div>您还可以输入<font id="count" color="red">150</font>个文字</div> 
 					</td>
 				</tr>

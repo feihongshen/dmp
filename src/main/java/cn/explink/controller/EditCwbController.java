@@ -632,6 +632,28 @@ public class EditCwbController {
 	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) {
+		
+/*		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
+		if (isshow > 0) {// 查询
+			
+			StringBuffer sb1 = new StringBuffer();
+			String cwbs="";
+			if(!StringUtils.isEmpty(cwb)){		
+			String cwbss[]=cwb.trim().split("\r\n");		
+			for(String str1:cwbss){
+				sb1=sb1.append("'"+str1+"',");
+			}
+			cwbs=sb1.substring(0, sb1.length()-1);
+			}
+			
+				List<CwbOrder> co = this.cwbDAO.getCwbByCwbs(cwbs);
+				if (co != null) {
+					cwborderlist=co;
+				}
+			}
+		
+		
+		*/
 
 		if (isshow > 0) {// 查询
 			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();

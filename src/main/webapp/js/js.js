@@ -6274,7 +6274,13 @@ function getReasonValue(){
 	});	
 }
 function aabzc(){
+	if($('#compaltecontent').val()=="订单号+工单内容")
 	$('#compaltecontent').val('');
+}
+function aabzc1(){
+	if($('#compaltecontent').val()==""){
+		$('#compaltecontent').val('订单号+工单内容');
+	}
 }
 function checkLen(obj) {  
 

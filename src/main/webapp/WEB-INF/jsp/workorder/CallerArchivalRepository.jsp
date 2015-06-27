@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 
@@ -72,7 +72,7 @@ function deleteidValue(){
 </head>
 <body>
 	<div>
-		<form action="${ requestScope.page == null ? '1' : requestScope.page }" id=PageFromW>
+		<form action="${ requestScope.page == null ? '1' : requestScope.page }" id=PageFromW method="post">
 			<table>
 				<tr>
 					<td>姓名:<input type="text" name="name" id="name" value="${param.name == null  ? '' : param.name}"/></td>

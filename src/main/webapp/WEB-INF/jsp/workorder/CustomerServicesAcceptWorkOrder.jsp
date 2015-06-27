@@ -5,7 +5,6 @@
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
 <%@page import="cn.explink.enumutil.ComplaintTypeEnum"%>
-<%@page import="cn.explink.util.DateTimeUtil"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<CwbOrderAndCustomname> lco=request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
@@ -595,6 +594,7 @@ function submitselect2(){    //通过手机号查询工单
 
 </head>
 <body> <!--  onload="startclock()" -->
+<iframe width="420" scrolling="no" height="60" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=12&icon=1&num=5"></iframe>
 <div>
 
 		<table width="100%">
