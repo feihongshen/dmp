@@ -7041,13 +7041,6 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8 COMMENT='加盟商合同管理明细';
     	</sql>
     </changeSet>
-    <changeSet id="lichongchong-2015-06-26-2" author="lichongchong">
-    	<sql>
-    		INSERT INTO dmp40_function VALUES('8080','1','派费结算','8080','','80');
-			INSERT INTO dmp40_function VALUES('808010','2','客户合同管理','808010','customerContract/customerContractList?','8080');
-			INSERT INTO dmp40_function VALUES('808020','2','加盟商合同管理','808020','branchContract/branchContractList?','8080');
-    	</sql>
-    </changeSet>
         <changeSet id="wukong-2015-06-26-1" author="wukong">
     	<sql>
     	ALTER TABLE express_ops_lose_back MODIFY  COLUMN questionno VARCHAR(10000);
