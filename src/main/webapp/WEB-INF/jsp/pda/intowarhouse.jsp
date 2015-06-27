@@ -364,7 +364,7 @@ function callfunction(cwb){//getEmailDateByIds
 									if(data.body.cwbOrder.emaildateid==0){
 										$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
 									}
-									} else {
+								} else {
 									$("#excelbranch").hide();
 									$("#customername").hide();
 									$("#cwbgaojia").hide();
@@ -374,6 +374,7 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#showcwb").html("");
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
+									$("#scancwb").html("");
 									if(data.statuscode=="3"){
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo);
