@@ -3040,21 +3040,22 @@ public class ExportService {
 	}
 
 	// 退货再投导出view
-		public void SetTuiHuoZaiTouFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "订单号";
-			cloumnName2[0] = "Cwb";
-			cloumnName1[1] = "订单类型";
-			cloumnName2[1] = "Cwbordertypeid";
-			cloumnName1[2] = "供货商名";
-			cloumnName2[2] = "Customername";
-			cloumnName1[3] = "收件人";
-			cloumnName2[3] = "Consigneename";
-			cloumnName1[4] = "收件人地址";
-			cloumnName2[4] = "Consigneeaddress";
-			cloumnName1[5] = "退货入库时间";
-			cloumnName2[5] = "Tuihuozhaninstoreroomtime";
-		
-		}
+	public void SetTuiHuoZaiTouFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "客户名称";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "收件人";
+		cloumnName2[3] = "Consigneename";
+		cloumnName1[4] = "收件人地址";
+		cloumnName2[4] = "Consigneeaddress";
+		cloumnName1[5] = "退货库入库时间";
+		cloumnName2[5] = "Tuihuozhaninstoreroomtime";
+		cloumnName1[6] = "配送站点";
+		cloumnName2[6] = "Branchname";
+	}
 		// 退货出站view
 		public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {
 			cloumnName1[0] = "订单号";

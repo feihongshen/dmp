@@ -195,7 +195,13 @@ function sub2(){
 }
 
 function btnClick(){
-	$("[name='ischeck']").attr("checked",'true');
+	if($("[name='ischeck']").attr("checked")=="checked"||$("[name='ischeck']").attr("checked")=="true"){
+		$("[name='ischeck']").removeAttr("checked");
+		$("#selectbtn").text("全选");
+	}else{
+		$("[name='ischeck']").attr("checked","checked");
+		$("#selectbtn").text("反选");
+	}
 }
 
 
@@ -298,7 +304,7 @@ function exportField(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
@@ -312,7 +318,7 @@ function exportField(){
 							<%for(CwbOrderView cwb :cwbList){ %>
 							<tr class="font_1" height="30" >
 								<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
-									<input type="checkbox" name="ischeck" id="ischeck" value="<%=cwb.getCwb()%>"/>
+									<input type="checkbox" name="ischeck" id="ischeck" checked="checked" value="<%=cwb.getCwb()%>"/>
 								</td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename() %></td>

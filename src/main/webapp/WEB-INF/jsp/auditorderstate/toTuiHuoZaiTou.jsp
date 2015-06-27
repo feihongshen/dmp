@@ -106,7 +106,13 @@ function sub(){
 }
 
 function btnClick(){
-	$("[name='ischeck']").attr("checked",'true');//全选  
+	if($("[name='ischeck']").attr("checked")=="checked"||$("[name='ischeck']").attr("checked")=="true"){
+		$("[name='ischeck']").removeAttr("checked");
+		$("#selectbtn").text("全选");
+	}else{
+		$("[name='ischeck']").attr("checked","checked");
+		$("#selectbtn").text("反选");
+	}
 }
 
 function exportField(){
@@ -265,14 +271,14 @@ $(function() {
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人地址</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
+									<td width="180" align="center" valign="middle" bgcolor="#E7F4E3">收件人地址</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退货库入库时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
 								</tr>
@@ -287,15 +293,15 @@ $(function() {
 									for(CwbOrderView cwb :covList){ %>
 									<tr height="30">
 										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
-											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getCwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %><%} %>>
+											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getCwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %> checked="checked" <%} %>>
 										</td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwbordertypename()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCustomername() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwbordertypename()%></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCustomername() %></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
+										<td width="180" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getBranchname()%></td>
 										<td width="200" align="center" valign="middle">
 										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>

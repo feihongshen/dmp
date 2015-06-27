@@ -74,7 +74,13 @@ function check(){
 }
 
 function btnClick(){
-	$("[name='checkbox']").attr("checked",'true');//全选  
+	if($("[name='checkbox']").attr("checked")=="checked"||$("[name='checkbox']").attr("checked")=="true"){
+		$("[name='checkbox']").removeAttr("checked");
+		$("#selectbtn").text("全选");
+	}else{
+		$("[name='checkbox']").attr("checked","checked");
+		$("#selectbtn").text("反选");
+	}
 }
 
 function applypass(){
@@ -193,9 +199,9 @@ function exportExcel(){
 											申请类型:
 											<select name ="applytype" id ="applytype">
 												<option  value ="0">全部</option>
-													<option value ="<%=ApplyEnum.dingdanjinE.getValue()%>"><%=ApplyEnum.dingdanjinE.getText() %></option>
-													<option value ="<%=ApplyEnum.zhifufangshi.getValue()%>"><%=ApplyEnum.zhifufangshi.getText() %></option>
-													<option value ="<%=ApplyEnum.dingdanleixing.getValue()%>"><%=ApplyEnum.dingdanleixing.getText() %></option>
+												<option value ="<%=ApplyEnum.dingdanjinE.getValue()%>"><%=ApplyEnum.dingdanjinE.getText() %></option>
+												<option value ="<%=ApplyEnum.zhifufangshi.getValue()%>"><%=ApplyEnum.zhifufangshi.getText() %></option>
+												<option value ="<%=ApplyEnum.dingdanleixing.getValue()%>"><%=ApplyEnum.dingdanleixing.getText() %></option>
 											</select>
 										</td>
 									</tr>	
@@ -203,6 +209,7 @@ function exportExcel(){
 										<td>
 											确认状态:
 											<select name ="confirmstate" id ="confirmstate">
+												<option  value ="0">全部</option>
 												<option value ="<%=ConfirmStateEnum.daiqueren.getValue() %>"><%=ConfirmStateEnum.daiqueren.getText() %></option>
 												<option value ="<%=ConfirmStateEnum.yiqueren.getValue() %>"><%=ConfirmStateEnum.yiqueren.getText() %></option>
 											</select>
@@ -235,7 +242,7 @@ function exportExcel(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
@@ -258,7 +265,7 @@ function exportExcel(){
 									%>
 									<tr height="30" >
 										<td  width="40" align="center" valign="middle">
-											<input type="checkbox"  name="checkbox" id="checkbox" value="<%=zav.getOpscwbid()%>"/>
+											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>

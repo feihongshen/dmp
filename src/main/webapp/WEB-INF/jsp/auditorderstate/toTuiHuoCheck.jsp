@@ -172,9 +172,14 @@ function Days(){
 	return true;
 }
 
-//全选按钮
 function btnClick(){
-	$("[name='checkbox']").attr("checked",'true');//全选  
+	if($("[name='checkbox']").attr("checked")=="checked"||$("[name='checkbox']").attr("checked")=="true"){
+		$("[name='checkbox']").removeAttr("checked");
+		$("#selectbtn").text("全选");
+	}else{
+		$("[name='checkbox']").attr("checked","checked");
+		$("#selectbtn").text("反选");
+	}
 }
 
 //根据订单号查询
@@ -297,7 +302,7 @@ $(function() {
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 						<tbody>
 							<tr class="font_1" height="30" >
-								<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+								<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
@@ -316,7 +321,7 @@ $(function() {
 								<%for(OrderBackCheck cwb :orderbackList){ %>
 									<tr>
 										<td  width="40" align="center" valign="middle">
-											<input type="checkbox"  name="checkbox" id="checkbox" value="<%=cwb.getId()%>"/>
+											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=cwb.getId()%>"/>
 										</td>
 										<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCwbordertypename())%></td>

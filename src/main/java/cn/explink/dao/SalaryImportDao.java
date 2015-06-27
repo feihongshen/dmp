@@ -23,6 +23,7 @@ public class SalaryImportDao {
 			simport.setWhichvalue(rs.getInt("whichvalue"));
 			simport.setIschecked(rs.getInt("ischecked"));
 			simport.setAddordeduct(rs.getInt("addordeduct"));
+			simport.setAddordeductimport(rs.getInt("addordeductimport"));
 			return simport;
 		}
 	}
@@ -38,6 +39,32 @@ public class SalaryImportDao {
 	public void updateWhichvalue(int whichvalue,String filename){
 		String sql = "update express_set_salary set whichvalue=? where filename=?";
 		jdbcTemplate.update(sql,whichvalue,filename);
+	}
+	
+	public List<SalaryImport> getSalarySheetAdd(){
+		String sql = "select * from express_set_salary where addordeduct=1";
+		return jdbcTemplate.query(sql, new SalaryImportRowMapper());
+	}
+	
+	public List<SalaryImport> getSalarySheetDeduct(){
+		String sql = "select * from express_set_salary where addordeduct=0";
+		return jdbcTemplate.query(sql, new SalaryImportRowMapper());
+	}
+
+	public void updateIscheced(String filename, int ischecked) {
+		String sql = "update express_set_salary set ischecked=? where filename=?";
+		jdbcTemplate.update(sql,ischecked,filename);
+	}
+
+	//获取所有工资条导入的增项
+	public List<SalaryImport> getSalaryImportAdd() {
+		String sql = "select * from express_set_salary where addordeductimport=1";
+		return jdbcTemplate.query(sql, new SalaryImportRowMapper());
+	}
+	//获取所有工资条导入的减项
+	public List<SalaryImport> getSalaryImportDeduct() {
+		String sql = "select * from express_set_salary where addordeductimport=0";
+		return jdbcTemplate.query(sql, new SalaryImportRowMapper());
 	}
 	
 }

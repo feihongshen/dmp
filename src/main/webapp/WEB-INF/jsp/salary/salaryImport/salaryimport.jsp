@@ -9,11 +9,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>工资导入设置</title>
 <%
-	List<SalaryImport> simportList = (List<SalaryImport>)request.getAttribute("simportList");
+	List<SalaryImport> addList = (List<SalaryImport>)request.getAttribute("addList");
+	List<SalaryImport> deductList = (List<SalaryImport>)request.getAttribute("deductList");
 %>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
@@ -24,13 +22,18 @@ function saveForm(){
 	
 	var fileNameArr = [];
 	var whichValueArr = [];
-	for(var ind = 0; ind < 37; ind ++){
-		var fileNameTemp = "filename" + ind;
+	<%for(int i=0;i<addList.size();i++){%> 
+		var fileNameTemp = "filenameadd" + <%=i%>;
 		fileNameArr.push($("#"+fileNameTemp).val());
-		var whichValueTemp = "whichvalue" + ind;
+		var whichValueTemp = "whichvalueadd" + <%=i%>;
 		whichValueArr.push($("#"+whichValueTemp).val());
-	}
-	
+	<%}%>
+	<%for(int i=0;i<deductList.size();i++){%> 
+		var fileNameTemp = "filenamededuct" + <%=i%>;
+		fileNameArr.push($("#"+fileNameTemp).val());
+		var whichValueTemp = "whichvaluededuct" + <%=i%>;
+		whichValueArr.push($("#"+whichValueTemp).val());
+	<%}%>
 	var urlStr = $("#saveform").attr("action");
 	var dataJson = {};
 	dataJson["fileNameArr"] = fileNameArr;
@@ -54,27 +57,51 @@ function saveForm(){
 <body>
 <form action="<%=request.getContextPath() %>/salaryImport/updateWhichvalue" method="post" id="saveform">
 	<input  type="button" id="save" name="save" value="保存"  onclick="saveForm();"/>
-	<%if(simportList!=null&&simportList.size()>0){%>
-	<table style="width: 70%;margin-left: 10%;margin-top: 5%" >
-		<tbody id="trlist">
+	<%if(addList!=null&&deductList!=null){%>
+	<div style="border: 1px;color: black;">
+	<fieldset style="margin-left: 20%;margin-right:5%;margin-top: 0%;margin-bottom:2%;background-color: white;width: 60%;">
+		<legend>增项</legend>
+		<table style="width: 100%;margin-top: 0%" >
 			<tr>
-			<%for(int i=0;i<simportList.size();i++){%>
-				<td height="50px" nowrap="nowrap" align="right" style="width: 15%"><%=simportList.get(i).getFiletext()%>:
-					<input id="filename<%=i %>" name="filename<%=i %>" type="hidden" value="<%=simportList.get(i).getFilename() %>" />
+			<%for(int i=0;i<addList.size();i++){%>
+				<td height="50px" nowrap="nowrap" align="right" style="width: 15%"><%=addList.get(i).getFiletext()%>:
+					<input id="filenameadd<%=i %>" name="filename" type="hidden" value="<%=addList.get(i).getFilename() %>" />
 				</td>
 				<td height="50px" align="left" style="width: 15%">
-					<select id="whichvalue<%=i %>" name="whichvalue<%=i %>">
-						<option value="<%=WhichValueEnum.Gudingxiang.getValue()%>" <%if(simportList.get(i).getWhichvalue()==WhichValueEnum.Gudingxiang.getValue()){ %> selected="selected" <%} %> ><%=WhichValueEnum.Gudingxiang.getText() %></option>
-						<option value="<%=WhichValueEnum.Linshixiang.getValue()%>" <%if(simportList.get(i).getWhichvalue()==WhichValueEnum.Linshixiang.getValue()){ %> selected="selected" <%} %>><%=WhichValueEnum.Linshixiang.getText() %></option>
-					</select>
+					<select id="whichvalueadd<%=i %>" name="whichvalue">
+						<option value="<%=WhichValueEnum.Gudingxiang.getValue()%>" <%if(addList.get(i).getWhichvalue()==WhichValueEnum.Gudingxiang.getValue()){ %> selected="selected" <%} %> ><%=WhichValueEnum.Gudingxiang.getText() %></option>
+						<option value="<%=WhichValueEnum.Linshixiang.getValue()%>" <%if(addList.get(i).getWhichvalue()==WhichValueEnum.Linshixiang.getValue()){ %> selected="selected" <%} %>><%=WhichValueEnum.Linshixiang.getText() %></option>
+					</select>				
 				</td>
 				<%if((i+1)%4==0){ %>
 			</tr>
 			<tr>
 			<%} }%>
 			</tr>
-		</tbody>
-	</table>
+		</table>	
+	</fieldset>	
+	</div>
+	<fieldset style="margin-left: 20%;margin-right:5%;margin-top: 0%;margin-bottom:2%;background-color: white;width: 60%;">
+		<legend>减项</legend>
+		<table style="width: 100%;margin-top: 0%" >	
+			<tr>
+			<%for(int i=0;i<deductList.size();i++){%>
+				<td height="50px" nowrap="nowrap" align="right" style="width: 15%"><%=deductList.get(i).getFiletext()%>:
+					<input id="filenamededuct<%=i %>" name="filename" type="hidden" value="<%=deductList.get(i).getFilename() %>" />
+				</td>
+				<td height="50px" align="left" style="width: 15%">
+					<select id="whichvaluededuct<%=i %>" name="whichvalue<%=i %>">
+						<option value="<%=WhichValueEnum.Gudingxiang.getValue()%>" <%if(deductList.get(i).getWhichvalue()==WhichValueEnum.Gudingxiang.getValue()){ %> selected="selected" <%} %> ><%=WhichValueEnum.Gudingxiang.getText() %></option>
+						<option value="<%=WhichValueEnum.Linshixiang.getValue()%>" <%if(deductList.get(i).getWhichvalue()==WhichValueEnum.Linshixiang.getValue()){ %> selected="selected" <%} %>><%=WhichValueEnum.Linshixiang.getText() %></option>
+					</select>				
+				</td>
+				<%if((i+1)%4==0){ %>
+			</tr>
+			<tr>
+			<%} }%>
+			</tr>
+		</table>
+	</fieldset>	
 	<%} %>
 </form>	
 </body>

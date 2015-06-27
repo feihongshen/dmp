@@ -350,25 +350,23 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
 			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
-			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) int shenhestate,
-			@RequestParam(value = "shenheresult", defaultValue = "0", required = false) int shenheresult
+			@RequestParam(value = "applystate", defaultValue = "0", required = false) int applystate,
+			@RequestParam(value = "applyresult", defaultValue = "0", required = false) int applyresult
 			) {
 		
 		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
 		String cwbss = getCwbs(cwbs);
-		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
-		long count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
+		long count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
 		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
 		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
 		
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("uslist",uslist);
-		model.addAttribute("exportmouldlist", exportmouldlist);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("zhifulist", covList);

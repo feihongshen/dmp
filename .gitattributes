@@ -1971,6 +1971,7 @@ src/main/webapp/WEB-INF/jsp/cwbapply/applytoZhongZhuan.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbapply/applytoZhongZhuanlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbapply/handleTuiHuo.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbapply/kefuuserapplytoTuiHuolist.jsp -text
+src/main/webapp/WEB-INF/jsp/cwbapply/kefuuserapplytoZhongZhuanlist-no.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbapply/kefuuserapplytoZhongZhuanlist.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbdetail/list.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbdiushi/diushihaverightlist.jsp -text

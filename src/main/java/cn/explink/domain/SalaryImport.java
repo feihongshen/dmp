@@ -5,8 +5,15 @@ public class SalaryImport {
 	private String filetext;//中文名
 	private int whichvalue;//固定值或者临时值
 	private int ischecked;//是否被选中（工资条）
-	private int addordeduct;//描述增减项
+	private int addordeduct;//描述工资条增减项
+	private int addordeductimport;//描述工资导入增减项
 	
+	public int getAddordeductimport() {
+		return addordeductimport;
+	}
+	public void setAddordeductimport(int addordeductimport) {
+		this.addordeductimport = addordeductimport;
+	}
 	public int getAddordeduct() {
 		return addordeduct;
 	}

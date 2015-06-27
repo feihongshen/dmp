@@ -2574,7 +2574,7 @@ public class CwbOrderController {
 		long begintime = 0;
 		long endtime = 0;
 		if(!begindate.equals("")&&!enddate.equals("")){
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
 				Date date1 = sdf.parse(begindate);
 				begintime = date1.getTime();
@@ -2611,8 +2611,8 @@ public class CwbOrderController {
 			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchList);//获取分页查询的view
 			
 		}	
-		String[] cloumnName1 = new String[6]; // 导出的列名
-		String[] cloumnName2 = new String[6]; // 导出的英文列名
+		String[] cloumnName1 = new String[7]; // 导出的列名
+		String[] cloumnName2 = new String[7]; // 导出的英文列名
 
 		this.exportService.SetTuiHuoZaiTouFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;

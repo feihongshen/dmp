@@ -41,7 +41,7 @@ public class ZhiFuApplyDao {
 			zfav.setConfirmstate(rs.getInt("confirmstate"));
 			zfav.setConfirmresult(rs.getInt("confirmresult"));
 			zfav.setUserid(rs.getInt("userid"));
-			zfav.setFeewaytyperemark(rs.getString("feeremark"));
+			zfav.setFeewaytyperemark(rs.getString("feewaytyperemark"));
 			return zfav;
 		}
 	}
@@ -69,7 +69,7 @@ public class ZhiFuApplyDao {
 			obj.put("confirmstate", rs.getInt("confirmstate"));
 			obj.put("confirmresult", rs.getInt("confirmresult"));
 			obj.put("userid", rs.getInt("userid"));
-			obj.put("feeremark", rs.getString("feeremark"));
+			obj.put("feeremark", rs.getString("feewaytyperemark"));
 			return obj;
 		}
 	}
@@ -85,7 +85,7 @@ public class ZhiFuApplyDao {
 	 * @return key
 	 */
 	public long creZhiFuApplyView(final ZhiFuApplyView zav) {
-		return	this.jdbcTemplate.update("insert into express_ops_zhifu_apply (cwb,customerid,cwbordertypeid,applycwbordertypeid,flowordertype,branchid,paywayid,applypaywayid,receivablefee,applyreceivablefee,applyway,applystate,applyresult,userid,feeremark) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+		return	this.jdbcTemplate.update("insert into express_ops_zhifu_apply (cwb,customerid,cwbordertypeid,applycwbordertypeid,flowordertype,branchid,paywayid,applypaywayid,receivablefee,applyreceivablefee,applyway,applystate,applyresult,userid,feewaytyperemark) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				zav.getCwb(),
 				zav.getCustomerid(),
 				zav.getCwbordertypeid(),
@@ -229,13 +229,12 @@ public class ZhiFuApplyDao {
 	}
 	
 	//在 审核 页面通过条件查询
-	public List<ZhiFuApplyView> getapplycwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int shenhestate,
-			int shenheresult) {
-		String sql = "select * from express_ops_zhifu_apply";
+	public List<ZhiFuApplyView> getapplycwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int applystate,
+			int applyresult) {
+		String sql = "select * from express_ops_zhifu_apply where applystate=?";
 		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
+			sql += " and cwb in("+cwbs+")";
 		}else{
-			sql += " where 1=1";
 			StringBuffer sb = new StringBuffer("");
 			if(cwbtypeid>0){
 				sb.append(" and cwbordertypeid="+cwbtypeid);
@@ -246,16 +245,16 @@ public class ZhiFuApplyDao {
 			if(applytype>0){
 				sb.append(" and applyway="+applytype);
 			}
-			if(shenhestate>0){
-				sb.append(" and applystate="+shenhestate);
+			if(applystate>0){
+				sb.append(" and applystate="+applystate);
 			}
-			if(shenheresult>0){
-				sb.append(" and applyresult="+shenheresult);
+			if(applyresult>0){
+				sb.append(" and applyresult="+applyresult);
 			}
 			sql += sb;
 		}
 		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper(),applystate);
 	}
 	
 	//在 审核 页面通过条件查询

@@ -133,6 +133,17 @@ function Days(){
 	return true;
 }
 
+function btnClick(){
+	if($("[name='checkbox']").attr("checked")=="checked"||$("[name='checkbox']").attr("checked")=="true"){
+		$("[name='checkbox']").removeAttr("checked");
+		$("#selectbtn").text("全选");
+	}else{
+		$("[name='checkbox']").attr("checked","checked");
+		$("#selectbtn").text("反选");
+	}
+}
+
+
 //重置反馈通过
 function resetfeedbackPass(){
 	var cwbdata = "";
@@ -331,7 +342,7 @@ function exportExcel(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();">全选</a></td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
@@ -356,7 +367,7 @@ function exportExcel(){
 								for(CwbOrderView aed :applyeditlist){ %>
 									<tr height="30">
 									<td  width="40" align="center" valign="middle">
-										<input type="checkbox"  name="checkbox" id="checkbox" value="<%=aed.getCwb()%>" />
+										<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=aed.getCwb()%>" />
 									</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwb() %></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwbordertypename() %></td>

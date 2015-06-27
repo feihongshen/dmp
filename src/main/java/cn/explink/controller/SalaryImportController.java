@@ -24,8 +24,10 @@ public class SalaryImportController {
 	 */
 	@RequestMapping("/list")
 	public String setSalaryImport(Model model){
-		List<SalaryImport> simportList = salaryImportDao.getAllSalaryImports();
-		model.addAttribute("simportList",simportList);
+		List<SalaryImport> addList = salaryImportDao.getSalaryImportAdd();
+		List<SalaryImport> deductList = salaryImportDao.getSalaryImportDeduct();
+		model.addAttribute("addList",addList);
+		model.addAttribute("deductList",deductList);
 		return "/salary/salaryImport/salaryimport";
 	}	
 	

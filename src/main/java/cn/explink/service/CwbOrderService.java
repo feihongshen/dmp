@@ -6355,11 +6355,11 @@ public class CwbOrderService {
 				cwbOrderView.setCwb(ot.getCwb());
 				cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
 				cwbOrderView.setApplytype(ApplyEnum.getTextByValue(ot.getApplyway()));
-				String oldnewCwbordertypename = CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText()+"/"+CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText();
+				String oldnewCwbordertypename = CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText()+"/"+(ot.getApplycwbordertypeid()==0?"":CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText());
 				cwbOrderView.setOldnewCwbordertypename(oldnewCwbordertypename);// 订单类型
 				String oldnewReceivablefee = ot.getReceivablefee()+"/"+ot.getApplyreceivablefee();
 				cwbOrderView.setOldnewReceivablefee(oldnewReceivablefee);//订单金额
-				String oldnewPaytype = PaytypeEnum.getTextByValue(ot.getPaywayid())+"/"+PaytypeEnum.getTextByValue(ot.getApplypaywayid());
+				String oldnewPaytype = PaytypeEnum.getTextByValue(ot.getPaywayid())+"/"+(ot.getApplypaywayid()==0?"":PaytypeEnum.getTextByValue(ot.getApplypaywayid()));
 				cwbOrderView.setOldnewPaytype(oldnewPaytype);//支付方式
 				cwbOrderView.setNowState(this.getNowApplyState(ot.getApplystate()));//订单当前状态
 				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
