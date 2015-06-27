@@ -39,7 +39,7 @@ public class CsPushSms extends Pageable{
 	 */
 	private Long complianBranchId;
 	/*
-	 * 被投诉员工id
+	 * 被投诉员工username
 	 */
 	private String complianUserName;
 	/*
@@ -55,6 +55,10 @@ public class CsPushSms extends Pageable{
 	 */
 	private Integer receiveType;
 	/*
+	 * 收件方 
+	 */
+	private Long receiveId;
+	/*
 	 * 催件短信收件手机号
 	 */
 	private String mobileNo;
@@ -67,24 +71,32 @@ public class CsPushSms extends Pageable{
 	}
 	
 	/**
-	 * 必填项构造
+	 * 
 	 * @param cwbOrderNo
 	 * @param workOrderNo
-	 * @param complaintType
+	 * @param complaintState
 	 * @param handler
 	 * @param sendTime
 	 * @param smsContent
+	 * @param complianBranchId
+	 * @param complianUserName
+	 * @param receiveId
+	 * @param receiveType
+	 * @param mobileNo
 	 */
-	public CsPushSms(String cwbOrderNo, String workOrderNo, Long complaintType,Integer complaintState,
-			String handler, String sendTime, String smsContent, String mobileNo) {
+	public CsPushSms(String cwbOrderNo, String workOrderNo,Integer complaintState,
+			String handler, String sendTime, String smsContent,Long complianBranchId,String complianUserName,Long receiveId,Integer receiveType,String mobileNo) {
 		super();
 		this.cwbOrderNo = cwbOrderNo;
 		this.workOrderNo = workOrderNo;
-		this.complaintType = complaintType;
 		this.complaintState = complaintState;
 		this.handler = handler;
 		this.sendTime = sendTime;
 		this.smsContent = smsContent;
+		this.complianBranchId = complianBranchId;
+		this.complianUserName = complianUserName;
+		this.receiveId = receiveId;
+		this.receiveType = receiveType;
 		this.mobileNo = mobileNo;
 	}
 	public Long getId() {
@@ -118,7 +130,12 @@ public class CsPushSms extends Pageable{
 	public void setComplaintState(Integer complaintState) {
 		this.complaintState = complaintState;
 	}
-
+	public Integer getReceiveType() {
+		return receiveType;
+	}
+	public void setReceiveType(Integer receiveType) {
+		this.receiveType = receiveType;
+	}
 	public String getHandler() {
 		return handler;
 	}
@@ -155,6 +172,11 @@ public class CsPushSms extends Pageable{
 	public void setMobileNo(String mobileNo) {
 		this.mobileNo = mobileNo;
 	}
-	
+	public Long getReceiveId() {
+		return receiveId;
+	}
+	public void setReceiveId(Long receiveId) {
+		this.receiveId = receiveId;
+	}
 	
 }

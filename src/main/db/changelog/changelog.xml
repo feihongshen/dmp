@@ -7200,5 +7200,13 @@ CREATE TABLE `cs_complaint_accept` (
 			CHANGE COLUMN `receivablefee` `caramount`  decimal(18,2) NULL DEFAULT 0.00 COMMENT '订单金额' AFTER `flowordertype`;
 		</sql>
 	</changeSet>
+	
+	<!-- 催件短信修改2 -->
+    <changeSet id="gaoll-2015-06-27-01" author="gaoll">
+    	<sql>
+    		ALTER TABLE `cs_push_sms` ADD COLUMN `receive_id` bigint(11) DEFAULT NULL COMMENT '短信接收对象' AFTER `complaint_state`,
+    		ADD COLUMN `receive_type` int(2) DEFAULT NULL COMMENT '短信接收对象类型' AFTER `receive_id`;
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  

@@ -107,7 +107,7 @@ List<Reason> r = request.getAttribute("lr")==null?null:(List<Reason>)request.get
 				</form>					
 			</div>
 			<div align="center">
-			<button class="button" onclick="smsSend()">发送催件短信</button>
+			<button class="button" onclick="if(decidecomplain1()){smsSend()}">发送催件短信</button>
 			<button class="button" onclick="if(decidecomplain1()){btnccwo('<%=ComplaintStateEnum.DaiHeShi.getValue()%>')}">待机构核实</button>
 			<button class="button" onclick="if(decidecomplain()){btnccwo(<%=ComplaintStateEnum.YiJieAn.getValue()%>)}">结案</button>
 			<button class="button" onclick="closeBox()">取消</button>

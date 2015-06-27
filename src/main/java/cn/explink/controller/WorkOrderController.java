@@ -1050,6 +1050,8 @@ public class WorkOrderController {
 	return reasondao.getSecondLevelReason(Integer.valueOf(leave));		
 	}
 	
+	
+	
 	/**
 	 * 发送催件短信
 	 * @param request
@@ -1057,36 +1059,49 @@ public class WorkOrderController {
 	 */
 	@RequestMapping("/smsSend")
 	@ResponseBody
-	public String smsSend(HttpServletRequest request){
+	public String smsSend(CsComplaintAccept cca,HttpServletRequest request){
+		
+		String accepttime=DateTimeUtil.formatDate(new Date());
+		cca.setAcceptTime(accepttime);
+		CwbOrder co=cwbdao.getCwbByCwb(cca.getOrderNo());
+		cca.setCustomerid(co.getCustomerid());
+		String username=getSessionUser().getUsername();
+		cca.setHandleUser(username);
+		workorderdao.saveComplainWorkOrderF(cca);
 		
 		//构建数据
-		String cwbScan = request.getParameter("cwbNo");
-		String workOrderNo = request.getParameter("acceptNo");
-		CsComplaintAccept workOrderObj = this.workorderdao.getMsgByWorkOrderNo(workOrderNo);
+		String cwbScan = cca.getOrderNo();
+		String workOrderNo = cca.getAcceptNo();
+		String message = cca.getContent();
+		int compBranch = cca.getCodOrgId();
+		String compUser = cca.getComplaintUser();
 		String cwb = cos.translateCwb(cwbScan);
 		CwbOrder cwbOrder = cwbdao.getCwbByCwb(cwb);
 		FlowOrderTypeEnum cwbOrderFlow = FlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
 		DeliveryStateEnum cwbDeliverState = DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate());
 		String smsSendMobile = null;
-		String message = null;
-		//构建短信数据
-		if(ComplaintTypeEnum.CuijianTousu.getValue() == workOrderObj.getComplaintType() ){
-			message = workOrderObj == null? null : workOrderObj.getContent();
-		}else{
-			message = workOrderObj == null? null : workOrderObj.getQueryContent();
-		}
+		Long receiveId = null;
+		Integer receiveType = null;
 		/** 短信逻辑  */
 		//分站领货、反馈为
 		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
 			FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow) && DeliveryStateEnum.ZhiLiuZiDongLingHuo.equals(cwbDeliverState)){
 			User deliver = userDao.getUserByUserid(cwbOrder.getDeliverid());
 			smsSendMobile = deliver.getUsermobile();
+			receiveId = Long.valueOf(deliver.getUserid());
+			receiveType = Integer.valueOf(2);
 		}
 		//其他状态订单
 		else{
 			Branch currentBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
 			smsSendMobile = currentBranch.getBranchmobile();
+			receiveId = Long.valueOf(currentBranch.getBranchid());
+			receiveType = Integer.valueOf(1);
 		}
+		
+		//初始催件短信对象
+		CsPushSms csPushSms = new CsPushSms(cwbScan, workOrderNo, Integer.valueOf(ComplaintStateEnum.DaiHeShi.getValue()), username, DateTimeUtil.getNowTime(), message,Long.valueOf(compBranch),compUser,receiveId,receiveType,smsSendMobile);
+		
 		String msg = "";
 		int j = 0;
 		int i = 0;
@@ -1117,7 +1132,6 @@ public class WorkOrderController {
 					if (mobile != null && !"".equals(mobile)) {
 						logger.info("短信发送，手机号：{}", mobile.trim());
 						try {
-//							msg = smsSendService.sendSmsInterface(mobile, message, 0, "未知", getSessionUser().getUserid(), HttpUtil.getUserIp(request), smsConf.getName(), smsConf.getPassword());
 							msg = smsSendService.sendSms(mobile, message, 1, 0, "催件短信", getSessionUser().getUserid(), HttpUtil.getUserIp(request));
 							logger.info("短信发送，手机号：{}  结果：{}", mobile.trim(), msg);
 							if ("发送短信成功".equals(msg)) {
@@ -1146,12 +1160,6 @@ public class WorkOrderController {
 		}
 		
 		if( StringUtils.isEmpty(errorMsg) && "发送短信成功".equals(msg)){
-			this.workorderdao.updateMsgNum(workOrderNo);
-			CsPushSms csPushSms = new CsPushSms(cwbScan, workOrderNo, Long.valueOf(workOrderObj.getComplaintType()), Integer.valueOf(workOrderObj.getComplaintState()), workOrderObj.getHandleUser(), DateTimeUtil.getNowTime(), message, smsSendMobile);
-			if( workOrderObj.getCodOrgId() != 0){
-				csPushSms.setComplianBranchId(Long.valueOf(workOrderObj.getCodOrgId()));
-				csPushSms.setComplianUserName(workOrderObj.getComplaintUser());
-			}
 			this.csPushSmsDao.createReId(csPushSms);
 			return "{\"errorCode\":0,\"error\":\"催件短信发送成功！\"}";
 		}else{

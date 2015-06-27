@@ -24,14 +24,15 @@ $(function(){
 		singleSelect:true,
 	    columns:[[    
 			{field:'id',title:'id',hidden:true},  
-			{field:'cwbOrderNo',title:'订单号',sortable:true,width:25},
-			{field:'workOrderNo',title:'工单号',sortable:true,width:25},
+			{field:'cwbOrderNo',title:'订单号',sortable:true,width:20},
+			{field:'workOrderNo',title:'工单号',sortable:true,width:20},
 	        {field:'complaintState',title:'工单状态',sortable:true,width:10,formatter:complaintStateFormatter},    
 	        {field:'handler',title:'工单创建人',sortable:15,formatter:useridFormatter},
-	        {field:'complianBranchId',title:'责任机构',sortable:true,width:15,formatter:branchFormatter},
-	        {field:'complianUserName',title:'责任人',sortable:true,width:15,formatter:usernameFormatter},
+	        {field:'complianBranchId',title:'责任机构',sortable:true,width:10,formatter:branchFormatter},
+	        {field:'complianUserName',title:'责任人',sortable:true,width:10,formatter:usernameFormatter},
 	        {field:'sendTime',title:'短信发送时间',sortable:true,width:20},
 	        {field:'smsContent',title:'短信内容',sortable:true,width:60},
+	        {field:'receiveId',title:'短信接收对象',sortable:true,width:15,formatter:receiveIdFormatter},
 	        {field:'mobileNo',title:'收信手机号',sortable:true,width:15}
 	    ]],
 	    enableHeaderClickMenu: true,
@@ -138,4 +139,11 @@ function useridFormatter(value, row, index){
 }
 function branchFormatter(value, row, index){
 	return entityFormatter("Branch", value, "branchname", "branchid");
+}
+function receiveIdFormatter(value, row, index){
+	if(row.receiveType == "2"){
+		return entityFormatter("User", value, "realname", "userid")+"(员工)";
+	}else if(row.receiveType == "1"){
+		return entityFormatter("Branch", value, "branchname", "branchid")+"(机构)";
+	}
 }

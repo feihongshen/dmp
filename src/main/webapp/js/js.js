@@ -5531,6 +5531,24 @@ function btnccwo(Val){
 	
 	}
 
+function smsSend(){
+	$('#cwo').val("1");	
+	$.ajax({
+		type:'POST',
+		data:$('#ComplainWorkOrderF').serialize(),
+		url:"workorder/smsSend",
+		dataType:'json',				
+		success:function(data){
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+			} 	
+		}
+	});
+	closeBox();
+}
+
 function btnupdate(csv){
 	$('#cwo').val(csv);
 	$.ajax({
@@ -6400,24 +6418,6 @@ function findbigAdd(self,chufaobject)
 { var parent=$(self).find("option:selected").attr("id");
 	$("#"+chufaobject+" option[value='"+parent+"']").attr("selected","selected");
 } 
-
-function smsSend(){
-
-	var dataJson = {};
-	dataJson['cwbNo'] = $('#cwbn').val();
-	dataJson['acceptNo'] = $('#transn').val();
-	$.ajax({
-		type:"POST",
-		url:"workorder/smsSend",
-		data:dataJson,
-		dataType:"json",
-		success:function(result){
-			if(null != result){
-				alert(result.error);
-			}
-		}
-	});
-}
 
 function Callerifnull(){
 if($('#caname').val()==''){
