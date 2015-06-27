@@ -85,83 +85,89 @@ public class SalaryFixedDAO {
 			return salary;
 		}
 	}
+
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	public int creSalaryByRealname(final SalaryFixed salary){
-		return this.jdbcTemplate.update("INSERT INTO `express_ops_salaryFixed_detail` "
-				+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`,`jobpush`,`bonusroom`,`bonusallday`,`bonusfood`,`bonustraffic`,`carrent`,`carmaintain`,`carfuel`,`penalizecancel_import`,`foul_import`,`pushcash`)"
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?);",new PreparedStatementSetter(){
 
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setLong(1, salary.getBranchid());
-				ps.setString(2, salary.getRealname());
-				ps.setString(3, salary.getIdcard());
-				ps.setBigDecimal(4,salary.getAccountSingle());
-				ps.setBigDecimal(5,salary.getSalarybasic());
-				ps.setBigDecimal(6,salary.getSalaryjob());
-				ps.setBigDecimal(7,salary.getSalarypush());
-				ps.setBigDecimal(8,salary.getAgejob());
-				ps.setBigDecimal(9,salary.getBonusfuel());
-				ps.setBigDecimal(10,salary.getBonusfixed());
-				ps.setBigDecimal(11,salary.getBonusphone());
-				ps.setBigDecimal(12,salary.getBonusweather());
-				ps.setBigDecimal(13,salary.getPenalizecancel());
-				ps.setBigDecimal(14,salary.getBonusother1());
-				ps.setBigDecimal(15,salary.getBonusother2());
-				ps.setBigDecimal(16,salary.getBonusother3());
-				ps.setBigDecimal(17,salary.getBonusother4());
-				ps.setBigDecimal(18,salary.getBonusother5());
-				ps.setBigDecimal(19,salary.getBonusother6());
-				ps.setBigDecimal(20,salary.getOvertimework());
-				ps.setBigDecimal(21,salary.getAttendance());
-				ps.setBigDecimal(22,salary.getSecurity());
-				ps.setBigDecimal(23,salary.getGongjijin());
-				ps.setBigDecimal(24,salary.getFoul());
-				ps.setBigDecimal(25,salary.getGoods());
-				ps.setBigDecimal(26,salary.getDorm());
-				ps.setBigDecimal(27,salary.getPenalizeother1());
-				ps.setBigDecimal(28,salary.getPenalizeother2());
-				ps.setBigDecimal(29,salary.getPenalizeother3());
-				ps.setBigDecimal(30,salary.getPenalizeother4());
-				ps.setBigDecimal(31,salary.getPenalizeother5());
-				ps.setBigDecimal(32,salary.getPenalizeother6());
-				ps.setBigDecimal(33,salary.getImprestgoods());
-				ps.setBigDecimal(34,salary.getImprestother1());
-				ps.setBigDecimal(35,salary.getImprestother2());
-				ps.setBigDecimal(36,salary.getImprestother3());
-				ps.setBigDecimal(37,salary.getImprestother4());
-				ps.setBigDecimal(38,salary.getImprestother5());
-				ps.setBigDecimal(39,salary.getImprestother6());
-				ps.setBigDecimal(40,salary.getSalaryaccrual());
-				ps.setBigDecimal(41,salary.getTax());
-				ps.setBigDecimal(42,salary.getSalary());
-				ps.setBigDecimal(43,salary.getJobpush());
-				ps.setBigDecimal(44,salary.getBonusroom());
-				ps.setBigDecimal(45,salary.getBonusallday());
-				ps.setBigDecimal(46,salary.getBonusfood());
-				ps.setBigDecimal(47,salary.getBonustraffic());
-				ps.setBigDecimal(48,salary.getCarrent());
-				ps.setBigDecimal(49,salary.getCarmaintain());
-				ps.setBigDecimal(50,salary.getCarfuel());
-				ps.setBigDecimal(51,salary.getPenalizecancel_import());
-				ps.setBigDecimal(52,salary.getFoul_import());
-				ps.setBigDecimal(53,salary.getPushcash());
-			}
+	public int creSalaryByRealname(final SalaryFixed salary) {
+		return this.jdbcTemplate
+				.update("INSERT INTO `express_ops_salaryFixed_detail` "
+						+ "( `branchid`, `realname`, `idcard`, `accountSingle`, `salarybasic`, `salaryjob`, `salarypush`, `agejob`, `bonusfuel`, `bonusfixed`, `bonusphone`, `bonusweather`, `penalizecancel`, `bonusother1`, `bonusother2`, `bonusother3`, `bonusother4`, `bonusother5`, `bonusother6`, `overtimework`, `attendance`, `security`, `gongjijin`, `foul`, `goods`, `dorm`, `penalizeother1`, `penalizeother2`, `penalizeother3`, `penalizeother4`, `penalizeother5`, `penalizeother6`, `imprestgoods`, `imprestother1`, `imprestother2`, `imprestother3`, `imprestother4`, `imprestother5`, `imprestother6`, `salaryaccrual`, `tax`, `salary`,`jobpush`,`bonusroom`,`bonusallday`,`bonusfood`,`bonustraffic`,`carrent`,`carmaintain`,`carfuel`,`penalizecancel_import`,`foul_import`,`pushcash`,`creuserid`,`importflag`)"
+						+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?);",
+						new PreparedStatementSetter() {
 
-		});
+							@Override
+							public void setValues(PreparedStatement ps) throws SQLException {
+								ps.setLong(1, salary.getBranchid());
+								ps.setString(2, salary.getRealname());
+								ps.setString(3, salary.getIdcard());
+								ps.setBigDecimal(4, salary.getAccountSingle());
+								ps.setBigDecimal(5, salary.getSalarybasic());
+								ps.setBigDecimal(6, salary.getSalaryjob());
+								ps.setBigDecimal(7, salary.getSalarypush());
+								ps.setBigDecimal(8, salary.getAgejob());
+								ps.setBigDecimal(9, salary.getBonusfuel());
+								ps.setBigDecimal(10, salary.getBonusfixed());
+								ps.setBigDecimal(11, salary.getBonusphone());
+								ps.setBigDecimal(12, salary.getBonusweather());
+								ps.setBigDecimal(13, salary.getPenalizecancel());
+								ps.setBigDecimal(14, salary.getBonusother1());
+								ps.setBigDecimal(15, salary.getBonusother2());
+								ps.setBigDecimal(16, salary.getBonusother3());
+								ps.setBigDecimal(17, salary.getBonusother4());
+								ps.setBigDecimal(18, salary.getBonusother5());
+								ps.setBigDecimal(19, salary.getBonusother6());
+								ps.setBigDecimal(20, salary.getOvertimework());
+								ps.setBigDecimal(21, salary.getAttendance());
+								ps.setBigDecimal(22, salary.getSecurity());
+								ps.setBigDecimal(23, salary.getGongjijin());
+								ps.setBigDecimal(24, salary.getFoul());
+								ps.setBigDecimal(25, salary.getGoods());
+								ps.setBigDecimal(26, salary.getDorm());
+								ps.setBigDecimal(27, salary.getPenalizeother1());
+								ps.setBigDecimal(28, salary.getPenalizeother2());
+								ps.setBigDecimal(29, salary.getPenalizeother3());
+								ps.setBigDecimal(30, salary.getPenalizeother4());
+								ps.setBigDecimal(31, salary.getPenalizeother5());
+								ps.setBigDecimal(32, salary.getPenalizeother6());
+								ps.setBigDecimal(33, salary.getImprestgoods());
+								ps.setBigDecimal(34, salary.getImprestother1());
+								ps.setBigDecimal(35, salary.getImprestother2());
+								ps.setBigDecimal(36, salary.getImprestother3());
+								ps.setBigDecimal(37, salary.getImprestother4());
+								ps.setBigDecimal(38, salary.getImprestother5());
+								ps.setBigDecimal(39, salary.getImprestother6());
+								ps.setBigDecimal(40, salary.getSalaryaccrual());
+								ps.setBigDecimal(41, salary.getTax());
+								ps.setBigDecimal(42, salary.getSalary());
+								ps.setBigDecimal(43, salary.getJobpush());
+								ps.setBigDecimal(44, salary.getBonusroom());
+								ps.setBigDecimal(45, salary.getBonusallday());
+								ps.setBigDecimal(46, salary.getBonusfood());
+								ps.setBigDecimal(47, salary.getBonustraffic());
+								ps.setBigDecimal(48, salary.getCarrent());
+								ps.setBigDecimal(49, salary.getCarmaintain());
+								ps.setBigDecimal(50, salary.getCarfuel());
+								ps.setBigDecimal(51, salary.getPenalizecancel_import());
+								ps.setBigDecimal(52, salary.getFoul_import());
+								ps.setBigDecimal(53, salary.getPushcash());
+								ps.setLong(54, salary.getCreuserid());
+								ps.setLong(55, salary.getImportflag());
+							}
+
+						});
 	}
-	public List<SalaryFixed> getSalaryByRealnameAndIdcard(long page,String realname,String idcard)
-	{
-		String sql="select * from express_ops_salaryFixed_detail where 1=1 ";
-		sql +=this.creConditions(realname,idcard);
+
+	public List<SalaryFixed> getSalaryByRealnameAndIdcard(long page, String realname, String idcard) {
+		String sql = "select * from express_ops_salaryFixed_detail where 1=1 ";
+		sql += this.creConditions(realname, idcard);
 		sql += "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new SalaryFixedRowMapper());
 	}
-	public int getSalaryByRealnameAndIdcardCounts(String realname,String idcard)
-	{
-		String sql="select count(1) from express_ops_salaryFixed_detail where 1=1 ";
-		sql+=this.creConditions(realname,idcard);
+
+	public int getSalaryByRealnameAndIdcardCounts(String realname, String idcard) {
+		String sql = "select count(1) from express_ops_salaryFixed_detail where 1=1 ";
+		sql += this.creConditions(realname, idcard);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
@@ -171,29 +177,33 @@ public class SalaryFixedDAO {
 	 * @return
 	 */
 	private String creConditions(String realname, String idcard) {
-		String sql="";
-		if((null!=realname)&&(realname.length()>0))
-		{
-			sql+=" and realname like '%"+realname+"%'";
+		String sql = "";
+		if ((null != realname) && (realname.length() > 0)) {
+			sql += " and realname like '%" + realname + "%'";
 		}
-		if((null!=idcard)&&(idcard.length()>0))
-		{
-			sql+=" and idcard like '%"+idcard+"%'";
+		if ((null != idcard) && (idcard.length() > 0)) {
+			sql += " and idcard like '%" + idcard + "%'";
 
 		}
 		return sql;
 	}
+
 	/**
 	 * @param ids
 	 * @return
 	 */
 	public long deleteSalaryByids(String ids) {
-		String sql="delete from express_ops_salaryFixed_detail where id in("+ids+")";
+		String sql = "delete from express_ops_salaryFixed_detail where id in(" + ids + ")";
 		return this.jdbcTemplate.update(sql);
 	}
-	public SalaryFixed getSalaryByIdcard(String idcard)
-	{
-		String sql="select * from express_ops_salaryFixed_detail where idcard="+idcard+" limit 1;";
-		return this.jdbcTemplate.queryForObject(sql,new SalaryFixedRowMapper());
+
+	public SalaryFixed getSalaryByIdcard(String idcard) {
+		try {
+			String sql = "select * from express_ops_salaryFixed_detail where idcard=" + idcard + " limit 1;";
+			return this.jdbcTemplate.queryForObject(sql, new SalaryFixedRowMapper());
+		} catch (Exception e) {
+			return null;
+
+		}
 	}
 }

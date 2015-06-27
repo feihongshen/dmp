@@ -1085,11 +1085,13 @@ public abstract class ExcelExtractor {
 				if(salary1!=null){
 					this.salaryFixedDAO.deleteSalaryByids(salary1.getId()+"");
 				}
+				salary.setCreuserid(user.getUserid());
+				salary.setImportflag(importflag);
 				int nums=this.salaryFixedDAO.creSalaryByRealname(salary);
 				successCounts += nums;
 			} catch (Exception e) {
 				failCounts++;
-				this.salaryErrorDAO.creSalaryError(salary.getRealname(), salary.getRealname(), "未知异常", importflag);
+				this.salaryErrorDAO.creSalaryError(salary.getRealname(), salary.getIdcard(), "未知异常", importflag);
 				continue;
 			}
 
@@ -1141,121 +1143,121 @@ public abstract class ExcelExtractor {
 		salary.setRealname(realname);
 		salary.setIdcard(idcard);
 		try{
-		if(map.get("salarybasic")==0) {
+		if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==0)) {
 			salary.setSalarybasic(new BigDecimal(this.getXRowCellData(row, 3)));
 		}
-		if(map.get("salaryjob")==0) {
+		if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==0)) {
 		salary.setSalaryjob(new BigDecimal(this.getXRowCellData(row, 4)));
 		}
-		if(map.get("pushcash")==0) {
+		if((null!=map.get("pushcash"))&&(map.get("pushcash")==0)) {
 		salary.setPushcash(new BigDecimal(this.getXRowCellData(row, 5)));
 		}
-		if(map.get("jobpush")==0) {
+		if((null!=map.get("jobpush"))&&(map.get("jobpush")==0)) {
 			salary.setJobpush(new BigDecimal(this.getXRowCellData(row, 6)));
 		}
-		if(map.get("agejob")==0) {
+		if((null!=map.get("agejob"))&&(map.get("agejob")==0)) {
 			salary.setAgejob(new BigDecimal(this.getXRowCellData(row, 7)));
 		}
-		if(map.get("bonusroom")==0) {
+		if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==0)) {
 		salary.setBonusroom(new BigDecimal(this.getXRowCellData(row, 8)));
 		}
-		if(map.get("bonusallday")==0) {
+		if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==0)) {
 		salary.setBonusallday(new BigDecimal(this.getXRowCellData(row, 9)));
 		}
-		if(map.get("bonusfood")==0) {
+		if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==0)) {
 		salary.setBonusfood(new BigDecimal(this.getXRowCellData(row, 10)));
 		}
-		if(map.get("bonustraffic")==0) {
+		if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==0)) {
 		salary.setBonustraffic(new BigDecimal(this.getXRowCellData(row, 11)));
 		}
-		if(map.get("bonusphone")==0) {
+		if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==0)) {
 		salary.setBonusphone(new BigDecimal(this.getXRowCellData(row, 12)));
 		}
-		if(map.get("bonusweather")==0) {
+		if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==0)) {
 			salary.setBonusweather(new BigDecimal(this.getXRowCellData(row, 13)));
 		}
-		if(map.get("penalizecancel_import")==0) {
+		if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==0)) {
 			salary.setPenalizecancel_import(new BigDecimal(this.getXRowCellData(row, 14)));
 		}
-		if(map.get("bonusother1")==0) {
+		if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==0)) {
 			salary.setBonusother1(new BigDecimal(this.getXRowCellData(row, 15)));
 		}
-		if(map.get("bonusother2")==0) {
+		if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==0)) {
 		salary.setBonusother2(new BigDecimal(this.getXRowCellData(row, 16)));
 		}
-		if(map.get("bonusother3")==0) {
+		if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==0)) {
 		salary.setBonusother3(new BigDecimal(this.getXRowCellData(row, 17)));
 		}
-		if(map.get("bonusother4")==0) {
+		if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==0)) {
 		salary.setBonusother4(new BigDecimal(this.getXRowCellData(row, 18)));
 		}
-		if(map.get("bonusother5")==0) {
+		if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==0)) {
 		salary.setBonusother5(new BigDecimal(this.getXRowCellData(row, 19)));
 		}
-		if(map.get("bonusother6")==0) {
+		if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==0)) {
 		salary.setBonusother6(new BigDecimal(this.getXRowCellData(row, 20)));
 		}
-		if(map.get("overtimework")==0) {
+		if((null!=map.get("overtimework"))&&(map.get("overtimework")==0)) {
 		salary.setOvertimework(new BigDecimal(this.getXRowCellData(row, 21)));
 		}
-		if(map.get("attendance")==0) {
+		if((null!=map.get("attendance"))&&(map.get("attendance")==0)) {
 		salary.setAttendance(new BigDecimal(this.getXRowCellData(row, 22)));
 		}
-		if(map.get("security")==0) {
+		if((null!=map.get("security"))&&(map.get("security")==0)) {
 		salary.setSecurity(new BigDecimal(this.getXRowCellData(row, 23)));
 		}
-		if(map.get("gongjijin")==0) {
+		if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==0)) {
 		salary.setGongjijin(new BigDecimal(this.getXRowCellData(row, 24)));
 		}
-		if(map.get("foul_import")==0) {
+		if((null!=map.get("foul_import"))&&(map.get("foul_import")==0)) {
 		salary.setFoul_import(new BigDecimal(this.getXRowCellData(row, 25)));
 		}
-		if(map.get("dorm")==0) {
+		if((null!=map.get("dorm"))&&(map.get("dorm")==0)) {
 			salary.setDorm(new BigDecimal(this.getXRowCellData(row, 26)));
 		}
-		if(map.get("penalizeother1")==0) {
+		if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==0)) {
 		salary.setPenalizeother1(new BigDecimal(this.getXRowCellData(row, 27)));
 		}
-		if(map.get("penalizeother2")==0) {
+		if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==0)) {
 		salary.setPenalizeother2(new BigDecimal(this.getXRowCellData(row, 28)));
 		}
-		if(map.get("penalizeother3")==0) {
+		if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==0)) {
 		salary.setPenalizeother3(new BigDecimal(this.getXRowCellData(row, 29)));
 		}
-		if(map.get("penalizeother4")==0) {
+		if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==0)) {
 		salary.setPenalizeother4(new BigDecimal(this.getXRowCellData(row, 30)));
 		}
-		if(map.get("penalizeother5")==0) {
+		if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==0)) {
 		salary.setPenalizeother5(new BigDecimal(this.getXRowCellData(row, 31)));
 		}
-		if(map.get("penalizeother6")==0) {
+		if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==0)) {
 		salary.setPenalizeother6(new BigDecimal(this.getXRowCellData(row, 32)));
 		}
-		if(map.get("imprestother1")==0) {
+		if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==0)) {
 		salary.setImprestother1(new BigDecimal(this.getXRowCellData(row, 33)));
 		}
-		if(map.get("imprestother2")==0) {
+		if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==0)) {
 		salary.setImprestother2(new BigDecimal(this.getXRowCellData(row, 34)));
 		}
-		if(map.get("imprestother3")==0) {
+		if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==0)) {
 		salary.setImprestother3(new BigDecimal(this.getXRowCellData(row, 35)));
 		}
-		if(map.get("imprestother4")==0) {
+		if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==0)) {
 		salary.setImprestother4(new BigDecimal(this.getXRowCellData(row, 36)));
 		}
-		if(map.get("imprestother5")==0) {
+		if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==0)) {
 		salary.setImprestother5(new BigDecimal(this.getXRowCellData(row, 37)));
 		}
-		if(map.get("imprestother6")==0) {
+		if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==0)) {
 		salary.setImprestother6(new BigDecimal(this.getXRowCellData(row, 38)));
 		}
-		if(map.get("carrent")==0) {
+		if((null!=map.get("carrent"))&&(map.get("carrent")==0)) {
 			salary.setCarrent(new BigDecimal(this.getXRowCellData(row, 39)));
 		}
-		if(map.get("carmaintain")==0) {
+		if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==0)) {
 				salary.setCarmaintain(new BigDecimal(this.getXRowCellData(row, 40)));
 		}
-		if(map.get("carfuel")==0) {
+		if((null!=map.get("carfuel"))&&(map.get("carfuel")==0)) {
 				salary.setCarfuel(new BigDecimal(this.getXRowCellData(row, 41)));
 		}
 	}

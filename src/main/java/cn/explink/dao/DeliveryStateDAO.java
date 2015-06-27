@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -101,7 +102,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 产生一条反馈记录
-	 * 
+	 *
 	 * @param cwb
 	 * @param businessfee
 	 * @param cwbordertypeid
@@ -136,7 +137,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据gcaid汇总codpos交款.
-	 * 
+	 *
 	 * @param gcaids
 	 * @return gcaid->codpos汇总.
 	 */
@@ -173,7 +174,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 返回数字in(需要前置判空).
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -194,7 +195,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -209,7 +210,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -225,10 +226,10 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.query(stringBuilder.toString(), new DeliveryStateRowMapper());
 	}
 
-	
+
 	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -272,7 +273,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据派送员获得当前未归班的反馈记录
-	 * 
+	 *
 	 * @param deliveryId
 	 * @return
 	 */
@@ -282,7 +283,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单编号串获取对应的订单反馈记录
-	 * 
+	 *
 	 * @param cwbs
 	 *            格式 '324324','sf3234'
 	 * @return
@@ -338,7 +339,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 获取所有身上有订单的小件员列表
-	 * 
+	 *
 	 * @return
 	 */
 	public List<JSONObject> getDeliverByDeliveryStateNoZero(long branchId) {
@@ -353,7 +354,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 获取所有小件员列表以及小件员身上订单的汇总统计
-	 * 
+	 *
 	 * @return
 	 */
 	public List<DeliveryState> getDeliverByBrancheForCountState(long branchId) {
@@ -363,7 +364,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号更新对应的派送员id和创建时间
-	 * 
+	 *
 	 * @param cwb
 	 * @param deliveryid
 	 * @param createtime
@@ -381,7 +382,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 通过订单号更新该反馈记录的信息
-	 * 
+	 *
 	 * @param gcaId
 	 */
 	public void auditDelivery(long id, long receivedfeeuser, String auditingtime, long gcaId) {
@@ -402,7 +403,7 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set isautolinghuo=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, isautolinghuo, cwb);
 	}
-	
+
 	public void saveDeliveyStateIsautolinghuoByCwb2(long isautolinghuo, String cwb ,int firstlevelreasonid) {
 		String sql = "update express_ops_delivery_state set isautolinghuo=?,firstlevelid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, isautolinghuo, firstlevelreasonid, cwb);
@@ -486,7 +487,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 验证是否审核了已审核的反馈记录
-	 * 
+	 *
 	 * @param subTrStr
 	 */
 	public int getIsRepeat(String subTrStr) {
@@ -496,7 +497,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 获取所有小件员列表以及小件员身上订单的汇总统计
-	 * 
+	 *
 	 * @return
 	 */
 	public List<DeliveryState> getDeliverByGcaid(long gcaid) {
@@ -515,7 +516,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 去掉归班审核后，获取当前应上缴的反馈记录列表
-	 * 
+	 *
 	 * @param branchid
 	 */
 	public List<DeliveryState> getCountPayToUpByNotAudit(long branchid) {
@@ -585,7 +586,7 @@ public class DeliveryStateDAO {
 	// ======站点日报统计使用======begin====
 	/**
 	 * 按站点、反馈状态、反馈日期 查询订单数量 state=1的
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliveryState
 	 * @param credate
@@ -603,7 +604,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、反馈日期、订单类型 查询订单数量 state=1的
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliveryState
 	 * @param cwbordertypeid
@@ -624,7 +625,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、时间 查询订单数量
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliveryState
 	 * @param credate
@@ -645,7 +646,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、时间 查询订单数量昨日的滞留
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliveryState
 	 * @param credate
@@ -669,7 +670,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、时间 查询订单数量昨日的滞留
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param deliveryState
@@ -692,7 +693,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、时间 查询订单数量今日的滞留 单数
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliveryState
 	 * @param credate
@@ -716,7 +717,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态 查询订单数量今日的滞留
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param deliveryState
@@ -740,7 +741,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 获取单号
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param deliveryState
@@ -754,7 +755,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -773,7 +774,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 更新上门揽收时间
-	 * 
+	 *
 	 * @param cwb
 	 * @param shangmenlanshoutime
 	 */
@@ -784,7 +785,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询反馈的合计订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -804,7 +805,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询未反馈的合计订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -825,7 +826,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询反馈，未归班的合计订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -844,7 +845,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 未归班的统计
-	 * 
+	 *
 	 * @param branchid
 	 * @param startCredate
 	 * @param endCredate
@@ -865,7 +866,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询款项分布单数、现金、pos、支票
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -885,7 +886,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询上门退成功的单数和应退金额
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -904,7 +905,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按站点查询已上缴的单数、现金、pos、支票
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param credate
@@ -953,7 +954,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -968,7 +969,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -989,7 +990,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -1029,7 +1030,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 更新反馈时间
-	 * 
+	 *
 	 * @param cwb
 	 * @param deliverytime
 	 */
@@ -1040,7 +1041,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 更新审核时间
-	 * 
+	 *
 	 * @param cwb
 	 * @param auditingtime
 	 */
@@ -1069,7 +1070,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据小件员id和既定的反馈ids 更新归班gcaid、上交款payupid、归班时间
-	 * 
+	 *
 	 * @param ids
 	 * @param deliveid
 	 * @param payupid
@@ -1083,7 +1084,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 在既定反馈ids的范围里按小件员获取 cash和pos统计的分组
-	 * 
+	 *
 	 * @param ids
 	 * @return
 	 */
@@ -1104,7 +1105,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 更新反馈状态
-	 * 
+	 *
 	 * @param cwb
 	 * @param state
 	 */
@@ -1161,7 +1162,7 @@ public class DeliveryStateDAO {
 			} else if (isaudit == 1) {
 				deliverystatesql.append(" and gcaid>0");
 			}
-			
+
 			if (firstlevelid>0){
 				deliverystatesql.append(" and firstlevelid= "+ firstlevelid );
 			}
@@ -1205,7 +1206,7 @@ public class DeliveryStateDAO {
 	 * sign_typeid 签收类型 在sql中自动置为未签收 0 sign_man 签收人 签收人在sql中自动清空 sign_time 签收时间
 	 * 在sql中自动清空 issendcustomer 是否已推送供货商 状态在sql中自动变更为 0 为推送 将 pushtime 推送成功时间
 	 * 在sql中自动置为""
-	 * 
+	 *
 	 * @param id
 	 *            反馈表id
 	 * @param deliverystate
@@ -1220,7 +1221,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 修改金额 修改反馈表字段
-	 * 
+	 *
 	 * @param id
 	 * @param receivedfee
 	 *            实收金额
@@ -1241,7 +1242,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 修改支付方式 修改反馈表字段
-	 * 
+	 *
 	 * @param id
 	 * @param cash
 	 * @param pos
@@ -1254,7 +1255,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 修改订单类型 修改反馈表字段
-	 * 
+	 *
 	 * @param id
 	 * @param newcwbordertypeid
 	 *            新的订单类型
@@ -1271,10 +1272,10 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号修改操作人
-	 * 
+	 *
 	 * @param userid
 	 * @param cwb
-	 * 
+	 *
 	 */
 	public void updateOperatorIdByCwb(long userid, String cwb) {
 		String sql = "update express_ops_delivery_state set userid=? where cwb=? and state=1 ";
@@ -1284,7 +1285,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * g根据订单号和站点Id判断是否重复。 查询最后一条信息，并且能够确保只查询到一条limit 0,1
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -1299,7 +1300,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 小件员领货查询 deliverystate表
-	 * 
+	 *
 	 * @param page
 	 * @param branchid
 	 * @param deliveryid
@@ -1329,7 +1330,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 小件员领货查询 count,分页
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 * @param start
@@ -1357,7 +1358,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 修改收件人--上门退
-	 * 
+	 *
 	 * @param consigneename
 	 * @param cwb
 	 */
@@ -1378,7 +1379,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 小件员订单的列表
-	 * 
+	 *
 	 * @return
 	 */
 	public List<JSONObject> getDeliverByDeliveryStateNoZeroUserid(long branchId, long userid) {
@@ -1397,7 +1398,7 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 小件员的派件量
-	 * 
+	 *
 	 * @return
 	 */
 	public List<JSONObject> getDeliveryStasticsByUserId(long branchId, String starttime, String endtime) {
@@ -1428,10 +1429,10 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号修改操作人
-	 * 
+	 *
 	 * @param userid
 	 * @param cwb
-	 * 
+	 *
 	 */
 	public void updateDeliveryByCwb(long userid, String cwb) {
 		String sql = "update express_ops_delivery_state set deliveryid=?,userid=? where cwb=? and state=1 ";
@@ -1441,17 +1442,17 @@ public class DeliveryStateDAO {
 
 	/**
 	 * 根据订单号修改小件员
-	 * 
+	 *
 	 * @param userid
 	 * @param cwb
-	 * 
+	 *
 	 */
 	public void updateDeliveryidByCwb(long deliveryid, long branchid, String cwb) {
 		String sql = "update express_ops_delivery_state set deliveryid=?,userid=?,deliverybranchid=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, deliveryid, deliveryid, branchid, cwb);
 
 	}
-	
+
 	public DeliveryState getDeliverSignTime(String cwb) {
 		String sql = "select d.* from express_ops_cwb_detail AS c  LEFT OUTER JOIN express_ops_delivery_state as d ON c.cwb=d.cwb  where c.state=1 and d.state =1 and c.cwb=?";
 		return this.jdbcTemplate.queryForObject(sql, new DeliveryStateRowMapper(), cwb);
@@ -1459,9 +1460,20 @@ public class DeliveryStateDAO {
 
 	public List<DeliveryState> getDeliverystates(String cwbs){
 		String sql = "select * from express_ops_delivery_state where deliverystate=4 and cwb in(?)";
-		
-		return jdbcTemplate.query(sql, new DeliveryStateRowMapper(),cwbs);
+
+		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper(),cwbs);
 	}
-	
-	
+	public Map<String,Object> getDeliverystatesOfSalaryCounts(String deliveryid,String starttime,String endtime){
+		String sql="select deliverystate,count(1) as counts from express_ops_delivery_state where deliveryid=? and deliverystate in(1,2,3) and gcaid>0 and deliverytime>=? and deliverytime<=? GROUP BY deliverystate";
+		return this.jdbcTemplate.queryForMap(sql, new DeliverySalaryCountsMapper(),deliveryid,starttime,endtime);
+	}
+	private final class DeliverySalaryCountsMapper implements RowMapper<Map<Integer,Integer >> {
+		@Override
+		public Map<Integer,Integer>mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Map<Integer,Integer> map=new HashMap<Integer, Integer>();
+			map.put(rs.getInt("deliverystate"), rs.getInt("counts"));
+			return map;
+		}
+	}
+
 }

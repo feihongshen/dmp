@@ -3,7 +3,9 @@
  */
 package cn.explink.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,8 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.SalaryCountDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -35,6 +39,8 @@ public class SalaryCountController {
 	UserDAO userDAO;
 	@Autowired
 	SalaryCountDAO salaryCountDAO;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page,
 			@RequestParam(value = "batchid", required = false, defaultValue = "") String batchid,
@@ -63,6 +69,10 @@ public class SalaryCountController {
 		{
 			branchids=branchids.substring(0,branchids.lastIndexOf(","));
 		}
+		if((branchname.length()>0)&&(branchids.length()==0))
+		{
+			branchids="-1";
+		}
 		if((null!=userList)&&(userList.size()>0)&&(null!=realname)&&(realname.length()>0)){
 			for(User user:userList)
 			{
@@ -75,6 +85,11 @@ public class SalaryCountController {
 		{
 			userids=userids.substring(0,userids.lastIndexOf(","));
 		}
+		if((realname.length()>0)&&(userids.length()==0))
+		{
+			userids="-1";
+		}
+
 		List<SalaryCount> salaryCountList=this.salaryCountDAO.getSalaryCountByPage(page,batchid,batchstate,branchids,starttime,endtime,userids,operationTime,orderbyname,orderbyway);
 		int count=this.salaryCountDAO.getSalaryCountByCount(batchid, batchstate, branchids, starttime, endtime, userids, operationTime, orderbyname, orderbyway);
 
@@ -111,5 +126,16 @@ public class SalaryCountController {
 		model.addAttribute("edit", 1);
 		model.addAttribute("userList", userList);
 		return "salary/salaryCount/list";
+	}
+	@RequestMapping("/delete")
+	public  @ResponseBody
+	Map<String, Long> delete(@RequestParam(value = "ids",required = false,defaultValue = "") String ids) throws Exception {
+		long counts=0;
+		if((ids!=null)&&(ids.length()>0)){
+		counts=this.salaryCountDAO.deleteSalarCountyByids(ids);
+		}
+		Map<String, Long> map=new HashMap<String, Long>();
+		map.put("counts", counts);
+		return map;
 	}
 }

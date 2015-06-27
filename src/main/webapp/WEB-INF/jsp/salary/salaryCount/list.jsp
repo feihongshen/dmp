@@ -27,31 +27,30 @@ function addInit(){
 }
 function allchecked()
 { var ids="";
-	$("[id=id]").each(
-			function()
+	$("[id=id]").each(function()
 			{
-				if($(this).attr('checked')=='true'||$(this).attr('checked')=='checked')
+				if($(this)[0].checked==true)
 					{
 					ids+=","+$(this).val();
 					}
 			});
-	if(ids.indexOf(',')!=-1)
+		if(ids.indexOf(',')!=-1)
 		{
 		ids=ids.substr(1);
 		}
 	
 	var dmpurl=$("#dmpurl").val();
-	if(window.confirm("确定要移除吗！")&&ids.length>0){
+	if(window.confirm("确定要删除吗！")&&ids.length>0){
 	$.ajax({
 		type:"post",
-		url:dmpurl+"/salaryFixed/delete",
+		url:dmpurl+"/salaryCount/delete",
 		data:{"ids":ids},
 		dataType:"json",
 		success:function(data){
 			if(data.counts>0){
 				alert("成功移除"+data.counts+"记录");
 				}
-			$("#searchForm").submit();
+			$("#find form").submit();
 			}
 		});
 	}
@@ -92,6 +91,30 @@ function showButton()
 	$("#subfile").removeAttr('disabled');
 	}
 }
+function check(flag)
+{ 
+	var startime=$("#"+flag+" [name=starttime]").val();
+	var endtime=$("#"+flag+" [name=endtime]").val();
+	if(flag=='add'){
+	 	if(startime==""){
+			alert("请选择开始时间");
+			return ;
+		}
+		if(startime==""){
+			alert("请选择结束时间");
+			return ;
+		}
+		if($("#"+flag+" [name=branchid]").val()==''){
+			alert("请选择站点！");
+			return ;
+		}
+	}	
+	if(startime>endtime){
+		alert("开始时间不能大于结束时间");
+		return ;
+	} 
+	$("#"+flag+" form").submit();
+	}
 </script>
 </head>
 
@@ -104,7 +127,7 @@ function showButton()
 			    <td>
 			    <input class="input_button2" type="button" onclick="$('#add').dialog('open')" value="新增"/>
 			    <input class="input_button2" type="button"  value="查看/修改"/>
-			    <input class="input_button2" type="button"  value="删除"/>
+			    <input class="input_button2" type="button" onclick="allchecked()"  value="删除"/>
 			    <input class="input_button2" type="button" onclick="$('#find').dialog('open')" value="查询"/>
 			    </td>
 			    </tr>
@@ -191,7 +214,7 @@ function showButton()
          		<tr>
 	         	<td colspan="2"  align="center" valign="bottom">
 	         	<input type="button" class="input_button2" value="返回" onclick="$('#add').dialog('close');"/>
-	         	<input type="submit" class="input_button2" value="保存"/>
+	         	<input type="button" class="input_button2" value="保存" onclick="check('add')"/>
 	         	</td>
 	         	</tr>
          		<tr>
@@ -228,8 +251,8 @@ function showButton()
          	<tr>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">
-	         	 <input type="text" name="starttime"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-   	       		 <input type="text" name="endtime" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+	         	 <input type="text" name="starttime" id="starttime_add" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
+   	       		 <input type="text" name="endtime" id="endtime_add" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          	<tr>
@@ -343,7 +366,7 @@ function showButton()
 </c:if>
 <!-- 查询层显示 -->
 	<div  id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
-	<form action="${ctx}/salaryCount/list/1" method="post" id="searchForm">
+	<form action="${ctx}/salaryCount/list/1" method="post" id="searchForm" >
          	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 15%;">批次编号：</td>
@@ -375,8 +398,8 @@ function showButton()
          		</td>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">
-	         	 <input type="text" name="starttime" value="${starttime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-   	       		 <input type="text" name="endtime"   value="${endtime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+	         	 <input type="text" name="starttime" id="starttime_find" value="${starttime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
+   	       		 <input type="text" name="endtime"   id="endtime_find" value="${endtime}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          	<tr>
@@ -409,7 +432,7 @@ function showButton()
          	</tr>
          	<tr>
          	<td colspan="4" rowspan="2" align="center" valign="bottom">
-         	<input type="submit" class="input_button2" value="查询" />
+         	<input type="button" onclick="check('find')" class="input_button2" value="查询" />
          	<input type="button" class="input_button2" value="关闭" onclick="$('#find').dialog('close');"/>
          	</td>
          	</tr>

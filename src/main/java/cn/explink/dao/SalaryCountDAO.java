@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.SalaryCount;
+import cn.explink.enumutil.BatchSateEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -124,6 +125,14 @@ public class SalaryCountDAO {
 	public SalaryCount getSalaryCountBybatchid(String batchid) {
 		String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
 		return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
+	}
+	/**
+	 * @param ids
+	 * @return
+	 */
+	public long deleteSalarCountyByids(String ids) {
+		String sql="delete from express_ops_salaryCount_detail where batchid in(?) and batchstate=? ";
+		return this.jdbcTemplate.update(sql,ids,BatchSateEnum.Weihexiao.getValue());
 	}
 
 }
