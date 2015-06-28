@@ -18,7 +18,7 @@ public enum ShenHeResultEnum {
 	public void setText(String text) {
 		this.text = text;
 	}
-	private ShenHeResultEnum(int vlaue,String text){
+	private ShenHeResultEnum(int value,String text){
 		this.value = value;
 		this.text = text;
 	}

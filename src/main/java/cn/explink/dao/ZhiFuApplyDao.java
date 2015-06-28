@@ -201,24 +201,24 @@ public class ZhiFuApplyDao {
 	
 	//审核通过
 	public void updateStatePassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applyresult=2  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=2  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
 
 	}
 	//审核为不通过
 	public void updateStateNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applyresult=1  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=1  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
 	}
 	
 	//确认通过
 	public void updateStateConfirmPassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set confirmresult=2  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=2  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
 	}
 	//确认不通过
 	public void updateStateConfirmNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set confirmresult=1  where applyid=? ";
+		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=1  where applyid=? ";
 		this.jdbcTemplate.update(sql, applyid);
 
 	}
@@ -231,58 +231,53 @@ public class ZhiFuApplyDao {
 	//在 审核 页面通过条件查询
 	public List<ZhiFuApplyView> getapplycwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int applystate,
 			int applyresult) {
-		String sql = "select * from express_ops_zhifu_apply where applystate=?";
+		String sql = "select * from express_ops_zhifu_apply where 1=1";
+		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
-			sql += " and cwb in("+cwbs+")";
-		}else{
-			StringBuffer sb = new StringBuffer("");
-			if(cwbtypeid>0){
-				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}
-			if(userid>0){
-				sb.append(" and userid="+userid);
-			}
-			if(applytype>0){
-				sb.append(" and applyway="+applytype);
-			}
-			if(applystate>0){
-				sb.append(" and applystate="+applystate);
-			}
-			if(applyresult>0){
-				sb.append(" and applyresult="+applyresult);
-			}
-			sql += sb;
+			sb.append(" and cwb in("+cwbs+")");
+		}if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
 		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(applystate>0){
+			sb.append(" and applystate="+applystate);
+		}
+		if(applyresult>0){
+			sb.append(" and applyresult="+applyresult);
+		}
+		sql += sb;
 		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new ZhiFuApplyMapper(),applystate);
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
 	
 	//在 审核 页面通过条件查询
-	public List<ZhiFuApplyView> getapplycwbs(String cwbs,int cwbtypeid, int applytype,int userid, int shenhestate,
-			int shenheresult) {
-		String sql = "select * from express_ops_zhifu_apply";
+	public List<ZhiFuApplyView> getapplycwbs(String cwbs,int cwbtypeid, int applytype,int userid, int applystate,
+			int applyresult) {
+		String sql = "select * from express_ops_zhifu_apply where 1=1";
+		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
-		}else{
-			sql += " where 1=1";
-			StringBuffer sb = new StringBuffer("");
-			if(cwbtypeid>0){
-				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}
-			if(userid>0){
-				sb.append(" and userid="+userid);
-			}
-			if(applytype>0){
-				sb.append(" and applyway="+applytype);
-			}
-			if(shenhestate>0){
-				sb.append(" and applystate="+shenhestate);
-			}
-			if(shenheresult>0){
-				sb.append(" and applyresult="+shenheresult);
-			}
-			sql += sb;
+			sb.append(" and cwb in("+cwbs+")");
+		}if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
 		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(applystate>0){
+			sb.append(" and applystate="+applystate);
+		}
+		if(applyresult>0){
+			sb.append(" and applyresult="+applyresult);
+		}
+		sql += sb;
 		
 		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
@@ -290,29 +285,26 @@ public class ZhiFuApplyDao {
 	//查出申请总数
 	public long getapplycwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int shenhestate,
 			int shenheresult) {
-		String sql = "select count(1) from express_ops_zhifu_apply";
+		String sql = "select count(1) from express_ops_zhifu_apply where 1=1";
+		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
-		}else{
-			sql += " where 1=1";
-			StringBuffer sb = new StringBuffer("");
-			if(cwbtypeid>0){
-				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}
-			if(userid>0){
-				sb.append(" and userid="+userid);
-			}
-			if(applytype>0){
-				sb.append(" and applyway="+applytype);
-			}
-			if(shenhestate>0){
-				sb.append(" and applystate="+shenhestate);
-			}
-			if(shenheresult>0){
-				sb.append(" and applyresult="+shenheresult);
-			}
-			sql += sb;
+			sb.append(" and cwb in("+cwbs+")");
+		}if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
 		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(shenhestate>0){
+			sb.append(" and applystate="+shenhestate);
+		}
+		if(shenheresult>0){
+			sb.append(" and applyresult="+shenheresult);
+		}
+		sql += sb;
 		return jdbcTemplate.queryForLong(sql);
 	}
 	

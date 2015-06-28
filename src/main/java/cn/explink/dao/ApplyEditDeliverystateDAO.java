@@ -53,6 +53,7 @@ public class ApplyEditDeliverystateDAO {
 			
 			applyEditDeliverystate.setCwbstate(rs.getLong("cwbstate"));
 			applyEditDeliverystate.setShenhestate(rs.getInt("shenhestate"));
+			applyEditDeliverystate.setReasonid(rs.getInt("reasonid"));
 			
 			return applyEditDeliverystate;
 		}
@@ -120,9 +121,9 @@ public class ApplyEditDeliverystateDAO {
 		return key.getKey().longValue();
 	}
 
-	public void saveApplyEditDeliverystateById(long id, long editnowdeliverystate, String editreason) {
-		String sql = "update express_ops_applyeditdeliverystate set state=1, editnowdeliverystate=?,editreason=? where id=?";
-		jdbcTemplate.update(sql, editnowdeliverystate, editreason, id);
+	public void saveApplyEditDeliverystateById(long id, long editnowdeliverystate,int reasonid, String editreason) {
+		String sql = "update express_ops_applyeditdeliverystate set state=1, editnowdeliverystate=?,reasonid=?,editreason=? where id=?";
+		jdbcTemplate.update(sql, editnowdeliverystate,reasonid, editreason, id);
 	}
 
 	public ApplyEditDeliverystate getApplyEditDeliverystateById(long id) {
@@ -253,7 +254,32 @@ public class ApplyEditDeliverystateDAO {
 		sql += " limit " +(page-1) * Page.ONE_PAGE_NUMBER + ","+Page.ONE_PAGE_NUMBER ;
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
+	//根据条件查询获取信息-分页
+	public long getAppliedEditDeliverystateCount(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
+		String sql = "select count(1) from express_ops_applyeditdeliverystate where state=1";
 	
+			StringBuffer sb = new StringBuffer();
+			if(!cwbs.equals("")){
+				sql += " and cwb in("+cwbs+")";
+			}
+			if(cwbordertypeid>0){
+				sb.append(" and cwbordertypeid="+cwbordertypeid);
+			}
+			if(cwbresult>0){
+				sb.append(" and nowdeliverystate="+cwbresult);
+			}
+			if(shenhestate>0){
+				sb.append(" and shenhestate="+shenhestate);
+			}
+			if(cwbstate>0){
+				sb.append(" and cwbstate="+cwbstate);
+			}
+			if(feedbackbranch>0){
+				sb.append(" and applybranchid="+feedbackbranch);
+			}
+			sql += sb;
+		return jdbcTemplate.queryForLong(sql);
+	}
 	//根据条件查询获取信息-
 	public List<ApplyEditDeliverystate> getAppliedEditDeliverystate(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
 		String sql = "select * from express_ops_applyeditdeliverystate where state=1";
@@ -280,35 +306,6 @@ public class ApplyEditDeliverystateDAO {
 		}
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
-	//根据条件查询获取信息-分页
-	public long getAppliedEditDeliverystateCount(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
-		String sql = "select count(1) from express_ops_applyeditdeliverystate where state=1";
-	
-			StringBuffer sb = new StringBuffer();
-			if(!cwbs.equals("")){
-				sql += " and cwb in("+cwbs+")";
-			}
-			if(cwbordertypeid>0){
-				sb.append(" and cwbordertypeid="+cwbordertypeid);
-			}
-			if(cwbresult>0){
-				sb.append(" and nowdeliverystate="+cwbresult);
-			}
-			if(shenhestate>0){
-				sb.append(" and ishandle="+shenhestate);
-			}
-			if(cwbstate>0){
-				sb.append(" and cwbstate="+cwbstate);
-			}
-			if(feedbackbranch>0){
-				sb.append(" and applybranchid="+feedbackbranch);
-			}
-			sql += sb;
-		return jdbcTemplate.queryForLong(sql);
-	}
-	
-	
-	
 	//审核为通过
 	public void updateShenheStatePass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
@@ -340,5 +337,41 @@ public class ApplyEditDeliverystateDAO {
 		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where cwb =? and shenhestate=? ";
 		return jdbcTemplate.queryForLong(sql, cwb, shenhestate);
 	}
+	public List<ApplyEditDeliverystate> getApplyEditDeliverys(long page,String begindate,
+			String enddate, long ishandle) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where 1=1";
+		StringBuffer sb = new StringBuffer("");
+		if(!begindate.equals("")){
+			sb.append(" and applytime >='" + begindate + "' ");
+		}
+		if(!enddate.equals("")){
+			sb.append(" and applytime <='" + enddate + "' ");
+		}
+		if(ishandle>-1){
+			sb.append(" and ishandle="+ishandle );
+		}
+		sql += sb;
+		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+	}
+	
+	public long getApplyEditDeliveryCount(String begindate,
+			String enddate, long ishandle) {
+		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where 1=1";
+		StringBuffer sb = new StringBuffer("");
+		if(!begindate.equals("")){
+			sb.append(" and applytime >='" + begindate + "' ");
+		}
+		if(!enddate.equals("")){
+			sb.append(" and applytime <='" + enddate + "' ");
+		}
+		if(ishandle>-1){
+			sb.append(" and ishandle="+ishandle );
+		}
+		sql += sb;
+		return jdbcTemplate.queryForLong(sql);
+	}
+	
+	
 
 }

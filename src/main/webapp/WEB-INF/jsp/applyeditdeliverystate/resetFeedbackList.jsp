@@ -198,7 +198,6 @@ function resetfeedbackNoPass(){
 			data:{cwbdata:cwbdata},
 			dataType:"json",
 			success:function(data){
-				alert(data);
 				if(data.errorCode==0){
 					alert(data.error);
 					$("#searchForm").submit();
@@ -356,15 +355,8 @@ function exportExcel(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
 								</tr>
 							</tbody>
-						</table>
-					</div>
-					<div style="height:130px"></div>
-					<br>
-					<from action="./auditTuiGongHuoShangSuccess" method="post" id="SubFrom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
-						<tbody>
-							<%
-							if(applyeditlist!=null){
+							<tbody>
+							<%if(applyeditlist!=null){
 								for(CwbOrderView aed :applyeditlist){ %>
 									<tr height="30">
 									<td  width="40" align="center" valign="middle">
@@ -385,8 +377,12 @@ function exportExcel(){
 								</tr>
 								<%} }%>
 						</tbody>
-					</table>
-					</from>
+						</table>
+					</div>
+					<div style="height:130px"></div>
+					<br>
+					<!-- <from action="./auditTuiGongHuoShangSuccess" method="post" id="SubFrom" >
+					</from> -->
 				</div>
 				<div style="height:40px">
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>

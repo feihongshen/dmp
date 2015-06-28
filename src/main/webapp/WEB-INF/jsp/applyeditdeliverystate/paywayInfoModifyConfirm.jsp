@@ -175,6 +175,7 @@ function exportExcel(){
 										<td rowspan="2">
 											订单号：
 											<textarea name="cwb"  rows="3" class="kfsh_text" id="cwb" ><%=cwbs %></textarea>
+											<input type="hidden" name="isnow" value="1"/>
 										</td>
 										<td>
 											订单类型:
@@ -251,6 +252,11 @@ function exportExcel(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认人</td>
+									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">确认时间</td>
 								</tr>
 							</tbody>
 						</table>
@@ -270,11 +276,16 @@ function exportExcel(){
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwbordertypename() %>/<%=zav.getNewcwbordertypename() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getReceivablefee()%>/<%=zav.getNewreceivefee() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getPaytype_old() %>/<%=zav.getPaytype()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewCwbordertypename()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewReceivablefee() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewPaytype() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getNowState() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="120" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="120" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 									</tr>
 								<%} }%>
 						</tbody>

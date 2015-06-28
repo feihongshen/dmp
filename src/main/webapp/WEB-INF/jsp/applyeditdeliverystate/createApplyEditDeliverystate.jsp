@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.User"%>
 <%@page import="cn.explink.domain.ApplyEditDeliverystate"%>
@@ -12,7 +13,7 @@
 <%
 List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliverystate>)request.getAttribute("applyEditDeliverystateList");
-
+List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");	
   List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
   List<User> userList = (List<User>)request.getAttribute("userList");
   Page page_obj = (Page)request.getAttribute("page_obj");
@@ -43,7 +44,7 @@ $(function(){
 	
 })
 //处理第一次修改时的状态
-function sub1(id){
+function sub(id){
 	
 	if($("#editnowdeliverystate"+id).val()==-1){
 		alert("请选择要更改的配送结果！");
@@ -58,6 +59,7 @@ function sub1(id){
 		type: "POST",
 		url:'<%=request.getContextPath()%>/applyeditdeliverystate/submitCreateApplyEditDeliverystate/'+id,
 		data:{editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
+			reasonid:$("#reasonid"+id).val(),
 			editreason:$("#editreason"+id).val()},
 		dataType:"json",
 		success : function(data) {
@@ -73,7 +75,7 @@ function sub1(id){
 	
 }
 //处理之前已经修改过之后产生新状态
-function sub2(cwbstr,id){
+<%-- function sub2(cwbstr,id){
 	
 	$.ajax({
 		type: "POST",
@@ -93,7 +95,7 @@ function sub2(cwbstr,id){
 		}
 	});
 	
-}
+} --%>
 
 function exportField(){
  	if(<%=covList!=null&&!covList.isEmpty()%>){
@@ -157,7 +159,8 @@ function  search(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
 									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
-									<td width="175" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
 							</tbody>
@@ -197,12 +200,20 @@ function  search(){
 					                   <%} %>
 									</select>
 								</td>
-								<td width="175" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
+								<td align="center" valign="middle">
+									<select id="reasonid<%=cwb.getOpscwbid()%>">
+										<option value="-1">==请选择==</option>
+										<%if(reasonList!=null){for(Reason reason:reasonList){ %>
+										<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
+										<%} }%>
+									</select>
+								</td>
+								<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
 								<td width="80" align="center" valign="middle">
 								<%if(cwb.getState()==0){ %>
-								<input name="提交" type="button" class="input_button2" onclick="sub1(<%=cwb.getOpscwbid() %>);" value="提交">
+								<input name="提交" type="button" class="input_button2" onclick="sub(<%=cwb.getOpscwbid() %>);" value="提交">
 								<%}else{ %>
-								<input type="button"  value="已提交" onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>);">
+								<input type="button"  value="已提交" <%-- onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>); --%>">
 								<%} %>
 								</td>
 							</tr>

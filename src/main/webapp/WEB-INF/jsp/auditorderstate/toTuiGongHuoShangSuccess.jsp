@@ -312,6 +312,8 @@ function exportField(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退客户出库时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认状态</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认时间</td>
 								</tr>
 								
 						<%if(cwbList!=null){ %>
@@ -335,6 +337,8 @@ function exportField(){
 									out.print("");
 								} %>									
 								</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 							</tr>
 						<%} }%>
 						

@@ -11,6 +11,9 @@ List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exp
 Page page_obj = (Page)request.getAttribute("page_obj");
 String cwbs = request.getParameter("cwb")==null?"":request.getParameter("cwb");
 List<CwbOrderView> zhifulist = (List<CwbOrderView>)request.getAttribute("zhifulist");
+
+long applyresult = request.getParameter("applyresult")==null?0:Long.parseLong(request.getParameter("applyresult"));
+
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -99,11 +102,11 @@ function applypass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg =="true" ){    
+		        if(data.code == 0 ){    
 		           alert("审核通过！");    
-		           window.location.reload();    
+		           $("#searchForm").submit();    
 		        }else{    
-		           alert("未完成审核出现异常！");   
+		           alert(data.msg);   
 	       		 }    
 	     }
 	 });
@@ -161,6 +164,7 @@ function exportExcel(){
 										<td rowspan="2">
 											订单号：
 											<textarea name="cwb"  rows="3" class="kfsh_text" id="cwb" ><%=cwbs %></textarea>
+											<input type="hidden" name="isnow" value="1"/>
 										</td>
 										<td>
 											订单类型:
@@ -203,9 +207,9 @@ function exportExcel(){
 										<td>
 											审核结果:
 											<select name ="applyresult" id ="applyresult">
-												<option  value ="0">全部</option>
-												<option value ="<%=ShenHeResultEnum.shenhebutongguo.getValue() %>"><%=ShenHeResultEnum.shenhebutongguo.getText() %></option>
-												<option value ="<%=ShenHeResultEnum.shenhetongguo.getValue() %>"><%=ShenHeResultEnum.shenhetongguo.getText() %></option>
+												<option  value ="0" >全部</option>
+												<option value ="<%=ShenHeResultEnum.shenhebutongguo.getValue() %>" ><%=ShenHeResultEnum.shenhebutongguo.getText() %></option>
+												<option value ="<%=ShenHeResultEnum.shenhetongguo.getValue() %>"  ><%=ShenHeResultEnum.shenhetongguo.getText() %></option>
 											</select>
 										</td>
 									</tr>
@@ -237,6 +241,10 @@ function exportExcel(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
 							</tbody>
 						</table>
@@ -256,11 +264,15 @@ function exportExcel(){
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwbordertypename() %>/<%=zav.getNewcwbordertypename() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getReceivablefee()%>/<%=zav.getNewreceivefee() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getPaytype_old() %>/<%=zav.getPaytype()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewCwbordertypename() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewReceivablefee() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewPaytype() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getNowState() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 									</tr>
 								<%} }%>
 						</tbody>
@@ -296,8 +308,8 @@ function exportExcel(){
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
 	$("#applypeople").val(<%=request.getParameter("applypeople")==null?0:Long.parseLong(request.getParameter("applypeople"))%>);
 	$("#applytype").val(<%=request.getParameter("applytype")==null?0:Long.parseLong(request.getParameter("applytype"))%>);
-	$("#shenhestate").val(<%=request.getParameter("shenhestate")==null?0:Long.parseLong(request.getParameter("shenhestate"))%>);
-	$("#shenheresult").val(<%=request.getParameter("shenheresult")==null?0:Long.parseLong(request.getParameter("shenheresult"))%>);
+	$("#applystate").val(<%=request.getParameter("applystate")==null?0:Long.parseLong(request.getParameter("applystate"))%>);
+	 $("#applyresult").val(<%=request.getParameter("applyresult")==null?0:Long.parseLong(request.getParameter("applyresult"))%>);
 </script>
 </BODY>
 </HTML>

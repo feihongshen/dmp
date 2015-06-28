@@ -7208,5 +7208,18 @@ CREATE TABLE `cs_complaint_accept` (
     		ALTER TABLE `express_set_branch` ADD COLUMN `branch_bail` decimal(19,2) DEFAULT 0.00 COMMENT '保证金' AFTER `backtime`;
     	</sql>
     </changeSet>
+    
+     <!-- 订单反馈申请新增下拉选择原因备注字段 -->
+     <changeSet id="liuxiao-2015-06-28-01" author="liuxiao">
+    	<sql>
+    		ALTER TABLE `express_ops_applyeditdeliverystate` ADD COLUMN `reasonid` INT(4) DEFAULT NULL COMMENT '下拉选择的原因备注id';
+    	</sql>
+    </changeSet>
+     <!-- 增加订单信息修改新增修改后站点名 -->
+     <changeSet id="liuxiao-2015-06-28-02" author="liuxiao">
+    	<sql>
+    		ALTER TABLE `express_ops_editcwbinfo` ADD COLUMN `newbranchname` varchar(255) DEFAULT NULL COMMENT '修改后的站点名' AFTER `deliverybranchid`;
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
  

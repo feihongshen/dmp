@@ -18,6 +18,16 @@ public class SearcheditInfo {
 	public long crename;
 	public String oldremark;
 	public String newremark;
+	
+	private String newbranchname;//修改后的站点信息
+	
+	public String getNewbranchname() {
+		return newbranchname;
+	}
+
+	public void setNewbranchname(String newbranchname) {
+		this.newbranchname = newbranchname;
+	}
 
 	public String getOldremark() {
 		return oldremark;

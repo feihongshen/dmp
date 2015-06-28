@@ -281,6 +281,8 @@ $(function() {
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
 							</tbody>
 						</table>
@@ -314,6 +316,8 @@ $(function() {
 											</select>
 										<%} %>
 										</td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 									</tr>
 								<%} }%>
 						</table>

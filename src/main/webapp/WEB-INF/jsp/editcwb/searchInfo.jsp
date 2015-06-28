@@ -126,6 +126,7 @@ function exportField(){
 											<td valign="middle"  align="center" width="8%"   bgcolor="#e7f4e3">手机（修改）</td>
 											<td valign="middle"  align="left"  bgcolor="#e7f4e3">地址（修改）</td>
 											<!-- <td valign="middle"  align="center" width="10%"  bgcolor="#e7f4e3">配送时间（修改）</td> -->
+											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">配送站点（修改）</td>
 											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">电商要求（修改）</td>
 											<td valign="middle"  align="center"   width="15%"  bgcolor="#e7f4e3">备注（修改）</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改人</td>
@@ -148,6 +149,7 @@ function exportField(){
 									<td   valign="middle"  align="center" ><%=sl.getNewconsigneemobile() %></td>
 									<td   valign="middle"  align="left"   ><%=sl.getNewconsigneeaddress() %></td>
 									<%-- <td   valign="middle"  align="center" ><%=sl.getNewResendtime() %></td> --%>
+									<td   valign="middle"  align="center" ><%=sl.getNewbranchname()%></td>
 									<td   valign="middle"  align="center" ><%=sl.getNewcommand()%></td>
 									<td   valign="middle"  align="center" ><textarea ><%=sl.getNewremark()%></textarea></td>
 									<td   valign="middle"  align="center" ><%=user%></td>

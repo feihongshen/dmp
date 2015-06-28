@@ -74,10 +74,10 @@ public class searchEditCwbInfoDao {
 	 * @param resendtime
 	 * @param userid
 	 */
-	public void createEditInfo(CwbOrder info, String editname, String editmobile, String editcommand, String editaddress, String resendtime, long userid, String remark) {
+	public void createEditInfo(CwbOrder info,String newbranchname, String editname, String editmobile, String editcommand, String editaddress, String resendtime, long userid, String remark) {
 		jdbcTemplate
-				.update("insert into express_ops_editcwbinfo(cwb,deliverybranchid,oldconsigneename,newconsigneename,oldconsigneemobile,newconsigneemobile,oldconsigneeaddress,newconsigneeaddress,oldResendtime,newResendtime,oldcommand,newcommand,cretime,crename,oldremark,newremark) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", info.getCwb(), info.getDeliverybranchid() == 0 ? info.getNextbranchid() : info.getDeliverybranchid(), info.getConsigneename(),
+				.update("insert into express_ops_editcwbinfo(cwb,deliverybranchid,newbranchname,oldconsigneename,newconsigneename,oldconsigneemobile,newconsigneemobile,oldconsigneeaddress,newconsigneeaddress,oldResendtime,newResendtime,oldcommand,newcommand,cretime,crename,oldremark,newremark) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", info.getCwb(), info.getDeliverybranchid() == 0 ? info.getNextbranchid() : info.getDeliverybranchid(), info.getConsigneename(),newbranchname,
 						editname, info.getConsigneemobile(), editmobile, info.getConsigneeaddress(), editaddress, info.getResendtime(), resendtime, info.getCustomercommand(), editcommand,
 						DateTimeUtil.getNowTime(), userid, info.getCwbremark(), remark);
 	}

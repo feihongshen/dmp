@@ -354,13 +354,13 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/paywayInfoModifyCheck/{page}")
 	public String paywayInfoModifyCheck(Model model,HttpServletRequest request,
 			@PathVariable(value = "page") long page,
-			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
 			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
 			@RequestParam(value = "applystate", defaultValue = "0", required = false) int applystate,
-			@RequestParam(value = "applyresult", defaultValue = "0", required = false) int applyresult
+			@RequestParam(value = "applyresult", defaultValue = "0", required = false) int applyresult,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
 		
 		Page pag = new Page();
@@ -368,10 +368,15 @@ public class ApplyEditDeliverystateController {
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
 		String cwbss = getCwbs(cwbs);
-		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
-		long count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
-		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
+		List<ZhiFuApplyView> zavlist = new ArrayList<ZhiFuApplyView>();
+		long count = 0;
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(isnow!=0){
+			zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
+			count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
+			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+			covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
+		}
 		
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
@@ -460,11 +465,15 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/editPaywayInfoModifyCheckpass")
 	public  @ResponseBody String editPaywayInfoModifyCheckpass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
-		for(String applyid:applyids.split(",")){
-			int applyidint = Integer.parseInt(applyid);
-			zhiFuApplyDao.updateStatePassByCwb(applyidint);//更改状态为通过审核
+		try{
+			for(String applyid:applyids.split(",")){
+				int applyidint = Integer.parseInt(applyid);
+				zhiFuApplyDao.updateStatePassByCwb(applyidint);//更改状态为通过审核
+			}
+			return "{\"code\":0,\"msg\":\"true\"}";
+		}catch(Exception e){
+			return "{\"code\":1,\"msg\":\"审核通过失败!\"}";
 		}
-		return "{\"code\":1,\"msg\":\"true\"}";
 	}
 	//获取需要审核的订单并进行处理成未通过审核
 	@RequestMapping("/editPaywayInfoModifyChecknopass")
@@ -488,23 +497,30 @@ public class ApplyEditDeliverystateController {
 		@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 		@RequestParam(value = "userid", defaultValue = "0", required = true) int userid,
 		@RequestParam(value = "confirmstate", defaultValue = "0", required = true) int confirmstate,
-		@RequestParam(value = "confirmresult", defaultValue = "0", required = true) int confirmresult
+		@RequestParam(value = "confirmresult", defaultValue = "0", required = true) int confirmresult,
+		@RequestParam(value = "isnow", defaultValue = "0", required = true) int isnow
+		
 			) {
 		
 		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
 		String cwbss = getCwbs(cwbs);
-		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getConfirmCwbsForpage(page,cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
-		long count = zhiFuApplyDao.getConfirmCwbsForCount(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
-		pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-		List<CwbOrderView> covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+		
+		List<ZhiFuApplyView> zavlist= new ArrayList<ZhiFuApplyView>();
+		long count = 0;
+		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
+		if(isnow!=0){
+			zavlist = zhiFuApplyDao.getConfirmCwbsForpage(page,cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
+			count = zhiFuApplyDao.getConfirmCwbsForCount(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
+			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+			covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+		}
+		
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("uslist",uslist);
-		model.addAttribute("exportmouldlist", exportmouldlist);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("zhifulist", covList);
@@ -722,6 +738,7 @@ public class ApplyEditDeliverystateController {
 				
 			}
 			coList = cwbDAO.getCwbByCwbsPage(page, cwbss);*/
+			List<Reason> reasonList = reasonDAO.getAllReason();
 			List<User> userList = userDAO.getAllUser();
 			List<Branch> branchList = branchDAO.getAllEffectBranches();
 			List<CwbOrderView> covList = this.cwborderService.getCwborderviewList(coList,aedsList,userList,branchList);
@@ -729,6 +746,7 @@ public class ApplyEditDeliverystateController {
 			model.addAttribute("applyEditDeliverystateList",aedsList);
 			model.addAttribute("branchList", branchList);
 			model.addAttribute("userList", userList);
+			model.addAttribute("reasonList",reasonList);
 			model.addAttribute("errorCwbs", errorCwbs.toString());
 			model.addAttribute("covList",covList);
 		}
@@ -851,13 +869,14 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/submitCreateApplyEditDeliverystate/{id}")
 	public @ResponseBody String submitCreateApplyEditDeliverystate(@PathVariable("id") long id, Model model,
 			@RequestParam(value = "editnowdeliverystate", defaultValue = "0", required = true) long editnowdeliverystate,
+			@RequestParam(value = "reasonid", defaultValue = "0", required = true) int reasonid,
 			@RequestParam(value = "editreason", defaultValue = "", required = true) String editreason) {
 		try {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 			ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
 			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
 			if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
-				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id,editnowdeliverystate, editreason);
+				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id,editnowdeliverystate,reasonid, editreason);
 				return "{\"errorCode\":0,\"error\":\"提交成功\"}";
 			} else {
 				if (deliverystate == null || deliverystate.getPayupid() > 0) {
@@ -886,17 +905,38 @@ public class ApplyEditDeliverystateController {
 	 */
 	@RequestMapping("/getApplyEditDeliverystateList/{page}")
 	public String getApplyEditDeliverystateList(@PathVariable("page") long page, Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle) {
-
-		model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, getSessionUser().getBranchid(), ishandle, ""));
-		model.addAttribute("branchList", branchDAO.getAllEffectBranches());
-		model.addAttribute("userList", userDAO.getAllUser());
-		model.addAttribute("page_obj", new Page(applyEditDeliverystateDAO.getApplyEditDeliverystateByWhereCount(begindate, enddate, getSessionUser().getBranchid(), ishandle, ""), page,
-				Page.ONE_PAGE_NUMBER));
+			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
+			) {
+			List<Reason> reasonList = reasonDAO.getAllReason();
+			Map<Long, String> reasonMap = new HashMap<Long, String>();
+			for(Reason reason : reasonList){
+				reasonMap.put(reason.getReasonid(), reason.getReasoncontent());
+			}
+			List<ApplyEditDeliverystate> applyEditDeliverystateList = new ArrayList<ApplyEditDeliverystate>();
+			if(isnow>0){
+			//List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, getSessionUser().getBranchid(), ishandle, "");
+			List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(page,begindate,enddate,ishandle);
+			applyEditDeliverystateList = this.getapplyeditdeliverysate(applyEditDeliverystateLists, reasonMap);
+			}
+			model.addAttribute("page",page);
+			model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateList);
+			model.addAttribute("branchList", branchDAO.getAllEffectBranches());
+			model.addAttribute("userList", userDAO.getAllUser());
+			model.addAttribute("page_obj", new Page(applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle), page,
+					Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
 	}
 	
+	public List<ApplyEditDeliverystate> getapplyeditdeliverysate(List<ApplyEditDeliverystate> applyEditDeliverystateLists,Map<Long, String> reasonMap){
+		if(applyEditDeliverystateLists!=null&&applyEditDeliverystateLists.size()>0&&reasonMap.size()>0){
+			for(ApplyEditDeliverystate aeds : applyEditDeliverystateLists){
+				aeds.setReasoncontent(reasonMap.get(aeds.getReasonid())==null?"":reasonMap.get(aeds.getReasonid()).toString());
+			}
+		}
+		return applyEditDeliverystateLists;
+	}
 	
 	
 	//客服部分lx

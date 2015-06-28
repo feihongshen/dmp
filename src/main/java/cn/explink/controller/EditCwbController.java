@@ -440,7 +440,7 @@ public class EditCwbController {
 							zfav.setApplystate(1);
 							zfav.setApplyresult(0);
 							zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-//							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
 							list.add(zfav);
 						}
 					}
@@ -499,7 +499,7 @@ public class EditCwbController {
 							zfav.setApplystate(1);
 							zfav.setApplyresult(0);
 							zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-//							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
 							list.add(zfav);
 						}
 					}
@@ -569,7 +569,7 @@ public class EditCwbController {
 							zfav.setApplystate(1);
 							zfav.setApplyresult(0);
 							zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-//							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
 							list.add(zfav);
 						}
 					}
@@ -778,7 +778,7 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			this.cwbInfoDao.createEditInfo(old, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+			this.cwbInfoDao.createEditInfo(old, checkbranchname, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
 			long count=orderAddressReviseDao.countReviseAddress(cwb);
 			if (count==0) {
 				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCustomercommand());

@@ -308,6 +308,8 @@ $(function() {
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">归班反馈时间</td>
+								<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 							</tr>
 						</tbody>
 					</table>
@@ -328,6 +330,8 @@ $(function() {
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getBranchname())%></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCreatetime())%></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
 									</tr>
 							<%} }%>
 							</tbody>

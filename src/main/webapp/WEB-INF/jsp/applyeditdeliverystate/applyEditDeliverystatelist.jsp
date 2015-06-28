@@ -138,6 +138,7 @@ function sub(){
 								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
 									到
 									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
+									<input id="isnow" name="isnow" type="hidden" value="1" />
 								处理状态:
 								<select name="ishandle" id="ishandle" class="select1">
 									<option value="-1">请选择</option>
@@ -158,39 +159,40 @@ function sub(){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td align="center" valign="middle" bgcolor="#eef6ff">申请修改原因</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td width="130" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td align="120" valign="middle" bgcolor="#eef6ff">备注</td>
 								</tr>
+								<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
+								<% CwbOrder co = cwbDAO.getCwbByCwb(adse.getCwb()); %>
+									<tr height="30" >
+										<td width="120" align="center" valign="middle"><%=adse.getCwb() %></td>
+										<td width="120" align="center" valign="middle"><%=adse.getApplytime() %></td>
+										<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+										<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+										<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
+										<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
+										<td width="100" align="center" valign="middle">
+										<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
+											{ 
+													if(adse.getAudit()==0){out.print("未处理");}
+												else if(adse.getAudit()==1){out.print("审核已通过");}
+												else if(adse.getAudit()==2){out.print("审核未通过");}
+											}
+										else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
+											{ out.print("<font color='red'>已处理</font>");}
+											%>
+										</td>
+										<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getEdituserid()==u.getUserid()){ %><font color="red"><%=u.getRealname() %></font><%}} %></td>
+										<td align="120" valign="middle"><%=DeliveryStateEnum.getByValue((int)adse.getEditnowdeliverystate()).getText() %></td>
+										<td align="130" valign="middle"><%=adse.getReasoncontent() %></td>
+										<td align="120" valign="middle"><%=adse.getEditreason() %></td>
+									</tr>
+								<%} %>
 							</tbody>
 						</table>
 					</div>
-					<div style="height:70px"></div>
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
-						<tbody>
-						<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
-						<% CwbOrder co = cwbDAO.getCwbByCwb(adse.getCwb()); %>
-							<tr height="30" >
-								<td width="120" align="center" valign="middle"><%=adse.getCwb() %></td>
-								<td width="120" align="center" valign="middle"><%=adse.getApplytime() %></td>
-								<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-								<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
-								<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-								<td width="100" align="center" valign="middle">
-								<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
-									{ 
-											if(adse.getAudit()==0){out.print("未处理");}
-										else if(adse.getAudit()==1){out.print("审核已通过");}
-										else if(adse.getAudit()==2){out.print("审核未通过");}
-									}
-								else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
-									{ out.print("<font color='red'>已处理</font>");}
-									%>
-								</td>
-								<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getEdituserid()==u.getUserid()){ %><font color="red"><%=u.getRealname() %></font><%}} %></td>
-								<td align="center" valign="middle"><%=adse.getEditreason() %></td>
-							</tr>
-						<%} %>
-					</table>
+					<!-- <div style="height:70px"></div> -->
 				</div>
 				<%if(page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">

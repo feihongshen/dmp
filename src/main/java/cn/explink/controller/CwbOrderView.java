@@ -264,6 +264,16 @@ public class CwbOrderView {
 	private String oldnewReceivablefee;
 	private String oldnewPaytype;
 	
+	//反馈状态申请
+	private int reasonid;
+	public int getReasonid() {
+		return reasonid;
+	}
+
+	public void setReasonid(int reasonid) {
+		this.reasonid = reasonid;
+	}
+
 	public String getOldnewCwbordertypename() {
 		return oldnewCwbordertypename;
 	}

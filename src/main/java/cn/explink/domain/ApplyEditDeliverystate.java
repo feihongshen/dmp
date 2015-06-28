@@ -34,6 +34,26 @@ public class ApplyEditDeliverystate {
 	private long cwbstate;//订单状态
 	private int shenhestate;//审核状态
 	
+	// 用于显示时使用
+	private String reasoncontent;
+	
+	public String getReasoncontent() {
+		return reasoncontent;
+	}
+
+	public void setReasoncontent(String reasoncontent) {
+		this.reasoncontent = reasoncontent;
+	}
+
+	private int reasonid;//
+	public int getReasonid() {
+		return reasonid;
+	}
+
+	public void setReasonid(int reasonid) {
+		this.reasonid = reasonid;
+	}
+
 	public int getShenhestate() {
 		return shenhestate;
 	}

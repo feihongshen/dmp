@@ -3998,8 +3998,8 @@ public class CwbOrderService {
 				return;
 			}
 			if (dse == DeliveryStateEnum.JuShou) {// 品信退货是否需要审核开关
-				String tuihuocheck = this.systemInstallDAO.getSystemInstallByName("tuihuocheck") == null ? "no" : this.systemInstallDAO.getSystemInstallByName("tuihuocheck").getValue();
-				if ("no".equals(tuihuocheck) && !chechFlag) {// 更改下一站为退货站
+				//String tuihuocheck = this.systemInstallDAO.getSystemInstallByName("tuihuocheck") == null ? "no" : this.systemInstallDAO.getSystemInstallByName("tuihuocheck").getValue();
+				if (/*"no".equals(tuihuocheck) && */!chechFlag) {// 更改下一站为退货站
 					this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
 				}
 			} else {
@@ -6388,11 +6388,11 @@ public class CwbOrderService {
 				cwbOrderView.setCwb(ot.getCwb());
 				cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
 				cwbOrderView.setApplytype(ApplyEnum.getTextByValue(ot.getApplyway()));
-				String oldnewCwbordertypename = CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText()+"/"+CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText();
+				String oldnewCwbordertypename = CwbOrderTypeIdEnum.getByValue(ot.getCwbordertypeid()).getText()+"/"+(ot.getApplycwbordertypeid()==0?"":CwbOrderTypeIdEnum.getByValue(ot.getApplycwbordertypeid()).getText());
 				cwbOrderView.setOldnewCwbordertypename(oldnewCwbordertypename);// 订单类型
 				String oldnewReceivablefee = ot.getReceivablefee()+"/"+ot.getApplyreceivablefee();
 				cwbOrderView.setOldnewReceivablefee(oldnewReceivablefee);//订单金额
-				String oldnewPaytype = PaytypeEnum.getTextByValue(ot.getPaywayid())+"/"+PaytypeEnum.getTextByValue(ot.getApplypaywayid());
+				String oldnewPaytype = PaytypeEnum.getTextByValue(ot.getPaywayid())+"/"+(ot.getApplypaywayid()==0?"":PaytypeEnum.getTextByValue(ot.getApplypaywayid()));
 				cwbOrderView.setOldnewPaytype(oldnewPaytype);//支付方式
 				cwbOrderView.setNowState(this.getNowConfirmState(ot.getConfirmstate()));//订单当前状态
 				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
@@ -6403,7 +6403,7 @@ public class CwbOrderService {
 	}
 	public String getNowConfirmState(int statevalue){
 		if(statevalue==1||statevalue==2){
-			String str = statevalue==1?"待审核":"已审核";
+			String str = statevalue==1?"待确认":"已确认";
 			return str;
 		}
 		return null;
@@ -6490,6 +6490,7 @@ public class CwbOrderService {
 				cov.setRemark2(this.dataStatisticsService.getQueryUserName(userList, aeds.getEdituserid()));//处理人
 				cov.setRemark3(aeds.getEditreason());//原因备注
 				cov.setDeliverystate(aeds.getEditnowdeliverystate());//申请修改配送结果
+				cov.setReasonid(aeds.getReasonid());
 				cov.setState(aeds.getState());
 				covList.add(cov);
 			}
