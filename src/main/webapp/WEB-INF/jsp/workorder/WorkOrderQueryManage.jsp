@@ -22,7 +22,7 @@
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
-	
+	long currentbranchid = (Long)request.getAttribute("currentbranchid");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -420,7 +420,8 @@ function CurentTime()   //计算当天时间
 				<th bgcolor="#eef6ff">来电人姓名</th>
 				<th bgcolor="#eef6ff">来电号码</th>
 				<th bgcolor="#eef6ff">责任机构</th>
-				<th bgcolor="#eef6ff">工单受理人</th>
+				<!-- <th bgcolor="#eef6ff">工单受理人</th> -->
+				<th bgcolor="#eef6ff">责任人</th>
 				<th bgcolor="#eef6ff">受理时间</th>
 				<th bgcolor="#eef6ff">工单一级分类</th>
 				<th bgcolor="#eef6ff">工单二级分类</th>
@@ -431,14 +432,10 @@ function CurentTime()   //计算当天时间
 			</tr>
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
-			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">
-				<%-- <%if(c.getComplaintState()==ComplaintStateEnum.YiJieShu.getValue()||c.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()) {%> --%>
+			<%if(currentbranchid==c.getCodOrgId()){ %>
+			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">				
 				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
-			<%-- 	<%}else{ %>
-				<td><%=c.getAcceptNo() %></td> --%>
-				<%-- <%} %> --%>
 				<td><%=c.getOrderNo() %></td>
-				<%-- <td><%=ComplaintTypeEnum.getByValue((long)c.getComplaintType()).getText()%></td> --%>
 				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
 				<td></td>
 				<td><%=connameList.get(c.getPhoneOne())%>
@@ -449,10 +446,11 @@ function CurentTime()   //计算当天时间
 						<%=br.getBranchname()%>
 					<%} }%>
 				<td>
-						<%for(User u:alluser){ %>
-							<%if(c.getHandleUser().equals(u.getUsername())){ %>
+						 <%for(User u:alluser){ %>
+							<%if(c.getComplaintUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
-						<%} }%>
+							<%} }%> 
+						
 				</td>					<!--受理人  -->
 				<td><%=c.getAcceptTime() %></td> 
 				   <!--受理时间  -->
@@ -487,15 +485,15 @@ function CurentTime()   //计算当天时间
 					<%} %>
 				</td>
 		</tr>
-			<%} }%>
+			<%} }}%>
 		</table>
 	</div>	
 
 	<input type="hidden" id="YiJieAn" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>"/>
 	<input type="hidden" id="DaiHeShi" value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"/>
 	<input type="hidden" id="YiHeShi" value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"/>
-	<input type="hidden" id="YiJieShu" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
-	<input type="hidden" id="JieAnChongShenZhong" value="<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>"/>
+	<%-- <input type="hidden" id="YiJieShu" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
+	<input type="hidden" id="JieAnChongShenZhong" value="<%=ComplaintStateEnum.JieAnChongShenZhong.getValue()%>"/> --%>
 	<input type="hidden" id="FormV"/>
 	<input type="hidden" id="ComStateV"/>
 	<input type="hidden" id="add_OrgVerifyV" value="<%=request.getContextPath()%>/workorder/OrgVerify"/>

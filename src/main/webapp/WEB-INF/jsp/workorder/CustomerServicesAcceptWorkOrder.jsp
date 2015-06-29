@@ -9,6 +9,7 @@
 <%
 	List<CwbOrderAndCustomname> lco=request.getAttribute("lco")==null?null:(List<CwbOrderAndCustomname>)request.getAttribute("lco");	
 	List<Reason> reasonList=request.getAttribute("KeHuLeiXingAllReason")==null?null:(List<Reason>)request.getAttribute("KeHuLeiXingAllReason");
+	String username=(String)request.getParameter("Username");
 %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -467,6 +468,9 @@ function submitselect2(){    //通过手机号查询工单
 								contentTemp = contentTemp.substring(0,10); /* onclick='getGoonacceptWO(\""
 								+ ele.acceptNo + "\",\""
 								+ ele.complaintState + "\")' "+ele.acceptNo+"*/
+								/* var currentuser=ele.complaintUser;
+								var currentusername=$('#currentusername').val();
+								if(currentuser==currentusername){ */
 								
 								dataTrStr1 = "<tr><td><a href='javascript:showWorkOrderDetailBox(\""+ele.acceptNo+"\")'>"
 										+ ele.acceptNo + "</a></td>" + 
@@ -497,6 +501,7 @@ function submitselect2(){    //通过手机号查询工单
 										+ "</td></tr>";
 							} */ /* order/queckSelectOrder/123 */
 							thStr1 += dataTrStr1;
+						/* 	} */
 
 						});
 				/* "<td>"+ele.showcomplaintTypeName+"</td>" +
@@ -692,9 +697,10 @@ function submitselect2(){    //通过手机号查询工单
 	<input type="hidden" id="GoOnacceptWoQuery" value="<%=request.getContextPath()%>/workorder/GoOnacceptWoQuery"/>
 	<input type="hidden" id="GV" />
 	<input type="hidden" id="GS"/>
-	<input type="hidden" id="ComplaintStateEnumValue" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
+	<input type="hidden" value="<%=username%>" id="currentusername"> 
+<%-- 	<input type="hidden" id="ComplaintStateEnumValue" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
 	<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
-	<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/>
+	<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/> --%>
 	<input type="hidden" id="CallerPhoneValue">
 	
 </body>

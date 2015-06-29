@@ -887,4 +887,9 @@ public class UserDAO {
 			return null;
 		}		
 	}
+	
+	public User getbranchidbyuserid(long userid){
+		String sql="select * from express_set_user where userid=?";
+		return this.jdbcTemplate.queryForObject(sql,new UserRowMapper(),userid);
+	}
 }

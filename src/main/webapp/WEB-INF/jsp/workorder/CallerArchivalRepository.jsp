@@ -28,6 +28,15 @@ function editInit(){
 }
 $(function(){
 	
+	
+	$('#chongzhi').click(function(){
+		$('#phoneonOne').val('');
+		$('#name').val('');
+		
+		
+		
+	});
+	
 $('#svc').val($('#consigneeTypeVL').val());
 	
 	
@@ -91,7 +100,7 @@ function deleteidValue(){
 				<tr>
 					<td>
 						<input type="submit" value="查询" class="input_button2" onclick="$('#PageFromW').attr('action',1);return true;"/>
-						<input type="reset" value="重置" class="input_button2"/>
+						<input type="button" value="重置" class="input_button2" id="chongzhi"/>
 					</td>
 				</tr>	
 				</table>				

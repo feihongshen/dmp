@@ -13,9 +13,9 @@
 		<h1><div id="close_box" onclick="closeBox()"></div>修改来电人信息</h1>		
 		<div id="box_form">
 			<form action="<%=request.getContextPath()%>/workorder/editCallerArchival" id="editcallerForm">
+								<td><input type="hidden" name="id" value="<%=ccf.getId()%>"></td>
 				<table>
 					<tr>
-					<td><input type="hidden" name="id" value="<%=ccf.getId()%>"></td>
 					<td><span><font color="red">*</font>姓名</span><input type="text" name="name" value="<%=ccf.getName()%>" id="caname" maxlength="20"/></td>
 					<td><span><font color="red">*</font>电话1</span><input type="text" name="phoneonOne" id='cp' value="<%=ccf.getPhoneonOne()%>" id="cp" onblur=" ifphoneNum(this.value)" /></td>
 					<td><span>电话2</span><input type="text" name="phoneonTwo" value="<%=ccf.getPhoneonTwo()==null?"":ccf.getPhoneonTwo()%>" onblur=" ifphoneNum(this.value)"/></td>

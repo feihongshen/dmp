@@ -349,7 +349,7 @@ public class WorkOrderController {
 		CsConsigneeInfo cci1=null;
 		if(cci!=null){
 		int newcn=cci.getContactNum()+1;
-		workorderdao.updateConnum(newcn);
+		workorderdao.updateConnum(newcn,phone);
 		cci1=workorderservice.querycciByPhoneNum(phone);
 		cci1.setContactLastTime(nowtime);
 		}
@@ -483,6 +483,8 @@ public class WorkOrderController {
 			lc.add(ca);
 		}
 		
+		model.addAttribute("Username", getSessionUser().getUsername());
+		
 		return lc;
 
 	}
@@ -607,6 +609,7 @@ public class WorkOrderController {
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomerid(c.getCustomerid());
 			ca.setHandleUser(c.getHandleUser());
+			ca.setComplaintUser(c.getComplaintUser());
 			ca.setJieanTime(c.getJieanTime());
 			ca.setCuijianNum(c.getCuijianNum());
 			ca.setIfpunish(c.getIfpunish());
@@ -623,14 +626,15 @@ public class WorkOrderController {
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
-		model.addAttribute("lr", lr==null?null:lr);
+		model.addAttribute("lr", lr);
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("alltworeason", alltworeason);
-		model.addAttribute("lb", lb==null?null:lb); 
-		model.addAttribute("lc", lc==null?null:lc);
+		model.addAttribute("lb", lb); 
+		model.addAttribute("lc", lc);
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
+		model.addAttribute("currentbranchid",userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());
 		
 		return "workorder/WorkOrderQueryManage";		
 	}
