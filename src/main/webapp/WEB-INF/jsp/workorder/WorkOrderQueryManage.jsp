@@ -11,6 +11,7 @@
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.domain.User"%>	
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%
 	List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 	List<Reason> r =request.getAttribute("lr")==null?null:(List<Reason>)request.getAttribute("lr");
@@ -23,6 +24,7 @@
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
 	long currentbranchid = (Long)request.getAttribute("currentbranchid");
+	String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids");
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -398,7 +400,7 @@ function CurentTime()   //计算当天时间
 			</form>	
 			<tr>
 				<td>
-				<%if(currentuser==1){ %>
+				<%if(currentuser==1||roleids.contains(currentuser+"")){ %>
 					<button id="add_CUSA" class="input_button2">客服结案</button>
 					<!-- <button id="add_AdjudicateRetrial" class="input_button2">结案重审</button> -->
 					 <%}else{ %>
@@ -420,8 +422,7 @@ function CurentTime()   //计算当天时间
 				<th bgcolor="#eef6ff">来电人姓名</th>
 				<th bgcolor="#eef6ff">来电号码</th>
 				<th bgcolor="#eef6ff">责任机构</th>
-				<!-- <th bgcolor="#eef6ff">工单受理人</th> -->
-				<th bgcolor="#eef6ff">责任人</th>
+				<th bgcolor="#eef6ff">工单受理人</th>
 				<th bgcolor="#eef6ff">受理时间</th>
 				<th bgcolor="#eef6ff">工单一级分类</th>
 				<th bgcolor="#eef6ff">工单二级分类</th>
@@ -432,7 +433,7 @@ function CurentTime()   //计算当天时间
 			</tr>
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
-			<%if(currentbranchid==c.getCodOrgId()){ %>
+			 <%if(currentbranchid==c.getCodOrgId()||currentuser==1||roleids.contains(currentuser+"")){ %>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">				
 				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
 				<td><%=c.getOrderNo() %></td>
@@ -446,11 +447,10 @@ function CurentTime()   //计算当天时间
 						<%=br.getBranchname()%>
 					<%} }%>
 				<td>
-						 <%for(User u:alluser){ %>
-							<%if(c.getComplaintUser().equals(u.getUsername())){ %>
+						<%for(User u:alluser){ %>
+							<%if(c.getHandleUser().equals(u.getUsername())){ %>
 								<%=u.getRealname()%>
-							<%} }%> 
-						
+						<%} }%>
 				</td>					<!--受理人  -->
 				<td><%=c.getAcceptTime() %></td> 
 				   <!--受理时间  -->
@@ -485,7 +485,7 @@ function CurentTime()   //计算当天时间
 					<%} %>
 				</td>
 		</tr>
-			<%} }}%>
+			<%}} }%>
 		</table>
 	</div>	
 

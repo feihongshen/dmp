@@ -56,6 +56,7 @@ import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.entity.CsPushSms;
@@ -117,6 +118,8 @@ public class WorkOrderController {
 	SmsManageDao smsManageDao;
 	@Autowired
 	private CsPushSmsDao csPushSmsDao;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -588,7 +591,7 @@ public class WorkOrderController {
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
-		}		
+		}
 		model.addAttribute("page", page);		
 		model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
 		lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
@@ -624,6 +627,9 @@ public class WorkOrderController {
 		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
+		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
+		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();
+		model.addAttribute("roleids",roleids);
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr);
