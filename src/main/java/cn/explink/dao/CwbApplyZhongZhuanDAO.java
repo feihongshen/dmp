@@ -51,6 +51,15 @@ public class CwbApplyZhongZhuanDAO {
 			return CwbApplyZhongZhuan;
 		}
 	}
+	
+	private final class CwbMapper implements RowMapper<String> {
+
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			return rs.getString("cwb");
+		}
+	}
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -267,6 +276,27 @@ public class CwbApplyZhongZhuanDAO {
 	public void updateCwbApplyZhongZhuanResultSuc(String handletime, long handleuserid, long ishandle, long applyzhongzhuanbranchid, String cwb) {
 		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=?";
 		jdbcTemplate.update(sql, handletime, handleuserid, ishandle, applyzhongzhuanbranchid, cwb);
+	}
+	
+	
+	public List<String> getCwbApplyZhongZhuanList(String begindate, String enddate, long ishandle) {
+		String sql = "select * from op_cwbapplyzhongzhuan ";
+
+		if (ishandle > -1 || begindate.length() > 0 || enddate.length() > 0) {
+			StringBuffer w = new StringBuffer();
+			sql += " where ";
+			if (ishandle > -1) {
+				w.append(" and ishandle=" + ishandle);
+			}
+			if (begindate.length() > 0) {
+				w.append(" and applytime >= '" + begindate + "' ");
+			}
+			if (enddate.length() > 0) {
+				w.append(" and applytime < '" + enddate + "' ");
+			}
+			sql += w.substring(4, w.length());
+		}
+		return jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
 }

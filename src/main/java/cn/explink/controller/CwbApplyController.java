@@ -675,6 +675,8 @@ public class CwbApplyController {
 			if(cazzList.size()>0){
 				for(CwbApplyZhongZhuan cazz:cazzList){
 					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 2, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
+					
+					
 				}
 			}
 			return "{\"errorCode\":0,\"error\":\"审核为不成功\"}";
