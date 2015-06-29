@@ -20,6 +20,23 @@ public class OrderBackCheck {
 	
 	//新加数据库字段
 	private long checkresult;//审核结果（默认0， 1：确认退货 2：站点滞留）
+	private String auditname;//审核人
+	private String audittime;//审核时间
+
+	public String getAuditname() {
+		return auditname;
+	}
+	public void setAuditname(String auditname) {
+		this.auditname = auditname;
+	}
+
+	public String getAudittime() {
+		return audittime;
+	}
+
+	public void setAudittime(String audittime) {
+		this.audittime = audittime;
+	}
 
 	public long getCheckresult() {
 		return checkresult;

@@ -7221,5 +7221,13 @@ CREATE TABLE `cs_complaint_accept` (
     		ALTER TABLE `express_ops_editcwbinfo` ADD COLUMN `newbranchname` varchar(255) DEFAULT NULL COMMENT '修改后的站点名' AFTER `deliverybranchid`;
     	</sql>
     </changeSet>
+    <!-- 退货出站审核申请表新增审核人和审核时间字段 -->
+    <changeSet id="liuxiao-2015-06-29-01" author="liuxiao">
+    	<sql>
+    		ALTER TABLE `ops_order_back_check`	add  COLUMN  `auditname` varchar(255) default NULL;
+			ALTER TABLE `ops_order_back_check`	add  COLUMN  `audittime` varchar(255) default NULL;	
+    	</sql>
+    </changeSet>
+    
 </databaseChangeLog>
  

@@ -4035,10 +4035,10 @@ public class CwbOrderService {
 	// 更改订单的订单状态为退货的流向
 	private void deliverPodForCwbstate(String cwb, long podresultid, FlowOrderTypeEnum auditFlowOrderTypeEnum, User user) {
 		// ====退货审核===
-		// OrderBackCheck
-		// orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
-		// if(orderBackCheck!=null){//如果存在先删除
-		this.orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
+		OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
+		if(orderBackCheck!=null){//如果存在先删除
+			this.orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
+		}
 		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
 		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 		
@@ -4053,7 +4053,7 @@ public class CwbOrderService {
 					// 获取订单信息
 					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 					// 退货审核表插入一条订单数据
-					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 0, DeliveryStateEnum.JuShou.getValue());
+					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
 					this.orderBackCheckDAO.createOrderBackCheck(o);
 					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 				} else {

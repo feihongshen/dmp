@@ -82,7 +82,7 @@ public class OrderBackCheckService {
 	 * @param user
 	 */
 	@Transactional
-	public void save(String ids, User user) {
+	public void save(String ids, User user,String dateStr) {
 		if (!"".equals(ids)) {
 			logger.info("===退货确认审核开始===");
 			for (String id : ids.split(",")) {
@@ -104,7 +104,7 @@ public class OrderBackCheckService {
 				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);
 
 				// 更新checkstate=1 并且更新确认状态为确认退货
-				orderBackCheckDAO.updateOrderBackCheck1(1,Long.parseLong(id));
+				orderBackCheckDAO.updateOrderBackCheck1(1,Long.parseLong(id),user.getRealname(), dateStr);
 				logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
 			}
 			logger.info("===退货审核确认结束===");
@@ -118,10 +118,10 @@ public class OrderBackCheckService {
 	 * @param user
 	 */
 	@Transactional
-	public void rsZhiliu(String ids){
-		if (!"".equals(ids)) {
-			logger.info("===退货站点滞留开始===");
-			List<OrderBackCheck> orderbackList = orderBackCheckDAO.getOrderBackCheckByIds(ids);
+	public void rsPeiSong(List<OrderBackCheck> orderbackList,User user,String dateStr){
+		if (orderbackList!=null) {
+			logger.info("===退货站点配送开始===");
+			
 			StringBuffer sb = new StringBuffer("");
 			for(OrderBackCheck obc:orderbackList){
 				sb.append("'").append(obc.getCwb()).append("',");
@@ -136,9 +136,9 @@ public class OrderBackCheckService {
 				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckByCwb(cwbOrder.getCwb());
 				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.PeiShong);
 				cwbDAO.updateNextbranch(cwbOrder);//修改下一站为当前站
-				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb());//修改为站点滞留状态
+				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb(),user.getRealname(),dateStr);//修改为站点滞留状态
 			}
-			logger.info("===退货站点滞留结束===");
+			logger.info("===退货站点配送结束===");
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class OrderBackCheckService {
 		orderBackCheck.setConsigneeaddress(co.getConsigneeaddress());
 		orderBackCheck.setBackreason(co.getBackreason());
 		orderBackCheck.setBranchid(branchid);
-		if (checkstate == 0) {
+		if (checkstate == 1) {
 			orderBackCheck.setUserid(userid);
 			orderBackCheck.setCreatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 		} else {

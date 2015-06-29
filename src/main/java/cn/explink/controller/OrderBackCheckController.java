@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -44,6 +47,7 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
@@ -307,7 +311,10 @@ public class OrderBackCheckController {
 	public @ResponseBody
 	String save(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		try {
-			this.orderBackCheckService.save(ids, this.getSessionUser());
+			Date date = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dateStr = sdf.format(date);
+			this.orderBackCheckService.save(ids, this.getSessionUser(),dateStr);
 			return "{\"errorCode\":0,\"error\":\"审核为确认退货成功\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
@@ -321,12 +328,21 @@ public class OrderBackCheckController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/resultZhiliu")
-	public @ResponseBody
-	String resultZhiliu(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
+	@RequestMapping("/resultPeiSong")
+	public @ResponseBody String resultPeiSong(Model model, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		try {
-			this.orderBackCheckService.rsZhiliu(ids);
-			return "{\"errorCode\":0,\"error\":\"审核站点滞留成功\"}";
+			Date date = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dateStr = sdf.format(date);
+			List<OrderBackCheck> orderbackList = new ArrayList<OrderBackCheck>();
+			if(!"".equals(ids)){
+				orderbackList = orderBackCheckDAO.getOrderBackCheckByIds(ids);
+				this.orderBackCheckService.rsPeiSong(orderbackList,this.getSessionUser(),dateStr);
+				for(OrderBackCheck obc:orderbackList){
+					this.cwbDao.updateCwbState(obc.getCwb(), CwbStateEnum.PeiShong);
+				}
+			}
+			return "{\"errorCode\":0,\"error\":\"审核站点配送成功\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}

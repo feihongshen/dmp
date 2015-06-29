@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrderBackCheck;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 @Component
 public class OrderBackCheckDAO {
@@ -42,6 +43,8 @@ public class OrderBackCheckDAO {
 			orderBackCheck.setCheckcreatetime(rs.getString("checkcreatetime"));
 			orderBackCheck.setBranchid(rs.getLong("branchid"));
 			orderBackCheck.setCheckresult(rs.getLong("checkresult"));
+			orderBackCheck.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//审核人
+			orderBackCheck.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//审核时间
 			return orderBackCheck;
 		}
 	}
@@ -124,15 +127,15 @@ public class OrderBackCheckDAO {
 		}
 	}
 	//审核为确认退货
-	public void updateOrderBackCheck1(long checkresult,long id) {
-		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=? where id =? ";
-		jdbcTemplate.update(sql, checkresult, id);
+	public void updateOrderBackCheck1(long checkresult,long id,String auditname,String audittime) {
+		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=?,auditname=?,audittime=? where id =?";
+		this.jdbcTemplate.update(sql, checkresult, auditname,audittime,id);
 	}
 	
 	//审核为站点滞留
-	public void updateOrderBackCheck2(long checkresult,String cwb) {
-		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=? where cwb =? ";
-		jdbcTemplate.update(sql, checkresult, cwb);
+	public void updateOrderBackCheck2(long checkresult,String cwb,String auditname,String audittime) {
+		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=?,auditname=?,audittime=? where cwb =?";
+		this.jdbcTemplate.update(sql, checkresult, auditname, audittime, cwb);
 	}
 
 	

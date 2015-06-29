@@ -2,7 +2,7 @@ package cn.explink.enumutil;
 
 public enum TuihuoResultEnum {
 	querentuihuo(1,"确认退货"),
-	zhandianzhiliu(2,"站点滞留"),
+	zhandianzhiliu(2,"站点配送"),
 	zhandianmaidan(3,"站点买单");
 	private int value;
 	private String text;

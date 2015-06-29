@@ -91,7 +91,7 @@ function sub2(){
     	$("#submitZ").val("请稍候");
     	$.ajax({
     		type: "POST",
-    		url:'<%=request.getContextPath()%>/orderBackCheck/resultZhiliu',
+    		url:'<%=request.getContextPath()%>/orderBackCheck/resultPeiSong',
     		data:"ids="+ids,
     		dataType : "json",
     		success : function(data) {
@@ -292,7 +292,7 @@ $(function() {
 									</td>
 									<td width="20%">
 										<input type="button" id="submitF" value="确认退货" onclick="sub()" class="input_button2">&nbsp;&nbsp;
-										<input type="button" id="submitZ" value="站点滞留" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
+										<input type="button" id="submitZ" value="站点配送" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
 										<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 									</td>
 								</tr>
@@ -312,11 +312,28 @@ $(function() {
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 							</tr>
 						</tbody>
+						<tbody>
+							<%if(orderbackList!=null&&!orderbackList.isEmpty()){%> 
+								<%for(OrderBackCheck cwb :orderbackList){ %>
+									<tr>
+										<td  width="40" align="center" valign="middle">
+											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=cwb.getId()%>"/>
+										</td>
+										<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
+										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCwbordertypename())%></td>
+										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
+										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getBranchname())%></td>
+										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCreatetime())%></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
+									</tr>
+							<%} }%>
+							</tbody>
 					</table>
 					</div>
 					<br>
 					<br>
-					<div style="height:104px"></div>
+					<%-- <div style="height:104px"></div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 							<%if(orderbackList!=null&&!orderbackList.isEmpty()){%> 
@@ -330,13 +347,13 @@ $(function() {
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getBranchname())%></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCreatetime())%></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
 									</tr>
 							<%} }%>
 							</tbody>
 						</table>
-				</div>
+				</div> --%>
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
