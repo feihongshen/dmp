@@ -2526,7 +2526,7 @@ public class CwbOrderController {
 			Date date = new Date();
 			String datetime = df.format(date);
 			
-			cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForIds(datetime, getSessionUser().getUserid(),  1, ids);
+			cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForIds(datetime, getSessionUser().getUserid(),  1, ids,1);
 			logger.info("订单id{}审核为中转件", ids);
 
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
@@ -2554,7 +2554,7 @@ public class CwbOrderController {
 			Date date = new Date();
 			String datetime = df.format(date);
 			
-			cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForIds(datetime, getSessionUser().getUserid(),  1, ids);
+			cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanForIds(datetime, getSessionUser().getUserid(),  1, ids,0);
 			logger.info("订单id{}审核为中转件", ids);
 
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";

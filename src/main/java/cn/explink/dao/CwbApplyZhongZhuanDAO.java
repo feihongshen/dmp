@@ -97,9 +97,9 @@ public class CwbApplyZhongZhuanDAO {
 		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,handleremark=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=? and isnow=1";
 		jdbcTemplate.update(sql, handletime, handleuserid, handleremark, ishandle, applyzhongzhuanbranchid, cwb);
 	}
-	public void updateCwbApplyZhongZhuanForIds(String handletime, long handleuserid, long ishandle,String opscwbids) {
-		String sql = "update op_cwbapplyzhongzhuan as op ,express_ops_cwb_detail de set op.handletime=?,op.handleuserid=?,op.ishandle=? where op.cwb=de.cwb and de.opscwbid in (" + opscwbids + ") and op.isnow=1 ";
-		jdbcTemplate.update(sql, handletime, handleuserid,  ishandle);
+	public void updateCwbApplyZhongZhuanForIds(String handletime, long handleuserid, long ishandle,String opscwbids,int isnow) {
+		String sql = "update op_cwbapplyzhongzhuan as op ,express_ops_cwb_detail de set op.handletime=?,op.handleuserid=?,op.ishandle=? where op.cwb=de.cwb and de.opscwbid in (" + opscwbids + ") and op.isnow=? ";
+		jdbcTemplate.update(sql, handletime, handleuserid,  ishandle, isnow);
 	}
 
 	public long getCwbApplyZhongZhuanByCwbCount(String cwb) {
@@ -108,7 +108,7 @@ public class CwbApplyZhongZhuanDAO {
 	}
 
 	public long getCwbApplyZhongZhuanYiChuLiByCwbCount(String cwb) {
-		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=1 and isnow=1";
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=3 and isnow=1";
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
@@ -265,7 +265,7 @@ public class CwbApplyZhongZhuanDAO {
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
 	public void updateCwbApplyZhongZhuanResultSuc(String handletime, long handleuserid, long ishandle, long applyzhongzhuanbranchid, String cwb) {
-		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=?,isnow=0  where cwb=? and isnow=1";
+		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=?";
 		jdbcTemplate.update(sql, handletime, handleuserid, ishandle, applyzhongzhuanbranchid, cwb);
 	}
 	

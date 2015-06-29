@@ -190,7 +190,7 @@ function checkuser(type){
  			<textarea rows="25" cols="30" name ="cwbs" id ="cwbs"></textarea>
  			<br/>共<label id="num"></label>单
  		</td>
- 		<td>	
+ 		<td><br> 
  			<input type="hidden" id="type" name="type" value="0" />
  			申请人：
  			<div id="search">
@@ -199,9 +199,9 @@ function checkuser(type){
 			</div> 
 			</br></br></br></br>
  			<%-- <input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue() %>)" value="重置审核状态" /> <br/><br/><br/> --%>
- 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiJinE.getValue() %>)" value="修改订单金额" /> <br/><br/><br/>
- 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue() %>)" value="修改订单支付方式" /><br/><br/><br/>
- 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue() %>)" value="修改订单类型" />
+ 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiJinE.getValue() %>)" value="修改订单金额申请" /> <br/><br/><br/>
+ 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue() %>)" value="修改订单支付方式申请" /><br/><br/><br/>
+ 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue() %>)" value="修改订单类型申请" />
  		</td>
  	</tr>
 </table>
