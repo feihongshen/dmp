@@ -35,6 +35,8 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
@@ -155,7 +157,7 @@ public class BaleController {
 
 	/**
 	 * 库房出库、退货出站根据包号扫描订单检查
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -163,10 +165,19 @@ public class BaleController {
 	public @ResponseBody
 	ExplinkResponse baleaddcwbCheck(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
 			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "flag", required = true, defaultValue = "0") long flag,
-			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid
+			) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		CwbOrder co=this.cwbDAO.getCwbByCwb(cwb);
+
 		try {
+			if(co!=null){
+				if (co.getCustomerid() != customerid) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU, this.customerDAO.getCustomerById(
+							co.getCustomerid()).getCustomername());
+				}}
 			// 封包检查
 			if (flag == 1) {// 库房出库
 				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
@@ -189,7 +200,7 @@ public class BaleController {
 
 	/**
 	 * 根据包号扫描订单
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -215,7 +226,7 @@ public class BaleController {
 
 	/**
 	 * 封包
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -239,7 +250,7 @@ public class BaleController {
 
 	/**
 	 * 按包 库房出库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param deliverybranchid
 	 *            中转出站正确的配送站点
@@ -338,7 +349,7 @@ public class BaleController {
 	}
 	/**
 	 * 按包 中转库房出库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param deliverybranchid
 	 *            中转出站正确的配送站点
@@ -355,50 +366,50 @@ public class BaleController {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
 			try {
-				baleService.fengbao(getSessionUser(), baleno.trim(), branchid);
+				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", "(按包出库异常)" + e.getMessage());
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 			}
-			
+
 			// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
-				List<CwbOrder> cwbOrderList = cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
-				if (cwbOrderList != null && !cwbOrderList.isEmpty()) {
+				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 					long successCount = 0;
 					long errorCount = 0;
 					for (CwbOrder co : cwbOrderList) {
 						try {
 							// 订单出库
-							CwbOrder cwbOrder = cwbOrderService.changeoutWarehous(getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false, true);
+							CwbOrder cwbOrder = this.cwbOrderService.changeoutWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false, true);
 							successCount++;
-							
+
 							// ====中转出站 正确的配送站点==========
-							if (deliverybranchid > 0 && branchid != deliverybranchid) {
-								Branch deliverybranch = branchDAO.getBranchByBranchid(deliverybranchid);
+							if ((deliverybranchid > 0) && (branchid != deliverybranchid)) {
+								Branch deliverybranch = this.branchDAO.getBranchByBranchid(deliverybranchid);
 								CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
-								if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()
-										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue()) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+								if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
+										|| (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
 									// 都将匹配状态变更为修改
 									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
-								} else if (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()
-										|| cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue()) {// 如果修改的数据原来是为匹配的
+								} else if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
+										|| (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
 									// 或者是人工匹配的
 									// 都将匹配状态变更为人工修改
 									addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 								}
-								cwbOrderService.updateDeliveryOutBranch(getSessionUser(), cwbOrder, deliverybranch, addressCodeEditType, branchid);
+								this.cwbOrderService.updateDeliveryOutBranch(this.getSessionUser(), cwbOrder, deliverybranch, addressCodeEditType, branchid);
 								obj.put("cwbdeliverybranchname", deliverybranch.getBranchname());
 								obj.put("cwbdeliverybranchnamewav",
 										request.getContextPath() + ServiceUtil.wavPath + (deliverybranch.getBranchwavfile() == null ? "" : deliverybranch.getBranchwavfile()));
 							}
 							// ====中转出站 正确的配送站点End==========
-							
+
 						} catch (CwbException e) {
 							errorCount++;
 							co.setRemark1(e.getMessage());// 异常原因
@@ -414,8 +425,8 @@ public class BaleController {
 						}
 					}
 					if (errorCount > 0) {
-						List<Customer> customerList = customerDAO.getAllCustomers();
-						errorListView = baleService.getCwbOrderCustomerView(errorList, customerList);
+						List<Customer> customerList = this.customerDAO.getAllCustomers();
+						errorListView = this.baleService.getCwbOrderCustomerView(errorList, customerList);
 						obj.put("errorListView", errorListView);
 						obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
 						explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -425,7 +436,7 @@ public class BaleController {
 					}
 					if (successCount > 0) {
 						// 更改包的状态
-						baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
 			}
@@ -435,7 +446,7 @@ public class BaleController {
 
 	/**
 	 * 到货扫描 按包 到货扫描
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -476,7 +487,7 @@ public class BaleController {
 
 	/**
 	 * 按包退货出站
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -547,7 +558,7 @@ public class BaleController {
 
 	/**
 	 * 退货站入库 按包到货
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -587,7 +598,7 @@ public class BaleController {
 
 	/**
 	 * 中转站入库扫描 按包到货
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
