@@ -6308,9 +6308,9 @@ function maxCheck(fee){
 	
 		}
 	}
-	else {
+
 		return true;
-	}
+	
 }
 function checke_fee(){
 	if(!isFloat($("#fee1").val())||!maxCheck($("#fee1").val()))
