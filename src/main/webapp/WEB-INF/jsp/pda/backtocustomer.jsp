@@ -311,6 +311,7 @@ function baleaddcwbCheck(){
    		type: "POST",
    		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=4",
    		dataType : "json",
+   		data:"customerid="+$("#customerid").val(),
    		success : function(data) {
    			$("#msg").html("");
    			if(data.body.errorcode=="111111"){
@@ -360,6 +361,11 @@ function fengbao(){
 		alert("包号不能为空！");
 		return;
 	}
+	if($("#customerid").val()<=0)
+	{
+		alert("请选择供货商！");
+		return ;
+	}
 	$.ajax({
 		type: "POST",
 		url:"<%=request.getContextPath()%>/bale/fengbao/"+$("#baleno").val(),
@@ -383,6 +389,11 @@ function chuku(){
 	if($("#baleno").val()==""){
 		alert("包号不能为空！");
 		return;
+	}
+	if($("#customerid").val()<=0)
+	{
+		alert("请选择供货商！");
+		return ;
 	}
 	$.ajax({
 		type: "POST",
