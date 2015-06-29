@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -378,8 +379,15 @@ public class CwbOrderService {
 	DataStatisticsService dataStatisticsService;
 	@Autowired
 	OrderbackRecordDao orderbackRecordDao;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
 	
 
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
+	
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
 
@@ -6313,6 +6321,9 @@ public class CwbOrderService {
 						cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());//收件人地址
 						cwbOrderView.setTuihuozhaninstoreroomtime(this.getStringDate(ot.getCredate()));//退货库入库时间
 						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));
+						User user = this.getSessionUser();
+						cwbOrderView.setAuditor(user.getRealname());//审核人
+						cwbOrderView.setAudittime("");//审核时间
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}

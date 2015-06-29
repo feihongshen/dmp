@@ -692,7 +692,7 @@ public class ApplyEditDeliverystateController {
 				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
 				if(corder == null){
 					errorCwbs.append(cwbStr + ":无此单号!");
-				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
+				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0|| deliverystate.getGcaid() == 0) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);

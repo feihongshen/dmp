@@ -316,8 +316,8 @@ $(function() {
 											</select>
 										<%} %>
 										</td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditor() %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAudittime() %></td>
 									</tr>
 								<%} }%>
 						</table>
