@@ -374,7 +374,7 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#showcwb").html("");
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
-									$("#scancwb").html("");
+									$("#scancwb").val("");
 									if(data.statuscode=="3"){
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo);
