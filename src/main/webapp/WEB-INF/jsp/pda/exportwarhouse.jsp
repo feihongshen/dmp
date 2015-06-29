@@ -666,7 +666,6 @@ function fengbao(){
 			$("#msg").html("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
-			
 				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
 				$("#msg").html("（封包异常）"+data.body.errorinfo);
@@ -731,9 +730,9 @@ function chuku(){
 			$("#scancwb").val("");
 			$("#baleno").val("");
 			
-		 	if(data.body.errorcode=='111111'){
+			if(data.body.errorListView!=null){
 				errorvedioplay("<%=request.getContextPath()%>",data);
-			}else if(data.statuscode=="000000"){
+			}else{
 				successvedioplay("<%=request.getContextPath()%>",data);
 			}
 			

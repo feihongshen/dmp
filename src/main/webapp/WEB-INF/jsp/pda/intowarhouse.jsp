@@ -384,13 +384,16 @@ function callfunction(cwb){//getEmailDateByIds
 									}else if(data.statuscode=="101"){
 										if(confirm("无数据，有货无单,确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
-											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+											batchPlayWav(data.wavList);
 											data.wavList = [];
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 										}
 										$("#scancwb").val("");
 									}else if(data.statuscode=="102"){
 										if(confirm("尚未匹配站点，确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
+											batchPlayWav(data.wavList);
+											data.wavList = [];
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 											data.wavList = [];
 										}

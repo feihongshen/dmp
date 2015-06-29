@@ -510,11 +510,12 @@ function fengbao(){
 			$("#msg").html("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
+				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
 				$("#msg").html("（封包异常）"+data.body.errorinfo);
+				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
 		}
 	});
 }
@@ -567,7 +568,12 @@ function chuku(){
 			}
 			$("#scancwb").val("");
 			$("#baleno").val("");
-			errorvedioplay("<%=request.getContextPath()%>",data);
+			
+			if(data.body.errorListView!=null){
+				errorvedioplay("<%=request.getContextPath()%>",data);
+			}else{
+				successvedioplay("<%=request.getContextPath()%>",data);
+			}
 		}
 	});
 }
