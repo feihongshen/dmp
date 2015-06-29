@@ -3482,9 +3482,11 @@ public class PDAController {
 		// 添加货物类型音频文件.
 		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
 		String wavPath = null;
+		String multiple = null;
 		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
 			if (this.isPlayYPDJSound()) {
-				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+				multiple = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+				explinkResponse.addLongWav(multiple);
 			}
 		}
 
@@ -3499,15 +3501,17 @@ public class PDAController {
 		} else {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
-		explinkResponse.addLongWav(wavPath);
 
 		if (cwbOrder.getDeliverybranchid() != 0) {
 			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
 			obj.put("cwbdeliverybranchname", branch.getBranchname());
 			if (branch.getBranchwavfile() != null) {
 				explinkResponse.addLastWav(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
+			}else{
+				explinkResponse.addLongWav(wavPath);
 			}
 		} else {
+			explinkResponse.addLongWav(wavPath);
 			obj.put("cwbdeliverybranchname", "");
 		}
 		return explinkResponse;
