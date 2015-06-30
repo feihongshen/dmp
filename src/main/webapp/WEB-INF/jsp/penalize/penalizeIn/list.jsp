@@ -1089,6 +1089,12 @@ function checkwithdiferenttype(type){
 									</tr>
 									<tr>
 									<td align="left">
+									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
+									<input type="button"    value="重置" class="input_button2" onclick="resetData();">
+									</td>
+									</tr>
+									<tr>
+									<td align="left">
 									<input type="button"   onclick="createinpunishbycwb()" value="根据订单创建" class="input_button1"/>
 									<input type="button"  onclick="checkwithdiferenttype(1)" value="根据工单创建" class="input_button1"/>
 									</td>
@@ -1102,8 +1108,6 @@ function checkwithdiferenttype(type){
  -->									<input type="button"  onclick="shensuopteration()" value="申诉" class="input_button2"/>
 									</td>
 									<td align="left">
-									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
-									<input type="button"    value="重置" class="input_button2" onclick="resetData();">
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(penalizeInsides.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
 									</td>
 								</tr>

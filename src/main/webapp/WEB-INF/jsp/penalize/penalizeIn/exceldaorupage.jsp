@@ -12,7 +12,7 @@
 <div id="box_bg"></div>
 	<div id="box_contant" >
 	<div id="box_top_bg"></div>
-	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 190px;">
+	<div id="box_in_bg" style="overflow: scroll;width: 800px;height: 230px;">
 		<h1><div id="close_box" onclick="closeBox()"></div>excel对内扣罚导入窗口</h1>
 		<form method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/submitPunishCreateByExcel;jsessionid=<%=session.getId()%>" onsubmit="submitPunishCreateByExcel(this);return false;" enctype="multipart/form-data">
 			<table width="900" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
@@ -62,6 +62,10 @@
 			</table>
 			<input type="hidden" id="pathurl" name="pathurl" value="/inpunish/importFlagSuccess/"/>
 			<input type="hidden" id="pathurl2" name="pathurl2" value="/inpunish/importFlagError/"/>
+			<div align="center">
+				<input type="button" onclick="closeBox();"  value="返回" class="button">
+			</div>
 			</form>
 	</div>
+	
 </div>

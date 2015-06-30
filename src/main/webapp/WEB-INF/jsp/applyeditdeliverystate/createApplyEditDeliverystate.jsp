@@ -123,8 +123,8 @@ function  search(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="#" class="light">订单信息修改</a></li>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">订单信息修改列表</a></li>
+				<li><a href="#" class="light">反馈状态修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">反馈状态修改列表</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">

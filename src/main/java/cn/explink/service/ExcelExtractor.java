@@ -968,12 +968,12 @@ public abstract class ExcelExtractor {
 				// return null;
 			}
 		}
-
-		PenalizeInside penalizeInside = this.punishInsideDao.getPenalizeInsideIsNullCheck(cwb, branchid, dutypersonid, penalizeOutsmall, penalizeOutGoodsfee, penalizeOutOtherfee);
+		//记录已经存在的限制
+	/*	PenalizeInside penalizeInside = this.punishInsideDao.getPenalizeInsideIsNullCheck(cwb, branchid, dutypersonid, penalizeOutsmall, penalizeOutGoodsfee, penalizeOutOtherfee);
 		if (penalizeInside != null) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
 			return null;
-		}
+		}*/
 		out.setPunishNo("P" + System.currentTimeMillis() + "");
 		out.setSourceNo(co.getCwb());
 		out.setCwb(co.getCwb());
@@ -1340,12 +1340,12 @@ public abstract class ExcelExtractor {
 			return null;
 		}
 		String abnormalInfo= this.getXRowCellData(row, 3);
-		//判断问题件记录是否存在
+		/*//判断问题件记录是否存在
 		List<AbnormalOrder> abnormalOrders=this.abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
 		if ((abnormalOrders != null)&&(abnormalOrders.size()>0)) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
 			return null;
-		}
+		}*/
 		long action = AbnormalWriteBackEnum.ChuangJian.getValue();
 		//abnormalOrder的状态为未处理
 		long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
