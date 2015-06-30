@@ -21,12 +21,13 @@ public enum ComplaintStateEnum {
 		return text;
 	}
 
-	public static ComplaintStateEnum getByValue(int value) {
+	public static String getByValue(int value) {
+		String complainstate="";
 		for (ComplaintStateEnum ct : ComplaintStateEnum.values()) {
 			if (ct.getValue() == value) {
-				return ct;
+				complainstate=ct.getText();
 			}
 		}
-		throw new ExplinkException(ExceptionCwbErrorTypeEnum.GongDanZhuangTaiWeiZhaoDao);
+		return complainstate;
 	}
 }
