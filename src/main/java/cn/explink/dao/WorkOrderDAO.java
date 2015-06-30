@@ -655,7 +655,7 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 			String sql="update cs_complaint_accept set if_punish=? where accept_no=?";
 			this.jt.update(sql,isfine,order_no);
 		} catch (DataAccessException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	

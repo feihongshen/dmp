@@ -478,7 +478,7 @@ public class WorkOrderController {
 			ca.setComplaintState(c.getComplaintState());
 			ca.setProvence(c.getProvence());
 			/*ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());*/
-			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()));
 			ca.setComplaintUser(c.getComplaintUser());
 			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
@@ -507,7 +507,7 @@ public class WorkOrderController {
 			ca.setComplaintState(c.getComplaintState());
 			/*ca.setShowcomplaintTypeName(ComplaintTypeEnum.getByValue(c.getComplaintType()).getText());*/
 			ca.setContent(c.getContent());
-			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			ca.setShowComplaintStateName(ComplaintStateEnum.getByValue(c.getComplaintState()));
 			ca.setComplaintUser(c.getComplaintUser());
 			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
@@ -848,7 +848,7 @@ public class WorkOrderController {
 			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
-			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()).getText());
+			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()));
 			ca.setCodOrgId(branchDao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
 			if(c.getComplaintOneLevel()!=0){
 			ca.setComplaintOneLevel(reasondao.getReasonByReasonid(c.getComplaintOneLevel()).getReasoncontent());

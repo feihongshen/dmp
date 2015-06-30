@@ -436,7 +436,7 @@ function CurentTime()   //计算当天时间
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">				
 				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
 				<td><%=c.getOrderNo() %></td>
-				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()).getText() %></td>
+				<td><%=ComplaintStateEnum.getByValue(c.getComplaintState()) %></td>
 				<td></td>
 				<td><%=connameList.get(c.getPhoneOne())%>
 				</td>				
@@ -467,7 +467,7 @@ function CurentTime()   //计算当天时间
 						<%} }}%>
 				</td>
 				<td><%=ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()==null?"":ComplaintResultEnum.getByValue((long)c.getComplaintResult()).getText()%></td><!-- 投诉结果 -->
-				<td>
+ 				<td>
 					<%if(c.getIfpunish()==2){ %>
 					<label>是</label>
 					<%}else{%>
