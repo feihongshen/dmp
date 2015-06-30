@@ -645,7 +645,7 @@ public class CwbApplyController {
 			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
 			if(cazzList.size()>0){
 				for(CwbApplyZhongZhuan cazz:cazzList){
-					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(),3, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getRealname(),3, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
 				}
 			}
 			return "{\"errorCode\":0,\"error\":\"审核成功\"}";
@@ -675,7 +675,7 @@ public class CwbApplyController {
 			List<CwbApplyZhongZhuan> cazzList = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByids(ids);
 			if(cazzList.size()>0){
 				for(CwbApplyZhongZhuan cazz:cazzList){
-					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getUserid(), 2, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
+					this.cwbApplyZhongZhuanDAO.updateCwbApplyZhongZhuanResultSuc(datetime, this.getSessionUser().getRealname(), 2, cazz.getApplyzhongzhuanbranchid(), cazz.getCwb());
 					
 					
 				}
@@ -1064,8 +1064,8 @@ public class CwbApplyController {
 			
 			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
 		}
-		String[] cloumnName1 = new String[6]; // 导出的列名
-		String[] cloumnName2 = new String[6]; // 导出的英文列名
+		String[] cloumnName1 = new String[8]; // 导出的列名
+		String[] cloumnName2 = new String[8]; // 导出的英文列名
 
 		this.exportService.SetZhongzhuanchuzhanFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;

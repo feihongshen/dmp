@@ -3088,6 +3088,10 @@ public class ExportService {
 			cloumnName2[4] = "Matchbranchname";
 			cloumnName1[5] = "到站时间";
 			cloumnName2[5] = "InSitetime";
+			cloumnName1[6] = "审核人";
+			cloumnName2[6] = "Auditor";
+			cloumnName1[7] = "审核时间";
+			cloumnName2[7] = "Audittime";
 			
 		}
 		

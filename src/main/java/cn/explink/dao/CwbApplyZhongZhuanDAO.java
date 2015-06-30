@@ -47,6 +47,10 @@ public class CwbApplyZhongZhuanDAO {
 			CwbApplyZhongZhuan.setApplyzhongzhuanremark(StringUtil.nullConvertToEmptyString(rs.getString("applyzhongzhuanremark")));
 			CwbApplyZhongZhuan.setHandleremark(StringUtil.nullConvertToEmptyString(rs.getString("handleremark")));
 			CwbApplyZhongZhuan.setArrivebranchtime(StringUtil.nullConvertToEmptyString(rs.getString("arrivebranchtime")));
+			
+			CwbApplyZhongZhuan.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//审核人
+			CwbApplyZhongZhuan.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//审核时间
+			
 
 			return CwbApplyZhongZhuan;
 		}
@@ -273,9 +277,9 @@ public class CwbApplyZhongZhuanDAO {
 		String sql = "select * from op_cwbapplyzhongzhuan where id in("+ids+") and ishandle=0 and isnow=1";
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
-	public void updateCwbApplyZhongZhuanResultSuc(String handletime, long handleuserid, long ishandle, long applyzhongzhuanbranchid, String cwb) {
-		String sql = "update op_cwbapplyzhongzhuan set handletime=?,handleuserid=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=?";
-		jdbcTemplate.update(sql, handletime, handleuserid, ishandle, applyzhongzhuanbranchid, cwb);
+	public void updateCwbApplyZhongZhuanResultSuc(String audittime, String auditname, long ishandle, long applyzhongzhuanbranchid, String cwb) {
+		String sql = "update op_cwbapplyzhongzhuan set audittime=?,auditname=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=?";
+		jdbcTemplate.update(sql, audittime, auditname, ishandle, applyzhongzhuanbranchid, cwb);
 	}
 	
 	
