@@ -173,7 +173,7 @@ public class BaleController {
 		CwbOrder co=this.cwbDAO.getCwbByCwb(cwb);
 
 		try {
-			if(co!=null){
+			if(co!=null&&customerid>0){
 				if (co.getCustomerid() != customerid) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU, this.customerDAO.getCustomerById(
 							co.getCustomerid()).getCustomername());
