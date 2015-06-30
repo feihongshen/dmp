@@ -52,7 +52,7 @@ public class AbnormalService {
 	@Autowired
 	AbnormalWriteBackDAO abnormalWriteBackDAO;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	public List<AbnormalView> setViews(List<JSONObject> alist, List<Branch> branchs, List<User> users, List<Customer> customers, List<AbnormalType> atlist) {
+	public List<AbnormalView> setViews(List<JSONObject> alist, List<Branch> branchs, List<User> users, List<Customer> customers, List<AbnormalType> atlist,long currentbranchid,long roleid) {
 
 		List<AbnormalView> views = new ArrayList<AbnormalView>();
 		if (alist.size() > 0) {
@@ -70,7 +70,7 @@ public class AbnormalService {
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
 				view.setIshandle(a.getLong("ishandle"));
-				view.setIshandleName(this.getIsHandName(a.getLong("ishandle")));
+				view.setIshandleName(this.getIsHandName(a.getLong("ishandle"),a.getLong("branchid"),a.getLong("dutybrachid"),currentbranchid,roleid));
 				view.setCredatetime(a.getString("credatetime"));
 				view.setFileposition(a.getString("fileposition"));
 				view.setDealResultContent(this.getDealResult(a.getLong("dealresult")));
@@ -301,11 +301,34 @@ public class AbnormalService {
 			return null;
 		}
 	}
-	public String getIsHandName(long ishandle){
+	public String getIsHandName(long ishandle,long createbranchid,long dutybranchid,long currentbranchid,long roleid){
 		String ishandName="";
 		for (AbnormalOrderHandleEnum abnormalOrderHandleEnum : AbnormalOrderHandleEnum.values()) {
 			if (abnormalOrderHandleEnum.getValue()==ishandle) {
-				ishandName=abnormalOrderHandleEnum.getText();
+				if (ishandle==AbnormalOrderHandleEnum.xiugai.getValue()) {
+					ishandName=AbnormalOrderHandleEnum.weichuli.getText();
+				}else if(ishandle==AbnormalOrderHandleEnum.kefuchuli.getValue()){
+					if (roleid==1) {
+						ishandName=AbnormalOrderHandleEnum.yichuli.getText();
+					}else {
+						ishandName=AbnormalOrderHandleEnum.daichuli.getText();
+					}
+				}else if (ishandle==AbnormalOrderHandleEnum.chuangjianfangchuli.getValue()) {
+					if (currentbranchid==createbranchid) {
+						ishandName=AbnormalOrderHandleEnum.yichuli.getText();
+					}else {
+						ishandName=AbnormalOrderHandleEnum.daichuli.getText();
+					}
+				}else if (ishandle==AbnormalOrderHandleEnum.zerenfangchuli.getValue()) {
+					if (currentbranchid==dutybranchid) {
+						ishandName=AbnormalOrderHandleEnum.yichuli.getText();
+
+					}else {
+						ishandName=AbnormalOrderHandleEnum.daichuli.getText();
+					}
+				}else {
+					ishandName=abnormalOrderHandleEnum.getText();
+				}
 				break;
 			}
 		}

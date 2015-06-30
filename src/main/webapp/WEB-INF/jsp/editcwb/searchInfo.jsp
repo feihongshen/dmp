@@ -149,7 +149,7 @@ function exportField(){
 									<td   valign="middle"  align="center" ><%=sl.getNewconsigneemobile() %></td>
 									<td   valign="middle"  align="left"   ><%=sl.getNewconsigneeaddress() %></td>
 									<%-- <td   valign="middle"  align="center" ><%=sl.getNewResendtime() %></td> --%>
-									<td   valign="middle"  align="center" ><%=sl.getNewbranchname()%></td>
+									<td   valign="middle"  align="center" ></td>
 									<td   valign="middle"  align="center" ><%=sl.getNewcommand()%></td>
 									<td   valign="middle"  align="center" ><textarea ><%=sl.getNewremark()%></textarea></td>
 									<td   valign="middle"  align="center" ><%=user%></td>

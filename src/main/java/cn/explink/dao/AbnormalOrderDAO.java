@@ -501,8 +501,11 @@ public class AbnormalOrderDAO {
 		//判断是不是客服的时候
 		if (handleBranch!=BranchEnum.KeFu.getValue()) {
 			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
-			if (findscope!=0) {
+			if (findscope!=0&&findscope!=4) {
 				sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+			}
+			if (findscope==4) {
+				sql+=" AND (`branchid`="+currentbranchid+" OR `dutybrachid`="+currentbranchid+")";
 			}
 		}
 		if (cwbs.length() > 0) {
@@ -610,8 +613,11 @@ public class AbnormalOrderDAO {
 		//判断是不是客服的时候
 		if (handleBranch!=BranchEnum.KeFu.getValue()) {
 			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
-			if (findscope!=0) {
+			if (findscope!=0&&findscope!=4) {
 					sql += " AND (`creuserid`="+userid+"  OR `dutypersonid`="+userid+")";
+			}
+			if (findscope==4) {
+				sql+=" AND (`branchid`="+currentbranchid+" OR `dutybrachid`="+currentbranchid+")";
 			}
 		}
 		if (cwbs.length() > 0) {
@@ -716,8 +722,11 @@ public class AbnormalOrderDAO {
 		//判断是不是客服的时候
 		if (handleBranch!=BranchEnum.KeFu.getValue()) {
 			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
-			if (findscope!=0) {
+			if (findscope!=0&&findscope!=4) {
 				sql += " AND (`creuserid`="+userid+"  or `dutypersonid`="+userid+")";
+			}
+			if (findscope==4) {
+				sql+=" AND (`branchid`="+currentbranchid+" OR `dutybrachid`="+currentbranchid+")";
 			}
 		}
 		if (cwb.length() > 0) {
@@ -823,7 +832,7 @@ public class AbnormalOrderDAO {
 		//判断是不是客服的时候
 		if (handleBranch!=BranchEnum.KeFu.getValue()) {
 			//判断是管理员还是库房与站点的非管理员的人（判断是否查询到本身）
-			if (findscope!=0) {
+			if (findscope!=0&&findscope!=4) {
 				if (dutybranchid==currentbranchid&&(createbranchid==currentbranchid)) {
 					sql += " AND `creuserid`="+userid;
 					sql+=" AND `dutypersonid`="+userid;
@@ -834,6 +843,9 @@ public class AbnormalOrderDAO {
 				}else {
 					sql += " AND (`creuserid`="+userid+" OR `dutypersonid`="+userid+")";
 				}
+			}
+			if (findscope==4) {
+				sql+=" AND (`branchid`="+currentbranchid+" OR `dutybrachid`="+currentbranchid+")";
 			}
 		}
 		if (cwb.length() > 0) {

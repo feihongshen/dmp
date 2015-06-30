@@ -17,6 +17,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<MissPieceView> misspieces=(List<MissPieceView>)request.getAttribute("missPieces");
+Object cwb=request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchlist");
 Page page_obj = (Page)request.getAttribute("page_obj");
  String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
@@ -234,7 +235,7 @@ function resethence(){
 								<tr>
 								<td align="left" >
 								订单号：
-									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ></textarea>
+									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb %></textarea>
 								</td>
 								
 								<td align="left">

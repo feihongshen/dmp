@@ -546,7 +546,7 @@ public class AbnormalOrderController {
 		List<User> users = this.userDAO.getAllUser();
 		List<Customer> customers = this.customerDAO.getAllCustomers();
 		List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
-		List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist);
+		List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 		/*
 		 * List<AbnormalView> viewForShow=new ArrayList<AbnormalView>(); for
 		 * (int i = (int) ((page-1)*Page.ONE_PAGE_NUMBER); i <
@@ -971,7 +971,7 @@ public class AbnormalOrderController {
 			List<User> users = this.userDAO.getAllUser();
 			List<Customer> customers = this.customerDAO.getAllCustomers();
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
-			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist);
+			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
@@ -1177,7 +1177,7 @@ public class AbnormalOrderController {
 			List<Customer> customers = this.customerDAO.getAllCustomers();
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
 			List<JSONObject> abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByWherefindExport(starttime, endtime, ishandle, abnormaltypeid);
-			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist);
+			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
@@ -1530,6 +1530,7 @@ public class AbnormalOrderController {
 		model.addAttribute("cwbordertype");
 		model.addAttribute("losebackbranchid", losebackbranchid);
 		model.addAttribute("page", page);
+		model.addAttribute("cwb", cwb);
 		model.addAttribute("page_obj", new Page(missPiecesCounList==null?0:missPiecesCounList.size(), page, Page.ONE_PAGE_NUMBER));
 		return "abnormalorder/losebackdetail";
 	}
