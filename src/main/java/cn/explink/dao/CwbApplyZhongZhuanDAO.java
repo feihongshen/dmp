@@ -28,31 +28,32 @@ public class CwbApplyZhongZhuanDAO {
 
 		@Override
 		public CwbApplyZhongZhuan mapRow(ResultSet rs, int rowNum) throws SQLException {
-			CwbApplyZhongZhuan CwbApplyZhongZhuan = new CwbApplyZhongZhuan();
+			CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
 
-			CwbApplyZhongZhuan.setApplybranchid(rs.getLong("applybranchid"));
-			CwbApplyZhongZhuan.setApplytime(StringUtil.nullConvertToEmptyString(rs.getString("applytime")));
-			CwbApplyZhongZhuan.setApplyzhongzhuanbranchid(rs.getLong("applyzhongzhuanbranchid"));
-			CwbApplyZhongZhuan.setApplyuserid(rs.getLong("applyuserid"));
-			CwbApplyZhongZhuan.setCustomerid(rs.getLong("customerid"));
-			CwbApplyZhongZhuan.setCwb(rs.getString("cwb"));
-			CwbApplyZhongZhuan.setCwbordertypeid(rs.getLong("cwbordertypeid"));
-			CwbApplyZhongZhuan.setHandletime(StringUtil.nullConvertToEmptyString(rs.getString("handletime")));
-			CwbApplyZhongZhuan.setHandleuserid(rs.getLong("handleuserid"));
-			CwbApplyZhongZhuan.setId(rs.getLong("id"));
-			CwbApplyZhongZhuan.setIshandle(rs.getLong("ishandle"));
-			CwbApplyZhongZhuan.setIsnow(rs.getLong("isnow"));
-			CwbApplyZhongZhuan.setPaybackfee(rs.getBigDecimal("paybackfee"));
-			CwbApplyZhongZhuan.setReceivablefee(rs.getBigDecimal("receivablefee"));
-			CwbApplyZhongZhuan.setApplyzhongzhuanremark(StringUtil.nullConvertToEmptyString(rs.getString("applyzhongzhuanremark")));
-			CwbApplyZhongZhuan.setHandleremark(StringUtil.nullConvertToEmptyString(rs.getString("handleremark")));
-			CwbApplyZhongZhuan.setArrivebranchtime(StringUtil.nullConvertToEmptyString(rs.getString("arrivebranchtime")));
+			cwbApplyZhongZhuan.setApplybranchid(rs.getLong("applybranchid"));
+			cwbApplyZhongZhuan.setApplytime(StringUtil.nullConvertToEmptyString(rs.getString("applytime")));
+			cwbApplyZhongZhuan.setApplyzhongzhuanbranchid(rs.getLong("applyzhongzhuanbranchid"));
+			cwbApplyZhongZhuan.setApplyuserid(rs.getLong("applyuserid"));
+			cwbApplyZhongZhuan.setCustomerid(rs.getLong("customerid"));
+			cwbApplyZhongZhuan.setCwb(rs.getString("cwb"));
+			cwbApplyZhongZhuan.setCwbordertypeid(rs.getLong("cwbordertypeid"));
+			cwbApplyZhongZhuan.setHandletime(StringUtil.nullConvertToEmptyString(rs.getString("handletime")));
+			cwbApplyZhongZhuan.setHandleuserid(rs.getLong("handleuserid"));
+			cwbApplyZhongZhuan.setId(rs.getLong("id"));
+			cwbApplyZhongZhuan.setIshandle(rs.getLong("ishandle"));
+			cwbApplyZhongZhuan.setIsnow(rs.getLong("isnow"));
+			cwbApplyZhongZhuan.setPaybackfee(rs.getBigDecimal("paybackfee"));
+			cwbApplyZhongZhuan.setReceivablefee(rs.getBigDecimal("receivablefee"));
+			cwbApplyZhongZhuan.setApplyzhongzhuanremark(StringUtil.nullConvertToEmptyString(rs.getString("applyzhongzhuanremark")));
+			cwbApplyZhongZhuan.setHandleremark(StringUtil.nullConvertToEmptyString(rs.getString("handleremark")));
+			cwbApplyZhongZhuan.setArrivebranchtime(StringUtil.nullConvertToEmptyString(rs.getString("arrivebranchtime")));
 			
-			CwbApplyZhongZhuan.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//审核人
-			CwbApplyZhongZhuan.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//审核时间
+			cwbApplyZhongZhuan.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//审核人
+			cwbApplyZhongZhuan.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//审核时间
 			
 
-			return CwbApplyZhongZhuan;
+			return cwbApplyZhongZhuan;
+
 		}
 	}
 	
@@ -283,12 +284,19 @@ public class CwbApplyZhongZhuanDAO {
 	}
 	
 	
-	public List<String> getCwbApplyZhongZhuanList(String begindate, String enddate, long ishandle) {
-		String sql = "select * from op_cwbapplyzhongzhuan ";
+	/**
+	 * 只统计isstastics =0的数据
+	 * @param begindate
+	 * @param enddate
+	 * @param ishandle
+	 * @return
+	 */
+	public List<String> getCwbApplyZhongZhuanList(String begindate, String enddate, long ishandle,long applybranchid) {
+		String sql = "select * from op_cwbapplyzhongzhuan where isstastics=0 and applybranchid="+applybranchid;
 
 		if (ishandle > -1 || begindate.length() > 0 || enddate.length() > 0) {
 			StringBuffer w = new StringBuffer();
-			sql += " where ";
+			
 			if (ishandle > -1) {
 				w.append(" and ishandle=" + ishandle);
 			}
@@ -298,9 +306,19 @@ public class CwbApplyZhongZhuanDAO {
 			if (enddate.length() > 0) {
 				w.append(" and applytime < '" + enddate + "' ");
 			}
-			sql += w.substring(4, w.length());
+			sql += w.toString();
 		}
 		return jdbcTemplate.query(sql, new CwbMapper());
 	}
+	
+	/**
+	 * 领货之后修改此状态为已统计
+	 * @param cwb
+	 */
+	public void updateStastics(String cwb) {
+		String sql = "update op_cwbapplyzhongzhuan set isstastics=1 where cwb=? and isstastics=0 ";
+		jdbcTemplate.update(sql,  cwb);
+	}
+	
 	
 }

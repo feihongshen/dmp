@@ -48,6 +48,13 @@ public class OrderBackCheckDAO {
 			return orderBackCheck;
 		}
 	}
+	
+	private final class CwbMapper implements RowMapper<String> {
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString("cwb");
+		}
+	}
 
 	public void createOrderBackCheck(final OrderBackCheck orderBackCheck) {
 		KeyHolder key = new GeneratedKeyHolder();
@@ -269,5 +276,40 @@ public class OrderBackCheckDAO {
 	}
 	
 	
+		
+		/**
+		 * 查询退货申请 不通过记录，只统计=0的数据
+		 * @param customerid
+		 * @param branchid
+		 * @param checkresult
+		 * @param begindate
+		 * @param enddate
+		 * @return
+		 */
+		public List<String> getOrderBackChecksCwbs(long branchid,String begindate,String enddate) {
+			String sql = "SELECT * from ops_order_back_check where checkresult=2 and isstastics=0 ";
+			StringBuffer sb = new StringBuffer();
+			if (branchid>0) {
+				sb.append(" and branchid="+branchid);
+			}
+			if(!"".equals(begindate)){
+				sb.append(" and createtime>="+"'"+begindate+"'");
+			}
+			if(!"".equals(enddate)){
+				sb.append(" and createtime<"+"'"+enddate+"'");
+			}
+			sql +=sb;
+			return this.jdbcTemplate.query(sql,new CwbMapper());
+		}
+	
+		/**
+		 * 领货之后修改此状态为已统计
+		 * @param cwb
+		 */
+		public void updateStastics(String cwb) {
+			String sql = "update ops_order_back_check set isstastics=1 where cwb=? and isstastics=0 ";
+			jdbcTemplate.update(sql,  cwb);
+		}
+		
 	
 }

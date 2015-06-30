@@ -1208,7 +1208,7 @@ public class OrderFlowDAO {
 	
 	public OrderFlow getOrderFlowCwb(String cwb) {
 		try {
-			String sql = "select * from express_ops_order_flow where cwb=? and flowordertype=7 order by floworderid desc limit 1" ;
+			String sql = "select * from express_ops_order_flow where cwb=? and flowordertype IN(7,8) order by floworderid desc limit 1" ;
 			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper(),cwb);
 		} catch (Exception e) {
 			return null;

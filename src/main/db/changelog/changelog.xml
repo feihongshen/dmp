@@ -7230,5 +7230,17 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `op_cwbapplyzhongzhuan`	add  COLUMN  `audittime` varchar(255) default NULL;	
     	</sql>
     </changeSet>
+    <changeSet id="zhangpengkai-2015-06-30-01" author="zhangpengkai">
+    	<sql>
+    	ALTER TABLE `op_cwbapplyzhongzhuan` ADD COLUMN `isstastics` INT(4) DEFAULT 0 NULL COMMENT '是否统计，用于分站领货统计，统计0的记录,分站领货完成之后会自动变为>0'; 	
+    	ALTER TABLE `op_cwbapplyzhongzhuan` ADD INDEX `CATH_stastics_Idx` (`isstastics`);
+    	</sql>
+    </changeSet>
+     <changeSet id="zhangpengkai-2015-06-30-02" author="zhangpengkai">
+    	<sql>
+    	ALTER TABLE `ops_order_back_check` ADD COLUMN `isstastics` INT(4) DEFAULT 0 NULL COMMENT '是否统计，用于分站领货统计，统计0的记录,分站领货完成之后会自动变为>0', ADD INDEX `Obc_isstastics_Idx` (`isstastics`); 
+    	</sql>
+    </changeSet>
+    
 </databaseChangeLog>
  

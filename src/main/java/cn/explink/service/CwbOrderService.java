@@ -5779,6 +5779,14 @@ public class CwbOrderService {
 			this.cwbKuaiDiDAO.saveCwbKuaiDiZhongZhuanByCwb(co.getNextbranchid(), co.getCwb());
 			this.logger.info("揽收订单中转出站时更新揽收表中订单信息,cwb:{}", co.getCwb());
 		}
+		
+		//10.分站领货更新中转申请表状态为1/退货申请审核失败，这样统计待领货则不需要查询统计了
+		if (orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+			cwbApplyZhongZhuanDAO.updateStastics(orderflow.getCwb()); //修改中转审核状态修改
+			orderBackCheckDAO.updateStastics(orderflow.getCwb());
+		}
+		
+		
 	}
 
 	// 获取对应机构的机构类型

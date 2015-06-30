@@ -2226,6 +2226,17 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	
+	
+	// 今日待领货订单(拒收)
+		public List<CwbOrder> getTodayWeiLingJuShouByWhereListformingxi(String deliveryStates, long currentbranchid, String cwbs, long deliverid) {
+			String sql = "select * from express_ops_cwb_detail where deliverystate IN("+deliveryStates+") and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
+					+ FlowOrderTypeEnum.YiShenHe.getValue() + " and cwb in(" + cwbs + ")";
+			if (deliverid > 0) {
+				sql += " and deliverid=" + deliverid;
+			}
+			return this.jdbcTemplate.query(sql, new CwbMapper());
+		}
 
 	public List<CwbOrder> getTodayWeiLingZhiliuByWhereList(long deliveryState, long currentbranchid, String cwbs) {
 		String sql = "select * from express_ops_cwb_detail where deliverystate =? and currentbranchid=? and state=1 and flowordertype=? and cwb in(" + cwbs + ")";
@@ -2256,6 +2267,18 @@ public class CwbDAO {
 
 	public List<CwbOrder> getHistoryWeiLingZhiliuByWhereList(long deliveryState, long currentbranchid, String cwbs, long deliverid) {
 		String sql = "select * from express_ops_cwb_detail where deliverystate =" + deliveryState + " and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
+				+ FlowOrderTypeEnum.YiShenHe.getValue();
+		if (cwbs.length() > 0) {
+			sql += " and cwb in(" + cwbs + ")";
+		}
+		if (deliverid > 0) {
+			sql += " and deliverid=" + deliverid;
+		}
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+	
+	public List<CwbOrder> getHistoryWeiLingJuShouByWhereList(String deliveryStates, long currentbranchid, String cwbs, long deliverid) {
+		String sql = "select * from express_ops_cwb_detail where deliverystate IN ("+deliveryStates+") and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
 		if (cwbs.length() > 0) {
 			sql += " and cwb in(" + cwbs + ")";

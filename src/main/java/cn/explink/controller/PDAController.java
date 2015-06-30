@@ -1622,14 +1622,14 @@ public class PDAController {
 		List<CwbOrder> historydaizhongzhuanlist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todaydaizhongzhuanlist = new ArrayList<CwbOrder>();
 		
-		List<String>  todayAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2);
+		List<String>  todayAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
 		
 		if (todayAppZhongZhuanCwbs.size() > 0) {
 			todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuByWhereListformingxi(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanCwbs),
 					deliverid);
 		}
 		// 历史待中转订单
-		List<String>  historyAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2);
+		List<String>  historyAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
 
 		if (historyAppZhongZhuanCwbs.size() > 0) {
 			historydaizhongzhuanlist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyAppZhongZhuanCwbs),
@@ -1638,6 +1638,28 @@ public class PDAController {
 		
 		//今日反馈待中转失败订单----------------------------------------------
 
+		
+		
+		
+		// 今日反馈拒收审核不通过失败订单-20150629新增---------------------------------------------
+		List<CwbOrder> historyjushoulist = new ArrayList<CwbOrder>();// 历史待领货list
+		List<CwbOrder> todayjushoulist = new ArrayList<CwbOrder>();
+		
+		List<String>  todayJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
+		String deliverystates=DeliveryStateEnum.JuShou.getValue()+","+DeliveryStateEnum.BuFenTuiHuo.getValue()+","+DeliveryStateEnum.ShangMenJuTui.getValue();
+		if (todayJuShouCwbs.size() > 0) {
+			todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereListformingxi(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
+					deliverid);
+		}
+		// 历史拒收订单
+		List<String>  historyJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
+
+		if (historyJuShouCwbs.size() > 0) {
+			historyjushoulist = this.cwbDAO.getHistoryWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(historyJuShouCwbs),
+					deliverid);
+		}
+		
+		//今日反馈拒收审核不通过----------------------------------------------
 		
 		
 		
@@ -1652,10 +1674,12 @@ public class PDAController {
 		// 2.历史未领货==========================
 		historydaohuolist.addAll(historyzhiliulist);
 		historydaohuolist.addAll(historydaizhongzhuanlist);
+		historydaohuolist.addAll(historyjushoulist);
 		historyweilinghuolist = this.getcwbDetail(historydaohuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 1.今日未领货======================================
-		todayweilinghuolist.addAll(todaydaizhongzhuanlist);// 今日滞留
+		todayweilinghuolist.addAll(todayjushoulist);// 今日拒收不通过
+		todayweilinghuolist.addAll(todaydaizhongzhuanlist);// 今日待中转
 		todayweilinghuolist.addAll(todayzhiliulist);// 今日滞留
 		todayweilinghuolist.addAll(todaydaohuolist);// 今日到货
 		List<CwbDetailView> todayweilinghuoViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
@@ -5337,7 +5361,7 @@ public class PDAController {
 		List<CwbOrder> historydaizhongzhuanlist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todaydaizhongzhuanlist = new ArrayList<CwbOrder>();
 		
-		List<String>  todayAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2);
+		List<String>  todayAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
 		
 		if (todayAppZhongZhuanList.size() > 0) {
 			todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuByWhereListformingxi(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanList),
@@ -5345,7 +5369,7 @@ public class PDAController {
 			this.logger.info("todaydaizhongzhuanlist:" + todaydaizhongzhuanlist.size());
 		}
 		// 历史待中转订单
-		List<String>  historyAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2);
+		List<String>  historyAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
 
 		if (historyAppZhongZhuanList.size() > 0) {
 			historydaizhongzhuanlist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyAppZhongZhuanList),
@@ -5355,6 +5379,32 @@ public class PDAController {
 		//今日反馈待中转失败订单----------------------------------------------
 		
 
+		
+		
+		// 今日反馈拒收审核不通过失败订单-20150629新增---------------------------------------------
+		List<CwbOrder> historyjushoulist = new ArrayList<CwbOrder>();// 历史待领货list
+		List<CwbOrder> todayjushoulist = new ArrayList<CwbOrder>();
+		
+		List<String>  todayJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
+		
+		String deliverystates=DeliveryStateEnum.JuShou.getValue()+","+DeliveryStateEnum.BuFenTuiHuo.getValue()+","+DeliveryStateEnum.ShangMenJuTui.getValue();
+		
+		if (todayJuShouCwbs.size() > 0) {
+			todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereListformingxi(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
+					deliverid);
+		}
+		// 历史拒收订单
+		List<String>  historyJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
+
+		if (historyJuShouCwbs.size() > 0) {
+			historyjushoulist = this.cwbDAO.getHistoryWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(historyJuShouCwbs),
+					deliverid);
+		}
+		
+		//今日反馈拒收审核不通过----------------------------------------------
+		
+		
+		
 		List<String> linghuocwbs = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		String yilinghuocwbs = "";
 		if (linghuocwbs.size() > 0) {
@@ -5366,10 +5416,12 @@ public class PDAController {
 		todayweilinghuolist.addAll(todaydaohuolist);
 		todayweilinghuolist.addAll(todayzhiliulist);
 		todayweilinghuolist.addAll(todaydaizhongzhuanlist);
+		todayweilinghuolist.addAll(todayjushoulist);
 		
 		historyweilinghuolist.addAll(historydaohuolist);
 		historyweilinghuolist.addAll(historyzhiliulist);
-		historydaizhongzhuanlist.addAll(historydaizhongzhuanlist);
+		historyweilinghuolist.addAll(historydaizhongzhuanlist);
+		historyweilinghuolist.addAll(historyjushoulist);
 
 		obj.put("todayweilinghuocount", todayweilinghuolist.size());
 		obj.put("historyweilinghuocount", historyweilinghuolist.size());
