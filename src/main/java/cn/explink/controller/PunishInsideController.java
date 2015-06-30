@@ -167,6 +167,7 @@ public class PunishInsideController {
 			model.addAttribute("penalizebigList", penalizebigList);
 			model.addAttribute("penalizesmallList", penalizesmallList);
 			model.addAttribute("importFlag", importFlag);
+			model.addAttribute("cwb", cwb);
 			return "penalize/penalizeIn/list";
 	}
 	//进入根据订单创建对内扣罚单的弹出框

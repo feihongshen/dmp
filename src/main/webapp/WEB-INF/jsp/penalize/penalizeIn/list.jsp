@@ -31,6 +31,7 @@
   List<PenalizeInside> penalizeInsides=(List<PenalizeInside>) request.getAttribute("penalizeInsides");
   List<PenalizeType> penalizebigList=(List<PenalizeType>)request.getAttribute("penalizebigList");
   List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("penalizesmallList");
+  Object cwb=request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
 %>
 
 
@@ -1021,7 +1022,7 @@ function checkwithdiferenttype(type){
 								<tr>
 								<td align="left" >
 								订单号：
-									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ></textarea>
+									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb %></textarea>
 								</td>
 								
 								<td align="left">
