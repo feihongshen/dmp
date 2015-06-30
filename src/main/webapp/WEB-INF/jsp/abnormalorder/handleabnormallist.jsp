@@ -522,6 +522,7 @@ function resultdatadeal(id)
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件类型</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">创建时间</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件说明</td>
+							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">问题件状态</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">处理结果</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">责任机构</td>
 							<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">责任人</td>
@@ -557,6 +558,7 @@ function resultdatadeal(id)
 						<td width="100" align="center" valign="middle"><%=view.getAbnormalType() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCredatetime() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDescribe() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getIshandleName() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDealResultContent() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDutybranchname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getDutyperson() %></td>

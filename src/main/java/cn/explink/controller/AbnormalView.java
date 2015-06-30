@@ -2,15 +2,6 @@ package cn.explink.controller;
 
 public class AbnormalView {
 	private long id;
-
-	public long getId() {
-		return this.id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	private String cwb;
 	private String customerName;
 	private String emaildate;
@@ -38,6 +29,23 @@ public class AbnormalView {
 	private String lastdutybranch;//最终审判人
 	private String lastdutyuser;//最后审判机构
 	private long creuserid;//创建人的id
+	private String ishandleName;//问题件当前状态
+	
+	public String getIshandleName() {
+		return ishandleName;
+	}
+
+	public void setIshandleName(String ishandleName) {
+		this.ishandleName = ishandleName;
+	}
+
+	public long getId() {
+		return this.id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 	public long getCreuserid() {
 		return creuserid;
 	}

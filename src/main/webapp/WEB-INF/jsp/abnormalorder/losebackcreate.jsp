@@ -155,7 +155,7 @@ function subChexiao(){
 							<tr>
 							<td>
 							
-								订    单    号*：
+								订    单    号<font color="red">*</font>：
 								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
 								</td>
 								<td>
@@ -249,6 +249,9 @@ function subChexiao(){
 					
 
 				</div>
+				<br>
+				<br>
+				<br>
 				<%if(cwbList!=null&&cwbList.size()>0){ %>
 				<div class="iframe_bottom" >
 						<table width="100%" border="0" cellspacing="1"  class="table_2" id="gd_table2">

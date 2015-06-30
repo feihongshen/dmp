@@ -904,7 +904,7 @@ public class AbnormalOrderController {
 			String enddate = request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1");
 			String chuangjianbegindate = request.getParameter("chuangjianbegindate1") == null ? "" : request.getParameter("chuangjianbegindate1");
 			String chuangjianenddate = request.getParameter("chuangjianenddate1") == null ? "" : request.getParameter("chuangjianenddate1");
-			long findscope1=user.getRoleid();
+			//long findscope1=user.getRoleid();
 			String quot = "'", quotAndComma = "',";
 			StringBuffer cwbs1 = new StringBuffer();
 			if (cwb.length() > 0) {
@@ -1424,7 +1424,7 @@ public class AbnormalOrderController {
 		if (abnormalinfo.equals("最多输入100个字")) {
 			abnormalinfo="";
 		}
-		String questionNo="";
+		String questionNoSum="";
 		String filepath=this.abnormalService.getExceptname(request);
 		String[] cwbStrings=cwbs.split("\r\n");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1434,6 +1434,7 @@ public class AbnormalOrderController {
 			if (cwbStrings.length>0) {
 				for (String cwb : cwbStrings) {
 					try {
+						StringBuffer questionNo=new StringBuffer();
 						CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwb);
 						if (cwbOrder==null) {
 							failCwbs.put(cwb, "不存在该订单号");
@@ -1455,13 +1456,13 @@ public class AbnormalOrderController {
 									.iterator(); iterator.hasNext();) {
 								AbnormalOrder abnormalOrder2 = (AbnormalOrder) iterator
 										.next();
-								questionNo=questionNo+abnormalOrder2.getQuestionno()+",";
+								questionNo.append(",").append(abnormalOrder2.getQuestionno());
 							}
-							questionNo=questionNo.substring(0, questionNo.length()-1);
+							questionNoSum=questionNo.substring(1).toString();
 
 							abnormalOrderDAO.updateMisspieceState(1,cwb);
 						}
-						missPieceDao.insertintoMissPiece(cwb,callbackbranchid,abnormalinfo,filepath,questionNo,nowtime,customerid,cwbtypeid,flowordertype,userid);
+						missPieceDao.insertintoMissPiece(cwb,callbackbranchid,abnormalinfo,filepath,questionNoSum,nowtime,customerid,cwbtypeid,flowordertype,userid);
 					} catch (Exception e) {
 						failCwbs.put(cwb, "创建时异常失败");
 						this.logger.error("订单号为'"+cwb+"'的订单创建丢失件的时候出现异常", e);
@@ -1692,6 +1693,7 @@ public class AbnormalOrderController {
 				}
 				JSONArray rJson = JSONArray.fromObject(cwbdetails);
 				for (int i = 0; i < rJson.size(); i++) {
+					StringBuffer questionNos=new StringBuffer();
 					String reason = rJson.getString(i);
 					if (reason.equals("") || (reason.indexOf("_s_") == -1)) {
 						continue;
@@ -1714,9 +1716,9 @@ public class AbnormalOrderController {
 											.iterator(); iterator.hasNext();) {
 										AbnormalOrder abnormalOrder2 = (AbnormalOrder) iterator
 												.next();
-										questionNo=questionNo+abnormalOrder2.getQuestionno()+",";
+										questionNos=questionNos.append(",").append(abnormalOrder2.getQuestionno());
 									}
-									questionNo=questionNo.substring(0, questionNo.length()-1);
+									questionNo=questionNos.substring(1).toString();
 									//修改问题件的是否丢失状态
 									abnormalOrderDAO.updateMisspieceState(1,cwb);
 								}

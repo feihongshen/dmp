@@ -33,6 +33,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MissPiece;
 import cn.explink.domain.MissPieceView;
 import cn.explink.domain.User;
+import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.ResourceBundleUtil;
@@ -69,6 +70,7 @@ public class AbnormalService {
 				view.setDescribe(a.getString("describe"));
 				view.setEmaildate(a.getString("emaildate"));
 				view.setIshandle(a.getLong("ishandle"));
+				view.setIshandleName(this.getIsHandName(a.getLong("ishandle")));
 				view.setCredatetime(a.getString("credatetime"));
 				view.setFileposition(a.getString("fileposition"));
 				view.setDealResultContent(this.getDealResult(a.getLong("dealresult")));
@@ -298,6 +300,16 @@ public class AbnormalService {
 		}else {
 			return null;
 		}
+	}
+	public String getIsHandName(long ishandle){
+		String ishandName="";
+		for (AbnormalOrderHandleEnum abnormalOrderHandleEnum : AbnormalOrderHandleEnum.values()) {
+			if (abnormalOrderHandleEnum.getValue()==ishandle) {
+				ishandName=abnormalOrderHandleEnum.getText();
+				break;
+			}
+		}
+		return ishandName;
 	}
 
    }

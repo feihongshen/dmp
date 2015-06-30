@@ -287,6 +287,9 @@ function inserexceldata(){
 					
 
 				</div>
+				<br>
+				<br>
+				<br>
 				<%if(cwbList!=null&&cwbList.size()>0){ %>
 				<div class="iframe_bottom" >
 						<table width="100%" border="0" cellspacing="1"  class="table_2" id="gd_table2">

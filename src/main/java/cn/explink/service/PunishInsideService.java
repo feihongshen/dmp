@@ -104,7 +104,7 @@ public class PunishInsideService {
 		PenalizeInside penalizeInside=new PenalizeInside();
 		String cwb = StringUtil.nullConvertToEmptyString(request.getParameter("cwb")).trim();
 		String cwbstate = StringUtil.nullConvertToEmptyString(request.getParameter("cwbstate")).trim();
-		String cwbprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbprice")==""?"0.00":request.getParameter("cwbprice")).trim();
+		String cwbprice = StringUtil.nullConvertToEmptyString((request.getParameter("cwbprice")==""||request.getParameter("cwbprice")==null)?"0.00":request.getParameter("cwbprice")).trim();
 		String cwpunishbigsort = StringUtil.nullConvertToEmptyString(request.getParameter("punishbigsort")).trim();
 		String punishsmallsort = StringUtil.nullConvertToEmptyString(request.getParameter("punishsmallsort")).trim();
 		String dutybranchid = StringUtil.nullConvertToEmptyString(request.getParameter("dutybranchid")).trim();
