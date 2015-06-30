@@ -23,7 +23,7 @@
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
-	String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids");
+	 String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids"); 
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

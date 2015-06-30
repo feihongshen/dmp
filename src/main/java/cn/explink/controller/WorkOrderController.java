@@ -118,8 +118,6 @@ public class WorkOrderController {
 	SmsManageDao smsManageDao;
 	@Autowired
 	private CsPushSmsDao csPushSmsDao;
-	@Autowired
-	SystemInstallDAO systemInstallDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -572,7 +570,7 @@ public class WorkOrderController {
 	投诉处理结果 	是否扣罚 	客户名称	催件次数*/
 	@RequestMapping("/WorkOrderQueryManage/{page}")  /*WorkOrderManageQuery*/
 	public String WorkOrderManageQuery(@PathVariable(value="page") long page,Model model,CsComplaintAcceptVO cv) throws Exception{
-		
+		List<CsComplaintAccept> lcs=null;
 		StringBuffer sb = new StringBuffer();
 		String ncwbs="";
 		if(!StringUtils.isEmpty(cv.getOrderNo())){
@@ -591,22 +589,22 @@ public class WorkOrderController {
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
-		}
+		}	
+		
 		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
 		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();
-		List<CsComplaintAccept> lcs=null;
-		if(getSessionUser().getRoleid()==1||roleids.contains(getSessionUser().getRoleid()+"")){
-			lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);			
-			model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
-			
-		}else{
-			long currentbranchid=userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid();
-			lcs=workorderdao.findGoOnacceptWOByCWBs2(page,ncwbs,cv,workorders,currentbranchid);		
-			model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount1(ncwbs,cv,workorders,currentbranchid), page, Page.ONE_PAGE_NUMBER));			
-			
-		}	
-		model.addAttribute("roleids", roleids);	
-		model.addAttribute("page", page);	
+		Page p=null;		
+		if(getSessionUser().getRoleid()==1||roleids.contains(getSessionUser().getRoleid()+"")){		
+			lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
+			p=new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER);			
+		}else
+		{
+			lcs=workorderdao.findGoOnacceptWOByCWBsnew(page,ncwbs,cv,workorders,userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());
+			p=new Page(workorderdao.findGoOnacceptWOByCWBsCountnew(ncwbs,cv,workorders,userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid()), page, Page.ONE_PAGE_NUMBER);
+		}		
+		model.addAttribute("roleids",roleids);
+		model.addAttribute("page", page);		
+		model.addAttribute("page_obj",p);				
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
@@ -624,7 +622,6 @@ public class WorkOrderController {
 			ca.setPhoneOne(c.getPhoneOne());	
 			ca.setCustomerid(c.getCustomerid());
 			ca.setHandleUser(c.getHandleUser());
-			ca.setComplaintUser(c.getComplaintUser());
 			ca.setJieanTime(c.getJieanTime());
 			ca.setCuijianNum(c.getCuijianNum());
 			ca.setIfpunish(c.getIfpunish());
@@ -641,16 +638,14 @@ public class WorkOrderController {
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
-		model.addAttribute("lr", lr);
+		model.addAttribute("lr", lr==null?null:lr);
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("alltworeason", alltworeason);
-		model.addAttribute("lb", lb); 
-		model.addAttribute("lc", lc);
+		model.addAttribute("lb", lb==null?null:lb); 
+		model.addAttribute("lc", lc==null?null:lc);
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
-		/*model.addAttribute("currentbranchid",userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());*/
-		
 		return "workorder/WorkOrderQueryManage";		
 	}
 
@@ -1086,7 +1081,6 @@ public class WorkOrderController {
 		cca.setCustomerid(co.getCustomerid());
 		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
-		cca.setCuijianNum(cca.getCuijianNum()+1);
 		workorderdao.saveComplainWorkOrderF(cca);
 		
 		//构建数据
@@ -1103,8 +1097,9 @@ public class WorkOrderController {
 		Long receiveId = null;
 		Integer receiveType = null;
 		/** 短信逻辑  */
-		//分站领货、反馈
-		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) || FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow)){
+		//分站领货、反馈为
+		if( FlowOrderTypeEnum.FenZhanLingHuo.equals(cwbOrderFlow) ||
+			FlowOrderTypeEnum.YiFanKui.equals(cwbOrderFlow) && DeliveryStateEnum.ZhiLiuZiDongLingHuo.equals(cwbDeliverState)){
 			User deliver = userDao.getUserByUserid(cwbOrder.getDeliverid());
 			smsSendMobile = deliver.getUsermobile();
 			receiveId = Long.valueOf(deliver.getUserid());
@@ -1112,14 +1107,9 @@ public class WorkOrderController {
 		}
 		//其他状态订单
 		else{
-			Branch targetBranch = null;
-			if(cwbOrder.getCurrentbranchid()!=0 ){
-				targetBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
-			}else{
-				targetBranch = branchDao.getBranchByBranchid(cwbOrder.getStartbranchid());
-			}
-			smsSendMobile = targetBranch.getBranchmobile();
-			receiveId = Long.valueOf(targetBranch.getBranchid());
+			Branch currentBranch = branchDao.getBranchById(cwbOrder.getCurrentbranchid());
+			smsSendMobile = currentBranch.getBranchmobile();
+			receiveId = Long.valueOf(currentBranch.getBranchid());
 			receiveType = Integer.valueOf(1);
 		}
 		
