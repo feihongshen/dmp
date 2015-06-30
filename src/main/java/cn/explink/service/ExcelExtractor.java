@@ -1340,6 +1340,15 @@ public abstract class ExcelExtractor {
 			return null;
 		}
 		String abnormalInfo= this.getXRowCellData(row, 3);
+		try {
+			if (abnormalInfo.length()>100) {
+				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件说明字数大于100！");
+				return null;
+			}
+		} catch (Exception e) {
+			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件说明字数大于100！");
+			return null;
+		}
 		/*//判断问题件记录是否存在
 		List<AbnormalOrder> abnormalOrders=this.abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
 		if ((abnormalOrders != null)&&(abnormalOrders.size()>0)) {
