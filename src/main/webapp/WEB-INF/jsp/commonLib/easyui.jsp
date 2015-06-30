@@ -11,7 +11,8 @@
 <link href="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-theme/icon.css" rel="stylesheet" type="text/css" />
 <link href="${ctx}/js/easyui-extend/plugins/easyui/icons/icon-all.css" rel="stylesheet" type="text/css" />
 
-<script src="${ctx}/js/easyui-extend/plugins/easyui/jquery/jquery-1.11.1.min.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-1.8.3.min.js"></script>
+
 
 <script src="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/jquery.easyui.min.js" type="text/javascript"></script>
 <script src="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>

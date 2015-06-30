@@ -1,8 +1,7 @@
 <%@ taglib prefix="t" uri="/easyui-tags"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ page language="java"
-	import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
 %>
@@ -10,56 +9,25 @@
 <html>
 <head>
 <title>配送信息系统</title>
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-1.8.3.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/tools/dataformat.js"></script>
-<link id="easyuiTheme" rel="stylesheet"
-	href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/default/easyui.css"
-	type="text/css"></link>
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/icon.css"
-	type="text/css"></link>
-<link rel="stylesheet" type="text/css"
-	href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/accordion.css">
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/jquery.easyui.min.1.3.2.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/locale/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/tools/syUtil.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/extends/datagrid-scrollview.js"></script>
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.css"
-	type="text/css"></link>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.min.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
-<link rel="shortcut icon"
-	href="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/explink.ico">
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/icons.css"
-	type="text/css"></link>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/dmp40/plug-in/accordion/js/leftmenu.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/js.js"></script>
-<script
-	src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js"
-	type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js"
-	type="text/javascript"></script>
-<script
-	src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js"
-	type="text/javascript"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/tools/dataformat.js"></script>
+<link id="easyuiTheme" rel="stylesheet"	href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/default/easyui.css"	type="text/css"></link>
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/icon.css"	type="text/css"></link>
+<link rel="stylesheet" type="text/css"	href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/accordion.css">
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/jquery.easyui.min.1.3.2.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/tools/syUtil.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/extends/datagrid-scrollview.js"></script>
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.css"	type="text/css"></link>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.min.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
+<link rel="shortcut icon"	href="<%=request.getContextPath()%>/dmp40/eap/sys/image/login/explink.ico">
+<link rel="stylesheet"	href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/icons.css"	type="text/css"></link>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/accordion/js/leftmenu.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/js/js.js"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js"	type="text/javascript"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 
 <style type="text/css">
 .navbar {
