@@ -23,7 +23,6 @@
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
-	long currentbranchid = (Long)request.getAttribute("currentbranchid");
 	String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids");
 %> 
 	
@@ -433,7 +432,7 @@ function CurentTime()   //计算当天时间
 			</tr>
 		<%if(a!=null){ %>			
 			<%for(CsComplaintAccept c:a){ %>
-			 <%if(currentbranchid==c.getCodOrgId()||currentuser==1||roleids.contains(currentuser+"")){ %>
+			<%--  <%if(currentbranchid==c.getCodOrgId()||currentuser==1||roleids.contains(currentuser+"")){ %> --%>
 			<tr onclick="getFomeV('<%=c.getAcceptNo() %>','<%=c.getComplaintState()%>','<%=c.getAcceptTime()%>')" id="getFomeV">				
 				<td><a href="javascript:getAddBox3('<%=c.getAcceptNo() %>')"><%=c.getAcceptNo() %></a></td>
 				<td><%=c.getOrderNo() %></td>
@@ -485,7 +484,7 @@ function CurentTime()   //计算当天时间
 					<%} %>
 				</td>
 		</tr>
-			<%}} }%>
+			<%} }%>
 		</table>
 	</div>	
 

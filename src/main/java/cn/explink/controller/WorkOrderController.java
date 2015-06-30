@@ -572,7 +572,7 @@ public class WorkOrderController {
 	投诉处理结果 	是否扣罚 	客户名称	催件次数*/
 	@RequestMapping("/WorkOrderQueryManage/{page}")  /*WorkOrderManageQuery*/
 	public String WorkOrderManageQuery(@PathVariable(value="page") long page,Model model,CsComplaintAcceptVO cv) throws Exception{
-		List<CsComplaintAccept> lcs=null;
+		
 		StringBuffer sb = new StringBuffer();
 		String ncwbs="";
 		if(!StringUtils.isEmpty(cv.getOrderNo())){
@@ -592,9 +592,21 @@ public class WorkOrderController {
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
 		}
-		model.addAttribute("page", page);		
-		model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
-		lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
+		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
+		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();
+		List<CsComplaintAccept> lcs=null;
+		if(getSessionUser().getRoleid()==1||roleids.contains(getSessionUser().getRoleid()+"")){
+			lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);			
+			model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER));			
+			
+		}else{
+			long currentbranchid=userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid();
+			lcs=workorderdao.findGoOnacceptWOByCWBs2(page,ncwbs,cv,workorders,currentbranchid);		
+			model.addAttribute("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBsCount1(ncwbs,cv,workorders,currentbranchid), page, Page.ONE_PAGE_NUMBER));			
+			
+		}	
+		model.addAttribute("roleids", roleids);	
+		model.addAttribute("page", page);	
 		List<CsComplaintAccept> lc=new ArrayList<CsComplaintAccept>();
 		Map<String,String> connameList=new HashMap<String, String>();
 		Map<Long,String> customerList=new HashMap<Long, String>();
@@ -627,9 +639,6 @@ public class WorkOrderController {
 		List<Branch> lb=branchDao.getAllBranches();
 		List<Reason> lr=reasondao.addWO();
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
-		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
-		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();
-		model.addAttribute("roleids",roleids);
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
 		model.addAttribute("lr", lr);
@@ -640,7 +649,7 @@ public class WorkOrderController {
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
-		model.addAttribute("currentbranchid",userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());
+		/*model.addAttribute("currentbranchid",userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());*/
 		
 		return "workorder/WorkOrderQueryManage";		
 	}

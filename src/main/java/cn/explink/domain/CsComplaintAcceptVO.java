@@ -31,7 +31,13 @@ public class CsComplaintAcceptVO {
 			private int consigneeId;   //收件人id
 			private String acceptNo;	//工单号
 			private String orderNo;		//订单号
-			private int codOrgId;		//被投诉机构
+			private long codOrgId;		//被投诉机构
+			public long getCodOrgId() {
+				return codOrgId;
+			}
+			public void setCodOrgId(long codOrgId) {
+				this.codOrgId = codOrgId;
+			}
 			private String ComplaintUser;	//被投诉人
 			private int complaintType;		//被投诉类型
 			private int complaintOneLevel;	//一级分类
@@ -133,12 +139,7 @@ public class CsComplaintAcceptVO {
 			public void setOrderNo(String orderNo) {
 				this.orderNo = orderNo;
 			}
-			public int getCodOrgId() {
-				return codOrgId;
-			}
-			public void setCodOrgId(int codOrgId) {
-				this.codOrgId = codOrgId;
-			}
+
 			public String getComplaintUser() {
 				return ComplaintUser;
 			}

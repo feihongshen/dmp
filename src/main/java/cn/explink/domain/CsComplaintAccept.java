@@ -71,9 +71,18 @@ public class CsComplaintAccept {
 			private String chongshenUser;
 			private int cuijianNum = 0;
 			private int ifOutofdate;
+			private long currentuserbranchid;
+			
+			
 			
 			
 
+			public long getCurrentuserbranchid() {
+				return currentuserbranchid;
+			}
+			public void setCurrentuserbranchid(long currentuserbranchid) {
+				this.currentuserbranchid = currentuserbranchid;
+			}
 			public int getIfOutofdate() {
 				return ifOutofdate;
 			}
