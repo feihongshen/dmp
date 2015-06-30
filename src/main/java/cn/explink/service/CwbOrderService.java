@@ -4035,10 +4035,10 @@ public class CwbOrderService {
 	// 更改订单的订单状态为退货的流向
 	private void deliverPodForCwbstate(String cwb, long podresultid, FlowOrderTypeEnum auditFlowOrderTypeEnum, User user) {
 		// ====退货审核===
-		OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
+		/*OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
 		if(orderBackCheck!=null){//如果存在先删除
 			this.orderBackCheckDAO.deleteOrderBackCheckByCwb(cwb);
-		}
+		}*/
 		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
 		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 		
@@ -4053,9 +4053,12 @@ public class CwbOrderService {
 					// 获取订单信息
 					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 					// 退货审核表插入一条订单数据
-					OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
-					this.orderBackCheckDAO.createOrderBackCheck(o);
-					this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
+					OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
+					if(orderBackCheck == null){
+						OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
+						this.orderBackCheckDAO.createOrderBackCheck(o);
+						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
+					}
 				} else {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
@@ -6446,7 +6449,7 @@ public class CwbOrderService {
 						cwbOrderView.setCwb(ot.getCwb());
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
-						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getApplyzhongzhuanbranchid()));//当前站点
+						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, getSessionUser().getBranchid()));//当前站点
 						cwbOrderView.setMatchbranchname(c.getExcelbranch());//匹配站点名称
 						cwbOrderView.setInSitetime(ot.getArrivebranchtime());//到站时间
 						cwbOrderViewList.add(cwbOrderView);

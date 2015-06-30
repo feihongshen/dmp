@@ -3068,6 +3068,10 @@ public class ExportService {
 			cloumnName2[3] = "Branchname";
 			cloumnName1[4] = "归班反馈时间";
 			cloumnName2[4] = "Createtime";
+			cloumnName1[5] = "审核人";
+			cloumnName2[5] = "Auditname";
+			cloumnName1[6] = "审核时间";
+			cloumnName2[6] = "Audittime";
 			
 		}
 		// 中转出站view
@@ -3076,7 +3080,7 @@ public class ExportService {
 			cloumnName2[0] = "Cwb";
 			cloumnName1[1] = "订单类型";
 			cloumnName2[1] = "Cwbordertypename";
-			cloumnName1[2] = "供货商名";
+			cloumnName1[2] = "客户名称";
 			cloumnName2[2] = "Customername";
 			cloumnName1[3] = "当前站点";
 			cloumnName2[3] = "Branchname";

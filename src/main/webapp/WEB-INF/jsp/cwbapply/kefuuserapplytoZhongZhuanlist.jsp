@@ -329,8 +329,8 @@ $(function() {
 									<td width="100" align="center" valign="middle"><%=cwb.getBranchname() %></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getMatchbranchname() %></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getInSitetime() %></td>
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+									<td width="80" align="center" valign="middle"></td>
+									<td width="100" align="center" valign="middle"></td>
 								</tr>
 							<%} }%> 
 							</tbody>

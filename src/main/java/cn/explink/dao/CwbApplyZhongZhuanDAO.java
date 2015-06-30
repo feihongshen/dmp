@@ -191,10 +191,10 @@ public class CwbApplyZhongZhuanDAO {
 			if (ishandle > -1) {
 				w.append(" and ishandle=" + ishandle);
 			}
-			if (begindate.length() > 0) {
+			if (!"".equals(begindate)) {
 				w.append(" and applytime >= '" + begindate + "' ");
 			}
-			if (enddate.length() > 0) {
+			if (!"".equals(enddate)) {
 				w.append(" and applytime <= '" + enddate + "' ");
 			}
 			sql += w.substring(4, w.length());
@@ -227,10 +227,10 @@ public class CwbApplyZhongZhuanDAO {
 			if (applyzhongzhuanbranchid > 0) {
 				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
 			}
-			if (begindate.length() > 0) {
+			if (!"".equals(begindate)) {
 				w.append(" and applytime >= '" + begindate + "' ");
 			}
-			if (enddate.length() > 0) {
+			if (!"".equals(enddate)) {
 				w.append(" and applytime <= '" + enddate + "' ");
 			}
 			sql += w;
@@ -256,10 +256,10 @@ public class CwbApplyZhongZhuanDAO {
 			if (applyzhongzhuanbranchid > 0) {
 				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
 			}
-			if (begindate.length() > 0) {
+			if (!"".equals(begindate)) {
 				w.append(" and applytime >= '" + begindate + "' ");
 			}
-			if (enddate.length() > 0) {
+			if (!"".equals(enddate)) {
 				w.append(" and applytime <= '" + enddate + "' ");
 			}
 			sql += w;

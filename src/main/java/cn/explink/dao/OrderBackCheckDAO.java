@@ -97,6 +97,15 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
+	
+	public OrderBackCheck getOrderBackCheckByCheckstate(String cwb) {
+		String sql = "select * from ops_order_back_check where checkstate=1 and cwb = ? ";
+		try {
+			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public OrderBackCheck getOrderBackCheckByCwbAndBranch(String cwb, String branchid) {
 		String sql = "select * from ops_order_back_check where cwb = ? and branchid in(" + branchid + ") and checkstate=0 ";
@@ -168,18 +177,24 @@ public class OrderBackCheckDAO {
 			StringBuffer sb = new StringBuffer();
 			if (branchid>0) {
 				sb.append(" and branchid="+branchid);
-			}else if(customerid>0){
+			}
+			if(customerid>0){
 				sb.append(" and customerid="+customerid);
-			}else if(cwbtypeid>0){
+			}
+			if(cwbtypeid>0){
 				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}else if(checkstate>=0){
+			}
+			if(checkstate>=0){
 				sb.append(" and checkstate="+checkstate);
-			}else if(checkresult>0){
+			}
+			if(checkresult>0){
 				sb.append(" and checkresult="+checkresult);
-			}else if(!begindate.equals("")){
-				sb.append(" and createtime>="+"'"+begindate+"'");
-			}else if(!enddate.equals("")){
-				sb.append(" and createtime<="+"'"+enddate+"'");
+			}
+			if(!"".equals(begindate)){
+				sb.append(" and createtime>='"+begindate+"'");
+			}
+			if(!"".equals(enddate)){
+				sb.append(" and createtime<='"+enddate+"'");
 			}
 			sql +=sb;
 		}
@@ -194,16 +209,21 @@ public class OrderBackCheckDAO {
 			StringBuffer sb = new StringBuffer();
 			if (branchid>0) {
 				sb.append(" and branchid="+branchid);
-			}else if(customerid>0){
+			}
+			if(customerid>0){
 				sb.append(" and customerid="+customerid);
-			}else if(cwbtypeid>0){
+			}
+			if(cwbtypeid>0){
 				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}else if(checkresult>0){
+			}
+			if(checkresult>0){
 				sb.append(" and checkresult="+checkresult);
-			}else if(!begindate.equals("")){
-				sb.append(" and createtime>="+"'"+begindate+"'");
-			}else if(!enddate.equals("")){
-				sb.append(" and createtime<="+"'"+enddate+"'");
+			}
+			if(!"".equals(begindate)){
+				sb.append(" and createtime >= '"+begindate+"'");
+			}
+			if(!"".equals(enddate)){
+				sb.append(" and createtime <= '"+enddate+"'");
 			}
 			sql +=sb;
 		}
@@ -222,16 +242,21 @@ public class OrderBackCheckDAO {
 			StringBuffer sb = new StringBuffer();
 			if (branchid>0) {
 				sb.append(" and branchid="+branchid);
-			}else if(customerid>0){
+			}
+			if(customerid>0){
 				sb.append(" and customerid="+customerid);
-			}else if(cwbtypeid>0){
+			}
+			if(cwbtypeid>0){
 				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}else if(checkresult>0){
+			}
+			if(checkresult>0){
 				sb.append(" and checkresult="+checkresult);
-			}else if(!begindate.equals("")){
-				sb.append(" and createtime>="+"'"+begindate+"'");
-			}else if(!enddate.equals("")){
-				sb.append(" and createtime<="+"'"+enddate+"'");
+			}
+			if(!"".equals(begindate)){
+				sb.append(" and createtime >='"+begindate+"'");
+			}
+			if(sb.equals(enddate)){
+				sb.append(" and createtime <='"+enddate+"'");
 			}
 			sql +=sb;
 		}

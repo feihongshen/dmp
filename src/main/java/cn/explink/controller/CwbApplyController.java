@@ -577,7 +577,8 @@ public class CwbApplyController {
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
 			) {
 		Page pag = new Page();
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	

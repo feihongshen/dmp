@@ -20,7 +20,25 @@ public class CwbApplyZhongZhuan {
 	private long handleuserid; // 处理人
 	private String handleremark; // 处理备注
 	private long isnow; // 标记为是否为最后一次申请(0不是，1是）
+	private String auditname;//审核人
+	private String audittime;//审核时间
 	
+	public String getAuditname() {
+		return auditname;
+	}
+
+	public void setAuditname(String auditname) {
+		this.auditname = auditname;
+	}
+
+	public String getAudittime() {
+		return audittime;
+	}
+
+	public void setAudittime(String audittime) {
+		this.audittime = audittime;
+	}
+
 	private String arrivebranchtime;
 	
 	public String getArrivebranchtime() {
