@@ -148,7 +148,6 @@ String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getA
 				<div align="center">
 						<input type="submit" value="结案" class="button" onclick="acceptcloseDiv()"<%-- onclick="AlreadyVerifyJieAn('<%=ComplaintStateEnum.YiJieAn.getValue()%>')" --%>/>						
 				</div>		
-				<%-- <input type="hidden" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>" id="acceptresultV">	 --%>
 				<input type="hidden" value="<%=ComplaintResultEnum.BuChengLi.getValue()%>" id="acceptresultVl"> 
 	</div>
 		</form>
