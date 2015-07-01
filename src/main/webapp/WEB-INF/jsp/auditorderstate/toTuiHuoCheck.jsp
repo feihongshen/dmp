@@ -208,6 +208,14 @@ $(function() {
 });
 
 
+function displayorno(displayorno){
+	if(displayorno==2){
+		$("#hiddendiv").removeAttr("hidden");
+	}else{
+		$("#hiddendiv").attr("hidden","hidden");
+	}
+}
+
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -261,19 +269,13 @@ $(function() {
 									<td>
 										&nbsp;&nbsp;
 										审核状态:
-										<select name ="shenhestate" id ="shenhestate">
+										<select name ="shenhestate" id ="shenhestate" onchange="displayorno($(this).val());">
 											<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 											<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 										</select>
 									</td>
+								
 									<td>
-										&nbsp;&nbsp;
-										审核结果:
-										<select name ="checkresult" id ="checkresult">
-											<option  value ="0">全部</option>
-											<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
-											<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
-										</select>
 										&nbsp;&nbsp;
 										归班反馈时间:
 											<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
@@ -281,6 +283,14 @@ $(function() {
 											<input type ="text" name ="enddate" id="endtime"  value="" class="input_text1" style="height:20px;"/>
 									</td>
 									<td>
+										<div id="hiddendiv" hidden="hidden">
+											审核结果:
+											<select name ="checkresult" id ="checkresult">
+												<option  value ="0">全部</option>
+												<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
+												<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
+											</select>
+										</div>
 									</td>
 								</tr>
 							</table>
@@ -331,29 +341,7 @@ $(function() {
 							</tbody>
 					</table>
 					</div>
-					<br>
-					<br>
-					<%-- <div style="height:104px"></div>
-						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
-							<tbody>
-							<%if(orderbackList!=null&&!orderbackList.isEmpty()){%> 
-								<%for(OrderBackCheck cwb :orderbackList){ %>
-									<tr>
-										<td  width="40" align="center" valign="middle">
-											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=cwb.getId()%>"/>
-										</td>
-										<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
-										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCwbordertypename())%></td>
-										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
-										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getBranchname())%></td>
-										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCreatetime())%></td>
-										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
-										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
-									</tr>
-							<%} }%>
-							</tbody>
-						</table>
-				</div> --%>
+				</div>	
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
