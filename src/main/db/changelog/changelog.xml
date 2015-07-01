@@ -7241,6 +7241,32 @@ CREATE TABLE `cs_complaint_accept` (
     	ALTER TABLE `ops_order_back_check` ADD COLUMN `isstastics` INT(4) DEFAULT 0 NULL COMMENT '是否统计，用于分站领货统计，统计0的记录,分站领货完成之后会自动变为>0', ADD INDEX `Obc_isstastics_Idx` (`isstastics`); 
     	</sql>
     </changeSet>
+     <changeSet id="liuxiao-2015-07-01-01" author="liuxiao">
+    	<sql>
+    		CREATE TABLE `express_orderbackruku_record` (  
+					  `id` bigint(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+					  `cwb` varchar(100) collate utf8_bin default NULL,
+					  `customerid` int(11) default '0',
+					  `cwbordertypeid` int(11) default '0',
+					  `branchid` int(11) default '0',
+					  `consigneename` varchar(100) collate utf8_bin default NULL,
+					  `consigneeaddress` varchar(100) collate utf8_bin default NULL,
+					  `createtime` varchar(100) collate utf8_bin default NULL,
+					  `auditstate` int(4) default '0',
+					  `cwbstate` int(4) default NULL,
+					  `remarkstr` varchar(100) collate utf8_bin default NULL,
+					  `auditname` varchar(100) collate utf8_bin default NULL,
+					  `audittime` varchar(100) collate utf8_bin default NULL,
+					  KEY `ruku_cwb_idx` (`cwb`),
+					  KEY `ruku_cwbordertypeid_idx` (`cwbordertypeid`),
+					  KEY `ruku_branchid_idx` (`branchid`),
+					  KEY `ruku_customerid_idx` (`customerid`),
+					  KEY `ruku_auditstate_idx` (`auditstate`),
+					  KEY `ruku_createtime_idx` (`createtime`)
+					 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    	</sql>
+    </changeSet>
+    
     
 </databaseChangeLog>
  
