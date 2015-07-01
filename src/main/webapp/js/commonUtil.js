@@ -42,6 +42,7 @@ $(window).ready(function() {
 function initEnumSelect(data){
 	var clear = $('<a href="javascript:void(0)">清空</a>'); 
 	var s = $(data);
+	var ifClear = s.attr("ifClear");
 	var enumName = s.attr("initDataKey");
 	var viewField = s.attr("viewField");
 	var saveField = s.attr("saveField");
@@ -57,15 +58,18 @@ function initEnumSelect(data){
 			return row[opts.textField].indexOf(q) >= 0;
 		}
 	});
-	s.after(clear);
-	clear.bind('click',function(){
-		s.combobox("clear")
-	});
+	if(!isNull(ifClear)){
+		s.after(clear);
+		clear.bind('click',function(){
+			s.combobox("clear")
+		});
+	}
 }
 
 function initTABLESelect(data){
-	var clear = $('<a>清空</a>'); 
+	var clear = $('<a href="javascript:void(0)">清空</a>'); 
 	var s = $(data);
+	var ifClear = s.attr("ifClear");
 	var entityName = s.attr("initDataKey");
 	var viewField = s.attr("viewField");
 	var saveField = s.attr("saveField");
@@ -113,10 +117,12 @@ function initTABLESelect(data){
 					return row[opts.textField].indexOf(q) >= 0;
 				}
 			});
-			s.after(clear);
-			clear.bind('click',function(){
-				s.combobox("clear")
-			});
+			if(!isNull(ifClear)){
+				s.after(clear);
+				clear.bind('click',function(){
+					s.combobox("clear")
+				});
+			}
 	}else{
 		s.combobox({
 			onSelect:function(selectObj){
@@ -134,10 +140,12 @@ function initTABLESelect(data){
 				return row[opts.textField].indexOf(q) >= 0;
 			}
 		});
-		s.after(clear);
-		clear.bind('click',function(){
-			s.combobox("clear")
-		});
+		if(!isNull(ifClear)){
+			s.after(clear);
+			clear.bind('click',function(){
+				s.combobox("clear")
+			});
+		}
 	}
 }
 
