@@ -38,9 +38,11 @@ public class AbnormalWriteBackDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb,String name) {
+	public long creAbnormalOrder(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb,String name) {
+		
 		String sql = "insert into express_ops_abnormal_write_back(`opscwbid`,`describe`,`creuserid`,`type`,`credatetime`,`abnormalorderid`,`abnormalordertype`,`cwb`,`fileposition`) values(?,?,?,?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb,name);
+		return this.jdbcTemplate.update(sql, opscwbid, describe, creuserid, type, credatetime, abnormalorderid, abnormaltypeid, cwb,name);
+		
 	}
 	
 	public void creAbnormalOrderAdd(long opscwbid, String describe, long creuserid, long type, String credatetime, long abnormalorderid, long abnormaltypeid, String cwb,String name) {

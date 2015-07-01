@@ -84,10 +84,20 @@ public class AbnormalService {
 				view.setIsfindInfo(this.checkfindOrnot(a.getLong("isfind")));
 				view.setLastdutybranch(this.getBranchName(branchs, a.getLong("lastdutybranchid")));
 				view.setLastdutyuser(this.getCreName(users, a.getLong("lastdutyuserid")));
+				view.setDutybrachid(a.getLong("dutybrachid"));
+				view.setIszhanzhang(this.getIsZhanzhang(currentbranchid,a.getLong("branchid"),a.getLong("dutybrachid"),roleid));
 				views.add(view);
 			}
 		}
 		return views;
+	}
+	//判断是不是创建方与责任方的站长
+	public long getIsZhanzhang(long currentbranchid,long crebranchid,long dutybranchid,long roleid){
+		long flag=0;
+		if ((currentbranchid==crebranchid||currentbranchid==dutybranchid)&&roleid==4) {
+			flag=1;
+		}
+		return flag;
 	}
 	public String checkfindOrnot(long losebackid){
 		if (losebackid==0) {

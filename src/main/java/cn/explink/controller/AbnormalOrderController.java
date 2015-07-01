@@ -1128,7 +1128,7 @@ public class AbnormalOrderController {
 			Date date = new Date();
 			String nowtime = df.format(date);
 			String[] arrayIds = ids.split(",");
-
+			long count=0;
 			for (int i = 0; i < arrayIds.length; i++) {
 				int id = Integer.parseInt(arrayIds[i]);
 				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
@@ -1141,17 +1141,18 @@ public class AbnormalOrderController {
 					ishandle=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
 				}
 				this.abnormalOrderDAO.saveAbnormalOrderForIshandleAdd(id, ishandle, nowtime);
-				this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
+				long num=this.abnormalWriteBackDAO.creAbnormalOrder(ab.getOpscwbid(), describe, this.getSessionUser().getUserid(), AbnormalWriteBackEnum.ChuLi.getValue(), nowtime, ab.getId(),
 						ab.getAbnormaltypeid(), ab.getCwb(),"");
 				/*
 				 * String json = "订单：" + ab.getCwb() + "已处理";
 				 * this.appearWindowDao.creWindowTime(json, "4",
 				 * ab.getCreuserid(), "1");
 				 */
+				count+=num;
 			}
-			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+			return "{\"errorCode\":0,\"error\":\"操作成功"+count+"单问题件\"}";
 		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+			return "{\"errorCode\":1,\"error\":\"操作失败（系统异常）\"}";
 		}
 	}
 
@@ -1237,18 +1238,19 @@ public class AbnormalOrderController {
 			String nowtime = df.format(date);
 			long action=AbnormalWriteBackEnum.XiuGai.getValue();
 			String[] arrayIds = ids.split(",");
+			long count=0;
 			for (int i = 0; i < arrayIds.length; i++) {
 				int id = Integer.parseInt(arrayIds[i]);
 				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
 				//String filepathsum=(ab.getFileposition()==null?"":ab.getFileposition())+filepath;
 				CwbOrder co=this.cwbDAO.getCwbByCwbLock(ab.getCwb());
 				abnormalOrderDAO.saveAbnormalOrderByidAdd(id, abnormaltypeid, describe,ishandle,nowtime);
-				this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, ab.getId(), abnormaltypeid, co.getCwb(),"");
-				
+				long num=this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, ab.getId(), abnormaltypeid, co.getCwb(),"");
+				count+=num;
 			}
-			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+			return "{\"errorCode\":0,\"error\":\"操作成功,成功修改"+count+"单\"}";
 		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+			return "{\"errorCode\":1,\"error\":\"操作失败(内部异常)\"}";
 		}
 	}
 	//修改创建过的问题件（带文件上传的）
@@ -1268,18 +1270,19 @@ public class AbnormalOrderController {
 			String nowtime = df.format(date);
 			long action=AbnormalWriteBackEnum.XiuGai.getValue();
 			String[] arrayIds = ids.split(",");
+			long count=0;
 			for (int i = 0; i < arrayIds.length; i++) {
 				long id = Long.parseLong(arrayIds[i]);
 				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
 				String filepathsum=(ab.getFileposition()==null?"":ab.getFileposition())+","+filepath;
 				CwbOrder co=this.cwbDAO.getCwbByCwbLock(ab.getCwb());
 				abnormalOrderDAO.saveAbnormalOrderByid(id, Integer.parseInt(abnormaltypeid), describe,ishandle,filepathsum,nowtime);
-				this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, ab.getId(), Integer.parseInt(abnormaltypeid), co.getCwb(),filepath);
-				
+				long num=this.abnormalWriteBackDAO.creAbnormalOrder(co.getOpscwbid(), describe, user.getUserid(), action, nowtime, ab.getId(), Integer.parseInt(abnormaltypeid), co.getCwb(),filepath);
+				count+=num;
 			}
-			return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+			return "{\"errorCode\":0,\"error\":\"操作成功,成功修改"+count+"单\"}";
 		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"操作失败\"}";
+			return "{\"errorCode\":1,\"error\":\"操作失败(内部异常)\"}";
 		}
 	}
 	//进入结案处理页面

@@ -30,7 +30,16 @@ public class AbnormalView {
 	private String lastdutyuser;//最后审判机构
 	private long creuserid;//创建人的id
 	private String ishandleName;//问题件当前状态
+	private long iszhanzhang;//是否是责任方或创建方的站长，0是不是，1为是
 	
+	public long getIszhanzhang() {
+		return iszhanzhang;
+	}
+
+	public void setIszhanzhang(long iszhanzhang) {
+		this.iszhanzhang = iszhanzhang;
+	}
+
 	public String getIshandleName() {
 		return ishandleName;
 	}

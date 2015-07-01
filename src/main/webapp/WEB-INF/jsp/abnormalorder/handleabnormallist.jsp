@@ -111,8 +111,12 @@ function getThisBoxList(id,flag){
 		console.info($("#dutyuseridhhh"+id).val()!=$("#userid").val());
 		if($("#sitetype").val()!=5){
 			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
-				alert("对不起，您不是该问题件的创建方与责任方不允许操作！！");
-				return;
+				//是否是本站的站长
+				if($("#iszhanzhang"+id).val()!=1){
+					alert("对不起，您不是该问题件的创建方与责任方(或双方的站长)不允许操作！！");
+					return;
+				}
+			
 			}
 		}
 		if($("#handlehhh"+id).val()==5){
@@ -241,9 +245,13 @@ function isgetallcheck(){
 		$('input[name="id"]').attr("checked",true);
 	}
 }
-function stateBatch(state)
+//dutyuseridhhh
+function stateBatch()
 {	var num=0;
 	var ids="";
+	var nodutynum=0;
+	var noduty="";
+	var efectiveids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($("#sitetype").val()!=5){
@@ -251,63 +259,142 @@ function stateBatch(state)
 				num=num+1;
 			}
 		}
+		if($("#dutyuseridhhh"+id).val()==0){
+			nodutynum=nodutynum+1;
+			if($.trim(id).length!=0){
+				noduty+=id+",";
+			}
+		}
 		if($.trim(id).length!=0){
 		ids+=id+",";
 		}
 		});
+	alert(ids);
+	alert(noduty);
 	if(ids.length==0){
-		alert("请选择要操作的记录！");
-		return false;
+		if(noduty.length==0||yijieanids.length==0){
+			alert("请选择要操作的记录！");
+			return false;
+		}
+		
 	}
-	if(num>=1){
-		alert("对不起，您不是选择该问题件的创建人与责任人，不允许操作！！");
-		return;
+	//一般没有这种情况
+	if(num>0){
+		if($("#roleid").val()!=4){
+			alert("您所选择的问题件包含您不是当事责任机构与责任人的单号，不允许操作！！");
+			return;
+		}
 	}
-	if($("#handlehhh"+id).val()==5){
-		alert("已经结案的问题件不能进行处理！！");
-		return;
+	if(nodutynum>0){
+		efectiveids=ids;
+		for(var j=0;j<noduty.substring(0, noduty.length-1).split(",").length;j++){
+		for(var i=0;i<ids.substring(0, ids.length-1).split(",").length;i++){
+ 			if(noduty.substring(0, noduty.length-1).split(",")[j]!=ids.substring(0, ids.length-1).split(",")[i]){
+	 		efectiveids=efectiveids.replace(noduty.substring(0, noduty.length-1).split(",")[j]+",", "");	
+         }
+			}
+		}
+	}
+	alert(efectiveids);
+	if(nodutynum>0){
+		if($("#roleid").val()==1){
+			if(confirm("您所选择的问题件包含没有责任机构与责任人的单号（以上情况的订单将不做操作），确认继续执行吗？")){
+				if(ids.indexOf(",")>0&&efectiveids.indexOf(",")>0){
+					$.ajax({
+						type : "POST",
+						url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
+						data:{"ids":efectiveids.substring(0, efectiveids.length-1)},
+						dataType : "html",
+						success : function(data) {$("#alert_box",parent.document).html(data);
+						},
+						complete:function(){
+							viewBox();
+						}
+					});
+					}else{
+						alert("没有能够操作的问题件，请重新选择！");
+						return;
+					}
+			}
+			return;
+		}
 	}
 	if(ids.indexOf(",")>0){
-	$.ajax({
-		type : "POST",
-		url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
-		data:{"ids":ids.substring(0, ids.length-1)},
-		dataType : "html",
-		success : function(data) {$("#alert_box",parent.document).html(data);
-		},
-		complete:function(){
-			viewBox();
+		$.ajax({
+			type : "POST",
+			url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
+			data:{"ids":ids.substring(0, ids.length-1)},
+			dataType : "html",
+			success : function(data) {$("#alert_box",parent.document).html(data);
+			},
+			complete:function(){
+				viewBox();
+			}
+		});
+		}else{
+			alert("没有能够操作的问题件，请重新选择！");
+			return;
 		}
-	});
-	}
+	<%-- if(yijieanids.length>0){
+		if($("#roleid").val()!=1){
+			
+				
+			
+		}else{
+			if(ids.indexOf(",")>0){
+				$.ajax({
+					type : "POST",
+					url:"<%=request.getContextPath()%>/abnormalOrder/gotoBatch",
+					data:{"ids":ids.substring(0, ids.length-1)},
+					dataType : "html",
+					success : function(data) {$("#alert_box",parent.document).html(data);
+					},
+					complete:function(){
+						viewBox();
+					}
+				});
+				}else{
+					alert("没有能够操作的问题件，请重新选择！");
+				}
+		}
+		
+	
+	} --%>
+	
 	}
 function reviseQuestionError(state)
 {
 	var num=0;
 	var ids="";
+	var errorids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($("#sitetype").val()!=5){
 			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
-				num=num+1;
+				if($("#iszhanzhang"+id).val()!=1){
+					num=num+1;
+				}
 			}
+		
 		}
 		if($.trim(id).length!=0){
 		ids+=id+",";
 		}
 		});
-	if(num>=1){
-		alert("对不起，您不是选择该问题件的创建人与责任人，不允许操作！！");
+	/* if(num>=1){
+		alert("您所选择的问题件里面包含您不是责任方与创建的订单！！");
 		return;
-	}
+	} */
 	if(ids.length==0){
 		alert("请选择要操作的记录！");
 		return false;
 	}
+	
 	if($("#ishandlehhh").val()!=1&&$("#ishandlehhh").val()!=8){
 		alert("当前所选订单的订单状态不是创建状态！！不允许修改！");
 		return;
 	}
+
 	if(ids.indexOf(",")>0){
 	$.ajax({
 		type : "POST",
@@ -579,6 +666,8 @@ function resultdatadeal(id)
 						<input type="hidden" id="useridhhh<%=view.getId() %>"  value="<%=view.getCreuserid() %>"/>
 						<input type="hidden" id="dutyuseridhhh<%=view.getId() %>"  value="<%=view.getDutypersonid() %>"/>
 						<input type="hidden" id="handlehhh<%=view.getId() %>"  value="<%=view.getIshandle() %>"/>
+						<input type="hidden" id="iszhanzhang<%=view.getId() %>"  value="<%=view.getIszhanzhang() %>"/>
+						
 					</tr>
 					<%} %>
 				</tbody>
