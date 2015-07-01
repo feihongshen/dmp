@@ -122,7 +122,7 @@ public class CwbApplyZhongZhuanDAO {
 	}
 
 	public long getCwbApplyZhongZhuanYiChuLiByCwbCount(String cwb) {
-		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=3 and isnow=1";
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=3 and isstastics =0 and isnow=1";
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
@@ -316,7 +316,7 @@ public class CwbApplyZhongZhuanDAO {
 	 * @param cwb
 	 */
 	public void updateStastics(String cwb) {
-		String sql = "update op_cwbapplyzhongzhuan set isstastics=1 where cwb=? and isstastics=0 ";
+		String sql = "update op_cwbapplyzhongzhuan set isstastics=1 where cwb=? and isstastics=0 and isnow=1 ";
 		jdbcTemplate.update(sql,  cwb);
 	}
 	

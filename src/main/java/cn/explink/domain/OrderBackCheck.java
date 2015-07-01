@@ -2,7 +2,7 @@ package cn.explink.domain;
 
 public class OrderBackCheck {
 	private long id;
-	private long checkstate;
+	private long checkstate;  //1待审核  2已审核
 	private String cwb;
 	private long customerid;
 	private int cwbordertypeid;

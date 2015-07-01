@@ -3228,7 +3228,7 @@ public class CwbOrderService {
 		//退货出站前做订单校验（判断是否在退货申请表中，以及处于什么状态）
 		OrderBackCheck obc = orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
 		if(obc!=null){
-			if(obc.getCheckstate()==0){
+			if(obc.getCheckstate()==1){
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Tui_Huo_Wei_Shen_He_Cheng_Gong_Error);	
 			}else if(obc.getCheckresult()==2){
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Tui_Huo_Zhi_Liu_Wu_Fa_Tui_Huo_Error);
@@ -4076,7 +4076,7 @@ public class CwbOrderService {
 					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 					// 退货审核表插入一条订单数据
 					OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
-					if(orderBackCheck == null){
+					if(orderBackCheck == null&&(podresultid == DeliveryStateEnum.JuShou.getValue() || podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) ){
 						OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
 						this.orderBackCheckDAO.createOrderBackCheck(o);
 						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
@@ -5804,6 +5804,7 @@ public class CwbOrderService {
 		
 		//10.分站领货更新中转申请表状态为1/退货申请审核失败，这样统计待领货则不需要查询统计了
 		if (orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+			logger.info("分站领货更新中转申请失败、退货申请审核失败表isstastics为1,cwb={}",orderflow.getCwb());
 			cwbApplyZhongZhuanDAO.updateStastics(orderflow.getCwb()); //修改中转审核状态修改
 			orderBackCheckDAO.updateStastics(orderflow.getCwb());
 		}
