@@ -467,8 +467,12 @@ function verify(){
 		alert("合同编号不能为空！");
 		return false;
 	}
-	if($("#number").val().lenght > 100){
-		alert("合同编号长度不能超过100位字符！")
+	if($("#taxrate").val()==""){
+		alert("税率不能为空！");
+		return false;
+	}
+	if($("#number").val().length > 20){
+		alert("合同编号长度不能超过20位字符！")
 	}
 	if($("#contracttype").val()==2){
 		if($("#othercontractors").val()==""){
@@ -482,8 +486,8 @@ function verify(){
 			return false;
 		}
 	}
-	if($("#contractdescription").val().lenght > 800){
-		alert("合同详细描述不能大于800位字符！");
+	if($("#contractdescription").val().length > 100){
+		alert("合同详细描述不能大于100位字符！");
 		return false;
 	}
 	return flag;
