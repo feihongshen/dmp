@@ -315,8 +315,8 @@ public class OrderBackCheckController {
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String dateStr = sdf.format(date);
-			this.orderBackCheckService.save(ids, this.getSessionUser(),dateStr);
-			return "{\"errorCode\":0,\"error\":\"审核为确认退货成功\"}";
+			String str = this.orderBackCheckService.save(ids, this.getSessionUser(),dateStr);
+			return "{\"errorCode\":0,\"error\":\"" + str + "\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}
@@ -336,14 +336,15 @@ public class OrderBackCheckController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String dateStr = sdf.format(date);
 			List<OrderBackCheck> orderbackList = new ArrayList<OrderBackCheck>();
+			String str = "";
 			if(!"".equals(ids)){
 				orderbackList = orderBackCheckDAO.getOrderBackCheckByIds(ids);
-				this.orderBackCheckService.rsPeiSong(orderbackList,this.getSessionUser(),dateStr);
+				str = this.orderBackCheckService.rsPeiSong(orderbackList,this.getSessionUser(),dateStr);
 				for(OrderBackCheck obc:orderbackList){
 					this.cwbDao.updateCwbState(obc.getCwb(), CwbStateEnum.PeiShong);
 				}
 			}
-			return "{\"errorCode\":0,\"error\":\"审核站点配送成功\"}";
+			return "{\"errorCode\":0,\"error\":\""+str+"\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		}

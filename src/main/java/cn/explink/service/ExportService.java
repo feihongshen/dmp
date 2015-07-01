@@ -3052,9 +3052,17 @@ public class ExportService {
 		cloumnName1[4] = "收件人地址";
 		cloumnName2[4] = "Consigneeaddress";
 		cloumnName1[5] = "退货库入库时间";
-		cloumnName2[5] = "Tuihuozhaninstoreroomtime";
-		cloumnName1[6] = "配送站点";
-		cloumnName2[6] = "Branchname";
+		cloumnName2[5] = "Createtime";
+		cloumnName1[6] = "审核为退货再投";
+		cloumnName2[6] = "Auditstatename";
+		cloumnName1[7] = "配送站点";
+		cloumnName2[7] = "Branchname";
+		cloumnName1[8] = "备注";
+		cloumnName2[8] = "Remarkstr";
+		cloumnName1[9] = "审核人";
+		cloumnName2[9] = "Auditname";
+		cloumnName1[10] = "审核时间";
+		cloumnName2[10] = "Audittime";
 	}
 		// 退货出站view
 		public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {

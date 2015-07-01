@@ -59,6 +59,7 @@ import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderArriveTimeDAO;
 import cn.explink.dao.OrderBackCheckDAO;
+import cn.explink.dao.OrderBackRukuRecordDao;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OrderbackRecordDao;
@@ -79,6 +80,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.OperationTime;
+import cn.explink.domain.OrderBackRuku;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
@@ -196,6 +198,8 @@ public class CwbOrderController {
 	OperationTimeDAO operationTimeDAO;
 	@Autowired
 	OrderbackRecordDao orderbackRecordDao;
+	@Autowired
+	OrderBackRukuRecordDao orderBackRukuRecordDao;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -967,64 +971,40 @@ public class CwbOrderController {
 	public String toTuiHuoZaiTou(Model model,HttpServletRequest request,
 			@PathVariable(value = "page") long page,
 			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
-			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbordertype,
 			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begintime,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String endtime,
+			@RequestParam(value = "auditstate", defaultValue = "-1", required = false) int auditstate,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
 		
-		long begintime = 0;
-		long endtime = 0;
-		if(!begindate.equals("")&&!enddate.equals("")){
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			try {
-				Date date1 = sdf.parse(begindate);
-				begintime = date1.getTime();
-				Date date2 = sdf.parse(enddate);
-				endtime = date2.getTime();
-			} catch (ParseException e) {
-				e.printStackTrace();
+		Page pag = new Page(); 	
+		List<Branch> branchList = new ArrayList<Branch>();
+		List<Customer> customerList = new ArrayList<Customer>();
+		List<Reason> reasonList = new ArrayList<Reason>();
+		List<OrderBackRuku> obrsList = new ArrayList<OrderBackRuku>();
+		if(isnow>0){
+			String cwbsStr = "";
+			if(cwbs.length()>0){
+				cwbsStr = cwborderService.getCwbs(cwbs);
 			}
-		}
-		String cwbsStr = "";
-		if(cwbs.length()>0){
-			cwbsStr = cwborderService.getCwbs(cwbs);
-		}
-		
-		Page pag = new Page();
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		
-		List<Branch> branchviewList = this.branchDAO.getAllEffectBranches();
-		List<Customer> customerList = this.customerDao.getAllCustomers();
-		model.addAttribute("reasonList", reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZaiTou.getValue()));
-		model.addAttribute("branchList", branchList);
-		model.addAttribute("customerList", customerList);
-		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
-		if(!(cwbs.equals("")&&begindate.equals(""))){
-			List<OperationTime> optList = new ArrayList<OperationTime>();
-			optList = this.operationTimeDAO.getCwbViewList(page,cwbsStr,cwbtypeid,customerid,branchid,begintime,endtime);
-			long count = this.operationTimeDAO.getCwbViewListCount(cwbsStr,cwbtypeid,customerid,branchid,begintime,endtime);
+			branchList = this.branchDAO.getAllEffectBranches();
+			customerList = this.customerDao.getAllCustomers();
+			reasonList = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZaiTou.getValue());
+			List<OrderBackRuku> obrList = this.orderBackRukuRecordDao.getOrderbackRukus(page, cwbsStr, cwbordertype, customerid, branchid, begintime, endtime, auditstate);
+			obrsList = cwborderService.getOrderBackRukuRecord(obrList,branchList,customerList);
+			long count = this.orderBackRukuRecordDao.getOrderbackRukusCount(page, cwbsStr, cwbordertype, customerid, branchid, begintime, endtime, auditstate);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			StringBuffer sb = new StringBuffer();
-			if(optList.size()>0){
-				for(OperationTime ot:optList){
-					sb.append("'").append(ot.getCwb()).append("',");
-				}
-			}
-			String strs = "";
-			List<CwbOrder> coList = new ArrayList<CwbOrder>();
-			if(sb.length()>0){
-				strs = sb.substring(0, sb.length()-1);
-				coList = cwbDao.getListbyCwbs(strs);
-			}
-			
-			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchviewList);//获取分页查询的view
 		}
-		
+		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("page",page);
-		model.addAttribute("covList", covList);
+		model.addAttribute("obrsList", obrsList);
+		model.addAttribute("reasonList", reasonList);
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("customerList", customerList);
 		return "auditorderstate/toTuiHuoZaiTou";
 	}
 	
@@ -1076,6 +1056,11 @@ public class CwbOrderController {
 					if (!cwb_reasonid[1].equals("0") && !cwb_reasonid[1].equals("")) {
 						String scancwb = cwb_reasonid[0];
 						cwborderService.auditToZaiTou(getSessionUser(), cwb_reasonid[0], scancwb, FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue(), Long.valueOf(cwb_reasonid[1]));
+						//更改退货站入库记录表审核为退货再投的状态
+						 Reason rs = reasonDAO.getRcontentByReasonid(Integer.parseInt(cwb_reasonid[1]));
+						 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						 String createtime = sdf.format(new Date());
+						orderBackRukuRecordDao.updateOrderBackRukuRecort(cwb_reasonid[0],rs.getReasoncontent(),getSessionUser().getRealname(),createtime);
 						successCount++;
 						failureCount--;
 					}
@@ -2565,56 +2550,31 @@ public class CwbOrderController {
 	}
 	@RequestMapping("/tuihuozaitouexport")
 	public void tuihuozaitouexport(HttpServletRequest request,HttpServletResponse response,
-			@RequestParam(value = "exportmould", defaultValue = "", required = false) String exportmould,
 			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
-			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
+			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbordertype,
 			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begintime,
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String endtime,
+			@RequestParam(value = "auditstate", defaultValue = "-1", required = false) int auditstate,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			){
-		long begintime = 0;
-		long endtime = 0;
-		if(!begindate.equals("")&&!enddate.equals("")){
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			try {
-				Date date1 = sdf.parse(begindate);
-				begintime = date1.getTime();
-				Date date2 = sdf.parse(enddate);
-				endtime = date2.getTime();
-			} catch (ParseException e) {
-				e.printStackTrace();
+	
+		List<Branch> branchList = new ArrayList<Branch>();
+		List<Customer> customerList = new ArrayList<Customer>();
+		List<OrderBackRuku> obrsList = new ArrayList<OrderBackRuku>();
+		if(isnow>0){
+			String cwbsStr = "";
+			if(cwbs.length()>0){
+				cwbsStr = cwborderService.getCwbs(cwbs);
 			}
+			branchList = this.branchDAO.getAllEffectBranches();
+			customerList = this.customerDao.getAllCustomers();
+			List<OrderBackRuku> obrList = this.orderBackRukuRecordDao.getOrderbackRukus(-1, cwbsStr, cwbordertype, customerid, branchid, begintime, endtime, auditstate);
+			obrsList = cwborderService.getOrderBackRukuRecord(obrList,branchList,customerList);
 		}
-		String cwbsStr = "";
-		if(cwbs.length()>0){
-			cwbsStr = cwborderService.getCwbs(cwbs);
-		}
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		List<Customer> customerList = this.customerDao.getAllCustomers();
-		
-		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
-		if(!(cwbs.equals("")&&begindate.equals(""))){
-			List<OperationTime> optList = new ArrayList<OperationTime>();
-			optList = this.operationTimeDAO.getCwbViewList(-9,cwbsStr,cwbtypeid,customerid,branchid,begintime,endtime);
-			StringBuffer sb = new StringBuffer();
-			if(optList.size()>0){
-				for(OperationTime ot:optList){
-					sb.append("'").append(ot.getCwb()).append("',");
-				}
-			}
-			String strs = "";
-			List<CwbOrder> coList = new ArrayList<CwbOrder>();
-			if(sb.length()>0){
-				strs = sb.substring(0, sb.length()-1);
-				coList = cwbDao.getListbyCwbs(strs);
-			}
-			
-			covList = this.cwborderService.getTuiZaiCwbOrderView(coList, optList, customerList, branchList);//获取分页查询的view
-			
-		}	
-		String[] cloumnName1 = new String[7]; // 导出的列名
-		String[] cloumnName2 = new String[7]; // 导出的英文列名
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
 
 		this.exportService.SetTuiHuoZaiTouFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
@@ -2622,7 +2582,7 @@ public class CwbOrderController {
 		String sheetName = "退货再投"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "tuihuozaitou_" + df.format(new Date()) + ".xlsx"; // 文件名
-		ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, covList);
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, obrsList);
 		
 	}
 	@RequestMapping("/toGonghuoshangExport")

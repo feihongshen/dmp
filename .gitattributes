@@ -947,6 +947,7 @@ src/main/java/cn/explink/dao/OperationTimeDAO.java -text
 src/main/java/cn/explink/dao/OrderAddressReviseDao.java -text
 src/main/java/cn/explink/dao/OrderArriveTimeDAO.java -text
 src/main/java/cn/explink/dao/OrderBackCheckDAO.java -text
+src/main/java/cn/explink/dao/OrderBackRukuRecordDao.java -text
 src/main/java/cn/explink/dao/OrderDeliveryClientDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowDAO.java -text
 src/main/java/cn/explink/dao/OrderFlowLogDAO.java -text
@@ -1129,6 +1130,7 @@ src/main/java/cn/explink/domain/OrderAddressRevise.java -text
 src/main/java/cn/explink/domain/OrderArriveTime.java -text
 src/main/java/cn/explink/domain/OrderBackCheck.java -text
 src/main/java/cn/explink/domain/OrderBackCheckView.java -text
+src/main/java/cn/explink/domain/OrderBackRuku.java -text
 src/main/java/cn/explink/domain/OrderDeliveryClient.java -text
 src/main/java/cn/explink/domain/OrderGoods.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text

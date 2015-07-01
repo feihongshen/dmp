@@ -1,18 +1,15 @@
+<%@page import="cn.explink.domain.OrderBackRuku"%>
 <%@page import="cn.explink.util.Page"%>
-<%@page import="cn.explink.domain.OperationTime"%>
-<%@page import="cn.explink.controller.pda.BranchListBodyPdaResponse"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.enumutil.*"%>
-<%@page import="cn.explink.domain.Exportmould"%>
 <%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
-List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
+List<OrderBackRuku> obrsList = (List<OrderBackRuku>)request.getAttribute("obrsList");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 String cwbStr = request.getParameter("cwbs")==null?"":request.getParameter("cwbs");
 Page page_obj = (Page)request.getAttribute("page_obj");
@@ -69,13 +66,14 @@ $(function(){
 	$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
 });
 
-function sub(){
+function audit(){
 	var datavalue = "[";
-	
+	//var remarkValue = "";
 	if($('input[name="ischeck"]:checked').size()>0){
 		$('input[name="ischeck"]:checked').each(function(index){
 			$(this).attr("checked",false);
 			var id=$(this).val()+"_cwbremark";
+			//remarkValue = $("#"+id).val();
 			//alert(id+"==="+$('#'+id).val());
 			/* for(var i = 0 ; i < $("select[name^='reason']").length ; i++){
 				datavalue[datavalue.length]=$("select[name^='reason']")[i].value;
@@ -116,7 +114,7 @@ function btnClick(){
 }
 
 function exportField(){
-	if(<%=covList!=null&&covList.size()!=0%>){
+	if(<%=obrsList!=null&&obrsList.size()!=0%>){
 		$("#btnval").attr("disabled","disabled"); 
 	 	$("#btnval").val("请稍后……");
 	 	$("#searchForm").attr("action",'<%=request.getContextPath()%>/cwborder/tuihuozaitouexport');
@@ -214,6 +212,7 @@ $(function() {
 										<td rowspan="2">
 											订单号：
 											<textarea name="cwbs" rows="3" class="kfsh_text" id="cwbs" ><%=cwbStr %></textarea>
+											<input type="hidden" name="isnow" value="1">
 										</td>
 										<td>
 											订单类型:
@@ -252,6 +251,13 @@ $(function() {
 											到
 												<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
 										</td>
+										<td>
+											审核状态:
+											<select id="auditstate" name="auditstate" >
+												<option value="0">待审核</option>
+												<option value="1">已审核</option>
+											</select>
+										</td>
 									</tr>
 								</table>
 								<table>
@@ -261,7 +267,7 @@ $(function() {
 											<input type="reset" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
-											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="sub()">
+											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="audit()">
 											<input name="" type="button" id="btnval" value="导出" class="input_button2"  onclick="exportField();"/>
 										</td>
 									</tr>
@@ -280,47 +286,46 @@ $(function() {
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退货库入库时间</td>
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
-									<td width="200" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
+									<td width="190" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div style="height:135px"></div>
-					<from action="<%=request.getContextPath() %>/cwborder/auditTuiHuoZaiTou" method="post" id="SubFrom" >
-						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
-							<tbody>
-								<%if(covList!=null){ 
-									for(CwbOrderView cwb :covList){ %>
+								<%if(obrsList!=null){ 
+									for(OrderBackRuku cwb :obrsList){ %>
 									<tr height="30">
 										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
-											<input id="ischeck" name="ischeck" type="checkbox" value="<%=cwb.getCwb() %>" <%if(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()||cwb.getCwbstate()==CwbStateEnum.TuiGongYingShang.getValue()){ %> checked="checked" <%} %>>
+											<input id="ischeck" name="ischeck" type="checkbox"  checked="checked" value="<%=cwb.getCwb() %>">
 										</td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
 										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwbordertypename()%></td>
 										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCustomername() %></td>
 										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
 										<td width="180" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getTuihuozhaninstoreroomtime()%></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%="是" %></td>
+										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCreatetime()%></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditstate()==0?"待审核":"已审核" %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getBranchname()%></td>
-										<td width="200" align="center" valign="middle">
-										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()&&cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue()){ %>
-												<%=cwb.getCwbremark() %>
+										<td width="190" align="center" valign="middle">
+										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()/* ||cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue() */){ %>
+												<%=cwb.getRemarkstr() %>
 										<input type="hidden" id="<%=cwb.getCwb() %>_cwbremark" name="<%=cwb.getCwb() %>_cwbremark" value="<%=cwb.getCwb() %>_s_0"/>
 										<%}else{ %>
-										<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
-										<option value="">请选择退货再投原因</option>
-										<%for(Reason r :reasonList) {%><option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option><%} %>
+											<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
+												<option value="">请选择退货再投原因</option>
+												<%for(Reason r :reasonList) {%>
+													<option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option>
+												<%} %>
 											</select>
 										<%} %>
 										</td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditor() %></td>
+										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditname() %></td>
 										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAudittime() %></td>
 									</tr>
 								<%} }%>
+							</tbody>
 						</table>
+					</div>
+					<div style="height:135px"></div>
+					<from action="<%=request.getContextPath() %>/cwborder/auditTuiHuoZaiTou" method="post" id="SubFrom" >
 					</from>
 				</div>
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
@@ -354,6 +359,7 @@ $(function() {
 	$("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
 	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
 	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
+	$("#auditstate").val(<%=request.getParameter("auditstate")==null?0:Long.parseLong(request.getParameter("auditstate"))%>);
 </script>
 </BODY>
 </HTML>

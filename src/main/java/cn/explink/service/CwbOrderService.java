@@ -84,6 +84,7 @@ import cn.explink.dao.NoPiPeiCwbDetailDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderArriveTimeDAO;
 import cn.explink.dao.OrderBackCheckDAO;
+import cn.explink.dao.OrderBackRukuRecordDao;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OrderFlowLogDAO;
@@ -135,6 +136,7 @@ import cn.explink.domain.NoPiPeiCwbDetail;
 import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderArriveTime;
 import cn.explink.domain.OrderBackCheck;
+import cn.explink.domain.OrderBackRuku;
 import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
@@ -381,6 +383,8 @@ public class CwbOrderService {
 	OrderbackRecordDao orderbackRecordDao;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	OrderBackRukuRecordDao orderBackRukuRecordDao;
 	
 
 	private User getSessionUser() {
@@ -1556,7 +1560,19 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		
+		//有效订单存入退货站入库记录表
+		OrderBackRuku obr = new OrderBackRuku();
+		obr.setCwb(co.getCwb());
+		obr.setCustomerid(co.getCustomerid());//供货商id
+		obr.setBranchid(co.getStartbranchid());//上一站（配送站） 当前站为退货站
+		obr.setCwbordertypeid(co.getCwbordertypeid());//订单类型
+		obr.setConsigneename(co.getConsigneename());//收件人名字
+		obr.setConsigneeaddress(co.getConsigneeaddress());//收件人地址
+		obr.setCreatetime(getNowtime());//当前时间
+		obr.setCwbstate((int)co.getCwbstate());
+		this.orderBackRukuRecordDao.creOrderbackRuku(obr);//导入到退货站入库记录表
+		
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
 		if ((cwbBranch.getBranchid() != currentbranchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
@@ -1582,6 +1598,12 @@ public class CwbOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
+	public String getNowtime(){
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sdf.format(date);
+	}
+	
 	private CwbOrder handleBackIntoWarehousYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, CwbOrder co,
 			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long driverid) {
 		if (isypdjusetranscwb == 1) {
@@ -6331,7 +6353,7 @@ public class CwbOrderService {
 						cwbOrderView.setConsigneename(c.getConsigneename());//收件人
 						cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());//收件人地址
 						cwbOrderView.setTuihuozhaninstoreroomtime(this.getStringDate(ot.getCredate()));//退货库入库时间
-						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));
+						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, c.getStartbranchid()));//退货站的上一站(配送站)
 						User user = this.getSessionUser();
 						cwbOrderView.setAuditor(user.getRealname());//审核人
 						cwbOrderView.setAudittime("");//审核时间
@@ -6520,6 +6542,28 @@ public class CwbOrderService {
 			}
 		}
 		return covList;
+	}
+
+	//退货再投页面显示
+	public List<OrderBackRuku> getOrderBackRukuRecord(
+			List<OrderBackRuku> obrList, List<Branch> branchList,
+			List<Customer> customerList) {
+		if(obrList!=null){
+			for(OrderBackRuku obr : obrList){
+				obr.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(obr.getCwbordertypeid()));//订单类型
+				obr.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, obr.getCustomerid()));//客户名称
+				obr.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, obr.getBranchid()));//站点名
+				obr.setAuditstatename(getAuditstatename(obr.getAuditstate()));
+			}
+		}
+		return obrList;
+	}
+	public String getAuditstatename(int auditstate){
+		if(auditstate==0){
+			return "待审核";
+		}else{
+			return "已审核";
+		}
 	}
 	
 	/*public String getCwbsBydate(long flowordertypeid, String begindate,

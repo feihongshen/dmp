@@ -211,5 +211,10 @@ public class ReasonDao {
 		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
 		return list;
 	}
+
+	public Reason getRcontentByReasonid(int reasonid) {
+		String sql = "select * from express_set_reason where reasonid="+reasonid;
+		return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper());
+	}
 	
 }

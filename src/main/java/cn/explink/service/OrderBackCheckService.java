@@ -25,6 +25,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.ExplinkException;
 
 @Service
 public class OrderBackCheckService {
@@ -82,12 +83,14 @@ public class OrderBackCheckService {
 	 * @param user
 	 */
 	@Transactional
-	public void save(String ids, User user,String dateStr) {
+	public String save(String ids, User user,String dateStr) {
 		if (!"".equals(ids)) {
 			logger.info("===退货确认审核开始===");
 			for (String id : ids.split(",")) {
 				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckById(Long.parseLong(id));
-				
+				if(order!=null&&order.getCheckstate()==2){
+					return "已审核的订单无法再次反馈！订单号:"+order.getCwb();
+				}
 				// 获得当前站点的退货站
 				List<Branch> bList = new ArrayList<Branch>();
 				for (long i : cwbRouteService.getNextPossibleBranch(order.getBranchid())) {
@@ -106,9 +109,11 @@ public class OrderBackCheckService {
 				// 更新checkstate=1 并且更新确认状态为确认退货
 				orderBackCheckDAO.updateOrderBackCheck1(1,Long.parseLong(id),user.getRealname(), dateStr);
 				logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
+				return "审核为确认退货成功！";
 			}
 			logger.info("===退货审核确认结束===");
 		}
+		return "";
 	}
 
 	/**
@@ -118,7 +123,7 @@ public class OrderBackCheckService {
 	 * @param user
 	 */
 	@Transactional
-	public void rsPeiSong(List<OrderBackCheck> orderbackList,User user,String dateStr){
+	public String rsPeiSong(List<OrderBackCheck> orderbackList,User user,String dateStr){
 		if (orderbackList!=null) {
 			logger.info("===退货站点配送开始===");
 			
@@ -134,12 +139,17 @@ public class OrderBackCheckService {
 			
 			for (CwbOrder cwbOrder : coList) {
 				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckByCwb(cwbOrder.getCwb());
+				if(order!=null&&order.getCheckstate()==2){
+					return "已审核的订单无法再次反馈!订单号:"+order.getCwb();
+				}
 				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.PeiShong);
 				cwbDAO.updateNextbranch(cwbOrder);//修改下一站为当前站
 				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb(),user.getRealname(),dateStr);//修改为站点滞留状态
 			}
 			logger.info("===退货站点配送结束===");
+			return "审核为站点配送成功!";
 		}
+		return "";
 	}
 	
 	
