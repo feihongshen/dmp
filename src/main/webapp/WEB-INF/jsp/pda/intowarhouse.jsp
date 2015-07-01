@@ -374,7 +374,7 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#showcwb").html("");
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
-									$("#scancwb").val("");
+									$("#scancwb").html("");
 									if(data.statuscode=="3"){
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo);
@@ -384,16 +384,13 @@ function callfunction(cwb){//getEmailDateByIds
 									}else if(data.statuscode=="101"){
 										if(confirm("无数据，有货无单,确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
-											batchPlayWav(data.wavList);
-											data.wavList = [];
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+											data.wavList = [];
 										}
 										$("#scancwb").val("");
 									}else if(data.statuscode=="102"){
 										if(confirm("尚未匹配站点，确定要入库吗？")){
 											$("#youhuowudanflag").val("1");
-											batchPlayWav(data.wavList);
-											data.wavList = [];
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 											data.wavList = [];
 										}
