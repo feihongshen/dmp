@@ -209,9 +209,13 @@ function addContract() {
 	$("#depositCollectDate").datepicker();
 	
 	$('#contractNo').focus(function(){
-		$('#contractNo').val('');
+		if($('#contractNo').val() && $('#contractNo').val() == '[自动生成]'){
+			$('#contractNo').val('');
+		}
 	}).blur(function(){
-		$('#contractNo').val('[自动生成]');
+		if(!$('#contractNo').val()){
+			$('#contractNo').val('[自动生成]');
+		}
 	});
 	
 	$("#alert_box").show();

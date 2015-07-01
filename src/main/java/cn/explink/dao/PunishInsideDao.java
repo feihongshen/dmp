@@ -230,6 +230,16 @@ public class PunishInsideDao {
 		}
 	}
 	
+	public PenalizeInside getInsideByPunishNo(String punishNo){
+		try {
+			String sql="select * from express_ops_punishInside_detail where punishNo=?";
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeInsideRowMapper(), punishNo);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+	}
+	
 	public void updateShensuPunishInside(final long id,final long shensutype,final String describe,final String fileposition,final long userid,final long punishcwbstate){
 		this.jdbcTemplate.update("update express_ops_punishInside_detail set shensutype=?,shensudescribe=?,shensufileposition=?,shensuuserid=?,punishcwbstate=?,shensudate=? where id=?", new PreparedStatementSetter() {
 			@Override

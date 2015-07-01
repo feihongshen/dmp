@@ -1,5 +1,8 @@
 package cn.explink.enumutil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.explink.exception.ExplinkException;
 
 public enum CwbStateEnum {
@@ -21,8 +24,6 @@ public enum CwbStateEnum {
 		return text;
 	}
 
-
-	
 	public static CwbStateEnum getByValue(long value) {
 		for (CwbStateEnum cc : CwbStateEnum.values()) {
 			if (value == cc.getValue()) {
@@ -30,5 +31,13 @@ public enum CwbStateEnum {
 			}
 		}
 		throw new ExplinkException(ExceptionCwbErrorTypeEnum.PEi_SONG_LEI_XING_WEI_ZHAO_DAO, value);
+	}
+	
+	public static Map<Integer, String> getMap() {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		for (CwbStateEnum e : CwbStateEnum.values()) {
+			map.put(e.value, e.text);
+		}
+		return map;
 	}
 }

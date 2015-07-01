@@ -3,6 +3,9 @@
  */
 package cn.explink.enumutil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 对内扣罚对外赔付账单状态
  *
@@ -32,5 +35,21 @@ public enum PunishBillStateEnum {
 			}
 		}
 		return null;
+	}
+	
+	public static Map<Integer, String> getMap() {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		for (PunishBillStateEnum e : PunishBillStateEnum.values()) {
+			map.put(e.value, e.text);
+		}
+		return map;
+	}
+	
+	public static Map<Long, String> getStateMap() {
+		Map<Long, String> map = new HashMap<Long, String>();
+		for (PunishBillStateEnum e : PunishBillStateEnum.values()) {
+			map.put(new Long((long)e.value), e.text);
+		}
+		return map;
 	}
 }
