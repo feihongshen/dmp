@@ -31,7 +31,6 @@
   List<PenalizeInside> penalizeInsides=(List<PenalizeInside>) request.getAttribute("penalizeInsides");
   List<PenalizeType> penalizebigList=(List<PenalizeType>)request.getAttribute("penalizebigList");
   List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("penalizesmallList");
-  Object cwb=request.getAttribute("cwb")==null?"":request.getAttribute("cwb");
 %>
 
 
@@ -263,12 +262,12 @@ function editSuccess(data){
 
 
 function isgetallcheck(){
-	if($('input[name="wentid"]:checked').size()>0){
-		$('input[name="wentid"]').each(function(){
+	if($('input[name="id"]:checked').size()>0){
+		$('input[name="id"]').each(function(){
 			$(this).attr("checked",false);
 		});
 	}else{
-		$('input[name="wentid"]').attr("checked",true);
+		$('input[name="id"]').attr("checked",true);
 	}
 }
 function createinpunishbycwb(){
@@ -1020,100 +1019,112 @@ function checkwithdiferenttype(type){
 							<form action="1" method="post" id="searchForm">
 								<table width="100%"  style="font-size: 12px;">
 								<tr>
-								<td align="left" >
+								<td nowrap="nowrap" style="width: 5%;" align="right" rowspan="2" nowrap="nowrap" valign="middle">
 								订单号：
-									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb %></textarea>
+								</td>
+								<td style="width: 10%;" valign="bottom" rowspan="2">
+									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ></textarea>
 								</td>
 								
-								<td align="left">
+								<td align="right" style="width: 5%;" nowrap="nowrap">
 								&nbsp;责 任 机构：
+								</td>
+								<td style="width: 10%;">
 									<label for="select2"></label>
-									<select name="dutybranchid" id="dutybranchid" class="select1" onchange="selectbranchUsers('dutyname','dutybranchid');">
+									<select style="width: 100%;" name="dutybranchid" id="dutybranchid" class="select1" onchange="selectbranchUsers('dutyname','dutybranchid');">
 										<option value="0">请选择责任机构</option>
 										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
 									</select>
-								<br>
-								<br>
-									扣罚单状态： <select name ="cwbpunishtype" id ="cwbpunishtype"  style="width: 120px;"  class="select1">
-									<option value="0" >请选择</option>
-									<%for(PunishInsideStateEnum    punishInsideStateEnum:PunishInsideStateEnum.values()){ %>
-										<option value="<%=punishInsideStateEnum.getValue() %>"><%=punishInsideStateEnum.getText() %></option>
-									<%} %>
-		      						  </select>
 		      						</td>
-		      						<td>
+		      						<td align="right" style="width: 5%;" nowrap="nowrap">
 									<label for="select3"></label>
-									&nbsp;&nbsp;责      任      人：
-									<select  id="dutyname" name="dutyname" class="select1">
+									&nbsp;&nbsp;责      任  人：
+									</td>
+									<td style="width: 10%;">
+									<select style="width: 100%;" id="dutyname" name="dutyname" class="select1">
 									<option value ='0' selected="selected">请选择机构责任人</option>
 									</select>
-									<br><br>
-									&nbsp;订单状态：
-									<label for="select2"></label>
-										<select name="cwbstate" id="cwbstate"  class="select1">
-										<option value="0">请选择订单状态</option>
-										<%for(FlowOrderTypeEnum flowOrderTypeEnum:FlowOrderTypeEnum.values()) {%>
-											<option value="<%=flowOrderTypeEnum.getValue()%>"><%=flowOrderTypeEnum.getText() %></option>
-										<%} %>
-									</select>
 									</td>
-										<td>
+										<td  align="right" style="width: 5%;" nowrap="nowrap">
 									<label for="select3"></label>
 									扣罚大类：
-									<select name="punishbigsort" id="punishbigsort"  class="select1" onchange="findsmallAdd('<%=request.getContextPath() %>',this,'punishsmallsort');">
+									</td>
+									<td style="width: 10%;">
+									<select style="width: 100%;" name="punishbigsort" id="punishbigsort"  class="select1" onchange="findsmallAdd('<%=request.getContextPath() %>',this,'punishsmallsort');">
 										<option value="0">请选择扣罚大类</option>
 										<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>
 								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>
 								<%}} %>
 										
 									</select>
-										&nbsp;&nbsp;扣罚小类：
+									</td>
+									<td align="right" style="width: 5%;" nowrap="nowrap">
+										扣罚小类：
+										</td>
+										<td  style="width: 10%;">
 									<label for="select4"></label>
-									<select name="punishsmallsort" id="punishsmallsort"  class="select1" onchange="findbigAdd(this,'punishbigsort');">
+									<select style="width: 100%;" name="punishsmallsort" id="punishsmallsort"  class="select1" onchange="findbigAdd(this,'punishbigsort');">
 										<option value="0">请选择扣罚小类</option>
 										<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>
 								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>
 								<%}} %>
 									</select>
-									<br><br>
-										<strong id="chuli">创建时间：</strong>
-									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
-									<strong id="chulidown">到</strong>
-									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
-									<input type="hidden" name="isshow" value="1"/>
-									<input type="hidden" name="roleid" id="roleid" value="<%=roleid %>"/>
-									<input type="hidden" name="userid" id="userid" value="<%=userid %>"/>
-									<input type="hidden" name="currentbranchid" id="currentbranchid" value="<%=currentbranchid %>"/>
 									</td>
 									</tr>
 									<tr>
-									<td align="left">
+									<td align="right"nowrap="nowrap">扣罚单状态：</td>
+									<td> <select name ="cwbpunishtype" id ="cwbpunishtype"  style="width: 100%;"  class="select1">
+									<option value="0" >请选择</option>
+									<%for(PunishInsideStateEnum    punishInsideStateEnum:PunishInsideStateEnum.values()){ %>
+										<option value="<%=punishInsideStateEnum.getValue() %>"><%=punishInsideStateEnum.getText() %></option>
+									<%} %>
+		      						  </select>
+									</td>
+									<td align="right" nowrap="nowrap">
+									订单状态：
+									</td>
+									<td>
+									<label for="select2"></label>
+										<select name="cwbstate" id="cwbstate"  style="width: 100%;">
+										<option value="0">请选择订单状态</option>
+										<%for(FlowOrderTypeEnum flowOrderTypeEnum:FlowOrderTypeEnum.values()) {%>
+											<option value="<%=flowOrderTypeEnum.getValue()%>"><%=flowOrderTypeEnum.getText() %></option>
+										<%} %>
+									</select>
+									</td>
+									<td align="right" nowrap="nowrap"><strong id="chuli">创建时间：</strong></td>
+									<td nowrap="nowrap" colspan="3">
+									<input  type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;width: 40%"/>
+									<strong id="chulidown">到</strong>
+									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;width: 40%"/>
+									<input type="hidden" name="isshow" value="1"/>
+									<input type="hidden" name="roleid" id="roleid" value="<%=roleid %>"/>
+									<input type="hidden" name="userid" id="userid" value="<%=userid %>"/>
+									<input type="hidden" name="currentbranchid" id="currentbranchid" value="<%=currentbranchid %>"/></td>
+									</tr>
+									<tr>
+									<td align="left" colspan="10">
 									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
 									<input type="button"    value="重置" class="input_button2" onclick="resetData();">
 									</td>
 									</tr>
 									<tr>
-									<td align="left">
+									<td colspan="10">
 									<input type="button"   onclick="createinpunishbycwb()" value="根据订单创建" class="input_button1"/>
 									<input type="button"  onclick="checkwithdiferenttype(1)" value="根据工单创建" class="input_button1"/>
-									</td>
-									<td>
 									<input type="button"  onclick="checkwithdiferenttype(2)" value="根据问题件创建" class="input_button1"/>
 									<input type="button"  onclick="createbyshixiaokaohe()" value="根据时效考核" class="input_button1"/>
 									<input type="button" id="excelimport" onclick="inserexceldata()" value="导入生成扣罚单" class="input_button1"/>
-									</td>
-									<td>
 <!-- 									<input type="button"  onclick="shenheopteration()" value="审核" class="input_button2"/>
  -->									<input type="button"  onclick="shensuopteration()" value="申诉" class="input_button2"/>
-									</td>
-									<td align="left">
-									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(penalizeInsides.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
+									
+									<input style="margin-left: 50px;" type ="button" id="btnval" value="导出" class="input_button2" <%if(penalizeInsides.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
 									</td>
 								</tr>
 								<tr>
-								</tr>
+								</tr> 
 								</table>
 								<input type="hidden" name="getbranchusers" id="getbranchusers" value="<%=url %>">
 							</form>
