@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.SearcheditInfo"%>
 <%@page import="cn.explink.util.DateTimeUtil"%>
 <%@page import="cn.explink.util.Page"%>
@@ -12,6 +13,7 @@
     List<User> uList = request.getAttribute("ulist")==null?new ArrayList<User>():(List<User>)request.getAttribute("ulist");
     String starttime=request.getParameter("strtime")==null?DateTimeUtil.getDateBefore(1):request.getParameter("strtime");
     String endtime=request.getParameter("endtime")==null?DateTimeUtil.getNowTime():request.getParameter("endtime");
+  	List<Branch> branchs=(List<Branch>)request.getAttribute("branchs");
     %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -149,7 +151,11 @@ function exportField(){
 									<td   valign="middle"  align="center" ><%=sl.getNewconsigneemobile() %></td>
 									<td   valign="middle"  align="left"   ><%=sl.getNewconsigneeaddress() %></td>
 									<%-- <td   valign="middle"  align="center" ><%=sl.getNewResendtime() %></td> --%>
-									<td   valign="middle"  align="center" ></td>
+									<td   valign="middle"  align="center" ><%for(Branch branch:branchs){
+										if(sl.getNewbranchid()==branch.getBranchid()){
+											
+										
+									 %>  <%=branch.getBranchname() %>    <%}} %></td>
 									<td   valign="middle"  align="center" ><%=sl.getNewcommand()%></td>
 									<td   valign="middle"  align="center" ><textarea ><%=sl.getNewremark()%></textarea></td>
 									<td   valign="middle"  align="center" ><%=user%></td>

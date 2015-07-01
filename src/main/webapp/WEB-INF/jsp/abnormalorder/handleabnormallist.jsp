@@ -278,8 +278,8 @@ function stateBatch()
 		ids+=id+",";
 		}
 		});
-	alert(ids);
-	alert(noduty);
+	/* alert(ids);
+	alert(noduty); */
 	if(ids.length==0){
 		if(noduty.length==0||yijieanids.length==0){
 			alert("请选择要操作的记录！");
@@ -304,7 +304,7 @@ function stateBatch()
 			}
 		}
 	}
-	alert(efectiveids);
+	/* alert(efectiveids); */
 	if(nodutynum>0){
 		if($("#roleid").val()==1){
 			if(confirm("您所选择的问题件包含没有责任机构与责任人的单号（以上情况的订单将不做操作），确认继续执行吗？")){

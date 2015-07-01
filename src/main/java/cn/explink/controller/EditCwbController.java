@@ -778,7 +778,9 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			this.cwbInfoDao.createEditInfo(old, checkbranchname, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+			Branch branch2=branchDAO.getBranchByBranchname(checkbranchname);
+			long branchid=branch2.getBranchid();
+			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
 			long count=orderAddressReviseDao.countReviseAddress(cwb);
 			if (count==0) {
 				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCustomercommand());
@@ -825,6 +827,7 @@ public class EditCwbController {
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String endtime, // 是否显示,
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) {
+		List<Branch> branchs=this.branchDAO.getAllBranches();
 		Page pageobj = new Page();
 		if (isshow > 0) {
 			List<SearcheditInfo> slist = this.cwbInfoDao.getInfoByCretime(page, begindate, endtime);
@@ -835,6 +838,7 @@ public class EditCwbController {
 		}
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", pageobj);
+		model.addAttribute("branchs", branchs);
 		return "editcwb/searchInfo";
 	}
 

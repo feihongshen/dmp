@@ -189,7 +189,8 @@ function editInit(){
 	function selectForm(a){
 		$("#button2").attr('disabled','disabled');
 		$("#button2").val('修改中');
-			$("#checkeditaddress")
+		$("#checkbranchid").val($("#branchlist").val());
+			//$("#checkeditaddress")
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/updateCwbInfo/"+a,
 						type:"POST",//数据发送方式 

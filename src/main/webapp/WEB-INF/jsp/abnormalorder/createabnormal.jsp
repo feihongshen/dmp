@@ -252,7 +252,7 @@ function inserexceldata(){
 					<br>
 					<br>
 					<div style="height:100px"></div>
-					<div style="height:400px;overflow-y:scroll">
+					<div style="height:350px;overflow-y:scroll">
 					<form id="searchform2"  action="<%=request.getContextPath()%>/abnormalOrder/submitCreateabnormal" method="post" enctype="multipart/form-data">
 					<%if(cwbList!=null&&cwbList.size()>0)for(CwbOrder cwb : cwbList){ 
 							%>

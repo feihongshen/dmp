@@ -7266,7 +7266,12 @@ CREATE TABLE `cs_complaint_accept` (
 					 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
     	</sql>
     </changeSet>
+    <changeSet id="wukong-2015-07-01-01" author="wukong">
+    	<sql>
+    	ALTER TABLE express_ops_editcwbinfo ADD COLUMN `newbranchid` INT(11) DEFAULT '0'; 
+    	</sql>
     
+    </changeSet>
     
 </databaseChangeLog>
  

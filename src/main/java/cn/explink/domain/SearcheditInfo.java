@@ -18,7 +18,17 @@ public class SearcheditInfo {
 	public long crename;
 	public String oldremark;
 	public String newremark;
+	private long newbranchid;
 	
+	
+	public long getNewbranchid() {
+		return newbranchid;
+	}
+
+	public void setNewbranchid(long newbranchid) {
+		this.newbranchid = newbranchid;
+	}
+
 	private String newbranchname;//修改后的站点信息
 	
 	public String getNewbranchname() {
