@@ -317,19 +317,22 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String getCheckboxDealPass(
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
-		if(cwbdata.length()>0){
-			for(String cwb:cwbdata.split(",")){
-				long edituserid =  this.getSessionUser().getUserid();
-				String edittime = DateTimeUtil.getNowTime();
-				applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);
-				ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
-				//重置审核的最终方法
-				EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
-				return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
+		try {
+			if(cwbdata.length()>0){
+				for(String cwb:cwbdata.split(",")){
+					long edituserid =  this.getSessionUser().getUserid();
+					String edittime = DateTimeUtil.getNowTime();
+					applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);
+					ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
+					//重置审核的最终方法
+					EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
+				}
 			}
-			
+		} catch (Exception e) {
+			return "{\"errorCode\":1,\"error\":\"审核失败\"}";
 		}
-		return "{\"errorCode\":1,\"error\":\"审核失败\"}";
+		return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
+
 	}
 	//处理为审核不通过状态
 	@RequestMapping("/getCheckboxDealNoPass")
@@ -909,9 +912,9 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
 			List<Reason> reasonList = reasonDAO.getAllReason();
-			Map<Long, String> reasonMap = new HashMap<Long, String>();
+			Map<String, String> reasonMap = new HashMap<String, String>();
 			for(Reason reason : reasonList){
-				reasonMap.put(reason.getReasonid(), reason.getReasoncontent());
+				reasonMap.put(reason.getReasonid()+"", reason.getReasoncontent());
 			}
 			List<ApplyEditDeliverystate> applyEditDeliverystateList = new ArrayList<ApplyEditDeliverystate>();
 			if(isnow>0){
@@ -929,10 +932,10 @@ public class ApplyEditDeliverystateController {
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
 	}
 	
-	public List<ApplyEditDeliverystate> getapplyeditdeliverysate(List<ApplyEditDeliverystate> applyEditDeliverystateLists,Map<Long, String> reasonMap){
+	public List<ApplyEditDeliverystate> getapplyeditdeliverysate(List<ApplyEditDeliverystate> applyEditDeliverystateLists,Map<String, String> reasonMap){
 		if(applyEditDeliverystateLists!=null&&applyEditDeliverystateLists.size()>0&&reasonMap.size()>0){
 			for(ApplyEditDeliverystate aeds : applyEditDeliverystateLists){
-				aeds.setReasoncontent(reasonMap.get(aeds.getReasonid())==null?"":reasonMap.get(aeds.getReasonid()).toString());
+				aeds.setReasoncontent(reasonMap.get(aeds.getReasonid()+"")==null?"":reasonMap.get(aeds.getReasonid()+"").toString());
 			}
 		}
 		return applyEditDeliverystateLists;

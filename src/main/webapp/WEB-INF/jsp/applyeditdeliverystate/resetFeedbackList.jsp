@@ -151,7 +151,7 @@ function resetfeedbackPass(){
 		$('input[name="checkbox"]:checked').each(function(index){
 			//$(this).attr("checked",false);
 			cwbdata = cwbdata+$(this).val()+",";
-		})
+		});
 	}
 	if(cwbdata.length==0){
 		alert("请勾选订单");
