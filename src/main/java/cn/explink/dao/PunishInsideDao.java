@@ -74,6 +74,8 @@ public class PunishInsideDao {
 			penalizeInside.setShenhedate(rs.getString("shenhedate"));
 			penalizeInside.setPunishbigsortname(punishInsideService.getSortname(Integer.parseInt(rs.getLong("punishbigsort")+"")));
 			penalizeInside.setPunishsmallsortname(punishInsideService.getSortname(Integer.parseInt(rs.getLong("punishsmallsort")+"")));
+			penalizeInside.setLastgoodpunishprice(rs.getBigDecimal("lastgoodpunishprice"));
+			penalizeInside.setLastqitapunishprice(rs.getBigDecimal("lastqitapunishprice"));
 			return penalizeInside;
 		}
 

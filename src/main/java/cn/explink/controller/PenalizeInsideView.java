@@ -29,11 +29,27 @@ public class PenalizeInsideView{
 	private String shenheusername;
 	private String shensudate;
 	private String shenhedate;
+	private String lastqitapunishprice;
+	private String lastgoodpunishprice;
 	
 	
 	
 	
-
+	
+	
+	public String getLastqitapunishprice() {
+		return lastqitapunishprice;
+	}
+	public void setLastqitapunishprice(String lastqitapunishprice) {
+		this.lastqitapunishprice = lastqitapunishprice;
+	}
+	
+	public String getLastgoodpunishprice() {
+		return lastgoodpunishprice;
+	}
+	public void setLastgoodpunishprice(String lastgoodpunishprice) {
+		this.lastgoodpunishprice = lastgoodpunishprice;
+	}
 	public String getShensudate() {
 		return shensudate;
 	}

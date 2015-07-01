@@ -93,6 +93,8 @@ PenalizeInsideView penalizeInsideview=(PenalizeInsideView)request.getAttribute("
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
+						最终货物扣罚金额：<font color="red">*</font><strong><%=penalizeInsideview.getLastgoodpunishprice() %></strong>&nbsp;&nbsp;
+						最终其他扣罚金额：<font color="red">*</font><strong><%=penalizeInsideview.getLastqitapunishprice() %></strong>&nbsp;&nbsp;
 						最终扣罚金额<font color="red">*</font>:<strong><%=penalizeInsideview.getShenhepunishprice() %></strong>&nbsp;&nbsp;
 						扣罚单状态:<font color="red">*</font>:<strong><%=penalizeInsideview.getPunishcwbstate() %></strong>
 						</td></tr>

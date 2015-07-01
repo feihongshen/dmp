@@ -237,7 +237,9 @@ public class PunishInsideService {
 			penalizeInsideView.setShenhetype(this.getShenheType(penalizeInside.getShenhetype()));
 			penalizeInsideView.setShenheusername(this.getCreUser(penalizeInside.getShenheuserid()));
 			penalizeInsideView.setShenhedate(penalizeInside.getShenhedate());
-			penalizeInside.setShensudate(penalizeInside.getShensudate());
+			penalizeInsideView.setShensudate(penalizeInside.getShensudate());
+			penalizeInsideView.setLastqitapunishprice(String.valueOf(penalizeInside.getLastqitapunishprice()));
+			penalizeInsideView.setLastgoodpunishprice(String.valueOf(penalizeInside.getLastgoodpunishprice()));
 			return penalizeInsideView;
 		}
 		//对内扣罚审核需要的数据
