@@ -6479,7 +6479,7 @@ public class CwbOrderService {
 						cwbOrderView.setCwb(ot.getCwb());
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
-						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, getSessionUser().getBranchid()));//当前站点
+						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, c.getCurrentbranchid()));//当前站点
 						cwbOrderView.setMatchbranchname(c.getExcelbranch());//匹配站点名称
 						cwbOrderView.setInSitetime(ot.getArrivebranchtime());//到站时间
 						cwbOrderView.setAuditor(ot.getAuditname());//审核人
