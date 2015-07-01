@@ -313,17 +313,25 @@ function CurentTime()   //计算当天时间
  
 <div>		
 	<div style="margin-left: 10px;margin-top: 20px">
-		<table style="float: left">	
+		<table style="float: left;width: 70%" >	
 			<form action="${ requestScope.page == null ? '1' : requestScope.page }" id="workorderquerymanageid" method="post" onsubmit="testCwbsIfNull()"/>
 				<tr>
-					<td>
-						订/运单号:<textarea rows="3" cols="16" name="orderNo" id="orderNo"><%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%></textarea>
+					<td align="right" style="width: 10%;">
+						订/运单号:
 					</td>	
-					<td>
-						工单号:<textarea rows="3" cols="16" name="acceptNo" id="acceptNo" ><%=request.getParameter("acceptNo")==null?"":request.getParameter("acceptNo")%></textarea>
+					<td style="width: 20%;">						
+						<textarea style="width: 100%;" rows="3" cols="16" name="orderNo" id="orderNo"><%=request.getParameter("orderNo")==null?"":request.getParameter("orderNo")%></textarea>
 					</td>	
-					<td>
-				工单状态:<select name="complaintState" class="select1" id="complaintState">				
+					<td align="right" style="width: 10%;">
+						工单号:
+					</td>
+					<td style="width: 20%;">	 <textarea style="width: 100%;" rows="3" cols="16" name="acceptNo" id="acceptNo" ><%=request.getParameter("acceptNo")==null?"":request.getParameter("acceptNo")%></textarea>
+					</td>	
+				<td align="right" style="width: 10%;">
+				工单状态:
+				</td>
+				<td  style="width: 20%;">
+				<select style="width: 100%;" name="complaintState" class="select1" id="complaintState">				
 							<option value="-1">全部</option>
 							<option value="<%=ComplaintStateEnum.DaiHeShi.getValue()%>"><%=ComplaintStateEnum.DaiHeShi.getText()%></option>
 							<option value="<%=ComplaintStateEnum.YiHeShi.getValue()%>"><%=ComplaintStateEnum.YiHeShi.getText()%></option>
@@ -332,9 +340,11 @@ function CurentTime()   //计算当天时间
 					</td>
 				</tr>	
 				<tr>			
-					<td>
+					<td align="right">
 					<span>工单一级分类:</span> 
-							<select class="select1" name="complaintOneLevel" id="olreasonV" onchange="getReasonValueV()">
+					</td>
+					<td>
+							<select style="width: 100%;" class="select1" name="complaintOneLevel" id="olreasonV" onchange="getReasonValueV()">
 								<option value="-1">全部</option>
 								<%if(r!=null){%>
 								<%for(Reason reason:r){ %>
@@ -342,17 +352,22 @@ function CurentTime()   //计算当天时间
 								<%} }%>
 								</select>
 					</td>	
-					<td>
+					<td align="right">
 							<span>责任机构:</span>
-							<select class="select1" name="codOrgId" id="codOrgId">
+					</td>
+					<td>		
+							<select style="width: 100%;" class="select1" name="codOrgId" id="codOrgId">
 								<option value="-1">全部</option>
 							<%for(Branch br:b){ %>
 								<option value="<%=br.getBranchid()%>"><%=br.getBranchname() %></option>
 							<%} %>	
 							</select>
 					</td>			
+					<td align="right">
+				工单处理结果:
+				</td>
 					<td>
-				工单处理结果:<select class="select1" name="complaintResult" id="complaintResult">
+				<select style="width: 100%;" class="select1" name="complaintResult" id="complaintResult">
 								<option value="-1">全部</option>
 								<option value="<%=ComplaintResultEnum.WeiChuLi.getValue()%>"><%=ComplaintResultEnum.WeiChuLi.getText() %></option>
 								<option value="<%=ComplaintResultEnum.ChengLi.getValue()%>"><%=ComplaintResultEnum.ChengLi.getText() %></option>
@@ -360,22 +375,30 @@ function CurentTime()   //计算当天时间
 							</select>
 					</td>	
 				<tr>		
-					<td>
+					<td align="right">
 							<span>工单二级分类:</span>
-							<select class="select1" name="complaintTwoLevel" id="tlreasonV">
+					</td>
+					<td>		
+							<select style="width: 100%;" class="select1" name="complaintTwoLevel" id="tlreasonV">
 							
 							</select>
 					</td>						
-					<td>
-				是否扣罚:		<select class="select1" name="ifpunish" id="ifpunish">
+					<td align="right">
+				是否扣罚:
+				</td>
+					<td>		
+				<select style="width: 100%;" class="select1" name="ifpunish" id="ifpunish">
 							<option value="-1">全部</option>
 							<option value="1">否</option>
 							<option value="2">是</option>
 							</select>
 					</td>			
-					<td>
+					<td align="right">
 							
-				受理人:		<select class="select1" name="handleUser" id="handleUser">
+				受理人:	
+				</td>
+					<td>	
+				<select style="width: 100%;" class="select1" name="handleUser" id="handleUser">
 							<option value="">全部</option>
 							<%if(lcsa!=null){ %>
 							<%for(CsComplaintAccept c:lcsa) {%>
@@ -385,20 +408,24 @@ function CurentTime()   //计算当天时间
 					</td>
 				</tr>
 				<tr>			
-					<td>
-					工单受理时间:<input type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
+					<td align="right">
+					工单受理时间:
 					</td>
-
-				
 					<td>
-						<input type="submit" onclick="$('#workorderquerymanageid').attr('action',1);return true;" value="查 询" class="input_button2" />
+					<input style="width: 44%;" type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input style="width: 44%;" type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
+					</td>
+</tr>
+<tr>
+					
+					<td colspan="6" >
+						<input style="margin-left: 10%;" type="submit" onclick="$('#workorderquerymanageid').attr('action',1);return true;" value="查 询" class="input_button2" />
 						<input type="reset" value="重置" class="input_button2"/>
-					</td>
-				</tr>
+					
+				
 				
 			</form>	
-			<tr>
-				<td>
+
+				
 				<%if(currentuser==1||roleids.contains(currentuser+"")){ %>
 					<button id="add_CUSA" class="input_button2">客服结案</button>
 					<!-- <button id="add_AdjudicateRetrial" class="input_button2">结案重审</button> -->
@@ -406,7 +433,7 @@ function CurentTime()   //计算当天时间
 					<button id="add_OrgVerify" class="input_button2">机构核实</button>
 				<!-- 	<button id="add_OrgAppeal" class="input_button2" onclick="decideShenSudate()">机构申诉</button> -->
 					 <%} %>
-					<button class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo">导出</button>
+					<input style="margin-left: 10%;"  class="input_button2" onclick="exportWorkOrderInFoExcle()" id="exInfo" value="导出" align="right"/>
 				</td>
 			</tr>
 		</table>		

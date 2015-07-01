@@ -1,5 +1,7 @@
 package cn.explink.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.weisuda.CourierService;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.User;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -25,12 +29,17 @@ public class CustomerService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	CustomerDAO customerdao;
 
 	public Customer loadFormForCustomer(HttpServletRequest request, MultipartFile file, long customerid) {
 		Customer customer = this.loadFormForCustomer(request, file);
 		customer.setCustomerid(customerid);
 		return customer;
 	}
+	
+
+	
 
 	public Customer loadFormForCustomer(HttpServletRequest request, MultipartFile file) {
 		Customer customer = new Customer();
@@ -86,6 +95,11 @@ public class CustomerService {
 			logger.error("dmp供货商修改调用oms重置异常", e);
 		}
 
+	}
+	
+	public List<Customer> getPageCash() {
+		
+		return this.customerdao.getAllCustomers();
 	}
 
 }

@@ -617,17 +617,17 @@ function submitselect2(){    //通过手机号查询工单
 						<%} %>				
 					</select>
 					</td>				
-					<td><font color="red">*</font>性别:
+					<td noWrap="noWrap"><font color="red">*</font>性别:
 					男<input type="radio" name="sex" value="1" id="sex1">
 					女<input type="radio" name="sex" value="0" id="sex">
 					</td>
-					<td><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this.value)"></td>
-					<td><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this.value)"></td>
+					<td noWrap="noWrap"><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this.value)"></td>
+					<td noWrap="noWrap"><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this.value)"></td>
 				</tr>
 				<tr>									
-					<td><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
-					<td><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled" style="display: none"/></td>
-					<td><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled" style="display: none"></td>
+					<td noWrap="noWrap"><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
+					<td noWrap="noWrap"><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled" style="display: none"/></td>
+					<td noWrap="noWrap"><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled" style="display: none"></td>
 					
 					</td>
 				</tr>	
@@ -649,10 +649,10 @@ function submitselect2(){    //通过手机号查询工单
 			<table>
 				<form action="<%=request.getContextPath()%>/workorder/selectDetalFormByCondition" id="selectF">
 					<tr>
-						<td>发货时间:<input type="text" name="staremaildate"  id="emaildate123" class="input_text1"/>到<input type="text" name="endemaildate"  id="emaildate456" class="input_text1"/></td>
-						<td>订/运单号:<input type="text" name="cwb"  id="cwb123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
-						<td>收件人姓名:<input type="text" name="consigneename"  id="consigneename123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
-						<td>收件人手机:<input type="text" name="consigneemobile"  id="consigneemobile123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
+						<td noWrap="noWrap">发货时间:<input type="text" name="staremaildate"  id="emaildate123" class="input_text1"/>到<input type="text" name="endemaildate"  id="emaildate456" class="input_text1"/></td>
+						<td noWrap="noWrap">订/运单号:<input type="text" name="cwb"  id="cwb123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
+						<td noWrap="noWrap">收件人姓名:<input type="text" name="consigneename"  id="consigneename123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
+						<td noWrap="noWrap">收件人手机:<input type="text" name="consigneemobile"  id="consigneemobile123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
 									
 				</form>	
 						<td><button class="input_button2" id="submitselect" onclick="submitselect()">查询</td> 

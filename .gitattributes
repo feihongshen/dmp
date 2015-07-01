@@ -685,6 +685,7 @@ src/main/java/cn/explink/controller/ComplaintController.java -text
 src/main/java/cn/explink/controller/ComplaintView.java -text
 src/main/java/cn/explink/controller/ContactController.java -text
 src/main/java/cn/explink/controller/CsPushSmsController.java -text
+src/main/java/cn/explink/controller/CustomerBillContractController.java -text
 src/main/java/cn/explink/controller/CustomerController.java -text
 src/main/java/cn/explink/controller/CustomerWareHouseController.java -text
 src/main/java/cn/explink/controller/CwbALLStateControlController.java -text
@@ -892,6 +893,7 @@ src/main/java/cn/explink/dao/CommonModelDAO.java -text
 src/main/java/cn/explink/dao/ComplaintDAO.java -text
 src/main/java/cn/explink/dao/CsPushSmsDao.java -text
 src/main/java/cn/explink/dao/CustomWareHouseDAO.java -text
+src/main/java/cn/explink/dao/CustomerBillContractDao.java -text
 src/main/java/cn/explink/dao/CustomerDAO.java -text
 src/main/java/cn/explink/dao/CwbALLStateControlDAO.java -text
 src/main/java/cn/explink/dao/CwbApplyTuiHuoDAO.java -text
@@ -1067,6 +1069,7 @@ src/main/java/cn/explink/domain/CsConsigneeInfo.java -text
 src/main/java/cn/explink/domain/CsConsigneeInfoVO.java -text
 src/main/java/cn/explink/domain/CustomWareHouse.java -text
 src/main/java/cn/explink/domain/Customer.java -text
+src/main/java/cn/explink/domain/CustomerBillContract.java -text
 src/main/java/cn/explink/domain/CwbALLStateControl.java -text
 src/main/java/cn/explink/domain/CwbApplyTuiHuo.java -text
 src/main/java/cn/explink/domain/CwbApplyZhongZhuan.java -text
@@ -1262,6 +1265,7 @@ src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
 src/main/java/cn/explink/enumutil/BatchSateEnum.java -text
+src/main/java/cn/explink/enumutil/BillStateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text
 src/main/java/cn/explink/enumutil/BranchRouteEnum.java -text
@@ -1273,6 +1277,7 @@ src/main/java/cn/explink/enumutil/ComplaintStateEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ConfirmResultEnum.java -text
 src/main/java/cn/explink/enumutil/ConfirmStateEnum.java -text
+src/main/java/cn/explink/enumutil/CwbDateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text
@@ -1575,6 +1580,7 @@ src/main/java/cn/explink/service/CommonModelService.java -text
 src/main/java/cn/explink/service/CommonService.java -text
 src/main/java/cn/explink/service/ComplaintService.java -text
 src/main/java/cn/explink/service/CsPushSmsService.java -text
+src/main/java/cn/explink/service/CustomerBillContractService.java -text
 src/main/java/cn/explink/service/CustomerService.java -text
 src/main/java/cn/explink/service/CwbAutoHandleService.java -text
 src/main/java/cn/explink/service/CwbDiuShiService.java -text
@@ -1760,6 +1766,8 @@ src/main/resources/dbsqlserver.properties -text
 src/main/resources/filepath.properties -text
 src/main/resources/logback.xml -text
 src/main/webapp/META-INF/MANIFEST.MF -text
+src/main/webapp/WEB-INF/jsp/CustomerBillContract/CustomerBillContractEdit.jsp.jsp -text
+src/main/webapp/WEB-INF/jsp/CustomerBillContract/CustomerBillContractList.jsp -text
 src/main/webapp/WEB-INF/jsp/SettlementContract/AddSettlementContract.jsp -text
 src/main/webapp/WEB-INF/jsp/SettlementContract/CriteriaQuery.jsp -text
 src/main/webapp/WEB-INF/jsp/SettlementContract/EditSettlementContract.jsp -text

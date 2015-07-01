@@ -21,6 +21,17 @@ public enum ComplaintStateEnum {
 		return text;
 	}
 
+
+	public static ComplaintStateEnum getByValue1(int value) {
+
+		for (ComplaintStateEnum ct : ComplaintStateEnum.values()) {
+			if (ct.getValue() == value) {
+				return ct;
+			}
+		}
+		return null;
+	}
+	
 	public static String getByValue(int value) {
 		String complainstate="";
 		for (ComplaintStateEnum ct : ComplaintStateEnum.values()) {
@@ -30,4 +41,6 @@ public enum ComplaintStateEnum {
 		}
 		return complainstate;
 	}
+	
+	
 }

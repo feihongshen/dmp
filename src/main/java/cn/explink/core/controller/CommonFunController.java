@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.core.utils.NameUtils;
 import cn.explink.service.BranchService;
+import cn.explink.service.CustomerService;
 import cn.explink.service.UserService;
 
 /**
@@ -30,6 +31,8 @@ public class CommonFunController {
 	private UserService userService;
 	@Autowired
 	private BranchService branchService;
+	@Autowired
+	private CustomerService customerservice;
 	
 	/**
 	 * 渲染前台枚举数据
@@ -86,6 +89,9 @@ public class CommonFunController {
 		//机构表express_set_branch
 		else if( entityName.equals("Branch")){
 			resultList = this.branchService.getPageCash();
+		}
+		else if( entityName.equals("Customer")){
+			resultList = this.customerservice.getPageCash();
 		}
 		
 		return resultList;

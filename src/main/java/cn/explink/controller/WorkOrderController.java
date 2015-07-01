@@ -242,6 +242,7 @@ public class WorkOrderController {
 	public String OrgVerify(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) throws Exception{
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
+		String customerName=customerDAO.findcustomername(co.getCustomerid()).getCustomername();
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne());		
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
@@ -255,12 +256,14 @@ public class WorkOrderController {
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
+		model.addAttribute("customerName",customerName);
 		return "workorder/OrgVerify";
 	}
 	@RequestMapping("/CustomerServiceAdjudicate")
 	public String CustomerServiceAdjudicate(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo) {     //客服结案
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);		
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
+		String customerName=customerDAO.findcustomername(co.getCustomerid()).getCustomername();
 		String nowtime =DateTimeUtil.getNowTime();
 		String uname=getSessionUser().getUsername();
 		cca.setJieanUser(uname);
@@ -274,13 +277,14 @@ public class WorkOrderController {
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
+		model.addAttribute("customerName",customerName);
 		return "workorder/CustomerServiceAdjudicate";
 	}
 	@RequestMapping("/OrgAppeal")
 	public String OrgAppeal(Model model,@RequestParam(value="acceptNo",defaultValue="",required=true) String acceptNo){
 		CsComplaintAccept cca=workorderdao.findGoOnacceptWOByWorkOrder(acceptNo);
 		CwbOrder co=cwbdao.getOneCwbOrderByCwb(cca.getOrderNo());
-		
+		String customerName=customerDAO.findcustomername(co.getCustomerid()).getCustomername();
 		CsConsigneeInfo cci=workorderdao.queryByPhoneNum(cca.getPhoneOne())==null?null:workorderdao.queryByPhoneNum(cca.getPhoneOne());
 		List<Branch> lb=branchDao.getAllBranches();
 		String nowtime =DateTimeUtil.getNowTime();
@@ -290,7 +294,7 @@ public class WorkOrderController {
 		cca.setComplaintTime(nowtime);
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
-		
+		model.addAttribute("customerName",customerName);
 		model.addAttribute("lb", lb);   
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("cci", cci);
@@ -598,7 +602,7 @@ public class WorkOrderController {
 			lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
 			p=new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER);			
 		}else
-		{
+		{    
 			lcs=workorderdao.findGoOnacceptWOByCWBsnew(page,ncwbs,cv,workorders,userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());
 			p=new Page(workorderdao.findGoOnacceptWOByCWBsCountnew(ncwbs,cv,workorders,userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid()), page, Page.ONE_PAGE_NUMBER);
 		}		
@@ -848,7 +852,7 @@ public class WorkOrderController {
 			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();
 			ca.setAcceptNo(c.getAcceptNo());
 			ca.setOrderNo(c.getOrderNo());
-			ca.setComplaintState(ComplaintStateEnum.getByValue(c.getComplaintState()));
+			ca.setComplaintState(ComplaintStateEnum.getByValue1(c.getComplaintState()).getText());
 			ca.setCodOrgId(branchDao.getBranchByBranchid(c.getCodOrgId()).getBranchname());
 			if(c.getComplaintOneLevel()!=0){
 			ca.setComplaintOneLevel(reasondao.getReasonByReasonid(c.getComplaintOneLevel()).getReasoncontent());
