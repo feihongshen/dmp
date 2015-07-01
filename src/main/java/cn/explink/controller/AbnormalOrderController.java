@@ -87,6 +87,7 @@ import cn.explink.service.ExportService;
 import cn.explink.service.UserService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.StringUtil;
@@ -510,7 +511,7 @@ public class AbnormalOrderController {
 		//findscope字段判断是查本站还是本人，管理员可以查询本站，个人只可以查询自己的
 		long findscope=user.getRoleid();
 		if (isshow == 1) {
-			if (ishandle ==1 ) {
+			if (ishandle ==1||ishandle==0 ) {
 
 				if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
@@ -880,8 +881,8 @@ public class AbnormalOrderController {
 	@RequestMapping("/exportExcle")
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request) {
 
-		String[] cloumnName1 = new String[9]; // 导出的列名
-		String[] cloumnName2 = new String[9]; // 导出的英文列名
+		String[] cloumnName1 = new String[17]; // 导出的列名
+		String[] cloumnName2 = new String[17]; // 导出的英文列名
 
 		this.exportService.SetAbnormalOrderFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
@@ -931,7 +932,7 @@ public class AbnormalOrderController {
 			long findscope=user.getRoleid();
 			List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 			//当ishandle这个字段为1与8的时候为修改与未处理状态，也就是为当前创建状态
-			if (ishandle == 1||ishandle==8) {
+			if (ishandle == 1||ishandle==8||ishandle==0) {
 
 				if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
@@ -972,7 +973,8 @@ public class AbnormalOrderController {
 			List<Customer> customers = this.customerDAO.getAllCustomers();
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
 			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
-			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+			ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, views);
+			/*ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 					for (int k = 0; k < views.size(); k++) {
@@ -989,7 +991,7 @@ public class AbnormalOrderController {
 					}
 				}
 			};
-			excelUtil.excel(response, cloumnName, sheetName, fileName);
+			excelUtil.excel(response, cloumnName, sheetName, fileName);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

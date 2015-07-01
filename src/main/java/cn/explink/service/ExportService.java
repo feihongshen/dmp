@@ -337,24 +337,42 @@ public class ExportService {
 
 	// 问题件导出view
 	public void SetAbnormalOrderFields(String[] cloumnName1, String[] cloumnName2) {
-		cloumnName1[0] = "订单号";
-		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "供货商";
-		cloumnName2[1] = "Customername";
-		cloumnName1[2] = "发货时间";
-		cloumnName2[2] = "Emaildate";
-		cloumnName1[3] = "当时状态";
-		cloumnName2[3] = "FlowordertypeName";
-		cloumnName1[4] = "配送站点";
-		cloumnName2[4] = "Deliverybranchname";
-		cloumnName1[5] = "反馈人";
-		cloumnName2[5] = "Creusername";
-		cloumnName1[6] = "问题件类型";
-		cloumnName2[6] = "Abnormaltype";
-		cloumnName1[7] = "问题件反馈时间";
-		cloumnName2[7] = "Credatetime";
-		cloumnName1[8] = "问题件说明";
-		cloumnName2[8] = "Describe";
+		
+		cloumnName1[0] = "问题件单号";
+		cloumnName2[0] = "Questionno";
+		cloumnName1[1] = "订单号";
+		cloumnName2[1] = "Cwb";
+		cloumnName1[2] = "供货商";
+		cloumnName2[2] = "CustomerName";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "CwborderType";
+		cloumnName1[4] = "发货时间";
+		cloumnName2[4] = "Emaildate";
+		cloumnName1[5] = "订单操作状态";
+		cloumnName2[5] = "Flowordertype";
+		cloumnName1[6] = "创建机构";
+		cloumnName2[6] = "BranchName";
+		cloumnName1[7] = "创建人";
+		cloumnName2[7] = "CreuserName";
+		cloumnName1[8] = "问题件类型";
+		cloumnName2[8] = "AbnormalType";
+		cloumnName1[9] = "创建时间";
+		cloumnName2[9] = "Credatetime";
+		cloumnName1[10] = "问题件说明";
+		cloumnName2[10] = "Describe";
+		cloumnName1[11] = "问题件状态";
+		cloumnName2[11] = "IshandleName";
+		cloumnName1[12] = "处理结果";
+		cloumnName2[12] = "DealResultContent";
+		cloumnName1[13] = "责任机构";
+		cloumnName2[13] = "Dutybranchname";
+		cloumnName1[14] = "责任人";
+		cloumnName2[14] = "Dutyperson";
+		cloumnName1[15] = "是否关联扣罚单";
+		cloumnName2[15] = "Isfinecontent";
+		cloumnName1[16] = "是否找回";
+		cloumnName2[16] = "IsfindInfo";
+	
 	}
 	// 丢失件导出view
 	public void SetMisspieceFields(String[] cloumnName1, String[] cloumnName2) {

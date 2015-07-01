@@ -142,8 +142,8 @@ function getThisBoxList(id,flag){
 
 function check(){
 
-	if($.trim($("#cwb").val()).length==0)
-	{
+	/* if($.trim($("#cwb").val()).length==0)
+	{ */
 	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.daichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
@@ -163,25 +163,28 @@ function check(){
 	}
 	}
 	else{
-		if($("#chuangjianstrtime").val()==""){
-			alert("请选择开始时间");
-			return false;
-		}
-		if($("#chuangjianendtime").val()==""){
-			alert("请选择结束时间");
-			return false;
-		}
-		/* if(!Days($("#chuangjianstrtime").val(),$("#chuangjianendtime").val())||($("#chuangjianstrtime").val()=='' &&$("#chuangjianendtime").val()!='')||($("#chuangjianstrtime").val()!='' &&$("#chuangjianendtime").val()=='')){
-			alert("时间跨度不能大于3天！");
-			return false;
-		} */
-		if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
-			alert("开始时间不能大于结束时间");
-			return;
-		}
+		
+			if($("#chuangjianstrtime").val()==""){
+				alert("请选择开始时间");
+				return false;
+			}
+			if($("#chuangjianendtime").val()==""){
+				alert("请选择结束时间");
+				return false;
+			}
+			/* if(!Days($("#chuangjianstrtime").val(),$("#chuangjianendtime").val())||($("#chuangjianstrtime").val()=='' &&$("#chuangjianendtime").val()!='')||($("#chuangjianstrtime").val()!='' &&$("#chuangjianendtime").val()=='')){
+				alert("时间跨度不能大于3天！");
+				return false;
+			} */
+			if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
+				alert("开始时间不能大于结束时间");
+				return;
+			}
+		
 		
 	}
-	}
+	/* } */
+	
 	$("#searchForm").submit();
 	
 }
@@ -209,7 +212,13 @@ function editSuccess(data){
 	$("#searchForm").submit();
 }		
 function checkstate(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.weichuli.getValue()%>){
+	if($("#ishandle").val()==0){
+		$("#chuangjianstrtime").show();
+		$("#chuangjianendtime").show();
+		$("#strtime").hide();
+		$("#endtime").hide();
+		$("#chuli").html("创建时间：");
+	}else if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.weichuli.getValue()%>){
 		$("#chuangjianstrtime").show();
 		$("#chuangjianendtime").show();
 		$("#strtime").hide();
@@ -469,7 +478,13 @@ function resultdatadeal(id)
 		$("#endtime").val("");
 		$("#chuli").html("创建时间：");
 	}
-
+function checkdealresult(){
+	if($("#ishandle").val()!=5){
+		$("#dealresult").val(0);
+		alert("请先选择处理状态未结案处理！！");
+		return;
+	}
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -527,6 +542,7 @@ function resultdatadeal(id)
 									<label for="select3"></label>
 									处理状态：
 									<select name="ishandle" id="ishandle" onchange="checkstate()" class="select1">
+										<option value="0">全部状态</option>
 										<option value="<%=AbnormalOrderHandleEnum.weichuli.getValue()%>"><%=AbnormalOrderHandleEnum.weichuli.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.daichuli.getValue()%>"><%=AbnormalOrderHandleEnum.daichuli.getText() %></option>
 										<option value="<%=AbnormalOrderHandleEnum.yichuli.getValue()%>"><%=AbnormalOrderHandleEnum.yichuli.getText() %></option>
@@ -544,7 +560,7 @@ function resultdatadeal(id)
 									<td>
 								处理结果：
 									<label for="select4"></label>
-									<select name="dealresult" id="dealresult"  class="select1">
+									<select name="dealresult" id="dealresult" onchange="checkdealresult()" class="select1">
 										<option value="0">请选择处理结果</option> 
 										<option value="1">问题成立</option>
 										<option value="2">问题不成立</option>
