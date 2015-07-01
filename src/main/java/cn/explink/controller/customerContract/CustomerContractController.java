@@ -111,6 +111,10 @@ public class CustomerContractController {
 	@RequestMapping("/addCustomerContractfile")
 	@ResponseBody
 	public String addfile(@RequestParam(value = "Filedata", required = false) MultipartFile file, CustomerContractManagement cm) {
+		if ("[自动生成]".equals(cm.getNumber())) {
+			String number = this.contractManagementService.getNumber();
+			cm.setNumber(number);
+		}
 		String filepath = this.contractManagementService.loadexceptfile(file);
 		cm.setContractaccessory(filepath);
 		this.customerContractDAO.createContract(cm);
