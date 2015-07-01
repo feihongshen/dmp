@@ -713,9 +713,9 @@ public class ApplyEditDeliverystateController {
 						aeds.setPos(ds.getPos());
 						aeds.setDeliverid(ds.getDeliveryid());
 						aeds.setCwbstate(co.getCwbstate());
-						aeds.setApplyuserid(getSessionUser().getUserid());
-						aeds.setApplybranchid(getSessionUser().getBranchid());
-						aeds.setApplytime(nowtime);
+						aeds.setApplyuserid(ds.getDeliveryid());
+						aeds.setApplybranchid(ds.getDeliverybranchid());
+						aeds.setApplytime(ds.getDeliverytime());
 						aeds.setShenhestate(1);//待审核状态
 						applyEditDeliverystateDAO.creApplyEditDeliverystate(aeds);
 					}
