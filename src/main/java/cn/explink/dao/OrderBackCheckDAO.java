@@ -97,7 +97,7 @@ public class OrderBackCheckDAO {
 	}
 
 	public OrderBackCheck getOrderBackCheckByCwb(String cwb) {
-		String sql = "select * from ops_order_back_check where cwb = ? and isstastics = 0 and isnow=1 ";
+		String sql = "select * from ops_order_back_check where cwb = ? and isstastics = 0  ";
 		try {
 			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ public class OrderBackCheckDAO {
 	}
 	
 	public OrderBackCheck getOrderBackCheckByCheckstate(String cwb) {
-		String sql = "select * from ops_order_back_check where checkstate=1 and isnow = 1 and cwb = ? ";
+		String sql = "select * from ops_order_back_check where checkstate=1  and cwb = ? ";
 		try {
 			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
 		} catch (Exception e) {
