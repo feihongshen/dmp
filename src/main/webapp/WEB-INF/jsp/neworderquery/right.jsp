@@ -18,7 +18,8 @@ List<AbnormalWriteBackView> backViewList = (List<AbnormalWriteBackView>)request.
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userList = (List<User>)request.getAttribute("userList");
 List<PunishType> punishTypeList = (List<PunishType>)request.getAttribute("punishTypeList");
-ArrayList<Punish> punishList = (ArrayList<Punish>)request.getAttribute("punishList");
+ArrayList<PenalizeInside> punishList = (ArrayList<PenalizeInside>)request.getAttribute("punishList");
+String punishinsideShixiaoTime=request.getAttribute("punishinsideShixiaoTime")==null?"":request.getAttribute("punishinsideShixiaoTime").toString();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -310,44 +311,44 @@ function remarkPost(){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚站点</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚人员</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
-			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
+<!-- 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
+ -->			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 		</tr>
-		<%if(punishList!=null){
-			for(Punish punish:punishList)
+		<%if(punishList!=null&&punishList.size()>0){
+			for(PenalizeInside punish:punishList)
 			{
 			%>
 		<tr>
 			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
-			<%for(PunishType pt:punishTypeList){ if(pt.getId()==punish.getPunishid()){out.print(pt.getName());}}%>
+			<%=punish.getPunishbigsortname()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(Branch b:branchlist){ if(b.getBranchid()==punish.getBranchid()){out.print(b.getBranchname());}}%>
+			<%=punish.getDutybranchname()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==punish.getUserid()){out.print(u.getRealname());}}%>
+			<%=punish.getDutypersonname()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%=punish.getPunishtime() %>
+			<%=punishinsideShixiaoTime %>小时
 			</td>
-			<td width="8%" align="center" valign="middle">
+		<%-- 	<td width="8%" align="center" valign="middle">
 			<%=punish.getPunishlevel() %>
-			</td>
+			</td> --%>
 			<td width="7%" align="center" valign="middle">
-			<%=punish.getPunishfee() %>
+			<%=punish.getShenhepunishprice() %>
 			</td>
 			<td width="15%" align="center" valign="middle">
-			<%=punish.getPunishcontent() %>
+			<%=punish.getShenhedescribe() %>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==punish.getCreateuser()){out.print(u.getRealname());}}%>
+			<%=punish.getCreUserName()%>
 			</td>
 			<td width="13%" align="center" valign="middle">
-			<%=punish.getCreatetime() %>
+			<%=punish.getCreDate() %>
 			</td>
 		</tr>
 		<%}} %>
@@ -604,43 +605,46 @@ function remarkPost(){
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚站点</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚人员</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">扣罚时效</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
-			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
+<!-- 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">优先级别</td>
+ -->			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">扣罚金额</td>
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">扣罚内容</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建人</td>
 			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">创建时间</td>
 		</tr>
-		<%if(punishList!=null){
-			for(Punish punish:punishList)
+		<%if(punishList!=null&&punishList.size()>0){
+			for(PenalizeInside punish:punishList)
 			{%>
 		<tr>
 			<td width="8%" align="center" valign="middle"><%=punish.getCwb()%></td>
 			<td width="8%" align="center" valign="middle">
-			<%for(PunishType pt:punishTypeList){ if(pt.getId()==punish.getPunishid()){out.print(pt.getName());}}%>
+			<%=punish.getCwb()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(Branch b:branchlist){ if(b.getBranchid()==punish.getBranchid()){out.print(b.getBranchname());}}%>
+			<%=punish.getPunishbigsortname()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==punish.getUserid()){out.print(u.getRealname());}}%>
+			<%=punish.getDutybranchname()%>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%=punish.getPunishtime() %>
+			<%=punish.getDutypersonname() %>
 			</td>
 			<td width="8%" align="center" valign="middle">
+			<%=punishinsideShixiaoTime %>小时
+			</td>
+			<%-- <td width="8%" align="center" valign="middle">
 			<%=punish.getPunishlevel() %>
-			</td>
+			</td> --%>
 			<td width="7%" align="center" valign="middle">
-			<%=punish.getPunishfee() %>
+			<%=punish.getShenhepunishprice() %>
 			</td>
 			<td width="15%" align="center" valign="middle">
-			<%=punish.getPunishcontent() %>
+			<%=punish.getShenhedescribe() %>
 			</td>
 			<td width="8%" align="center" valign="middle">
-			<%for(User u:userList){ if(u.getUserid()==punish.getCreateuser()){out.print(u.getRealname());}}%>
+			<%=punish.getCreUserName()%>
 			</td>
 			<td width="13%" align="center" valign="middle">
-			<%=punish.getCreatetime() %>
+			<%=punish.getCreDate() %>
 			</td>
 		</tr>
 		<%} }%>

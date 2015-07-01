@@ -60,6 +60,7 @@ import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PunishDAO;
+import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
@@ -83,6 +84,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.OrderDeliveryClient;
+import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.Reason;
@@ -120,7 +122,8 @@ import cn.explink.util.MD5.MD5Util;
 @Controller
 @RequestMapping("/order")
 public class OrderSelectController {
-
+	@Autowired
+	PunishInsideDao punishInsideDao;
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
 	@Autowired
@@ -2304,11 +2307,14 @@ public class OrderSelectController {
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
-		List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
+		//List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
+		List<PenalizeInside> penalizeInsides=punishInsideDao.getInsidebycwb(cwb);
+		String punishinsideShixiaoTime=this.systemInstallDAO.getSystemInstall("punishinsideshixiao").getValue();
 		model.addAttribute("branchlist", branchlist);
-		model.addAttribute("punishList", punishList);
+		model.addAttribute("punishList", penalizeInsides);
 		model.addAttribute("userList", userList);
 		model.addAttribute("punishTypeList", punishTypeList);
+		model.addAttribute("punishinsideShixiaoTime", punishinsideShixiaoTime);
 		return "/neworderquery/right";
 	}
 
