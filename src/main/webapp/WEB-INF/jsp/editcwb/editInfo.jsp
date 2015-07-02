@@ -46,8 +46,8 @@
 		});
 		
 	});
-	function setMatchAddress(obj){
-		$("#matchaddress").val($(obj).val());
+	function setMatchAddress(obj,cwb){
+		$("#matchaddress"+cwb).val($(obj).val());
 	}
 	function querycwb(form) {
 		var cwb = trim(form.cwb.value);
@@ -109,8 +109,9 @@ function editInit(){
 										<td width="120" align="left" valign="top" bgcolor="#f5f5f5">
 										<form action="<%=request.getContextPath()%>/editcwb/editCwbInfo" method="post">
 										订单号：
-										<input name="cwb" type="text" id="cwb" onfocus="if(this.value=='输入单个订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入单个订单号查询后进行修改……'}" class="input_text1" style="height:20px;"/>
-										<input name="button" type="submit" class="input_button2" id="button" value="查询" />
+										<textarea rows="3" name="cwb" id="cwb" onfocus="if(this.value=='输入订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入订单号查询后进行修改……'}">输入订单号查询后进行修改……</textarea>
+<!-- 										<input name="cwb" type="text" id="cwb" onfocus="if(this.value=='输入单个订单号查询后进行修改……'){this.value=''}" onblur="if(this.value==''){this.value='输入单个订单号查询后进行修改……'}" class="input_text1" style="height:20px;"/>
+ -->										<input name="button" type="submit" class="input_button2" id="button" value="查询" />
 										<input type="hidden" id="isshow" name="isshow" value="1" />
 										</form>
 										</td>
@@ -135,14 +136,14 @@ function editInit(){
 									<%for(CwbOrder c:List){ %>
 										<tr>
 											<td width="120px"  align="center" valign="middle" height="19" ><%=c.getCwb() %>
-											<input type="hidden" name="cwb" id="cwb" value="<%=c.getCwb() %>">
+											<input type="hidden" name="cwb" id="cwb<%=c.getCwb() %>" value="<%=c.getCwb() %>">
 											</td>
-											<td width="5%"  valign="middle" align="center"  ><input type="text" size="12px"  value="<%=c.getConsigneenameOfkf() %>" id="editname" name="editname"/></td>
-											<td width="8%"  valign="middle"  align="center"  ><input type="text" size="12px"   value="<%=c.getConsigneemobileOfkf()%>" id="editmobile" name="editmobile"/></td>
-											<td width="15%" valign="middle"  align="center"  ><textarea  cols="20"  name="editaddress" id="editaddress" ><%=c.getConsigneeaddress() %></textarea></td>
+											<td width="5%"  valign="middle" align="center"  ><input type="text" size="12px"  value="<%=c.getConsigneenameOfkf() %>" id="editname<%=c.getCwb() %>" name="editname"/></td>
+											<td width="8%"  valign="middle"  align="center"  ><input type="text" size="12px"   value="<%=c.getConsigneemobileOfkf()%>" id="editmobile<%=c.getCwb() %>" name="editmobile"/></td>
+											<td width="15%" valign="middle"  align="center"  ><textarea  cols="20"  name="editaddress" id="editaddress<%=c.getCwb() %>" ><%=c.getConsigneeaddress() %></textarea></td>
 											<td width="15%" valign="middle"  align="center"  >
-											<input type="text" onkeyup="findbranch()" value=""  name="matchaddress" id="matchaddress" />
-											<select id="branchlist" onchange="setMatchAddress(this)">
+											<input type="text" onkeyup="findbranch('<%=c.getCwb() %>')" value=""  name="matchaddress" id="matchaddress<%=c.getCwb() %>" />
+											<select id="branchlist<%=c.getCwb() %>" onchange="setMatchAddress(this,'<%=c.getCwb() %>')">
 											<option>请选择</option>
 											<%for(Branch b:branchs) {%>
 											<option value="<%=b.getBranchname()%>"><%=b.getBranchname()%></option>
@@ -150,23 +151,24 @@ function editInit(){
 											</select>
 											</td>
 											<%-- <td width="10%" valign="middle"  align="center"  ><input type ="text" name ="begindate" id="strtime"  value="<%=c.getResendtime()%>"/></td> --%>
-											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand" name="editcommand"/></td>
-											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark" name="remark" ><%=c.getCwbremark() %></textarea></td>
+											<td width="10%" valign="middle"  align="left"  ><input type="text"  value="<%=c.getCustomercommand() %>" id="editcommand<%=c.getCwb() %>" name="editcommand"/></td>
+											<td width="15%" valign="middle"  align="left"  ><textarea rows="3" cols="30"   id="remark<%=c.getCwb() %>" name="remark" ><%=c.getCwbremark() %></textarea></td>
 											<td>
 											
-											<input name="button2" type="button" class="input_button2" id="buttonMatch" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
-											<input name="button2" type="button" class="input_button2" id="button2" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
+											<input name="button2" type="button" class="input_button2" id="buttonMatch<%=c.getCwb() %>" value="修改匹配站" onclick="mathaddress('<%=c.getCwb() %>');" />
+											<input name="button2" type="button" class="input_button2" id="button2<%=c.getCwb() %>" value="修改" onclick="selectForm('<%=c.getCwb() %>');" />
 											</br>
 											<%-- <a href="javascript:edit_button('<%=c.getCwb() %>');" id="cwbdetail" name="cwbdetail"  > 地址修改详情 </a>  --%>
-											<input type="hidden" value="1" name="editshow" id="editshow">
-											<textarea type= cols="20"  name="checkeditaddress" id="checkeditaddress" style="display:none" ><%=c.getConsigneeaddress() %></textarea>
-											<input type="hidden"   value="<%=c.getConsigneenameOfkf() %>" id="checkeditname" name="checkeditname"/>
-											<input type="hidden"   value="<%=c.getConsigneemobileOfkf()%>" id="checkeditmobile" name="checkeditmobile"/>
-											<input type="hidden"   value="<%=destinationName%>" id="checkbranchname" name="checkbranchname"/>
-											<input type="hidden"  value="<%=c.getCustomercommand() %>" id="checkeditcommand" name="checkeditcommand"/>
+											<input type="hidden" value="1" name="editshow" id="editshow<%=c.getCwb() %>">
+											<textarea type= cols="20"  name="checkeditaddress" id="checkeditaddress<%=c.getCwb() %>" style="display:none" ><%=c.getConsigneeaddress() %></textarea>
+											<input type="hidden"   value="<%=c.getConsigneenameOfkf() %>" id="checkeditname<%=c.getCwb() %>" name="checkeditname"/>
+											<input type="hidden"   value="<%=c.getConsigneemobileOfkf()%>" id="checkeditmobile<%=c.getCwb() %>" name="checkeditmobile"/>
+											<input type="hidden"   value="<%=destinationName%>" id="checkbranchname<%=c.getCwb() %>" name="checkbranchname"/>
+											<input type="hidden"  value="<%=c.getCustomercommand() %>" id="checkeditcommand<%=c.getCwb() %>" name="checkeditcommand"/>
 											</td>
 											
-										</tr><%} %>
+										</tr>
+										<%} %>
 										<%} %>
 								</table></form>
 								</td>
@@ -187,34 +189,47 @@ function editInit(){
 </div>
 <script type="text/javascript">
 	function selectForm(a){
-		$("#button2").attr('disabled','disabled');
-		$("#button2").val('修改中');
-		$("#checkbranchid").val($("#branchlist").val());
+		$("#button2"+a).attr('disabled','disabled');
+		$("#button2"+a).val('修改中');
+		$("#checkbranchid"+a).val($("#branchlist"+a).val());
 			//$("#checkeditaddress")
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/updateCwbInfo/"+a,
 						type:"POST",//数据发送方式 
-						data:$('#searchForm2').serialize(),//参数
+						data:{
+							editname:$("#editname"+a).val(),	
+							editmobile:$("#editmobile"+a).val(),	
+							editcommand:$("#editcommand"+a).val(),	
+							editshow:$("#editshow"+a).val(),	
+							remark:$("#remark"+a).val(),	
+							matchaddress:$("#matchaddress"+a).val(),	
+							editaddress:$("#editaddress"+a).val(),	
+							checkeditaddress:$("#checkeditaddress"+a).val(),	
+							checkeditname:$("#checkeditname"+a).val(),	
+							checkeditmobile:$("#checkeditmobile"+a).val(),	
+							checkbranchname:$("#checkbranchname"+a).val(),	
+							checkeditcommand:$("#checkeditcommand"+a).val(),	
+						},
 						dataType:'json',//接受数据格式
 						success:function(data){
 							if(data.errorCode == 1){
 								 alert(data.error);
-								 $("#button2").removeAttr('disabled');
-									$("#button2").val('修改');
+								 $("#button2"+a).removeAttr('disabled');
+									$("#button2"+a).val('修改');
 							}else{
-								$("#checkeditaddress").val($("#editaddress").val());
-								$("#checkeditname").val($("#editname").val());
-								$("#checkeditmobile").val($("#editmobile").val());
-								if(($("#matchaddress").val()!="请选择")){
-									if($("#matchaddress").val()==""){
+								$("#checkeditaddress"+a).val($("#editaddress"+a).val());
+								$("#checkeditname"+a).val($("#editname"+a).val());
+								$("#checkeditmobile"+a).val($("#editmobile"+a).val());
+								if(($("#matchaddress"+a).val()!="请选择")){
+									if($("#matchaddress"+a).val()==""){
 									}else{
-										$("#checkbranchname").val($("#matchaddress").val());
+										$("#checkbranchname"+a).val($("#matchaddress"+a).val());
 									}
 								}
-								$("#checkeditcommand").val($("#editcommand").val());
+								$("#checkeditcommand"+a).val($("#editcommand"+a).val());
 								$("#checkbegindate").val($("#strtime").val());
-								$("#button2").removeAttr('disabled');
-								$("#button2").val('修改');
+								$("#button2"+a).removeAttr('disabled');
+								$("#button2"+a).val('修改');
 								alert(data.error);
 							}
 						}
@@ -222,9 +237,9 @@ function editInit(){
 					});
 }
 	function mathaddress(cwb){
-		$("#buttonMatch").attr('disabled','disabled');
-		$("#buttonMatch").val('匹配中');
-		var editaddress=$("#editaddress").val();
+		$("#buttonMatch"+cwb).attr('disabled','disabled');
+		$("#buttonMatch"+cwb).val('匹配中');
+		var editaddress=$("#editaddress"+cwb).val();
 		if(editaddress.length>0){
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/matchaddress",
@@ -233,13 +248,13 @@ function editInit(){
 						dataType:'json',//接受数据格式
 						success:function(data){
 							if(data.netpoint.length==0){
-								$("#buttonMatch").removeAttr('disabled');
-								$("#buttonMatch").val('修改匹配站');
+								$("#buttonMatch"+cwb).removeAttr('disabled');
+								$("#buttonMatch"+cwb).val('修改匹配站');
 								alert("未匹配到站点");}
-							$("#matchaddress").val((data.netpoint));
-							if($("#matchaddress").val().length>0){
-								$("#buttonMatch").removeAttr('disabled');
-								$("#buttonMatch").val('修改匹配站');
+							$("#matchaddress"+cwb).val((data.netpoint));
+							if($("#matchaddress"+cwb).val().length>0){
+								$("#buttonMatch"+cwb).removeAttr('disabled');
+								$("#buttonMatch"+cwb).val('修改匹配站');
 								findbranch();
 							}
 							
@@ -251,8 +266,8 @@ function editInit(){
 			alert("请检查收件人地址！");
 		}
 }
-	function findbranch(){
-		var branchname=$("#matchaddress").val();
+	function findbranch(cwb){
+		var branchname=$("#matchaddress"+cwb).val();
 		if(branchname.length>0){
 					$.ajax({
 						url:"<%=request.getContextPath()%>/editcwb/findbranch",
@@ -268,12 +283,12 @@ function editInit(){
 									
 									options+="<option value='"+data[i].branchname+"'>"+data[i].branchname+"</option>";
 									}
-								$("#branchlist").empty();
-								$("#branchlist").append(options);
+								$("#branchlist"+cwb).empty();
+								$("#branchlist"+cwb).append(options);
 								}else {
-									$("#branchlist").empty();
+									$("#branchlist"+cwb).empty();
 									$('#branchAll option').each(function(){
-										  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist");
+										  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist"+cwb);
 										  }); 
 								}
 						}
@@ -281,9 +296,9 @@ function editInit(){
 					});
 		}
 		else{
-			$("#branchlist").empty();
+			$("#branchlist"+cwb).empty();
 			$('#branchAll option').each(function(){
-				  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist");
+				  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist"+cwb);
 				  });
 		}
 		
