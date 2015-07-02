@@ -6533,13 +6533,25 @@ public class CwbOrderService {
 				cwbOrderView.setResetfeedtime(deliveryState.getDeliverytime());//反馈时间
 				cwbOrderView.setDonepeople(this.dataStatisticsService.getQueryUserName(uslist,ot.getEdituserid()));//操作人
 				cwbOrderView.setDonetime(ot.getEdittime());//操作时间
-				cwbOrderView.setNowState(ApplyStateEnum.getTextByValue(ot.getShenhestate()));//订单当前状态
+				cwbOrderView.setNowState(this.getNowstate(ot.getShenhestate()));//订单当前状态
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}
 		return cwbOrderViewList;
 	}
-
+	public String getNowstate(int shenhestate){
+		String shenhestateString="";
+		if (shenhestate==1) {
+			shenhestateString="待审核";
+		}
+		if (shenhestate==2) {
+			shenhestateString="审核不通过";
+		}
+		if (shenhestate==3) {
+			shenhestateString="审核通过";
+		}
+		return shenhestateString;
+	}
 	public List<CwbOrderView> getCwborderviewList(List<CwbOrder> coList,
 			List<ApplyEditDeliverystate> aedsList, List<User> userList,
 			List<Branch> branchList) {
