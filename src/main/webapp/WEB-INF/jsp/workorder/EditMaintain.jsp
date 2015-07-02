@@ -32,7 +32,16 @@
 								<%for(Reason r:reasonList) {%>
 								<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
 								<%} %>
-						</select></td>
+			 			</select></td>
+						<td noWrap="noWrap"><font color="red">*</font>性别:
+							<%if(ccf.getSex()==1){ %>
+							男<input type="radio" name="sex" value="1" id="sex1" checked="checked">
+							女<input type="radio" name="sex" value="0" id="sex">
+							<%}else{ %>
+							男<input type="radio" name="sex" value="1" id="sex1">
+							女<input type="radio" name="sex" value="0" id="sex"  checked="checked">
+							<%} %>
+						</td>
 					</tr>				
 				</table>
 				<div>

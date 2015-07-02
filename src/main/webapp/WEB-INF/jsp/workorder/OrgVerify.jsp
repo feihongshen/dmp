@@ -135,14 +135,14 @@ String customerName=request.getAttribute("customerName")==null?null:(String)requ
 			<div id="box_form">
 					<table>
 						<tr>
-							<td align="right">工单号:</td><td><%=cca.getAcceptNo() %></td>
-							<td align="right">工单状态:</td><td><%=ComplaintStateEnum.getByValue1(cca.getComplaintState()).getText() %></td>
-							<td align="right">订单号:</td><td><%=cca.getOrderNo() %></td>
+							<td align="right">工单号:</td><td><font color="croci"><%=cca.getAcceptNo()%></font></td>
+							<td align="right">工单状态:</td><td><font color="croci"><%=ComplaintStateEnum.getByValue1(cca.getComplaintState()).getText()%></font></td>
+							<td align="right">订单号:</td><td><font color="croci"><%=cca.getOrderNo() %></font></td>
 						</tr>
 						<tr>
 							
-								<td align="right">一级类型:</td><td><%=oneleave%></td>
-								<td align="right">二级类型:</td><td><%=twoleave%></td>
+								<td align="right">一级类型:</td><td><font color="croci"><%=oneleave%></font></td>
+								<td align="right">二级类型:</td><td><font color="croci"><%=twoleave%></font></td>
 							
 						</tr>	
 						<tr>
@@ -150,46 +150,46 @@ String customerName=request.getAttribute("customerName")==null?null:(String)requ
 								<td align="right"><span>责任机构:</span></td>					
 								<%for(Branch b:lb){ %>
 								<%if(b.getBranchid()==cca.getCodOrgId()) {%>
-										<td><%=b.getBranchname() %></td>
+										<td><font color="croci"><%=b.getBranchname()%></font></td>
 								<%} }%>
 								<%if(cca.getComplaintUser()!=null){ %>
 								<td align="right"><span>责任人:</span></td>					
 								<%for(User u:alluser){ %>
 									<%if(cca.getComplaintUser().equals(u.getUsername())){ %>
-									<td><%=u.getRealname()%></td>
+									<td><font color="croci"><%=u.getRealname()%></font></td>
 								<%} }}%>
 								<%} %>
 						</tr>
 						<tr>
-								<td align="right"><span>订单操作状态:</span></td><td><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%></td>
-								<td align="right"><span>当前机构:</span></td><td><%=cca.getCurrentBranch() %></td>
-								<td align="right"><span>客户名称:</span></td><td><%=customerName%></td>
+								<td align="right"><span>订单操作状态:</span></td><td><font color="croci"><%=FlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%></font></td>
+								<td align="right"><span>当前机构:</span></td><td><font color="croci"><%=cca.getCurrentBranch()%></font></td>
+								<td align="right"><span>客户名称:</span></td><td><font color="croci"><%=customerName%></font></td>
 						</tr>
 					<tr>
 						<%if(cci!=null){ %>
-						<td align="right"><span>来电人姓名:</span></td><td><%=cci.getName()==null?"":cci.getName() %></td>
-						<td align="right"><span>来电号码:</span></td><td><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%></td>
+						<td align="right"><span>来电人姓名:</span></td><td><font color="croci"><%=cci.getName()==null?"":cci.getName()%></font></td>
+						<td align="right"><span>来电号码:</span></td><td><font color="croci"><%=cci.getPhoneonOne()==null?"":cci.getPhoneonOne()%></font></td>
 						<%}else{ %>
 						<td align="right"><span>来电人姓名:</span></td>
 						<td align="right"><span>来电号码:</span></td>
 						<%} %>
-						<td align="right"><span>收件人手机:</span></td><td><%=co.getConsigneemobile()%></td>
+						<td align="right"><span>收件人手机:</span></td><td><font color="croci"><%=co.getConsigneemobile()%></font></td>
 					</tr>
 					<tr>
 						<td align="right"><span>工单内容:</span></td>
-						<td><textarea cols="10" disabled="disabled"><%=cca.getContent()%></textarea></td>
+						<td><font color="croci"><textarea cols="10" disabled="disabled"><%=cca.getContent()%></textarea></font></td>
 					</tr>
 					<tr>
-						<td align="right"><span>受理时间:</span></td><td><%=cca.getAcceptTime()%></td>
+						<td align="right"><span>受理时间:</span></td><td><font color="croci"><%=cca.getAcceptTime()%></font></td>
 						<td align="right"><span>受理人:</span></td>
 								<%for(User u:alluser){ %>
 									<%if(cca.getHandleUser().equals(u.getUsername())){ %>
-										<td><%=u.getRealname()%></td>
+										<td><font color="croci"><%=u.getRealname()%></font></td>
 								<%} }%>
 					</tr>
 					<tr>
 						<td align="right">核实内容*:</td>				
-						<td><textarea onkeyup="checkLen(this)" style="width: 100%;" rows="10" cols="7" name="remark" id="remark"></textarea></td>																		
+						<td><font color="croci"><textarea onkeyup="checkLen(this)" style="width: 100%;" rows="10" cols="7" name="remark" id="remark"></textarea></font></td>																		
 					</tr>
 					<tr><td>您还可以输入<font id="count" color="red">150</font>个文字</td></tr>
 					 </table> 

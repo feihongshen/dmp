@@ -29,6 +29,10 @@ List<Reason> reasonList=request.getAttribute("KeHuLeiXingAllReason")==null?null:
 								<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
 								<%} %>
 						</select></td>
+						<td noWrap="noWrap"><font color="red">*</font>性别:
+							男<input type="radio" name="sex" value="1" id="sex1">
+							女<input type="radio" name="sex" value="0" id="sex">
+						</td>
 					</tr>				
 				</table>
 				<div>

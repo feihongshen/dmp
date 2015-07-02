@@ -143,7 +143,7 @@
 				<li>
 						<div class="fitem">
 							<label>客户名称:</label>
-								<input type="text" name="customerName" class="easyui-validatebox" 
+								<input type="text" name="customerId" class="easyui-validatebox" 
 								 	data-options="width:150,prompt: '客户名称'"
 								 	initDataType="TABLE" 
 								 	initDataKey="Customer"
@@ -159,8 +159,8 @@
 									 	saveField="value"
 									 	value="1"
 								/>
-							<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;">
-							至<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;">
+							<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;" name="startdate">
+							至<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;" name="enddate">
 						</div>	
 					</li>				
 					<li style="padding-top: 0.5cm">
