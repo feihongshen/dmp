@@ -758,56 +758,7 @@ public class ApplyEditDeliverystateController {
 		return "applyeditdeliverystate/createApplyEditDeliverystate";
 	}
 
-	//反馈状态修改申请导出
-	@RequestMapping("/createApplyeditExportExcel")
-	public void createApplyeditExportExcel(HttpServletRequest request,HttpServletResponse response,
-			 @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb
-			){
-		String quot = "'", quotAndComma = "',";
-		if (cwb.length() > 0) {
-			StringBuffer cwbs = new StringBuffer();
-			StringBuffer errorCwbs = new StringBuffer();
-
-			for (String cwbStr : cwb.split("\r\n")) {
-				if (cwbStr.trim().length() == 0) {
-					continue;
-				}
-				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
-				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
-				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
-				if(corder == null){
-					errorCwbs.append(cwbStr + ":无此单号!");
-				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
-					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
-				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
-					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
-				}
-			}	
-			String cwbs1 = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "'--'";
-			
-			List<ApplyEditDeliverystate> aedsList = applyEditDeliverystateDAO.getApplyEditDeliverystates(cwbs1, ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue());
-			StringBuffer sb = new StringBuffer();
-			for(ApplyEditDeliverystate aeds:aedsList){
-				sb.append("'").append(aeds.getCwb()).append("',");
-			}
-			String strss = "";
-			if(sb.length()>0){
-				strss = sb.substring(0,sb.length()-1);
-			}
-			List<CwbOrder> coList = cwbDAO.getcwborderList(strss);
-			List<User> userList = userDAO.getAllUser();
-			List<Branch> branchList = branchDAO.getAllEffectBranches();
-			List<CwbOrderView> covList = this.cwborderService.getCwborderviewList(coList,aedsList,userList,branchList);
-			
-			String[] cloumnName1 = new String[8]; // 导出的列名
-			String[] cloumnName2 = new String[8]; // 导出的英文列名
-			this.exportService.SetResetFeedBackFields(cloumnName1, cloumnName2);
-			String sheetName = "反馈状态修改申请"; // sheet的名称
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-			String fileName = "fankuizhuangtai_order_" + sdf.format(new Date()) + ".xlsx"; // 文件名
-			ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
-		}
-	}
+	
 	/*@RequestMapping("/toCreateApplyEditDeliverystateAgin")
 	public @ResponseBody String toCreateApplyEditDeliverystateAgin(Model model,
 			//处理在修改时应该
@@ -917,19 +868,55 @@ public class ApplyEditDeliverystateController {
 				reasonMap.put(reason.getReasonid()+"", reason.getReasoncontent());
 			}
 			List<ApplyEditDeliverystate> applyEditDeliverystateList = new ArrayList<ApplyEditDeliverystate>();
+			long count = 0;
 			if(isnow>0){
 			//List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, getSessionUser().getBranchid(), ishandle, "");
 			List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(page,begindate,enddate,ishandle);
 			applyEditDeliverystateList = this.getapplyeditdeliverysate(applyEditDeliverystateLists, reasonMap);
+			count = applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle);
 			}
 			model.addAttribute("page",page);
 			model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateList);
 			model.addAttribute("branchList", branchDAO.getAllEffectBranches());
 			model.addAttribute("userList", userDAO.getAllUser());
-			model.addAttribute("page_obj", new Page(applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle), page,
+			model.addAttribute("page_obj", new Page(count, page,
 					Page.ONE_PAGE_NUMBER));
 
 		return "applyeditdeliverystate/applyEditDeliverystatelist";
+	}
+	
+	//反馈状态修改申请导出
+	@RequestMapping("/createApplyeditExportExcel")
+	public void createApplyeditExportExcel(HttpServletRequest request,HttpServletResponse response,
+		@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
+		@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, 
+		@RequestParam(value = "ishandle", defaultValue = "-1", required = false) long ishandle
+	){
+		List<Reason> reasonList = reasonDAO.getAllReason();
+		Map<String, String> reasonMap = new HashMap<String, String>();
+		for(Reason reason : reasonList){
+			reasonMap.put(reason.getReasonid()+"", reason.getReasoncontent());
+		}
+		List<Branch> branchlist = branchDAO.getAllEffectBranches();
+		List<User> userList = userDAO.getAllUser();
+		List<ApplyEditDeliverystate> applyEditDeliverystateList = new ArrayList<ApplyEditDeliverystate>();
+		List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(begindate,enddate,ishandle);
+		List<String> strList = new ArrayList<String>();
+		if(applyEditDeliverystateLists!=null&&!applyEditDeliverystateLists.isEmpty()){
+			for(ApplyEditDeliverystate aeds : applyEditDeliverystateLists){
+				CwbOrder co = cwbDAO.getCwbByCwb(aeds.getCwb());
+				strList.add(co.getCwb());
+			}
+		}
+		applyEditDeliverystateList = cwborderService.getapplyeditdeliverysates(applyEditDeliverystateLists, reasonMap,branchlist,userList,strList);
+		
+		String[] cloumnName1 = new String[11]; // 导出的列名
+		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		this.exportService.SetResetFeedBackFields(cloumnName1, cloumnName2);
+		String sheetName = "反馈状态修改申请信息"; // sheet的名称
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "fankuizhuangtai_order_" + sdf.format(new Date()) + ".xlsx"; // 文件名
+		ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, applyEditDeliverystateList);
 	}
 	
 	public List<ApplyEditDeliverystate> getapplyeditdeliverysate(List<ApplyEditDeliverystate> applyEditDeliverystateLists,Map<String, String> reasonMap){
@@ -940,7 +927,6 @@ public class ApplyEditDeliverystateController {
 		}
 		return applyEditDeliverystateLists;
 	}
-	
 	
 	//客服部分lx
 	/**

@@ -5837,6 +5837,22 @@ public class CwbDAO {
 		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	/**
+	 * 批量查询
+	 * @param cwbs
+	 * @return
+	 */
+	public List<CwbOrder> getcwborderLists(String cwbs){
+		try{
+			String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
+			return this.jdbcTemplate.query(sql, new CwbMapper());
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
 	public void updateNextbranch(CwbOrder cwbOrder) {
 		String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=?";
 		jdbcTemplate.update(sql,cwbOrder.getCurrentbranchid(),cwbOrder.getCwb());

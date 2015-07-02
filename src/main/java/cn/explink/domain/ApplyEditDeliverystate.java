@@ -28,7 +28,7 @@ public class ApplyEditDeliverystate {
 	private long isauditpayup;// 是否已交款审核（站点交款审核）
 	private long ishandle;// 是否已处理
 	private String editdetail;// 修改后的详情（JSON）（封装deliverystate表中的信息）
-	private long state;// 是否已向客服申请 1已申请 0，未申请
+	private long state;// 是否已向客服申请 1已申请 0，未申请(已提交，提交状态)
 	private long audit;// 有代收款的订单 客服是否已经审核 1已经审核,0,未审核
 	//新加字段
 	private long cwbstate;//订单状态
@@ -36,7 +36,69 @@ public class ApplyEditDeliverystate {
 	
 	// 用于显示时使用
 	private String reasoncontent;
+	private String editusername;// 处理人
+	private String handlename;// 处理状态
 	
+	private String currentbranchname;//当前站点
+	private String applybranchname;//申请站点
+	
+
+	private String nowdeliveryname;//当前配送结果
+	private String editnowdeliveryname;//修改当前配送结果
+	private String delivername;//小件员名字
+	
+	public String getNowdeliveryname() {
+		return nowdeliveryname;
+	}
+	public void setNowdeliveryname(String nowdeliveryname) {
+		this.nowdeliveryname = nowdeliveryname;
+	}
+	public String getEditnowdeliveryname() {
+		return editnowdeliveryname;
+	}
+	public void setEditnowdeliveryname(String editnowdeliveryname) {
+		this.editnowdeliveryname = editnowdeliveryname;
+	}
+	public String getDelivername() {
+		return delivername;
+	}
+
+	public void setDelivername(String delivername) {
+		this.delivername = delivername;
+	}
+
+	public String getCurrentbranchname() {
+		return currentbranchname;
+	}
+
+	public void setCurrentbranchname(String currentbranchname) {
+		this.currentbranchname = currentbranchname;
+	}
+
+	public String getApplybranchname() {
+		return applybranchname;
+	}
+
+	public void setApplybranchname(String applybranchname) {
+		this.applybranchname = applybranchname;
+	}
+
+	public String getEditusername() {
+		return editusername;
+	}
+
+	public void setEditusername(String editusername) {
+		this.editusername = editusername;
+	}
+
+	public String getHandlename() {
+		return handlename;
+	}
+
+	public void setHandlename(String handlename) {
+		this.handlename = handlename;
+	}
+
 	public String getReasoncontent() {
 		return reasoncontent;
 	}

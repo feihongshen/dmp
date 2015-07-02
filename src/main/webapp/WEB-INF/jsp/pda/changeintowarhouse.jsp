@@ -56,24 +56,24 @@ function initEmailDateUI(emaildate){
 			}
 		});
 }
-	function moreOpt(){
-		step=startIndex+4;
-		if(preStep>step){
-			step=preStep;
-		}
-		for(var i=startIndex;i<data.length;i++){
-			if(i>step){
-				continue;
-			}
-			optionstring="<option value='"+data[i].emaildateid+"'>"+
-			data[i].emaildatetime+(data[i].state==0?"（未到货）":"")+" "+
-			data[i].customername+"_"+data[i].warehousename+"_"+data[i].areaname
-			+"</option>";
-			var opt=$(optionstring);
-			$("#emaildate").append(opt);
-			startIndex=i+1;
-		}
+function moreOpt(){
+	step=startIndex+4;
+	if(preStep>step){
+		step=preStep;
 	}
+	for(var i=startIndex;i<data.length;i++){
+		if(i>step){
+			continue;
+		}
+		optionstring="<option value='"+data[i].emaildateid+"'>"+
+		data[i].emaildatetime+(data[i].state==0?"（未到货）":"")+" "+
+		data[i].customername+"_"+data[i].warehousename+"_"+data[i].areaname
+		+"</option>";
+		var opt=$(optionstring);
+		$("#emaildate").append(opt);
+		startIndex=i+1;
+	}
+}
 var emaildate=0;
 	$(function(){
 		$("#more").click(moreOpt);

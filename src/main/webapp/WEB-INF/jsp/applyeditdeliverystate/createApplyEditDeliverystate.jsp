@@ -97,17 +97,6 @@ function sub(id){
 	
 } --%>
 
-function exportField(){
- 	if(<%=covList!=null&&!covList.isEmpty()%>){
- 		$("#btnval").attr("disabled","disabled"); 
-	 	$("#btnval").val("请稍后……");
-		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/createApplyeditExportExcel");	
-		$("#searchForm").submit();
-		$("#searchForm").attr("action","1");
-	}else{
-		alert("没有做申请操作，不能导出！");
-	} 
-}
 
 function  search(){
 	if($("#cwb").val()=='查询多个订单用回车隔开' || $("#cwb").val()=='' ){
@@ -140,9 +129,6 @@ function  search(){
 										<td>
 											<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb"><%=request.getParameter("cwb")==null?"查询多个订单用回车隔开":request.getParameter("cwb")%></textarea>
 											<input type="button" value="申请" class="input_button2" onclick="search();">
-										</td>
-										<td>
-											<input id="btnval" type="button" value="导出" onclick="exportField();" class="input_button2">
 										</td>
 									</tr>
 								</table>

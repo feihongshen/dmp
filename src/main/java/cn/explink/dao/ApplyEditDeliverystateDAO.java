@@ -328,6 +328,13 @@ public class ApplyEditDeliverystateDAO {
 		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb in(" + cwbs + ") and ishandle=? and state=1";
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper(), ishandle);
 	}
+	
+	//新加，导出已提交订单
+	public List<ApplyEditDeliverystate> getApplyEditDeliverystatess(String cwbs) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where cwb in(" + cwbs + ")  and state=1";
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+	}
+	
 	public long getApplyEditDeliverystateCount(String cwbs, long ishandle) {
 		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where cwb in(" + cwbs + ") and ishandle=? and state=0";
 		return jdbcTemplate.queryForLong(sql, new ApplyEditDeliverystateRowMapper(), ishandle);
@@ -352,6 +359,23 @@ public class ApplyEditDeliverystateDAO {
 		}
 		sql += sb;
 		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
+	}
+	
+	public List<ApplyEditDeliverystate> getApplyEditDeliverys(String begindate,
+			String enddate, long ishandle) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where 1=1";
+		StringBuffer sb = new StringBuffer("");
+		if(!begindate.equals("")){
+			sb.append(" and applytime >='" + begindate + "' ");
+		}
+		if(!enddate.equals("")){
+			sb.append(" and applytime <='" + enddate + "' ");
+		}
+		if(ishandle>-1){
+			sb.append(" and ishandle="+ishandle );
+		}
+		sql += sb;
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
 	

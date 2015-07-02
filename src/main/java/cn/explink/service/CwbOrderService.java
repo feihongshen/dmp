@@ -1022,7 +1022,13 @@ public class CwbOrderService {
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
 		}
-
+		
+		//已申请中转出站并且没有做审核的订单不允许中转出站
+		CwbApplyZhongZhuan cazz = cwbApplyZhongZhuanDAO.getCwbapplyZZ(cwb); 
+		if(cazz!=null){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error);
+		}
+		
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		if ((customerid > 0) && (co != null)) {
@@ -6522,7 +6528,7 @@ public class CwbOrderService {
 			List<ApplyEditDeliverystate> aedsList, List<User> userList,
 			List<Branch> branchList) {
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
-		if(coList.size()>0&&aedsList.size()>0){
+		if(coList!=null&&aedsList!=null){
 			for(CwbOrder co : coList){
 				CwbOrderView cov = new CwbOrderView();
 				int index = coList.indexOf(co);
@@ -6566,6 +6572,33 @@ public class CwbOrderService {
 		}else{
 			return "已审核";
 		}
+	}
+	
+	
+	
+	public List<ApplyEditDeliverystate> getapplyeditdeliverysates(List<ApplyEditDeliverystate> applyEditDeliverystateLists,Map<String, String> reasonMap,
+			List<Branch> branchlist,List<User> userList,List<String> strList
+			){
+		if(applyEditDeliverystateLists!=null&&applyEditDeliverystateLists.size()>0&&reasonMap.size()>0){
+			for(ApplyEditDeliverystate aeds : applyEditDeliverystateLists){
+				int ad = applyEditDeliverystateLists.indexOf(aeds);
+				aeds.setReasoncontent(reasonMap.get(aeds.getReasonid()+"")==null?"":reasonMap.get(aeds.getReasonid()+"").toString());//原因备注
+				aeds.setEditusername(this.dataStatisticsService.getQueryUserName(userList, aeds.getEdituserid()));//处理人
+				aeds.setHandlename(gethandlename(aeds.getIshandle()));//处理状态
+				CwbOrder co = cwbDAO.getCwbByCwb(strList.get(ad));
+				aeds.setCurrentbranchname(this.dataStatisticsService.getQueryBranchName(branchlist, co.getCurrentbranchid()));//当前站点
+				aeds.setApplybranchname(this.dataStatisticsService.getQueryBranchName(branchlist,co.getCurrentbranchid()));//申请站点
+				aeds.setNowdeliveryname(DeliveryStateEnum.getByValue((int)aeds.getNowdeliverystate()).getText());//修改前的配送结果
+				aeds.setEditnowdeliveryname(DeliveryStateEnum.getByValue((int)aeds.getEditnowdeliverystate()).getText());//修改后的配送结果
+				aeds.setDelivername(this.dataStatisticsService.getQueryUserName(userList, aeds.getDeliverid()));//小件员名字
+			}
+		}
+		return applyEditDeliverystateLists;
+	}
+	
+	public String gethandlename(long ishandle){
+		String str = ishandle==1?"已处理":"未处理";
+		return str;
 	}
 	
 	/*public String getCwbsBydate(long flowordertypeid, String begindate,

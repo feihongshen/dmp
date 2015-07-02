@@ -319,6 +319,16 @@ public class CwbApplyZhongZhuanDAO {
 		String sql = "update op_cwbapplyzhongzhuan set isstastics=1 where cwb=? and isstastics=0 and isnow=1 ";
 		jdbcTemplate.update(sql,  cwb);
 	}
+
+	public CwbApplyZhongZhuan getCwbapplyZZ(String cwb) {
+		try{
+			String sql = "select * from op_cwbapplyzhongzhuan where cwb=? and ishandle=0";
+			return this.jdbcTemplate.queryForObject(sql,new CwbApplyZhongZhuanMapper(), cwb);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 }

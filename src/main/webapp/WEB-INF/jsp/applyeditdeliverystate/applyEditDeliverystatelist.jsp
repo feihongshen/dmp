@@ -116,7 +116,17 @@ function sub(){
 	}
 }
 
-
+function exportField(){
+ 	if(<%=applyEditDeliverystateList!=null&&!applyEditDeliverystateList.isEmpty()%>){
+ 		$("#btnval").attr("disabled","disabled"); 
+	 	$("#btnval").val("请稍后……");
+		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/createApplyeditExportExcel");	
+		$("#searchForm").submit();
+		$("#searchForm").attr("action","1");
+	}else{
+		alert("没有做申请操作，不能导出！");
+	} 
+}
 
 </script>
 </head>
@@ -145,7 +155,8 @@ function sub(){
 									<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
 									<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
 								</select>
-								<input type="button" value="查询" class="input_button2" onclick="sub();">
+									<input type="button" value="查询" class="input_button2" onclick="sub();">
+									<input id="btnval" type="button" value="导出" onclick="exportField();" class="input_button2">
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
