@@ -714,10 +714,18 @@ public class ApplyEditDeliverystateController {
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
 				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
+				if (corder!=null) {
+					if (deliverystate.getDeliverybranchid()!=this.getSessionUser().getBranchid()) {
+						errorCwbs.append(cwbStr + ":非本站点反馈订单，不能操作此订单!");
+						continue;
+					}
+				}
 				if(corder == null){
 					errorCwbs.append(cwbStr + ":无此单号!");
+					continue;
 				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0|| deliverystate.getGcaid() == 0) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
+					continue;
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
 					CwbOrder co = cwbDAO.getCwbByCwbLock(cwbStr);
