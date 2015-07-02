@@ -278,6 +278,7 @@ function resub(form){
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>);"/> <%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.JuShou.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.JuShou.getValue() %>);"/> <%=DeliveryStateEnum.JuShou.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>);"/> <%=DeliveryStateEnum.FenZhanZhiLiu.getText() %>
+							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>);"/> <%=DeliveryStateEnum.DaiZhongZhuan.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>);"/> <%=DeliveryStateEnum.HuoWuDiuShi.getText() %>
 							
 						</td>
