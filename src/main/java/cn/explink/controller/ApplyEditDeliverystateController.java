@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.dangdang_dataimport.DeliveryTypeEnum;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -50,6 +51,7 @@ import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
@@ -1160,5 +1162,21 @@ public class ApplyEditDeliverystateController {
 		sdv.setLeavedreason(cwbOrder.getLeavedreason());
 		return sdv;
 	}
-
+	@RequestMapping("/finddeliveryreason")
+	public @ResponseBody List<Reason> finddeliveryreason(@RequestParam(value="deliverytype",defaultValue="0",required=false)long deliverytype){
+		List<Reason> reasons=new ArrayList<Reason>();
+		if ((deliverytype==DeliveryStateEnum.PeiSongChengGong.getValue())||(deliverytype==DeliveryStateEnum.ShangMenHuanChengGong.getValue())||deliverytype==DeliveryStateEnum.HuoWuDiuShi.getValue()) {
+			reasons=reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.GiveResult.getValue());
+		}
+		if (deliverytype==DeliveryStateEnum.ShangMenTuiChengGong.getValue()||deliverytype==DeliveryStateEnum.JuShou.getValue()||deliverytype==DeliveryStateEnum.BuFenTuiHuo.getValue()||deliverytype==DeliveryStateEnum.ShangMenJuTui.getValue()) {
+			reasons=reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
+		}
+		if (deliverytype==DeliveryStateEnum.FenZhanZhiLiu.getValue()||deliverytype==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()) {
+			reasons=reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
+		}
+		if (deliverytype==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
+			reasons=reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
+		}
+		return reasons==null?new ArrayList<Reason>():reasons;
+	}
 }

@@ -105,6 +105,25 @@ function  search(){
 	}
 	$("#searchForm").submit();
 }
+
+function changereasonremark(obj,opscwbid){
+	$("#reasonid"+opscwbid).empty();
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/applyeditdeliverystate/finddeliveryreason",
+		data:{"deliverytype":$(obj).val()},
+		dataType:"json",
+		success:function(data){
+			var optstr="<option value='0'>==请选择==</option>";
+			$.each(data,function(i,a){
+				optstr+="<option value='"+a.reasonid+"' >"+a.reasoncontent+"</option>";
+			});
+			$("#reasonid"+opscwbid).append(optstr);
+			}
+			
+			});
+	}
+	
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -166,7 +185,7 @@ function  search(){
 								<td width="100" align="center" valign="middle"><%=cwb.getRemark1()%></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getRemark2()%></td>
 								<td align="center" valign="middle">
-									<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>">
+									<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>" onchange="changereasonremark(this,'<%=cwb.getOpscwbid() %>')">
 										<option value ="-1">==请选择==</option>
 					                   <%if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Peisong.getValue()){%>
 					                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
@@ -187,7 +206,7 @@ function  search(){
 									</select>
 								</td>
 								<td align="center" valign="middle">
-									<select id="reasonid<%=cwb.getOpscwbid()%>">
+									<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 150px">
 										<option value="-1">==请选择==</option>
 										<%if(reasonList!=null){for(Reason reason:reasonList){ %>
 										<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
