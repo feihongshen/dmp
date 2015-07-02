@@ -24,7 +24,7 @@ public class CustomerBillContractDao {
 			c.setId(rs.getLong("id"));
 			c.setBillBatches(rs.getLong("bill_batches"));
 			c.setBillState(rs.getLong("bill_state"));
-			c.setCustomerName(rs.getString("customer_name"));
+			c.setCustomerId(rs.getLong("customer_id"));
 			c.setDateRange(rs.getString("date_range"));
 			c.setCorrespondingCwbNum(rs.getLong("corresponding_cwb_num"));
 			c.setDeliveryMoney(rs.getBigDecimal("delivery_money"));

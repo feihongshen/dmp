@@ -176,7 +176,8 @@ String customerName=request.getAttribute("customerName")==null?null:(String)requ
 						<td align="right"><span>收件人手机:</span></td><td><%=co.getConsigneemobile()%></td>
 					</tr>
 					<tr>
-						<td align="right"><span>工单内容:</span></td><td><%=cca.getContent()%></td>
+						<td align="right"><span>工单内容:</span></td>
+						<td><textarea cols="10" disabled="disabled"><%=cca.getContent()%></textarea></td>
 					</tr>
 					<tr>
 						<td align="right"><span>受理时间:</span></td><td><%=cca.getAcceptTime()%></td>

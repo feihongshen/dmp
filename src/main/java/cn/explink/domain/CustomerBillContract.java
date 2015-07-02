@@ -7,7 +7,7 @@ public class CustomerBillContract {
 		private long id;
 		private long billBatches;//账单批次
 		private long billState;//账单状态
-		private String customerName;//客户名称
+		private long customerId;//客户名称
 		private String dateRange;//日期范围
 		private long correspondingCwbNum;//对应订单数
 		private BigDecimal deliveryMoney; //提货费
@@ -59,17 +59,19 @@ public class CustomerBillContract {
 		public void setBillState(long billState) {
 			this.billState = billState;
 		}
-		public String getCustomerName() {
-			return customerName;
-		}
-		public void setCustomerName(String customerName) {
-			this.customerName = customerName;
-		}
+
 		public String getDateRange() {
 			return dateRange;
 		}
 		public void setDateRange(String dateRange) {
 			this.dateRange = dateRange;
+		}
+
+		public long getCustomerId() {
+			return customerId;
+		}
+		public void setCustomerId(long customerId) {
+			this.customerId = customerId;
 		}
 		public long getCorrespondingCwbNum() {
 			return correspondingCwbNum;

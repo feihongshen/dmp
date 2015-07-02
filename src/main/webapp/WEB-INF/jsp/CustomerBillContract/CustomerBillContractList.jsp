@@ -98,12 +98,39 @@
 	  			}
 	  		});
 	  	}
+	  	
+	 	function neweditbill(){
+			$('#dlgedit').dialog('open').dialog('setTitle','查看修改表单');
+			$('#fm2').form('clear');
+			url = '';
+		}
+	  	
+	  	function editbill(){
+	  		$('#fm2').form('submit',{
+	  			url: url,
+	  			onSubmit: function(){
+	  				return $(this).form('validate');
+	  			},
+	  			success: function(result){
+	  				var result = eval('('+result+')');
+	  				if (result.errorMsg){
+	  					$.messager.show({
+	  						title: 'Error',
+	  						msg: result.errorMsg
+	  					});
+	  				} else {
+	  					$('#dlgserch').dialog('close');		// close the dialog
+	  					$('#dg').datagrid('reload');	// reload the user data
+	  				}
+	  			}
+	  		});
+	  	}
 	</script>
 </head>
 <body>
 <div id="toolbar">
 	<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="newBill()">新增</a>  
-	<a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editbill()">查看/修改</a>  
+	<a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="neweditbill()">查看/修改</a>  
 	<a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removebill()">删除</a>  
 	<a id="btn3" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="newaddsearchbill()">查询</a>  
 </div>	
@@ -166,7 +193,7 @@
 
 
 <div id="dlgserch" class="easyui-dialog" style="width:800px;height:280px;padding:10px 20px"
-		closed="true" buttons="#dlg-buttons">
+		closed="true" buttons="#dlg-buttonsserch">
 	<form id="fm1" method="post">
 		<ul>
 					<li>
@@ -236,14 +263,74 @@
 								</select>
 						</div>
 					</li>		
+			</form>
+	</div>
 
-			</div>
-		
-	</form>
-</div>
-<div id="dlg-buttons">
+<div id="dlg-buttonsserch">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="newaddsearchbill()">查询</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgserch').dialog('close')">关闭</a>
 </div>
+
+
+<div id="dlgedit" class="easyui-dialog" style="width:900px;height:600px;padding:10px 20px"
+		closed="true">
+		<table>
+			<tr>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgedit').dialog('close')">返回</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok">保存</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">审核</a>OR
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok">取消审核</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">核销完成</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">客户订单导入</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok">显示差异报告</a></td>
+			</tr>
+	</table>
+		<form id="fm1" method="post">
+				<table class="fitem">
+						<tr>
+							<td align="right" style="width:90px;">账单批次</td><td style="width:30px;" ><input name="billBatches" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">账单状态</td><td style="width:30px;"><input name="billState" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">日期范围</td><td style="width:30px;"><input name="dateRange" class="easyui-validatebox" readonly="readonly"></td>
+						</tr>
+						<tr>
+							<td align="right" style="width:90px;">派费合计(元)</td><td style="width:30px;"><input name="totalCharge" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">对应订单数</td><td style="width:30px;"><input name="correspondingCwbNum" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">客户名称</td><td style="width:30px;"><input name="customerId" class="easyui-validatebox" readonly="readonly"></td>
+						</tr>
+						<tr>
+							<td align="right" style="width:90px;">提货费(元)</td><td style="width:30px;"><input name="deliveryMoney" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">配送费(元)</td><td style="width:30px;"><input name="distributionMoney" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">中转费(元)</td><td style="width:30px;"><input name="transferMoney" class="easyui-validatebox" readonly="readonly"></td>
+						</tr>
+						<tr>
+							<td align="right" style="width:90px;"><label>备注:</label></td>
+							<td colspan="6" rowspan="5"><input class="easyui-textbox" data-options="multiline:true" id="remark" style="width:540px;height:100px"></td>	<!-- 	 style="width:600px;height:100px" -->				
+						</tr>
+				</table>
+		</form>
+
+
+<table id="dga" title="My Users" class="easyui-datagrid" style="width:550px;height:250px"
+		url=""
+		toolbar="#toolbarinedit"
+		rownumbers="true" fitColumns="true" singleSelect="true">
+	<thead>
+		<tr>
+			<th><input type="checkbox"/></th>
+			<th field="firstname" width="50">First Name</th>
+			<th field="lastname" width="50">Last Name</th>
+			<th field="phone" width="50">Phone</th>
+			<th field="email" width="50">Email</th>
+		</tr>
+	</thead>
+</table>
+<div id="toolbarinedit">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+</div>
+		
+</div>
+
 </body>
 </html>
