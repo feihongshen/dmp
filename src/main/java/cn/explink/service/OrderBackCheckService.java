@@ -60,8 +60,6 @@ public class OrderBackCheckService {
 	}
 
 	public List<OrderBackCheck> getOrderBackCheckList2(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<Branch> branchList) {
-		List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
-
 		if (orderbackList != null && !orderbackList.isEmpty()) {
 			for (OrderBackCheck o : orderbackList) {
 				o.setCustomername(dataStatisticsService.getQueryCustomerName(customerList, o.getCustomerid()));// 供货商的名称
@@ -69,12 +67,32 @@ public class OrderBackCheckService {
 				o.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(o.getCwbordertypeid()).getText());
 				o.setCwbstatename(DeliveryStateEnum.getByValue((int) o.getCwbstate()).getText());
 				o.setBranchname(dataStatisticsService.getQueryBranchName(branchList, o.getBranchid()));
-				list.add(o);
+				o.setCheckstatename(getCheckstatename(o.getCheckstate()));//审核状态
+				o.setCheckresultname(getCheckresultname(o.getCheckresult()));//审核结果
 			}
 		}
-		return list;
+		return orderbackList;
 	}
 
+	public String getCheckstatename(long checkstate){
+		if(checkstate==1){
+			return "待审核";
+		}else if(checkstate==2){
+			return "已审核";
+		}
+		return "";
+	}
+	
+	public String getCheckresultname(long checkresult){
+		if(checkresult==0){
+			return "未审核";
+		}else if(checkresult==1){
+			return "确认退货";
+		}else if(checkresult==2){
+			return "站点配送";
+		}
+		return "";
+	}
 	
 	/**
 	 * 退货出站审核为

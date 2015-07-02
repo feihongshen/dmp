@@ -265,7 +265,8 @@ public class OrderBackCheckController {
 			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) long checkstate,
 			@RequestParam(value = "checkresult", defaultValue = "0", required = false) long checkresult,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
 		Page pag = new Page();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -273,7 +274,7 @@ public class OrderBackCheckController {
 		List<Branch> branchList = branchDAO.getAllBranches();
 		List<OrderBackCheck> orderbackList = null;
 		String cwbsStr = this.getCwbs(cwbs);
-		if(!(cwbs.equals("")&&begindate.equals(""))){	
+		if(isnow>0){	
 			List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(page,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 			orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
 			long count = this.orderBackCheckDAO.getOrderBackChecksCount(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
@@ -659,8 +660,8 @@ public class OrderBackCheckController {
 				List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(-9,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 				orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
 			}
-			String[] cloumnName1 = new String[7]; // 导出的列名
-			String[] cloumnName2 = new String[7]; // 导出的英文列名
+			String[] cloumnName1 = new String[9]; // 导出的列名
+			String[] cloumnName2 = new String[9]; // 导出的英文列名
 
 			this.exportService.SetTuiHuoChuzhanFields(cloumnName1, cloumnName2);
 			final String[] cloumnName = cloumnName1;

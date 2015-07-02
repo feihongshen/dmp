@@ -262,7 +262,7 @@ public class OrderBackCheckDAO {
 			if(!"".equals(begindate)){
 				sb.append(" and createtime >='"+begindate+"'");
 			}
-			if(sb.equals(enddate)){
+			if(!"".equals(enddate)){
 				sb.append(" and createtime <='"+enddate+"'");
 			}
 			sql +=sb;

@@ -22,7 +22,23 @@ public class OrderBackCheck {
 	private long checkresult;//审核结果（默认0， 1：确认退货 2：站点滞留）
 	private String auditname;//审核人
 	private String audittime;//审核时间
-
+	
+	//用来显示字段
+	private String checkstatename;//审核状态
+	private String checkresultname;//审核结果
+	
+	public String getCheckstatename() {
+		return checkstatename;
+	}
+	public void setCheckstatename(String checkstatename) {
+		this.checkstatename = checkstatename;
+	}
+	public String getCheckresultname() {
+		return checkresultname;
+	}
+	public void setCheckresultname(String checkresultname) {
+		this.checkresultname = checkresultname;
+	}
 	public String getAuditname() {
 		return auditname;
 	}

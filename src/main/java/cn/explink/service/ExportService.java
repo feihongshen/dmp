@@ -3098,7 +3098,10 @@ public class ExportService {
 			cloumnName2[5] = "Auditname";
 			cloumnName1[6] = "审核时间";
 			cloumnName2[6] = "Audittime";
-			
+			cloumnName1[7] = "审核状态";
+			cloumnName2[7] = "Checkstatename";
+			cloumnName1[8] = "审核结果";
+			cloumnName2[8] = "Checkresultname";
 		}
 		// 中转出站view
 		public void SetZhongzhuanchuzhanFields(String[] cloumnName1, String[] cloumnName2) {

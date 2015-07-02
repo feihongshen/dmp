@@ -233,6 +233,7 @@ function displayorno(displayorno){
 									<td rowspan="2">
 										订单号：
 										<textarea name="cwbStr" rows="3"  id="areatest" class="kfsh_text" ><%=cwbStr %></textarea>
+										<input id="isnow" name="isnow" type="hidden" value="1" />
 									</td>
 									<td>
 										&nbsp;&nbsp;
@@ -320,6 +321,8 @@ function displayorno(displayorno){
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">归班反馈时间</td>
 								<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
+								<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
+								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核结果</td>
 							</tr>
 						</tbody>
 						<tbody>
@@ -335,7 +338,9 @@ function displayorno(displayorno){
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getBranchname())%></td>
 										<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCreatetime())%></td>
 										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
-										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
+										<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getCheckstatename() %></td>
+										<td width="100" align="center" valign="middle"><%=cwb.getCheckresultname() %></td>
 									</tr>
 							<%} }%>
 							</tbody>
