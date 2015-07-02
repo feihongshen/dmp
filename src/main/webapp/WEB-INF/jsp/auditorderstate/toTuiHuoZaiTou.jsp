@@ -284,7 +284,7 @@ $(function() {
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
 									<td width="180" align="center" valign="middle" bgcolor="#E7F4E3">收件人地址</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">退货库入库时间</td>
-									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核为退货再投</td>
+									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 									<td width="190" align="center" valign="middle" bgcolor="#E7F4E3">备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
