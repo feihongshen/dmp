@@ -1571,7 +1571,7 @@ public class CwbOrderService {
 		OrderBackRuku obr = new OrderBackRuku();
 		obr.setCwb(co.getCwb());
 		obr.setCustomerid(co.getCustomerid());//供货商id
-		obr.setBranchid(co.getStartbranchid());//上一站（配送站） 当前站为退货站
+		obr.setBranchid(co.getDeliverybranchid());//上一站（配送站） 当前站为退货站(配送到达的站点)
 		obr.setCwbordertypeid(co.getCwbordertypeid());//订单类型
 		obr.setConsigneename(co.getConsigneename());//收件人名字
 		obr.setConsigneeaddress(co.getConsigneeaddress());//收件人地址
