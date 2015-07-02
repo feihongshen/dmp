@@ -90,7 +90,6 @@ import cn.explink.domain.Common;
 import cn.explink.domain.Complaint;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
-import cn.explink.domain.CwbApplyZhongZhuan;
 import cn.explink.domain.CwbDetailView;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
@@ -300,7 +299,7 @@ public class PDAController {
 
 	/**
 	 * 提货
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -317,7 +316,7 @@ public class PDAController {
 
 	/**
 	 * 进入入库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -357,7 +356,7 @@ public class PDAController {
 		}
 		String transcwbs = this.otmservice.replaceTranscwb(cwb, transcwb);
 		this.cwbDAO.updateTranscwb(cwb, transcwbs);// 更新数据库一票多件订单补入
-		
+
 		List<TranscwbView> translist = this.transCwbDao.getTransCwbByCwb(cwb);
 		StringBuffer buffer = new StringBuffer();
 		for (Iterator iterator = translist.iterator(); iterator.hasNext();) {
@@ -376,7 +375,7 @@ public class PDAController {
 
 	/**
 	 * 进入入库的功能页面（明细）
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -415,7 +414,7 @@ public class PDAController {
 
 	/**
 	 * 进入中转站入库的功能页面（明细）
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -453,7 +452,7 @@ public class PDAController {
 
 	/**
 	 * 入库扫描 未入库 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getimportweirukulist")
@@ -475,7 +474,7 @@ public class PDAController {
 
 	/**
 	 * 入库扫描 已入库 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getimportyiruku")
@@ -495,7 +494,7 @@ public class PDAController {
 
 	/**
 	 * 进入入库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -510,7 +509,7 @@ public class PDAController {
 
 	/**
 	 * 进入到货的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -585,7 +584,7 @@ public class PDAController {
 
 	/**
 	 * 站点入站 已到站 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchimportyidaolist")
@@ -610,7 +609,7 @@ public class PDAController {
 
 	/**
 	 * 分站到货今日到货 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchimportjinriweidaolist")
@@ -648,7 +647,7 @@ public class PDAController {
 
 	/**
 	 * 分站到货历史未到货list
-	 * 
+	 *
 	 * @param page
 	 * @return
 	 */
@@ -687,7 +686,7 @@ public class PDAController {
 
 	/**
 	 * 到货扫描（批量）
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @return
@@ -850,7 +849,7 @@ public class PDAController {
 
 	/**
 	 * 进入入库（包）的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -866,7 +865,7 @@ public class PDAController {
 
 	/**
 	 * 进入分站退货出站的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -966,7 +965,7 @@ public class PDAController {
 
 	/**
 	 * 分站 退货出站 已扫描list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchbackexportyisaomiaolist")
@@ -984,7 +983,7 @@ public class PDAController {
 
 	/**
 	 * 分站 退货出站 待出货list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchbackexportdaichuhuolist")
@@ -1001,7 +1000,7 @@ public class PDAController {
 
 	/**
 	 * 进入退货站退货出站的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1032,7 +1031,7 @@ public class PDAController {
 
 	/**
 	 * 退货站出站扫描 已出站 list
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -1053,7 +1052,7 @@ public class PDAController {
 
 	/**
 	 * 退货站出站扫描 未出站 list
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -1073,7 +1072,7 @@ public class PDAController {
 
 	/**
 	 * 进入分站中转出站的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1118,7 +1117,7 @@ public class PDAController {
 
 	/**
 	 * 进入出库的功能页面（明细）
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1168,7 +1167,7 @@ public class PDAController {
 
 	/**
 	 * 进入中转站出库的功能页面（明细）
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1215,7 +1214,7 @@ public class PDAController {
 
 	/**
 	 * 得到出库明细 已出库list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getexportyichukulist")
@@ -1246,7 +1245,7 @@ public class PDAController {
 
 	/**
 	 * 得到 出库明细 未入库 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getexportweichukulist")
@@ -1273,7 +1272,7 @@ public class PDAController {
 
 	/**
 	 * 进入出库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1292,7 +1291,7 @@ public class PDAController {
 
 	/**
 	 * 加急件出库
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1311,7 +1310,7 @@ public class PDAController {
 
 	/**
 	 * 进入站点出站的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1351,7 +1350,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站 已扫描list
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -1371,7 +1370,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站 未出库list
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -1390,7 +1389,7 @@ public class PDAController {
 
 	/**
 	 * 进入库房对库房出库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1435,7 +1434,7 @@ public class PDAController {
 
 	/**
 	 * 库对库 扫描 已出库list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getkdkexportyichukulist")
@@ -1455,7 +1454,7 @@ public class PDAController {
 
 	/**
 	 * 库对库扫描 未出库 list
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -1475,7 +1474,7 @@ public class PDAController {
 
 	/**
 	 * 进入加急件出库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1495,7 +1494,7 @@ public class PDAController {
 
 	/**
 	 * 进入出库的功能页面（包）
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1513,7 +1512,7 @@ public class PDAController {
 
 	/**
 	 * 进入小件员领货的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -1550,7 +1549,7 @@ public class PDAController {
 
 	/**
 	 * 进入小件员领货（详细）的功能页面
-	 * 
+	 *
 	 * @param model
 	 *            //3a
 	 * @return
@@ -1615,57 +1614,57 @@ public class PDAController {
 			historyzhiliulist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyzhiliucwbs),
 					deliverid);
 		}
-		
-		
-	
+
+
+
 		// 今日反馈待中转失败订单-20150629新增---------------------------------------------
 		List<CwbOrder> historydaizhongzhuanlist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todaydaizhongzhuanlist = new ArrayList<CwbOrder>();
-		
-		List<String>  todayAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
-		
+
+		List<String>  todayAppZhongZhuanCwbs=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
+
 		if (todayAppZhongZhuanCwbs.size() > 0) {
 			todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuByWhereListformingxi(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanCwbs),
 					deliverid);
 		}
 		// 历史待中转订单
-		List<String>  historyAppZhongZhuanCwbs=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
+		List<String>  historyAppZhongZhuanCwbs=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
 
 		if (historyAppZhongZhuanCwbs.size() > 0) {
 			historydaizhongzhuanlist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyAppZhongZhuanCwbs),
 					deliverid);
 		}
-		
+
 		//今日反馈待中转失败订单----------------------------------------------
 
-		
-		
-		
+
+
+
 		// 今日反馈拒收审核不通过失败订单-20150629新增---------------------------------------------
 		List<CwbOrder> historyjushoulist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todayjushoulist = new ArrayList<CwbOrder>();
-		
-		List<String>  todayJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
+
+		List<String>  todayJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
 		String deliverystates=DeliveryStateEnum.JuShou.getValue()+","+DeliveryStateEnum.BuFenTuiHuo.getValue()+","+DeliveryStateEnum.ShangMenJuTui.getValue();
 		if (todayJuShouCwbs.size() > 0) {
 			todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereListformingxi(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
 					deliverid);
 		}
 		// 历史拒收订单
-		List<String>  historyJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
+		List<String>  historyJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
 
 		if (historyJuShouCwbs.size() > 0) {
 			historyjushoulist = this.cwbDAO.getHistoryWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(historyJuShouCwbs),
 					deliverid);
 		}
-		
+
 		//今日反馈拒收审核不通过----------------------------------------------
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
@@ -1714,7 +1713,7 @@ public class PDAController {
 
 	/**
 	 * 领货明细 未领货 history list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliverweilinghistorylist")
@@ -1782,7 +1781,7 @@ public class PDAController {
 
 	/**
 	 * 领货明细 已领货 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliveryilinglist")
@@ -1810,7 +1809,7 @@ public class PDAController {
 
 	/**
 	 * 领货明细 今日未领货 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliverweilinglist")
@@ -1860,7 +1859,7 @@ public class PDAController {
 
 	/**
 	 * 进入小件员批量领货的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -1884,9 +1883,9 @@ public class PDAController {
 		roleids += "," + r.getRoleid();
 			}
 		}
-		
-		
-		
+
+
+
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 		model.addAttribute("userList", uList);// 获取用户列表
 
@@ -2076,7 +2075,7 @@ public class PDAController {
 
 	/**
 	 * 进入小件员批量反馈的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -2099,7 +2098,7 @@ public class PDAController {
 
 	/**
 	 * 进入退货站入库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -2160,7 +2159,7 @@ public class PDAController {
 
 	/**
 	 * 进入退货站、中转站入库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -2171,8 +2170,8 @@ public class PDAController {
 		// TODO 退货中转入库备注
 		List<Reason> backreasonList = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZhanRuKuBeiZhu.getValue());
 
-		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 		Map allcwbstr = new HashMap();
 
 		Map tAllcwbstr = this.getCwbsbyBranch(tbranchlist, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), 0);
@@ -2318,7 +2317,7 @@ public class PDAController {
 
 	/**
 	 * 按站点list，flowtype、订单类型 查询超期异常监控表，返回订单list
-	 * 
+	 *
 	 * @param branchlist
 	 * @param flowordertype
 	 * @param cwbordertypeid
@@ -2345,7 +2344,7 @@ public class PDAController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param map
 	 * @return
 	 */
@@ -2363,7 +2362,7 @@ public class PDAController {
 
 	/**
 	 * 退货站入库 得到未入库 list
-	 * 
+	 *
 	 */
 
 	@RequestMapping("/getbackimportweirukulist")
@@ -2380,7 +2379,7 @@ public class PDAController {
 
 	/**
 	 * 退货站入库 得到已入库信息
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbackimportyirukulist")
@@ -2397,7 +2396,7 @@ public class PDAController {
 
 	/**
 	 * 临时功能，将“退货站入库”功能中“待入库”数据插入到退货记录表ops_tuihuorecord，避免退货出站统计和退货站入库统计查不到这些记录
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param request
@@ -2445,7 +2444,7 @@ public class PDAController {
 
 	/**
 	 * 进入退货站再投的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -2466,20 +2465,15 @@ public class PDAController {
 
 	/**
 	 * 进入退供货商出库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping("/backtocustomer")
 	public String backtocustomer(Model model) {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		List<CwbOrder> weitghsckList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
-		List<CwbOrder> yitghsckList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1);
 		List<Customer> customersList = this.customerDAO.getAllCustomers();
-		model.addAttribute("weitghsckList", weitghsckList);
-		model.addAttribute("yitghsckList", yitghsckList);
-		model.addAttribute("customerlist", cList);
-
+		List<CwbOrder> yitghsckList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1);
 		List<CwbOrder> ypeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> yshangmentui = new ArrayList<CwbOrder>();
@@ -2496,12 +2490,24 @@ public class PDAController {
 		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { yshangmentui.add(cwb); }
 		 * }
 		 */
+	//最新注释
+/*		List<CwbOrder> weitghsckList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
 		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
 		wpeisong = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
 		wshangmenhuan = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
 		wshangmentui = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+		*/
+		//与退客户入库 已出库保持
+				List<CwbOrder> weitghsckList = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1);
+				List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
+				List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
+				List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
+				wpeisong = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+				wshangmenhuan = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+				wshangmentui = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
+
 		/*
 		 * for (CwbOrder cwb : weitghsckList) { if (cwb.getCwbordertypeid() ==
 		 * CwbOrderTypeIdEnum.Peisong.getValue()) { wpeisong.add(cwb); } else if
@@ -2511,6 +2517,9 @@ public class PDAController {
 		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { wshangmentui.add(cwb); }
 		 * }
 		 */
+		model.addAttribute("weitghsckList", weitghsckList);
+		model.addAttribute("yitghsckList", yitghsckList);
+		model.addAttribute("customerlist", cList);
 
 		model.addAttribute("ypeisong", ypeisong);
 		model.addAttribute("yshangmenhuan", yshangmenhuan);
@@ -2527,7 +2536,7 @@ public class PDAController {
 
 	/**
 	 * 得到退供货商 待出库list
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -2546,7 +2555,7 @@ public class PDAController {
 
 	/**
 	 * 得到退供货商已出库 list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getbacktocustomeryichukulist")
@@ -2563,7 +2572,7 @@ public class PDAController {
 
 	/**
 	 * 进入供货商拒收返库的功能页面
-	 * 
+	 *
 	 * @param model
 	 * @return
 	 */
@@ -2579,7 +2588,7 @@ public class PDAController {
 
 	/**
 	 * 退供货商拒收返库 已返库list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getcustomerrefusedbackyifankulist")
@@ -2597,7 +2606,7 @@ public class PDAController {
 
 	/**
 	 * 退供货商拒收返库 待返库list
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getcustomerrefusedbackdaifankulist")
@@ -2677,7 +2686,7 @@ public class PDAController {
 
 	/**
 	 * 入库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -2694,7 +2703,7 @@ public class PDAController {
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate,
 			@RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag
-			
+
 			) {
 
 		String scancwb = cwb;
@@ -2767,7 +2776,7 @@ public class PDAController {
 				}
 			}
 			/*
-			 * 单票成功订单，有站点提示语音的，忽略通用提示音 
+			 * 单票成功订单，有站点提示语音的，忽略通用提示音
 			 */
 			//通用提示音
 			String wavPath = null;
@@ -2882,7 +2891,7 @@ public class PDAController {
 
 	/**
 	 * 入库扫描（批量）
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param customerid
@@ -3030,7 +3039,7 @@ public class PDAController {
 
 	/**
 	 * 中转站入库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3145,7 +3154,7 @@ public class PDAController {
 
 	/**
 	 * 中转站入库扫描（批量）
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param customerid
@@ -3298,7 +3307,7 @@ public class PDAController {
 
 	/**
 	 * 分站到货扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3394,7 +3403,7 @@ public class PDAController {
 
 	/**
 	 * 按包号入库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3434,7 +3443,7 @@ public class PDAController {
 
 	/**
 	 * 入库备注提交
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3473,7 +3482,7 @@ public class PDAController {
 
 	/**
 	 * 出库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3576,7 +3585,7 @@ public class PDAController {
 
 	/**
 	 * 中转站出库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3675,7 +3684,7 @@ public class PDAController {
 
 	/**
 	 * 中转出站功能
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3790,7 +3799,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -3861,7 +3870,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站批量
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param branchid
@@ -3994,7 +4003,7 @@ public class PDAController {
 
 	/**
 	 * 库对库出库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4076,7 +4085,7 @@ public class PDAController {
 
 	/**
 	 * 库对库出库扫描====================================
-	 * 
+	 *
 	 * @param model
 	 * @param branchid
 	 * @param driverid
@@ -4198,7 +4207,7 @@ public class PDAController {
 
 	/**
 	 * 退货出站扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4217,7 +4226,7 @@ public class PDAController {
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "comment", required = false, defaultValue = "") String comment) {
-		
+
 		String scancwb = cwb;
 		long SuccessCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
 		cwb = this.cwborderService.translateCwb(cwb);
@@ -4276,7 +4285,7 @@ public class PDAController {
 
 	/**
 	 * 退货出站（批量）
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4405,7 +4414,7 @@ public class PDAController {
 
 	/**
 	 * 退货站退货出站扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4467,7 +4476,7 @@ public class PDAController {
 
 	/**
 	 * 小件员领货扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4558,7 +4567,7 @@ public class PDAController {
 
 	/**
 	 * 订单最后流程时间，供上门退订单分派区分.
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -4568,7 +4577,7 @@ public class PDAController {
 
 	/**
 	 * 小件员批量反馈扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4628,7 +4637,7 @@ public class PDAController {
 
 	/**
 	 * 退货站入库扫描
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4878,7 +4887,7 @@ public class PDAController {
 
 	/**
 	 * 理货
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -4979,7 +4988,7 @@ public class PDAController {
 
 	/**
 	 * 退供货商出库
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param respStore
@@ -5023,7 +5032,7 @@ public class PDAController {
 
 	/**
 	 * 退供货商出库批量
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param respStore
@@ -5121,7 +5130,7 @@ public class PDAController {
 
 	/**
 	 * 供货商拒收返库
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -5155,7 +5164,7 @@ public class PDAController {
 
 	/**
 	 * 获得供货商拒收返库的数量
-	 * 
+	 *
 	 * @param model
 	 * @param cwb
 	 * @return
@@ -5172,7 +5181,7 @@ public class PDAController {
 
 	/**
 	 * 到货/入库 包扫描
-	 * 
+	 *
 	 * @param baleno
 	 * @param driverid
 	 * @param sysintowarhouse
@@ -5228,7 +5237,7 @@ public class PDAController {
 
 	/**
 	 * 得到该供货商的订单总数（如果扫描后得到该批次的订单数，针对入库环节）
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5262,7 +5271,7 @@ public class PDAController {
 
 	/**
 	 * 得到待退供应商出库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param cwb
 	 * @return
@@ -5272,7 +5281,8 @@ public class PDAController {
 	JSONObject getTGYSCKSum() {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
-		Smtcount wsmtcount = this.cwbDAO.getTGYSCKbyBranchidsmt(branchid);
+	//	Smtcount wsmtcount = this.cwbDAO.getTGYSCKbyBranchidsmt(branchid);
+		Smtcount wsmtcount = this.cwbDAO.getBackYiRukubyBranchidsmt(branchid);//于退客户入库已入库保持一致
 		Smtcount ysmtcount = this.cwbDAO.getTGYSYCKsmt(branchid);
 		obj.put("yps", ysmtcount.getPscount());
 		obj.put("ysmh", ysmtcount.getSmhcount());
@@ -5291,7 +5301,7 @@ public class PDAController {
 
 	/**
 	 * 得到待领货的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param cwb
 	 * @return
@@ -5354,57 +5364,57 @@ public class PDAController {
 			historyzhiliulist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyzhiliucwbs),
 					deliverid);
 		}
-		
-		
-		
+
+
+
 		// 今日反馈待中转失败订单-20150629新增---------------------------------------------
 		List<CwbOrder> historydaizhongzhuanlist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todaydaizhongzhuanlist = new ArrayList<CwbOrder>();
-		
-		List<String>  todayAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
-		
+
+		List<String>  todayAppZhongZhuanList=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
+
 		if (todayAppZhongZhuanList.size() > 0) {
 			todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuByWhereListformingxi(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanList),
 					deliverid);
 			this.logger.info("todaydaizhongzhuanlist:" + todaydaizhongzhuanlist.size());
 		}
 		// 历史待中转订单
-		List<String>  historyAppZhongZhuanList=cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
+		List<String>  historyAppZhongZhuanList=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
 
 		if (historyAppZhongZhuanList.size() > 0) {
 			historydaizhongzhuanlist = this.cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(historyAppZhongZhuanList),
 					deliverid);
 		}
-		
-		//今日反馈待中转失败订单----------------------------------------------
-		
 
-		
-		
+		//今日反馈待中转失败订单----------------------------------------------
+
+
+
+
 		// 今日反馈拒收审核不通过失败订单-20150629新增---------------------------------------------
 		List<CwbOrder> historyjushoulist = new ArrayList<CwbOrder>();// 历史待领货list
 		List<CwbOrder> todayjushoulist = new ArrayList<CwbOrder>();
-		
-		List<String>  todayJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
-		
+
+		List<String>  todayJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
+
 		String deliverystates=DeliveryStateEnum.JuShou.getValue()+","+DeliveryStateEnum.BuFenTuiHuo.getValue()+","+DeliveryStateEnum.ShangMenJuTui.getValue();
-		
+
 		if (todayJuShouCwbs.size() > 0) {
 			todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereListformingxi(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
 					deliverid);
 		}
 		// 历史拒收订单
-		List<String>  historyJuShouCwbs=orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
+		List<String>  historyJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
 
 		if (historyJuShouCwbs.size() > 0) {
 			historyjushoulist = this.cwbDAO.getHistoryWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(historyJuShouCwbs),
 					deliverid);
 		}
-		
+
 		//今日反馈拒收审核不通过----------------------------------------------
-		
-		
-		
+
+
+
 		List<String> linghuocwbs = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		String yilinghuocwbs = "";
 		if (linghuocwbs.size() > 0) {
@@ -5417,7 +5427,7 @@ public class PDAController {
 		todayweilinghuolist.addAll(todayzhiliulist);
 		todayweilinghuolist.addAll(todaydaizhongzhuanlist);
 		todayweilinghuolist.addAll(todayjushoulist);
-		
+
 		historyweilinghuolist.addAll(historydaohuolist);
 		historyweilinghuolist.addAll(historyzhiliulist);
 		historyweilinghuolist.addAll(historydaizhongzhuanlist);
@@ -5431,7 +5441,7 @@ public class PDAController {
 
 	/**
 	 * 得到出库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5459,7 +5469,7 @@ public class PDAController {
 
 	/**
 	 * 得到中转站出库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5484,7 +5494,7 @@ public class PDAController {
 
 	/**
 	 * 库对库出库未出库数据
-	 * 
+	 *
 	 * @param nextbranchid
 	 * @param cwbstate
 	 * @return
@@ -5524,7 +5534,7 @@ public class PDAController {
 
 	/**
 	 * 得到出库缺货件数的统计
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5539,7 +5549,7 @@ public class PDAController {
 
 	/**
 	 * 得到出库缺货件数的list列表
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5568,7 +5578,7 @@ public class PDAController {
 
 	/**
 	 * 得到中转站出库缺货件数的list列表
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5617,7 +5627,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站待出站数据
-	 * 
+	 *
 	 * @param deliverybranchid
 	 * @return
 	 */
@@ -5632,7 +5642,7 @@ public class PDAController {
 
 	/**
 	 * 站点出站已出站数据
-	 * 
+	 *
 	 * @param deliverybranchid
 	 * @return
 	 */
@@ -5646,7 +5656,7 @@ public class PDAController {
 
 	/**
 	 * 得到待退货的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5678,7 +5688,7 @@ public class PDAController {
 
 	/**
 	 * 退货出站已出站数据
-	 * 
+	 *
 	 * @param nextbranchid
 	 * @return
 	 */
@@ -5694,7 +5704,7 @@ public class PDAController {
 
 	/**
 	 * 得到入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5711,7 +5721,7 @@ public class PDAController {
 
 	/**
 	 * 得到入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5733,7 +5743,7 @@ public class PDAController {
 
 	/**
 	 * 得到中转站入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5755,7 +5765,7 @@ public class PDAController {
 
 	/**
 	 * 得到入库缺货件数的统计
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5770,7 +5780,7 @@ public class PDAController {
 
 	/**
 	 * 得到中转站入库缺货件数的统计
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5785,7 +5795,7 @@ public class PDAController {
 
 	/**
 	 * 得到入库缺货件数的list列表
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5814,7 +5824,7 @@ public class PDAController {
 
 	/**
 	 * 得到中转站入库缺货件数的list列表
-	 * 
+	 *
 	 * @param customerid
 	 * @return
 	 */
@@ -5890,7 +5900,7 @@ public class PDAController {
 
 	/**
 	 * 站点到货统计
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -5954,7 +5964,7 @@ public class PDAController {
 
 	/**
 	 * 得到退货站入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5985,7 +5995,7 @@ public class PDAController {
 
 	/**
 	 * 得到退货站入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -5998,8 +6008,8 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 		String tbranchids = "-1";
 		String zbranchids = "-1";
-		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
-		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+		List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 		if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 			for (Branch branch : tbranchlist) {
 				tbranchids += "," + branch.getBranchid();
@@ -6034,7 +6044,7 @@ public class PDAController {
 
 	/**
 	 * 得到入库的订单总数
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @param cwb
@@ -6065,7 +6075,7 @@ public class PDAController {
 
 	/**
 	 * 供货商拒收返库
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param respStore
@@ -6091,7 +6101,7 @@ public class PDAController {
 
 	/**
 	 * 出库批量功能======================================
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param branchid
@@ -6230,7 +6240,7 @@ public class PDAController {
 
 	/**
 	 * 中转站出库批量功能======================================
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param branchid
@@ -6397,7 +6407,7 @@ public class PDAController {
 
 	/**
 	 * 标签打印功能列表
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @param emaildateid
@@ -6452,7 +6462,7 @@ public class PDAController {
 
 	/**
 	 * 根据供订单查询对应的发货批次
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @return
@@ -6479,7 +6489,7 @@ public class PDAController {
 
 	/**
 	 * 根据供货商切换供货商对应的发货批次
-	 * 
+	 *
 	 * @param model
 	 * @param customerid
 	 * @return
@@ -6576,7 +6586,7 @@ public class PDAController {
 
 	/**
 	 * 入库、到货（明细）、领货（明细）功能的导出数据功能
-	 * 
+	 *
 	 * @param model
 	 * @param response
 	 * @param request
@@ -6768,7 +6778,7 @@ public class PDAController {
 
 	/**
 	 * 查询订单的配送结果
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
@@ -6932,7 +6942,7 @@ public class PDAController {
 
 	/**
 	 * 进入库存盘点功能，开始往库存明细表产生数据
-	 * 
+	 *
 	 * @param model
 	 * @param cwb
 	 * @return
@@ -6952,7 +6962,7 @@ public class PDAController {
 
 	/**
 	 * 得到盘点数
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping("/getStockSum")
@@ -6969,7 +6979,7 @@ public class PDAController {
 
 	/**
 	 * 库存盘点功能
-	 * 
+	 *
 	 * @param model
 	 * @param cwbs
 	 * @return
@@ -7009,12 +7019,12 @@ public class PDAController {
 
 	/**
 	 * 导出
-	 * 
+	 *
 	 * @param customerid
 	 *            供应商
 	 * @type 未出库 已出库 一票多件
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@RequestMapping("/exportByCustomerid")
 	public void exportByCustomerid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
@@ -7196,12 +7206,12 @@ public class PDAController {
 
 	/**
 	 * 导出 出库
-	 * 
+	 *
 	 * @param customerid
 	 *            供应商
 	 * @type 未出库 已出库 一票多件
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@RequestMapping("/exportBybranchid")
 	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "branchid", defaultValue = "0") long branchid,
@@ -7371,7 +7381,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7391,12 +7401,12 @@ public class PDAController {
 
 	/**
 	 * 退货站入库 导出
-	 * 
+	 *
 	 * @param customerid
 	 *            供应商
 	 * @type 未出库 已出库 一票多件
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@RequestMapping("/backimportexport")
 	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type,
@@ -7608,7 +7618,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7653,8 +7663,8 @@ public class PDAController {
 			String sqlstr = "";
 			String tbranchids = "-1";
 			String zbranchids = "-1";
-			List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
-			List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
+			List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.TuiHuo.getValue());
+			List<Branch> zbranchlist = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(),BranchEnum.ZhongZhuan.getValue());
 			if ((tbranchlist != null) && (tbranchlist.size() > 0)) {
 				for (Branch branch : tbranchlist) {
 					tbranchids += "," + branch.getBranchid();
@@ -7852,7 +7862,7 @@ public class PDAController {
 
 	/**
 	 * 退供货商 导出
-	 * 
+	 *
 	 * @param response
 	 * @param request
 	 * @param type
@@ -8046,7 +8056,7 @@ public class PDAController {
 
 	/**
 	 * 领货够功能页面中的导出
-	 * 
+	 *
 	 * @param response
 	 * @param request
 	 * @param deliverid
@@ -8549,7 +8559,7 @@ public class PDAController {
 
 	/**
 	 * 通用方法，json变为list
-	 * 
+	 *
 	 * @param s
 	 *            json
 	 * @param clazz
@@ -8923,13 +8933,13 @@ public class PDAController {
 
 	}
 	/**
-	 * 
+	 *
 	 * @param cwb
 	 * @param customerid
 	 * @return
 	 */
 	public String checkyouhuowudan(User user,String cwb,long customerid,long currentbranchid){
-		cwb = cwborderService.translateCwb(cwb);
+		cwb = this.cwborderService.translateCwb(cwb);
 		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.RuKu;
 
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
@@ -8941,7 +8951,7 @@ public class PDAController {
 		if ((customerid > 0) && (co != null)) {
 			// TODO 因为客户的货物会混着扫描
 			customerid = co.getCustomerid();
-		
+
 		}
 
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
