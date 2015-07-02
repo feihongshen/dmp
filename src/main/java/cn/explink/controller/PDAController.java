@@ -8182,8 +8182,22 @@ public class PDAController {
 								this.getStrings(historyzhiliulist), deliverid);
 					}
 
+					// 历史待中转订单
+					List<String>  historyAppZhongZhuanList=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList("",DateTimeUtil.getCurrentDayZeroTime(), 2,this.getSessionUser().getBranchid());
+
+					if (historyAppZhongZhuanList.size() > 0) {
+						historycwbslist.addAll(historyAppZhongZhuanList);
+					}
+					// 历史拒收订单
+					//List<CwbOrder> historyjushoulist = new ArrayList<CwbOrder>();// 历史待领货list
+					List<String>  historyJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), "", DateTimeUtil.getCurrentDayZeroTime());
+					if (historyJuShouCwbs.size() > 0) {
+						//historyjushoulist = this.cwbDAO.getHistoryWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(historyJuShouCwbs),
+						historycwbslist.addAll(historyJuShouCwbs);
+					}
 					historycwbslist.addAll(historydaohuolist);
 					historycwbslist.addAll(historyzhiliulist);
+
 
 					StringBuffer str = new StringBuffer();
 					String cwbs = "";
