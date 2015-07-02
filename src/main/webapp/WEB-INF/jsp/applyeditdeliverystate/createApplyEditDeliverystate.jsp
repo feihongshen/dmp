@@ -193,15 +193,23 @@ function changereasonremark(obj,opscwbid){
 											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
 											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
 											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
 					                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+					                   												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
 											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
 											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
 					                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
 					                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
 					                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+					                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 					                   <%} %>
 									</select>
 								</td>
