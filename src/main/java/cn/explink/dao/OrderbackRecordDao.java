@@ -28,7 +28,9 @@ public class OrderbackRecordDao {
 			zfav.setShenhestate(rs.getInt("shenhestate"));
 			zfav.setCreatetime(StringUtil.nullConvertToEmptyString(rs.getString("createtime")));
 			zfav.setReceivablefee(rs.getBigDecimal("receivablefee"));
-			zfav.setEmaildate(StringUtil.nullConvertToEmptyString(rs.getString("emaildate")));
+			zfav.setEmaildate(StringUtil.nullConvertToEmptyString(rs.getString("emaildate")));//退货出库时间
+			zfav.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//确认人
+			zfav.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//确认时间
 			return zfav;
 		}
 	}
@@ -70,28 +72,27 @@ public class OrderbackRecordDao {
 	}
 	//分页查询退供货商订单
 	public List<OrderbackRecord> getCwbOrdersByCwbspage(long page,String cwb, int cwbtypeid,long customerid, long shenhestate, String begindate, String enddate) {
-		String sql = " select * from express_ops_orderback_record where shenhestate=" + shenhestate;
-		if(!cwb.equals("")){
+		String sql = " select * from express_ops_orderback_record where 1=1";
+		if(!"".equals(cwb)){
 			sql += " and cwb in("+cwb+")";
-		}else{
-			StringBuffer w = new StringBuffer("");
-			if (cwbtypeid > 0) {
-				w.append(" and cwbordertypeid=" + cwbtypeid);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (begindate.length() > 0) {
-				w.append(" and createtime >= '" + begindate + "' ");
-			}
-			if (enddate.length() > 0) {
-				w.append(" and createtime <= '" + enddate + "' ");
-			}
-			sql += w;
 		}
+		StringBuffer w = new StringBuffer("");
+		if (cwbtypeid > 0) {
+			w.append(" and cwbordertypeid=" + cwbtypeid);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (shenhestate > -1) {
+			w.append(" and shenhestate=" + shenhestate);
+		}
+		if (begindate.length() > 0) {
+			w.append(" and createtime >= '" + begindate + "' ");
+		}
+		if (enddate.length() > 0) {
+			w.append(" and createtime <= '" + enddate + "' ");
+		}
+		sql += w;
 		if (page!=-9) {
 			 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 
@@ -100,32 +101,31 @@ public class OrderbackRecordDao {
 	}
 	
 	public long getCwbOrdersByCwbsCount(String cwb, int cwbtypeid,long customerid, long shenhestate, String begindate, String enddate) {
-		String sql = " select count(1) from express_ops_orderback_record where shenhestate=" + shenhestate;
-		if(!cwb.equals("")){
+		String sql = " select count(1) from express_ops_orderback_record where 1=1";
+		if(!"".equals(cwb)){
 			sql += " and cwb in("+cwb+")";
-		}else{
-			StringBuffer w = new StringBuffer("");
-			if (cwbtypeid > 0) {
-				w.append(" and cwbordertypeid=" + cwbtypeid);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (begindate.length() > 0) {
-				w.append(" and createtime >= '" + begindate + "' ");
-			}
-			if (enddate.length() > 0) {
-				w.append(" and createtime <= '" + enddate + "' ");
-			}
-			sql += w;
 		}
+		StringBuffer w = new StringBuffer("");
+		if (cwbtypeid > 0) {
+			w.append(" and cwbordertypeid=" + cwbtypeid);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (shenhestate > -1) {
+			w.append(" and shenhestate=" + shenhestate);
+		}
+		if (begindate.length() > 0) {
+			w.append(" and createtime >= '" + begindate + "' ");
+		}
+		if (enddate.length() > 0) {
+			w.append(" and createtime <= '" + enddate + "' ");
+		}
+			sql += w;
 		return jdbcTemplate.queryForLong(sql);
 	}
-	public void updateShenheState(int shenhestate,String cwb) {
-		String sql = "update express_ops_orderback_record set shenhestate=? where cwb=? ";
-		jdbcTemplate.update(sql,shenhestate,cwb);
+	public void updateShenheState(int shenhestate,String cwb,String auditname,String audittime) {
+		String sql = "update express_ops_orderback_record set shenhestate=?,auditname=?,audittime=? where cwb=?";
+		jdbcTemplate.update(sql,shenhestate,auditname,audittime,cwb);
 	}
 }

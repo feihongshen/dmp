@@ -6386,7 +6386,10 @@ public class CwbOrderService {
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
 						cwbOrderView.setReceivablefee(ot.getReceivablefee());
 						cwbOrderView.setEmaildate(ot.getEmaildate());
-						cwbOrderView.setCreatetime(ot.getCreatetime());
+						cwbOrderView.setCreatetime(ot.getCreatetime());//退货出库时间
+						cwbOrderView.setAuditstatename(this.getAuditname(ot.getShenhestate()));//当前确认状态
+						cwbOrderView.setAuditor(ot.getAuditname());//确认人
+						cwbOrderView.setAudittime(ot.getAudittime());//确认时间
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}
@@ -6394,6 +6397,19 @@ public class CwbOrderService {
 		}
 		return cwbOrderViewList;
 	}
+	
+	public String getAuditname(int auditstatename){
+		if(auditstatename==0){
+			return "待确认";
+		}else if(auditstatename==1){
+			return "退客户成功";
+		}else if(auditstatename==2){
+			return "拒收退货";
+		}
+		return "";
+	}
+	
+	
 	
 	//新增支付信息申请view
 	public List<CwbOrderView> getZhifuApplyCwbOrderView( List<ZhiFuApplyView> orList, List<Customer> customerList,

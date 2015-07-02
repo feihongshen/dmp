@@ -4,21 +4,16 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -39,7 +34,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.AccountAreaDAO;
@@ -79,7 +73,6 @@ import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
-import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderBackRuku;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OrderbackRecord;
@@ -1187,9 +1180,10 @@ public class CwbOrderController {
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
 			@RequestParam(value = "customerid",defaultValue = "0", required = false) long customerid,
-			@RequestParam(value = "shenhestate",defaultValue = "0", required = false)long shenhestate,
+			@RequestParam(value = "shenhestate",defaultValue = "-1", required = false)long shenhestate,
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
+			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate,
+			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
 		
 		Page pag = new Page();
@@ -1210,27 +1204,28 @@ public class CwbOrderController {
 		}
 		List<OrderbackRecord> orList = new ArrayList<OrderbackRecord>();
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
-		if(!(cwb.equals("")&&begindate.equals(""))){
-			orList = orderbackRecordDao.getCwbOrdersByCwbspage(page,cwbss,cwbtypeid,customerid,shenhestate,begindate,enddate);
-			long count = orderbackRecordDao.getCwbOrdersByCwbsCount(cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
-			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			
-			StringBuffer sb = new StringBuffer();
-			if(orList.size()>0){
-				for(OrderbackRecord ot:orList){
-					sb.append("'").append(ot.getCwb()).append("',");
+		if(isnow>0){
+			if(!(cwb.equals("")&&begindate.equals(""))){
+				orList = orderbackRecordDao.getCwbOrdersByCwbspage(page,cwbss,cwbtypeid,customerid,shenhestate,begindate,enddate);
+				long count = orderbackRecordDao.getCwbOrdersByCwbsCount(cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
+				pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
+				
+				StringBuffer sb = new StringBuffer();
+				if(orList.size()>0){
+					for(OrderbackRecord ot:orList){
+						sb.append("'").append(ot.getCwb()).append("',");
+					}
 				}
+				String strs = "";
+				List<CwbOrder> coList = new ArrayList<CwbOrder>();
+				if(sb.length()>0){
+					strs = sb.substring(0, sb.length()-1);
+					coList = cwbDao.getListbyCwbs(strs);
+				}
+				
+				covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
 			}
-			String strs = "";
-			List<CwbOrder> coList = new ArrayList<CwbOrder>();
-			if(sb.length()>0){
-				strs = sb.substring(0, sb.length()-1);
-				coList = cwbDao.getListbyCwbs(strs);
-			}
-			
-			covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
 		}
-
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
 		model.addAttribute("cwbList",covList);
@@ -1536,34 +1531,6 @@ public class CwbOrderController {
 		return successCount + "_s_" + failureCount;
 	}
 
-	/**
-	 * 审核为中转
-	 * 
-	 * @param model
-	 * @param request
-	 * @return
-	 */
-	/*
-	 * @RequestMapping("/auditZhongZhuan") public @ResponseBody String
-	 * auditZhongZhuan(Model model,HttpServletRequest request,
-	 * 
-	 * @RequestParam(value = "deliverybranchid", required = false, defaultValue
-	 * = "0") long deliverybranchid){ logger.info("--审核为中转 开始--"); String
-	 * cwbremarks = request.getParameter("cwbs"); if(cwbremarks==null){ return
-	 * 0+"_s_"+0; } JSONArray rJson = JSONArray.fromObject(cwbremarks); long
-	 * successCount = 0; long failureCount = rJson.size(); for(int i=0 ;i <
-	 * rJson.size() ; i ++ ){ String reason = rJson.getString(i);
-	 * if(reason.equals("")||reason.indexOf("_s_")==-1){ continue; } String []
-	 * cwb_reasonid = reason.split("_s_"); if(cwb_reasonid.length==2){ //TODO
-	 * 所有订单号均向订单所在负责人发送短信 try{ if(!cwb_reasonid[1].equals("0")){
-	 * cwborderService.auditToZhongZhuan(getSessionUser(),cwb_reasonid[0],
-	 * deliverybranchid); successCount++; failureCount--; }
-	 * logger.info("{} 成功",reason); }catch (Exception e) { e.printStackTrace();
-	 * logger.error("{} 失败",reason); } }else{ logger.info("{} 失败，格式不正确",reason);
-	 * } }
-	 * 
-	 * return successCount+"_s_"+failureCount; }
-	 */
 
 	/**
 	 * 审为供货商拒收返库
@@ -1638,7 +1605,10 @@ public class CwbOrderController {
 				// TODO 所有订单号均向订单所在负责人发送短信
 				String scancwb = reason;
 				cwborderService.supplierBackSuccess(getSessionUser(), reason, scancwb, 0);
-				orderbackRecordDao.updateShenheState(1,reason);//修改成退供货商成功shenhestate为1
+				String auditname = getSessionUser().getRealname();//确认人
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String audittime = sdf.format(new Date());
+				orderbackRecordDao.updateShenheState(1,reason,auditname,audittime);//修改成退供货商成功shenhestate为1
 				successCount++;
 				failureCount--;
 				logger.info("{} 成功", reason);
@@ -1673,7 +1643,10 @@ public class CwbOrderController {
 			}
 			if (reason.length()>0) {
 				cwbDao.updateFlowordertype(FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(),reason);
-				orderbackRecordDao.updateShenheState(2, reason);//退货拒收修改shenhestate为2
+				String auditname = getSessionUser().getRealname();//确认人
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String audittime = sdf.format(new Date());
+				orderbackRecordDao.updateShenheState(2, reason,auditname,audittime);//退货拒收修改shenhestate为2
 				successCount++;
 				failureCount--;
 				logger.info("{} 成功", reason);
@@ -2627,8 +2600,8 @@ public class CwbOrderController {
 			
 			covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
 		}
-		String[] cloumnName1 = new String[6]; // 导出的列名
-		String[] cloumnName2 = new String[6]; // 导出的英文列名
+		String[] cloumnName1 = new String[9]; // 导出的列名
+		String[] cloumnName2 = new String[9]; // 导出的英文列名
 
 		this.exportService.SetKehuShoutuihuoFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;

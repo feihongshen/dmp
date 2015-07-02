@@ -12,6 +12,22 @@ public class OrderbackRecord {
 	private String createtime;//退供货商出库时间
 	private BigDecimal receivablefee;//应收金额
 	private String emaildate;//发货时间
+	
+	private String auditname;//确认人
+	private String audittime;//确认时间
+	
+	public String getAuditname() {
+		return auditname;
+	}
+	public void setAuditname(String auditname) {
+		this.auditname = auditname;
+	}
+	public String getAudittime() {
+		return audittime;
+	}
+	public void setAudittime(String audittime) {
+		this.audittime = audittime;
+	}
 	public int getId() {
 		return id;
 	}

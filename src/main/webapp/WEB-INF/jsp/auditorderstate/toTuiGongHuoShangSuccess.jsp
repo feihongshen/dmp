@@ -235,6 +235,7 @@ function exportField(){
 										<td rowspan="2">
 											订单号：
 											<textarea name="cwb" rows="3" class="kfsh_text" id="cwb"><%=cwbs %></textarea>
+											<input type="hidden" id="isnow" name="isnow" value="1" />
 										</td>
 										<td>
 											&nbsp;&nbsp;
@@ -264,9 +265,9 @@ function exportField(){
 											&nbsp;&nbsp;
 											确认状态:
 											<select name ="shenhestate" id ="shenhestate">
-												<option  value ="0">全部</option>
-													<option value = "1">退客户成功</option>
-													<option value ="2">拒收退货</option>
+												<option value ="0">待确认</option>
+												<option value = "1">退客户成功</option>
+												<option value ="2">拒收退货</option>
 											</select>
 										</td>
 										<td>
@@ -319,7 +320,7 @@ function exportField(){
 						<%if(cwbList!=null){ %>
 							<%for(CwbOrderView cwb :cwbList){ %>
 							<tr class="font_1" height="30" >
-								<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
+								<td width="40" align="center" valign="middle" >
 									<input type="checkbox" name="ischeck" id="ischeck" checked="checked" value="<%=cwb.getCwb()%>"/>
 								</td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCwb() %></td>
@@ -328,17 +329,9 @@ function exportField(){
 								<td width="100" align="right" valign="middle"><strong><%=cwb.getReceivablefee() %></strong></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getCreatetime() %></td>
-								<td width="100" align="center" valign="middle">
-								<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){
-									out.print("退客户成功");
-								}else if(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()){
-									out.print("拒收退货");
-								}else{	
-									out.print("");
-								} %>									
-								</td>
-								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-								<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getAuditstatename() %></td>
+								<td width="100" align="center" valign="middle" ><%=cwb.getAuditor() %></td>
+								<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
 							</tr>
 						<%} }%>
 						

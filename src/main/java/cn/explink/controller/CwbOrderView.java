@@ -266,6 +266,18 @@ public class CwbOrderView {
 	
 	//反馈状态申请
 	private int reasonid;
+	
+	//退供应商成功确认状态
+	private String auditstatename;
+	
+	public String getAuditstatename() {
+		return auditstatename;
+	}
+
+	public void setAuditstatename(String auditstatename) {
+		this.auditstatename = auditstatename;
+	}
+
 	public int getReasonid() {
 		return reasonid;
 	}

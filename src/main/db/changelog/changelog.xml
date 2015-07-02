@@ -7273,5 +7273,13 @@ CREATE TABLE `cs_complaint_accept` (
     
     </changeSet>
     
+    
+     <changeSet id="liuxiao-2015-07-02-01" author="liuxiao">
+    	<sql>
+	    	ALTER TABLE `express_ops_orderback_record` add COLUMN `auditname` varchar(225) default NULL;
+			ALTER TABLE `express_ops_orderback_record` add COLUMN `audittime` varchar(225) default NULL;
+    	</sql>
+    
+    </changeSet>
 </databaseChangeLog>
  

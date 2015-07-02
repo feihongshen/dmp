@@ -3163,6 +3163,12 @@ public class ExportService {
 			cloumnName2[4] = "Emaildate";
 			cloumnName1[5] = "退客户出户时间";
 			cloumnName2[5] = "Createtime";
+			cloumnName1[6] = "确认状态";
+			cloumnName2[6] = "Auditstatename";
+			cloumnName1[7] = "确认人";
+			cloumnName2[7] = "Auditor";
+			cloumnName1[8] = "确认时间";
+			cloumnName2[8] = "Audittime";
 			
 		}
 
