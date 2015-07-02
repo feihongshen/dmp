@@ -319,21 +319,30 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String getCheckboxDealPass(
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
-		try {
+			long errorcount=0;
 			if(cwbdata.length()>0){
 				for(String cwb:cwbdata.split(",")){
+					try {
 					long edituserid =  this.getSessionUser().getUserid();
 					String edittime = DateTimeUtil.getNowTime();
 					applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);
 					ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
 					//重置审核的最终方法
 					EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
+				} catch (Exception e) {
+					errorcount++;
+					
+				}
 				}
 			}
-		} catch (Exception e) {
-			return "{\"errorCode\":1,\"error\":\"审核失败\"}";
+		if (errorcount==0) {
+			return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
+		}else if (errorcount==cwbdata.split(",").length) {
+			return "{\"errorCode\":1,\"error\":\"审核单全部失败（有些订单已经审核或不是审核状态）\"}";
+		}else {
+			return "{\"errorCode\":1,\"error\":\"审核单部分失败（可能有些订单已经审核或不是审核状态）\"}";
 		}
-		return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
+		
 
 	}
 	//处理为审核不通过状态
