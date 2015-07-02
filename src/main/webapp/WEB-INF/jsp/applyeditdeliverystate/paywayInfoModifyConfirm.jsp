@@ -103,7 +103,7 @@ function applypass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg =="true1" ){    
+		       /*  if(data.msg =="true1" ){    
 		           alert("修改金额确认通过！");    
 		           window.location.reload();    
 		        }else if(data.msg =="true2" ){
@@ -114,7 +114,14 @@ function applypass(){
 		        	window.location.reload();    
 		        }else{    
 		           alert("未完成确认出现异常！");   
-	        }    
+	        }     */
+	        if(data.msg!="true4"){
+	        	
+	        	alert("修改金额确认通过"+data.msg.split("_")[1]+"单"+",修改支付方式确认通过"+data.msg.split("_")[3]+"单"+",修改订单类型确认通过"+data.msg.split("_")[5]+"单");
+	        	$("#searchForm").submit();
+	        }else{
+		           alert("未完成确认出现异常！");   
+	        }
 	     }
 	 });
 	}

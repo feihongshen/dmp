@@ -539,27 +539,37 @@ public class ApplyEditDeliverystateController {
 		
 		List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 		List<String> errorList = new ArrayList<String>();
-		
-		for(String applyid:applyids.split(",")){
-			zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
-			FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(),FeeWayTypeRemark.class);
-			if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
-				todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
+		long cwbpricerevisenum=0;
+		long applywayrevisenum=0;
+		long cwbtyperevisenum=0;
+		try {
+			for(String applyid:applyids.split(",")){
 				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-				return "{\"errorCode\":0,\"msg\":\"true1\"}";
-			}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
-				todoConfirmWayResult(fwtr,ecList,errorList,model);
-				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-				return "{\"errorCode\":0,\"msg\":\"true2\"}";
-			}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
-				todoConfirmTypeResult(fwtr,ecList,errorList,model);
-				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过	
-				return "{\"errorCode\":0,\"msg\":\"true3\"}";
+				ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
+				FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(),FeeWayTypeRemark.class);
+				if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
+					todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
+					cwbpricerevisenum++;
+					//return "{\"errorCode\":0,\"msg\":\"true1\"}";
+				}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
+					todoConfirmWayResult(fwtr,ecList,errorList,model);
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
+					applywayrevisenum++;
+					//return "{\"errorCode\":0,\"msg\":\"true2\"}";
+				}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
+					todoConfirmTypeResult(fwtr,ecList,errorList,model);
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
+					cwbtyperevisenum++;
+					//return "{\"errorCode\":0,\"msg\":\"true3\"}";
+				}
 			}
+		} catch (Exception e) {
+			return "{\"errorCode\":0,\"msg\":\"true4\"}";
 		}
 		
-		return "";
+		return "{\"errorCode\":0,\"msg\":\"true1_"+cwbpricerevisenum+"_true2_"+applywayrevisenum+"_true3_"+cwbtyperevisenum+"\"}";
+
 	}
 	//对订单类型进行修改的确认lx
 	public void todoConfirmTypeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
