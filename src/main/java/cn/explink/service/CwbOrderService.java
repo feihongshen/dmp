@@ -6499,15 +6499,16 @@ public class CwbOrderService {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (applyeditlist.size() > 0) {
 			for (ApplyEditDeliverystate ot :applyeditlist ){
+				DeliveryState deliveryState=deliveryStateDAO.getDeliveryByCwb(ot.getCwb());
 				CwbOrderView cwbOrderView = new CwbOrderView();
 				cwbOrderView.setCwb(ot.getCwb());
 				cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(ot.getCwbordertypeid()));//订单类型
 				cwbOrderView.setDeliveryname(DeliveryStateEnum.getByValue((int)(ot.getNowdeliverystate())).getText());//配送结果
 				cwbOrderView.setCwbstatename(CwbStateEnum.getByValue(ot.getCwbstate()).getText());//订单状态
 				cwbOrderView.setRemark1("");//结算状态
-				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getApplybranchid()));//反馈站点
-				cwbOrderView.setResetfeedusername(this.dataStatisticsService.getQueryUserName(uslist,ot.getApplyuserid()));//反馈人
-				cwbOrderView.setResetfeedtime(ot.getApplytime());//反馈时间
+				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, deliveryState.getDeliverybranchid()));//反馈站点
+				cwbOrderView.setResetfeedusername(this.dataStatisticsService.getQueryUserName(uslist,deliveryState.getDeliveryid()));//反馈人
+				cwbOrderView.setResetfeedtime(deliveryState.getDeliverytime());//反馈时间
 				cwbOrderView.setDonepeople(this.dataStatisticsService.getQueryUserName(uslist,ot.getEdituserid()));//操作人
 				cwbOrderView.setDonetime(ot.getEdittime());//操作时间
 				cwbOrderView.setNowState(ApplyStateEnum.getTextByValue(ot.getShenhestate()));//订单当前状态

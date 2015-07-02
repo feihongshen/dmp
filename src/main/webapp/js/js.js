@@ -6743,7 +6743,7 @@ function uploadFormInitAddhh(form, contextPath) {
 //excel导入
 function submitPunishCreateByExcel(form){
 	if($("#update")[0].contentWindow.checkIsExistexcelData()){
-		alert("您还未选择导入的excel！！")
+		alert("您还未选择导入的excel！！");
 		return;
 	}
 	$("#importdaorubutton").attr("disabled","disabled");
