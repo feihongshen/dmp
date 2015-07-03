@@ -340,7 +340,6 @@ function displayorno(displayorno){
 										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
 										<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
 										<td width="80" align="center" valign="middle" ><%=cwb.getCheckstatename() %></td>
-										<td width="100" align="center" valign="middle" ><%=cwb.getCheckstate()==1?"待审核":"已审核" %></td>
 										<td width="100" align="center" valign="middle"><%=cwb.getCheckresultname() %></td>
 									</tr>
 							<%} }%>
