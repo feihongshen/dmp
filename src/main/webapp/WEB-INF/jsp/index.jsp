@@ -75,7 +75,7 @@
 						</div>
 						<div>
 							<h2>
-								<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统v4.1-UAT测试版</label>
+								<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统</label>
 							</h2>
 
 						</div>
