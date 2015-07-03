@@ -396,6 +396,7 @@ function callfunction(cwb){//getEmailDateByIds
 										}
 										$("#scancwb").val("");
 									}else{
+										$("#scancwb").val("");
 										$("#msg").html("（异常扫描）" + data.errorinfo);
 									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
