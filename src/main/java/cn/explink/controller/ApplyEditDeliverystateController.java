@@ -7,12 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sourceforge.jtds.jdbc.DateTime;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import cn.explink.b2c.dangdang_dataimport.DeliveryTypeEnum;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -43,7 +37,6 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
-import cn.explink.domain.Exportmould;
 import cn.explink.domain.FeeWayTypeRemark;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
@@ -389,7 +382,7 @@ public class ApplyEditDeliverystateController {
 			zavlist = zhiFuApplyDao.getapplycwbsForpage(page,cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
 			count = zhiFuApplyDao.getapplycwbsForCount(cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
+			covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList,uslist);
 		}
 		
 		model.addAttribute("page",page);
@@ -409,27 +402,26 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
 			@RequestParam(value = "applytype", defaultValue = "0", required = false) int applytype,
 			@RequestParam(value = "applypeople", defaultValue = "0", required = false) int userid,
-			@RequestParam(value = "shenhestate", defaultValue = "0", required = false) int shenhestate,
-			@RequestParam(value = "shenheresult", defaultValue = "0", required = false) int shenheresult
+			@RequestParam(value = "applystate", defaultValue = "0", required = false) int applystate,
+			@RequestParam(value = "applyresult", defaultValue = "0", required = false) int applyresult
 			) {
 
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		
+		List<User> uslist = userDAO.getAllUser();
 		String cwbss = getCwbs(cwbs);
-		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbs(cwbss,cwbtypeid,applytype,userid,shenhestate,shenheresult);
-		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList);
+		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getapplycwbs(cwbss,cwbtypeid,applytype,userid,applystate,applyresult);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuApplyCwbOrderView(zavlist,customerList,branchList,uslist);
 		
-		String[] cloumnName1 = new String[8]; // 导出的列名
-		String[] cloumnName2 = new String[8]; // 导出的英文列名
-		this.exportService.SetEditPIMCheckOrderFields(cloumnName1, cloumnName2);
+		String[] cloumnName1 = new String[12]; // 导出的列名
+		String[] cloumnName2 = new String[12]; // 导出的英文列名
+		this.exportService.setEditPIMCheckOrderFields(cloumnName1, cloumnName2);
 		String sheetName = "支付信息修改审核"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ZhiFU_Info_Check_" + df.format(new Date()) + ".xlsx"; // 文件名  
 		ExcelUtilsHandler.exportExcelHandler(response, cloumnName1, cloumnName2, sheetName, fileName, covList);
 	}
 
-	
 	//支付信息修改确认-导出
 	@RequestMapping("/confirmExportExcel")
 	public void confirmExportExcel(Model model,HttpServletRequest request,HttpServletResponse response,
@@ -443,14 +435,14 @@ public class ApplyEditDeliverystateController {
 
 		List<Customer> customerList = customerDao.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		
+		List<User> userList = userDAO.getAllUser();
 		String cwbss = getCwbs(cwbs);
 		List<ZhiFuApplyView> zavlist = zhiFuApplyDao.getConfirmCwbs(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
-		List<CwbOrderView> covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+		List<CwbOrderView> covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList,userList);
 		
-		String[] cloumnName1 = new String[8]; // 导出的列名
-		String[] cloumnName2 = new String[8]; // 导出的英文列名
-		this.exportService.SetEditPIMCheckOrderFields(cloumnName1, cloumnName2);
+		String[] cloumnName1 = new String[13]; // 导出的列名
+		String[] cloumnName2 = new String[13]; // 导出的英文列名
+		this.exportService.setEditPIMConfirmFields(cloumnName1, cloumnName2);
 		String sheetName = "支付信息修改确认"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ZhiFU_Info_Confirm_" + df.format(new Date()) + ".xlsx"; // 文件名  
@@ -466,14 +458,10 @@ public class ApplyEditDeliverystateController {
 		}
 		String cwbss = "";
 		if(strs.length()>0){
-			strs.substring(0, strs.length()-1);
+			cwbss = strs.substring(0, strs.length()-1);
 		}
 		return cwbss;
 	}	
-	
-	
-
-	
 	
 	//获取需要审核的订单并进行处理成通过审核
 	@RequestMapping("/editPaywayInfoModifyCheckpass")
@@ -482,7 +470,10 @@ public class ApplyEditDeliverystateController {
 		try{
 			for(String applyid:applyids.split(",")){
 				int applyidint = Integer.parseInt(applyid);
-				zhiFuApplyDao.updateStatePassByCwb(applyidint);//更改状态为通过审核
+				String auditname = getSessionUser().getRealname();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String dateStr = sdf.format(new Date());
+				zhiFuApplyDao.updateStatePassByCwb(applyidint,auditname,dateStr);//更改状态为通过审核
 			}
 			return "{\"code\":0,\"msg\":\"true\"}";
 		}catch(Exception e){
@@ -495,7 +486,10 @@ public class ApplyEditDeliverystateController {
 		String applyids = request.getParameter("applyids");
 		for(String applyid:applyids.split(",")){
 			int applyidint = Integer.parseInt(applyid);
-			zhiFuApplyDao.updateStateNopassByCwb(applyidint);//更改状态为未通过审核
+			String auditname = getSessionUser().getRealname();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dateStr = sdf.format(new Date());
+			zhiFuApplyDao.updateStateNopassByCwb(applyidint,auditname,dateStr);//更改状态为未通过审核
 		}
 		return "{\"code\":1,\"msg\":\"true\"}";
 	}
@@ -529,7 +523,7 @@ public class ApplyEditDeliverystateController {
 			zavlist = zhiFuApplyDao.getConfirmCwbsForpage(page,cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
 			count = zhiFuApplyDao.getConfirmCwbsForCount(cwbss,cwbtypeid,applytype,userid,confirmstate,confirmresult);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList);
+			covList = this.cwborderService.getZhifuConfirmCwbOrderView(zavlist,customerList,branchList,uslist);
 		}
 		
 		model.addAttribute("page",page);
@@ -551,34 +545,33 @@ public class ApplyEditDeliverystateController {
 		long cwbpricerevisenum=0;
 		long applywayrevisenum=0;
 		long cwbtyperevisenum=0;
-		try {
-			for(String applyid:applyids.split(",")){
-				zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-				ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
-				FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(),FeeWayTypeRemark.class);
+		for(String applyid:applyids.split(",")){
+			//zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
+			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
+			FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(),FeeWayTypeRemark.class);
+			String cofirmname = this.getSessionUser().getRealname();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String confirmtime = sdf.format(new Date());
+			try {
 				if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
 					todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-					cwbpricerevisenum++;
-					//return "{\"errorCode\":0,\"msg\":\"true1\"}";
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
+					return "{\"errorCode\":0,\"msg\":\"true1\"}";
 				}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
 					todoConfirmWayResult(fwtr,ecList,errorList,model);
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-					applywayrevisenum++;
-					//return "{\"errorCode\":0,\"msg\":\"true2\"}";
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
+					return "{\"errorCode\":0,\"msg\":\"true2\"}";
 				}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
 					todoConfirmTypeResult(fwtr,ecList,errorList,model);
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-					cwbtyperevisenum++;
-					//return "{\"errorCode\":0,\"msg\":\"true3\"}";
-				}
+					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过	
+					return "{\"errorCode\":0,\"msg\":\"true3\"}";
+				}	
+			
+			} catch (Exception e) {
+				return "{\"errorCode\":0,\"msg\":\"true4\"}";
 			}
-		} catch (Exception e) {
-			return "{\"errorCode\":0,\"msg\":\"true4\"}";
 		}
-		
 		return "{\"errorCode\":0,\"msg\":\"true1_"+cwbpricerevisenum+"_true2_"+applywayrevisenum+"_true3_"+cwbtyperevisenum+"\"}";
-
 	}
 	//对订单类型进行修改的确认lx
 	public void todoConfirmTypeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
@@ -670,7 +663,10 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String editPaywayInfoModifyConfirmnopass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
 		for(String applyid:applyids.split(",")){
-			zhiFuApplyDao.updateStateConfirmNopassByCwb(Integer.parseInt(applyid));//更改状态为确认不通过
+			String cofirmname = this.getSessionUser().getRealname();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String confirmtime = sdf.format(new Date());
+			zhiFuApplyDao.updateStateConfirmNopassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认不通过
 			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
 			if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
 				return "{\"errorCode\":0,\"msg\":\"true1\"}";

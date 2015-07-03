@@ -261,23 +261,25 @@ function exportExcel(){
 										<td  width="40" align="center" valign="middle">
 											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewCwbordertypename() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewReceivablefee() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewPaytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getNowState() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getBranchname()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCwb() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCustomername()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewCwbordertypename() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getNowState() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplyuser() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplytime() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getAudittime() %></td>
 									</tr>
 								<%} }%>
 						</tbody>
 					</table>
 					</from>
+				</div>
+	</div>
 					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 					<div class="iframe_bottom">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
@@ -299,9 +301,6 @@ function exportExcel(){
 						</table>
 					</div>
 				    <%} %>
-				</div>
-		</div>
-	</div>
 </div>
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);

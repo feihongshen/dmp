@@ -6413,7 +6413,7 @@ public class CwbOrderService {
 	
 	//新增支付信息申请view
 	public List<CwbOrderView> getZhifuApplyCwbOrderView( List<ZhiFuApplyView> orList, List<Customer> customerList,
-			List<Branch> branchList	) {
+			List<Branch> branchList,List<User> uslist) {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (orList.size() > 0 && orList.size() > 0) {
 			for (ZhiFuApplyView ot :orList){
@@ -6430,6 +6430,10 @@ public class CwbOrderService {
 				cwbOrderView.setOldnewPaytype(oldnewPaytype);//支付方式
 				cwbOrderView.setNowState(this.getNowApplyState(ot.getApplystate()));//订单当前状态
 				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
+				cwbOrderView.setApplyuser(this.dataStatisticsService.getQueryUserName(uslist, ot.getUserid()));//申请人
+				cwbOrderView.setApplytime(ot.getApplytime());//申请时间
+				cwbOrderView.setAuditor(ot.getAuditname());//审核人
+				cwbOrderView.setAudittime(ot.getAudittime());//审核时间
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}
@@ -6446,7 +6450,7 @@ public class CwbOrderService {
 	
 	//新增支付信息确认view
 	public List<CwbOrderView> getZhifuConfirmCwbOrderView(List<ZhiFuApplyView> orList, List<Customer> customerList,
-			List<Branch> branchList	) {
+			List<Branch> branchList,List<User> userList	) {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (orList.size() > 0 && orList.size() > 0) {
 			for (ZhiFuApplyView ot :orList){
@@ -6463,6 +6467,11 @@ public class CwbOrderService {
 				cwbOrderView.setOldnewPaytype(oldnewPaytype);//支付方式
 				cwbOrderView.setNowState(this.getNowConfirmState(ot.getConfirmstate()));//订单当前状态
 				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, ot.getBranchid()));//当前站点
+				cwbOrderView.setApplyuser(this.dataStatisticsService.getQueryUserName(userList, ot.getUserid()));//申请人
+				cwbOrderView.setAuditor(ot.getAuditname());//审核人
+				cwbOrderView.setAudittime(ot.getAudittime());//审核时间
+				cwbOrderView.setConfirmname(ot.getConfirmname());//确认人
+				cwbOrderView.setConfirmtime(ot.getConfirmtime());//确认时间
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}

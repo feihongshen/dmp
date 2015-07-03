@@ -20,9 +20,54 @@ public class ZhiFuApplyView {
 	private int applyresult; //审核结果
 	private int confirmstate;//确认状态
 	private int confirmresult;//确认结果
-	private int userid; 
-	private String feewaytyperemark;
 	
+	private int userid; //申请人
+	private String applytime;//申请时间
+	private String auditname;//审核人
+	private String audittime;//审核时间
+	private String feewaytyperemark;
+	private String confirmname;
+	private String confirmtime;
+	
+	public String getConfirmname() {
+		return confirmname;
+	}
+	public void setConfirmname(String confirmname) {
+		this.confirmname = confirmname;
+	}
+	public String getConfirmtime() {
+		return confirmtime;
+	}
+	public void setConfirmtime(String confirmtime) {
+		this.confirmtime = confirmtime;
+	}
+	//用于显示
+	private String username;//申请人
+	
+	public String getApplytime() {
+		return applytime;
+	}
+	public void setApplytime(String applytime) {
+		this.applytime = applytime;
+	}
+	public String getAuditname() {
+		return auditname;
+	}
+	public void setAuditname(String auditname) {
+		this.auditname = auditname;
+	}
+	public String getAudittime() {
+		return audittime;
+	}
+	public void setAudittime(String audittime) {
+		this.audittime = audittime;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	public int getConfirmstate() {
 		return confirmstate;
 	}

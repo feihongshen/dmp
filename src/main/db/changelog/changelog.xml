@@ -7281,5 +7281,20 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     
     </changeSet>
+    
+    <changeSet id="liuxiao-2015-07-02-02" author="liuxiao">
+    	<sql>
+	    	ALTER TABLE `express_ops_zhifu_apply` ADD COLUMN `applytime` varchar(225) collate utf8_bin default NULL;
+			ALTER TABLE `express_ops_zhifu_apply` ADD COLUMN `auditname` varchar(225) collate utf8_bin default NULL;
+			ALTER TABLE `express_ops_zhifu_apply` ADD COLUMN `audittime` varchar(225) collate utf8_bin default NULL;
+			ALTER TABLE `express_ops_zhifu_apply` ADD COLUMN `confirmname` varchar(225) collate utf8_bin default NULL;
+			ALTER TABLE `express_ops_zhifu_apply` ADD COLUMN `confirmtime` varchar(225) collate utf8_bin default NULL;
+    	</sql>
+    
+    </changeSet>
+    
+    
+    
+    
 </databaseChangeLog>
  

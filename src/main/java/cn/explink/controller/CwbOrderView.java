@@ -263,7 +263,43 @@ public class CwbOrderView {
 	private String oldnewCwbordertypename;
 	private String oldnewReceivablefee;
 	private String oldnewPaytype;
+	private String applyuser;//申请人
+	private String applytime;//申请时间
+	private String confirmname;//确认人
+	private String confirmtime;//确认时间
 	
+	public String getConfirmname() {
+		return confirmname;
+	}
+
+	public void setConfirmname(String confirmname) {
+		this.confirmname = confirmname;
+	}
+
+	public String getConfirmtime() {
+		return confirmtime;
+	}
+
+	public void setConfirmtime(String confirmtime) {
+		this.confirmtime = confirmtime;
+	}
+
+	public String getApplytime() {
+		return applytime;
+	}
+
+	public void setApplytime(String applytime) {
+		this.applytime = applytime;
+	}
+
+	public String getApplyuser() {
+		return applyuser;
+	}
+
+	public void setApplyuser(String applyuser) {
+		this.applyuser = applyuser;
+	}
+
 	//反馈状态申请
 	private int reasonid;
 	

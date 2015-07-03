@@ -161,7 +161,7 @@ function applynopass(){
 	}
 }
 function exportExcel(){
-	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
+	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/confirmExportExcel");
 	$("#searchForm").submit();
 	$("#searchForm").attr("action","1");
 }
@@ -280,19 +280,19 @@ function exportExcel(){
 										<td  width="40" align="center" valign="middle">
 											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCwb() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getCustomername()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewCwbordertypename()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewReceivablefee() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getOldnewPaytype() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getNowState() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=zav.getBranchname()%></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="120" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-										<td width="120" align="center" valign="middle" bgcolor="#E7F4E3"></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCwb() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCustomername()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewCwbordertypename()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getNowState() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplyuser() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
+										<td width="120" align="center" valign="middle" ><%=zav.getAudittime() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getConfirmname() %></td>
+										<td width="120" align="center" valign="middle" ><%=zav.getConfirmtime() %></td>
 									</tr>
 								<%} }%>
 						</tbody>

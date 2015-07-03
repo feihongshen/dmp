@@ -5834,7 +5834,7 @@ public class CwbDAO {
 	 * 查询批量订单
 	 */
 	public List<CwbOrder> getcwborderList(String cwbs){
-		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+")";
+		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbs+") and state=1" ;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	/**

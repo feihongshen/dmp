@@ -3175,8 +3175,8 @@ public class ExportService {
 			
 		}
 
-
-	public void SetEditPIMCheckOrderFields(String[] cloumnName1,String[] cloumnName2) {
+	//支付信息修改审核导出
+	public void setEditPIMCheckOrderFields(String[] cloumnName1,String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
 		cloumnName1[1] = "客户名称";
@@ -3193,7 +3193,45 @@ public class ExportService {
 		cloumnName2[6] = "NowState";
 		cloumnName1[7] = "订单当前机构";
 		cloumnName2[7] = "Branchname";
+		cloumnName1[8] = "申请人";
+		cloumnName2[8] = "Applyuser";
+		cloumnName1[9] = "申请时间";
+		cloumnName2[9] = "Applytime";
+		cloumnName1[10] = "审核人";
+		cloumnName2[10] = "Auditor";
+		cloumnName1[11] = "审核时间";
+		cloumnName2[11] = "Audittime";
 		
+	}
+	
+	//支付信息修改确认导出
+	public void setEditPIMConfirmFields(String[] cloumnName1,String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "客户名称";
+		cloumnName2[1] = "Customername";
+		cloumnName1[2] = "申请类型";
+		cloumnName2[2] = "Applytype";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "OldnewCwbordertypename";
+		cloumnName1[4] = "订单金额[元]";
+		cloumnName2[4] = "OldnewReceivablefee";
+		cloumnName1[5] = "订单支付方式";
+		cloumnName2[5] = "OldnewPaytype";
+		cloumnName1[6] = "订单当前状态";
+		cloumnName2[6] = "NowState";
+		cloumnName1[7] = "订单当前机构";
+		cloumnName2[7] = "Branchname";
+		cloumnName1[8] = "申请人";
+		cloumnName2[8] = "Applyuser";
+		cloumnName1[9] = "审核人";
+		cloumnName2[9] = "Auditor";
+		cloumnName1[10] = "审核时间";
+		cloumnName2[10] = "Audittime";
+		cloumnName1[11] = "确认人";
+		cloumnName2[11] = "Confirmname";
+		cloumnName1[12] = "确认时间";
+		cloumnName2[12] = "Confirmtime";
 	}
 
 	public void SetResetFeedbackOrderFields(String[] cloumnName1,

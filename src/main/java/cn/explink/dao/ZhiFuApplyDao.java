@@ -42,6 +42,12 @@ public class ZhiFuApplyDao {
 			zfav.setConfirmresult(rs.getInt("confirmresult"));
 			zfav.setUserid(rs.getInt("userid"));
 			zfav.setFeewaytyperemark(rs.getString("feewaytyperemark"));
+			zfav.setApplytime(StringUtil.nullConvertToEmptyString(rs.getString("applytime")));//申请时间
+			zfav.setAuditname(StringUtil.nullConvertToEmptyString(rs.getString("auditname")));//审核人
+			zfav.setAudittime(StringUtil.nullConvertToEmptyString(rs.getString("audittime")));//审核时间
+			zfav.setConfirmname(StringUtil.nullConvertToEmptyString(rs.getString("confirmname")));//确认人
+			zfav.setConfirmtime(StringUtil.nullConvertToEmptyString(rs.getString("confirmtime")));//确认时间
+			
 			return zfav;
 		}
 	}
@@ -85,7 +91,7 @@ public class ZhiFuApplyDao {
 	 * @return key
 	 */
 	public long creZhiFuApplyView(final ZhiFuApplyView zav) {
-		return	this.jdbcTemplate.update("insert into express_ops_zhifu_apply (cwb,customerid,cwbordertypeid,applycwbordertypeid,flowordertype,branchid,paywayid,applypaywayid,receivablefee,applyreceivablefee,applyway,applystate,applyresult,userid,feewaytyperemark) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+		return	this.jdbcTemplate.update("insert into express_ops_zhifu_apply (cwb,customerid,cwbordertypeid,applycwbordertypeid,flowordertype,branchid,paywayid,applypaywayid,receivablefee,applyreceivablefee,applyway,applystate,applyresult,userid,feewaytyperemark,applytime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				zav.getCwb(),
 				zav.getCustomerid(),
 				zav.getCwbordertypeid(),
@@ -100,7 +106,9 @@ public class ZhiFuApplyDao {
 				zav.getApplystate(),
 				zav.getApplyresult(),
 				zav.getUserid(),
-				zav.getFeewaytyperemark());
+				zav.getFeewaytyperemark(),
+				zav.getApplytime());
+				
 	}
 	
 	public List<ZhiFuApplyView> getAllZFAVBycwbs(){
@@ -200,26 +208,26 @@ public class ZhiFuApplyDao {
 	}
 	
 	//审核通过
-	public void updateStatePassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=2  where applyid=? ";
-		this.jdbcTemplate.update(sql, applyid);
+	public void updateStatePassByCwb(int applyid,String auditname,String audittime) {
+		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=2,auditname=?,audittime=? where applyid=? ";
+		this.jdbcTemplate.update(sql,auditname,audittime,applyid);
 
 	}
 	//审核为不通过
-	public void updateStateNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=1  where applyid=? ";
-		this.jdbcTemplate.update(sql, applyid);
+	public void updateStateNopassByCwb(int applyid,String auditname,String audittime) {
+		String sql = "update express_ops_zhifu_apply set applystate=2, applyresult=1,auditname=?,audittime=? where applyid=? ";
+		this.jdbcTemplate.update(sql,auditname,audittime, applyid);
 	}
 	
 	//确认通过
-	public void updateStateConfirmPassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=2  where applyid=? ";
-		this.jdbcTemplate.update(sql, applyid);
+	public void updateStateConfirmPassByCwb(int applyid,String confirmname,String confirmtime) {
+		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=2,confirmname=?,confirmtime=? where applyid=? ";
+		this.jdbcTemplate.update(sql,confirmname,confirmtime, applyid);
 	}
 	//确认不通过
-	public void updateStateConfirmNopassByCwb(int applyid) {
-		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=1  where applyid=? ";
-		this.jdbcTemplate.update(sql, applyid);
+	public void updateStateConfirmNopassByCwb(int applyid,String confirmname,String confirmtime) {
+		String sql = "update express_ops_zhifu_apply set confirmstate=2,confirmresult=1,confirmname=?,confirmtime=? where applyid=? ";
+		this.jdbcTemplate.update(sql,confirmname,confirmtime, applyid);
 
 	}
 	//通过applyid查到对应数据
@@ -312,29 +320,27 @@ public class ZhiFuApplyDao {
 	//在确认 页面通过条件查询
 	public List<ZhiFuApplyView> getConfirmCwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
 			int confirmresult) {
-		String sql = "select * from express_ops_zhifu_apply";
-		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
-		}else{
-			sql += " where 1=1";
-			StringBuffer sb = new StringBuffer("");
-			if(cwbtypeid>0){
-				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}
-			if(userid>0){
-				sb.append(" and userid="+userid);
-			}
-			if(applytype>0){
-				sb.append(" and applyway="+applytype);
-			}
-			if(confirmstate>0){
-				sb.append(" and confirmstate="+confirmstate);
-			}
-			if(confirmresult>0){
-				sb.append(" and confirmresult="+confirmresult);
-			}
-			sql += sb;
+		String sql = "select * from express_ops_zhifu_apply where applystate=2";
+		StringBuffer sb = new StringBuffer("");
+		if(!"".equals(cwbs)){
+			sb.append(" and cwb in("+cwbs+")");
 		}
+		if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
+		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(confirmstate>0){
+			sb.append(" and confirmstate="+confirmstate);
+		}
+		if(confirmresult>0){
+			sb.append(" and confirmresult="+confirmresult);
+		}
+		sql += sb;
 		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
@@ -342,58 +348,54 @@ public class ZhiFuApplyDao {
 	//在确认 页面通过条件查询所有订单
 	public List<ZhiFuApplyView> getConfirmCwbs(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
 			int confirmresult) {
-		String sql = "select * from express_ops_zhifu_apply";
-		if(!cwbs.equals("")){
-			sql += " where cwb in("+cwbs+")";
-		}else{
-			sql += " where 1=1";
-			StringBuffer sb = new StringBuffer("");
-			if(cwbtypeid>0){
-				sb.append(" and cwbordertypeid="+cwbtypeid);
-			}
-			if(userid>0){
-				sb.append(" and userid="+userid);
-			}
-			if(applytype>0){
-				sb.append(" and applyway="+applytype);
-			}
-			if(confirmstate>0){
-				sb.append(" and confirmstate="+confirmstate);
-			}
-			if(confirmresult>0){
-				sb.append(" and confirmresult="+confirmresult);
-			}
-			sql += sb;
+		String sql = "select * from express_ops_zhifu_apply where applystate=2";
+		StringBuffer sb = new StringBuffer("");
+		if(!"".equals(cwbs)){
+			sb.append(" and cwb in("+cwbs+")");
 		}
+		if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
+		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(confirmstate>0){
+			sb.append(" and confirmstate="+confirmstate);
+		}
+		if(confirmresult>0){
+			sb.append(" and confirmresult="+confirmresult);
+		}
+		sql += sb;
 		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
 	
 	//在确认 页面通过条件查询
-		public long getConfirmCwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
-				int confirmresult) {
-			String sql = "select count(1) from express_ops_zhifu_apply";
-			if(!cwbs.equals("")){
-				sql += " where cwb in("+cwbs+")";
-			}else{
-				sql += " where 1=1";
-				StringBuffer sb = new StringBuffer("");
-				if(cwbtypeid>0){
-					sb.append(" and cwbordertypeid="+cwbtypeid);
-				}
-				if(userid>0){
-					sb.append(" and userid="+userid);
-				}
-				if(applytype>0){
-					sb.append(" and applyway="+applytype);
-				}
-				if(confirmstate>0){
-					sb.append(" and confirmstate="+confirmstate);
-				}
-				if(confirmresult>0){
-					sb.append(" and confirmresult="+confirmresult);
-				}
-				sql += sb;
-			}
-			return jdbcTemplate.queryForLong(sql);
+	public long getConfirmCwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
+			int confirmresult) {
+		String sql = "select count(1) from express_ops_zhifu_apply where applystate=2";
+		StringBuffer sb = new StringBuffer("");
+		if(!"".equals(cwbs)){
+			sb.append(" and cwb in("+cwbs+")");
 		}
+		if(cwbtypeid>0){
+			sb.append(" and cwbordertypeid="+cwbtypeid);
+		}
+		if(userid>0){
+			sb.append(" and userid="+userid);
+		}
+		if(applytype>0){
+			sb.append(" and applyway="+applytype);
+		}
+		if(confirmstate>0){
+			sb.append(" and confirmstate="+confirmstate);
+		}
+		if(confirmresult>0){
+			sb.append(" and confirmresult="+confirmresult);
+		}
+		sql += sb;
+		return jdbcTemplate.queryForLong(sql);
+	}
 }
