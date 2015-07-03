@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class CustomerBillContract {
 	
 		private long id;
-		private long billBatches;//账单批次
+		private String billBatches;//账单批次
 		private long billState;//账单状态
 		private long customerId;//客户名称
 		private String dateRange;//日期范围
@@ -47,10 +47,11 @@ public class CustomerBillContract {
 		public void setId(long id) {
 			this.id = id;
 		}
-		public long getBillBatches() {
+
+		public String getBillBatches() {
 			return billBatches;
 		}
-		public void setBillBatches(long billBatches) {
+		public void setBillBatches(String billBatches) {
 			this.billBatches = billBatches;
 		}
 		public long getBillState() {

@@ -87,7 +87,7 @@ public class WorkOrderDAO {
 		if(cci.getMailBox()!=null&&cci.getMailBox().length()>0){
 			sb.append(" mail_box='"+cci.getMailBox()+"',");
 		}
-		if(cci.getCallerremark()!=null&&cci.getCallerremark().length()>0){
+		if(!cci.getCallerremark().equals("")){
 			sb.append(" callerremark='"+cci.getCallerremark()+"',");
 		}
 		if(cci.getName()!=null&&cci.getName().length()>0){
@@ -293,14 +293,25 @@ public class WorkOrderDAO {
 		
 	}
 	
-	public List<CsComplaintAccept> findGoOnacceptWO(String phone){
+	public List<CsComplaintAccept> findGoOnacceptWO(String phone,long page){
 		String sql="select * from cs_complaint_accept where phone_one=? order by complaint_state,accpet_time asc";
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),phone);		
 	} 
-	public List<CsComplaintAccept> findGoOnacceptWOByCWB(String cwb){
+	public long findGoOnacceptWOCount(String phone){
+		String sql="select count(1) from cs_complaint_accept where phone_one=?";
+		return this.jt.queryForLong(sql,phone);		
+	}
+	public List<CsComplaintAccept> findGoOnacceptWOByCWB(String cwb,long page){
 		String sql="select * from cs_complaint_accept where order_no=? order by complaint_state,accpet_time asc";
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper(),cwb);		
-	} 
+	}
+	
+	public long findGoOnacceptWOByCWBCount(String cwb){
+		String sql="select count(1) from cs_complaint_accept where order_no=?";
+		return this.jt.queryForLong(sql,cwb);		
+	}
 
 public List<CsComplaintAccept> findGoOnacceptWOByCWBs(long page,String cwbs,CsComplaintAcceptVO cv,String workorders){
 		String sql="select * from cs_complaint_accept where id>0";
@@ -703,9 +714,53 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		
 		sql+=sb.toString();
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println(sql);
 		return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
 	}
+	
+	
+	public List<CsComplaintAccept> findGoOnacceptWOByCWBsnewNoPage(
+			String cwbs, CsComplaintAcceptVO cv, String workorders,
+			long branchid) {
+		String sql="select * from cs_complaint_accept where id>0 and cod_org_id="+branchid;
+		StringBuilder sb = new StringBuilder();	
+		if(!cwbs.equals("")){
+			sb.append(" and order_no in("+cwbs+")");
+		}
+		if(!workorders.equals("")){
+			sb.append(" and accept_no in("+workorders+")");
+		}
+		if(cv.getComplaintState()!=-1){
+			sb.append(" and complaint_state="+cv.getComplaintState());
+		}
+		/*if(cv.getComplaintType()!=-1){
+			sb.append(" and complaint_type="+cv.getComplaintType());
+		}*/
+		if(cv.getComplaintOneLevel()!=-1){
+			sb.append(" and complaint_one_level="+cv.getComplaintOneLevel());
+		}
+		/*if(cv.getCodOrgId()!=-1){
+			sb.append(" and cod_org_id="+cv.getCodOrgId());
+		}*/if(cv.getComplaintResult()!=-1){
+			sb.append(" and complaint_result="+cv.getComplaintResult());
+		}
+		if(cv.getIfpunish()>0){
+			sb.append(" and if_punish="+cv.getIfpunish());
+		}
+		if(cv.getHandleUser()!=null&&cv.getHandleUser().length()>0){
+			sb.append(" and handle_user='"+cv.getHandleUser()+"'");
+		}
+		if(cv.getComplaintTwoLevel()>0){
+			sb.append(" and complaint_two_level="+cv.getComplaintTwoLevel());	
+		}
+		if(cv.getBeginRangeTime()!=null&&cv.getBeginRangeTime().length()>0&&cv.getEndRangeTime()!=null&&cv.getEndRangeTime().length()>0){
+			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
+		}
+		
+		sql+=sb.toString();
+		return this.jt.query(sql, new CsComplaintAcceptRowMapper());		
+	}
+	
+	
 
 	public long findGoOnacceptWOByCWBsCountnew(String cwbs,
 			CsComplaintAcceptVO cv, String workorders, long branchid) {

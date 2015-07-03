@@ -16,8 +16,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
@@ -58,65 +58,58 @@ function gettrValue(cwbId){
 	//$('#GV').val("");
 	$('#GoonacceptWO').hide();
 	$('#createquerywo_button').show();
-		$('#createcomplain_buttonn').removeAttr('disabled');
+	$('#createcomplain_buttonn').removeAttr('disabled');
 	$('#trid').val(cwbId);
 	var cwbStr = 'cwb'+cwbId;
-	WOcwb=$('#'+cwbStr).text();
-
+	   
+	var cwbnum=$('#'+cwbStr).text();
+	$('#WorkorderidValue').val(cwbnum);
+	showWorkorder(1);
+	var cwbStr="";
+}
+function showWorkorder(page){
 	$.ajax({
 		type:'POST',
-		data:'cwb='+WOcwb,	
-		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWOByCWB',
+		data:'cwb='+$('#WorkorderidValue').val(),	
+		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWOByCWB/'+page,
 		datatype:'json',
 		success:function(data){
 			var thStr1 = "<tr class='font_1'>" +
 			"<th bgcolor='#eef6ff'>工单号</th>" +
 			"<th bgcolor='#eef6ff'>订单号</th>" +
 			"<th bgcolor='#eef6ff'>来电号码</th>" +
-			"<th bgcolor='#eef6ff'>归属地</th>"	 +			
+			"<th bgcolor='#eef6ff'>归属地</th>" +			
 			"<th bgcolor='#eef6ff'>受理时间</th>" +
-			/* "<th bgcolor='#eef6ff'>工单类型</th>" + */
 			"<th bgcolor='#eef6ff'>受理内容</th>" +
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
-			$.each(data,function(ind,ele){
+			$.each(data.list,function(ind,ele){
 				var dataTrStr1 = "";
-				/* if(ele.complaintType==$('#ComplaintTypeEnumTouSu').val()){ */
 					var contentTemp = ele.content;								
-					contentTemp = contentTemp.substring(0,10);
-					
+					contentTemp = contentTemp.substring(0,10);					
 					dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\")'>" +
 							"<td><a href='javascript:showWorkOrderDetailBox(\""+ele.acceptNo+"\")'>"+ele.acceptNo+"</a></td>" +  /* order/queckSelectOrder/123 */
 							"<td>"+ele.orderNo+"</td>" +
 							"<td>"+ele.phoneOne+"</td>" +
 							"<td>"+ele.provence+"</td>" +
 							"<td>"+ele.acceptTime+"</td>" +
-							/* "<td>"+ele.showcomplaintTypeName+"</td>" + */
 							"<td>"+contentTemp+"</td>" +
-							"<td>"+ele.showComplaintStateName+"</td></tr>";
-					/*} else if(ele.complaintType==$('#ComplaintTypeEnumChaXun').val()){
-						
-						var contentTemp = ele.queryContent;								
-						contentTemp = contentTemp.substring(0,10);
-						dataTrStr1 = "<tr onclick='getGoonacceptWO(\""+ele.acceptNo+"\",\""+ele.complaintState+"\",\""+ele.complaintType+"\")'>" +
-						"<td>"+ele.acceptNo+"</td>" + 
-						"<td>"+ele.orderNo+"</td>" +
-						"<td>"+ele.phoneOne+"</td>" +
-						"<td>"+ele.provence+"</td>" +
-						"<td>"+ele.acceptTime+"</td>" +
-						"<td>"+ele.showcomplaintTypeName+"</td>" +
-						"<td>"+contentTemp+"</td>" +
-						"<td>"+ele.showComplaintStateName+"</td></tr>";
-					}*/ /* order/queckSelectOrder/123 */
-				thStr1 += dataTrStr1;
-				
+							"<td>"+ele.showComplaintStateName+"</td></tr>";					
+				thStr1 += dataTrStr1;				
 			});
-			$("#showWO").html(thStr1);
+			$("#showWO").html(thStr1);			
+			var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:showWorkorder(1)'>"+'第一页'+"</a>" +
+			"<a href='javascript:showWorkorder("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
+			"<a href='javascript:showWorkorder("+data.page_obj.next+")'>"+'下一页'+"</a>" +
+			"<a href='javascript:showWorkorder("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+			"</tr>";			
+			$("#pageWo").html(apage);
 			selectcolorofwo();
-		}
-	});	
-	var cwbStr="";	
-}
+			}
+		});	
+	}
 
+	
+	
 	
 $(function(){
 	
@@ -355,12 +348,12 @@ function SelectPhone(){
 				  }
 		 });	
 }
-function SelectdetailForm(){
+function SelectdetailForm(page){
 	$.ajax({
 		type:'POST',
 		data:'phoneonOne='+$(phoneonOne).val(),
 		datatype:'json',
-		url:'<%=request.getContextPath()%>/workorder/SelectdetalForm',
+		url:'<%=request.getContextPath()%>/workorder/SelectdetalForm/'+page,
 		success:function(data){					
 				var thStr = "<tr>" +
 							"<th bgcolor='#eef6ff'>订单号</th>" +
@@ -371,7 +364,7 @@ function SelectdetailForm(){
 							"<th bgcolor='#eef6ff'>收货地址</th>" +
 							"<th bgcolor='#eef6ff'>手机</th>" +
 							"<th bgcolor='#eef6ff'>当前状态</th></tr>";
-				$.each(data,function(ind,ele){
+				$.each(data.list,function(ind,ele){
 				
 				
 					var dataTrStr = "";
@@ -389,6 +382,16 @@ function SelectdetailForm(){
 					
 				});
 				$("#CsAcceptDg").html(thStr);
+				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:SelectdetailForm(1)'>"+'第一页'+"</a>" +
+				"<a href='javascript:SelectdetailForm("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
+				"<a href='javascript:SelectdetailForm("+data.page_obj.next+")'>"+'下一页'+"</a>" +
+				"<a href='javascript:SelectdetailForm("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+				"</tr>";
+				
+				$("#pageid").html(apage);
+			
+					
+			
 				selectcolor();			
 		}
 		
@@ -396,8 +399,12 @@ function SelectdetailForm(){
 	
 }
 
-	
-function submitselect(){
+	/* 
+						"<a href='javascript:SelectdetailForm("+data.page_obj.previous < 1 ? 1 : data.page_obj.previous+")'>"+'上一页'+"</a>"+
+				"<a href='javascript:SelectdetailForm("+data.page_obj.next < 1 ? 1 : data.page_obj.next+")'>"+'下一页'+"</a>" +
+				"<a href='javascript:SelectdetailForm("+data.page_obj.maxpage < 1 ? 1 : data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+	*/
+function submitselect(page){
 	/* $('#createquerywo_button').hide(); */
 	$('#createcomplain_buttonn').attr('disabled','disabled');
 	if($('#cwb123').val()==""&&$('#emaildate123').val()==""&&$('#consigneename123').val()==""&&$('#consigneemobile123').val()==""){
@@ -407,7 +414,7 @@ function submitselect(){
 	$.ajax({
 		type:'POST',
 		data:$('#selectF').serialize(),
-		url:$('#selectF').attr('action'),
+		url:$('#selectF').attr('action')+"/"+page,
 		dataType:'json',
 		success:function(data){
 			var thStr = "<tr>" +
@@ -419,7 +426,7 @@ function submitselect(){
 			"<th bgcolor='#eef6ff'>收货地址</th>" +
 			"<th bgcolor='#eef6ff'>手机</th>" +
 			"<th bgcolor='#eef6ff'>当前状态</th></tr>";
-$.each(data,function(ind,ele){
+$.each(data.list,function(ind,ele){
 	var dataTrStr = "";
 	dataTrStr = "<tr onclick='gettrValue("+ ele.id +")' id='eleid'>" +
 			"<td id='cwb"+ele.id+"'><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.cwb+"' target='_Blank'>"+ele.cwb+"</a></td>" +
@@ -433,7 +440,17 @@ $.each(data,function(ind,ele){
 	thStr += dataTrStr;
 	
 });
-$("#CsAcceptDg").html(thStr);
+	$("#CsAcceptDg").html(thStr);
+	var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect(1)'>"+'第一页'+"</a>" +
+	"<a href='javascript:submitselect("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
+	"<a href='javascript:submitselect("+data.page_obj.next+")'>"+'下一页'+"</a>" +
+	"<a href='javascript:submitselect("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+	"</tr>";
+	
+	$("#pageid").html(apage);
+	
+
+
 selectcolor();
 			
 			
@@ -444,11 +461,11 @@ selectcolor();
 
 }
 
-function submitselect2(){    //通过手机号查询工单
+function submitselect2(page){    //通过手机号查询工单
 	$.ajax({
 		type:'POST',
 		data:'phoneonOne='+$(phoneonOne).val(),
-		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWO',
+		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWO/'+page,
 			dataType : 'json',
 			success : function(data) {
 				var thStr1 = "<tr class='font_1'>"
@@ -457,57 +474,33 @@ function submitselect2(){    //通过手机号查询工单
 						+ "<th bgcolor='#eef6ff'>来电号码</th>"
 						+ "<th bgcolor='#eef6ff'>归属地</th>"
 						+ "<th bgcolor='#eef6ff'>受理时间</th>"
-						/* + "<th bgcolor='#eef6ff'>工单类型</th>" */
 						+ "<th bgcolor='#eef6ff'>受理内容</th>"
 						+ "<th bgcolor='#eef6ff'>工单状态</th></tr>";
-				$.each(data,function(ind, ele) {
+				$.each(data.list,function(ind, ele) {
 							var dataTrStr1 = "";
-							/* if (ele.complaintType == $(
-									'#ComplaintTypeEnumTouSu').val()) { */
 								var contentTemp = ele.content;								
-								contentTemp = contentTemp.substring(0,10); /* onclick='getGoonacceptWO(\""
-								+ ele.acceptNo + "\",\""
-								+ ele.complaintState + "\")' "+ele.acceptNo+"*/
-								/* var currentuser=ele.complaintUser;
-								var currentusername=$('#currentusername').val();
-								if(currentuser==currentusername){ */
-								
+								contentTemp = contentTemp.substring(0,10);
 								dataTrStr1 = "<tr><td><a href='javascript:showWorkOrderDetailBox(\""+ele.acceptNo+"\")'>"
 										+ ele.acceptNo + "</a></td>" + 
 										"<td>" + ele.orderNo + "</td>" + "<td>"
 										+ ele.phoneOne + "</td>" + "<td>"
 										+ ele.provence + "</td>" 
-										+ "<td>"+ ele.acceptTime + "</td>" /*  + "<td>"
-										+ ele.showcomplaintTypeName + "</td>" */
+										+ "<td>"+ ele.acceptTime + "</td>" 
 										+ "<td>" + contentTemp + "</td>"
 										+ "<td>" + ele.showComplaintStateName
 										+ "</td></tr>";
-								/*}  else if (ele.complaintType == $(
-									'#ComplaintTypeEnumChaXun').val()) {
-								var contentTemp = ele.queryContent;								
-									contentTemp = contentTemp.substring(0,10);
-								dataTrStr1 = "<tr onclick='getGoonacceptWO(\""
-										+ ele.acceptNo + "\",\""
-										+ ele.complaintState + "\",\""
-										+ ele.complaintType + "\")'>" + "<td>"
-										+ ele.acceptNo + "</td>" + 
-										"<td>" + ele.orderNo + "</td>" + "<td>"
-										+ ele.phoneOne + "</td>" + "<td>"
-										+ ele.provence + "</td>" + "<td>"
-										+ ele.acceptTime + "</td>" + "<td>"
-										+ ele.showcomplaintTypeName + "</td>"
-										+ "<td>" + contentTemp + "</td>"
-										+ "<td>" + ele.showComplaintStateName
-										+ "</td></tr>";
-							} */ /* order/queckSelectOrder/123 */
+						
 							thStr1 += dataTrStr1;
-						/* 	} */
 
 						});
-				/* "<td>"+ele.showcomplaintTypeName+"</td>" +
-				 "<td>"+ele.content+"</td>" +
-				 "<td>"+ele.showComplaintStateName+"</td></tr>"; */
+
 				$("#showWO").html(thStr1);
+				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect2(1)'>"+'第一页'+"</a>" +
+				"<a href='javascript:submitselect2("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
+				"<a href='javascript:submitselect2("+data.page_obj.next+")'>"+'下一页'+"</a>" +
+				"<a href='javascript:submitselect2("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+				"</tr>";			
+				$("#pageWo").html(apage);
 				selectcolorofwo();
 
 			}
@@ -527,35 +520,15 @@ function submitselect2(){    //通过手机号查询工单
 			return false;
 		} else if ($('#phoneonOne').val() != "") {
 			SelectPhone();
-			SelectdetailForm();
-			submitselect2();
+			SelectdetailForm(1);
+			submitselect2(1);
 		} else {
 			alert('手机号码不能为空');
 			return false;
 		}
 	}
 	
-	/*addTime 
-	var timerID = null;  
-    var timerRunning = false;  
-    function stopclock() {  
-        if (timerRunning)  
-            clearTimeout(timerID);  
-        timerRunning = false;  
-    }  
-    function startclock() {  
-        stopclock();  
-        showtime();  
-    }  
-  
-    function showtime() {  
-    	
-    	var str1=CurentTime();
-  		$('#contactLastTime').val(str1);
-        timerID = setTimeout("showtime()", 1000);  
-        timerRunning = true;  
-    } 
-    */
+	
     function CurentTime()   
     { 
         var now = new Date();
@@ -650,33 +623,37 @@ function submitselect2(){    //通过手机号查询工单
 				<form action="<%=request.getContextPath()%>/workorder/selectDetalFormByCondition" id="selectF">
 					<tr>
 						<td noWrap="noWrap">发货时间:<input type="text" name="staremaildate"  id="emaildate123" class="input_text1"/>到<input type="text" name="endemaildate"  id="emaildate456" class="input_text1"/></td>
-						<td noWrap="noWrap">订/运单号:<input type="text" name="cwb"  id="cwb123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
-						<td noWrap="noWrap">收件人姓名:<input type="text" name="consigneename"  id="consigneename123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
-						<td noWrap="noWrap">收件人手机:<input type="text" name="consigneemobile"  id="consigneemobile123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(); }"/></td>
+						<td noWrap="noWrap">订/运单号:<input type="text" name="cwb"  id="cwb123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(1); }"/></td>
+						<td noWrap="noWrap">收件人姓名:<input type="text" name="consigneename"  id="consigneename123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(1); }"/></td>
+						<td noWrap="noWrap">收件人手机:<input type="text" name="consigneemobile"  id="consigneemobile123" class="input_text1" onkeydown="if(event.keyCode == 13){submitselect(1); }"/></td>
 									
 				</form>	
-						<td><button class="input_button2" id="submitselect" onclick="submitselect()">查询</td> 
+						<td><button class="input_button2" id="submitselect" onclick="submitselect(1)">查询</td> 
 						<!-- <td><button id="createquerywo_button"  class="input_button1">创建查询工单</button></td>	 -->						
 						<td><button id="createcomplain_buttonn"  class="input_button1">创建工单</button></td>						
 					</tr>
 			</table>
 			<hr>
-
-			<table id="CsAcceptDg" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
-			<tbody>
-				<tr class="font_1">
-				<th bgcolor="#eef6ff">订单号</th>
-				<th bgcolor="#eef6ff">运单号</th>
-				<th bgcolor="#eef6ff">供货商</th>
-				<th bgcolor="#eef6ff">发货时间</th>
-				<th bgcolor="#eef6ff">收件人名称</th>
-				<th bgcolor="#eef6ff">收货地址</th>
-				<th bgcolor="#eef6ff">手机</th>
-				<th bgcolor="#eef6ff">当前状态</th>
-				</tr>
-
-				</tbody>			
-				</table>				
+				<div>
+					<table id="CsAcceptDg" width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
+						<tbody>
+								<tr class="font_1">
+									<th bgcolor="#eef6ff">订单号</th>
+									<th bgcolor="#eef6ff">运单号</th>
+									<th bgcolor="#eef6ff">供货商</th>
+									<th bgcolor="#eef6ff">发货时间</th>
+									<th bgcolor="#eef6ff">收件人名称</th>
+									<th bgcolor="#eef6ff">收货地址</th>
+									<th bgcolor="#eef6ff">手机</th>
+									<th bgcolor="#eef6ff">当前状态</th>
+								</tr>	
+						</tbody>			
+					</table>	
+					
+	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
+		
+	</table>
+				</div>			
 		</div>	
 	<hr></br>
 			<!-- <button id="GoonacceptWO" class="input_button2" style="display: none;">继续受理</button> -->
@@ -684,6 +661,7 @@ function submitselect2(){    //通过手机号查询工单
 	
 		<div>
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="showWO"></table>
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageWo"></table>
 		</div>
 			
 				
@@ -698,8 +676,8 @@ function submitselect2(){    //通过手机号查询工单
 	<input type="hidden" id="GV" />
 	<input type="hidden" id="GS"/>
 	<input type="hidden" value="<%=username%>" id="currentusername"> 
-<%-- 	<input type="hidden" id="ComplaintStateEnumValue" value="<%=ComplaintStateEnum.YiJieShu.getValue()%>"/>
-	<input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
+	<input type="hidden" id="WorkorderidValue"/>
+	<%-- <input type="hidden" id="ComplaintTypeEnumChaXun" value="<%=ComplaintTypeEnum.DingDanChaXun.getValue()%>"/>
 	<input type="hidden" id="ComplaintTypeEnumTouSu" value="<%=ComplaintTypeEnum.CuijianTousu.getValue()%>"/> --%>
 	<input type="hidden" id="CallerPhoneValue">
 	

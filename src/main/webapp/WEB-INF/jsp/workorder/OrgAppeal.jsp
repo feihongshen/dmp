@@ -292,9 +292,9 @@ String customerName=request.getAttribute("customerName")==null?null:(String)requ
 							<%if(cca.getComplaintState()==ComplaintStateEnum.YiJieAn.getValue()&&cca.getJieanTime()!=null&&cca.getJieanUser()!=null){%>
 							<tr>					
 								<td align="right"><span>结案处理结果:</span></td>
-								<font color="croci"><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText()%></font>
+								<td><font color="croci"><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText()%></font></td>
 								<td align="right"><span>结案时间:</span></td>
-								<font color="croci"><%=cca.getJieanTime() %></font>
+								<td><font color="croci"><%=cca.getJieanTime() %></font></td>
 								
 							</tr>
 							
@@ -314,15 +314,15 @@ String customerName=request.getAttribute("customerName")==null?null:(String)requ
 						<%}else{%>
 							<%if(cca.getComplaintState()!=ComplaintStateEnum.DaiHeShi.getValue()){ %>
 							<tr>					
-							<td align="right"><span>结案处理结果:</span></td>
+								<td align="right"><span>结案处理结果:</span></td>
 								<td><font color="croci"><%=ComplaintResultEnum.getByValue(cca.getComplaintResult()).getText() %></font></td>
 								<td align="right"><span>结案时间:</span></td>
 								<td><font color="croci"><%=cca.getAcceptTime()%></font></td>
 								<td align="right"><span>结案人:</span></td>
-							<%for(User u:alluser){ %>
+								<td><%for(User u:alluser){ %>
 									<%if(cca.getHandleUser().equals(u.getUsername())){ %>
-										<td><font color="croci"><%=u.getRealname()%></font></td>
-								<%} }%>
+										<font color="croci"><%=u.getRealname()%></font>
+								<%} }%></td>
 							<%if(cca.getDownloadjieanpath()!=null){ %>						
 							</tr>
 							<tr>

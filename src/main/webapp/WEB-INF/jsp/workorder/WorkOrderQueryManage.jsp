@@ -155,10 +155,14 @@ $(function() {
 		if($('#FormV').val()==""){
 			alert('请选择一条记录');
 			return false;
-		}else if($('#ComStateV').val()==$('#JieAnChongShenZhong').val()||$('#ComStateV').val()==$('#YiJieShu').val()||$('#ComStateV').val()==$('#YiJieAn').val()||$('#ComStateV').val()==$('#DaiHeShi').val()){
+		}else if($('#ComStateV').val()==$('#DaiHeShi').val()){
 			alert('本条数据未核实不能结案');
 			return false;
+		}else if($('#ComStateV').val()==$('#YiJieAn').val()){
+			alert('本条数据已经结案不能再次结案');
+			return false;
 		}
+		
 		getAddBox2();
 		}
 	});
@@ -307,6 +311,22 @@ function CurentTime()   //计算当天时间
     return(clock); 
 }
 
+function chongZhiAnNiu(){
+	$('#orderNo').val('');
+	$('#acceptNo').val('');
+	$('#complaintState').val(-1);
+	$('#olreasonV').val(-1);
+	$('#codOrgId').val(-1);
+	$('#complaintResult').val(-1);
+	$('#tlreasonV').val(-1);
+	$('#ifpunish').val(-1);
+	$('#handleUser').val("");
+	$('#beginRangeTime').val('');
+	$('#endRangeTime').val('');
+
+
+}
+
 </script>
 </head>
 <body>  
@@ -419,7 +439,7 @@ function CurentTime()   //计算当天时间
 					
 					<td colspan="6" >
 						<input style="margin-left: 10%;" type="submit" onclick="$('#workorderquerymanageid').attr('action',1);return true;" value="查 询" class="input_button2" />
-						<input type="reset" value="重置" class="input_button2"/>
+						<input type="button" value="重置" class="input_button2" onclick="chongZhiAnNiu()"/>
 					
 				
 				

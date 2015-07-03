@@ -158,6 +158,7 @@ public class WorkOrderController {
 	@ResponseBody
 	public String editCallerArchival(CsConsigneeInfo ccf){
 		workorderdao.editAllCsConsigneeInfo(ccf);
+		System.out.println(ccf.getCallerremark()+"123");
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 	}
 	
@@ -362,11 +363,14 @@ public class WorkOrderController {
 		return cci1;		
 	}
 	
-	@RequestMapping("/SelectdetalForm")
+	@RequestMapping("/SelectdetalForm/{page}")
 	@ResponseBody
-	public  List<CwbOrderAndCustomname> SelectdetalForm(HttpServletRequest req){
+	public Map<String, Object> SelectdetalForm(HttpServletRequest req,@PathVariable(value="page") long currentPage,Model model){
 		String phone=req.getParameter("phoneonOne");
-		List<CwbOrder> cwborderlist=workorderservice.SelectCwbdetalForm(phone)==null?null:workorderservice.SelectCwbdetalForm(phone);
+		List<CwbOrder> cwborderlist=workorderservice.SelectCwbdetalForm(phone,currentPage);
+		long count =workorderservice.SelectDetalFormCount(phone);
+		Map<String,Object> pageResult = new HashMap<String, Object>();
+		//TODO 分页逻辑
 		List<CwbOrderAndCustomname> lc= new ArrayList<CwbOrderAndCustomname>();
 		for(CwbOrder c:cwborderlist){
 			CwbOrderAndCustomname co = new CwbOrderAndCustomname();
@@ -382,20 +386,27 @@ public class WorkOrderController {
 				co.setCustomerid(c.getCustomerid());
 				lc.add(co);				
 		}		
-				
-		return lc;
+		pageResult.put("page",currentPage);
+		pageResult.put("page_obj", new Page(workorderservice.SelectDetalFormCount(phone), currentPage, Page.ONE_PAGE_NUMBER));		
+		pageResult.put("list",lc);
+		pageResult.put("currentPage", 1);
+		pageResult.put("pageSize",Page.ONE_PAGE_NUMBER);
+		pageResult.put("pageNum",(long)Math.ceil(count/Page.ONE_PAGE_NUMBER));
+		return pageResult;
 	}
 	
-	@RequestMapping("/selectDetalFormByCondition")
+	@RequestMapping("/selectDetalFormByCondition/{page}")
 	@ResponseBody
-	public List<CwbOrderAndCustomname> selectDetalFormByCondition(CwbOrderAndCustomname coc,Model model,
+	public Map<String,Object> selectDetalFormByCondition(CwbOrderAndCustomname coc,Model model,
 			@RequestParam(value="staremaildate",defaultValue="",required=false) String staremaildate,
-			@RequestParam(value="endemaildate",defaultValue="",required=false) String endemaildate
+			@RequestParam(value="endemaildate",defaultValue="",required=false) String endemaildate,
+			@PathVariable(value="page") long page
 			){
 	
 		String cwb1 = cos.translateCwb(coc.getCwb());
 		coc.setCwb(cwb1);	
-			List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc,staremaildate,endemaildate);
+		List<CwbOrder> lc=cwbdao.SelectDetalFormByCondition(coc,staremaildate,endemaildate,page);
+		Map<String,Object> pageResult = new HashMap<String, Object>();
 		List<CwbOrderAndCustomname> lco= new ArrayList<CwbOrderAndCustomname>();
 		for(CwbOrder c:lc){
 			CwbOrderAndCustomname co = new CwbOrderAndCustomname();
@@ -410,8 +421,12 @@ public class WorkOrderController {
 				co.setCwbstate(CwbStateEnum.getByValue(c.getCwbstate()).getText());
 				lco.add(co);				
 		}
-		
-		return lco;
+		pageResult.put("page",page);
+		pageResult.put("page_obj", new Page(cwbdao.SelectDetalFormByConditionCount(coc,staremaildate,endemaildate), page, Page.ONE_PAGE_NUMBER));		
+		pageResult.put("list",lco);
+		pageResult.put("currentPage", 1);
+		pageResult.put("pageSize",Page.ONE_PAGE_NUMBER);
+		return pageResult;
 	}
 	
 
@@ -465,11 +480,12 @@ public class WorkOrderController {
 	}
 	
 
-	@RequestMapping("/findGoOnAcceptWO")  //通过手机号查询工单
+	@RequestMapping("/findGoOnAcceptWO/{page}")  //通过手机号查询工单
 	@ResponseBody
-	public List<CsComplaintAcceptVO> findGoOnAcceptWO(Model model,HttpServletRequest req){
+	public Map<String,Object> findGoOnAcceptWO(Model model,HttpServletRequest req,@PathVariable(value="page") long page){
 		String phone=req.getParameter("phoneonOne");
-		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWO(phone);
+		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWO(phone,page);
+		Map<String,Object> pageResult = new HashMap<String, Object>();
 		List<CsComplaintAcceptVO> lc=new ArrayList<CsComplaintAcceptVO>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAcceptVO ca = new CsComplaintAcceptVO();
@@ -487,18 +503,21 @@ public class WorkOrderController {
 			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
 		}
-		
+		pageResult.put("page",page);
+		pageResult.put("page_obj", new Page(workorderdao.findGoOnacceptWOCount(phone), page, Page.ONE_PAGE_NUMBER));		
+		pageResult.put("list",lc);
 		model.addAttribute("Username", getSessionUser().getUsername());
 		
-		return lc;
+		return pageResult;
 
 	}
 	
-	@RequestMapping("/findGoOnAcceptWOByCWB") 
+	@RequestMapping("/findGoOnAcceptWOByCWB/{page}") 
 	@ResponseBody
-	public List<CsComplaintAcceptVO> findGoOnAcceptWOByCWB(Model model,HttpServletRequest req){
+	public Map<String,Object> findGoOnAcceptWOByCWB(Model model,HttpServletRequest req,@PathVariable(value="page") long page){
 		String cwb=req.getParameter("cwb");
-		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWB(cwb);
+		List<CsComplaintAccept> lcs=workorderdao.findGoOnacceptWOByCWB(cwb,page);
+		Map<String,Object> pageResult = new HashMap<String, Object>();
 		List<CsComplaintAcceptVO> lc=new ArrayList<CsComplaintAcceptVO>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAcceptVO ca = new CsComplaintAcceptVO();
@@ -516,8 +535,11 @@ public class WorkOrderController {
 			ca.setQueryContent(c.getQueryContent());
 			lc.add(ca);
 		}
+		pageResult.put("page",page);
+		pageResult.put("page_obj", new Page(workorderdao.findGoOnacceptWOByCWBCount(cwb), page, Page.ONE_PAGE_NUMBER));		
+		pageResult.put("list",lc);
 		
-		return lc;
+		return pageResult;
 
 	}
 	
@@ -642,11 +664,11 @@ public class WorkOrderController {
 		List<CsComplaintAccept> lcsa=workorderdao.refreshWOFPage();
 		model.addAttribute("heshiTime", Integer.valueOf(systeminstalldao.getSystemInstallByName("heshiTime").getValue()));
 		model.addAttribute("customernameList", customerList);
-		model.addAttribute("lr", lr==null?null:lr);
+		model.addAttribute("lr", lr);
 		model.addAttribute("lcsa", lcsa);
 		model.addAttribute("alltworeason", alltworeason);
-		model.addAttribute("lb", lb==null?null:lb); 
-		model.addAttribute("lc", lc==null?null:lc);
+		model.addAttribute("lb", lb); 
+		model.addAttribute("lc", lc);
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
@@ -846,7 +868,18 @@ public class WorkOrderController {
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
 		}
-		lcs=workorderdao.findGoOnacceptWOByCWBs1(ncwbs,cc,workorders);
+		
+		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
+		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();		
+		if(getSessionUser().getRoleid()==1||roleids.contains(getSessionUser().getRoleid()+"")){		
+			lcs=workorderdao.findGoOnacceptWOByCWBs1(ncwbs,cc,workorders);		
+		
+		}else
+		{    
+			lcs=workorderdao.findGoOnacceptWOByCWBsnewNoPage(ncwbs,cc,workorders,userDao.getbranchidbyuserid(getSessionUser().getUserid()).getBranchid());
+		}		
+	
+		/*lcs=workorderdao.findGoOnacceptWOByCWBs1(ncwbs,cc,workorders);*/
 	final List<CsComplaintAcceptExportVO> lc=new ArrayList<CsComplaintAcceptExportVO>();
 		for(CsComplaintAccept c:lcs){
 			CsComplaintAcceptExportVO ca = new CsComplaintAcceptExportVO();

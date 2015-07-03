@@ -7281,6 +7281,61 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     
     </changeSet>
+
+    <changeSet id="wangzhiyong-07-03-01" author="wangzhiyong">
+    	<sql>
+			DROP TABLE IF EXISTS `cs_complaint_accept`;
+			CREATE TABLE `cs_complaint_accept` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `consignee_id` bigint(11) DEFAULT NULL,
+			  `accept_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `order_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `cod_org_id` bigint(11) DEFAULT NULL,
+			  `complaint_user` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_type` int(8) DEFAULT NULL,
+			  `complaint_one_level` int(8) DEFAULT NULL,
+			  `complaint_two_level` int(8) DEFAULT NULL,
+			  `content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+			  `chongshen_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `shensu_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `jiean_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `heshi_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_user` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_result` int(8) DEFAULT NULL,
+			  `is_complaint` int(8) DEFAULT NULL,
+			  `complaint_state` int(8) DEFAULT NULL,
+			  `complaint_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_end_time` bigint(11) DEFAULT NULL,
+			  `remaind_num` int(8) DEFAULT NULL,
+			  `cwbstate` bigint(20) DEFAULT NULL,
+			  `flowordertype` bigint(20) DEFAULT NULL,
+			  `currentbrannch` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `accpet_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `phone_one` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `province` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `querycontent` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `heshi_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+			  `customerid` int(4) DEFAULT NULL,
+			  `jiean_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `shensu_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `jieanchongshen_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `jiean_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `jieanchongshen_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `if_punish` int(10) DEFAULT '1',
+			  `cuijian_num` int(20) DEFAULT NULL,
+			  `downloadheshipath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadjieanpath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadshensupath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadchongshenpath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `phoneone_idx` (`phone_one`)
+			) ENGINE=InnoDB AUTO_INCREMENT=262 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    	</sql>
+    </changeSet>
+
     
     <changeSet id="liuxiao-2015-07-02-02" author="liuxiao">
     	<sql>
@@ -7324,6 +7379,8 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     </changeSet>
     
-    
+
 </databaseChangeLog>
+
+
  

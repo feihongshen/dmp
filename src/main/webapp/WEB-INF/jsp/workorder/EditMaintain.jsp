@@ -23,30 +23,30 @@
 					<tr>
 					<td><span>邮箱</span><input type="text" name="mailBox" value="<%=ccf.getMailBox()==null?"":ccf.getMailBox()%>" id="mailBoxid" onblur="isEmailValue(this.value)" maxlength="30"/></td>
 					<td><span><font color="red">*</font>省份</span><input type="text" name="province" value="<%=ccf.getProvince()%>" id="cprovince" onblur="isChineseValue(this.value)" maxlength="30"/></td>
-					<td><span><font color="red">*</font>城市</span><input type="text" name="city" value="<%=ccf.getCity()%>" id="ccity" onblur="isChineseValue1(this.value)" maxlength="30"/></td>					
+					<t  d><span><font color="red">*</font>城市</span><input type="text" name="city" value="<%=ccf.getCity()%>" id="ccity" onblur="isChineseValue1(this.value)" maxlength="30"/></td>					
 					</tr>
 					<tr>
 						<td><span><font color="red">*</font>客户分类:</span>
 						<select class="select1" name="consigneeType" id="skhfl">
 							<option value="-1">选择客户分类</option>
-								<%for(Reason r:reasonList) {%>
+								<%for(Reason r:reasonList) {%>					
 								<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
-								<%} %>
+								<%}%>
 			 			</select></td>
 						<td noWrap="noWrap"><font color="red">*</font>性别:
-							<%if(ccf.getSex()==1){ %>
+							<%if(ccf.getSex()==1){ %> 
 							男<input type="radio" name="sex" value="1" id="sex1" checked="checked">
 							女<input type="radio" name="sex" value="0" id="sex">
-							<%}else{ %>
+							 <%}else if(ccf.getSex()==0){ %>
 							男<input type="radio" name="sex" value="1" id="sex1">
-							女<input type="radio" name="sex" value="0" id="sex"  checked="checked">
-							<%} %>
+							女<input type="radio" name="sex" value="0" id="sex" checked="checked">
+							<%} %> 
 						</td>
 					</tr>				
 				</table>
 				<div>
 				<label><font color="red">*</font>备注:</label>
-				<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name=callerremark" id="callerremark"></textarea>																	
+				<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name=callerremark" id="callerremark"><%=ccf.getCallerremark()==null?"":ccf.getCallerremark()%></textarea>																	
 				<div>您还可以输入<font id="count" color="red">150</font>个文字</div>
 				</div>
 				

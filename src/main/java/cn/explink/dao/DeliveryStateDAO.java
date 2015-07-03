@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -1474,6 +1476,22 @@ public class DeliveryStateDAO {
 			map.put(rs.getInt("deliverystate"), rs.getInt("counts"));
 			return map;
 		}
+	}
+	
+	
+	
+	
+	
+	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate){
+		String sql="select * from express_ops_delivery_state where cwb in("+cwbs+") and deliverytime>'"+startdate+"' and deliverytime<'"+enddate+"'";
+		List<DeliveryState> cwblist=jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+		return cwblist;
+	}
+	
+	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs,String startdate,String enddate){
+		String sql="select * from express_ops_delivery_state where cwb in("+cwbs+") and auditingtime>'"+startdate+"' and auditingtime<'"+enddate+"'";
+		List<DeliveryState> cwblist=jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+		return cwblist;
 	}
 
 }

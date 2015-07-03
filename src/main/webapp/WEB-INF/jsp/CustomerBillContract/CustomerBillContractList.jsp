@@ -247,19 +247,18 @@
 					<li style="padding-top: 0.5cm">
 						<div class="fitem">
 							<label>排序:</label>
-								<select id="customerName" class="easyui-combobox" name="customerName" style="width:118px;">
-								    <option value="aa">aitem1</option>
-								    <option>bitem2</option>
-								    <option>bitem3</option>
-								    <option>ditem4</option>
-								    <option>eitem5</option>
-								</select>
+								<input type="text" name="condition" class="easyui-validatebox" 
+									 	data-options="width:150,prompt: '账单批次'"
+									 	initDataType="ENUM" 
+									 	initDataKey="cn.explink.enumutil.SortReasonEnum"
+									 	viewField="text" 
+									 	saveField="value"
+									 	value="billBatches"
+								/>
 								<select id="sort" class="easyui-combobox" name="sort" style="width:66px;">
-								   		<option value="aa">阿斯顿</option>
-									    <option>bitem2</option>
-									    <option>bitem3</option>
-									    <option>ditem4</option>
-									    <option>eitem5</option>
+								   		<option value="desc">降序</option>
+									    <option value="asc">升序</option>
+									   
 								</select>
 						</div>
 					</li>		

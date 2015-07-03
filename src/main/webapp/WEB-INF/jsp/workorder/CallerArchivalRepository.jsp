@@ -137,7 +137,7 @@ function deleteidValue(){
 							  <c:when test="${cv.sex==1}">  
 							   		<td>男</td>				
 							  </c:when> 							
-							  <c:when test="${cv.sex==2}"> 
+							  <c:when test="${cv.sex==0}"> 
 							    	<td>女</td>					
 							  </c:when> 							
 							  <c:otherwise>   

@@ -46,8 +46,9 @@ public class WorkOrderService {
 		return cc;
 	}
 
-	public List<CwbOrder> SelectCwbdetalForm(String phone) {
-		List<CwbOrder> lc=cwbdao.SelectDetalForm(phone)==null?null:cwbdao.SelectDetalForm(phone);
+	public List<CwbOrder> SelectCwbdetalForm(String phone,long currentPage) {
+
+		List<CwbOrder> lc=cwbdao.SelectDetalForm(phone,currentPage);
 		return lc;		
 	}
 	
@@ -89,6 +90,12 @@ public class WorkOrderService {
 			name=name.substring(0, name.length()-1);
 		}
         return name;
+	}
+
+	public long SelectDetalFormCount(String phone) {
+		// TODO Auto-generated method stub
+	
+		return cwbdao.SelectDetalFormCount(phone);
 	}
 
 }

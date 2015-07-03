@@ -6096,7 +6096,9 @@ function init(cwb)
 }
 
 function acceptcloseDiv(){
-	closeBox();
+	if($('#jieanremark').val()!=""){
+		closeBox();
+	}	
 }
 
 function acceptqueryWoJieAn(){

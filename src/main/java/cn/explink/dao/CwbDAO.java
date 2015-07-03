@@ -5771,13 +5771,20 @@ public class CwbDAO {
 	
 	
 	
-	public List<CwbOrder> SelectDetalForm(String phone){
+	public List<CwbOrder> SelectDetalForm(String phone, long currentPage){
 			
-			String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? order by emaildate desc limit 10";
+			String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? order by emaildate desc limit "+((currentPage - 1) * Page.ONE_PAGE_NUMBER) + "," + Page.ONE_PAGE_NUMBER;
 			
 		
 		return this.jdbcTemplate.query(sql, new CwbMapper(),phone);
-	}	
+	}
+	
+	public long SelectDetalFormCount(String phone){
+		
+		String sql="select count(1) from express_ops_cwb_detail where state=1 and consigneemobile=?";
+
+	return this.jdbcTemplate.queryForLong(sql,phone);
+}	
 	
 /*public List<CwbOrder> SelectDetalFormByConditio1n(CwbOrderAndCustomname coc){
 		String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=?"
@@ -5787,7 +5794,7 @@ public class CwbDAO {
 
 	}	*/
 	
-	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc,String staremaildate,String endemaildate){
+	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc,String staremaildate,String endemaildate,long page){
 		StringBuilder sb = new StringBuilder();
 		String sql="select * from express_ops_cwb_detail where state=1";
 				
@@ -5807,7 +5814,7 @@ public class CwbDAO {
 					sb.append(" and consigneemobile='"+coc.getConsigneemobile()+"'");
 				}
 				
-				sb.append(" order by emaildate desc limit 10");
+				sb.append(" order by emaildate desc limit "+((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 				sql+=sb.toString();
 				
 	
@@ -5815,6 +5822,32 @@ public class CwbDAO {
 
 	}	
 	
+	
+	public long SelectDetalFormByConditionCount(CwbOrderAndCustomname coc,String staremaildate,String endemaildate){
+		StringBuilder sb = new StringBuilder();
+		String sql="select count(1) from express_ops_cwb_detail where state=1";
+				
+				if(coc.getCwb()!=null&&coc.getCwb().length()>0){
+					sb.append(" and cwb='"+coc.getCwb()+"'");
+				}
+				if(!staremaildate.equals("")&&!endemaildate.equals("")){
+					sb.append(" and emaildate>'"+staremaildate+"' and emaildate<'"+endemaildate+"'");
+				}
+				if(coc.getEmaildate()!=null&&coc.getEmaildate().length()>0){
+					sb.append(" and emaildate='"+coc.getEmaildate()+"'");
+				}
+				if(coc.getConsigneename()!=null&&coc.getConsigneename().length()>0){
+					sb.append(" and consigneename='"+coc.getConsigneename()+"'");
+				}
+				if(coc.getConsigneemobile()!=null&&coc.getConsigneemobile().length()>0){
+					sb.append(" and consigneemobile='"+coc.getConsigneemobile()+"'");
+				}
+				sql+=sb.toString();
+				
+	
+				return 	this.jdbcTemplate.queryForLong(sql);
+
+	}	
 	
 	
 	public List<CwbOrder> SelectDetalForm1(String phone){
@@ -5912,5 +5945,16 @@ public class CwbDAO {
 	public long findcwbByCwbsAndDateCount(String cwbs,String startdate,String enddate){
 		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return jdbcTemplate.queryForLong(sql);
+	}
+	
+	public List<CwbOrder> getCwbByCwbsAndType(String cwbs,String cwbtypeid) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
+				new CwbMapper());
+	}
+	public long getCwbByCwbsAndTypeCount(String cwbs,String cwbtypeid) {
+		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
+	}
+	public long getCwbByCwbsCount(String cwbs) {
+		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
 	}
 }	
