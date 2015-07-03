@@ -398,4 +398,14 @@ public class ZhiFuApplyDao {
 		sql += sb;
 		return jdbcTemplate.queryForLong(sql);
 	}
+
+	public ZhiFuApplyView getCheckstate(int applyidint, int applystate) {
+		String sql = "select * from express_ops_zhifu_apply where applyid=? and applystate=?";
+		return jdbcTemplate.queryForObject(sql,new ZhiFuApplyMapper(),applyidint,applystate);
+	}
+
+	public ZhiFuApplyView getConfirmstate(int applyidint, int confirmstate) {
+		String sql = "select * from express_ops_zhifu_apply where applyid=? and confirmstate=?";
+		return this.jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyidint,confirmstate);
+	}
 }

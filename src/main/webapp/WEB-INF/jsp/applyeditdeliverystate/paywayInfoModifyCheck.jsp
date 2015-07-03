@@ -94,6 +94,9 @@ function applypass(){
 			datavalue = datavalue+$(this).val()+",";
 		});
 	}
+	if(datavalue.length==0){
+		alert("请选择当前要处理订单！");
+	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 		$.ajax({
@@ -102,12 +105,15 @@ function applypass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.code == 0 ){    
+		        if(data.msg == "true1" ){  
+		        	alert("订单已做过审核!");
+		        }else if(data.msg == "true"){
 		           alert("审核通过！");    
 		           $("#searchForm").submit();    
+		        	
 		        }else{    
 		           alert(data.msg);   
-	       		 }    
+	       		}    
 	     }
 	 });
 	}
@@ -122,6 +128,9 @@ function applynopass(){
 			datavalue = datavalue+$(this).val()+",";
 		});
 	}
+	if(datavalue.length==0){
+		alert("请选择当前要处理订单！");
+	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 		$.ajax({
@@ -130,9 +139,11 @@ function applynopass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg =="true" ){    
-		           alert("审核为未通过！");    
-		           window.location.reload();    
+		        if(data.msg =="true1" ){    
+		          alert("订单已做过审核!"); 
+		        }else if(data.msg == "true"){
+	        	 alert("审核为未通过！");    
+		         window.location.reload();   
 		        }else{    
 		           alert("未完成审核,出现异常！");   
 	        }    

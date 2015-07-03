@@ -470,6 +470,10 @@ public class ApplyEditDeliverystateController {
 		try{
 			for(String applyid:applyids.split(",")){
 				int applyidint = Integer.parseInt(applyid);
+				ZhiFuApplyView zhifu = zhiFuApplyDao.getCheckstate(applyidint,2);
+				if(zhifu!=null){
+					return "{\"code\":0,\"msg\":\"true1\"}";
+				}
 				String auditname = getSessionUser().getRealname();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String dateStr = sdf.format(new Date());
@@ -486,6 +490,10 @@ public class ApplyEditDeliverystateController {
 		String applyids = request.getParameter("applyids");
 		for(String applyid:applyids.split(",")){
 			int applyidint = Integer.parseInt(applyid);
+			ZhiFuApplyView zhifu = zhiFuApplyDao.getCheckstate(applyidint,2);
+			if(zhifu!=null){
+				return "{\"code\":0,\"msg\":\"true1\"}";
+			}
 			String auditname = getSessionUser().getRealname();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String dateStr = sdf.format(new Date());
@@ -553,20 +561,23 @@ public class ApplyEditDeliverystateController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String confirmtime = sdf.format(new Date());
 			try {
-				if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
-					todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
-					return "{\"errorCode\":0,\"msg\":\"true1\"}";
-				}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
-					todoConfirmWayResult(fwtr,ecList,errorList,model);
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
-					return "{\"errorCode\":0,\"msg\":\"true2\"}";
-				}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
-					todoConfirmTypeResult(fwtr,ecList,errorList,model);
-					zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过	
-					return "{\"errorCode\":0,\"msg\":\"true3\"}";
-				}	
-			
+				if(zfav.getConfirmstate()==2){
+					return "{\"errorCode\":0,\"msg\":\"true5\"}";
+				}else{
+					if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
+						todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
+						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
+						return "{\"errorCode\":0,\"msg\":\"true1\"}";
+					}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
+						todoConfirmWayResult(fwtr,ecList,errorList,model);
+						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
+						return "{\"errorCode\":0,\"msg\":\"true2\"}";
+					}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
+						todoConfirmTypeResult(fwtr,ecList,errorList,model);
+						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过	
+						return "{\"errorCode\":0,\"msg\":\"true3\"}";
+					}	
+				}
 			} catch (Exception e) {
 				return "{\"errorCode\":0,\"msg\":\"true4\"}";
 			}
@@ -663,6 +674,10 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String editPaywayInfoModifyConfirmnopass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
 		for(String applyid:applyids.split(",")){
+			ZhiFuApplyView zhifu = zhiFuApplyDao.getConfirmstate(Integer.parseInt(applyid),2);
+			if(zhifu!=null){
+				return "{\"errorCode\":0,\"msg\":\"true4\"}";
+			}
 			String cofirmname = this.getSessionUser().getRealname();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String confirmtime = sdf.format(new Date());

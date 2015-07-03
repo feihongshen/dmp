@@ -115,13 +115,14 @@ function applypass(){
 		        }else{    
 		           alert("未完成确认出现异常！");   
 	        }     */
-	        if(data.msg!="true4"){
-	        	
+	        if(data.msg =="true5"){
+	        	alert("订单已做过确认！");
+	        }else{
 	        	alert("修改金额确认通过"+data.msg.split("_")[1]+"单"+",修改支付方式确认通过"+data.msg.split("_")[3]+"单"+",修改订单类型确认通过"+data.msg.split("_")[5]+"单");
 	        	$("#searchForm").submit();
-	        }else{
+	        }/* else{
 		           alert("未完成确认出现异常！");   
-	        }
+	        } */
 	     }
 	 });
 	}
@@ -135,6 +136,9 @@ function applynopass(){
 			$(this).attr("checked",false);
 			datavalue = datavalue+$(this).val()+",";
 		});
+	}
+	if(datavalue.length==0){
+		alert("请选择当前要处理订单！");
 	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
@@ -153,9 +157,11 @@ function applynopass(){
 		        }else if(data.msg =="true3" ){
 		        	alert("修改订单类型未确认通过！");    
 		        	window.location.reload();    
+		        }else if(data.msg == "true4"){
+		        	alert("订单已做过确认!");
 		        }else{    
 		           alert("未完成确认出现异常！");   
-	        }    
+	        	}    
 	     }
 	 });
 	}
