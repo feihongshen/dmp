@@ -125,9 +125,9 @@ function addContract() {
 			'			<form method="post" onSubmit="addContractForm(this);return false;" action="<%=request.getContextPath()%>/branchContract/addBranchContractfile;jsessionid=<%=session.getId()%>" id="addcallerForm" enctype="multipart/form-data">'+
 			'		 	<table>'+
 			'					<tr>'+
-			'						<th align="left">编号</th>'+
+			'						<th align="left"><font color="red">*</font>编号</th>'+
 			'						<td><input type="text" name="contractNo" value="[自动生成]" id="contractNo" maxlength="20"/></td>'+
-			'						<th align="left">合同状态</th>'+
+			'						<th align="left"><font color="red">*</font>合同状态</th>'+
 			'						<td>'+
 			'							<select id="contractState" name="contractState">'+
 			'				         	</select>'+
@@ -140,9 +140,9 @@ function addContract() {
 			'						</td>'+
 			'					</tr>'+
 			'					<tr>'+
-			'						<th align="left">加盟商名称</th>'+
+			'						<th align="left"><font color="red">*</font>加盟商名称</th>'+
 			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"/></td>'+
-			'						<th align="left">站点负责人</th>'+
+			'						<th align="left"><font color="red">*</font>站点负责人</th>'+
 			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"/></td>'+
 			'						<th align="left">负责人身份证</th>'+
 			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20" onblur="IdCardValidate(this.value)"/></td>'+
@@ -150,7 +150,7 @@ function addContract() {
 			'					<tr>'+
 			'						<th align="left">区域经理</th>'+
 			'						<td><input type="text" name="areaManager" value="" id="areaManager" maxlength="20"/></td>'+
-			'						<th align="left">是否有押金</th>'+
+			'						<th align="left"><font color="red">*</font>是否有押金</th>'+
 			'						<td>'+
 			'							<select id ="isDeposit" name ="isDeposit" onchange="changeDeposit();">'+
 			'					        </select>'+
@@ -499,6 +499,23 @@ function upLoad(){
 }*/
 
 function addContractForm(form){
+	if(!$("#contractState").val()){
+		alert("合同状态为必填项!");
+		return false;
+	}
+	if(!$("#branchName").val()){
+		alert("加盟商名称为必填项!");
+		return false;
+	}
+	if(!$("#siteChief").val()){
+		alert("站点负责人为必填项!");
+		return false;
+	}
+	if(!$("#isDeposit").val()){
+		alert("是否有押金为必填项!");
+		return false;
+	}
+	
 	if($('#isDeposit option:selected').text()=="是"){  
 		if(!$("#depositCollectDate").val()){
 			alert("押金收取日期为必填项!");
@@ -517,7 +534,6 @@ function addContractForm(form){
 			return false;
 		}
 	}
-	
 	
 	if ($("#txtFileName").val()=="") {
 		$(form).attr("enctype", "");

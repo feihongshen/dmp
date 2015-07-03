@@ -24,6 +24,11 @@ $(function(){
 	//$('#updatePage').dialog('close');
 	$('#queryPage').dialog('close');
 	//$('#penalizeInsidePage').dialog('close');
+	
+	$("#updateForm select[name='billState']").attr("disabled",true); 
+	$("#updateForm select[name='punishbigsort']").attr("disabled",true); 
+	$("#updateForm select[name='punishsmallsort']").attr("disabled",true); 
+	$("#updateForm select[name='dutybranchid']").attr("disabled",true); 
 });
 function addInit(){
 	//无处理
@@ -40,7 +45,7 @@ $.ajax({
 	dataType:"json",
 	success:function(data){
 		if(data.length>0){
-			var optstr="<option value='0'>请选择扣罚小类</option>";
+			var optstr="<option value='0'>全部</option>";
 			$("#addForm select[name='punishsmallsort']").append(optstr);
 			for(var i=0;i<data.length;i++)
 			{
@@ -76,72 +81,12 @@ function selectbranchUsers(){
 	});
 }
 
-function allchecked()
-{ var ids="";
-	$("[id=id]").each(
-			function()
-			{
-				if($(this).attr('checked')=='true'||$(this).attr('checked')=='checked')
-					{
-					ids+=","+$(this).val();
-					}
-			});
-	if(ids.indexOf(',')!=-1)
-		{
-		ids=ids.substr(1);
-		}
-	
-	var dmpurl=$("#dmpurl").val();
-	if(window.confirm("确定要移除吗！")&&ids.length>0){
-	$.ajax({
-		type:"post",
-		url:dmpurl+"/salaryFixed/delete",
-		data:{"ids":ids},
-		dataType:"json",
-		success:function(data){
-			if(data.counts>0){
-				alert("成功移除"+data.counts+"记录");
-				}
-			$("#searchForm").submit();
-			}
-		});
-	}
-}
-function checkAll()
-{ var checked=$("#all")[0].checked;
-	$("[id=id]").each(function(){
-		var e = $(this)[0];
-		if(checked=='true'||checked=='checked')
-		{
-			e['checked'] = checked;
-			//$(e).attr('checked',checked);
-			}
-		else {
-			//$(e).removeAttr('checked');
-			e['checked'] = checked;
-		}
+function checkAll(id){ 
+	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
+	var chkBoxes = $("#"+ id +" input[type='checkbox'][name='checkBox']");
+	$(chkBoxes).each(function() {
+		$(this)[0].checked = chkAll;
 	});
-}
-function showUp()
-{
-	$("#fileup").removeAttr('style');
-	$("#top").removeAttr('style');
-	$("#br").attr('style','display: none;');
-	$("#imp").attr('disabled','disabled');
-//	$("#box_form").removeAttr('style');
-	}
-function showButton()
-{ 	if($("#filename").val().indexOf(".xlsx")==-1&&$("#filename").val().indexOf(".xls")==-1)
-	{
-	alert("文件类型必须为xls或者xlsx");
-	$("#filename").val('');
-	$("#subfile").attr('disabled','disabled');
-	return false;
-	}
-	if($("#filename").val().length>0)
-	{
-	$("#subfile").removeAttr('disabled');
-	}
 }
 
 function queryBillList(){
@@ -154,11 +99,10 @@ function updatePage(){
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
 		{
-			//$(this).parent().parent().remove();
 			getEditData($(this).val());
+			return false;
 		}
 	}); 
-	//$('#updatePage').dialog('open');
 }
 
 function getEditData(val){
@@ -168,20 +112,26 @@ function getEditData(val){
 
 function addPenalizeInside(){
 	var id = $("#updateForm input[type='hidden'][name='id']").val(); 
-	
 	$("#addPenalizeInsideForm input[name='id']").val(id);
 	$("#addPenalizeInsideForm").submit();
-	//$('#penalizeInsidePage').dialog('open');
 }
 
 function deletePenalizeInside(){
+	var sumPrice = $("#updateForm input[name='sumPrice']").val();
 	var chkBoxes = $("#penalizeInsideTable input[type='checkbox'][name='checkBox']");
 	$(chkBoxes).each(function() {
-		if ($(this)[0].checked == true)
-		{
+		if ($(this)[0].checked == true){
+			penalizeInsideTds = $(this).parent().parent().children();
+			$(penalizeInsideTds).each(function(){
+				if($(this)[0].attributes[1].value == 'punishInsideprice'){
+					cwbPriceVal = $(this)[0].textContent;
+					sumPrice = (parseFloat(sumPrice)-parseFloat(cwbPriceVal)).toFixed(2);
+				}
+			});
 			$(this).parent().parent().remove();
 		}
 	}); 
+	$("#updateForm input[name='sumPrice']").val(sumPrice);
 }
 
 function queryPenalizeInsideList(){
@@ -192,12 +142,19 @@ function addPenalizeInsideList(){
 	var chkBoxes = $("#penalizeInsideListTable input[type='checkbox'][name='checkBox']");
 	var punishNos = "";
 	$(chkBoxes).each(function() {
-		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
-		{
-			//$(this).parent().parent().remove();
+		if ($(this)[0].checked == true){
 			punishNos = $(this).val()+","+punishNos;
 		}
 	}); 
+	if(!punishNos){
+		$('#penalizeInsidePage').dialog('close');
+		return false;
+	}
+	chkBoxes = $("#penalizeInsideTable input[type='checkbox'][name='checkBox']");
+	$(chkBoxes).each(function() {
+		punishNos = $(this).val()+","+punishNos;
+	}); 
+	
 	punishNos = punishNos.substring(0,punishNos.length-1);
 	var id = $("#queryPenalizeInsideListForm input[type='hidden'][name='id']").val(); 
 	
@@ -213,9 +170,53 @@ function updatePunishinsideBill(){
 		punishNos = $(this).val()+","+punishNos;
 	}); 
 	punishNos = punishNos.substring(0,punishNos.length-1);
-	
 	$("#updateForm input[type='hidden'][name='punishNos']").val(punishNos);
-	$("#updateForm").submit();
+	
+	$("#updateForm select[name='billState']").attr("disabled",false); 
+	$("#updateForm select[name='punishbigsort']").attr("disabled",false); 
+	$("#updateForm select[name='punishsmallsort']").attr("disabled",false); 
+	$("#updateForm select[name='dutybranchid']").attr("disabled",false); 
+	
+	//$("#updateForm").submit();
+	 $.ajax({
+			type : "POST",
+			data : $('#updateForm').serialize(),
+			url : $("#updateForm").attr('action'),
+			dataType : "json",
+			success : function(data) {
+					if(data.errorCode==0){
+						alert(data.error);
+					  	$('#updatePage').dialog('close');
+			   			window.location.href='<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList';
+					}
+				}
+			});
+}
+
+function deletePunishinsideBill(){
+	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
+	var billIds = "";
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true)
+		{
+			billIds = billIds + $(this).val() + ",";
+		}
+	}); 
+	billIds = billIds.substring(0,billIds.length-1);
+	if(window.confirm("是否确定删除?")){
+		$.ajax({
+			type:"post",
+			url:"<%=request.getContextPath()%>/punishinsideBill/deletePunishinsideBill",
+			data:{"ids":billIds},
+			dataType:"json",
+			success:function(data){
+					if(data && data.errorCode==0){
+						alert(data.error);
+						window.location.href='<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList';
+					}
+				}
+			});
+	}
 }
 
 function addPunishBillPage(){
@@ -242,6 +243,10 @@ function addPunishBillPage(){
 	});
 }
 function addPunishinsideBill(){
+	if(!$("#addForm select[name='punishbigsort']").val()){
+		alert("扣罚大类为必填项!");
+		return false;
+	}
 	var punishNos = $("#addForm textarea[name='punishNos']").val();
 	if(punishNos){
 		if(punishNos == "如多个扣罚单回车隔开"){
@@ -263,6 +268,44 @@ function addPunishinsideBill(){
 	}
 	$("#addForm").submit();
 }
+function changeBillState(state){
+	if(state){
+		if(state == 'ShenHe'){
+			 if(confirm("是否确认审核?")){
+				$("#updateForm select[name='billState']").val('${yiShenHeState}');
+				$("#updateForm input[name='shenHeDate']").val('${nowDate}');
+				$("#updateForm input[name='shenHePerson']").val('${userid}');
+				$("#updateForm input[name='shenHePersonName']").val('${realname}');
+			 }
+		} else if(state == 'QuXiaoShenHe'){
+			if(confirm("是否确认取消审核?")){
+				$("#updateForm select[name='billState']").val('${weiShenHeState}');
+				$("#updateForm input[name='shenHeDate']").val('');
+				$("#updateForm input[name='shenHePerson']").val('');
+				$("#updateForm input[name='shenHePersonName']").val('');
+			}
+		} else if(state == 'HeXiaoWanCheng'){
+			if(confirm("是否确认核销完成?")){
+				$("#updateForm select[name='billState']").val('${yiHeXiaoState}');
+				$("#updateForm input[name='heXiaoDate']").val('${nowDate}');
+				$("#updateForm input[name='heXiaoPerson']").val('${userid}');
+				$("#updateForm input[name='heXiaoPersonName']").val('${realname}');
+			}
+		} else if(state == 'QuXiaoHeXiao'){
+			if(confirm("是否确认取消核销?")){
+				$("#updateForm select[name='billState']").val('${yiShenHeState}');
+				$("#updateForm input[name='heXiaoDate']").val('');
+				$("#updateForm input[name='heXiaoPerson']").val('');
+				$("#updateForm input[name='heXiaoPersonName']").val('');
+			}
+		}
+	}
+}
+function changePage(obj){
+	var url = "<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/"+$(obj).val();
+	$('#queryPenalizeInsideListForm').attr('action',url);
+	$('#queryPenalizeInsideListForm').submit();
+}
 </script>
 </head>
 
@@ -272,24 +315,22 @@ function addPunishinsideBill(){
 	<div class="inputselect_box">
 		<table style="width: 60%">
 			    <tr>
-			    <td>
-			    <input class="input_button2" type="button" onclick="addPunishBillPage()" value="新增"/>
-			    <input class="input_button2" type="button" onclick="updatePage()" value="查看/修改"/>
-			    <input class="input_button2" type="button"  value="删除"/>
-			    <input class="input_button2" type="button" onclick="$('#queryPage').dialog('open')" value="查询"/>
-			    </td>
+				    <td>
+					    <input class="input_button2" type="button" onclick="addPunishBillPage()" value="新增"/>
+					    <input class="input_button2" type="button" onclick="updatePage()" value="查看/修改"/>
+					    <input class="input_button2" type="button" onclick="deletePunishinsideBill()" value="删除"/>
+					    <input class="input_button2" type="button" onclick="$('#queryPage').dialog('open')" value="查询"/>
+			    	</td>
 			    </tr>
 		 </table>
 	</div>
-
-
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 		<div class="right_title">
 			<div style="overflow: auto;">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="listTable">
 					<tr>
-						<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll()"/> </td>
+						<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('listTable')"/> </td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 账单批次</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 账单状态</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 责任机构</td>
@@ -338,7 +379,7 @@ function addPunishinsideBill(){
 			</div>
 		</div>
 </div>
-	<input type="hidden" id="dmpurl" value="<%=request.getContextPath()%>" />
+
 <!-- 新增层显示 -->
 <div  id="addPage" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save'" style="width:780px;height:250px;">
 	<form action="<%=request.getContextPath()%>/punishinsideBill/addPunishinsideBill" method="post" id="addForm">
@@ -354,10 +395,10 @@ function addPunishinsideBill(){
 	         		<td></td>
 	         	</tr>
 	         	<tr>
-	         		<td align="left">扣罚大类</td>
+	         		<td align="left"><font color="red">*</font>扣罚大类</td>
 	         		<td>
 		         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'punishsmallsort');">
-		         			<option value="0">请选择扣罚大类</option>
+		         			<option value="0"></option>
 		         			<c:forEach items="${punishbigsortList}" var="bigsort">
 		         				<option value="${bigsort.id}">${bigsort.text}</option>
 							</c:forEach>
@@ -366,7 +407,7 @@ function addPunishinsideBill(){
 	         		<td align="left">扣罚小类</td>
 	         		<td>
 		         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'punishbigsort');">
-		         			<option value="0">请选择扣罚小类</option>
+		         			<option value="0">全部</option>
 		         			<c:forEach items="${punishsmallsortList}" var="smallsort">
 		         				<option value="${smallsort.id}" title="${smallsort.parent}">${smallsort.text}</option>
 							</c:forEach>
@@ -419,39 +460,66 @@ function addPunishinsideBill(){
 	<form action="<%=request.getContextPath()%>/punishinsideBill/updatePunishinsideBill" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
         	<tr>
-	         	<td colspan="2"  align="center" valign="bottom" >
-		         	<input type="button" class="input_button2" value="返回" onclick="$('#save').dialog('close');"/>
-		         	<input type="button" class="input_button2" value="保存" onclick="updatePunishinsideBill()"/>
+	         	<td colspan="3"  align="left">
+		         	<input type="button" class="input_button2" value="返回" onclick="$('#updatePage').dialog('close');"/>
+		         	<c:if test="${weiShenHeState==punishinsideBillVO.billState}">
+		         		<input type="button" class="input_button2" value="保存" onclick="updatePunishinsideBill()"/>
+		         	</c:if>
 	         	</td>
-	         	<td  align="left" colspan="3"  > 
-	         		<input type="button" class="input_button2" id=""  onclick="showUp()" value="审核"/>
-	         		<input type="button" class="input_button2" id=""  onclick="showUp()" value="取消审核"/>
-	         	</td>
-	         	<td align="left" >
-	         		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	         		<input type="button" class="input_button2" id=""  onclick="showUp()" value="核销完成"/>
-	         		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	         	</td>
-	         	<td   colspan="2"> &nbsp;&nbsp;&nbsp;</td>
+	         	<c:choose>
+	         	<c:when test="${jiesuanAuthority==1}">
+	         		<c:choose>
+			         	<c:when test="${weiShenHeState==punishinsideBillVO.billState}">
+			         		<td align="right" colspan="3"> 
+			         			<input type="button" class="input_button2" onclick="changeBillState('ShenHe')" value="审核"/>
+			         		</td>
+			         	</c:when>
+			         	<c:when test="${yiShenHeState==punishinsideBillVO.billState}">
+			         		<td align="right" colspan="3">
+			         			<input type="button" class="input_button2" onclick="changeBillState('QuXiaoShenHe')" value="取消审核"/>
+			         			<input type="button" class="input_button2" onclick="changeBillState('HeXiaoWanCheng')" value="核销完成"/>
+			         		</td>
+			         	</c:when>
+		         	</c:choose>
+	         	</c:when>
+	         	<c:when test="${jiesuanAdvanceAuthority==1}">
+	         		<c:if test="${yiHeXiaoState==punishinsideBillVO.billState}">
+			         	<td align="right" colspan="3"> 
+			         		<input type="button" class="input_button2" onclick="changeBillState('QuXiaoHeXiao')" value="取消核销"/>
+			         	</td>
+		         	</c:if>
+	         	</c:when>
+	         	<c:otherwise>
+					<td colspan="3">
+			         	&nbsp;&nbsp;&nbsp;&nbsp;
+			        </td>
+				</c:otherwise>
+	         	</c:choose>
+	         	<td colspan="2">
+			         &nbsp;&nbsp;&nbsp;&nbsp;
+			   	</td>
          	</tr>
         	<tr>
          		<td align="left">账单批次</td>
          		<td>
-         			<input type="text"  name="billBatch" readonly="readonly"  value="${punishinsideBillVO.billBatch}"/> 
+         			<input type="text"  name="billBatch" readonly="readonly"  value="${punishinsideBillVO.billBatch}" style="background-color:#DCDCDC"/> 
         			</td>
          		<td  align="left" >账单状态</td>
          		<td>
-         			<select name="billState" class="select1">
+         			<select name="billState" style="background-color:#DCDCDC">
 			         	<c:forEach var="item" items="${billStateMap}">
 							<c:if test="${punishinsideBillVO.billState==item.key}">
 								<option value="${item.key}" selected="selected">${item.value}</option>
+							</c:if>
+							<c:if test="${punishinsideBillVO.billState!=item.key}">
+								<option value="${item.key}">${item.value}</option>
 							</c:if>
 						</c:forEach> 
 					</select>
          		</td>
          		<td  align="left">扣罚大类</td>
          		<td>
-        			<select name="punishbigsort" class="select1">
+        			<select name="punishbigsort" style="background-color:#DCDCDC">
 		         			<c:forEach items="${punishbigsortList}" var="bigsort">
 		         				<c:if test="${punishinsideBillVO.punishbigsort==bigsort.id}">
 									<option value="${bigsort.id}" selected="selected">${bigsort.text}</option>
@@ -461,7 +529,8 @@ function addPunishinsideBill(){
         		 </td>
          		<td  align="left">扣罚小类</td>
          		<td>
-       				<select name="punishsmallsort" class="select1">
+       				<select name="punishsmallsort" style="background-color:#DCDCDC">
+       						<option value="0">全部</option>
 							<c:forEach items="${punishsmallsortList}" var="smallsort">
 								<c:if test="${punishinsideBillVO.punishsmallsort==smallsort.id}">
 			         				<option value="${smallsort.id}" title="${smallsort.parent}" selected="selected">${smallsort.text}</option>
@@ -473,25 +542,25 @@ function addPunishinsideBill(){
        		<tr>
        			<td align="left">扣罚金额(元)</td>
          		<td>
-         			<input type="text"  name="sumPrice" readonly="readonly"  value="${punishinsideBillVO.sumPrice}"/> 
+         			<input type="text"  name="sumPrice" readonly="readonly"  value="${punishinsideBillVO.sumPrice}" style="background-color:#DCDCDC"/> 
         			</td>
          		<td  align="left" >创建日期</td>
          		<td>
-		         	<input type="text"  name="createDate" readonly="readonly"  value="${punishinsideBillVO.createDate}"/>
+		         	<input type="text"  name="createDate" readonly="readonly"  value="${punishinsideBillVO.createDate}" style="background-color:#DCDCDC"/>
          		</td>
          		<td  align="left"  >审核日期</td>
          		<td>
-        				<input type="text"  name="shenHeDate" readonly="readonly"  value="${punishinsideBillVO.shenHeDate}"/>
+        				<input type="text"  name="shenHeDate" readonly="readonly"  value="${punishinsideBillVO.shenHeDate}" style="background-color:#DCDCDC"/>
         		 	</td>
          		<td  align="left"  >核销日期</td>
          		<td>
-       				<input type="text"  name="heXiaoDate" readonly="readonly"  value="${punishinsideBillVO.heXiaoDate}"/>
+       				<input type="text"  name="heXiaoDate" readonly="readonly"  value="${punishinsideBillVO.heXiaoDate}" style="background-color:#DCDCDC"/>
        		 	</td>
          	</tr>
        		<tr>
        			<td align="left">责任机构</td>
          		<td>
-         			<select name="dutybranchid" class="select1">
+         			<select name="dutybranchid" style="background-color:#DCDCDC">
 		         			<c:forEach items="${branchList}" var="branch">
 		         				<c:if test="${punishinsideBillVO.dutybranchid==branch.branchid}">
 		         					<option value="${branch.branchid}">${branch.branchname}</option>
@@ -501,24 +570,24 @@ function addPunishinsideBill(){
         		</td>
          		<td  align="left">创建人</td>
          		<td>
-		         	<input type="text"  name="creatorName" readonly="readonly"  value="${punishinsideBillVO.creatorName}"/>
+		         	<input type="text"  name="creatorName" readonly="readonly"  value="${punishinsideBillVO.creatorName}" style="background-color:#DCDCDC"/>
 		         	<input type="hidden"  name="creator"  value="${punishinsideBillVO.creator}"/>
          		</td>
          		<td  align="left">审核人</td>
          		<td>
-       				<input type="text"  name="shenHePersonName" readonly="readonly"  value="${punishinsideBillVO.shenHePersonName}"/>
+       				<input type="text"  name="shenHePersonName" readonly="readonly"  value="${punishinsideBillVO.shenHePersonName}" style="background-color:#DCDCDC"/>
        				<input type="hidden"  name="shenHePerson"  value="${punishinsideBillVO.shenHePerson}"/>
        		 	</td>
          		<td  align="left">核销人</td>
          		<td>
-       				<input type="text"  name="heXiaoPersonName" readonly="readonly"  value="${punishinsideBillVO.heXiaoPersonName}"/>
+       				<input type="text"  name="heXiaoPersonName" readonly="readonly"  value="${punishinsideBillVO.heXiaoPersonName}" style="background-color:#DCDCDC"/>
        				<input type="hidden"  name="heXiaoPerson"  value="${punishinsideBillVO.heXiaoPerson}"/>
        		 	</td>
          	</tr>
          	<tr>
          		<td  align="left">责任人</td>
          		<td>
-       				<input type="text"  name="dutypersonname" readonly="readonly"  value="${punishinsideBillVO.dutypersonname}"/>
+       				<input type="text"  name="dutypersonname" readonly="readonly"  value="${punishinsideBillVO.dutypersonname}" style="background-color:#DCDCDC"/>
        				<input type="hidden"  name="dutypersonid"  value="${punishinsideBillVO.dutypersonid}"/>
        		 	</td>
        		 	<td colspan="6"></td>
@@ -526,7 +595,7 @@ function addPunishinsideBill(){
          	<tr>
          		<td  align="left">扣罚说明</td>
          		<td  colspan="7" >
-			   	 <textarea rows="3"  name="punishInsideRemark" style="width: 100%;resize: none;" value="${punishinsideBillVO.punishInsideRemark}"></textarea>
+			   	 <textarea rows="3"  name="punishInsideRemark" style="width: 100%;resize: none;">${punishinsideBillVO.punishInsideRemark}</textarea>
 		        </td>
          	</tr>
          	<tr>
@@ -543,7 +612,7 @@ function addPunishinsideBill(){
          		<td colspan="8">
 		         	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideTable" >
 						<tr>
-							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick=""/> </td>
+							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideTable')"/> </td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 扣罚单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单状态</td>
@@ -554,23 +623,25 @@ function addPunishinsideBill(){
 							<td align="center" valign="middle" style="font-weight: bold;"> 扣罚小类 </td>
 						</tr>
 						<c:forEach var="pIn" items="${punishinsideBillVO.penalizeInsideList}">
-							<td height="30px"  valign="middle"><input type="checkbox" name="checkBox" value="${pIn.punishNo}"/> </td>
-							<td align="center" valign="middle">${pIn.punishNo}</td>
-							<td align="center" valign="middle">${pIn.cwb}</td>
-							<td align="center" valign="middle">
-								<c:forEach var="item" items="${cwbStateMap}">
-									<c:if test="${pIn.cwbstate==item.key}">${item.value}</c:if>
-								</c:forEach> 
-							</td>
-							<td align="center" valign="middle">${pIn.dutypersonname}</td>
-							<!-- <td align="center" valign="middle"></td> -->
-							<td align="center" valign="middle">${pIn.cwbPrice}</td>
-							<td align="center" valign="middle">${pIn.punishInsideprice}</td>
-							<td align="center" valign="middle">
-								<c:forEach items="${punishsmallsortList}" var="smallsort">
-									<c:if test="${pIn.punishsmallsort==smallsort.id}">${smallsort.text}</c:if>
-								</c:forEach>
-							</td>
+							<tr>
+								<td height="30px"  valign="middle"><input type="checkbox" name="checkBox" value="${pIn.punishNo}"/> </td>
+								<td align="center" valign="middle">${pIn.punishNo}</td>
+								<td align="center" valign="middle">${pIn.cwb}</td>
+								<td align="center" valign="middle">
+									<c:forEach var="item" items="${cwbStateMap}">
+										<c:if test="${pIn.cwbstate==item.key}">${item.value}</c:if>
+									</c:forEach> 
+								</td>
+								<td align="center" valign="middle">${pIn.dutypersonname}</td>
+								<!-- <td align="center" valign="middle"></td> -->
+								<td align="center" name="cwbPrice" valign="middle">${pIn.cwbPrice}</td>
+								<td align="center" name="punishInsideprice" valign="middle">${pIn.punishInsideprice}</td>
+								<td align="center" valign="middle">
+									<c:forEach items="${punishsmallsortList}" var="smallsort">
+										<c:if test="${pIn.punishsmallsort==smallsort.id}">${smallsort.text}</c:if>
+									</c:forEach>
+								</td>
+							</tr>
          				</c:forEach>
 					</table>
 					<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
@@ -584,18 +655,20 @@ function addPunishinsideBill(){
 <!-- 查询层显示 -->
 	<div  id="queryPage" class="easyui-dialog" title="查询条件" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
 	<form action="<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList" method="post" id="queryForm">
-         	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
+         <table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>
          		<td align="left"  style="width: 15%;">账单批次</td>
          		<td  style="width: 30%;">
-         			<input type="text" name="billBatch" /> 
+         			<input type="text" name="billBatch" value="${queryConditionVO.billBatch}"/> 
          		</td>
          		<td  align="left" style="width: 15%;">账单状态</td>
          		<td  style="width: 30%;">
 	         		<select name="billState">
-	         			<option value="0">---全部---</option>
+						<option value="0">---全部---</option>
 						<c:forEach var="item" items="${billStateMap}">
-							<option value="${item.key}">${item.value}</option>
+							<c:if test="${queryConditionVO.billState==item.key}">
+								<option value="${item.key}" selected="selected">${item.value}</option>
+							</c:if>
 						</c:forEach> 
 	         		</select>
          		</td>
@@ -603,26 +676,28 @@ function addPunishinsideBill(){
          	<tr>
          		<td align="left">账单创建日期</td>
          		<td >
-		         	 <input type="text" name="createDateFrom" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/> 至 
-	   	       		 <input type="text" name="createDateTo" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/>
+		         	 <input type="text" name="createDateFrom" value="${queryConditionVO.createDateFrom}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/> 至 
+	   	       		 <input type="text" name="createDateTo" value="${queryConditionVO.createDateTo}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/>
          		</td>
          		<td align="left">账单核销日期</td>
          		<td >
-		         	 <input type="text" name="heXiaoDateFrom" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/> 至 
-	   	       		 <input type="text" name="heXiaoDateTo"   class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/>
+		         	 <input type="text" name="heXiaoDateFrom" value="${queryConditionVO.heXiaoDateFrom}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/> 至 
+	   	       		 <input type="text" name="heXiaoDateTo"  value="${queryConditionVO.heXiaoDateTo}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"/>
          		</td>
          	</tr>
          	<tr>
          		<td  align="left" >责任机构</td>
          		<td >
-         			<input type="text" name="dutybranchname" /> 
+         			<input type="text" name="dutybranchname" value="${queryConditionVO.dutybranchname}" /> 
          		</td>
          		<td  align="left" >扣罚大类</td>
          		<td >
          			<select name="punishbigsort">
 	         			<option value="0">---全部---</option>
 	         			<c:forEach items="${punishbigsortList}" var="bigsort">
-		         				<option value="${bigsort.id}">${bigsort.text}</option>
+	         				<c:if test="${queryConditionVO.punishbigsort==bigsort.id}">
+		         				<option value="${bigsort.id}" selected="selected">${bigsort.text}</option>
+		         			</c:if>
 						</c:forEach>
 	         		</select>
          		</td>
@@ -630,14 +705,16 @@ function addPunishinsideBill(){
          	<tr>
          		<td  align="left" >责任人</td>
          		<td >
-         			<input type="text" name="dutypersonname" /> 
+         			<input type="text" name="dutypersonname" value="${queryConditionVO.dutypersonname}" /> 
          		</td>
          		<td  align="left" >扣罚小类</td>
          		<td >
          			<select name="punishsmallsort">
 	         			<option value="0">---全部---</option>
 	         			<c:forEach items="${punishsmallsortList}" var="smallsort">
-		         				<option value="${smallsort.id}">${smallsort.text}</option>
+	         				<c:if test="${queryConditionVO.punishsmallsort==smallsort.id}">
+		         				<option value="${smallsort.id}" selected="selected">${smallsort.text}</option>
+		         			</c:if>
 						</c:forEach>
 	         		</select>
          		</td>
@@ -646,48 +723,46 @@ function addPunishinsideBill(){
          		<td  align="left">排序</td>
          		<td >
 			    	<select name="contractColumn">
-			    		<option value="billBatch">账单批次</option>
-			    		<option value="billState">账单状态</option>
-			    		<option value="createDate">账单创建日期</option>
-			    		<option value="heXiaoDate">账单核销日期</option>
-			    		<option value="dutybranchname">责任机构</option>
-			    		<option value="punishbigsort">扣罚大类</option>
-			    		<option value="dutypersonname">责任人</option>
-			    		<option value="punishsmallsort">扣罚小类</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == billBatch}'>selected="selected"</c:if> value="billBatch">账单批次</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == billState}'>selected="selected"</c:if> value="billState">账单状态</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == createDate}'>selected="selected"</c:if> value="createDate">账单创建日期</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == heXiaoDate}'>selected="selected"</c:if> value="heXiaoDate">账单核销日期</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == dutybranchname}'>selected="selected"</c:if> value="dutybranchname">责任机构</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == punishbigsort}'>selected="selected"</c:if> value="punishbigsort">扣罚大类</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == dutypersonname}'>selected="selected"</c:if> value="dutypersonname">责任人</option>
+			    		<option <c:if test='${queryConditionVO.contractColumn == punishsmallsort}'>selected="selected"</c:if> value="punishsmallsort">扣罚小类</option>
 			    	</select>
 			    	<select name="contractColumnOrder">
-			    		<option value="asc">升序</option>
-			    		<option value="desc">降序</option>
+			    		<option <c:if test='${queryConditionVO.contractColumnOrder == asc}'>selected="selected"</c:if> value="asc">升序</option>
+			    		<option <c:if test='${queryConditionVO.contractColumnOrder == desc}'>selected="selected"</c:if> value="desc">降序</option>
 			    	</select>
 		        </td>
 		        <td></td>
 		        <td></td>
          	</tr>
          	<tr>
-         	<td colspan="4" >
-         	&nbsp;
-         	</td>
+	         	<td colspan="4" >&nbsp;</td>
          	</tr>
          	<tr>
-         	<td colspan="4" rowspan="2" align="center" valign="bottom">
-         	<input type="button" class="input_button2" value="查询" onclick="queryBillList()"/>
-         	<input type="button" class="input_button2" value="关闭" onclick="$('#queryPage').dialog('close');"/>
-         	</td>
+	         	<td colspan="4" rowspan="2" align="center" valign="bottom">
+	         	<input type="button" class="input_button2" value="查询" onclick="queryBillList()"/>
+	         	<input type="button" class="input_button2" value="关闭" onclick="$('#queryPage').dialog('close');"/>
+	         	</td>
          	</tr>
-         	</table>
-         	</form>
+         </table>
+       </form>
 	</div>
 	
 <!-- 扣罚单finder层显示 -->
 <c:if test="${penalizeInsidePage==1}">
 <div  id="penalizeInsidePage" class="easyui-dialog" title="扣罚单" data-options="iconCls:'icon-save'" style="width:700px;height:600px;">
 	<div style="width:100%;">
-		<form action="<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList" method="post" id="queryPenalizeInsideListForm">
-			<table width="60%" style="margin-top: 10px;font-size: 10px;">
+		<form action="<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/1" method="post" id="queryPenalizeInsideListForm">
+			<table width="80%" style="margin-top: 10px;font-size: 10px;">
 				  <tr>
 						<td align="left">扣罚大类</td>
 		         		<td>
-			         		<select name="punishbigsort" >
+			         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'punishsmallsort');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishbigsortList}" var="bigsort">
 			         				<option value="${bigsort.id}">${bigsort.text}</option>
@@ -696,15 +771,15 @@ function addPunishinsideBill(){
 			         	</td>
 			         	<td align="left">创建日期</td>
 	         			<td>
-			         		<input type="text" name="punishNoCreateBeginDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${punishinsideBill.punishNoCreateBeginDate}"/>
+			         		<input type="text" name="punishNoCreateBeginDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${punishinsideBillVO.punishNoCreateBeginDate}"/>
 			         		至 
-		   	       		 	<input type="text" name="punishNoCreateEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${punishinsideBill.punishNoCreateEndDate}"/>
+		   	       		 	<input type="text" name="punishNoCreateEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${punishinsideBillVO.punishNoCreateEndDate}"/>
 		         		</td>
 		         	</tr>
 		         	<tr>
 		         		<td align="left">扣罚小类</td>
 		         		<td>
-			         		<select name="punishsmallsort" >
+			         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'punishbigsort');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishsmallsortList}" var="smallsort">
 			         				<option value="${smallsort.id}">${smallsort.text}</option>
@@ -718,7 +793,7 @@ function addPunishinsideBill(){
 				  </tr>
 				  <tr>
 				  	<td colspan="4">
-				  		<input type="hidden" name="id" value="${punishinsideBill.id}">
+				  		<input type="hidden" name="id" value="${punishinsideBillVO.id}">
 				  		<input class="input_button2" type="button" onclick="queryPenalizeInsideList()" value="查询"/>
 				  	</td>
 				  </tr>
@@ -732,7 +807,7 @@ function addPunishinsideBill(){
 		<div style="overflow: auto;">
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideListTable">
 				<tr>
-					<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll()"/> </td>
+					<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideListTable')"/> </td>
 					<td align="center" valign="middle" style="font-weight: bold;"> 订单号</td>
 					<td align="center" valign="middle" style="font-weight: bold;"> 责任机构</td>
 					<td align="center" valign="middle" style="font-weight: bold;"> 对内扣罚金额 </td>
@@ -743,7 +818,11 @@ function addPunishinsideBill(){
 				<tr>
 					<td height="30px" align="center"  valign="middle"><input type="checkbox" name="checkBox" value="${list.punishNo}" /> </td>
 					<td align="center" valign="middle" >${list.cwb}</td>
-					<td align="center" valign="middle" >${list.dutybranchname}</td>
+					<td align="center" valign="middle" >
+						<c:forEach items="${branchList}" var="branch">
+							<c:if test="${list.dutybranchid==branch.branchid}">${branch.branchname}</c:if>
+						</c:forEach>
+					</td>
 					<td align="center" valign="middle" >${list.punishInsideprice}</td>
 					<td>
 						<c:forEach items="${punishbigsortList}" var="bigsort">
@@ -752,7 +831,7 @@ function addPunishinsideBill(){
 					</td>
 					<td>
 						<c:forEach items="${punishsmallsortList}" var="smallsort">
-						<c:if test="${list.punishbigsort==smallsort.id}">${smallsort.text}</c:if>
+						<c:if test="${list.punishsmallsort==smallsort.id}">${smallsort.text}</c:if>
 						</c:forEach>
 					</td>
 				</tr>
@@ -764,18 +843,18 @@ function addPunishinsideBill(){
 			<input class="input_button2" type="button" onclick="$('#penalizeInsidePage').dialog('close')" value="取消"/>
 		</div>
 	</div>
-		<%-- <c:if test="${page_obj.maxpage>1}">
+		<c:if test="${page_obj.maxpage>1}">
 			<div class="iframe_bottom"> 
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr>
 						<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
-						<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
-						<a href="javascript:$('#searchForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#searchForm').submit();">上一页</a>　
-						<a href="javascript:$('#searchForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#searchForm').submit();" >下一页</a>　
-						<a href="javascript:$('#searchForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#searchForm').submit();" >最后一页</a>
+						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/1');$('#queryPenalizeInsideListForm').submit();" >第一页</a>　
+						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/${page_obj.previous<1?1:page_obj.previous}');$('#queryPenalizeInsideListForm').submit();">上一页</a>　
+						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/${page_obj.next<1?1:page_obj.next }');$('#queryPenalizeInsideListForm').submit();" >下一页</a>　
+						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryPenalizeInsideListForm').submit();" >最后一页</a>
 						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
 								id="selectPg"
-								onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+								onchange="changePage(this)">
 								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
 								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>
@@ -784,7 +863,7 @@ function addPunishinsideBill(){
 					</tr>
 				</table>
 			</div>
-		</c:if> --%>
+		</c:if>
 </div>
 </c:if>
 

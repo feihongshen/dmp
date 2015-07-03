@@ -76,4 +76,12 @@ public enum FlowOrderTypeEnum {
 	public static FlowOrderTypeEnum getText(long value) {
 		return FlowOrderTypeEnum.indexMap.get(Integer.valueOf((int) value));
 	}
+	
+	public static Map<Integer, String> getMap() {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		for (FlowOrderTypeEnum e : FlowOrderTypeEnum.values()) {
+			map.put(e.value, e.text);
+		}
+		return map;
+	}
 }

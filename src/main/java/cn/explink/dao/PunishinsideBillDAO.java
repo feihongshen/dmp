@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -134,7 +135,7 @@ public class PunishinsideBillDAO {
 	public long createPunishinsideBill(
 			final ExpressOpsPunishinsideBill punishinsideBill) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(
 					java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -242,25 +243,24 @@ public class PunishinsideBillDAO {
 						});
 	}
 	
-	public void updatePunishinsideBill(
-			final String punishNos, final int id) {
+	public void updatePunishinsideBill( final String punishNos, final BigDecimal sumPrice, final int id) {
 		
 		this.jdbcTemplate
 		.update("update express_ops_punishinside_bill set "
-				+ "punishNos=? where id=?",
+				+ "punishNos=?,sumPrice=? where id=?",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
 							throws SQLException {
-						// TODO Auto-generated method stub
 						ps.setString(1, punishNos);
-						ps.setInt(2, id);
+						ps.setBigDecimal(2, sumPrice);
+						ps.setInt(3, id);
 					}
 				});
 	}
 
-	public int deletePunishinsideBill(int id) {
-		String sql = "delete from express_ops_punishinside_bill where id=" + id;
+	public int deletePunishinsideBill(String ids) {
+		String sql = "delete from express_ops_punishinside_bill where id in (" + ids + ")";
 		return this.jdbcTemplate.update(sql);
 	}
 
@@ -345,7 +345,7 @@ public class PunishinsideBillDAO {
 	public List<PenalizeInside> findByCondition(long punishbigsort,
 			long punishsmallsort, String punishNos, long dutybranchid,
 			long dutypersonid, String punishNoCreateBeginDate,
-			String punishNoCreateEndDate, long page) {
+			String punishNoCreateEndDate, int punishcwbstate, long page) {
 		String sql = "select * from express_ops_punishInside_detail where 1=1 ";
 
 		if (punishbigsort > 0) {
@@ -369,6 +369,9 @@ public class PunishinsideBillDAO {
 		if (StringUtils.isNotBlank(punishNoCreateEndDate)) {
 			sql += " And creDate<='" + punishNoCreateEndDate + "'";
 		}
+		if (punishcwbstate != -1) {
+			sql += " And punishcwbstate=" + punishcwbstate;
+		}
 		if (page != -9) {
 			sql += " ORDER BY creDate DESC limit "
 					+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
@@ -378,11 +381,19 @@ public class PunishinsideBillDAO {
 
 	}
 
-	public List<ExpressOpsPunishinsideBill> getMaxContractNo() {
-		String sql = "select * from express_ops_punishinside_bill order by contractNo desc ";
+	public List<ExpressOpsPunishinsideBill> getMaxBillBatch() {
+		String sql = "select * from express_ops_punishinside_bill order by billBatch desc";
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());
 	}
 
+	public BigDecimal calculateSumPrice(String punishNos){
+		String sql="SELECT SUM(punishInsideprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
+		if (StringUtils.isNotBlank(punishNos)) {
+			sql+=" And punishNo IN("+punishNos+")";
+		}
+		return this.jdbcTemplate.queryForObject(sql, BigDecimal.class);
+	}
+	
 	public List<ExpressOpsPunishinsideBill> getPunishinsideBillByChukuDate(
 			String begindate, String enddate, long page) {
 		String sql = "select * from express_ops_bale where cretime>=? and cretime<=? ";

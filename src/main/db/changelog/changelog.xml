@@ -7293,7 +7293,36 @@ CREATE TABLE `cs_complaint_accept` (
     
     </changeSet>
     
-    
+    <changeSet id="lichongchong-2015-07-02-1" author="lichongchong">
+    	<sql>
+    		CREATE TABLE `express_ops_punishinside_bill` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主表id',
+			  `billBatch` varchar(100) DEFAULT '' COMMENT '账单批次',
+			  `billState` int(4) DEFAULT '0' COMMENT '账单状态',
+			  `dutybranchid` int(10) DEFAULT '0' COMMENT '责任机构',
+			  `dutypersonid` int(11) DEFAULT '0' COMMENT '责任人',
+			  `sumPrice` decimal(19,2) DEFAULT '0.00' COMMENT '扣罚金额',
+			  `creator` int(11) DEFAULT '0' COMMENT '创建人',
+			  `createDate` varchar(20) DEFAULT '' COMMENT '创建日期',
+			  `shenHePerson` int(11) DEFAULT '0' COMMENT '审核人',
+			  `shenHeDate` varchar(20) DEFAULT '' COMMENT '审核日期',
+			  `cheXiaoPerson` int(11) DEFAULT '0' COMMENT '撤销人',
+			  `cheXiaoDate` varchar(20) DEFAULT '' COMMENT '撤销日期',
+			  `heXiaoPerson` int(11) DEFAULT '0' COMMENT '核销人',
+			  `heXiaoDate` varchar(20) DEFAULT '' COMMENT '核销日期',
+			  `quXiaoHeXiaoPerson` int(11) DEFAULT '0' COMMENT '取消核销人',
+			  `quXiaoHeXiaoDate` varchar(20) DEFAULT '' COMMENT '取消核销日期',
+			  `punishbigsort` int(10) DEFAULT '0' COMMENT '扣罚大类',
+			  `punishsmallsort` int(10) DEFAULT '0' COMMENT '扣罚小类',
+			  `punishInsideRemark` varchar(255) DEFAULT '' COMMENT '扣罚说明',
+			  `punishInsideIds` varchar(1000) DEFAULT '' COMMENT '对内扣罚ids',
+			  `punishNos` text COMMENT '扣罚单号',
+			  `punishNoCreateBeginDate` varchar(20) DEFAULT '' COMMENT '扣罚单创建开始日期',
+			  `punishNoCreateEndDate` varchar(20) DEFAULT '' COMMENT '扣罚单创建结束日期',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='对内扣罚账单表';
+    	</sql>
+    </changeSet>
     
     
 </databaseChangeLog>

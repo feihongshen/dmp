@@ -142,10 +142,10 @@ public class PunishInsideDao {
 			sql+=" And punishsmallsort="+punishsmallsort;
 		}
 		if (!begindate.equals("")) {
-			sql+=" And creDate>='"+begindate+"'";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (!enddate.equals("")) {
-			sql+=" And creDate<='"+enddate+"'";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (page!=-9) {
 			sql += " ORDER BY creDate DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -178,10 +178,10 @@ public class PunishInsideDao {
 			sql+=" And punishsmallsort="+punishsmallsort;
 		}
 		if (!begindate.equals("")) {
-			sql+=" And creDate>='"+begindate+"'";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (!enddate.equals("")) {
-			sql+=" And creDate<='"+enddate+"'";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		return this.jdbcTemplate.queryForInt(sql);
 		
