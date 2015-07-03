@@ -194,7 +194,15 @@ $(function() {
 	});
 	
 });
-
+function resetData(){
+	$("#cwbs").val("");
+	$("#cwbtypeid").val(0);
+	$("#customerid").val(0);
+	$("#branchid").val(0);
+	$("#strtime").val("");
+	$("#endtime").val("");
+	$("#auditstate").val(0);
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -264,7 +272,7 @@ $(function() {
 									<tr>
 										<td width="20%">
 											<input type="button" onclick="check();"  value="查询" class="input_button2">&nbsp;&nbsp;
-											<input type="reset" value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="resetData();" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
 											<input type="button" name="tuizai" id="tuizai" value="退货再投" class="input_button2" onclick="audit()">

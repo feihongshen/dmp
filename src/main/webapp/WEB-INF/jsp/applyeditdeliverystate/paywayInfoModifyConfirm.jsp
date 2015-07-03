@@ -171,6 +171,14 @@ function exportExcel(){
 	$("#searchForm").submit();
 	$("#searchForm").attr("action","1");
 }
+function resetData(){
+	$("#cwb").val("");
+	$("#cwbtypeid").val(0);
+	$("#applypeople").val(0);
+	$("#applytype").val(0);
+	$("#confirmstate").val(0);
+	$("#confirmresult").val(0);
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -242,7 +250,7 @@ function exportExcel(){
 									<tr>
 										<td width="20%">
 											<input type="button" value="查询" onclick="check();" class="input_button2">&nbsp;&nbsp;
-											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="resetData();"  value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
 											<input type="button" onclick="applypass();" id="pass" value="确认通过" class="input_button2">&nbsp;&nbsp;

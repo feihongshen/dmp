@@ -215,7 +215,17 @@ function displayorno(displayorno){
 		$("#hiddendiv").attr("hidden","hidden");
 	}
 }
-
+function restData(){
+	$("#areatest").val("");
+	$("#cwbtypeid").val(0);
+	$("#customerid").val(0);
+	$("#branchid").val(0);
+	$("#checkresult").val(0);
+	$("#shenhestate").val(1);
+	$("#strtime").val("");
+	$("#endtime").val("");
+	
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -299,7 +309,7 @@ function displayorno(displayorno){
 								<tr>
 									<td width="20%">
 										<input type="button" onclick="check();"  value="查询" class="input_button2">&nbsp;&nbsp;
-										<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
+										<input type="button"  onclick="restData();" value="重置" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td width="20%">
 										<input type="button" id="submitF" value="确认退货" onclick="sub()" class="input_button2">&nbsp;&nbsp;

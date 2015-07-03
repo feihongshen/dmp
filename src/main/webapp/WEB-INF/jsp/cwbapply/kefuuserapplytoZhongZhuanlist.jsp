@@ -209,7 +209,16 @@ $(function() {
 	});
 	
 });
-
+function resetData(){
+	$("#cwbs").val("");
+	$("#strtime").val("");
+	$("#endtime").val("");
+	$("#cwbtypeid").val(0);
+	$("#customerid").val(0);
+	$("#cwbtypeid").val(0);
+	$("#branchid").val(0);
+	$("#ishandle").val(0);
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -283,7 +292,7 @@ $(function() {
 									<tr>
 										<td width="20%">
 											<input type="button" onclick="check();" id="serch" value="查询" class="input_button2">&nbsp;&nbsp;
-											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button" onclick="resetData();" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
 											<input type="button" onclick="subPass()" value="审核通过" class="input_button2">&nbsp;&nbsp;

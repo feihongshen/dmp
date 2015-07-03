@@ -216,7 +216,14 @@ function exportField(){
 		alert("没有做查询操作，不能导出！");
 	} 
 }
-
+function resetData(){
+	$("#cwb").val("");
+	$("#cwbtypeid").val(0);
+	$("#customerid").val(0);
+	$("#shenhestate").val(0);
+	$("#strtime").val("");
+	$("#endtime").val("");
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -285,7 +292,7 @@ function exportField(){
 									<tr>
 										<td width="20%">
 											<input type="button" onclick="check();"  value="查询" class="input_button2">&nbsp;&nbsp;
-											<input type="reset"  value="重置" class="input_button2">&nbsp;&nbsp;
+											<input type="button"  onclick="resetData();" value="重置" class="input_button2">&nbsp;&nbsp;
 										</td>
 										<td width="20%">
 											<input type="button" onclick="sub()" value="退客户成功" class="input_button2">&nbsp;&nbsp;
