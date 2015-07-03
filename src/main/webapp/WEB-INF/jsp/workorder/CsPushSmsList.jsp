@@ -42,6 +42,7 @@
       	        	initDataKey="cn.explink.enumutil.ComplaintStateEnum"
       	        	viewField="text" 
       	        	saveField="value"
+      	        	ifClear="true"
 	      	        data-options="width:150,prompt: '工单状态'"
    	        />
 			

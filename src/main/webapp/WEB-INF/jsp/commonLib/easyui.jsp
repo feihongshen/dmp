@@ -58,6 +58,7 @@
 <script src="${ctx}/js/easyui-extend/plugins/easyui/jeasyui-extensions/jquery.portal.js" type="text/javascript"></script>
 <script src="${ctx}/js/easyui-extend/plugins/easyui/jeasyui-extensions/jquery.my97.js" type="text/javascript"></script>    
 <script src="${ctx}/js/easyui-extend/plugins/easyui/jeasyui-extensions/jeasyui.extensions.ty.js"></script>
+<script src="${ctx}/js/commonUtil.js"></script>
 
 <%-- <script src="${ctx}/script/system/dictionary.js" type="text/javascript"></script> --%>
 
