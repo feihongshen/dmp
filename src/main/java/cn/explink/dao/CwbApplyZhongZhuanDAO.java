@@ -219,27 +219,26 @@ public class CwbApplyZhongZhuanDAO {
 	}
 	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanList(long page,String cwbs,int cwbordertype,long customerid,long applyzhongzhuanbranchid,int ishandle,String begindate, String enddate) {
 		String sql = " select * from op_cwbapplyzhongzhuan where ishandle=" + ishandle;
-		if(!cwbs.equals("")){
-			sql += " and cwb in("+cwbs+")";
-		}else{
-			StringBuffer w = new StringBuffer("");
-			if (cwbordertype > 0) {
-				w.append(" and cwbordertypeid=" + cwbordertype);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (applyzhongzhuanbranchid > 0) {
-				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
-			}
-			if (!"".equals(begindate)) {
-				w.append(" and applytime >= '" + begindate + "' ");
-			}
-			if (!"".equals(enddate)) {
-				w.append(" and applytime <= '" + enddate + "' ");
-			}
-			sql += w;
+		StringBuffer w = new StringBuffer("");
+		if(!"".equals(cwbs)){
+			w.append(" and cwb in("+cwbs+")");
 		}
+		if (cwbordertype > 0) {
+			w.append(" and cwbordertypeid=" + cwbordertype);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (applyzhongzhuanbranchid > 0) {
+			w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
+		}
+		if (!"".equals(begindate)) {
+			w.append(" and applytime >= '" + begindate + "' ");
+		}
+		if (!"".equals(enddate)) {
+			w.append(" and applytime <= '" + enddate + "' ");
+		}
+		sql += w;
 		if (page!=-9) {
 			 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 
@@ -248,27 +247,26 @@ public class CwbApplyZhongZhuanDAO {
 	}
 	public long getCwbApplyZhongZhuanCount(String cwbs,int cwbordertype,long customerid,long applyzhongzhuanbranchid,int ishandle, String begindate, String enddate) {
 		String sql = "select count(1) from op_cwbapplyzhongzhuan where ishandle=" + ishandle;
-		if(!cwbs.equals("")){
-			sql += " and cwb in("+cwbs+")";
-		}else{
-			StringBuffer w = new StringBuffer("");
-			if (cwbordertype > 0) {
-				w.append(" and cwbordertypeid=" + cwbordertype);
-			}
-			if (customerid > 0) {
-				w.append(" and customerid=" + customerid);
-			}
-			if (applyzhongzhuanbranchid > 0) {
-				w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
-			}
-			if (!"".equals(begindate)) {
-				w.append(" and applytime >= '" + begindate + "' ");
-			}
-			if (!"".equals(enddate)) {
-				w.append(" and applytime <= '" + enddate + "' ");
-			}
-			sql += w;
+		StringBuffer w = new StringBuffer("");
+		if(!"".equals(cwbs)){
+			w.append(" and cwb in("+cwbs+")");
 		}
+		if (cwbordertype > 0) {
+			w.append(" and cwbordertypeid=" + cwbordertype);
+		}
+		if (customerid > 0) {
+			w.append(" and customerid=" + customerid);
+		}
+		if (applyzhongzhuanbranchid > 0) {
+			w.append(" and applyzhongzhuanbranchid=" + applyzhongzhuanbranchid);
+		}
+		if (!"".equals(begindate)) {
+			w.append(" and applytime >= '" + begindate + "' ");
+		}
+		if (!"".equals(enddate)) {
+			w.append(" and applytime <= '" + enddate + "' ");
+		}
+		sql += w;
 		return jdbcTemplate.queryForInt(sql);
 	}
 	

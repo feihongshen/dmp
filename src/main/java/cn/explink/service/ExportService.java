@@ -3113,7 +3113,7 @@ public class ExportService {
 			cloumnName2[2] = "Customername";
 			cloumnName1[3] = "当前站点";
 			cloumnName2[3] = "Branchname";
-			cloumnName1[4] = "匹配站点";
+			cloumnName1[4] = "配送站点";
 			cloumnName2[4] = "Matchbranchname";
 			cloumnName1[5] = "到站时间";
 			cloumnName2[5] = "InSitetime";

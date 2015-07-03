@@ -8,9 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONArray;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
@@ -55,7 +52,6 @@ import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.User;
-import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -1042,7 +1038,7 @@ public class CwbApplyController {
 			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
 			){
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	

@@ -312,7 +312,7 @@ function resetData(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">匹配站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送站点</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">到站时间</td>
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>

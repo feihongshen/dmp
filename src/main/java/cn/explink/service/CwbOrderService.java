@@ -4073,7 +4073,7 @@ public class CwbOrderService {
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 				|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) {
 			// 拒收修改订单为配送状态
-			if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
+			if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 				List<Branch> bList = new ArrayList<Branch>();
 				//chechFlag (退货是否需要审核的标识 0：否 ,1：是)
 				if (chechFlag) {
@@ -4083,7 +4083,12 @@ public class CwbOrderService {
 					// 退货审核表插入一条订单数据
 					OrderBackCheck orderBackCheck=orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
 					if(orderBackCheck == null&&(podresultid == DeliveryStateEnum.JuShou.getValue() || podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) ){
-						OrderBackCheck o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
+						OrderBackCheck o = new OrderBackCheck();
+						if(podresultid == DeliveryStateEnum.JuShou.getValue()){
+							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
+						}else if(podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()){
+							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.BuFenTuiHuo.getValue());
+						}
 						this.orderBackCheckDAO.createOrderBackCheck(o);
 						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 					}
@@ -4472,7 +4477,7 @@ public class CwbOrderService {
 				CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
 				cwbApplyZhongZhuan.setApplybranchid(user.getBranchid());
 				cwbApplyZhongZhuan.setApplytime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-				cwbApplyZhongZhuan.setApplyzhongzhuanbranchid(zhongzhuanbranchList==null||zhongzhuanbranchList.size()==0?0:zhongzhuanbranchList.get(0).getBranchid());
+				cwbApplyZhongZhuan.setApplyzhongzhuanbranchid(co.getDeliverybranchid());//配送站点
 				cwbApplyZhongZhuan.setApplyuserid(user.getUserid());
 				cwbApplyZhongZhuan.setCustomerid(co.getCustomerid());
 				cwbApplyZhongZhuan.setCwbordertypeid(co.getCwbordertypeid());
@@ -6512,8 +6517,8 @@ public class CwbOrderService {
 						cwbOrderView.setCwbordertypename(CwbOrderTypeIdEnum.getByValue((int)(ot.getCwbordertypeid())).getText());// 订单类型
 						cwbOrderView.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, ot.getCustomerid()));// 供货商的名称
 						cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, c.getCurrentbranchid()));//当前站点
-						cwbOrderView.setMatchbranchname(c.getExcelbranch());//匹配站点名称
-						cwbOrderView.setInSitetime(ot.getArrivebranchtime());//到站时间
+						cwbOrderView.setMatchbranchname(this.dataStatisticsService.getQueryBranchName(branchList,ot.getApplyzhongzhuanbranchid()));//配送站点名称
+						cwbOrderView.setInSitetime(ot.getApplytime());//到站时间(审核为待中转时的当前时间)
 						cwbOrderView.setAuditor(ot.getAuditname());//审核人
 						cwbOrderView.setAudittime(ot.getAudittime());//审核时间
 						cwbOrderViewList.add(cwbOrderView);

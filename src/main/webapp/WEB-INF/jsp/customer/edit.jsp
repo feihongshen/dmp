@@ -37,7 +37,7 @@ Customer customer = (Customer)request.getAttribute("customer");
 							<option value="2" <%if(customer.getIsUsetranscwb()==2){ %>selected<%} %>>否</option>
 						</select>
 					</li>
-					<li><span>退货订单申请：</span>
+					<li><span>退货订单审核：</span>
 						<select id ="needchecked" name ="needchecked" class="select1">
 							<option value="0" <%if(customer.getNeedchecked()==0){ %>selected<%} %>>否</option>
 							<option value="1" <%if(customer.getNeedchecked()==1){ %>selected<%} %>>是</option>
