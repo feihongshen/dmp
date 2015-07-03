@@ -241,7 +241,7 @@ function showUp()
 </tr>
 <tr>
 <td><input type="button" class="input_button2" id="addpenalizeOut" value="创建"/> </td>
-<td><input type="button" ${importFlag>0?'disabled="disabled"':''}  class="input_button2" value="导入" id="imp"  onclick="showUp()"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
+<td><input type="button" ${importFlag > 0 ? 'disabled="disabled"' : ''}  class="input_button2" value="导入" id="imp"  onclick="showUp()"/> <input class="input_button2" type="button" disabled="disabled" value="生成扣罚单" id="addpenalizeIn"/> </td>
 <td><input type="button" class="input_button2" disabled="disabled" id="cancelpenalizeOut" value="撤销"/></td>
 <td> </td>
 <td> </td>
@@ -250,13 +250,13 @@ function showUp()
 <td colspan="2"> 
 <input class="input_button2" type="button" onclick="check()" value="查询"/>
 <input class="input_button2" type="button" onclick="javascript:window.location.href='${pageContext.request.contextPath}/penalizeOut/list/1'" value="重置" />
-<input class="input_button2" type="button" onclick="exportExcel()"  ${page_obj.total>0?'':'disabled="disabled"' } value="导出"/>  
+<input class="input_button2" type="button" onclick="exportExcel()"  ${page_obj.total> 0 ? '' : 'disabled="disabled"' } value="导出"/>  
 </td>
 </tr>
 	<input name="isnow" value="1" type="hidden"/>
 	</form>
 <tr><td colspan="6">
-<div id="fileup"  ${importFlag>0?'':'style="display: none;"' }>
+<div id="fileup"  ${importFlag > 0 ? '' : 'style="display: none;"' }>
 <table>
 	<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/penalizeOut/importData" method="post" enctype="multipart/form-data" >
 		<tr>
@@ -384,14 +384,14 @@ function showUp()
 	<tr>
 		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
 			<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
-			<a href="javascript:$('#searchForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#searchForm').submit();">上一页</a>　
-			<a href="javascript:$('#searchForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#searchForm').submit();" >下一页</a>　
-			<a href="javascript:$('#searchForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#searchForm').submit();" >最后一页</a>
+			<a href="javascript:$('#searchForm').attr('action','${page_obj.previous < 1 ? 1 : page_obj.previous}');$('#searchForm').submit();">上一页</a>　
+			<a href="javascript:$('#searchForm').attr('action','${page_obj.next < 1 ? 1 : page_obj.next }');$('#searchForm').submit();" >下一页</a>　
+			<a href="javascript:$('#searchForm').attr('action','${page_obj.maxpage < 1 ? 1 : page_obj.maxpage}');$('#searchForm').submit();" >最后一页</a>
 			　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
 					id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-					<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+					<option value='${i}' ${page == i ? 'selected=seleted' : ''}>${i}</option>
 					</c:forEach>
 				</select>页
 		</td>

@@ -852,6 +852,8 @@ public class DeliveryController {
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("firstchangereasonlist", firstchangereasonlist);
 		model.addAttribute("showposandqita", this.systemInstallDAO.getSystemInstall("showposandqita") == null ? "no" : this.systemInstallDAO.getSystemInstall("showposandqita").getValue());
+		model.addAttribute("firstchangereasonid", firstchangereasonid);
+		model.addAttribute("changereasonid", changereasonid);
 		// model.addAttribute("pl_switch",
 		// switchDAO.getSwitchBySwitchname(SwitchEnum.PiLiangFanKuiPOS.getText()));
 		model.addAttribute("pl_switch", this.systemInstallDAO.getSystemInstall("feedbackpos") == null ? "no" : this.systemInstallDAO.getSystemInstall("feedbackpos").getValue());
@@ -1136,6 +1138,8 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = true, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "0", required = true, value = "backreasonid") long backreasonid,
 			@RequestParam(defaultValue = "0", required = true, value = "losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "firstchangereasonid") long firstchangereasonid,
+			@RequestParam(defaultValue = "0", required = true, value = "changereasonid") long changereasonid,
 			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, 
 			@RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
@@ -1180,6 +1184,8 @@ public class DeliveryController {
 					parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
 					parameters.put("sign_time", DateTimeUtil.getNowTime());
 					parameters.put("isbatch", true);
+					parameters.put("firstchangereasonid", firstchangereasonid);
+					parameters.put("changereasonid", changereasonid);
 					parameters.put("paywayid", paytype);
 					parameters.put("weishuakareasonid", Long.parseLong(cwb_reasonid[1] == null ? "0" : cwb_reasonid[1].indexOf("w") > -1 ? cwb_reasonid[1].replaceAll("w", "") : "0"));
 					parameters.put("resendtime", resendtime);

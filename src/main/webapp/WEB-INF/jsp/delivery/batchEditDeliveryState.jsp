@@ -23,6 +23,8 @@ List<Reason> weishuakareasonlist = (List<Reason>)request.getAttribute("weishuaka
 
 String deliverystate = request.getAttribute("deliverystate")==null?"":(String)request.getAttribute("deliverystate");
 long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
+long firstchangereasonid = request.getAttribute("firstchangereasonid")==null?0:(Long)request.getAttribute("firstchangereasonid");
+long changereasonid = request.getAttribute("changereasonid")==null?0:(Long)request.getAttribute("changereasonid");
 
 long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
@@ -364,7 +366,8 @@ function resub(form){
 							拒收原因：
 							 <select name="backreasonid" id="backreasonid" class="select1">
 					        	<option value ="0">请选择</option>
-					        	<%for(Reason r : backlist){ %>
+					        	<%if(backlist!=null&&backlist.size()>0)
+					        	for(Reason r : backlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			           			<%} %>
 					        </select>
@@ -374,7 +377,8 @@ function resub(form){
 							一级原因：
 							 <select name="firstchangereasonid" id="firstchangereasonid" class="select1"  onchange="updatechangelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)">
 					        	<option value ="0">请选择</option>
-					        	<%for(Reason r : firstchangereasonlist){ %>
+					        	<%if(firstchangereasonlist!=null&&firstchangereasonlist.size()>0)
+					        	for(Reason r : firstchangereasonlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			           			<%} %>
 					        </select>
@@ -413,7 +417,8 @@ function resub(form){
 							货物丢失原因：
 			       			 <select name="losereasonid" id="losereasonid">
 			        			<option value ="0">请选择</option>
-			        				<%for(Reason r : losereasonlist){ %>
+			        				<%if(losereasonlist!=null&&losereasonlist.size()>0)
+			        				for(Reason r : losereasonlist){ %>
 	           						<option value="<%=r.getReasonid()%>"  title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
 	           				<%} %>
 			      			  </select>
@@ -476,7 +481,8 @@ function resub(form){
 						<%if(obj.getLong("errorcode")==ExceptionCwbErrorTypeEnum.Wei_Shua_Ka_Yuan_Yin.getValue()){ %>
 							<select name="weishuakareasonid<%=obj.getString("cwb") %>" id="weishuakareasonid<%=obj.getString("cwb") %>">
 									<option value="0">请选择</option>
-									<%for(Reason r : weishuakareasonlist){ %>
+									<%if(weishuakareasonlist!=null&&weishuakareasonlist.size()>0)
+									for(Reason r : weishuakareasonlist){ %>
 										<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 									<%} %>
 							</select>
@@ -498,6 +504,8 @@ function resub(form){
 					<input type="hidden" name="deliverystate" value="<%=deliverystateid%>" />
 					<input type="hidden" name="backreasonid" value="<%=backreasonid%>" />
 					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
+					<input  name="firstchangereasonid" value="<%=firstchangereasonid%>" />
+					<input  name="changereasonid" value="<%=changereasonid%>" />
 					<input type="hidden" name="paytype" value="<%=paytype%>" />
 					<input type="hidden" name="leavedreasonid" value="<%=leavedreasonid%>" />
 					<input type="hidden" name="losereasonid" value="<%=losereasonid%>" />

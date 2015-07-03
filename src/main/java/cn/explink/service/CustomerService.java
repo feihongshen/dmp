@@ -80,7 +80,8 @@ public class CustomerService {
 			SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 			String url1 = "";
 			if (omsPathUrl != null && omsUrl != null) {
-				url1 = omsPathUrl.getValue() + omsUrl.getValue();
+//				url1 = omsPathUrl.getValue() + omsUrl.getValue();
+				url1 = omsUrl.getValue();
 			} else {
 				url1 = "http://127.0.0.1:8080/oms/";
 			}
