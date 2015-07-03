@@ -4495,6 +4495,7 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
+		
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -4553,7 +4554,10 @@ public class PDAController {
 		obj.put("isTodayFlow", this.getTodayZeroDate().compareTo(flowTime) < 0);
 		// 重复领货.
 		obj.put("isRepeatPicking", FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowType.intValue());
-		if(FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowType.intValue()){
+		CwbOrder tempCwbOrder = cwbDAO.getCwbByCwb(cwb);
+		if(FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowType.intValue() 
+				&& null != tempCwbOrder
+				&& (tempCwbOrder.getScannum() < tempCwbOrder.getBackcarnum() || tempCwbOrder.getScannum() >= tempCwbOrder.getSendcarnum()) ){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Ling_Huo);
 		}
 	}
