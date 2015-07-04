@@ -1,12 +1,13 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>工资固定值设置</title>
+<title>工资查询</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css" type="text/css"  />
 <script src="${pageContext.request.contextPath}/js/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -19,6 +20,8 @@
 <script src="${pageContext.request.contextPath}/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/js.js" type="text/javascript"></script>
+<script src="${ctx}/js/commonUtil.js" type="text/javascript"></script>
+<script src="${ctx}/js/workorder/csPushSmsList.js" type="text/javascript"></script>
 <script type="text/javascript">
 function showButton()
 { 	if($("#filename").val().indexOf(".xlsx")==-1&&$("#filename").val().indexOf(".xls")==-1)
@@ -49,37 +52,7 @@ function showUp()
 
 	}
 	
-function allchecked()
-{ var ids="";
-	$("[id=id]").each(
-			function()
-			{
-				if($(this).attr('checked')=='true'||$(this).attr('checked')=='checked')
-					{
-					ids+=","+$(this).val();
-					}
-			});
-	if(ids.indexOf(',')!=-1)
-		{
-		ids=ids.substr(1);
-		}
-	
-	var dmpurl=$("#dmpurl").val();
-	if(window.confirm("确定要移除吗！")&&ids.length>0){
-	$.ajax({
-		type:"post",
-		url:dmpurl+"/salaryFixed/delete",
-		data:{"ids":ids},
-		dataType:"json",
-		success:function(data){
-			if(data.counts>0){
-				alert("成功移除"+data.counts+"记录");
-				}
-			$("#searchForm").submit();
-			}
-		});
-	}
-}
+
 function checkall()
 { var checked=$("#all").attr('checked');
 	$("[id=id]").each(
@@ -91,6 +64,11 @@ function checkall()
 			}
 			});
 }
+function exportByCondation(sign){
+	$("#exportform").attr("action","<%=request.getContextPath()%>/salaryQuery/exportExceldata/"+sign);
+	$("#exportform").submit();
+}
+
 </script>
 </head>
 
@@ -103,49 +81,37 @@ function checkall()
 	    <tr>
 	    <td colspan="4" height="25px">
 	    <input class="input_button2" type="submit"  value="查询"/>
-	    <input type="button" <%-- ${importFlag>0?'disabled="disabled"':''} --%>  class="input_button2" value="固定值导入" id="imp"  onclick="showUp()"/> 
+	    </td>
+	    <td colspan="4" height="25px" style="margin-right: 3%;">
+	    <input class="input_button2" type="button"  value="全部导出" onclick="exportByCondation(0);"/>
+	    </td>
+	     <td colspan="4" width="400" height="25px" style="margin-right: 2%;">
+	    <input class="input_button1" type="button"  value="按工资条导出" onclick="exportByCondation(1);"/>
 	    </td>
 	    </tr>
 	    <tr>
-	    <td  align="right" height="25px">姓名：</td>
-	    <td  align="left"><input type="text" name="realname" value="${realname}"/></td>
-	    <td  align="right">身份证号：</td>
+	    <td  align="right" height="25px">批次编号：</td>
+	    <td  align="left"><input type="text" name="batchnum" value="${realname}"/></td>
+	    <td  align="right">站点：</td>
+	    <td  align="left">
+	   <%--  <input type="text" name="branch" value="${idcard}" /> --%>
+	    <select id="branch" name="branch" >
+	    	<option value="0">请选择站点</option>
+	    	<c:forEach  items="${branchList}" var="branch">
+	    	<option value="${branch.branchid}">${branch.branchname}</option>
+	    	</c:forEach>
+	    
+	    </select>
+	    </td>
+	    <td  align="right">配送员：</td>
+	    <td  align="left"><input type="text" name="distributionmember" value="${idcard}" /></td>
+	    </tr>
+	    <tr>
+	      <td  align="right">身份证号：</td>
 	    <td  align="left"><input type="text" name="idcard" value="${idcard}"/></td>
 	    </tr>
 	    </form>
 		<tr>
-		<td colspan="4" height="25px">
-		<div id="fileup"  ${importflag>0 ? '' : 'style="display : none;"' }>
-		<form   action="${pageContext.request.contextPath}/salaryFixed/importData" method="post" enctype="multipart/form-data" >
-			<table>
-				<tr>
-					<td>
-						<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
-				   </td>
-				   <td>
-					   <input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
-				  </td>
-		 
-		     <c:if test="${importflag>0 }" >
-					<td>
-						<span style="font-weight: bold;"> 成功:</span> 
-				   </td>
-				   <td>
-						<span style="font-weight: bold;color: red">${record.successCounts}</span>
-				  </td> 
-				  <td>
-						<span style="font-weight: bold;"> 失败:</span>
-				 </td>
-				 <td>
-						<input type="hidden" id="importFlag" value="${importflag}"/>
-						<span ${record.failCounts > 0 ? 'onclick="showError()"' : ''} style="font-weight: bold;color: red;cursor:pointer ;">${record.failCounts}</span>
-				 </td>
-		 </c:if>
-		 </tr>
-		</table>
-	</form>
-	</div>
-	</td>
 		</tr>
  </table>
 
@@ -160,20 +126,19 @@ function checkall()
 	<table width="250%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
 	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 站点</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 姓名</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 身份证号</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 结算单量</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 基本工资 </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 岗位工资</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 绩效奖金</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 岗位津贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 工龄</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 住房补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 全勤补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 餐费补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 交通补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 通讯补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 提成</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 工龄 </td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 邮费补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 固定补贴</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 话费补助</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 高温寒冷补贴</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 违纪扣款扣罚(导入)</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 扣款撤销</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴2</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴3</td>
@@ -181,10 +146,11 @@ function checkall()
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴5</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它补贴6</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 加班费</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 考勤扣款</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 考勤扣款 </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 个人社保扣款</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 个人公积金扣款</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 违纪扣款扣罚(导入)</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 违纪违规扣罚</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 货损赔偿</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 宿舍费用</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚2</td>
@@ -192,22 +158,22 @@ function checkall()
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚4</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚5</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它扣罚6</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 货物预付款</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款2</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款3</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款4</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款5</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 其它预付款6</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 租用车辆费用</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 车子维修费用</td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 油/电费用</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 应发工资</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 个税</td>
+	<td align="center" valign="middle"style="font-weight: bold;"> 实发工资</td>
 	</tr>
 	<c:forEach items="${salaryList}" var="salary">
 	<tr> 
 		<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
 		<td align="center" valign="middle">${salary.realname}</td>
 		<td align="center" valign="middle">${salary.idcard}</td>
-		<%-- <td align="center" valign="middle">${salary.accountSingle}</td> --%>
 		<td align="center" valign="middle">${salary.salarybasic}</td>
 		<td align="center" valign="middle">${salary.salaryjob}</td>
 		<td align="center" valign="middle">${salary.pushcash}</td>
@@ -231,7 +197,6 @@ function checkall()
 		<td align="center" valign="middle">${salary.security}</td>
 		<td align="center" valign="middle">${salary.gongjijin}</td>
 		<td align="center" valign="middle">${salary.foul_import}</td>
-		<%-- <td align="center" valign="middle">${salary.goods}</td> --%>
 		<td align="center" valign="middle">${salary.dorm}</td>
 		<td align="center" valign="middle">${salary.penalizeother1}</td>
 		<td align="center" valign="middle">${salary.penalizeother2}</td>
@@ -248,10 +213,10 @@ function checkall()
 		<td align="center" valign="middle">${salary.carrent}</td>
 		<td align="center" valign="middle">${salary.carmaintain}</td>
 		<td align="center" valign="middle">${salary.carfuel}</td>
+		<td align="center" valign="middle">${salary.carfuel}</td>
 	</tr>
 	</c:forEach>
 	</table>
-	<input type="button" onclick="allchecked()" value="移除"/>
 	</div>
 	</div>
 	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
@@ -268,7 +233,7 @@ function checkall()
 					id="selectPg"
 					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 					<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-					<option value='${i}' ${page==i ? 'selected=seleted' : ''}>${i}</option>
+					<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 					</c:forEach>
 				</select>页
 		</td>
@@ -276,7 +241,12 @@ function checkall()
 	</table>
 	</div>
 	</c:if>
-	<input id="add" type="hidden"/>
+	<form action="<%=request.getContextPath()%>/salaryQuery/exportExceldata/0" method="post" id="exportform">
+		<input type="hidden" name="batchnum" value="${realname}"/>
+		<input type="hidden" name="branch" value="${idcard}"/>
+		<input type="hidden" name="distributionmember" value="${idcard}"/>
+		<input type="hidden" name="idcard" value="${idcard}"/>
+	</form>
 </body>
 </html>
 

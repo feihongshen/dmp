@@ -140,6 +140,13 @@ function sub(){
 function subChexiao(){
 	$("#searchForm3").submit();
 }
+function checkfileValue(object){
+	if($(object).val().indexOf(".txt")<0&&$(object).val().indexOf(".img")<0){
+		$(object).val("");
+		alert("您所选择的不是.img或.txt格式，请重新选择！！");
+		return;
+	}
+}
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -237,7 +244,7 @@ function subChexiao(){
 								</select></td>
 								<td width="200" align="center" valign="middle"><input type="text" name="describe<%=cwb.getOpscwbid()%>" id="describe<%=cwb.getOpscwbid()%>" style="width:95%" value="<%=losebackdescribe.equals("最多输入100个字")?"":losebackdescribe %>"/></td>
 								<td width="200" align="center"  valign="middle">
-								<input type="file" id="file<%=cwb.getOpscwbid() %>" name="file<%=cwb.getOpscwbid() %>" width="200"/>
+								<input type="file" id="file<%=cwb.getOpscwbid() %>" name="file<%=cwb.getOpscwbid() %>" width="200" onchange="checkfileValue(this);"/>
 								</td>
 							</tr>
 							<%} %>

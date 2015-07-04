@@ -771,6 +771,7 @@ src/main/java/cn/explink/controller/RoleController.java -text
 src/main/java/cn/explink/controller/SalaryCountController.java -text
 src/main/java/cn/explink/controller/SalaryFixedController.java -text
 src/main/java/cn/explink/controller/SalaryImportController.java -text
+src/main/java/cn/explink/controller/SalaryQueryController.java -text
 src/main/java/cn/explink/controller/SalarySheetController.java -text
 src/main/java/cn/explink/controller/SetDefaultExportController.java -text
 src/main/java/cn/explink/controller/SetExportCwbController.java -text
@@ -2392,6 +2393,7 @@ src/main/webapp/WEB-INF/jsp/salary/salaryCount/showfind.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryFixed/errorRecords.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryFixed/list.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryImport/salaryimport.jsp -text
+src/main/webapp/WEB-INF/jsp/salary/salaryQuery/list.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salarySheet/salarysheet.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/add.jsp -text
 src/main/webapp/WEB-INF/jsp/setexportcwb/editM.jsp -text
