@@ -56,7 +56,7 @@
             <td ><input  type="text" id="fee3" name="punishInsideprice" style="width: 100%;border-style:none" readonly="readonly" /></td>
           	</tr>
             <tr>
-            <td align="right" nowrap="nowrap">扣罚说明：</td>
+            <td align="right" nowrap="nowrap">扣罚说明<span style="color: red">*</span>：</td>
             <td colspan="5"><textarea name="punishdescribe" style="width: 100%;resize: none;" onfocus="if(this.value=='最多100字'){ this.value=''}" onblur="if(this.value==''){ this.value='最多100字'}" >最多100字</textarea></td>
            </tr>
            <tr>
