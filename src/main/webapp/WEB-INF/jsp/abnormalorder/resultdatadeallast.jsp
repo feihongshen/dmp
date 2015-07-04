@@ -147,6 +147,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 			<input type="hidden" name="id" id="id" value="<%=abnormalOrder.getId() %> ">
 			<input type="hidden" name="cwb" id="cwb" value="<%=cwborder.getCwb() %>">
 			<input type="hidden" name="getbranchusers" id="getbranchusers" value="<%=url %>">
+			<input type="hidden" id="filepathsumsize" name="filepathsumsize" value="<%=filepathsum.split(",").length %>"/>
 			<iframe name='post_frame' id="post_frame" style="display:none;" mce_style="display:none;"></iframe> 
 			<div align="center">
 			<input type="submit" value="处理" class="button" >

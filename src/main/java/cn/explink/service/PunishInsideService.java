@@ -220,7 +220,7 @@ public class PunishInsideService {
 			penalizeInsideView.setCreDate(penalizeInside.getCreDate());
 			penalizeInsideView.setCwbprice(String.valueOf(penalizeInside.getCwbPrice()));
 			penalizeInsideView.setDutybranchname(this.getBranchName(penalizeInside.getDutybranchid()));
-			penalizeInsideView.setDutyperson(this.getCreUser(penalizeInside.getCreateuserid()));
+			penalizeInsideView.setDutyperson(this.getCreUser(penalizeInside.getDutypersonid()));
 			penalizeInsideView.setFlowordertypename(this.getFlowOrdertype(penalizeInside.getCwbstate()));
 			penalizeInsideView.setPunishbigsort(this.getSortname(Integer.parseInt(penalizeInside.getPunishbigsort()+"")));//-----暂时没写????
 			penalizeInsideView.setPunishcwbstate(this.getPunishState(penalizeInside.getPunishcwbstate()));//???扣罚操作状态
@@ -439,7 +439,7 @@ public class PunishInsideService {
 							String filePath = ResourceBundleUtil.EXCEPTPATH;
 							name=file.getOriginalFilename();
 							if (name.indexOf(".")!=-1) {
-								String suffix=name.substring(name.indexOf("."));
+								String suffix=name.substring(name.lastIndexOf("."));
 								 name = System.currentTimeMillis() + suffix;
 							}else {
 								 name = System.currentTimeMillis()+"";

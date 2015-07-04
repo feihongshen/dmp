@@ -286,12 +286,12 @@ public class PunishinsideBillController {
 				.findByCondition(page, billVO.getCwbs(), 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate());
+						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 		int count = this.punishInsideDao
 				.findByConditionSum(billVO.getCwbs(), 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate());
+						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);

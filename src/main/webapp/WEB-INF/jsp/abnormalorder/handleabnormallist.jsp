@@ -142,8 +142,8 @@ function getThisBoxList(id,flag){
 
 function check(){
 
-	/* if($.trim($("#cwb").val()).length==0)
-	{ */
+	 if($.trim($("#cwb").val()).length==0)
+	{ 
 	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.daichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
 	if($("#strtime").val()==""){
 		alert("请选择开始时间");
@@ -183,7 +183,18 @@ function check(){
 		
 		
 	}
-	/* } */
+	}else{
+		if($("#chuangjianstrtime").val()!=""||$("#chuangjianendtime").val()!=""){
+			if($("#chuangjianstrtime").val()==""){
+				alert("请选择开始时间！！");
+				return;
+			}
+			if($("#chuangjianendtime").val()==""){
+				alert("请选择结束时间！！");
+				return;
+			}
+		}
+	 } 
 	
 	$("#searchForm").submit();
 	
@@ -302,10 +313,9 @@ function stateBatch()
 			}
 		}
 	}
-	 alert(efectiveids); 
 	if(nodutynum>0){
 		if($("#roleid").val()==1){
-			if(confirm("您所选择的问题件包含没有责任机构与责任人的单号（以上情况的订单将不做操作），确认继续执行吗？")){
+			if(confirm("您所选择的问题件包含没有责任机构与责任人的单号"+noduty.substring(0, noduty.length-1).split(",").length+"单（以上情况的订单将不做操作），确认继续执行吗？")){
 				if(ids.indexOf(",")>0&&efectiveids.indexOf(",")>0){
 					$.ajax({
 						type : "POST",
@@ -373,7 +383,8 @@ function reviseQuestionError(state)
 {
 	var num=0;
 	var ids="";
-	var errorids="";
+	var statenotpass="";
+	var effectids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
 		if($("#sitetype").val()!=5){
@@ -383,6 +394,12 @@ function reviseQuestionError(state)
 				}
 			}
 		
+		}
+		if($("#handlehhh"+id).val()!=1&&$("#handlehhh"+id).val()!=8){
+			if($.trim(id).length!=0){
+				statenotpass+=id+",";
+				}
+			
 		}
 		if($.trim(id).length!=0){
 		ids+=id+",";
@@ -397,11 +414,37 @@ function reviseQuestionError(state)
 		return false;
 	}
 	
-	if($("#ishandlehhh").val()!=1&&$("#ishandlehhh").val()!=8){
+/* 	if($("#ishandlehhh").val()!=1&&$("#ishandlehhh").val()!=8){
 		alert("当前所选订单的订单状态不是创建状态！！不允许修改！");
 		return;
+	} */
+	if(statenotpass.indexOf(",")>=0){
+		effectids=ids;
+		for(var i=0;i<statenotpass.substring(0, statenotpass.length-1).split(",").length;i++){
+			if(effectids.indexOf(statenotpass.substring(0, statenotpass.length-1).split(",")[i]+"")>=0){
+				effectids=effectids.replace(statenotpass.substring(0, statenotpass.length-1).split(",")[i]+",","");
+			}
+		}
+		if(confirm("您所选的订单里面包含不是创建状态的订单"+statenotpass.substring(0, statenotpass.length-1).split(",").length+"单，确定要继续操作吗？？")){
+			if(ids.indexOf(",")>0&&effectids.length>0){
+				$.ajax({
+					type : "POST",
+					url:"<%=request.getContextPath()%>/abnormalOrder/revisequestionstate",
+					data:{"ids":effectids.substring(0, effectids.length-1)},
+					dataType : "html",
+					success : function(data) {$("#alert_box",parent.document).html(data);
+						
+					},
+					complete:function(){
+						viewBox();
+					}
+				});
+				}else{
+					alert("没有能够操作的订单！！");
+					return;
+				}
+		}
 	}
-
 	if(ids.indexOf(",")>0){
 	$.ajax({
 		type : "POST",
@@ -415,11 +458,12 @@ function reviseQuestionError(state)
 			viewBox();
 		}
 	});
+	}else{
+		alert("没有能够操作的订单！！");
 	}
 	}
 function resultdatadeal(id)
 {
-	console.info(id);
 /* 	var ids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();

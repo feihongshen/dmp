@@ -127,6 +127,7 @@ public class PunishInsideController {
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
 			String quot = "'", quotAndComma = "',";
 			StringBuffer cwbs1 = new StringBuffer();
+			long roleid=this.getSessionUser().getRoleid();
 			if (cwb.length() > 0) {
 			for (String cwbStr : cwb.split("\r\n")) {
 				if (cwbStr.trim().length() == 0) {
@@ -144,9 +145,9 @@ public class PunishInsideController {
 			int count=0;
 			//isshow为1时为查询的时候，为0时为进入页面的时候
 			if (isshow==1) {
-				penalizeInsides=punishInsideDao.findByCondition(page,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate);
-				count=punishInsideDao.findByConditionSum(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate);
-				punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate);
+				penalizeInsides=punishInsideDao.findByCondition(page,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate,this.getSessionUser().getBranchid(),roleid);
+				count=punishInsideDao.findByConditionSum(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),roleid);
+				punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),roleid);
 			}
 			User user=this.getSessionUser();
 			List<Branch> branchs = this.branchDAO.getAllEffectBranches();
@@ -566,8 +567,8 @@ public class PunishInsideController {
 			if (cwbs1.length() > 0) {
 				cwbs = cwbs1.substring(0, cwbs1.length() - 1);
 			}
-			List<PenalizeInside> penalizeInsides=punishInsideDao.findByCondition(-9,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate);
-			String punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate);
+			List<PenalizeInside> penalizeInsides=punishInsideDao.findByCondition(-9,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+			String punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 			final List<PenalizeInsideView> penalizeInsideViews=punishInsideService.setViews(penalizeInsides,punishsumprice);
 			ExcelUtils excelUtil = new ExcelUtils() {
 

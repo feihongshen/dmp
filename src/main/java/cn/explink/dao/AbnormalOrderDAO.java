@@ -493,7 +493,10 @@ public class AbnormalOrderDAO {
 
 	public List<JSONObject> getAbnormalOrderByCredatetimeofpage(long page, String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle,
 			long customerid, long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
-		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' and isnow=1";
+		String sql = "SELECT *  from `express_ops_abnormal_order`   " + "WHERE isnow=1";
+		if(chuangjianbegindate.length()>0&&chuangjianenddate.length()>0){
+			sql+=" and credatetime>='"+chuangjianbegindate+"'"+" and credatetime<='"+chuangjianenddate+"'";
+		}
 		boolean iskefu=false;
 		if (handleBranch==BranchEnum.KeFu.getValue()) {
 			iskefu=true;
@@ -604,7 +607,10 @@ public class AbnormalOrderDAO {
 
 	public int getAbnormalOrderByCredatetimeCount(String chuangjianbegindate, String chuangjianenddate, String cwbs, long createbranchid, long abnormaltypeid, long ishandle, long customerid,
 			long handleBranch,long dealresult,long losebackisornot,long dutybranchid,long currentbranchid,long findscope,long userid) {
-		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE   " + "credatetime >= '" + chuangjianbegindate + "' " + "and credatetime <= '" + chuangjianenddate + "' and isnow=1";
+		String sql = "SELECT count(1)  from `express_ops_abnormal_order`   " + "WHERE  isnow=1";
+		if(chuangjianbegindate.length()>0&&chuangjianenddate.length()>0){
+			sql+=" and credatetime>='"+chuangjianbegindate+"'"+" and credatetime<='"+chuangjianenddate+"'";
+		}
 		//查询到与自身有关的，自己可以是负责人或者是创建人
 		boolean iskefu=false;
 		if (handleBranch==BranchEnum.KeFu.getValue()) {
@@ -714,7 +720,10 @@ public class AbnormalOrderDAO {
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
 		// + "' ";
-		String sql = "SELECT count(1) FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' ";
+		String sql = "SELECT count(1) FROM `express_ops_abnormal_order`" + "  WHERE isnow=1 ";
+		if(begindate.length()>0&&enddate.length()>0){
+			sql+=" and `handletime`>='"+begindate+"'"+" and `handletime`<='"+enddate+"'";
+		}
 		boolean iskefu=false;
 		if (handleBranch==BranchEnum.KeFu.getValue()) {
 			iskefu=true;
@@ -823,8 +832,10 @@ public class AbnormalOrderDAO {
 		// "select opscwbid from express_ops_abnormal_write_back where " +
 		// " credatetime >= '" + begindate + "'  and credatetime <= '" + enddate
 		// + "' ";
-		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE `handletime` >='" + begindate + "' and `handletime` <='" + enddate + "' and isnow=1";
-		
+		String sql = "SELECT * FROM `express_ops_abnormal_order`" + "  WHERE  isnow=1";
+		if(begindate.length()>0&&enddate.length()>0){
+			sql+=" and `handletime`>='"+begindate+"'"+" and `handletime`<='"+enddate+"'";
+		}
 		boolean iskefu=false;
 		if (handleBranch==BranchEnum.KeFu.getValue()) {
 			iskefu=true;

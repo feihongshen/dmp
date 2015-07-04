@@ -513,12 +513,12 @@ public class AbnormalOrderController {
 		if (isshow == 1) {
 			if (ishandle ==1||ishandle==0 ) {
 
-				if (chuangjianbegindate.length() == 0) {
+				/*if (chuangjianbegindate.length() == 0) {
 					chuangjianbegindate = DateTimeUtil.getDateBefore(1);
 				}
 				if (chuangjianenddate.length() == 0) {
 					chuangjianenddate = DateTimeUtil.getNowTime();
-				}
+				}*/
 				// count=abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs,branchid,
 				// abnormaltypeid, ishandle,begindate,enddate);
 				// abnormalOrderList=abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page,cwbs,branchid,
@@ -529,12 +529,12 @@ public class AbnormalOrderController {
 					count = this.abnormalOrderDAO.getAbnormalOrderByCredatetimeCount(chuangjianbegindate, chuangjianenddate, cwbs, createbranchid, abnormaltypeid, ishandle, customerid, handleBranch,dealresult,losebackisornot,dutybranchid,branch.getBranchid(),findscope,userid);
 			} else {
 
-				if (begindate.length() == 0) {
+		/*		if (begindate.length() == 0) {
 					begindate = DateTimeUtil.getDateBefore(1);
 				}
 				if (enddate.length() == 0) {
 					enddate = DateTimeUtil.getNowTime();
-				}
+				}*/
 				count = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandleCount(cwbs, createbranchid, abnormaltypeid, ishandle, begindate, enddate, customerid,
 						handleBranch,dealresult,losebackisornot,dutybranchid,branch.getBranchid(),findscope,userid);
 				abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderAndCwbdetailByCwbAndBranchidAndAbnormaltypeidAndIshandle(page, cwbs, createbranchid, abnormaltypeid, ishandle, begindate, enddate,
@@ -1038,7 +1038,7 @@ public class AbnormalOrderController {
 	public String getFilepathSum(long id,String name){
 		String filepath="";
 		AbnormalOrder abnormalOrder=abnormalOrderDAO.getAbnormalOrderById(id);
-		if (abnormalOrder.getFileposition()!=null&&abnormalOrder.getFileposition()!="") {
+		if (abnormalOrder.getFileposition()!=null&&!abnormalOrder.getFileposition().equals("")) {
 			filepath=abnormalOrder.getFileposition()+","+name;
 			return filepath;
 		}else {

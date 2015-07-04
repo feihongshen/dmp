@@ -118,7 +118,7 @@ public class PunishInsideDao {
 		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
 	}
 	//根据查询条件查询对内扣罚的扣罚单
-	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,long currentbranchid,long roleid){
 		String sql="select * from express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
@@ -128,6 +128,10 @@ public class PunishInsideDao {
 		}
 		if (dutybranchid>0) {
 			sql+=" And dutybranchid="+dutybranchid;
+		}else {
+			if (roleid!=1) {
+				sql+=" And dutybranchid="+currentbranchid;
+			}
 		}
 		if (dutynameid>0) {
 			sql+=" And dutypersonid="+dutynameid;
@@ -154,7 +158,7 @@ public class PunishInsideDao {
 
 	}
 	//根据查询条件查询对内扣罚的扣罚单总单数
-	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,long currentbranchid,long roleid){
 		String sql="select count(1) from express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
@@ -164,6 +168,11 @@ public class PunishInsideDao {
 		}
 		if (dutybranchid>0) {
 			sql+=" And dutybranchid="+dutybranchid;
+		}else {
+			if (roleid!=1) {
+				sql+=" And dutybranchid="+currentbranchid;
+
+			}
 		}
 		if (dutynameid>0) {
 			sql+=" And dutypersonid="+dutynameid;
@@ -272,7 +281,7 @@ public class PunishInsideDao {
 			}
 		});
 	}
-	public String calculateSumPrice(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+	public String calculateSumPrice(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,long currentbranchid,long roleid){
 		String sql="SELECT SUM(punishInsideprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
@@ -282,6 +291,10 @@ public class PunishInsideDao {
 		}
 		if (dutybranchid>0) {
 			sql+=" And dutybranchid="+dutybranchid;
+		}else {
+			if (roleid!=1) {
+				sql+=" And dutybranchid="+currentbranchid;
+			}
 		}
 		if (dutynameid>0) {
 			sql+=" And dutypersonid="+dutynameid;
