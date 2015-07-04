@@ -1732,6 +1732,12 @@ public class CwbOrderController {
 				SystemInstall  systemInstall=systemInstallDAO.getSystemInstall("daohuoiseffect");
 				if (systemInstall!=null) {
 					if (systemInstall.getValue().equals("1")) {
+						if (co.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()) {
+							List<OrderFlow> orderFlows=orderFlowDAO.getOrderFlowByCwbAndFlowordertype(FlowOrderTypeEnum.RuKu.getValue(),cwb);
+							if (orderFlows.size()>1) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDiYiCiRuKuBuNengShiXiao);
+							}
+						}
 						if (co.getFlowordertype()!=FlowOrderTypeEnum.DaoRuShuJu.getValue()&&co.getFlowordertype()!=FlowOrderTypeEnum.RuKu.getValue()) {
 							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujuandrukunotallowshixiao);
 						}
