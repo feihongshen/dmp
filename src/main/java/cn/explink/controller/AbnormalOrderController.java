@@ -717,13 +717,14 @@ public class AbnormalOrderController {
 				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
+			long roleid=this.getSessionUser().getRoleid();
 			long ishandle=0;
 			//判断是谁处理的
 			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
 				ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
 			}else if (userid==ab.getCreuserid()) {
 				ishandle=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
-			}else if (userid==ab.getDutypersonid()) {
+			}else if (userid==ab.getDutypersonid()||roleid==4) {
 				ishandle=AbnormalOrderHandleEnum.zerenfangchuli.getValue();
 			}
 			if (Integer.parseInt(isfind)== 1) {
@@ -765,13 +766,14 @@ public class AbnormalOrderController {
 				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
+			long roleid=this.getSessionUser().getRoleid();
 			long ishandle=0;
 			//判断是谁处理的
 			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
 				ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
 			}else if (userid==ab.getCreuserid()) {
 				ishandle=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
-			}else if (userid==ab.getDutypersonid()) {
+			}else if (userid==ab.getDutypersonid()||roleid==4) {
 				ishandle=AbnormalOrderHandleEnum.zerenfangchuli.getValue();
 			}
 			if (Integer.parseInt(isfind)== 1) {
