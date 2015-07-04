@@ -58,7 +58,7 @@ public class PenalizeOutService {
 		cloumnName1[3] = "订单状态";
 		cloumnName2[3] = "Flowordertype";
 		cloumnName1[4] = "订单金额";
-		cloumnName2[4] = "Receivablefee";
+		cloumnName2[4] = "Caramount";
 		cloumnName1[5] = "赔付金额";
 		cloumnName2[5] = "PenalizeOutfee";
 		cloumnName1[6] = "赔付大类";
