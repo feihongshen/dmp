@@ -302,7 +302,7 @@ public class PenalizeOutController {
 			if (out.getPenalizeOutsmall() == 0) {
 				return "{\"errorCode\":1,\"error\":\"赔付小类不能为空！\"}";
 			}
-			if (out.getPenalizeOutContent().trim().length() <= 0) {
+			if ((out.getPenalizeOutContent().trim().length() <= 0)||out.getPenalizeOutContent().trim().contains("最多100字")) {
 				return "{\"errorCode\":1,\"error\":\"赔付说明不能为空！\"}";
 			}
 			if (out.getPenalizeOutContent().trim().length() > 100) {
@@ -353,7 +353,7 @@ public class PenalizeOutController {
 			{
 				return "{\"errorCode\":1,\"error\":\"请选择责任机构！\"}";
 			}
-			if (punishdescribe.trim().length() <= 0) {
+			if ((punishdescribe.trim().length() <= 0)||punishdescribe.trim().contains("最多100字")) {
 				return "{\"errorCode\":1,\"error\":\"对内扣罚说明不能为空！\"}";
 			}
 			if (punishdescribe.trim().length() > 100) {
@@ -415,7 +415,7 @@ public class PenalizeOutController {
 			defaultValue = "0") int penalizeOutId, Model model) throws Exception {
 		if (penalizeOutId > 0) {
 			String canceldate = DateTimeUtil.getNowTime();
-			if (cancelContent.trim().length() <= 0) {
+			if ((cancelContent.trim().length() <= 0)||cancelContent.trim().contains("最多100字")) {
 				return "{\"errorCode\":1,\"error\":\"撤销说明不能为空！\"}";
 			}
 			if (cancelContent.trim().length() > 100) {
