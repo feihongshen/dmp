@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeOut;
+import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -80,15 +81,28 @@ public class PenalizeOutDAO {
 		}
 	}
 
-	public List<PenalizeOut> getPenalizeOutByCwbs(String cwbs) {
+	public List<PenalizeOut> getPenalizeOutByid(String cwbs) {
 		try {
-		String sql = "select * from express_ops_penalizeOut_detail where cwb in (?)";
-		return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper(), cwbs);
-		}
-		catch(Exception e)
-		{
+			String sql = "select * from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+			return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper());
+		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public List<PenalizeOut> getPenalizeOutByCwbs(String cwbs, long page) {
+		try {
+			String sql = "select * from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+			sql += " order by cwb desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+			return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public int getPenalizeOutByCwbscount(String cwbs) {
+		String sql = "select count(1) from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public List<PenalizeOut> getPenalizeOutByList(String cwbs, long flowordertype, long customerid, int penalizeOutbig, int penalizeOutsmall, int penalizeState, String starttime, String endtime,
@@ -149,20 +163,23 @@ public class PenalizeOutDAO {
 
 	public int crePenalizeOut(PenalizeOut out) throws Exception {
 
-			String sql = "insert into express_ops_penalizeOut_detail(penalizeOutNO,cwb,customerid,flowordertype,caramount,penalizeOutfee,penalizeOutGoodsfee,penalizeOutOtherfee,penalizeOutbig,penalizeOutsmall,penalizeOutContent,createruser,createrdate,penalizeOutstate,state)"
-					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?) ";
-			return this.jdbcTemplate.update(sql,out.getPenalizeOutNO(), out.getCwb(), out.getCustomerid(), out.getFlowordertype(), out.getCaramount(), out.getPenalizeOutfee(),out.getPenalizeOutGoodsfee(),out.getPenalizeOutOtherfee(), out.getPenalizeOutbig(),
-					out.getPenalizeOutsmall(), out.getPenalizeOutContent(), out.getCreateruser(), out.getPenalizeOutstate(), 1);
+		String sql = "insert into express_ops_penalizeOut_detail(penalizeOutNO,cwb,customerid,flowordertype,caramount,penalizeOutfee,penalizeOutGoodsfee,penalizeOutOtherfee,penalizeOutbig,penalizeOutsmall,penalizeOutContent,createruser,createrdate,penalizeOutstate,state)"
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?) ";
+		return this.jdbcTemplate.update(sql, out.getPenalizeOutNO(), out.getCwb(), out.getCustomerid(), out.getFlowordertype(), out.getCaramount(), out.getPenalizeOutfee(),
+				out.getPenalizeOutGoodsfee(), out.getPenalizeOutOtherfee(), out.getPenalizeOutbig(), out.getPenalizeOutsmall(), out.getPenalizeOutContent(), out.getCreateruser(),
+				out.getPenalizeOutstate(), 1);
 
 	}
-	public PenalizeOut getPenalizeOutByIsNull(String cwb,int penalizeOutsmall,BigDecimal penalizeOutGoodsfee,BigDecimal penalizeOutOtherfee)  {
+
+	public PenalizeOut getPenalizeOutByIsNull(String cwb, int penalizeOutsmall, BigDecimal penalizeOutGoodsfee, BigDecimal penalizeOutOtherfee) {
 		try {
 			String sql = "select * from express_ops_penalizeOut_detail where cwb =? and  penalizeOutsmall=? and penalizeOutGoodsfee=? penalizeOutOtherfee=? and and state=1 limit 1";
-			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(), cwb, penalizeOutsmall,penalizeOutGoodsfee,penalizeOutOtherfee);
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(), cwb, penalizeOutsmall, penalizeOutGoodsfee, penalizeOutOtherfee);
 		} catch (Exception e) {
 			return null;
 		}
 	}
+
 	/**
 	 * @param penalizeOutId
 	 * @return
@@ -170,7 +187,7 @@ public class PenalizeOutDAO {
 	public PenalizeOut getPenalizeOutByPenalizeOutId(int penalizeOutId) {
 		try {
 			String sql = "select * from express_ops_penalizeOut_detail where penalizeOutId =?  and state=1 limit 1";
-			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(),penalizeOutId);
+			return this.jdbcTemplate.queryForObject(sql, new PenalizeOutRowMapper(), penalizeOutId);
 		} catch (Exception e) {
 			return null;
 		}
@@ -206,17 +223,84 @@ public class PenalizeOutDAO {
 	 * @param penalizeOutId
 	 * @param cancelContent
 	 */
-	public int cancelpenalizeOutDataById(int penalizeOutId,int penalizeOutState, String cancelContent,String canceldate,long userid) {
-		try{
-			String  sql=" update express_ops_penalizeOut_detail set cancelContent=?,penalizeOutState=?,canceluser=?,canceldate=? where penalizeOutId=? ";
-			return this.jdbcTemplate.update(sql,cancelContent,penalizeOutState,userid,canceldate,penalizeOutId);
+	public int cancelpenalizeOutDataById(int penalizeOutId, int penalizeOutState, String cancelContent, String canceldate, long userid) {
+		try {
+			String sql = " update express_ops_penalizeOut_detail set cancelContent=?,penalizeOutState=?,canceluser=?,canceldate=? where penalizeOutId=? ";
+			return this.jdbcTemplate.update(sql, cancelContent, penalizeOutState, userid, canceldate, penalizeOutId);
+		} catch (Exception e) {
+			return 0;
 		}
-	catch(Exception e)
-	{
-		return 0;
-	}
 
 	}
 
+	/**
+	 * 通过条件查询指定对外赔付订单
+	 *
+	 */
+	public List<PenalizeOut> queryByOdd(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate) {
+		StringBuffer sql = new StringBuffer("select * from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
+		if (compensatebig != null) {
+			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
+		}
+		if (compensatesmall != null) {
+			sql.append(" and penalizeOutsmall = '" + compensatesmall + "'");
+		}
+		if ((str != null) && (str != "")) {
+			sql.append(" and cwb in (" + str + ")");
+		}
+		if ((CreationStartDate != null) && (CreationStartDate != "")) {
+			sql.append(" and '" + CreationStartDate + "'< createrdate");
+		}
+		if ((CreationEndDate != null) && (CreationEndDate != "")) {
+			sql.append(" and createrdate < '" + CreationEndDate + "'");
+		}
+		return this.jdbcTemplate.query(sql.toString(), new PenalizeOutRowMapper());
+	}
 
+	public List<PenalizeOut> queryByOddDetail(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr, long page) {
+		StringBuffer sql = new StringBuffer("select * from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
+		if ((compensatebig != null) && (compensatebig != 0)) {
+			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
+		}
+		if ((compensatesmall != null) && (compensatesmall != 0)) {
+			sql.append(" and penalizeOutsmall = '" + compensatesmall + "'");
+		}
+		if ((str != null) && (str != "")) {
+			sql.append(" and cwb in (" + str + ")");
+		}
+		if ((CreationStartDate != null) && (CreationStartDate != "")) {
+			sql.append(" and '" + CreationStartDate + "'< createrdate");
+		}
+		if ((CreationEndDate != null) && (CreationEndDate != "")) {
+			sql.append(" and createrdate < '" + CreationEndDate + "'");
+		}
+		if ((oddstr != null) && (oddstr != "")) {
+			sql.append(" and cwb not in (" + oddstr + ")");
+		}
+		sql.append(" ORDER BY cwb DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		return this.jdbcTemplate.query(sql.toString(), new PenalizeOutRowMapper());
+	}
+
+	public int queryByOddDetailsum(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr) {
+		StringBuffer sql = new StringBuffer("select count(1) from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
+		if ((compensatebig != null) && (compensatebig != 0)) {
+			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
+		}
+		if ((compensatesmall != null) && (compensatesmall != 0)) {
+			sql.append(" and penalizeOutsmall = '" + compensatesmall + "'");
+		}
+		if ((str != null) && (str != "")) {
+			sql.append(" and cwb in (" + str + ")");
+		}
+		if ((CreationStartDate != null) && (CreationStartDate != "")) {
+			sql.append(" and '" + CreationStartDate + "'< createrdate");
+		}
+		if ((CreationEndDate != null) && (CreationEndDate != "")) {
+			sql.append(" and createrdate < '" + CreationEndDate + "'");
+		}
+		if ((oddstr != null) && (oddstr != "")) {
+			sql.append(" and cwb not in (" + oddstr + ")");
+		}
+		return this.jdbcTemplate.queryForInt(sql.toString());
+	}
 }
