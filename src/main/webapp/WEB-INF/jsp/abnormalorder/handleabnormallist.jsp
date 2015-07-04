@@ -297,14 +297,12 @@ function stateBatch()
 	if(nodutynum>0){
 		efectiveids=ids;
 		for(var j=0;j<noduty.substring(0, noduty.length-1).split(",").length;j++){
-		for(var i=0;i<ids.substring(0, ids.length-1).split(",").length;i++){
- 			if(noduty.substring(0, noduty.length-1).split(",")[j]!=ids.substring(0, ids.length-1).split(",")[i]){
+		if(ids.indexOf(noduty.substring(0, noduty.length-1).split(",")[j]+",")>=0){
 	 		efectiveids=efectiveids.replace(noduty.substring(0, noduty.length-1).split(",")[j]+",", "");	
-         }
 			}
 		}
 	}
-	/* alert(efectiveids); */
+	 alert(efectiveids); 
 	if(nodutynum>0){
 		if($("#roleid").val()==1){
 			if(confirm("您所选择的问题件包含没有责任机构与责任人的单号（以上情况的订单将不做操作），确认继续执行吗？")){
@@ -465,7 +463,8 @@ function resultdatadeal(id)
 		$("#createbranchid").val(0);
 		$("#customerid").val(-1);
 		$("#abnormaltypeid").val(0);
-		$("#ishandle").val(1);
+		$("#dutybranchid").val(0);
+		$("#ishandle").val(0);
 		$("#losebackisornot").val(-1);
 		$("#dealresult").val(0);
 		$("#chuangjianstrtime").show();
