@@ -6521,6 +6521,7 @@ public class CwbOrderService {
 						cwbOrderView.setInSitetime(ot.getApplytime());//到站时间(审核为待中转时的当前时间)
 						cwbOrderView.setAuditor(ot.getAuditname());//审核人
 						cwbOrderView.setAudittime(ot.getAudittime());//审核时间
+						cwbOrderView.setAuditstatename(this.getAuditstatename(ot.getIshandle()));//审核状态
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}
@@ -6529,6 +6530,15 @@ public class CwbOrderService {
 		return cwbOrderViewList;
 	}
 	
+	public String getAuditstatename(long ishandle){
+		if(ishandle==2){
+			return "审核不通过";
+		}else if(ishandle==3){
+			return "审核通过";
+		}else{
+			return "待审核";
+		}
+	}
 	//修改状态重置反馈(页面view)
 	public List<CwbOrderView> getResetCwbOrderView(List<ApplyEditDeliverystate> applyeditlist,
 			List<User> uslist,List<Branch> branchList) {

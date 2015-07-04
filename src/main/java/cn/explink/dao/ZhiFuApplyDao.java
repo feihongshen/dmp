@@ -400,8 +400,13 @@ public class ZhiFuApplyDao {
 	}
 
 	public ZhiFuApplyView getCheckstate(int applyidint, int applystate) {
-		String sql = "select * from express_ops_zhifu_apply where applyid=? and applystate=?";
-		return jdbcTemplate.queryForObject(sql,new ZhiFuApplyMapper(),applyidint,applystate);
+		try{
+			String sql = "select * from express_ops_zhifu_apply where applyid=? and applystate=?";
+			return jdbcTemplate.queryForObject(sql,new ZhiFuApplyMapper(),applyidint,applystate);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public ZhiFuApplyView getConfirmstate(int applyidint, int confirmstate) {

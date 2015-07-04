@@ -77,8 +77,7 @@ public class CwbApplyZhongZhuanDAO {
 		}
 	}
 
-	public long creCwbApplyZhongZhuan(final CwbApplyZhongZhuan CwbApplyZhongZhuan) {
-		KeyHolder key = new GeneratedKeyHolder();
+	public long creCwbApplyZhongZhuan(final CwbApplyZhongZhuan CwbApplyZhongZhuan) { KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;

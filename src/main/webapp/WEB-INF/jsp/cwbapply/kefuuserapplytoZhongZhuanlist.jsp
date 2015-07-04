@@ -316,6 +316,7 @@ function resetData(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">到站时间</td>
 									<td width="80" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
 								</tr>
 							</tbody>
 						</table>
@@ -340,6 +341,7 @@ function resetData(){
 									<td width="100" align="center" valign="middle"><%=cwb.getInSitetime() %></td>
 									<td width="80" align="center" valign="middle"><%=cwb.getAuditor() %></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getAuditstatename() %></td>
 								</tr>
 							<%} }%> 
 							</tbody>

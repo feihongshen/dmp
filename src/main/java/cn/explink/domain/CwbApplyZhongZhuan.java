@@ -15,7 +15,7 @@ public class CwbApplyZhongZhuan {
 	private String applyzhongzhuanremark; // 中转申请备注
 	private BigDecimal receivablefee; // 应收金额
 	private BigDecimal paybackfee; // 应退金额
-	private long ishandle; // 是否标记为已处理(0未处理，1已处理）
+	private long ishandle; // 是否标记为已处理(0未审核，2审核不通过 3审核通过）
 	private String handletime; // 处理时间
 	private long handleuserid; // 处理人
 	private String handleremark; // 处理备注
