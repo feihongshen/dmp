@@ -39,6 +39,23 @@ $(window).ready(function() {
 
 });
 
+/**
+ * 
+ * @param id
+ * @param type
+ */
+function initDynamicSelect(id,type){
+	if( type == "TABLE" ){
+		initTABLESelect($('#'+id));
+	}else if( type == "ENUM" ){
+		initEnumSelect($('#'+id));
+	}
+}
+
+/**
+ * 
+ * @param data
+ */
 function initEnumSelect(data){
 	var clear = $('<a href="javascript:void(0)">清空</a>'); 
 	var s = $(data);
@@ -66,6 +83,10 @@ function initEnumSelect(data){
 	}
 }
 
+/**
+ * 
+ * @param data
+ */
 function initTABLESelect(data){
 	var clear = $('<a href="javascript:void(0)">清空</a>'); 
 	var s = $(data);
