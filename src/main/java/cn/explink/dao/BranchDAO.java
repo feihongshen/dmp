@@ -108,7 +108,7 @@ public class BranchDAO {
 
 	/**
 	 * 保存机构之间的流程关系
-	 * 
+	 *
 	 * @param branchId
 	 *            保存的对象机构id
 	 * @param toBranchId
@@ -207,7 +207,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
-	
+
 	@Cacheable(value = "branchCache", key = "#branchid")
 	public Branch getEffectBranchById(long branchid) {
 		try {
@@ -365,7 +365,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠货款
-	 * 
+	 *
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -375,7 +375,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠赔款
-	 * 
+	 *
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -385,7 +385,7 @@ public class BranchDAO {
 
 	/**
 	 * 修改branch的欠罚款
-	 * 
+	 *
 	 * @param brach
 	 */
 	@CacheEvict(value = "branchCache", key = "#branchid")
@@ -562,7 +562,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的财务机构或者中转站或者退货站，根据当前的用户所属机构的相对应这些类型的机构
-	 * 
+	 *
 	 * @param sitetype
 	 * @return
 	 */
@@ -577,7 +577,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的财中转站，根据当前的用户所属机构的相对应这些类型的机构
-	 * 
+	 *
 	 * @param sitetype
 	 * @return
 	 */
@@ -592,7 +592,7 @@ public class BranchDAO {
 
 	/**
 	 * 相应当前站点的退货站，根据当前的用户所属机构的相对应这些类型的机构
-	 * 
+	 *
 	 * @param sitetype
 	 * @return
 	 */
@@ -607,7 +607,7 @@ public class BranchDAO {
 
 	/**
 	 * 根据财务所在的站点id查询 所有的属于财务的站点。
-	 * 
+	 *
 	 * @param caiwubranchid
 	 * @return
 	 */
@@ -692,7 +692,7 @@ public class BranchDAO {
 	// ==================================
 	/**
 	 * 重置审核状态 修改站点帐户欠款金额表字段
-	 * 
+	 *
 	 * @param branchid
 	 *            站点id
 	 * @param arrearagepayupaudit
@@ -932,7 +932,7 @@ public class BranchDAO {
 		}
 		return this.jdbcTemplate.queryForInt(sql);
 	}
-	
+
 	public Branch getbranchname(long l){
 		Branch b;
 		try {
@@ -948,5 +948,9 @@ public class BranchDAO {
 		String sql = "SELECT * from express_set_branch  WHERE sitetype=?  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
 	}
-	
+	public List<Branch> getBranchsBycontractflag(String contractflag) {
+		String sql = "SELECT * from express_set_branch  WHERE contractflag in("+contractflag+")  and brancheffectflag='1' ";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper());
+	}
+
 }
