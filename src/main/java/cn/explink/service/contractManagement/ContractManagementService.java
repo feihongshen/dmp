@@ -31,8 +31,8 @@ public class ContractManagementService {
 	private CustomerContractDAO customerContractDAO;
 
 	public List<CustomerContractManagement> getCustomerContractList(CustomerContractManagement contractManagement, String createStatrtTime, String createEndTime, String overStartTime,
-			String overEndTime, String sort, String method) {
-		return this.customerContractDAO.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
+			String overEndTime, String sort, String method, Long page) {
+		return this.customerContractDAO.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method, page);
 	}
 
 	public String loadexceptfile(MultipartFile file) {

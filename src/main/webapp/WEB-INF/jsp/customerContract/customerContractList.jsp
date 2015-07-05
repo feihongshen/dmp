@@ -215,27 +215,6 @@ function getBranchContractDetailVOList(){
 	return list;
 }
 
-//添加行
-/* function addTr(){
-	var table = $('#depositTable'); 
-	var tr = $("<tr class='contractTr' name='tr"+rowCount+"'></tr>"); 
-	var checkTd = $("<td></td>");
-	checkTd.append($("<input type='checkbox' name='count' value='checkbox"+rowCount+"'>"));
-	tr.append(checkTd); 
-	var depositReturnTimeTd = $("<td class='contractTd' name='depositreturndate'></td>"); 
-	tr.append(depositReturnTimeTd); 
-	var depositReturnAmountTd = $("<td class='contractTd' name='depositreturnsum'></td>"); 
-	tr.append(depositReturnAmountTd); 
-	var depositReturnPersonTd = $("<td class='contractTd' name='refundpeople'></td>"); 
-	tr.append(depositReturnPersonTd); 
-	var depositCollectorTd = $("<td class='contractTd' name='payee'></td>"); 
-	tr.append(depositCollectorTd); 
-	var remarkTd = $("<td class='contractTd' name='remarks'></td>"); 
-	tr.append(remarkTd); 
-	table.append(tr);
-	rowCount++;
-	initBranchContract();
-} */
 
 //添加行
  function addTr(){
@@ -932,7 +911,7 @@ function showBox(data){
 		'	<div id="box_in_bg">'+
 		'	<div id="box_form">'+
 		'		<h1><div id="close_box" onclick="closeBox()"></div>查询</h1>'+
-		'			<form action="<%=request.getContextPath()%>/customerContract/customerContractList" id="queryContract">'+
+		'			<form action="<%=request.getContextPath()%>/customerContract/customerContractList/1" id="queryContract">'+
 		'		 	<table>'+
 		'					<tr>'+
 		'				<th align="left">编号:</th>'+
@@ -1101,11 +1080,51 @@ function showBox(data){
 					
 				</table>
 				<div class="jg_10"></div><div class="jg_10"></div>
+				<c:if test="${page_obj.maxpage>1}">
+			<div class="iframe_bottom"> 
+				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+					<tr>
+						<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
+						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/1');$('#queryContractForm').submit();" >第一页</a>　
+						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.previous<1?1:page_obj.previous}');$('#queryContractForm').submit();">上一页</a>　
+						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.next<1?1:page_obj.next }');$('#queryContractForm').submit();" >下一页</a>　
+						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryContractForm').submit();" >最后一页</a>
+						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
+								id="selectPg"
+								onchange="changePage(this)">
+								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
+								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+								</c:forEach>
+								</select>页
+						</td>
+					</tr>
+				</table>
+			</div>
+		</c:if>
 	</div>
 	</div>
 	<div class="jg_10"></div>
 	<div class="jg_10"></div>
 	<input type="hidden" id="contractid" value=""/>
 	<input type="hidden" id="customerContractState" value=""/>
+	<div id="query">
+	<form action="<%=request.getContextPath()%>/customerContract/customerContractList/1" method="post" id="queryContractForm">
+		<input type="hidden" name="number" value="${number}"/> 
+		<input type="hidden" name="contractstatus"  value="${contractstatus}"/> 
+		<input type="hidden" name="customerid"  value="${customerid}"/> 
+		<input type="hidden" name="partyaname"  value="${partyaname}"/> 
+		<input type="hidden" name="marketingprincipal"  value="${marketingprincipal}"/> 
+		<input type="hidden" name="othercontractors"  value="${othercontractors}"/> 
+		<input type="hidden" name="contractdescription"  value="${contractdescription}"/> 
+		<input type="hidden" name="loansandsettlementway"  value="${loansandsettlementway}"/> 
+		<input type="hidden" name="createStatrtTime"  value="${createStatrtTime}"/> 
+		<input type="hidden" name="overStartTime"  value="${overStartTime}"/> 
+		<input type="hidden" name="whetherhavedeposit"  value="${whetherhavedeposit}"/> 
+		<input type="hidden" name="sort"  value="${sort}"/> 
+		<input type="hidden" name="method"  value="${method}"/> 
+	</form>
+</div>
+	
+	
 </body>
 </html>

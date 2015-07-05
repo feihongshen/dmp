@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +28,7 @@ import cn.explink.dao.contractManagement.CustomerContractDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.service.contractManagement.ContractManagementService;
+import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 
 /**
@@ -57,14 +59,19 @@ public class CustomerContractController {
 	 * @param method
 	 * @return
 	 */
-	@RequestMapping("/customerContractList")
-	public String getCustomerContractList(Model model, CustomerContractManagement contractManagement, @RequestParam(value = "createStatrtTime", required = false) String createStatrtTime,
-			@RequestParam(value = "createEndTime", required = false, defaultValue = "") String createEndTime, @RequestParam(value = "overStartTime", required = false) String overStartTime,
-			@RequestParam(value = "overEndTime", required = false) String overEndTime, @RequestParam(value = "sort", required = false) String sort,
-			@RequestParam(value = "method", required = false) String method) {
-		List<CustomerContractManagement> list = this.contractManagementService.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
+	@RequestMapping("/customerContractList/{page}")
+	public String getCustomerContractList(Model model, @PathVariable("page") long page, CustomerContractManagement contractManagement,
+			@RequestParam(value = "createStatrtTime", required = false) String createStatrtTime, @RequestParam(value = "createEndTime", required = false, defaultValue = "") String createEndTime,
+			@RequestParam(value = "overStartTime", required = false) String overStartTime, @RequestParam(value = "overEndTime", required = false) String overEndTime,
+			@RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "method", required = false) String method) {
+		List<CustomerContractManagement> list = this.contractManagementService.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method,
+				page);
 		model.addAttribute("customerContractList", list);
+		int count = this.customerContractDAO.getCustomerContractcount(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
 		// 客户信息
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		model.addAttribute("contractList", customerList);
 		model.addAttribute("number", contractManagement.getNumber());

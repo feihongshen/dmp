@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.domain.customerCoutract.DepositInformation;
+import cn.explink.util.Page;
 
 /**
  * @author wangqiang
@@ -229,12 +230,21 @@ public class CustomerContractDAO {
 	 * @return
 	 */
 	public List<CustomerContractManagement> getCustomerContractList(CustomerContractManagement contractManagement, String createStatrtTime, String createEndTime, String overStartTime,
-			String overEndTime, String sort, String method) {
+			String overEndTime, String sort, String method, Long page) {
 		StringBuffer selectSql = new StringBuffer("SELECT * FROM express_set_customer_contract_management WHERE 1=1 ");
 		String sql = this.getCustomerContractByPageWhereSql(selectSql.toString(), contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
-		sql = selectSql.toString() + sql;
+		StringBuffer limitSql = new StringBuffer(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		sql = selectSql.toString() + sql + limitSql.toString();
 		List<CustomerContractManagement> list = this.jdbcTemplate.query(sql, new CustomerContractRowMapper());
 		return list;
+	}
+
+	public int getCustomerContractcount(CustomerContractManagement contractManagement, String createStatrtTime, String createEndTime, String overStartTime, String overEndTime, String sort,
+			String method) {
+		StringBuffer selectSql = new StringBuffer("SELECT count(1) FROM express_set_customer_contract_management WHERE 1=1 ");
+		String sql = this.getCustomerContractByPageWhereSql(selectSql.toString(), contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
+		sql = selectSql.toString() + sql;
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	/**
@@ -295,9 +305,11 @@ public class CustomerContractDAO {
 			if ((sort != null) && (sort != "") && (method != null) && (method != "")) {
 				StringBuffer orderBuffer = new StringBuffer();
 				orderBuffer.append(" order by " + sort + "  " + method);
+
 				String sqlString = whereSql.append(orderBuffer).toString();
 				return sqlString;
 			}
+
 		}
 		String sqlString = whereSql.toString();
 		return sqlString;
