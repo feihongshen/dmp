@@ -4085,9 +4085,9 @@ public class CwbOrderService {
 					if(orderBackCheck == null&&(podresultid == DeliveryStateEnum.JuShou.getValue() || podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) ){
 						OrderBackCheck o = new OrderBackCheck();
 						if(podresultid == DeliveryStateEnum.JuShou.getValue()){
-							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
+							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, co.getDeliverybranchid(), user.getUserid(), 1, DeliveryStateEnum.JuShou.getValue());
 						}else if(podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()){
-							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, user.getBranchid(), user.getUserid(), 1, DeliveryStateEnum.BuFenTuiHuo.getValue());
+							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, co.getDeliverybranchid(), user.getUserid(), 1, DeliveryStateEnum.BuFenTuiHuo.getValue());
 						}
 						this.orderBackCheckDAO.createOrderBackCheck(o);
 						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });

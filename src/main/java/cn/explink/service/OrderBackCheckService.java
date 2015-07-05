@@ -66,7 +66,7 @@ public class OrderBackCheckService {
 				o.setFlowordertypename(FlowOrderTypeEnum.getText(o.getFlowordertype()).getText());
 				o.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(o.getCwbordertypeid()).getText());
 				o.setCwbstatename(DeliveryStateEnum.getByValue((int) o.getCwbstate()).getText());
-				o.setBranchname(dataStatisticsService.getQueryBranchName(branchList, o.getBranchid()));
+				o.setBranchname(dataStatisticsService.getQueryBranchName(branchList, o.getBranchid()));//配送站点
 				o.setCheckstatename(getCheckstatename(o.getCheckstate()));//审核状态
 				o.setCheckresultname(getCheckresultname(o.getCheckresult()));//审核结果
 			}

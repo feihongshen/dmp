@@ -163,76 +163,72 @@ function changereasonremark(obj,opscwbid){
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
-									<td align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
 									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
+								<%if(covList!=null&&covList.size()>0){
+								for(CwbOrderView cwb : covList){ %>
+								<tr height="30" >
+									<td width="120" align="center" valign="middle"><%=cwb.getCwb() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
+									<td width="120" align="center" valign="middle"><%=cwb.getBranchname()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getDeliveryname() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getDelivername() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getRemark1()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getRemark2()%></td>
+									<td width="120" align="center" valign="middle">
+										<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>" onchange="changereasonremark(this,'<%=cwb.getOpscwbid() %>')" style="width: 140px;">
+											<option value ="-1">==请选择==</option>
+						                   <%if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Peisong.getValue()){%>
+						                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+						                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%} %>
+										</select>
+									</td>
+									<td width="120" align="center" valign="middle">
+										<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 140px">
+											<option value="-1">==请选择==</option>
+											<%if(reasonList!=null){for(Reason reason:reasonList){ %>
+											<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
+											<%} }%>
+										</select>
+									</td>
+									<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
+									<td width="80" align="center" valign="middle">
+									<%if(cwb.getState()==0){ %>
+									<input name="提交" type="button" class="input_button2" onclick="sub(<%=cwb.getOpscwbid() %>);" value="提交">
+									<%}else{ %>
+									<input type="button"  value="已提交" <%-- onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>); --%>">
+									<%} %>
+									</td>
+								</tr>
+								<%} }%>
 							</tbody>
 						</table>
 					</div>
 					<div style="height:105px"></div>
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
-						<tbody>
-						<%if(covList!=null&&covList.size()>0){
-							for(CwbOrderView cwb : covList){ %>
-							<tr height="30" >
-								<td width="120" align="center" valign="middle"><%=cwb.getCwb() %></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
-								<td width="120" align="center" valign="middle"><%=cwb.getBranchname()%></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getDeliveryname() %></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getDelivername() %></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getRemark1()%></td>
-								<td width="100" align="center" valign="middle"><%=cwb.getRemark2()%></td>
-								<td align="center" valign="middle">
-									<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>" onchange="changereasonremark(this,'<%=cwb.getOpscwbid() %>')">
-										<option value ="-1">==请选择==</option>
-					                   <%if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Peisong.getValue()){%>
-					                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
-					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
-					                   												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
-					                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
-					                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-					                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
-											<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
-					                   <%} %>
-									</select>
-								</td>
-								<td align="center" valign="middle">
-									<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 150px">
-										<option value="-1">==请选择==</option>
-										<%if(reasonList!=null){for(Reason reason:reasonList){ %>
-										<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
-										<%} }%>
-									</select>
-								</td>
-								<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
-								<td width="80" align="center" valign="middle">
-								<%if(cwb.getState()==0){ %>
-								<input name="提交" type="button" class="input_button2" onclick="sub(<%=cwb.getOpscwbid() %>);" value="提交">
-								<%}else{ %>
-								<input type="button"  value="已提交" <%-- onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>); --%>">
-								<%} %>
-								</td>
-							</tr>
-							<%} }%>
-						
-					</table>
 				</div>
 				<%if(page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">

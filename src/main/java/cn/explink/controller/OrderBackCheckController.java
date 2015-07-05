@@ -324,7 +324,7 @@ public class OrderBackCheckController {
 	}
 	
 	/**
-	 * 审核为站点滞留
+	 * 审核为站点配送
 	 * 
 	 * @param model
 	 * @param request
