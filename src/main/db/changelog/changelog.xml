@@ -5806,9 +5806,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		</sql>
 	</changeSet>
 
-<!-- TODO -->
-	<!-- 创建失效配置表 -->
-	<!-- 	
+		<!-- 创建失效配置表 -->
 	<changeSet id="zhaoshb-2014-12-29-1" author="zhaoshb">
 		<sql>
 			CREATE TABLE express_set_time_effective (
@@ -5838,7 +5836,7 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 			express_set_time_effective(CODE,NAME,TIME_TYPE,SCOPE)VALUES('not_mat','分配处理时效',1,3*3600);
 		</sql>
 	</changeSet>
- -->
+
 	<!-- 插入上门退订单时效菜单 -->
 	<changeSet id="zhaoshb-2014-12-29-2" author="zhaoshb">
 		<sql>
@@ -5855,8 +5853,8 @@ INSERT INTO `express_set_menu_info_new` ( `menuname`, `menuurl`, `menulevel`, `m
 		</sql>
 	</changeSet>
 
-<!-- TODO -->
-<!-- 
+
+
 	<changeSet id="zhaoshb-2014-12-29-3" author="zhaoshb">
 		<sql>
 CREATE TABLE
@@ -5895,10 +5893,7 @@ CREATE TABLE
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		</sql>
-	</changeSet> 
-	-->
-	<!-- TODO -->
-	<!-- 
+	</changeSet>
 	<changeSet id="wangyonghe-2015-2-4-1" author="wangyonghe">
 		<sql>
 		ALTER TABLE `express_ops_abnormal_order`
@@ -5912,10 +5907,6 @@ CREATE TABLE
 		;
 		</sql>
 	</changeSet>
-	 -->
-	 
-	<!-- TODO -->
-	<!--  
 	<changeSet id="wangyonghe-2015-2-4-2" author="wangyonghe">
 		<sql>
 		ALTER TABLE `express_ops_abnormal_write_back`
@@ -5923,7 +5914,6 @@ CREATE TABLE
 		ADD INDEX `Abnormal_Back_cwb_idx` (`cwb`) ;
 		</sql>
 	</changeSet>
-	 -->
 	<changeSet id="wangyonghe-2015-2-5-1" author="wangyonghe">
 		<sql>
 		INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'showbranchPhone', 'no', '到货是否显示站点电话号码');
@@ -5934,19 +5924,13 @@ CREATE TABLE
   	      <sqlFile path="dmp40_function.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
      </changeSet>
      
-     <!-- TODO -->
-     <!-- 
      <changeSet id="jiangyu-2015-04-09-1" author="jiangyu">
   	      <sqlFile path="fnc.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
      </changeSet>
-      -->
      
-     <!-- TODO -->
-     <!-- 
      <changeSet id="jiangyu-2015-04-09-2" author="jiangyu">
   	      <sqlFile path="order_add_field.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
      </changeSet>
-      -->
 
 	<changeSet id="lansheng-2015-01-25-1" author="lansheng">
 		<sql>
@@ -6031,16 +6015,11 @@ CREATE TABLE
 		ADD INDEX `Abnormal_Back_cwb_idx` (`cwb`) ;
 		</sql>
 	</changeSet>
-	
-	<!-- TODO -->
-	<!-- 
 	<changeSet id="jiangyu-2015-04-10-1" author="jiangyu">
 		<sql>
 			ALTER TABLE fn_org_bill_adjustment_record ADD COLUMN `pay_way_change_flag` int(2) DEFAULT 0 comment '是否修改支付方式标识';
 		</sql>
 	</changeSet>
-	 -->
-	
 	<changeSet id="wangzhiyong-2015-4-16-1" author="wangzhiyong">
 		<sql>
 			INSERT INTO express_set_system_install(name,value,chinesename) VALUES('isUseAuditZhongZhuan','yes','是否使用中转订单申请与审核');
@@ -6052,17 +6031,13 @@ CREATE TABLE
 		INSERT INTO `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`)VALUES('146','实收运费','1','Infactfare'); 
 		</sql>
 	</changeSet>
-	
-	<!-- TODO -->
-	<!-- 
 	<changeSet id="wangzhiyong-2015-4-21-1" author="wangzhiyong">
 		<sql>
 			ALTER TABLE `express_set_reason` ADD COLUMN `whichreason` INT(11) DEFAULT 0 NULL AFTER `reasontype`;
 			ALTER TABLE `express_set_reason` ADD COLUMN `parentid` INT(11) DEFAULT 0 NULL AFTER `whichreason`;
 		</sql>
 	</changeSet>
-	 -->
-	 
+	
 	<changeSet id="wangzhiyong-2015-4-22-1" author="wangzhiyong">
 		<sql>			
 		UPDATE `express_set_menu_info_new` SET `menuname`='退供货商出库(P)',`menuno`='P18' WHERE `menuid`='296'; 
@@ -6114,7 +6089,6 @@ CREATE TABLE
           INSERT INTO `dmp40_function` (`ID`,`functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES(501075,2,'返单出库','501075','returnCwbs/returnCwbsoutwarhouse?','5010');
 		</sql>
 	</changeSet>
-	
 	<changeSet id="jikunlong-2015-05-05-1" author="jikunlong">
 		<sql>
 		CREATE TABLE `encodingsetting_customer_mapping` (
@@ -6143,8 +6117,8 @@ CREATE TABLE
 	</changeSet>
 	<changeSet id="wangyonghe-2015-05-18-1" author="wangyonghe">
 		<sql>
-			INSERT INTO `express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '20');
-			INSERT INTO `express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '2020');
+INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '20');
+INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '2020');
 		</sql>
 	</changeSet>
 	<changeSet id="wukong-2015-05-19-1" author="wukong">
@@ -6471,7 +6445,6 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO `EXPRESs_SET_role_menu_new`(`roleid`,`menuid`)VALUES('0','2020'); 
 		</sql>
 	</changeSet>
-	<!-- CONFLICT -->
 	<changeSet id="wukong-2015-05-25-1" author="wukong">
 		<sql>
 		INSERT INTO express_set_system_install (`name`, `value`, `chinesename`) VALUES ('ypdjpathtong', '2', '一票多件操作流程件数限制:一票多件全部流程不对件数限制:(2),缺件扫描下站，站点能扫描入库，但不能领货,但不能操作退货甲方:(1),正常每个环节都会对件数验证限制:(0)');
@@ -6483,7 +6456,7 @@ CREATE TABLE `cs_complaint_accept` (
 		ADD COLUMN `dealresult` INT(20) DEFAULT '0' AFTER `cwbordertypeid`,
 		ADD COLUMN `dutybrachid`  INT(10) DEFAULT '0' AFTER `dealresult`,
 		ADD COLUMN `dutypersonid` INT(10) DEFAULT '0' AFTER `dutybrachid`,
-		ADD COLUMN `isfine`  INT(10) DEFAULT '0' AFTER `dutypersonid`,
+		ADD COLUMN `isfine`  INT(10) DEFAULT '0' AFTER `dutypersoname`,
 		ADD COLUMN `losebackid` INT(10) DEFAULT '0' AFTER `isfine`,
 		ADD COLUMN `resultdealcontent` VARCHAR(200) NULL DEFAULT '' AFTER `losebackid`;
 		</sql>
@@ -6516,21 +6489,23 @@ CREATE TABLE `cs_complaint_accept` (
 		 ALTER TABLE `express_ops_abnormal_order` ADD COLUMN `isfind`  INT(10) DEFAULT '0' ;
 		</sql>
 	</changeSet>
-<!-- CONFLICT -->
 	<changeSet id="wukong-2015-06-04-2" author="wukong">
 		<sql>
  		 ALTER TABLE `express_ops_abnormal_order`  ADD COLUMN `lastdutybranchid`  INT(10) DEFAULT '0' ,
          ADD COLUMN `lastdutyuserid` INT(10) DEFAULT '0';
+         ALTER TABLE `express_ops_abnormal_order`
+		 DROP COLUMN dutypersoname;	
+		 ALTER TABLE `express_ops_abnormal_order`
+		 ADD COLUMN `dutypersonid` INT(10) DEFAULT '0' AFTER `dutybrachid`;		
         </sql>
 	</changeSet>
-<!-- TODO -->
-<!-- 
+
 	<changeSet id="mali-2015-06-04-01" author="mali">
         <sql>
         	ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `customerbillimportflag` INT(4) DEFAULT 0 NULL ;
         </sql> 
 	</changeSet>
- -->
+
         
     <changeSet id="wangzhiyong-2015-06-04-01" author="wangzhiyong">
     	<sql>
@@ -7306,6 +7281,61 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     
     </changeSet>
+
+    <changeSet id="wangzhiyong-07-03-01" author="wangzhiyong">
+    	<sql>
+			DROP TABLE IF EXISTS `cs_complaint_accept`;
+			CREATE TABLE `cs_complaint_accept` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `consignee_id` bigint(11) DEFAULT NULL,
+			  `accept_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `order_no` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `cod_org_id` bigint(11) DEFAULT NULL,
+			  `complaint_user` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_type` int(8) DEFAULT NULL,
+			  `complaint_one_level` int(8) DEFAULT NULL,
+			  `complaint_two_level` int(8) DEFAULT NULL,
+			  `content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+			  `chongshen_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `shensu_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `jiean_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `heshi_user` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_user` varchar(64) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_result` int(8) DEFAULT NULL,
+			  `is_complaint` int(8) DEFAULT NULL,
+			  `complaint_state` int(8) DEFAULT NULL,
+			  `complaint_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `handle_content` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `complaint_end_time` bigint(11) DEFAULT NULL,
+			  `remaind_num` int(8) DEFAULT NULL,
+			  `cwbstate` bigint(20) DEFAULT NULL,
+			  `flowordertype` bigint(20) DEFAULT NULL,
+			  `currentbrannch` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `accpet_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `phone_one` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `province` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `querycontent` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `heshi_time` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+			  `customerid` int(4) DEFAULT NULL,
+			  `jiean_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `shensu_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `jieanchongshen_remark` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+			  `jiean_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `jieanchongshen_time` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `if_punish` int(10) DEFAULT '1',
+			  `cuijian_num` int(20) DEFAULT NULL,
+			  `downloadheshipath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadjieanpath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadshensupath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `downloadchongshenpath` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `phoneone_idx` (`phone_one`)
+			) ENGINE=InnoDB AUTO_INCREMENT=262 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+    	</sql>
+    </changeSet>
+
     
     <changeSet id="liuxiao-2015-07-02-02" author="liuxiao">
     	<sql>
@@ -7348,94 +7378,6 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='对内扣罚账单表';
     	</sql>
     </changeSet>
-    
-    <changeSet id="gaoll-2015-07-05-1" author="gaoliangliang">
-    	<sql>
-    		ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fnorgbillid` bigint(11) DEFAULT '0' COMMENT '站点账单的id'  AFTER `outareaflag`;
-			
-			ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fnorgoffsetflag` int(11) DEFAULT '0' COMMENT '收款状态'  AFTER `fnorgbillid`;
-			
-			ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fnorgoffset` decimal(19,2) DEFAULT '0.00' COMMENT '核销金额'  AFTER `fnorgoffsetflag`;
-			
-			ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fncustomerbillverifyflag` int(11) DEFAULT '0' COMMENT '客户账单的核销标识'  AFTER `fnorgoffset`;
-			
-			ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fncustomerpayablebillid` bigint(11) DEFAULT '0' COMMENT '应付账单的id'  AFTER `fncustomerbillverifyflag`;
-			
-			ALTER TABLE  `express_ops_cwb_detail`  MODIFY COLUMN  `fncustomerbillid` bigint(11) DEFAULT '0' COMMENT '非应付账单的id'  AFTER `fncustomerpayablebillid`;
-			
-			ALTER TABLE  `express_ops_penalizeout_detail`  MODIFY COLUMN  `penalizeOutcontent` varchar(50) DEFAULT '' COMMENT '赔付说明'  AFTER `penalizeOutsmall`;
-			
-			ALTER TABLE  `express_ops_penalizeout_detail`  MODIFY COLUMN  `cancelcontent` varchar(50) DEFAULT '' COMMENT '撤销说明'  AFTER `canceldate`;
-			
-			ALTER TABLE  `express_ops_penalizeoutimporterrorrecord`  MODIFY COLUMN  `error` varchar(100) DEFAULT '' COMMENT '导入失败原因'  AFTER `cwb`;
-			
-			ALTER TABLE  `express_ops_salarycount_detail`  DROP COLUMN  `batchstate`;
-			
-			ALTER TABLE  `express_ops_salarycount_detail`  ADD COLUMN  `bacthstate` int(10) DEFAULT NULL COMMENT '批次状态'  AFTER `remark`;
-			
-			ALTER TABLE  `express_ops_salarycount_detail`  ADD KEY `bacthstate_idx` (`bacthstate`);
-			
-			CREATE TABLE `express_ops_smt_cwb_opt_time` (
-			  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-			  `cwb` varchar(100) NOT NULL,
-			  `warehouse_id` bigint(20) DEFAULT NULL,
-			  `deliver_station_id` bigint(20) DEFAULT NULL,
-			  `deliver_id` bigint(20) DEFAULT NULL,
-			  `vender_id` bigint(20) DEFAULT NULL,
-			  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `system_accept_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `station_accept_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `dispatch_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `print_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `report_outarea_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `exception_match_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `feedback_result` tinyint(4) DEFAULT NULL,
-			  `feedback_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-			  `deliver_state` tinyint(4) DEFAULT '0',
-			  `pay_type` tinyint(4) DEFAULT NULL,
-			  `should_fee` decimal(10,0) DEFAULT NULL,
-			  `received_fee` decimal(10,0) DEFAULT NULL,
-			  PRIMARY KEY (`id`),
-			  KEY `cwb` (`cwb`),
-			  KEY `warehouse_id` (`warehouse_id`),
-			  KEY `deliver_station_id` (`deliver_station_id`),
-			  KEY `deliver_id` (`deliver_id`),
-			  KEY `vender_id` (`vender_id`),
-			  KEY `create_time` (`create_time`),
-			  KEY `system_accept_time` (`system_accept_time`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-			ALTER TABLE `express_ops_smt_cwb_opt_time` AUTO_INCREMENT = 1;
-			
-			ALTER TABLE  `express_ops_transcwb`  DROP KEY  `cwb_IDx`;
-			
-			ALTER TABLE  `express_set_penalizetype`  MODIFY COLUMN  `text` varchar(200) DEFAULT '' COMMENT '赔付说明'  AFTER `id`;
-			
-			CREATE TABLE `express_set_time_effective` (
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `code` varchar(10) NOT NULL,
-			  `name` varchar(20) NOT NULL,
-			  `time_type` tinyint(4) NOT NULL,
-			  `scope` bigint(20) NOT NULL DEFAULT '3600',
-			  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			  `dr` tinyint(4) NOT NULL DEFAULT '0',
-			  PRIMARY KEY (`id`),
-			  UNIQUE KEY `code` (`code`)
-			) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-			ALTER TABLE `express_set_time_effective` AUTO_INCREMENT = 8;
-			
-			ALTER TABLE  `fn_customer_bill`  MODIFY COLUMN  `deliver_org` int(11) DEFAULT '0' COMMENT '发货仓库'  AFTER `verify_user`;
-			
-			ALTER TABLE  `jg_person`  MODIFY COLUMN  `AGE` int(11) DEFAULT NULL  AFTER `ID`;
-			
-			ALTER TABLE  `jg_person`  MODIFY COLUMN  `CREATEDT` datetime DEFAULT NULL  AFTER `BIRTHDAY`;
-			
-			ALTER TABLE  `jg_person`  MODIFY COLUMN  `NAME` varchar(255) NOT NULL  AFTER `CREATEDT`;
-			
-			ALTER TABLE  `jg_person`  MODIFY COLUMN  `SALARY` decimal(19,2) DEFAULT NULL  AFTER `NAME`;
-			    		
-    	</sql>
-    </changeSet>
     <changeSet id="wangqiang-2015-07-04-01" author="wangqiang">
     	<sql>
     		CREATE TABLE `express_ops_penalize_out_bill` (
@@ -7460,5 +7402,8 @@ CREATE TABLE `cs_complaint_accept` (
     	</sql>
     </changeSet>
     
+
 </databaseChangeLog>
+
+
  
