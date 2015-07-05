@@ -483,19 +483,18 @@ function verify(){
 	</table>
 	
 	</div>
-	<c:if test='${page_obj.maxpage>1}'>
 		<div class="iframe_bottom"> 
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
 					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/1');$('#searchForm').submit();" >第一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_obj.previous<1?1:page_obj.previous}');$('#searchForm').submit();">上一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_obj.next<1?1:page_obj.next }');$('#searchForm').submit();" >下一页</a>　
-					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#searchForm').submit();" >最后一页</a>
-					　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
+					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_ob.previous<1?1:page_ob.previous}');$('#searchForm').submit();">上一页</a>　
+					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_ob.next<1?1:page_ob.next }');$('#searchForm').submit();" >下一页</a>　
+					<a href="javascript:$('#searchForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillPage/${page_ob.maxpage<1?1:page_ob.maxpage}');$('#searchForm').submit();" >最后一页</a>
+					　共${page_ob.maxpage}页　共${page_ob.total}条记录 　当前第<select
 							id="selectPg"
 							onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
-							<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
+							<c:forEach var="i" begin="1" end="${page_ob.maxpage}">
 							<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 							</c:forEach>
 							</select>页
@@ -503,7 +502,6 @@ function verify(){
 				</tr>
 			</table>
 		</div>
-	</c:if>
 	</div>
 </div>
 <!-- 新增层显示 -->
@@ -787,13 +785,13 @@ function verify(){
 					<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
 	         		<input type="button" class="input_button2"  onclick="deletePenalizeInside()" value="移除"/>
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/1');$('#updatePageForm').submit();" >第一页</a>　
-					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_obj.previous<1?1:page_obj.previous}');$('#updatePageForm').submit();">上一页</a>　
-					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_obj.next<1?1:page_obj.next }');$('#updatePageForm').submit();" >下一页</a>　
-					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#updatePageForm').submit();" >最后一页</a>
-					　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
+					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.previous<1?1:page_o.previous}');$('#updatePageForm').submit();">上一页</a>　
+					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.next<1?1:page_o.next }');$('#updatePageForm').submit();" >下一页</a>　
+					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.maxpage<1?1:page_o.maxpage}');$('#updatePageForm').submit();" >最后一页</a>
+					　共${page_o.maxpage}页　共${page_o.total}条记录 　当前第<select
 							id="selectPg"
 							onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
-							<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
+							<c:forEach var="i" begin="1" end="${page_o.maxpage}">
 							<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 							</c:forEach>
 							</select>页

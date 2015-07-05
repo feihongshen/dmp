@@ -85,9 +85,9 @@ public class PenalizeOutBillController {
 		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(bill, billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		model.addAttribute("billList", list);
 		int count = this.PenalizeOutBilldao.queryAllCount(bill, billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
-		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		Page page_ob = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
-		model.addAttribute("page_obj", page_obj);
+		model.addAttribute("page_ob", page_ob);
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -144,8 +144,12 @@ public class PenalizeOutBillController {
 		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_ob", page_ob);
 		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
-		int count = this.penalizeOutBillService.queryByIdcount(id);
+		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -167,9 +171,9 @@ public class PenalizeOutBillController {
 		}
 
 		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
-		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
-		model.addAttribute("page_obj", page_obj);
+		model.addAttribute("page_o", page_o);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -257,7 +261,13 @@ public class PenalizeOutBillController {
 		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		// 主页面的分页
+		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_ob", page_ob);
 		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -280,6 +290,11 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
+		// 账单中的订单明细分页
+		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_o", page_o);
+		// 添加订单时所需要的分页
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
@@ -336,6 +351,7 @@ public class PenalizeOutBillController {
 				method, page);
 		model.addAttribute("billList", list);
 		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -357,6 +373,16 @@ public class PenalizeOutBillController {
 			userid = user.getUserid();
 		}
 
+		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		// 主页面的分页
+		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_ob", page_ob);
+
+		// 账单中的订单明细分页
+		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_o", page_o);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -390,7 +416,7 @@ public class PenalizeOutBillController {
 				method, page);
 		model.addAttribute("billList", list);
 		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
-
+		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -411,7 +437,16 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
+		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		// 主页面的分页
+		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_ob", page_ob);
 
+		// 账单中的订单明细分页
+		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", page);
+		model.addAttribute("page_o", page_o);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
