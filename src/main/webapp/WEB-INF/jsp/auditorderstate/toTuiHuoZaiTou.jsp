@@ -47,11 +47,11 @@ $(function(){
 		$(this).css("backgroundColor","#fff");	
 	});//表单颜色交替和鼠标滑过高亮
 	
-	$("table#gd_table2 tr").click(function(){
+	/* $("table#gd_table2 tr").click(function(){
 			$(this).css("backgroundColor","#FFA500");
 			$(this).siblings().css("backgroundColor","#ffffff");
 			$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
-		});
+		}); */
 	
 	$(".index_dh li").mouseover(function(){
 		//$(this).show(0)
@@ -73,6 +73,10 @@ function audit(){
 		$('input[name="ischeck"]:checked').each(function(index){
 			$(this).attr("checked",false);
 			var id=$(this).val()+"_cwbremark";
+			if($("#"+id).val()==0){
+				alert("请选择备注!");
+				return false;
+			}
 			//remarkValue = $("#"+id).val();
 			//alert(id+"==="+$('#'+id).val());
 			/* for(var i = 0 ; i < $("select[name^='reason']").length ; i++){
@@ -282,6 +286,7 @@ function resetData(){
 								</table>
 							</form>
 						</div>
+						<div style="height: 500px;overflow: scroll;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -301,38 +306,43 @@ function resetData(){
 								<%if(obrsList!=null){ 
 									for(OrderBackRuku cwb :obrsList){ %>
 									<tr height="30">
-										<td width="40" align="center" valign="middle" bgcolor="#E7F4E3">
+										<td width="40" align="center" valign="middle" >
 											<input id="ischeck" name="ischeck" type="checkbox"  checked="checked" value="<%=cwb.getCwb() %>">
 										</td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwb()%></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCwbordertypename()%></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCustomername() %></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneename() %></td>
-										<td width="180" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getConsigneeaddress() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getCreatetime()%></td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditstate()==0?"待审核":"已审核" %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getCwb()%></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getCwbordertypename()%></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getCustomername() %></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getConsigneename() %></td>
+										<td width="180" align="center" valign="middle" ><%=cwb.getConsigneeaddress() %></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getCreatetime()%></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getAuditstate()==0?"待审核":"已审核" %></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getBranchname()%></td>
 										<td width="190" align="center" valign="middle">
 										<%if(cwb.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()/* ||cwb.getCwbstate()!=CwbStateEnum.TuiGongYingShang.getValue() */){ %>
 												<%=cwb.getRemarkstr() %>
 										<input type="hidden" id="<%=cwb.getCwb() %>_cwbremark" name="<%=cwb.getCwb() %>_cwbremark" value="<%=cwb.getCwb() %>_s_0"/>
 										<%}else{ %>
+										<%if(!"".equals(cwb.getRemarkstr())){ %>
+											<input value="<%=cwb.getRemarkstr() %>" />
+										<%}else{ %>
 											<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
-												<option value="">请选择退货再投原因</option>
+												<option value="0">请选择退货再投原因</option>
 												<%for(Reason r :reasonList) {%>
 													<option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option>
 												<%} %>
 											</select>
-										<%} %>
+										<%} }%>
 										</td>
-										<td width="80" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAuditname() %></td>
-										<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=cwb.getAudittime() %></td>
+										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
+										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
 									</tr>
 								<%} }%>
+								
 							</tbody>
 						</table>
+						</div>
 					</div>
-					<div style="height:135px"></div>
+					<div style="height:135px;"></div>
 					<from action="<%=request.getContextPath() %>/cwborder/auditTuiHuoZaiTou" method="post" id="SubFrom" >
 					</from>
 				</div>

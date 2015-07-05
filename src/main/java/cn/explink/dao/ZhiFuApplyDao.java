@@ -320,7 +320,7 @@ public class ZhiFuApplyDao {
 	//在确认 页面通过条件查询
 	public List<ZhiFuApplyView> getConfirmCwbsForpage(long page,String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
 			int confirmresult) {
-		String sql = "select * from express_ops_zhifu_apply where applystate=2";
+		String sql = "select * from express_ops_zhifu_apply where applyresult=2 and confirmstate="+confirmstate;
 		StringBuffer sb = new StringBuffer("");
 		if(!"".equals(cwbs)){
 			sb.append(" and cwb in("+cwbs+")");
@@ -334,9 +334,9 @@ public class ZhiFuApplyDao {
 		if(applytype>0){
 			sb.append(" and applyway="+applytype);
 		}
-		if(confirmstate>0){
+		/*if(confirmstate>0){
 			sb.append(" and confirmstate="+confirmstate);
-		}
+		}*/
 		if(confirmresult>0){
 			sb.append(" and confirmresult="+confirmresult);
 		}
@@ -348,7 +348,7 @@ public class ZhiFuApplyDao {
 	//在确认 页面通过条件查询所有订单
 	public List<ZhiFuApplyView> getConfirmCwbs(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
 			int confirmresult) {
-		String sql = "select * from express_ops_zhifu_apply where applystate=2";
+		String sql = "select * from express_ops_zhifu_apply where applyresult=2 and confirmstate="+confirmstate;
 		StringBuffer sb = new StringBuffer("");
 		if(!"".equals(cwbs)){
 			sb.append(" and cwb in("+cwbs+")");
@@ -362,9 +362,9 @@ public class ZhiFuApplyDao {
 		if(applytype>0){
 			sb.append(" and applyway="+applytype);
 		}
-		if(confirmstate>0){
+		/*if(confirmstate>0){
 			sb.append(" and confirmstate="+confirmstate);
-		}
+		}*/
 		if(confirmresult>0){
 			sb.append(" and confirmresult="+confirmresult);
 		}
@@ -375,7 +375,7 @@ public class ZhiFuApplyDao {
 	//在确认 页面通过条件查询
 	public long getConfirmCwbsForCount(String cwbs,int cwbtypeid, int applytype,int userid, int confirmstate,
 			int confirmresult) {
-		String sql = "select count(1) from express_ops_zhifu_apply where applystate=2";
+		String sql = "select count(1) from express_ops_zhifu_apply where applyresult=2 and confirmstate="+confirmstate;
 		StringBuffer sb = new StringBuffer("");
 		if(!"".equals(cwbs)){
 			sb.append(" and cwb in("+cwbs+")");
@@ -389,9 +389,9 @@ public class ZhiFuApplyDao {
 		if(applytype>0){
 			sb.append(" and applyway="+applytype);
 		}
-		if(confirmstate>0){
+		/*if(confirmstate>0){
 			sb.append(" and confirmstate="+confirmstate);
-		}
+		}*/
 		if(confirmresult>0){
 			sb.append(" and confirmresult="+confirmresult);
 		}
@@ -410,7 +410,12 @@ public class ZhiFuApplyDao {
 	}
 
 	public ZhiFuApplyView getConfirmstate(int applyidint, int confirmstate) {
-		String sql = "select * from express_ops_zhifu_apply where applyid=? and confirmstate=?";
-		return this.jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyidint,confirmstate);
+		try{
+			String sql = "select * from express_ops_zhifu_apply where applyid=? and confirmstate=?";
+			return this.jdbcTemplate.queryForObject(sql, new ZhiFuApplyMapper(),applyidint,confirmstate);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

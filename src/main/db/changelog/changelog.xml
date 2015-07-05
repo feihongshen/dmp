@@ -7401,7 +7401,11 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='对外赔付账单表';
     	</sql>
     </changeSet>
-    
+    <changeSet id="liuxiao-2015-07-04-01" author="liuxiao">
+    	<sql>
+	    	ALTER table `express_ops_zhifu_apply` modify column `feewaytyperemark` varchar(1000) ;
+    	</sql>
+    </changeSet>
 
 </databaseChangeLog>
 

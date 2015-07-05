@@ -390,6 +390,7 @@ public class EditCwbController {
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		//存储在订单修改确认时所需要的参数(在金额修改时需要使用)
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
+		long editcwbnum = 0;
 		if(cwbs!=null&&cwbs.length>0){
 			for (String cwb : cwbs) {
 				FeeWayTypeRemark fr = new FeeWayTypeRemark();
@@ -445,6 +446,7 @@ public class EditCwbController {
 							String dateStr = sdf.format(new Date());
 							zfav.setApplytime(dateStr);
 							list.add(zfav);
+							editcwbnum+=1;
 						}
 					}
 				}
@@ -453,6 +455,7 @@ public class EditCwbController {
 				}
 			}
 		}
+		model.addAttribute("auditcwbnum",editcwbnum);
 		return "editcwb/start";
 	}
 
@@ -462,6 +465,7 @@ public class EditCwbController {
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
+		long editcwbnum = 0;
 		if(cwbs!=null&&cwbs.length>0){
 			//5.28新加支付申请-审核-确认流程
 			
@@ -507,6 +511,7 @@ public class EditCwbController {
 							String dateStr = sdf.format(new Date());
 							zfav.setApplytime(dateStr);
 							list.add(zfav);
+							editcwbnum+=1;
 						}
 					}
 				}
@@ -516,6 +521,7 @@ public class EditCwbController {
 			}
 		
 		}
+		model.addAttribute("auditcwbnum",editcwbnum);
 		return "editcwb/start";
 	}
 

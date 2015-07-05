@@ -6554,7 +6554,7 @@ public class CwbOrderService {
 				cwbOrderView.setRemark1("");//结算状态
 				cwbOrderView.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, deliveryState.getDeliverybranchid()));//反馈站点
 				cwbOrderView.setResetfeedusername(this.dataStatisticsService.getQueryUserName(uslist,deliveryState.getDeliveryid()));//反馈人
-				cwbOrderView.setResetfeedtime(deliveryState.getDeliverytime());//反馈时间
+				cwbOrderView.setResetfeedtime(ot.getDeliverpodtime());//反馈时间
 				cwbOrderView.setDonepeople(this.dataStatisticsService.getQueryUserName(uslist,ot.getEdituserid()));//操作人
 				cwbOrderView.setDonetime(ot.getEdittime());//操作时间
 				cwbOrderView.setNowState(this.getNowstate(ot.getShenhestate()));//订单当前状态
@@ -6638,8 +6638,8 @@ public class CwbOrderService {
 				aeds.setEditusername(this.dataStatisticsService.getQueryUserName(userList, aeds.getEdituserid()));//处理人
 				aeds.setHandlename(gethandlename(aeds.getIshandle()));//处理状态
 				CwbOrder co = cwbDAO.getCwbByCwb(strList.get(ad));
-				aeds.setCurrentbranchname(this.dataStatisticsService.getQueryBranchName(branchlist, co.getCurrentbranchid()));//当前站点
-				aeds.setApplybranchname(this.dataStatisticsService.getQueryBranchName(branchlist,co.getCurrentbranchid()));//申请站点
+				aeds.setCurrentbranchname(this.dataStatisticsService.getQueryBranchName(branchlist, co.getStartbranchid()));//当前站点
+				aeds.setApplybranchname(this.dataStatisticsService.getQueryBranchName(branchlist,aeds.getApplybranchid()));//申请站点
 				aeds.setNowdeliveryname(DeliveryStateEnum.getByValue((int)aeds.getNowdeliverystate()).getText());//修改前的配送结果
 				aeds.setEditnowdeliveryname(DeliveryStateEnum.getByValue((int)aeds.getEditnowdeliverystate()).getText());//修改后的配送结果
 				aeds.setDelivername(this.dataStatisticsService.getQueryUserName(userList, aeds.getDeliverid()));//小件员名字

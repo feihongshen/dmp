@@ -51,11 +51,11 @@ $(function(){
 		$(this).css("backgroundColor","#fff");	
 	});//表单颜色交替和鼠标滑过高亮
 	
-	$("table#gd_table2 tr").click(function(){
+	/* $("table#gd_table2 tr").click(function(){
 			$(this).css("backgroundColor","#FFA500");
 			$(this).siblings().css("backgroundColor","#ffffff");
 			$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
-		});
+		}); */
 	
 	$(".index_dh li").mouseover(function(){
 		//$(this).show(0)
@@ -105,12 +105,9 @@ function applypass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg == "true1" ){  
-		        	alert("订单已做过审核!");
-		        }else if(data.msg == "true"){
-		           alert("审核通过！");    
+		        if(data.code == 0 ){  
+		        	alert(data.msg);
 		           $("#searchForm").submit();    
-		        	
 		        }else{    
 		           alert(data.msg);   
 	       		}    
@@ -139,15 +136,13 @@ function applynopass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg =="true1" ){    
-		          alert("订单已做过审核!"); 
-		        }else if(data.msg == "true"){
-	        	 alert("审核为未通过！");    
-		         window.location.reload();   
-		        }else{    
-		           alert("未完成审核,出现异常！");   
-	        }    
-	     }
+		        if(data.code == 0 ){    
+		          alert(data.msg); 
+		          window.location.reload();   
+		        }else if(data.code == 1){
+		           alert(data.msg);   
+		        }
+	     	}
 	 });
 	}
 }
@@ -217,7 +212,6 @@ function reserData(){
 										<td>
 											审核状态:
 											<select name ="applystate" id ="applystate">
-												<option  value ="0">全部</option>
 												<option value ="<%=ApplyStateEnum.daishenhe.getValue() %>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 												<option value ="<%=ApplyStateEnum.yishenhe.getValue()%>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 											</select>
@@ -271,8 +265,7 @@ function reserData(){
 					<from action="" method="post" id="SubFrom" >
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
 						<tbody>
-							<%
-							if(zhifulist!=null){
+							<%if(zhifulist!=null){
 								for(CwbOrderView zav :zhifulist){ 
 									%>
 									<tr height="30" >

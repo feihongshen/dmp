@@ -318,13 +318,12 @@ public class ApplyEditDeliverystateController {
 					try {
 					long edituserid =  this.getSessionUser().getUserid();
 					String edittime = DateTimeUtil.getNowTime();
-					applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);
 					ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
 					//重置审核的最终方法
 					EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
+					applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);//更改审核状态
 				} catch (Exception e) {
 					errorcount++;
-					
 				}
 				}
 			}
@@ -467,39 +466,60 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/editPaywayInfoModifyCheckpass")
 	public  @ResponseBody String editPaywayInfoModifyCheckpass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
+		long auditnum = 0;
+		StringBuffer sb = new StringBuffer("");
 		try{
 			for(String applyid:applyids.split(",")){
 				int applyidint = Integer.parseInt(applyid);
 				ZhiFuApplyView zhifu = zhiFuApplyDao.getCheckstate(applyidint,2);
 				if(zhifu!=null){
-					return "{\"code\":0,\"msg\":\"true1\"}";
+					sb.append(zhifu.getCwb()+",");
+				}else{
+					String auditname = getSessionUser().getRealname();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String dateStr = sdf.format(new Date());
+					zhiFuApplyDao.updateStatePassByCwb(applyidint,auditname,dateStr);//更改状态为通过审核
+					auditnum+=1;
 				}
-				String auditname = getSessionUser().getRealname();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String dateStr = sdf.format(new Date());
-				zhiFuApplyDao.updateStatePassByCwb(applyidint,auditname,dateStr);//更改状态为通过审核
 			}
-			return "{\"code\":0,\"msg\":\"true\"}";
 		}catch(Exception e){
-			return "{\"code\":1,\"msg\":\"审核通过失败!\"}";
+			return "{\"code\":1,\"msg\":\"审核通过出现异常!\"}";
 		}
+		if(sb.length()>0){
+			String str = sb.substring(0, sb.length()-1);
+			return "{\"code\":0,\"msg\":\"审核通过成功:"+auditnum+"单,已审核且不能再审核订单:"+str+"\"}";
+		}
+		return "{\"code\":0,\"msg\":\"审核通过成功:"+auditnum+"单\"}";
 	}
 	//获取需要审核的订单并进行处理成未通过审核
 	@RequestMapping("/editPaywayInfoModifyChecknopass")
 	public @ResponseBody String editPaywayInfoModifyChecknopass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
-		for(String applyid:applyids.split(",")){
-			int applyidint = Integer.parseInt(applyid);
-			ZhiFuApplyView zhifu = zhiFuApplyDao.getCheckstate(applyidint,2);
-			if(zhifu!=null){
-				return "{\"code\":0,\"msg\":\"true1\"}";
+		long auditnum = 0;
+		StringBuffer sb = new StringBuffer("");
+		try{
+			for(String applyid:applyids.split(",")){
+				int applyidint = Integer.parseInt(applyid);
+				ZhiFuApplyView zhifu = zhiFuApplyDao.getCheckstate(applyidint,2);
+				if(zhifu!=null){
+					sb.append(zhifu.getCwb()+",");
+				}else{
+					String auditname = getSessionUser().getRealname();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String dateStr = sdf.format(new Date());
+					zhiFuApplyDao.updateStateNopassByCwb(applyidint,auditname,dateStr);//更改状态为未通过审核
+					auditnum+=1;
+				}
 			}
-			String auditname = getSessionUser().getRealname();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String dateStr = sdf.format(new Date());
-			zhiFuApplyDao.updateStateNopassByCwb(applyidint,auditname,dateStr);//更改状态为未通过审核
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{\"code\":1,\"msg\":\"审核不通过出现异常!\"}";
 		}
-		return "{\"code\":1,\"msg\":\"true\"}";
+		if(sb.length()>0){
+			String str = sb.substring(0, sb.length()-1);
+			return "{\"code\":0,\"msg\":\"审核不通过成功:"+auditnum+"单,已审核且不能再审核订单:"+str+"\"}";
+		}
+		return "{\"code\":0,\"msg\":\"审核不通过成功:"+auditnum+"单\"}";
 	}
 	/**
 	 * 支付信息修改确认
@@ -550,9 +570,10 @@ public class ApplyEditDeliverystateController {
 		
 		List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 		List<String> errorList = new ArrayList<String>();
-		long cwbpricerevisenum=0;
-		long applywayrevisenum=0;
-		long cwbtyperevisenum=0;
+		long cwbpricerevisenum=0;//金额修改单量
+		long applywayrevisenum=0;//支付方式修改单量
+		long cwbtyperevisenum=0;//支付方式修改单量
+		StringBuffer sb = new StringBuffer("");
 		for(String applyid:applyids.split(",")){
 			//zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
 			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
@@ -562,27 +583,35 @@ public class ApplyEditDeliverystateController {
 			String confirmtime = sdf.format(new Date());
 			try {
 				if(zfav.getConfirmstate()==2){
-					return "{\"errorCode\":0,\"msg\":\"true5\"}";
+					sb.append(zfav.getCwb()+",");
 				}else{
 					if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
 						todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
 						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
-						return "{\"errorCode\":0,\"msg\":\"true1\"}";
+						cwbpricerevisenum+=1;
+						//return "{\"errorCode\":0,\"msg\":\"true1\"}";
 					}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
 						todoConfirmWayResult(fwtr,ecList,errorList,model);
 						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
-						return "{\"errorCode\":0,\"msg\":\"true2\"}";
+						applywayrevisenum+=1;
+						//return "{\"errorCode\":0,\"msg\":\"true2\"}";
 					}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
 						todoConfirmTypeResult(fwtr,ecList,errorList,model);
 						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过	
-						return "{\"errorCode\":0,\"msg\":\"true3\"}";
+						cwbtyperevisenum+=1;
+						//return "{\"errorCode\":0,\"msg\":\"true3\"}";
 					}	
 				}
 			} catch (Exception e) {
-				return "{\"errorCode\":0,\"msg\":\"true4\"}";
+				e.printStackTrace();
+				return "{\"code\":1,\"msg\":\"支付信息修改异常!\"}";
 			}
 		}
-		return "{\"errorCode\":0,\"msg\":\"true1_"+cwbpricerevisenum+"_true2_"+applywayrevisenum+"_true3_"+cwbtyperevisenum+"\"}";
+		if(sb.length()>0){
+			String str = sb.substring(0,sb.length()-1);
+			return "{\"code\":0,\"msg\":\"订单金额修改:"+cwbpricerevisenum+"单,订单支付方式修改:"+applywayrevisenum+"单,订单类型修改:"+cwbtyperevisenum+"单,已审核订单:"+str+"\"}";
+		}
+		return "{\"code\":0,\"msg\":\"订单金额修改:"+cwbpricerevisenum+"单,订单支付方式修改:"+applywayrevisenum+"单,订单类型修改:"+cwbtyperevisenum+"单\"}";
 	}
 	//对订单类型进行修改的确认lx
 	public void todoConfirmTypeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
@@ -673,25 +702,39 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/editPaywayInfoModifyConfirmnopass")
 	public @ResponseBody String editPaywayInfoModifyConfirmnopass(HttpServletRequest request){
 		String applyids = request.getParameter("applyids");
-		for(String applyid:applyids.split(",")){
-			ZhiFuApplyView zhifu = zhiFuApplyDao.getConfirmstate(Integer.parseInt(applyid),2);
-			if(zhifu!=null){
-				return "{\"errorCode\":0,\"msg\":\"true4\"}";
+		long cwbpricerevisenum=0;//金额修改单量
+		long applywayrevisenum=0;//支付方式修改单量
+		long cwbtyperevisenum=0;//支付方式修改单量
+		StringBuffer sb = new StringBuffer("");
+		try{
+			for(String applyid:applyids.split(",")){
+				ZhiFuApplyView zhifu = zhiFuApplyDao.getConfirmstate(Integer.parseInt(applyid),2);
+				if(zhifu!=null){
+					sb.append(zhifu.getCwb()+",");
+				}else{
+					String cofirmname = this.getSessionUser().getRealname();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String confirmtime = sdf.format(new Date());
+					zhiFuApplyDao.updateStateConfirmNopassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认不通过
+					ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
+					if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
+						cwbpricerevisenum+=1;
+					}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
+						applywayrevisenum+=1;
+					}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
+						cwbtyperevisenum+=1;
+					}
+				}
 			}
-			String cofirmname = this.getSessionUser().getRealname();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String confirmtime = sdf.format(new Date());
-			zhiFuApplyDao.updateStateConfirmNopassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认不通过
-			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
-			if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
-				return "{\"errorCode\":0,\"msg\":\"true1\"}";
-			}else if (zfav.getApplyway()==ApplyEnum.zhifufangshi.getValue()){
-				return "{\"errorCode\":0,\"msg\":\"true2\"}";
-			}else if (zfav.getApplyway()==ApplyEnum.dingdanleixing.getValue()){
-				return "{\"errorCode\":0,\"msg\":\"true3\"}";
-			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{\"code\":1,\"msg\":\"支付信息修改确认出现异常!\"}";
 		}
-		return null;
+		if(sb.length()>0){
+			String str = sb.substring(0,sb.length()-1);
+			return "{\"code\":0,\"msg\":\"订单金额修改不通过:"+cwbpricerevisenum+"单,订单支付方式修改不通过:"+applywayrevisenum+"单,订单类型修改不通过:"+cwbtyperevisenum+"单,已审核订单:"+str+"\"}";
+		}
+		return "{\"code\":0,\"msg\":\"订单金额修改不通过:"+cwbpricerevisenum+"单,订单支付方式修改不通过:"+applywayrevisenum+"单,订单类型修改不通过:"+cwbtyperevisenum+"单\"}";
 	}
 	
 	
@@ -735,7 +778,7 @@ public class ApplyEditDeliverystateController {
 					errorCwbs.append(cwbStr + ":无此单号!");
 					continue;
 				//deliverystate.getGcaid() == 0	 已审核订单！
-				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0 || deliverystate.getGcaid() == 0) {
+				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0 ||deliverystate.getGcaid() == 0 ) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 					continue;
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
@@ -758,6 +801,7 @@ public class ApplyEditDeliverystateController {
 						aeds.setApplybranchid(getSessionUser().getBranchid());
 						aeds.setApplytime(nowtime);
 						aeds.setShenhestate(1);//待审核状态
+						aeds.setDeliverpodtime(ds.getDeliverytime());//反馈时间
 						applyEditDeliverystateDAO.creApplyEditDeliverystate(aeds);
 					}
 				} else {

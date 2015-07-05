@@ -44,11 +44,11 @@ $(function(){
 		$(this).css("backgroundColor","#fff");	
 	});//表单颜色交替和鼠标滑过高亮
 	
-	$("table#gd_table2 tr").click(function(){
+	/* $("table#gd_table2 tr").click(function(){
 			$(this).css("backgroundColor","#FFA500");
 			$(this).siblings().css("backgroundColor","#ffffff");
 			$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
-		});
+		}); */
 	
 	$(".index_dh li").mouseover(function(){
 		//$(this).show(0)
@@ -372,18 +372,18 @@ function resetData(){
 									<td  width="40" align="center" valign="middle">
 										<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=aed.getCwb()%>" />
 									</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwb() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwbordertypename() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getDeliveryname() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getCwbstatename() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getCwb() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getCwbordertypename() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getDeliveryname() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getCwbstatename() %></td>
 									<!--TODO 结算状态 -->
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getBranchname() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getResetfeedusername() %></td>
-									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getResetfeedtime() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getDonepeople() %></td>
-									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getDonetime() %></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3"><%=aed.getNowState() %></td>
+									<td width="100" align="center" valign="middle" ></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getBranchname() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getResetfeedusername() %></td>
+									<td width="110" align="center" valign="middle" ><%=aed.getResetfeedtime() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getDonepeople() %></td>
+									<td width="110" align="center" valign="middle" ><%=aed.getDonetime() %></td>
+									<td width="100" align="center" valign="middle" ><%=aed.getNowState() %></td>
 								</tr>
 								<%} }%>
 						</tbody>

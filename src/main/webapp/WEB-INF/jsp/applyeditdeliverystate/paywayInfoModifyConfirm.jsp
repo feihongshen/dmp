@@ -47,11 +47,11 @@ $(function(){
 		$(this).css("backgroundColor","#fff");	
 	});//表单颜色交替和鼠标滑过高亮
 	
-	$("table#gd_table2 tr").click(function(){
+	/* $("table#gd_table2 tr").click(function(){
 			$(this).css("backgroundColor","#FFA500");
 			$(this).siblings().css("backgroundColor","#ffffff");
 			$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
-		});
+		}); */
 	
 	$(".index_dh li").mouseover(function(){
 		//$(this).show(0)
@@ -103,27 +103,14 @@ function applypass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		       /*  if(data.msg =="true1" ){    
-		           alert("修改金额确认通过！");    
-		           window.location.reload();    
-		        }else if(data.msg =="true2" ){
-		        	alert("修改支付方式确认通过！");    
-		        	window.location.reload();    
-		        }else if(data.msg =="true3" ){
-		        	alert("修改订单类型确认通过！");    
-		        	window.location.reload();    
-		        }else{    
-		           alert("未完成确认出现异常！");   
-	        }     */
-	        if(data.msg =="true5"){
-	        	alert("订单已做过确认！");
-	        }else{
-	        	alert("修改金额确认通过"+data.msg.split("_")[1]+"单"+",修改支付方式确认通过"+data.msg.split("_")[3]+"单"+",修改订单类型确认通过"+data.msg.split("_")[5]+"单");
-	        	$("#searchForm").submit();
-	        }/* else{
-		           alert("未完成确认出现异常！");   
-	        } */
-	     }
+		        if(data.code == 0){
+		        	alert(data.msg);
+		        	$("#searchForm").submit();
+		        }else{
+		        	//alert("修改金额确认通过"+data.msg.split("_")[1]+"单"+",修改支付方式确认通过"+data.msg.split("_")[3]+"单"+",修改订单类型确认通过"+data.msg.split("_")[5]+"单");
+		       		alert(data.msg);
+		     	}
+			}
 	 });
 	}
 }
@@ -148,19 +135,12 @@ function applynopass(){
 			data:{applyids:datavalue},
 			dataType:"json",
 			success:function(data) {    
-		        if(data.msg =="true1" ){    
-		           alert("修改金额未确认通过！");    
-		           window.location.reload();    
-		        }else if(data.msg =="true2" ){
-		        	alert("修改支付方式未确认通过！");    
-		        	window.location.reload();    
-		        }else if(data.msg =="true3" ){
-		        	alert("修改订单类型未确认通过！");    
-		        	window.location.reload();    
-		        }else if(data.msg == "true4"){
-		        	alert("订单已做过确认!");
+		        if(data.code == 0 ){    
+		           alert(data.msg);  
+		           $("#searchForm").submit();
+		           //window.location.reload();    
 		        }else{    
-		           alert("未完成确认出现异常！");   
+		           alert(data.msg);   
 	        	}    
 	     }
 	 });
@@ -176,7 +156,7 @@ function resetData(){
 	$("#cwbtypeid").val(0);
 	$("#applypeople").val(0);
 	$("#applytype").val(0);
-	$("#confirmstate").val(0);
+	$("#confirmstate").val(1);
 	$("#confirmresult").val(0);
 }
 </script>
@@ -231,7 +211,6 @@ function resetData(){
 										<td>
 											确认状态:
 											<select name ="confirmstate" id ="confirmstate">
-												<option  value ="0">全部</option>
 												<option value ="<%=ConfirmStateEnum.daiqueren.getValue() %>"><%=ConfirmStateEnum.daiqueren.getText() %></option>
 												<option value ="<%=ConfirmStateEnum.yiqueren.getValue() %>"><%=ConfirmStateEnum.yiqueren.getText() %></option>
 											</select>
@@ -280,12 +259,7 @@ function resetData(){
 									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">确认时间</td>
 								</tr>
 							</tbody>
-						</table>
-					</div>
-					<div style="height:135px"></div>
-					<from action="" method="post" id="SubFrom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
-						<tbody>
+							<tbody>
 							<%
 							if(zhifulist!=null){
 								for(CwbOrderView zav :zhifulist){ 
@@ -310,7 +284,10 @@ function resetData(){
 									</tr>
 								<%} }%>
 						</tbody>
-					</table>
+						</table>
+					</div>
+					<div style="height:135px"></div>
+					<from action="" method="post" id="SubFrom" >
 					</from>
 					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 					<div class="iframe_bottom">

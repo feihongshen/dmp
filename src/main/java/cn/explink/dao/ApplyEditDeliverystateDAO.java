@@ -68,7 +68,7 @@ public class ApplyEditDeliverystateDAO {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_applyeditdeliverystate (deliverystateid,opscwbid,cwb,"
-						+ "cwbordertypeid,nowdeliverystate,nopos,pos,deliverid,applyuserid,applybranchid,applytime,cwbstate,shenhestate) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+						+ "cwbordertypeid,nowdeliverystate,nopos,pos,deliverid,applyuserid,applybranchid,applytime,cwbstate,shenhestate,deliverpodtime) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setLong(1, aeds.getDeliverystateid());
 				ps.setLong(2, aeds.getOpscwbid());
 				ps.setString(3, aeds.getCwb());
@@ -83,6 +83,7 @@ public class ApplyEditDeliverystateDAO {
 				
 				ps.setLong(12, aeds.getCwbstate());
 				ps.setInt(13, aeds.getShenhestate());
+				ps.setString(14, aeds.getDeliverpodtime());//反馈时间
 				return ps;
 			}
 		}, key);
@@ -309,7 +310,7 @@ public class ApplyEditDeliverystateDAO {
 	//审核为通过
 	public void updateShenheStatePass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
-		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,  ishandle=1 where cwb=? ";
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,ishandle=1 where cwb=? ";
 		this.jdbcTemplate.update(sql,edituserid,edittime,cwb);
 	}
 	//审核为不通过
