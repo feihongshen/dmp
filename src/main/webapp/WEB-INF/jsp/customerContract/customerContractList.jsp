@@ -1091,7 +1091,7 @@ function showBox(data){
 						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryContractForm').submit();" >最后一页</a>
 						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
 								id="selectPg"
-								onchange="changePage(this)">
+								onchange="$('#queryContractForm').attr('action',$(this).val());$('#searchForm').submit()">
 								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
 								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>

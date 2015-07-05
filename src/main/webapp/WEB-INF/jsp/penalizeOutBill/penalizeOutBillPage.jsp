@@ -20,6 +20,7 @@
 <script src="${ctx}/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
 <script src="${ctx}/js/commonUtil.js" type="text/javascript"></script>
 <script src="${ctx}/js/workorder/csPushSmsList.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 $(function(){
 	$("#customerselect").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
@@ -403,7 +404,6 @@ function verify(){
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	<div class="right_title">
-	<div style="overflow: auto;">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
 		<!-- <td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall('')"/> </td> -->
@@ -461,28 +461,8 @@ function verify(){
 		</td>
 	</tr>
 	</c:forEach>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
-	<tr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tr>
 	</table>
-	
-	</div>
+		<div class="jg_10"></div><div class="jg_10"></div>
 		<div class="iframe_bottom"> 
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
@@ -577,7 +557,7 @@ function verify(){
          		<td nowrap="nowrap" style="width: 20%;">
          			<select name="batchstate" style="width: 100%;">
 	         			<c:forEach items="${branchList}" var="branch">
-	         				<option value="${branch.branchid}">${branch.branchname}</option>
+	         				<option value="${branch.branchid}" ${branch.branchid==batchstate?'selected=seleted':''}>${branch.branchname}</option>
 						</c:forEach>
 		         	</select>
          		</td>
@@ -790,7 +770,7 @@ function verify(){
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.maxpage<1?1:page_o.maxpage}');$('#updatePageForm').submit();" >最后一页</a>
 					　共${page_o.maxpage}页　共${page_o.total}条记录 　当前第<select
 							id="selectPg"
-							onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+							onchange="$('##updatePageForm').attr('action',$(this).val());$('#searchForm').submit()">
 							<c:forEach var="i" begin="1" end="${page_o.maxpage}">
 							<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 							</c:forEach>
@@ -903,7 +883,7 @@ function verify(){
 						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryPenalizeInsideListForm').submit();" >最后一页</a>
 						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
 								id="selectPg"
-								onchange="changePage(this)">
+								onchange="$('#queryPenalizeInsideListForm').attr('action',$(this).val());$('#searchForm').submit()">
 								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
 								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>
