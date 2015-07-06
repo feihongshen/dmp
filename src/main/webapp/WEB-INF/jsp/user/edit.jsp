@@ -62,11 +62,14 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					 <li><span>登录密码：</span><input type="text" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认密码：</span><input type="text" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
-	           		<%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
-			         <a href="javascript:document.music1.Play();">点击测试</a>
-			         <%} %>
-	           		<input type="hidden" id ="wavh" name="wavh" value ="<%=u.getUserwavfile() %>"  />
-	           		<EMBED id='music1' NAME='music1' SRC='<%=request.getContextPath()+ServiceUtil.wavPath+u.getUserwavfile() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+			         <%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
+		         	<a href="#" onclick="	
+			         	var audioElement = document.createElement('audio');
+			        	audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile() %>');
+			     		audioElement.load();
+			     		audioElement.play();
+		     		">点击测试</a>
+		         <%} %>
 	           		</li>
 	           		
 	           		<!-- <li><span>导出时联系方式：</span>
