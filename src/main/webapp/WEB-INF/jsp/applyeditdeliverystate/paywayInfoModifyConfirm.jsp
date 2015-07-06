@@ -244,6 +244,7 @@ function resetData(){
 								</table>
 							</form>
 						</div>
+						<div style="overflow: scroll;height: 480px;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -289,10 +290,12 @@ function resetData(){
 								<%} }%>
 						</tbody>
 						</table>
+						</div>
 					</div>
-					<div style="height:135px"></div>
 					<from action="" method="post" id="SubFrom" >
 					</from>
+					</div>
+					</div>
 					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 					<div class="iframe_bottom">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
