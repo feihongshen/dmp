@@ -3147,7 +3147,10 @@ public class CwbOrderService {
 		this.logger.info("开始退货出站处理,cwb:{}", cwb);
 
 		cwb = this.translateCwb(cwb);
-
+		OrderBackCheck obc = orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
+		if(obc!=null){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_dai_shen_he);
+		}
 		return this.outUntreadWarehousHandle(user, user.getBranchid(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagename, anbaochuku);
 	}
 
@@ -4005,7 +4008,8 @@ public class CwbOrderService {
 	 */
 	private void saveFanKuiNextBranchId(User user, long deliverystate, String cwb) {
 		DeliveryStateEnum dse = DeliveryStateEnum.getByValue((int) deliverystate);
-		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		Customer customer = this.customerDao.getCustomerById(co.getCustomerid());
 		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 		String isZhiLiuZhongZhuanDaoKuFand = this.systemInstallDAO.getSystemInstall("isZhiLiuZhongZhuanDaoKuFand") == null ? "no" : this.systemInstallDAO.getSystemInstall(
 				"isZhiLiuZhongZhuanDaoKuFand").getValue();
@@ -4046,7 +4050,8 @@ public class CwbOrderService {
 				this.logger.info("站点{0}没有指定退货站", user.getBranchid());
 				return;
 			}
-			this.cwbDAO.updateNextBranchid(cwb, zhongzhuanNextBranch.getBranchid());
+			//this.cwbDAO.updateNextBranchid(cwb, zhongzhuanNextBranch.getBranchid());
+			this.cwbDAO.updateNextBranchid(cwb, co.getStartbranchid());
 
 		} else if (dse == DeliveryStateEnum.DaiZhongZhuan) {// 待中转
 			if (zhongzhuanNextBranch == null) {
@@ -4070,6 +4075,7 @@ public class CwbOrderService {
 		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
 		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 		
+		Branch tuihuoNextBranch = null;
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 				|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) {
 			// 拒收修改订单为配送状态
@@ -4092,7 +4098,28 @@ public class CwbOrderService {
 						this.orderBackCheckDAO.createOrderBackCheck(o);
 						this.logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 					}
-				} else {
+					
+					
+					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+						bList.add(this.branchDAO.getBranchByBranchid(i));
+					}
+					
+					//Branch tuihuoNextBranch = null;
+					for (Branch b : bList) {// 获得当前站点的退货站
+						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+							tuihuoNextBranch = b;
+						}
+					}
+					if (tuihuoNextBranch == null) {
+						tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
+					} else {
+						// 更改下一站为退货站
+						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
+					}
+					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					
+				}/* else {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
@@ -4111,7 +4138,7 @@ public class CwbOrderService {
 					}
 					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 					this.logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
-				}
+				}*/
 				
 			} else {
 				this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
@@ -4122,8 +4149,10 @@ public class CwbOrderService {
 		// 处理站点
 		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
 			this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?, currentbranchid=0 where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
-		} else {
-			this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
+		}else if(podresultid == DeliveryStateEnum.JuShou.getValue()||podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()){
+			this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid,nextbranchid=? where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(),tuihuoNextBranch.getBranchid(),cwb);
+		}else {
+			this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(),cwb);
 		}
 	}
 
