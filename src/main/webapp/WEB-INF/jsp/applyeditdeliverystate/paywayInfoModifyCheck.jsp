@@ -153,9 +153,14 @@ function applynopass(){
 }
 
 function exportExcel(){
-	$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
-	$("#searchForm").submit();
-	$("#searchForm").attr("action","1");
+	if(<%=zhifulist!=null&&!zhifulist.isEmpty()%>){
+		$("#btnval").attr("disable","disable");
+		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/checkExportExcel");
+		$("#searchForm").submit();
+		$("#searchForm").attr("action","1");
+	}else{
+		alert("无查询结果,无法导出!");
+	}
 }
 function reserData(){
 	$("#cwb").val("");
@@ -240,7 +245,7 @@ function reserData(){
 										<td width="20%">
 											<input type="button" onclick="applypass()" id="pass" value="审核通过" class="input_button2">&nbsp;&nbsp;
 											<input type="button" onclick="applynopass()" id="nopass" value="审核不通过" class="input_button2">&nbsp;&nbsp;
-											<input type="button" onclick="exportExcel();" value="导出" class="input_button2">
+											<input type="button" id="btnval" onclick="exportExcel();" value="导出" class="input_button2">
 										</td>
 									</tr>
 								</table>

@@ -212,12 +212,13 @@ function resetfeedbackNoPass(){
 	}
 }
 function exportExcel(){
-	if(<%=applyeditlist!=null%>){
+	if(<%=applyeditlist!=null&&!applyeditlist.isEmpty()%>){
+		$("#btnval").attr("disable","disable");
 		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/rfbExportExcel");
 		$("#searchForm").submit();
 		$("#searchForm").attr("action","1");
 	}else{
-		alert("未做查询,无法导出！");
+		alert("未查询结果,无法导出！");
 	}
 }
 function resetData(){
@@ -342,7 +343,7 @@ function resetData(){
 											<input type="button" onclick="resetfeedbackNoPass()" value="审核不通过" class="input_button2">&nbsp;&nbsp;&nbsp;&nbsp;
 										</td>
 										<td  width="40" align="right">
-											<input type="button" onclick="exportExcel();" value="导出" class="input_button2">
+											<input type="button" id="btnval" onclick="exportExcel();" value="导出" class="input_button2">
 										</td>
 									</tr>
 								</table>
