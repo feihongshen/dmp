@@ -947,7 +947,7 @@ function verify(){
          				<option value="" >---全部---</option>
 						<c:forEach items="${penalizebigList}" var="big" >
 							<%-- <c:if test="${compensatebig==big.id}"> --%>
-		         				<option value="${big.id}"<c:if test='${queryConditionVO.contractColumnOrder == asc}'>selected="selected"</c:if>>${big.text}</option>
+		         				<option value="${big.id}"<c:if test='${compensatebig == big.id}'>selected="selected"</c:if>>${big.text}</option>
 		         			<%-- </c:if> --%>
 						</c:forEach>
 	         		</select>
@@ -958,6 +958,9 @@ function verify(){
          		<td nowrap="nowrap">
 			    	<select style="width:70%;" name="sort">
 			    		<option value="billstate">账单状态</option>
+			    		<option value="billbatches">账单批次</option>
+			    		<option value="compensatefee">赔付金额</option>
+			    		<option value="createddate">创建日期</option>
 			    	</select>
 			    	<select style="width:30%;" name="method">
 			    		<option  value="asc">升序</option>
