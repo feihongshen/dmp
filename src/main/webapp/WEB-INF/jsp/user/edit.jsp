@@ -65,7 +65,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			         <%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
 		         	<a href="#" onclick="	
 			         	var audioElement = document.createElement('audio');
-			        	audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile() %>');
+			        	audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+u.getUserwavfile() %>');
 			     		audioElement.load();
 			     		audioElement.play();
 		     		">点击测试</a>
