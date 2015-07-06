@@ -504,8 +504,8 @@ function resub(form){
 					<input type="hidden" name="deliverystate" value="<%=deliverystateid%>" />
 					<input type="hidden" name="backreasonid" value="<%=backreasonid%>" />
 					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
-					<input  name="firstchangereasonid" value="<%=firstchangereasonid%>" />
-					<input  name="changereasonid" value="<%=changereasonid%>" />
+					<input type="hidden" name="firstchangereasonid" value="<%=firstchangereasonid%>" />
+					<input type="hidden" name="changereasonid" value="<%=changereasonid%>" />
 					<input type="hidden" name="paytype" value="<%=paytype%>" />
 					<input type="hidden" name="leavedreasonid" value="<%=leavedreasonid%>" />
 					<input type="hidden" name="losereasonid" value="<%=losereasonid%>" />
