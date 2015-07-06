@@ -98,21 +98,24 @@ function applypass(){
 		alert("请选择当前要处理订单！");
 	}
 	if(datavalue.length>1){
-		datavalue= datavalue.substring(0, datavalue.length-1);
-		$.ajax({
-			type: 'POST',
-			url: "<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyCheckpass",
-			data:{applyids:datavalue},
-			dataType:"json",
-			success:function(data) {    
-		        if(data.code == 0 ){  
-		        	alert(data.msg);
-		           $("#searchForm").submit();    
-		        }else{    
-		           alert(data.msg);   
-	       		}    
-	     }
-	 });
+		if(confirm("确定要审核通过吗?")){
+			datavalue= datavalue.substring(0, datavalue.length-1);
+			$.ajax({
+				type: 'POST',
+				url: "<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyCheckpass",
+				data:{applyids:datavalue},
+				dataType:"json",
+				success:function(data) {    
+			        if(data.code == 0 ){  
+			        	alert(data.msg);
+			           $("#searchForm").submit();    
+			        }else{    
+			           alert(data.msg);   
+		       		}    
+		    	 }
+			 });
+			
+		}
 	}
 }
 
@@ -129,21 +132,23 @@ function applynopass(){
 		alert("请选择当前要处理订单！");
 	}
 	if(datavalue.length>1){
-		datavalue= datavalue.substring(0, datavalue.length-1);
-		$.ajax({
-			type: 'POST',
-			url: "<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyChecknopass",
-			data:{applyids:datavalue},
-			dataType:"json",
-			success:function(data) {    
-		        if(data.code == 0 ){    
-		          alert(data.msg); 
-		          window.location.reload();   
-		        }else if(data.code == 1){
-		           alert(data.msg);   
-		        }
-	     	}
-	 });
+		if(confirm("确定要审核不通过吗？")){
+			datavalue= datavalue.substring(0, datavalue.length-1);
+			$.ajax({
+				type: 'POST',
+				url: "<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyChecknopass",
+				data:{applyids:datavalue},
+				dataType:"json",
+				success:function(data) {    
+			        if(data.code == 0 ){    
+			          alert(data.msg); 
+			          window.location.reload();   
+			        }else if(data.code == 1){
+			           alert(data.msg);   
+			        }
+		     	}
+			 });
+		}
 	}
 }
 
@@ -241,6 +246,7 @@ function reserData(){
 								</table>
 							</form>
 						</div>
+						<div style="overflow: scroll;height: 480px;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -258,14 +264,8 @@ function reserData(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div style="height:135px"></div>
-					<from action="" method="post" id="SubFrom" >
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2" >
-						<tbody>
-							<%if(zhifulist!=null){
+								
+								<%if(zhifulist!=null){
 								for(CwbOrderView zav :zhifulist){ 
 									%>
 									<tr height="30" >
@@ -286,11 +286,14 @@ function reserData(){
 										<td width="100" align="center" valign="middle" ><%=zav.getAudittime() %></td>
 									</tr>
 								<%} }%>
-						</tbody>
-					</table>
+								
+							</tbody>
+						</table>
+						</div>
+					<from action="" method="post" id="SubFrom" >
 					</from>
 				</div>
-	</div>
+			</div>
 					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 					<div class="iframe_bottom">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
@@ -312,7 +315,7 @@ function reserData(){
 						</table>
 					</div>
 				    <%} %>
-</div>
+		</div>
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);

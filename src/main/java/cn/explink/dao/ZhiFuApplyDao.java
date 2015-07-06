@@ -258,6 +258,7 @@ public class ZhiFuApplyDao {
 		if(applyresult>0){
 			sb.append(" and applyresult="+applyresult);
 		}
+		sb.append(" order by applytime desc");
 		sql += sb;
 		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
@@ -340,6 +341,7 @@ public class ZhiFuApplyDao {
 		if(confirmresult>0){
 			sb.append(" and confirmresult="+confirmresult);
 		}
+		sb.append(" order by audittime desc");
 		sql += sb;
 		sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
@@ -417,5 +419,10 @@ public class ZhiFuApplyDao {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	//根据cwb查询申请表里有多少单申请数据
+	public long getApplystateCount(String cwb,int applyway){
+		String sql = "select count(1) from express_ops_zhifu_apply where applystate=1 and cwb=? and applyway=?";
+		return this.jdbcTemplate.queryForLong(sql,cwb,applyway);
 	}
 }

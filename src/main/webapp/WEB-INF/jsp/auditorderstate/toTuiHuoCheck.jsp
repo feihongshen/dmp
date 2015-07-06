@@ -208,13 +208,13 @@ $(function() {
 });
 
 
-function displayorno(displayorno){
+/* function displayorno(displayorno){
 	if(displayorno==2){
 		$("#hiddendiv").removeAttr("hidden");
 	}else{
 		$("#hiddendiv").attr("hidden","hidden");
 	}
-}
+} */
 function restData(){
 	$("#areatest").val("");
 	$("#cwbtypeid").val(0);
@@ -241,13 +241,12 @@ function restData(){
 							<table>
 								<tr>
 									<td rowspan="2">
-										订单号：
+									订单号：
 										<textarea name="cwbStr" rows="3"  id="areatest" class="kfsh_text" ><%=cwbStr %></textarea>
 										<input id="isnow" name="isnow" type="hidden" value="1" />
 									</td>
-									<td>
-										&nbsp;&nbsp;
-										订单类型:
+									<td align="right">订单类型:</td>
+									<td align="left">
 										<select name ="cwbtypeid" id ="cwbtypeid">
 											<option  value ="0">全部</option>
 												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue()%>"><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
@@ -255,9 +254,8 @@ function restData(){
 												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
 										</select>
 									</td>
-									<td>	
-										&nbsp;&nbsp;
-										客户名称:
+									<td align="right">客户名称:</td>
+									<td align="left">	
 										<select name ="customerid" id ="customerid">
 											<option  value ="0">全部</option>
 											<%if(customerList!=null){ %>
@@ -265,7 +263,6 @@ function restData(){
 												<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
 												<%} }%>
 										</select>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										配送站点:
 										<select name ="branchid" id ="branchid">
 											<option  value ="0">全部</option>
@@ -277,31 +274,25 @@ function restData(){
 									</td>
 								</tr>
 								<tr>
-									<td>
-										&nbsp;&nbsp;
-										审核状态:
-										<select name ="shenhestate" id ="shenhestate" onchange="displayorno($(this).val());">
+									<td align="right">审核状态:</td>
+									<td align="left">
+										<select name ="shenhestate" id ="shenhestate" <!-- onchange="displayorno($(this).val()); -->">
 											<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 											<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 										</select>
 									</td>
-								
+									<td>审核结果:</td>
 									<td>
-										&nbsp;&nbsp;
+										<select name ="checkresult" id ="checkresult">
+											<option  value ="0">全部</option>
+											<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
+											<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
+										</select>
+										&nbsp;
 										归班反馈时间:
 											<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
 										到
 											<input type ="text" name ="enddate" id="endtime"  value="" class="input_text1" style="height:20px;"/>
-									</td>
-									<td>
-										<div id="hiddendiv" hidden="hidden">
-											审核结果:
-											<select name ="checkresult" id ="checkresult">
-												<option  value ="0">全部</option>
-												<option value ="<%=TuihuoResultEnum.querentuihuo.getValue()%>"><%=TuihuoResultEnum.querentuihuo.getText() %></option>
-												<option value ="<%=TuihuoResultEnum.zhandianzhiliu.getValue() %>"><%=TuihuoResultEnum.zhandianzhiliu.getText() %></option>
-											</select>
-										</div>
 									</td>
 								</tr>
 							</table>

@@ -222,7 +222,7 @@ public class EditCwbController {
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
 				// 存储订单表记录和反馈表记录，用于前端判断 如果代收金额
-				if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0) {
+				if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0 ||co.getDeliverystate()==0) {
 					prohibitedCods.add(cods);
 				} else {
 					allowCods.add(cods);
@@ -424,29 +424,38 @@ public class EditCwbController {
 				}
 				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
 				for(CwbOrder co:cwblist){
-					for(FeeWayTypeRemark fre:frlist){
-						if(co.getCwb().equals(fre.getCwb())){
-							ZhiFuApplyView zfav = new ZhiFuApplyView();
-							zfav.setCwb(co.getCwb());
-							zfav.setCustomerid((int)co.getCustomerid());
-							zfav.setCwbordertypeid(co.getCwbordertypeid());
-							zfav.setApplycwbordertypeid(0);
-							zfav.setFlowordertype((int)co.getFlowordertype());
-							zfav.setBranchid((int)co.getCurrentbranchid());
-							zfav.setPaywayid((int)co.getPaywayid());
-							zfav.setApplypaywayid(0);
-							zfav.setReceivablefee(co.getReceivablefee());
-							zfav.setApplyreceivablefee(request.getParameter("Receivablefee_" + co.getCwb()) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + co.getCwb())));
-							zfav.setApplyway(1);
-							zfav.setApplystate(1);
-							zfav.setApplyresult(0);
-							zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							String dateStr = sdf.format(new Date());
-							zfav.setApplytime(dateStr);
-							list.add(zfav);
-							editcwbnum+=1;
+					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),1);
+					if(count==0){
+						for(FeeWayTypeRemark fre:frlist){
+							if(co.getCwb().equals(fre.getCwb())){
+								ZhiFuApplyView zfav = new ZhiFuApplyView();
+								zfav.setCwb(co.getCwb());
+								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCwbordertypeid(co.getCwbordertypeid());
+								zfav.setApplycwbordertypeid(0);
+								zfav.setFlowordertype((int)co.getFlowordertype());
+								zfav.setBranchid((int)co.getCurrentbranchid());
+								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setApplypaywayid(0);
+								zfav.setReceivablefee(co.getReceivablefee());
+								BigDecimal bd = BigDecimal.ZERO;
+								if(co.getCwbordertypeid()==2){
+									bd = fre.getPaybackfee();
+								}else{
+									bd = fre.getReceivablefee();
+								}
+								zfav.setApplyreceivablefee(bd);
+								zfav.setApplyway(1);
+								zfav.setApplystate(1);
+								zfav.setApplyresult(0);
+								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
+								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String dateStr = sdf.format(new Date());
+								zfav.setApplytime(dateStr);
+								list.add(zfav);
+								editcwbnum+=1;
+							}
 						}
 					}
 				}
@@ -488,30 +497,34 @@ public class EditCwbController {
 					cwbss+="'"+cwb+"',";
 				}
 				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
+				
 				for(CwbOrder co:cwblist){
-					for(FeeWayTypeRemark ftr:frlist){
-						if(ftr.getCwb().equals(co.getCwb())){
-							ZhiFuApplyView zfav = new ZhiFuApplyView();
-							zfav.setCwb(co.getCwb());
-							zfav.setCustomerid((int)co.getCustomerid());
-							zfav.setCwbordertypeid(co.getCwbordertypeid());
-							zfav.setApplycwbordertypeid(0);
-							zfav.setFlowordertype((int)co.getFlowordertype());
-							zfav.setBranchid((int)co.getCurrentbranchid());
-							zfav.setPaywayid((int)co.getPaywayid());
-							zfav.setApplypaywayid(request.getParameter("Newpaywayid_" + co.getCwb()) == null ? 0 : Integer.valueOf(request.getParameter("Newpaywayid_" + co.getCwb())));
-							zfav.setReceivablefee(co.getReceivablefee());
-							zfav.setApplyreceivablefee(BigDecimal.ZERO);
-							zfav.setApplyway(2);
-							zfav.setApplystate(1);
-							zfav.setApplyresult(0);
-							zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-							zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							String dateStr = sdf.format(new Date());
-							zfav.setApplytime(dateStr);
-							list.add(zfav);
-							editcwbnum+=1;
+					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),2);
+					if(count==0){
+						for(FeeWayTypeRemark ftr:frlist){
+							if(ftr.getCwb().equals(co.getCwb())){
+								ZhiFuApplyView zfav = new ZhiFuApplyView();
+								zfav.setCwb(co.getCwb());
+								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCwbordertypeid(co.getCwbordertypeid());
+								zfav.setApplycwbordertypeid(0);
+								zfav.setFlowordertype((int)co.getFlowordertype());
+								zfav.setBranchid((int)co.getCurrentbranchid());
+								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setApplypaywayid(ftr.getNewpaywayid());
+								zfav.setReceivablefee(co.getReceivablefee());
+								zfav.setApplyreceivablefee(BigDecimal.ZERO);
+								zfav.setApplyway(2);
+								zfav.setApplystate(1);
+								zfav.setApplyresult(0);
+								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
+								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String dateStr = sdf.format(new Date());
+								zfav.setApplytime(dateStr);
+								list.add(zfav);
+								editcwbnum+=1;
+							}
 						}
 					}
 				}
@@ -519,9 +532,7 @@ public class EditCwbController {
 					long lon = zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
-		
 		}
-		model.addAttribute("auditcwbnum",editcwbnum);
 		return "editcwb/start";
 	}
 
@@ -530,57 +541,59 @@ public class EditCwbController {
 	public String editXiuGaiDingDanLeiXing(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser,
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-		for (String cwb : cwbs) {
-			FeeWayTypeRemark fr = new FeeWayTypeRemark();
-			fr.setCwb(cwb);
-			fr.setCwbordertypeid(request.getParameter("cwbordertypeid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("cwbordertypeid_" + cwb)));
-			fr.setNewcwbordertypeid(request.getParameter("Newcwbordertypeid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + cwb)));
-			frlist.add(fr);
-		}
-		List<User> userList = this.userDAO.getUserByid(requestUser);
-		if (userList.size() > 0) {
-			this.logger.info("修改订单类型功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
-			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
-			List<String> errorList = new ArrayList<String>();
-			//5.28新加支付申请-审核-确认流程
-			List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
-			String cwbss = "";
-			for(String cwb:cwbs){
-				cwbss+="'"+cwb+"',";
+		if(cwbs!=null&&cwbs.length>0){
+			for (String cwb : cwbs) {
+				FeeWayTypeRemark fr = new FeeWayTypeRemark();
+				fr.setCwb(cwb);
+				fr.setCwbordertypeid(request.getParameter("cwbordertypeid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("cwbordertypeid_" + cwb)));
+				fr.setNewcwbordertypeid(request.getParameter("Newcwbordertypeid_" + cwb) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + cwb)));
+				frlist.add(fr);
 			}
-			
-			List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
-			for(CwbOrder co:cwblist){
-				for(FeeWayTypeRemark ftr:frlist){
-					if(ftr.getCwb().equals(co.getCwb())){
-						ZhiFuApplyView zfav = new ZhiFuApplyView();
-						zfav.setCwb(co.getCwb());
-						zfav.setCustomerid((int)co.getCustomerid());
-						zfav.setCwbordertypeid(co.getCwbordertypeid());
-						zfav.setApplycwbordertypeid(request.getParameter("Newcwbordertypeid_" +co.getCwb() ) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + co.getCwb())));
-						zfav.setFlowordertype((int)co.getFlowordertype());
-						zfav.setBranchid((int)co.getCurrentbranchid());
-						zfav.setPaywayid((int)co.getPaywayid());
-						zfav.setApplypaywayid(0);
-						zfav.setReceivablefee(co.getReceivablefee());
-						zfav.setApplyreceivablefee(BigDecimal.ZERO);
-						zfav.setApplyway(3);
-						zfav.setApplystate(1);
-						zfav.setApplyresult(0);
-						zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-						zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String dateStr = sdf.format(new Date());
-						zfav.setApplytime(dateStr);
-						list.add(zfav);
+			List<User> userList = this.userDAO.getUserByid(requestUser);
+			if (userList.size() > 0) {
+				this.logger.info("修改订单类型功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
+				//5.28新加支付申请-审核-确认流程
+				List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
+				String cwbss = "";
+				for(String cwb:cwbs){
+					cwbss+="'"+cwb+"',";
+				}
+				
+				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
+				for(CwbOrder co:cwblist){
+					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),3);
+					if(count==0){
+						for(FeeWayTypeRemark ftr:frlist){
+							if(ftr.getCwb().equals(co.getCwb())){
+								ZhiFuApplyView zfav = new ZhiFuApplyView();
+								zfav.setCwb(co.getCwb());
+								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCwbordertypeid(co.getCwbordertypeid());
+								zfav.setApplycwbordertypeid(request.getParameter("Newcwbordertypeid_" +co.getCwb() ) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + co.getCwb())));
+								zfav.setFlowordertype((int)co.getFlowordertype());
+								zfav.setBranchid((int)co.getCurrentbranchid());
+								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setApplypaywayid(0);
+								zfav.setReceivablefee(co.getReceivablefee());
+								zfav.setApplyreceivablefee(BigDecimal.ZERO);
+								zfav.setApplyway(3);
+								zfav.setApplystate(1);
+								zfav.setApplyresult(0);
+								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
+								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String dateStr = sdf.format(new Date());
+								zfav.setApplytime(dateStr);
+								list.add(zfav);
+							}
+						}
 					}
 				}
-			}
-			for(ZhiFuApplyView za:list){
-				long lon = zhiFuApplyDao.creZhiFuApplyView(za);
+				for(ZhiFuApplyView za:list){
+					long lon = zhiFuApplyDao.creZhiFuApplyView(za);
+				}
 			}
 		}
-			
 		return "editcwb/start";
 	}
 

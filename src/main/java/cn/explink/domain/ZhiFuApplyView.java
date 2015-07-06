@@ -26,8 +26,8 @@ public class ZhiFuApplyView {
 	private String auditname;//审核人
 	private String audittime;//审核时间
 	private String feewaytyperemark;
-	private String confirmname;
-	private String confirmtime;
+	private String confirmname;//确认人
+	private String confirmtime;//确认时间
 	
 	public String getConfirmname() {
 		return confirmname;

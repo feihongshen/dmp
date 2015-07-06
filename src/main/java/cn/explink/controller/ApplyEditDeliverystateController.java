@@ -574,6 +574,7 @@ public class ApplyEditDeliverystateController {
 		long applywayrevisenum=0;//支付方式修改单量
 		long cwbtyperevisenum=0;//支付方式修改单量
 		StringBuffer sb = new StringBuffer("");
+		StringBuffer cwbStr = new StringBuffer("");
 		for(String applyid:applyids.split(",")){
 			//zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
 			ZhiFuApplyView zfav = zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
@@ -586,6 +587,10 @@ public class ApplyEditDeliverystateController {
 					sb.append(zfav.getCwb()+",");
 				}else{
 					if(zfav.getApplyway()==ApplyEnum.dingdanjinE.getValue()){
+						long lon = zhiFuApplyDao.getApplystateCount(zfav.getCwb(),1);
+						if(lon>0){
+							cwbStr.append(zfav.getCwb());//添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
+						}
 						todoConfirmFeeResult(fwtr,ecList,errorList,model); //修改金额时的最终结算部分操作
 						zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid),cofirmname,confirmtime);//更改状态为确认通过
 						cwbpricerevisenum+=1;
@@ -614,49 +619,35 @@ public class ApplyEditDeliverystateController {
 		return "{\"code\":0,\"msg\":\"订单金额修改:"+cwbpricerevisenum+"单,订单支付方式修改:"+applywayrevisenum+"单,订单类型修改:"+cwbtyperevisenum+"单\"}";
 	}
 	//对订单类型进行修改的确认lx
-	public void todoConfirmTypeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
+	public void todoConfirmTypeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model) throws Exception{
 		String cwb = fwtr.getCwb();
 		int cwbordertypeid = fwtr.getCwbordertypeid();
 		int newcwbordertypeid = fwtr.getNewcwbordertypeid();
 		long requestUser = fwtr.getRequestUser();
-		try {
-			EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiDingDanLeiXing(cwb, cwbordertypeid, newcwbordertypeid, requestUser, getSessionUser().getUserid());
-			ecList.add(ec_dsd);
-		} catch (ExplinkException ee) {
-			errorList.add(cwb + "_" + ee.getMessage());
-		} catch (Exception e) {
-			errorList.add(cwb + "_不确定_系统内部报错！");
-			e.printStackTrace();
-		}
+		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiDingDanLeiXing(cwb, cwbordertypeid, newcwbordertypeid, requestUser, getSessionUser().getUserid());
+		ecList.add(ec_dsd);
 		model.addAttribute("ecList", ecList);
 		model.addAttribute("errorList", errorList);
 	}
 	//对支付方式进行修改的确认lx
-	public void todoConfirmWayResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
+	public void todoConfirmWayResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model) throws Exception{
 		String cwb = fwtr.getCwb();
 		int paywayid = fwtr.getPaywayid();
 		int newpaywayid = fwtr.getNewpaywayid();
 		long requestUser = fwtr.getRequestUser();
-		try {
-			EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, getSessionUser().getUserid());
-			//added by jiangyu begin
-			adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
-			orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
-			//修改支付方式,判断是否生成调整单
-			//added by jiangyu end
-			ecList.add(ec_dsd);
-		} catch (ExplinkException ee) {
-			errorList.add(cwb + "_" + ee.getMessage());
-		} catch (Exception e) {
-			errorList.add(cwb + "_不确定_系统内部报错！");
-			e.printStackTrace();
-		}
+		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, getSessionUser().getUserid());
+		//added by jiangyu begin
+		adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
+		orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
+		//修改支付方式,判断是否生成调整单
+		//added by jiangyu end
+		ecList.add(ec_dsd);
 		model.addAttribute("ecList", ecList);
 		model.addAttribute("errorList", errorList);
 	}
 	
 	//对金额更改的最终确认方法lx
-	public void todoConfirmFeeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model){
+	public void todoConfirmFeeResult(FeeWayTypeRemark fwtr,List<EdtiCwb_DeliveryStateDetail> ecList,List<String> errorList,Model model) throws Exception{
 		String cwb = fwtr.getCwb();
 		String isDeliveryState = fwtr.getIsDeliveryState();
 		BigDecimal receivablefee = fwtr.getReceivablefee();
@@ -684,16 +675,9 @@ public class ApplyEditDeliverystateController {
 			this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
 		}
 		
-		try {
-			EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, paybackfee, requestUser,
-					getSessionUser().getUserid());
-			ecList.add(ec_dsd);
-		} catch (ExplinkException ee) {
-			errorList.add(cwb + "_" + ee.getMessage());
-		} catch (Exception e) {
-			errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
-			e.printStackTrace();
-		}
+		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, paybackfee, requestUser,
+				getSessionUser().getUserid());
+		ecList.add(ec_dsd);
 		model.addAttribute("ecList", ecList);
 		model.addAttribute("errorList", errorList);
 	}
@@ -777,7 +761,7 @@ public class ApplyEditDeliverystateController {
 				if(corder == null){
 					errorCwbs.append(cwbStr + ":无此单号!");
 					continue;
-				//deliverystate.getGcaid() == 0	 已审核订单！
+				//deliverystate.getGcaid() == 0	(审核状态字段)！
 				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0 ||deliverystate.getGcaid() == 0 ) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 					continue;

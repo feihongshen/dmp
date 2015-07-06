@@ -1,9 +1,7 @@
 <%@page import="cn.explink.domain.User"%>
 <%@page import="cn.explink.enumutil.EditCwbTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%
-Long editcwbnum = (Long)request.getAttribute("editcwbnum");
-%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
 <HEAD>

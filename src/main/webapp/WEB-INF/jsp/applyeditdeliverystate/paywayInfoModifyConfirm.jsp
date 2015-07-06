@@ -96,6 +96,7 @@ function applypass(){
 		alert("请选择当前要处理订单！");
 	}
 	if(datavalue.length>1){
+		if(confirm("确定要确认通过吗?")){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 		$.ajax({
 			type: "POST",
@@ -111,7 +112,8 @@ function applypass(){
 		       		alert(data.msg);
 		     	}
 			}
-	 });
+		 });
+		}
 	}
 }
 
@@ -128,22 +130,24 @@ function applynopass(){
 		alert("请选择当前要处理订单！");
 	}
 	if(datavalue.length>1){
-		datavalue= datavalue.substring(0, datavalue.length-1);
-		$.ajax({
-			type: "POST",
-			url:"<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyConfirmnopass",
-			data:{applyids:datavalue},
-			dataType:"json",
-			success:function(data) {    
-		        if(data.code == 0 ){    
-		           alert(data.msg);  
-		           $("#searchForm").submit();
-		           //window.location.reload();    
-		        }else{    
-		           alert(data.msg);   
-	        	}    
-	     }
-	 });
+		if(confirm("确定要确认不通过吗?")){
+			datavalue= datavalue.substring(0, datavalue.length-1);
+			$.ajax({
+				type: "POST",
+				url:"<%=request.getContextPath()%>/applyeditdeliverystate/editPaywayInfoModifyConfirmnopass",
+				data:{applyids:datavalue},
+				dataType:"json",
+				success:function(data) {    
+			        if(data.code == 0 ){    
+			           alert(data.msg);  
+			           $("#searchForm").submit();
+			           //window.location.reload();    
+			        }else{    
+			           alert(data.msg);   
+		        	}    
+		     }
+		 });
+		}
 	}
 }
 function exportExcel(){
