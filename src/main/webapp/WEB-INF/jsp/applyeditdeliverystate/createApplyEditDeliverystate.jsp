@@ -50,8 +50,12 @@ function sub(id){
 		alert("请选择要更改的配送结果！");
 		return false;
 	}
+	if($("#reasonid"+id).val()==0){
+		alert("请选择原因备注!");
+		return false;
+	}
 	if($("#editreason"+id).val().length==0){
-		alert("请填写原因备注！");
+		alert("请填写备注！");
 		return false;
 	}
 	
@@ -117,12 +121,11 @@ function changereasonremark(obj,opscwbid){
 			var optstr="<option value='0'>==请选择==</option>";
 			$.each(data,function(i,a){
 				optstr+="<option value='"+a.reasonid+"' >"+a.reasoncontent+"</option>";
-			});
-			$("#reasonid"+opscwbid).append(optstr);
+				});
+				$("#reasonid"+opscwbid).append(optstr);
 			}
-			
-			});
-	}
+		});
+}
 	
 </script>
 </head>
@@ -209,10 +212,10 @@ function changereasonremark(obj,opscwbid){
 									</td>
 									<td width="120" align="center" valign="middle">
 										<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 140px">
-											<option value="-1">==请选择==</option>
-											<%if(reasonList!=null){for(Reason reason:reasonList){ %>
+											<option value="0">==请选择==</option>
+											<%-- <%if(reasonList!=null){for(Reason reason:reasonList){ %>
 											<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
-											<%} }%>
+											<%} }%> --%>
 										</select>
 									</td>
 									<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
