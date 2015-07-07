@@ -25,7 +25,7 @@ public class BranchService {
 
 	@Autowired
 	private BranchDAO branchDao;
-	
+
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
 		if ((file != null) && !file.isEmpty()) {
@@ -155,14 +155,17 @@ public class BranchService {
 		}
 
 		branch.setBacktime(Long.parseLong(request.getParameter("backtime") == null ? "0" : request.getParameter("backtime")));
-		
+
 		//站点保证金
 		if(StringUtils.isEmpty(request.getParameter("branchBail"))){
 			branch.setBranchBail(BigDecimal.ZERO);
 		}else{
-			branch.setBranchBail(new BigDecimal(request.getParameter("branchBail")));
+			String branchBail=request.getParameter("branchBail");
+			if((branchBail!=null)&&!branchBail.equals("null")) {
+				branch.setBranchBail(new BigDecimal(branchBail));
+			}
 		}
-		
+
 		return branch;
 	}
 
