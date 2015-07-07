@@ -15,12 +15,17 @@ List<Reason> losereasonlist = (List<Reason>)request.getAttribute("losereasonlist
 List<Reason> firstlist = (List<Reason>)request.getAttribute("firstlist");
 List<Reason> leavedlist = (List<Reason>)request.getAttribute("leavedreasonlist");
 List<Reason> weishuakareasonlist = (List<Reason>)request.getAttribute("weishuakareasonlist");
+List<Reason> firstchangereasonlist = (List<Reason>)request.getAttribute("firstchangereasonlist");
+
 long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
 long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
 String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":request.getAttribute("deliverstateremark").toString();
 String batchEditDeliveryStateisUseCash = request.getAttribute("batchEditDeliveryStateisUseCash")==null?"no":(String)request.getAttribute("batchEditDeliveryStateisUseCash");
 String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("resendtime"));
+long firstchangereasonid = request.getAttribute("firstchangereasonid")==null?0:(Long)request.getAttribute("firstchangereasonid");
+long changereasonid = request.getAttribute("changereasonid")==null?0:(Long)request.getAttribute("changereasonid");
+
 /*
 上面为添加的信息
 */
@@ -34,7 +39,6 @@ long successcount = request.getAttribute("successcount")==null?0:Long.parseLong(
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request.getAttribute("pl_switch");
-String isReasonRequired = request.getAttribute("isReasonRequired").equals("")?"no":(String)request.getAttribute("isReasonRequired").toString();
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -160,6 +164,23 @@ function changeTag(id){
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 		$("#paytype").val(-1);
+	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
+		$("#firstchangereasonid").parent().show();
+		$("#firstlevelreasonid").parent().hide();
+		$("#changereasonid").parent().show();
+		$("#resendtime").parent().hide();
+		$("#backreasonid").parent().hide();
+		$("#deliverstateremark").parent().hide();
+		$("#paytype").parent().hide();
+		$("#leavedreasonid").parent().hide();
+	
+		$("#zhiliuremark").parent().hide();
+		$("#backreasonid").val(0);
+		$("#deliverstateremark").val("");
+		$("#leavedreasonid").val(0);
+		$("#resendtime").val("");
+		$("#zhiliuremark").val("");
+		$("#paytype").val(-1);
 	}
 } 
 
@@ -190,17 +211,11 @@ function sub(){
 		if($(this).attr("checked")=="checked"){
 			
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
-				if($("#isReasonRequired").val()!="no"){
-					if($("#firstlevelreasonid").val()==0){
-						alert("请选择滞留一级原因");
-						return false;
-					}
-					if($("#leavedreasonid").val()==0){
-						alert("请选择滞留原因");
-						return false;
-					}
+				
+				if($("#leavedreasonid").val()==0){
+					alert("请选择滞留原因");
+					return false;
 				}
-			
 				var myDate = new Date();
 				var myDatetime = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
 				var myDatetimeArr = myDatetime.split('-');
@@ -219,13 +234,16 @@ function sub(){
 				return;
 				
 			}else if($(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
-				if($("#isReasonRequired").val()!="no"){
 				alert("请选择拒收原因");
 				return false;
-				}
-				$("#subForm").submit();
-				return;
-			}else if($(this).val()==<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>&&$("#paytype").val()==-1){
+			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
+				alert("请选择一级中转原因");
+				return false;
+			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#changereasonid").val()==0){
+				alert("请选择二级中转原因");
+				return false;
+			}
+			else if($(this).val()==<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>&&$("#paytype").val()==-1){
 				alert("请选择支付方式");
 				return false;
 			}else if($(this).val()==<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>&&$("#losereasonid").val()==0){
@@ -299,7 +317,7 @@ function resub(form){
 						<em style="display:none">
 							一级原因：
 							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
-					        	<option value ="0">==请选择==</option>
+					        	<option value ="-1">==请选择==</option>
 					        	<%if(firstlist!=null&&firstlist.size()>0)
 					        		for(Reason r : firstlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
@@ -329,6 +347,22 @@ function resub(form){
 					        	<%for(Reason r : backlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
 			           			<%} %>
+					        </select>
+						</em>
+												<em style="display:none">
+							一级原因：
+							 <select name="firstchangereasonid" id="firstchangereasonid" class="select1"  onchange="updatechangelevel('<%=request.getContextPath()%>/delivery/getChangeReason',this.value)">
+					        	<option value ="0">请选择</option>
+					        	<%if(firstchangereasonlist!=null&&firstchangereasonlist.size()>0)
+					        	for(Reason r : firstchangereasonlist){ %>
+			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+			           			<%} %>
+					        </select>
+						</em>
+						<em style="display:none">
+							二级原因：
+							 <select name="changereasonid" id="changereasonid" class="select1">
+					        	<option value ="0">请选择</option>
 					        </select>
 						</em>
 						<em style="display:none">
@@ -364,7 +398,6 @@ function resub(form){
 						<td valign="middle" >&nbsp;&nbsp;
 							订单号： <label for="textfield"></label> 
 							<textarea name="cwbs" cols="25" rows="4" id="cwbs" style="vertical-align: middle;height:60px"  ></textarea>
-							<input type="hidden" id="isReasonRequired" value="<%=isReasonRequired %>" />
 							<input type="button" name="button" id="button" value="确定" class="input_button2" onclick="sub()" />
 							(只能反馈上门换类型的订单)
 						</td>
@@ -425,6 +458,8 @@ function resub(form){
 					<input type="hidden" name="paytype" value="<%=paytype%>" />
 					<input type="hidden" name="backreasonid" value="<%=backreasonid%>" />
 					<input type="hidden" name="deliverstateremark" value="<%=deliverstateremark%>" />
+					<input type="hidden" name="firstchangereasonid" value="<%=firstchangereasonid%>" />
+					<input type="hidden" name="changereasonid" value="<%=changereasonid%>" />
 					<input type="hidden" name="leavedreasonid" value="<%=leavedreasonid%>" />
 					<input type="hidden" name="losereasonid" value="<%=losereasonid%>" />
 					<input type="hidden" name="resendtime" value="<%=request.getParameter("resendtime") %>" />
