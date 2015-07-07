@@ -7407,7 +7407,16 @@ CREATE TABLE `cs_complaint_accept` (
   			CHANGE `compensateodd` `compensateodd` TEXT CHARSET utf8 COLLATE utf8_general_ci NULL  COMMENT '赔付单号';
     	</sql>
     </changeSet>
-    
+    <changeSet id="liuxiao-2015-07-07-01" author="liuxiao">
+    	<sql>
+		    ALTER table `express_set_common` modify column `orderprefix` varchar(100) ;
+    	</sql>
+    </changeSet>
+    <changeSet id="liuxiao-2015-07-07-02" author="liuxiao">
+    	<sql>
+		    ALTER table `express_ops_zhifu_apply` modify column `feewaytyperemark` varchar(1500) ;
+    	</sql>
+    </changeSet>
 
 </databaseChangeLog>
 
