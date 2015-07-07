@@ -17,8 +17,8 @@
     String endtime=request.getParameter("endtime")==null?"":(String)request.getParameter("endtime");
     String baleno=request.getParameter("baleno")==null?"":(String)request.getParameter("baleno");
     String[] branchidList=request.getParameterValues("branchid");
-    String truckid=(String)request.getParameter("truckid");
-    String driverid=(String)request.getParameter("driverid");
+    long truckid=Long.parseLong(request.getParameter("truckid")==null?"-1":request.getParameter("truckid").toString());
+    long driverid=Long.parseLong(request.getParameter("driverid")==null?"-1":request.getParameter("driverid").toString());
 %>
 
 
@@ -172,7 +172,7 @@ function cwbexport(){
 				<select id="driverid" name="driverid" style="width: 160px" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(User u : uList){ %>
-						<option value="<%=u.getUserid() %>"><%=u.getRealname() %></option>
+						<option value="<%=u.getUserid() %>" <%if(driverid==u.getUserid()){%> selected="selected" <%}%> ><%=u.getRealname() %></option>
 					<%} %>
 		        </select>
 		        <!--添加车辆  -->
@@ -180,7 +180,7 @@ function cwbexport(){
 				<select id="truckid" name="truckid" style="width: 160px" class="select1">
 					<option value="-1" selected>请选择</option>
 					<%for(Truck t : tList){ %>
-						<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
+						<option value="<%=t.getTruckid() %>" <%if(truckid==t.getTruckid()){%> selected="selected" <%}%> ><%=t.getTruckno() %></option>
 					<%} %>
 		        </select>
 		        &nbsp;&nbsp;
@@ -201,6 +201,7 @@ function cwbexport(){
 				</div>
 				<div class="right_title">
 				<div style="height:30px;"></div>
+				<div style="height:380px;width:98%;overflow: auto;">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
@@ -209,10 +210,10 @@ function cwbexport(){
 						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">当前状态</td>
 						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">出库时间</td>
 					</tr>
-				</table>
+				<!-- </table> -->
 				<form action="" method="post" id="selectforsmtbdprintForm" >
 				<input type="hidden"  name="flowordertype" value="<%=request.getAttribute("flowordertype") %>" />
-					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+					<!-- <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table"> -->
 					<%for(PrintView pv:printList){ %>
 						 <tr>
 						 	<td width="10%" align="center" valign="middle"><input id="isprint" name="isprint" type="checkbox" value="<%=pv.getCwb() %>" checked="checked"/></td>
@@ -227,6 +228,7 @@ function cwbexport(){
 						</tr>
 					<%} %>
 					</table>
+					
 					<input id="nextbranchid" name="nextbranchid" value="<%=request.getAttribute("branchids")%>" type="hidden"/>
 					<input id="printtemplateid" name="printtemplateid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("templateid"))%>" type="hidden"/>
 					<input name="type" value="<%=request.getAttribute("type") %>" type="hidden"/>
@@ -234,6 +236,7 @@ function cwbexport(){
 					<input name="truckid" value="<%=request.getAttribute("truckid") %>" type="hidden"/>
 					<input name="driverid" value="<%=request.getAttribute("driverid") %>" type="hidden"/>
 				</form>
+				</div>
 				<div class="jg_10"></div><div class="jg_10"></div>
 				</div>
 			</div>			
