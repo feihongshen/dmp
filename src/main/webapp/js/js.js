@@ -1187,10 +1187,12 @@ function initMenu(role_menu) {
 
 function checkMenu(menu) {
 	if ($("#menu_" + menu)) {
-		if ($("#menu_" + menu).is(":hidden") && $("#cb_" + menu).attr("checked") == "checked") {
+		if ($("#menu_" + menu).is(":hidden")) {
+			$("#cb_" + menu).attr("checked", false);
 			$("#menu_" + menu).show();
 			$("#pic_" + menu).addClass("click");
 		} else {
+			checkAll(menu);
 			$("#menu_" + menu).hide();
 			$("#pic_" + menu).find("input[type='checkbox']").attr("checked", false);
 			$("#pic_" + menu).removeClass("click");
@@ -1223,14 +1225,28 @@ function validataJuniorCheck(menu){
 			var $thisCB = $(this);
 			if($thisCB.attr("checked")){
 				clearFlag = false;
+				return;
 			}
 		});
 		if(clearFlag){
 			$("#menu_" + menu).parent().find("div").hide();
 			$("#cb_" + menu).attr("checked", false);
+		}else{
+			$("#cb_" + menu).attr("checked", true);
 		}
 	}
 	
+}
+//选中所有下级菜单
+function juniorCheck(menu){
+	$("#menu_" + menu).parent().find("input[type='checkbox']").attr("checked", true);
+	$("#pic_" + menu).parent().find("h2[id^='pic']").addClass("click");
+	$("#pic_" + menu).parent().find("h3[id^='pic']").addClass("click");
+}
+//选中所有下级菜单
+function juniorUnCheck(menu){
+	$("#cb_" + menu).attr("checked", false);
+	$("#menu_" + menu).parent().find("input[type='checkbox']").attr("checked", false);
 }
 
 function checkPDAMenu() {
