@@ -774,7 +774,7 @@ public class CwbDAO {
 			return null;
 		}
 	}
-	
+
 
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
@@ -794,7 +794,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的发货数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -818,7 +818,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的发货数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -838,7 +838,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间查询供货商的妥投数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -860,7 +860,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的拒收数据：包括拒收、上门退拒退、部分拒收
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -882,7 +882,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的滞留数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -903,7 +903,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的货物丢失数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -924,7 +924,7 @@ public class CwbDAO {
 
 	/**
 	 * 按发货时间分组查询供货商的无结果数据
-	 * 
+	 *
 	 * @param customerids
 	 * @param beginemaildate
 	 * @param endemaildate
@@ -1040,7 +1040,7 @@ public class CwbDAO {
 			if (branchid > 0) {
 				w.append(" and deliverybranchid=" + branchid);
 			}
-			
+
 		}
 		sql += w.toString();
 		sql += " order by CONVERT( excelbranch USING gbk ) COLLATE gbk_chinese_ci DESC,consigneeaddress desc ,nextbranchid ";
@@ -1130,7 +1130,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询当前以匹配的数
-	 * 
+	 *
 	 * @param customerid
 	 * @param branchid
 	 * @param beginemaildate
@@ -1209,7 +1209,7 @@ public class CwbDAO {
 
 	/**
 	 * 查询存在的订单号.
-	 * 
+	 *
 	 * @param cwbs
 	 *            1,2,3.
 	 * @return 去重订单号.
@@ -1384,7 +1384,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 * 
+	 *
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1408,7 +1408,7 @@ public class CwbDAO {
 
 	/**
 	 * 新地址库匹配成功后处理
-	 * 
+	 *
 	 * @param excelbranch
 	 * @param branchid
 	 * @param cwb
@@ -1446,7 +1446,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息
-	 * 
+	 *
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -1544,7 +1544,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1562,7 +1562,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到出库已出库数据列表
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1581,7 +1581,7 @@ public class CwbDAO {
 
 	/**
 	 * 不分页 得到出库已出库数据列表
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param flowordertype
@@ -1597,7 +1597,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1612,7 +1612,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到站点出站已出站数据列表
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param deliverybranchid
 	 * @param nextbranchid
@@ -1668,7 +1668,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供应商 未出库（所有）
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -1760,7 +1760,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单统计
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1779,7 +1779,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单统计
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @return
@@ -1795,7 +1795,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库订单列表
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1815,7 +1815,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转站已入库订单列表
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param page
@@ -1832,31 +1832,31 @@ public class CwbDAO {
 
 	/**
 	 * 已到货订单统计
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
 	public CwbOrder getYiDaohuobyBranchid(long branchid) {
-		String sql = "SELECT COUNT(1) as opscwbid,(CASE WHEN SUM(sendcarnum) IS NULL THEN 0 ELSE SUM(sendcarnum) END ) sendcarnum FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype="
-				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue();
+		String sql = "SELECT COUNT(1) as opscwbid,(CASE WHEN SUM(sendcarnum) IS NULL THEN 0 ELSE SUM(sendcarnum) END ) sendcarnum FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype in("
+				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()+")";
 		return this.jdbcTemplate.queryForObject(sql, new YiTongJiMapper(), branchid);
 	}
 
 	/**
 	 * 已到货订单列表
-	 * 
+	 *
 	 * @param branchid
 	 * @param page
 	 * @return
 	 */
 	public List<CwbOrder> getYiDaohuobyBranchidList(long branchid, long page) {
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype=" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue();
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=? and state=1 and flowordertype in (" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()+")";
 		sql += " limit ?,?";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	public String getYiDaohuobyBranchidListSql(long branchid) {
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + branchid + " and state=1 and flowordertype=" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue();
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + branchid + " and state=1 and flowordertype in (" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()+")";
 		return sql;
 	}
 
@@ -1892,7 +1892,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取未入库的订单列表
-	 * 
+	 *
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -1922,7 +1922,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于获取中转站未入库的订单列表
-	 * 
+	 *
 	 * @param branchid
 	 *            当前机构
 	 * @param sitetype
@@ -2064,7 +2064,7 @@ public class CwbDAO {
 
 	/**
 	 * 退货站已入库订单列表,按订单号查询
-	 * 
+	 *
 	 * @param cwbs
 	 * @return
 	 */
@@ -2143,7 +2143,7 @@ public class CwbDAO {
 
 	/**
 	 * 已领货 没有订单号
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param deliverid
 	 * @return
@@ -2227,8 +2227,8 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
-	
-	
+
+
 	// 今日待领货订单(拒收)
 		public List<CwbOrder> getTodayWeiLingJuShouByWhereListformingxi(String deliveryStates, long currentbranchid, String cwbs, long deliverid) {
 			String sql = "select * from express_ops_cwb_detail where deliverystate IN("+deliveryStates+") and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
@@ -2277,7 +2277,7 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
-	
+
 	public List<CwbOrder> getHistoryWeiLingJuShouByWhereList(String deliveryStates, long currentbranchid, String cwbs, long deliverid) {
 		String sql = "select * from express_ops_cwb_detail where deliverystate IN ("+deliveryStates+") and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
@@ -2327,7 +2327,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库（有分页）
-	 * 
+	 *
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -2384,7 +2384,7 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set leavedreason=?,leavedreasonid=?, firstlevelid=? where cwb=?";
 		this.jdbcTemplate.update(sql, leavedreason, leavedreasonid, firstlevelreasonid, cwb);
 	}
-	
+
 	public void saveCwbForChangereason(String cwb, String changereason, long changereasonid,long firstchangereasonid) {
 		String sql = "update express_ops_cwb_detail set changereason=?,changereasonid=?,firstchangereasonid=? where cwb=?";
 		this.jdbcTemplate.update(sql, changereason, changereasonid,firstchangereasonid, cwb);
@@ -2400,7 +2400,7 @@ public class CwbDAO {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param emaildateid
 	 * @return String[] 0是单数 1是应收金额 2是应退金额
 	 */
@@ -2412,7 +2412,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得大于toDay时间的对应emailFinishFlag状态的branchid机构的customerid供货商的订单与金额的汇总
-	 * 
+	 *
 	 * @param emailFinishFlag
 	 *            对应EmailFinishFlagEnum
 	 * @param branchid
@@ -2882,14 +2882,14 @@ public class CwbDAO {
 	public String getCwbOrderByPageWhereSqlHuiZongAdd(String sql, String customeridStr, String cwbordertypeidStr, String orderflowcwbs, long flowordertype, long paywayid,
 			String[] operationOrderResultTypes, Integer paybackfeeIsZero) {
 		sql += " where cwb in (" + orderflowcwbs + ") and state=1 ";
-		
+
 		if ((customeridStr.length() > 0) || (cwbordertypeidStr.length() > 0) || (flowordertype > 0) || (paywayid > 0) || (paybackfeeIsZero > -1)) {
 			StringBuffer w = new StringBuffer();
-			
+
 			if (customeridStr.length() > 0) {
 				w.append(" and customerid in(" + customeridStr + ")");
 			}
-			
+
 			if (cwbordertypeidStr.length() > 0) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeidStr + ")");
 			}
@@ -2899,7 +2899,7 @@ public class CwbDAO {
 			if (paywayid > 0) {
 				w.append(" and newpaywayid = '" + paywayid + "'");
 			}
-			
+
 			if (paybackfeeIsZero > -1) {
 				if (paybackfeeIsZero == 0) {
 					w.append(" and receivablefee=0 ");
@@ -2914,7 +2914,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取相应条件对应的sql组合字符串
-	 * 
+	 *
 	 * @param sql
 	 * @param begindate
 	 * @param enddate
@@ -3052,7 +3052,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据小件员Id和Cwb查询订单详情
-	 * 
+	 *
 	 * @param deliverid
 	 * @param cwb
 	 * @return
@@ -3075,7 +3075,7 @@ public class CwbDAO {
 
 	/**
 	 * 撤销
-	 * 
+	 *
 	 * @param deliverid
 	 * @param cwb
 	 */
@@ -3176,7 +3176,7 @@ public class CwbDAO {
 	// ==============货款结算===============
 	/**
 	 * 按供货商、反馈状态、反馈日期 查询订单数量、应收金额、应退金额
-	 * 
+	 *
 	 * @param customerid
 	 * @param deliverystate
 	 * @param credate
@@ -3195,7 +3195,7 @@ public class CwbDAO {
 	// =====================库房日志统计 获取list=========begin===================
 	/**
 	 * 未入库 flowordertype = 1
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3210,7 +3210,7 @@ public class CwbDAO {
 
 	/**
 	 * 未入库 flowordertype = 1 不限制供货商
-	 * 
+	 *
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3224,7 +3224,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3238,7 +3238,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出未入库的 全部供货商
-	 * 
+	 *
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3250,7 +3250,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3265,7 +3265,7 @@ public class CwbDAO {
 
 	/**
 	 * 到错货 flowordertype =8 不限制供货商
-	 * 
+	 *
 	 * @param branchid
 	 * @param flowordertype
 	 * @param page
@@ -3279,7 +3279,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出到错货 flowordertype =8
-	 * 
+	 *
 	 * @param branchid
 	 * @param customerid
 	 * @param flowordertype
@@ -3292,7 +3292,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商的到错货 flowordertype =8
-	 * 
+	 *
 	 * @param branchid
 	 * @param flowordertype
 	 * @return
@@ -3311,7 +3311,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出昨日出库在途 flowordertype =6
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3327,7 +3327,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商 昨日出库在途 flowordertype =6
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param customerid
 	 * @param startTime
@@ -3341,7 +3341,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3357,7 +3357,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日出库 flowordertype =6 不限制供货商
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3379,7 +3379,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日出库在途 flowordertype =6
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param customerid
@@ -3394,7 +3394,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日出库在途 flowordertype =6
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param flowordertype
 	 * @param startTime
@@ -3408,7 +3408,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3421,7 +3421,7 @@ public class CwbDAO {
 
 	/**
 	 * 今日库存 不限制供货商
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param customerid
 	 * @param page
@@ -3434,7 +3434,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出今日库存
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3446,7 +3446,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商今日库存
-	 * 
+	 *
 	 * @param currentbranchid
 	 * @param customerid
 	 * @return
@@ -3458,7 +3458,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3474,7 +3474,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 漏扫到站 flowordertype =6 不限制供货商
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3511,7 +3511,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出漏扫到站 flowordertype =6
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3526,7 +3526,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出全部供货商漏扫到站 flowordertype =6
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3540,7 +3540,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param customerid
@@ -3555,7 +3555,7 @@ public class CwbDAO {
 
 	/**
 	 * 所有漏扫到站的订单号 漏扫到站 flowordertype =6 不限制供货商
-	 * 
+	 *
 	 * @param flowordertype
 	 * @param branchid
 	 * @param startTime
@@ -3570,7 +3570,7 @@ public class CwbDAO {
 	//
 	/**
 	 * 库房 出库已到站的list
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3589,7 +3589,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房 出库已到站的list 不限制供货商
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3608,7 +3608,7 @@ public class CwbDAO {
 
 	/**
 	 * 站点 出库已到站的list
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3627,7 +3627,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出 站点 出库已到站的list
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3647,7 +3647,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出出库已到站的list
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3667,7 +3667,7 @@ public class CwbDAO {
 
 	/**
 	 * 导出所有供货商出库已到站的list
-	 * 
+	 *
 	 * @param flowordertype
 	 *            7,8
 	 * @param branchid
@@ -3907,14 +3907,14 @@ public class CwbDAO {
 	public List<CwbOrder> getAllCwbOrderByCwb(String cwb) {/*state=1*/
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
 	}
-	
+
 	/*public CwbOrder getAllCwbOrderByCwb1(String cwb) {state=1
 		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
 	}*/
-	
+
 	public CwbOrder getOneCwbOrderByCwb(String cwb) {
-		
-		
+
+
 		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail  where state=1 and cwb ='"+ cwb+"'", new CwbMapper());
 	}
 
@@ -4121,7 +4121,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询订单
-	 * 
+	 *
 	 * @param branchid
 	 * @param flowordertype
 	 *            库房出库，站点到站，领货
@@ -4133,7 +4133,7 @@ public class CwbDAO {
 
 	/**
 	 * 按站点区域发送短信，查询滞留的订单
-	 * 
+	 *
 	 * @param branchid
 	 * @param deliverystate
 	 *            滞留的状态 6
@@ -4354,7 +4354,7 @@ public class CwbDAO {
 
 	/**
 	 * 重置审核状态 修改订单表字段
-	 * 
+	 *
 	 * @param nextbranchid
 	 *            下一站 目前逻辑如此 改为对应货物所在站点的中转站id
 	 * @param flowordertype
@@ -4375,7 +4375,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改金额 修改订单表字段
-	 * 
+	 *
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param receivablefee
@@ -4389,7 +4389,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单支付方式 修改订单表字段
-	 * 
+	 *
 	 * @param opscwbid
 	 *            要修改的订单
 	 * @param newpaywayid
@@ -4401,7 +4401,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改订单类型 修改订单表字段
-	 * 
+	 *
 	 * @param opscwbid
 	 * @param newcwbordertypeid
 	 *            新的订单类型
@@ -4418,7 +4418,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到待返单出站的订单信息
-	 * 
+	 *
 	 * @param type
 	 * @param branchid
 	 * @param isnow
@@ -4477,12 +4477,12 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, tobranchid);
 	}
-	
+
 	/**
 	 * 返单待入库
 	 *
 	 * 得到待返单入库的订单信息
-	 * 
+	 *
 	 * @param type
 	 * @param tobranchid
 	 * @param isnow
@@ -4500,7 +4500,7 @@ public class CwbDAO {
 			sb.append(" and ds.auditingtime>='" + starttime + " 00:00:00' and ds.auditingtime<='" + endtime + " 59:59:59' ");
 		} else if ((timetype == 4) && !"".equals(starttime) && !"".equals(endtime)) {// 出站
 			sb.append(" and rc.createtime>='" + starttime + " 00:00:00' and rc.createtime<='" + endtime + " 59:59:59' ");
-		} 
+		}
 		if (customerid > 0) {
 			sb.append(" and rc.customerid=" + customerid);
 		}
@@ -4549,11 +4549,11 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, branchid);
 	}
-	
-	
+
+
 	/**
 	 * 获得供货商拒收返库 待出库数量
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4565,7 +4565,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 已出库数量
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4576,7 +4576,7 @@ public class CwbDAO {
 
 	/**
 	 * 获得供货商拒收返库 待出库订单
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4587,7 +4587,7 @@ public class CwbDAO {
 
 	/**
 	 * 获取 供货商拒收返库 已扫描
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4653,7 +4653,7 @@ public class CwbDAO {
 
 	/**
 	 * 用于 入库 导出
-	 * 
+	 *
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4676,7 +4676,7 @@ public class CwbDAO {
 
 	/**
 	 * 已入库 导出 sql
-	 * 
+	 *
 	 * @param customerid
 	 * @param b
 	 * @return
@@ -4695,7 +4695,7 @@ public class CwbDAO {
 
 	/**
 	 * 未出库 导出 sql
-	 * 
+	 *
 	 * @param branchid
 	 * @param b
 	 * @param cwbstate
@@ -4717,7 +4717,7 @@ public class CwbDAO {
 
 	/**
 	 * 已出库 导出 sql
-	 * 
+	 *
 	 * @param startbranchid
 	 * @param nextbranchid
 	 * @param value
@@ -4742,7 +4742,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库
-	 * 
+	 *
 	 * @param branchid
 	 * @param page
 	 * @return
@@ -4763,7 +4763,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 已出库 导出
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4775,7 +4775,7 @@ public class CwbDAO {
 
 	/**
 	 * 得到退供货商 已出库 件数
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4796,7 +4796,7 @@ public class CwbDAO {
 
 	/**
 	 * 退供货商 未出库 导出
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -4808,7 +4808,7 @@ public class CwbDAO {
 
 	/**
 	 * 中转出站打印 添加时间选项
-	 * 
+	 *
 	 * @param page
 	 * @param startbranchid
 	 * @param nextbranchid
@@ -4909,7 +4909,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库统计 发货库房 支持多选
-	 * 
+	 *
 	 * @param begindate
 	 * @param enddate
 	 * @param orderName
@@ -4973,7 +4973,7 @@ public class CwbDAO {
 
 	/**
 	 * 库房出库 发货库房支持多选 导出
-	 * 
+	 *
 	 * @param page
 	 * @param begindate
 	 * @param enddate
@@ -4995,7 +4995,7 @@ public class CwbDAO {
 	// ==========================小件员领货查询====================================
 	/**
 	 * * 小件员领货查询List
-	 * 
+	 *
 	 * @param page
 	 * @param deliveryid
 	 * @param start
@@ -5044,7 +5044,7 @@ public class CwbDAO {
 
 	/**
 	 * 出库打印 按照站点分开
-	 * 
+	 *
 	 * @param cwbs
 	 * @param nextbranchid
 	 * @return
@@ -5060,7 +5060,7 @@ public class CwbDAO {
 
 	/**
 	 * 分站到货 已到货
-	 * 
+	 *
 	 * @param yidaohuo
 	 * @param page
 	 * @return
@@ -5073,7 +5073,7 @@ public class CwbDAO {
 
 	/**
 	 * 揽收 更新数据
-	 * 
+	 *
 	 * @param cwb
 	 * @param consigneename
 	 * @param consigneeaddress
@@ -5182,7 +5182,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据订单号 和 当前环节
-	 * 
+	 *
 	 * @param string
 	 * @param strings
 	 * @return
@@ -5200,7 +5200,7 @@ public class CwbDAO {
 
 	/**
 	 * 合单修改multi_shipcwb
-	 * 
+	 *
 	 */
 	public void appendTranscwb(String cwb, String transcwb) {
 		try {
@@ -5227,7 +5227,7 @@ public class CwbDAO {
 
 	/**
 	 * 修改客户备注信息 remark1 remark2
-	 * 
+	 *
 	 * @param cwb
 	 * @param cwbstate
 	 */
@@ -5238,7 +5238,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询客户单量
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -5251,7 +5251,7 @@ public class CwbDAO {
 
 	/**
 	 * 根据条件查询 客户发货统计
-	 * 
+	 *
 	 * @param branchid
 	 * @return
 	 */
@@ -5643,7 +5643,7 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set deliverid=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, deliverid, cwb);
 	}
-	
+
 	public void updateCwbRemarkPaytype(String cwb, String remark5) {
 		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, remark5, cwb);
@@ -5789,105 +5789,105 @@ public class CwbDAO {
 	// 更改一票多件时运单不足的补入情况
 	public void updateTranscwb(String cwb, String transcwbs) {
 		String[] str1 = transcwbs.split(",");
-		long sendcarnum = (long)str1.length;
+		long sendcarnum = str1.length;
 		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=? ,sendcarnum= "+sendcarnum+" where cwb=? and state = 1  ", transcwbs, cwb);
 	}
 	/**
 	 * 根据小件员id查询其所配送的cwb信息
 	 */
-	
+
 	public List<CwbOrder> findcwbinfoBydeliveryId(int deliverid){
 		String sql="select * from express_ops_cwb_detail where state=1 and  deliverid=?";
-		
+
 		return this.jdbcTemplate.query(sql, new CwbMapper(),deliverid);
 	}
-	
-	
-	
+
+
+
 	public List<CwbOrder> SelectDetalForm(String phone, long currentPage){
-			
+
 			String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=? order by emaildate desc limit "+((currentPage - 1) * Page.ONE_PAGE_NUMBER) + "," + Page.ONE_PAGE_NUMBER;
-			
-		
+
+
 		return this.jdbcTemplate.query(sql, new CwbMapper(),phone);
 	}
-	
+
 	public long SelectDetalFormCount(String phone){
-		
+
 		String sql="select count(1) from express_ops_cwb_detail where state=1 and consigneemobile=?";
 
 	return this.jdbcTemplate.queryForLong(sql,phone);
-}	
-	
+}
+
 /*public List<CwbOrder> SelectDetalFormByConditio1n(CwbOrderAndCustomname coc){
 		String sql="select * from express_ops_cwb_detail where state=1 and consigneemobile=?"
 				+ " or cwb=? or emaildate=? or consigneename=? order by emaildate desc limit 10";
-	
+
 	return 	this.jdbcTemplate.query(sql, new CwbMapper(),coc.getConsigneemobile(),coc.getCwb(),coc.getEmaildate(),coc.getConsigneename());
 
 	}	*/
-	
+
 	public List<CwbOrder> SelectDetalFormByCondition(CwbOrderAndCustomname coc,String staremaildate,String endemaildate,long page){
 		StringBuilder sb = new StringBuilder();
 		String sql="select * from express_ops_cwb_detail where state=1";
-				
-				if(coc.getCwb()!=null&&coc.getCwb().length()>0){
+
+				if((coc.getCwb()!=null)&&(coc.getCwb().length()>0)){
 					sb.append(" and cwb='"+coc.getCwb()+"'");
 				}
 				if(!staremaildate.equals("")&&!endemaildate.equals("")){
 					sb.append(" and emaildate>'"+staremaildate+"' and emaildate<'"+endemaildate+"'");
 				}
-				if(coc.getEmaildate()!=null&&coc.getEmaildate().length()>0){
+				if((coc.getEmaildate()!=null)&&(coc.getEmaildate().length()>0)){
 					sb.append(" and emaildate='"+coc.getEmaildate()+"'");
 				}
-				if(coc.getConsigneename()!=null&&coc.getConsigneename().length()>0){
+				if((coc.getConsigneename()!=null)&&(coc.getConsigneename().length()>0)){
 					sb.append(" and consigneename='"+coc.getConsigneename()+"'");
 				}
-				if(coc.getConsigneemobile()!=null&&coc.getConsigneemobile().length()>0){
+				if((coc.getConsigneemobile()!=null)&&(coc.getConsigneemobile().length()>0)){
 					sb.append(" and consigneemobile='"+coc.getConsigneemobile()+"'");
 				}
-				
+
 				sb.append(" order by emaildate desc limit "+((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 				sql+=sb.toString();
-				
-	
+
+
 	return 	this.jdbcTemplate.query(sql, new CwbMapper());
 
-	}	
-	
-	
+	}
+
+
 	public long SelectDetalFormByConditionCount(CwbOrderAndCustomname coc,String staremaildate,String endemaildate){
 		StringBuilder sb = new StringBuilder();
 		String sql="select count(1) from express_ops_cwb_detail where state=1";
-				
-				if(coc.getCwb()!=null&&coc.getCwb().length()>0){
+
+				if((coc.getCwb()!=null)&&(coc.getCwb().length()>0)){
 					sb.append(" and cwb='"+coc.getCwb()+"'");
 				}
 				if(!staremaildate.equals("")&&!endemaildate.equals("")){
 					sb.append(" and emaildate>'"+staremaildate+"' and emaildate<'"+endemaildate+"'");
 				}
-				if(coc.getEmaildate()!=null&&coc.getEmaildate().length()>0){
+				if((coc.getEmaildate()!=null)&&(coc.getEmaildate().length()>0)){
 					sb.append(" and emaildate='"+coc.getEmaildate()+"'");
 				}
-				if(coc.getConsigneename()!=null&&coc.getConsigneename().length()>0){
+				if((coc.getConsigneename()!=null)&&(coc.getConsigneename().length()>0)){
 					sb.append(" and consigneename='"+coc.getConsigneename()+"'");
 				}
-				if(coc.getConsigneemobile()!=null&&coc.getConsigneemobile().length()>0){
+				if((coc.getConsigneemobile()!=null)&&(coc.getConsigneemobile().length()>0)){
 					sb.append(" and consigneemobile='"+coc.getConsigneemobile()+"'");
 				}
 				sql+=sb.toString();
-				
-	
+
+
 				return 	this.jdbcTemplate.queryForLong(sql);
 
-	}	
-	
-	
+	}
+
+
 	public List<CwbOrder> SelectDetalForm1(String phone){
-		 
+
 		String sql="select * from express_ops_cwb_detail where consigneemobile=?";/*d,cs_complaint_accept a  a.order_no=d.cwb*/
 		List<CwbOrder> lc=this.jdbcTemplate.query(sql, new CwbMapper(),phone);
-	
+
 	return lc;
 
 }
@@ -5917,14 +5917,14 @@ public class CwbDAO {
 			return null;
 		}
 	}
-	
-	
+
+
 	public void updateNextbranch(CwbOrder cwbOrder) {
 		String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=?";
-		jdbcTemplate.update(sql,cwbOrder.getCurrentbranchid(),cwbOrder.getCwb());
+		this.jdbcTemplate.update(sql,cwbOrder.getCurrentbranchid(),cwbOrder.getCwb());
 	}
 
-	
+
 	/*//综合查询退客户确认lx
 	public List<CwbOrder> getCwbOrderLX(int cwbordertypeid,long customerid,long flowordertypeid,String begindate,String enddate) {
 		StringBuffer sb = new StringBuffer("select * from express_ops_cwb_detail where cwbstate="+CwbStateEnum.TuiHuo);
@@ -5945,41 +5945,41 @@ public class CwbDAO {
 */
 	public void updateFlowordertype(long flowordertypeid,String cwb) {
 		String sql = "update express_ops_cwb_detail set flowordertype=? where cwb=?";
-		jdbcTemplate.update(sql,flowordertypeid,cwb);
+		this.jdbcTemplate.update(sql,flowordertypeid,cwb);
 	}
 	public CwbOrder getCwborder(String cwb) {
 		try{
 			String sql = "select * from  express_ops_cwb_detail  where cwb=?";
-			return jdbcTemplate.queryForObject(sql, new CwbMapper(),cwb);
+			return this.jdbcTemplate.queryForObject(sql, new CwbMapper(),cwb);
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	public List<CwbOrder> findCwbByCustomerid(long customerid){
 		String sql="select * from express_ops_cwb_detail  where customerid="+customerid;
-		
-		return jdbcTemplate.query(sql, new CwbMapper());
+
+		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
-	
+
 	public List<CwbOrder> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
-		return jdbcTemplate.query(sql, new CwbMapper());
+		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public long findcwbByCwbsAndDateAndtypeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 	public List<CwbOrder> findcwbByCwbsAndDate(String cwbs,String startdate,String enddate){
 		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
-		return jdbcTemplate.query(sql, new CwbMapper());
+		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public long findcwbByCwbsAndDateCount(String cwbs,String startdate,String enddate){
 		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
-	
+
 	public List<CwbOrder> getCwbByCwbsAndType(String cwbs,String cwbtypeid) {
 		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
 				new CwbMapper());
@@ -5990,4 +5990,4 @@ public class CwbDAO {
 	public long getCwbByCwbsCount(String cwbs) {
 		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
 	}
-}	
+}
