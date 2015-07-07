@@ -5,10 +5,14 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<CwbOrder> weiTiHuolist = (List<CwbOrder>)request.getAttribute("weiTiHuolist");
+List<CwbOrder> yiTiHuolist = (List<CwbOrder>)request.getAttribute("yiTiHuolist");
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
 List<User> uList = (List<User>)request.getAttribute("userList");
 List<JSONObject> objList = request.getAttribute("objList")==null?null:(List<JSONObject>)request.getAttribute("objList");
+long weiTiHuoCount = request.getAttribute("weiTiHuoCount")==null?0:Long.parseLong(request.getAttribute("weiTiHuoCount").toString());
+long yiTiHuoCount = request.getAttribute("yiTiHuoCount")==null?0:Long.parseLong(request.getAttribute("yiTiHuoCount").toString());
 long SuccessCount = request.getAttribute("SuccessCount")==null?0:Long.parseLong(request.getAttribute("SuccessCount").toString());
+long ErrorCount = request.getAttribute("ErrorCount")==null?0:Long.parseLong(request.getAttribute("ErrorCount").toString());
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -85,9 +89,14 @@ long SuccessCount = request.getAttribute("SuccessCount")==null?0:Long.parseLong(
 			dataType : "json",
 			success : function(data) {
 				if ($("#tihuokucundanshu", parent.document).length > 0) {
-					$("#tihuokucundanshu", parent.document).html(data.count);
+					$("#tihuokucundanshu", parent.document).html(data.daiTiCount);
 				} else {
-					$("#tihuokucundanshu").html(data.count);
+					$("#tihuokucundanshu").html(data.daiTiCount);
+				}
+				if ($("#successcwbnum", parent.document).length > 0) {
+					$("#successcwbnum", parent.document).html(data.yiTiCount);
+				} else {
+					$("#successcwbnum").html(data.yiTiCount);
 				}
 			}
 		});
@@ -181,12 +190,12 @@ function sub(){
 	<div class="saomiao_topnum2">
 		<dl class="blue">
 			<dt>待提货</dt>
-			<dd style="cursor:pointer" onclick="tabView('table_weitihuo')" id="tihuokucundanshu">${yitihuo }</dd>
+			<dd style="cursor:pointer" onclick="tabView('table_weitihuo')" id="tihuokucundanshu"><%=weiTiHuoCount %></dd>
 		</dl>
 		
 		<dl class="green">
 			<dt>已提货</dt>
-			<dd style="cursor:pointer" onclick="tabView('table_yitihuo')" id="successcwbnum" name="successcwbnum"><%=SuccessCount %></dd>
+			<dd style="cursor:pointer" onclick="tabView('table_yitihuo')" id="successcwbnum"><%=yiTiHuoCount %></dd>
 		</dl>
 		
 		<br clear="all">
@@ -225,7 +234,8 @@ function sub(){
 					</p>
 				</div>
 				<div class="saomiao_right2">
-					<p id="msg" name="msg" ><%if(SuccessCount>0){ %>成功扫描<%=SuccessCount %>单<%} %></p>
+					<p id="msg" name="msg" ><%if(SuccessCount>0){ %>扫描成功<%=SuccessCount %>单<%} %></p>
+					<p id="errormsg" name="errormsg" ><%if(ErrorCount>0){ %>扫描失败<%=ErrorCount%>单<%} %></p>
 				</div>
 			</div></form>
 		</div>
@@ -299,19 +309,16 @@ function sub(){
 									</table>
 									<div style="height: 160px; overflow-y: scroll">
 										<table id="successTable" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
-										<%if(objList!=null)for(JSONObject obj:objList){
-											if("000000".equals(obj.getString("errorcode"))){
-											JSONObject co = JSONObject.fromObject(obj.getString("cwbOrder"));
-										%>
-											<tr id="TR<%=obj.getString("cwb") %>" cwb="<%=obj.getString("cwb") %>" customerid="<%=co.getLong("customerid") %>">
-												<td width="120" align="center" bgcolor="#f1f1f1"><%=obj.getString("cwb") %></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%for(Customer c:cList){if(c.getCustomerid()==co.getLong("customerid")){out.print(c.getCustomername());break;}} %></td>
-												<td width="140" align="center" bgcolor="#f1f1f1"><%=co.getString("emaildate") %></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getString("consigneename") %></td>
-												<td width="100" align="center" bgcolor="#f1f1f1"><%=co.getDouble("receivablefee") %></td>
-												<td align="center" bgcolor="#f1f1f1"><%=co.getString("consigneeaddress") %></td>
+											<%for(CwbOrder co : yiTiHuolist){ %>
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>">
+												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
+												<td width="140"><%=co.getEmaildate() %></td>
+												<td width="100"><%=co.getConsigneename() %></td>
+												<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+												<td align="left"><%=co.getConsigneeaddress() %></td>
 											</tr>
-										<%}} %>
+											<%} %>
 										</table>
 									</div>
 								</td>

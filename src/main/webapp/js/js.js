@@ -234,7 +234,6 @@ function submitCreateForm(form) {
 				$(form)[0].reset();
 				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
-
 			}
 		}
 	});
@@ -1214,6 +1213,26 @@ function checkAll(menu) {
 		}
 	}
 }
+
+//判断上级下层所有选项未选中，取消当前(岗位权限管理)
+function validataJuniorCheck(menu){
+	var clearFlag = true;
+	if ($("#menu_" + menu)) {
+		var arrayTemp = $("#menu_" + menu).find("input[type='checkbox']");
+		$(arrayTemp).each(function(){
+			var $thisCB = $(this);
+			if($thisCB.attr("checked")){
+				clearFlag = false;
+			}
+		});
+		if(clearFlag){
+			$("#menu_" + menu).parent().find("div").hide();
+			$("#cb_" + menu).attr("checked", false);
+		}
+	}
+	
+}
+
 function checkPDAMenu() {
 	if ($("#menuPDA1").is(":hidden") && $("#menuPDA2").is(":hidden") && $("#cb_PDA").attr("checked") == "checked") {
 		$("#menuPDA1").show();

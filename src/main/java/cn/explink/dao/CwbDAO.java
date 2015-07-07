@@ -1719,6 +1719,14 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForObject(sql, new YiTongJiMapper(), branchid, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 	}
 
+	public CwbOrder getTiHuobyBranchid(long branchid, long customerid) {
+		String sql = "SELECT COUNT(1) as opscwbid,(CASE WHEN SUM(sendcarnum) IS NULL THEN 0 ELSE SUM(sendcarnum) END ) sendcarnum FROM express_ops_cwb_detail WHERE carwarehouse=? and state=1 and flowordertype=?";
+		if (customerid > 0) {
+			sql += " and customerid =" + customerid;
+		}
+		return this.jdbcTemplate.queryForObject(sql, new YiTongJiMapper(), branchid, FlowOrderTypeEnum.TiHuo.getValue());
+	}
+
 	public List<Map<String, Object>> getRukubyBranchid(long branchid, long sitetype, long customerid, long emaildateid) {
 		if (sitetype == BranchEnum.ZhanDian.getValue()) {
 			return this.jdbcTemplate.queryForList(
@@ -1888,6 +1896,11 @@ public class CwbDAO {
 	public List<CwbOrder> getDaoRuByBranchidForList(long branchid) {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE carwarehouse=? and state=1 and flowordertype=?";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, FlowOrderTypeEnum.DaoRuShuJu.getValue());
+	}
+
+	public List<CwbOrder> getYiTiByBranchidForList(long branchid) {
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE carwarehouse=? and state=1 and flowordertype=?";
+		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid, FlowOrderTypeEnum.TiHuo.getValue());
 	}
 
 	/**

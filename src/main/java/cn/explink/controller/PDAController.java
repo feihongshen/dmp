@@ -308,9 +308,16 @@ public class PDAController {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<CwbOrder> weiTiHuolist = this.cwbDAO.getDaoRuByBranchidForList(this.getSessionUser().getBranchid());
+		List<CwbOrder> yiTiHuolist = this.cwbDAO.getYiTiByBranchidForList(this.getSessionUser().getBranchid());
+		long weiTiHuoCount = this.cwbDAO.getDaoRubyBranchid(this.getSessionUser().getBranchid(),-1l).getOpscwbid();
+		long yiTiHuoCount = this.cwbDAO.getTiHuobyBranchid(this.getSessionUser().getBranchid(),-1l).getOpscwbid();
+		
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("weiTiHuolist", weiTiHuolist);
+		model.addAttribute("yiTiHuolist", yiTiHuolist);
+		model.addAttribute("weiTiHuoCount", weiTiHuoCount);
+		model.addAttribute("yiTiHuoCount", yiTiHuoCount);
 		return "pda/intoWarehousForGetGoodsBatch";
 	}
 
@@ -2624,10 +2631,12 @@ public class PDAController {
 	@RequestMapping("/cwbintoWarehousForGetGoodsBatch")
 	public String cwbintoWarehousForGetGoodsBatch(Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "succesCount", required = false, defaultValue = "0") long succesCount) {
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid) {
 		List<Customer> customerlist = this.customerDAO.getAllCustomers();
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
+		long succesCount = 0l;
+		long errorCount = 0l;
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -2644,6 +2653,7 @@ public class PDAController {
 			} catch (CwbException ce) {// 出现验证错误
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
+					errorCount++;
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 					List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
 					String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
@@ -2663,8 +2673,12 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwb(
+						cwb, ce.getFlowordertye(), ce.getMessage(), 
+						this.getSessionUser().getBranchid(), 
+						this.getSessionUser().getUserid(), 
+						cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
+						0, 0, 0, "");
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -2675,11 +2689,18 @@ public class PDAController {
 
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<CwbOrder> weiTiHuolist = this.cwbDAO.getDaoRuByBranchidForList(this.getSessionUser().getBranchid());
+		List<CwbOrder> yiTiHuolist = this.cwbDAO.getYiTiByBranchidForList(this.getSessionUser().getBranchid());
+		long weiTiHuoCount = this.cwbDAO.getDaoRubyBranchid(this.getSessionUser().getBranchid(),customerid).getOpscwbid();
+		long yiTiHuoCount = this.cwbDAO.getTiHuobyBranchid(this.getSessionUser().getBranchid(),customerid).getOpscwbid();
 		model.addAttribute("customerlist", customerlist);
 		model.addAttribute("userList", uList);
 		model.addAttribute("weiTiHuolist", weiTiHuolist);
-		model.addAttribute("yitihuo", this.cwbDAO.getDaoRubyBranchid(this.getSessionUser().getBranchid(), customerid).getOpscwbid());
-		model.addAttribute("SuccessCount", succesCount);// 成功到货总数
+		model.addAttribute("yiTiHuolist", yiTiHuolist);
+		model.addAttribute("weiTiHuoCount", weiTiHuoCount);
+		model.addAttribute("yiTiHuoCount", yiTiHuoCount);
+		
+		model.addAttribute("SuccessCount", succesCount);// 本次扫描提货成功总数
+		model.addAttribute("ErrorCount", errorCount);// 本次扫描提货失败总数
 
 		return "pda/intoWarehousForGetGoodsBatch";
 	}
@@ -4562,12 +4583,6 @@ public class PDAController {
 		obj.put("isTodayFlow", this.getTodayZeroDate().compareTo(flowTime) < 0);
 		// 重复领货.
 		obj.put("isRepeatPicking", FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowType.intValue());
-		CwbOrder tempCwbOrder = cwbDAO.getCwbByCwb(cwb);
-		if(FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowType.intValue() 
-				&& null != tempCwbOrder
-				&& (tempCwbOrder.getScannum() < tempCwbOrder.getBackcarnum() || tempCwbOrder.getScannum() >= tempCwbOrder.getSendcarnum()) ){
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Ling_Huo);
-		}
 	}
 
 	private Date getTodayZeroDate() {
@@ -5729,7 +5744,8 @@ public class PDAController {
 	JSONObject getDaoRuSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
-		obj.put("count", this.cwbDAO.getDaoRubyBranchid(branchid, customerid).getOpscwbid());
+		obj.put("daiTiCount", this.cwbDAO.getDaoRubyBranchid(branchid, customerid).getOpscwbid());
+		obj.put("yiTiCount", this.cwbDAO.getTiHuobyBranchid(branchid, customerid).getOpscwbid());
 		return obj;
 	}
 

@@ -3469,6 +3469,14 @@ public class CwbOrderService {
 			if ((co.getScannum() < 1) || (co.getDeliverid() != deliveryUser.getUserid())) {
 				this.handleReceiveGoods(user, cwb, scancwb, currentbranchid, deliveryUser, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true);
 			}
+			if(co.getFlowordertype() ==FlowOrderTypeEnum.FenZhanLingHuo.getValue() && co.getDeliverid() == deliveryUser.getUserid()  ){//重复领货
+				if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao, co.getCurrentbranchid(), deliveryUser.getBranchid());
+				}
+				if(co.getSendcarnum() >0 && co.getSendcarnum() == co.getScannum()){
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao, co.getCurrentbranchid(), deliveryUser.getBranchid());
+				}
+			}
 			if ((co.getDeliverid() == deliveryUser.getUserid()) && ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum()))) {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
 				co.setScannum(co.getScannum() + 1);
@@ -3527,6 +3535,11 @@ public class CwbOrderService {
 			throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, "上门换成功且应处理金额不为0", FlowOrderTypeEnum.FenZhanLingHuo.getText());
 		} else if ((ds != null) && (ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 			throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, "上门退成功且应处理金额不为0", FlowOrderTypeEnum.FenZhanLingHuo.getText());
+		}
+		
+		//单件领货 重复判断（同一个小件员）(一票多件已经处理)
+		if( (ds != null) && deliveryUser.getUserid() == ds.getDeliveryid() && co.getScannum() == 1 && (co.getSendcarnum() == 1 || co.getBackcarnum() == 1)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Ling_Huo);
 		}
 
 		if (!isauto && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
