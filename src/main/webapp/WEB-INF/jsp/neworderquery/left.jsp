@@ -1,3 +1,5 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.enumutil.*"%>
@@ -24,11 +26,9 @@
   
   String chukubegindate = request.getParameter("chukubegindate")==null?"":request.getParameter("chukubegindate");
   String chukuenddate = request.getParameter("chukuenddate")==null?"":request.getParameter("chukuenddate");
-  String cwbs=request.getAttribute("cwbs").toString();
+  String cwbs=request.getAttribute("cwbs")==null?"":request.getAttribute("cwbs").toString();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>订单查询</title>
@@ -315,7 +315,7 @@ $(function(){
 </script>
 </head>
 
-<body onLoad="$(&#39;#orderSearch&#39;).focus();" marginwidth="0" marginheight="0">
+<body onLoad="$('#orderSearch').focus();" marginwidth="0" marginheight="0">
 <table width="100%" border="0" cellspacing="1" cellpadding="5" class="table_2">
 	<tr>
 		<td align="left" valign="top">

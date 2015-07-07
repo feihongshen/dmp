@@ -41,6 +41,7 @@ import cn.explink.exception.CwbException;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
 
@@ -112,6 +113,7 @@ public class BaleController {
 		model.addAttribute("baleList", bList);
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("page_obj", pageparm);
+		model.addAttribute("currentime", DateTimeUtil.getCurrentDate());
 		model.addAttribute("page", page);
 		model.addAttribute("showLetfOrRight", showLetfOrRight);
 		return "/neworderquery/left";

@@ -251,10 +251,12 @@
 	         <li id="wav" style="display: none"><span>上传声音文件：</span>
 		         <iframe id="update" name="update" src="branch/update?fromAction=branch_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 		         <%if(branch.getBranchwavfile()!=null&&branch.getBranchwavfile().length()>4){ %>
-		         <a href="#" onclick="	var audioElement = document.createElement('audio');
-		        		audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile() %>');
-		     	audioElement.load();
-		     	audioElement.play();">点击测试</a>
+		         <a href="#" onclick="	
+			         	var audioElement = document.createElement('audio');
+			        	audioElement.setAttribute('src', '<%=request.getContextPath()+ServiceUtil.wavPath+branch.getBranchwavfile() %>');
+			     		audioElement.load();
+			     		audioElement.play();
+		     		">点击测试</a>
 		         <%} %>
 	         </li>
 	         <input type="hidden" id ="wavh" name="wavh" value ="<%=branch.getBranchwavfile() %>"  />

@@ -26,7 +26,13 @@ var initMenuList = new Array();
 							if(menu.getParentid()==0){
 						  %>
 							<div class="set_two">
-								<h2 id="pic_<%=menu.getId() %>"  ><label><input type="checkbox" id="cb_<%=menu.getId() %>" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" ><b><%=menu.getName() %></b></label><a href="javascript:;" onclick="checkAll(<%=menu.getId() %>)">[全选]</a> </h2>
+								<h2 id="pic_<%=menu.getId() %>"  >
+									<label>
+										<input type="checkbox" id="cb_<%=menu.getId() %>" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" >
+										<b><%=menu.getName() %></b>
+									</label>
+									<a href="javascript:;" onclick="checkAll(<%=menu.getId() %>)">[全选]</a>
+								</h2>
 								
 								<div style ="display:none ;" id="menu_<%=menu.getId() %>" class="set_three">
 								<% for(Menu menu_1: menuList){ 
@@ -35,9 +41,9 @@ var initMenuList = new Array();
 									<ul>
 										<li>
 											<h3 id="pic_<%=menu_1.getId() %>"/>
-												<h3>
-													<input type="checkbox" id="cb_<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val())" value="<%=menu_1.getId() %>" >
-													<%=menu_1.getName() %></h3>
+											<h3>
+											<input type="checkbox" id="cb_<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val())" value="<%=menu_1.getId() %>" >
+											<%=menu_1.getName() %></h3>
 											<%
 											boolean hasChild = false;
 											for(Menu menu_2: menuList){
@@ -56,7 +62,7 @@ var initMenuList = new Array();
 											%>
 													<li>
 														<label>
-															<input type="checkbox" id="cb_<%=menu_2.getId() %>" name="menu" onclick="checkMenu($(this).val())" value="<%=menu_2.getId() %>" >
+															<input type="checkbox" id="cb_<%=menu_2.getId() %>" name="menu" onclick="checkMenu($(this).val());validataJuniorCheck(<%=menu_1.getId() %>)" value="<%=menu_2.getId() %>" >
 															<%=menu_2.getName() %></label>
 													</li>
 												<%}} %>
