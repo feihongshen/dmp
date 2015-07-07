@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OperationTime;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -62,7 +63,7 @@ public class OperationTimeDAO {
 				System.currentTimeMillis(), flowordertype, deliverystate, nextbranchid, customerid, inwarehouseTime, emaildate,cwbordertypeid,receivablefee,paybackfee);
 	}
 
-	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid, 
+	public void creAndUpdateOperationTime(String cwb, long branchid, int flowordertype, long deliverystate, long nextbranchid,
 			long customeid, String inwarehouseTime, String emaildate,int cwbordertypeid,BigDecimal receivablefee, BigDecimal paybackfee) {
 		String sql = "select count(1) from express_ops_operation_time where cwb=?";
 		long count = this.jdbcTemplate.queryForLong(sql, cwb);
@@ -515,7 +516,7 @@ public class OperationTimeDAO {
 	 * @return
 	 */
 	public List<String> getyidaohuoByBranchid(long branchid, int flowordertype) {
-		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and flowordertype =" + flowordertype;
+		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and flowordertype in(" + flowordertype+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()+")";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
@@ -553,8 +554,8 @@ public class OperationTimeDAO {
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and nextbranchid=" + nextbranchid + " and flowordertype =" + flowordertype;
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
-	
-	
+
+
 	/**
 	 * 退货、中转已入库订单列表,读取超期异常监控表
 	 * @param branchids 退货或者中转站点ids
@@ -585,11 +586,11 @@ public class OperationTimeDAO {
 		}
 		return this.jdbcTemplate.queryForList(sql, String.class, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-	
-	
+
+
 	public OperationTime getObjectBycwb(String cwb) {
 		String sql = "SELECT * FROM express_ops_operation_time  where cwb=? ";
-		
+
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new OperationTimeRowMapper(), cwb);
 		} catch (DataAccessException e) {
@@ -627,11 +628,11 @@ public class OperationTimeDAO {
 			sql += w;
 		}
 		if (page!=-9) {
-			sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + "," + Page.ONE_PAGE_NUMBER;
+			sql+=" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + "," + Page.ONE_PAGE_NUMBER;
 		}
-		return jdbcTemplate.query(sql, new OperationTimeRowMapper());
+		return this.jdbcTemplate.query(sql, new OperationTimeRowMapper());
 	}
-	
+
 	public long getCwbViewListCount(String cwbs, int cwbordertype, long customerid, long branchid,long begindate, long enddate) {
 		String sql = "select count(1) from express_ops_operation_time where flowordertype=15";
 		if(!cwbs.equals("")){
@@ -655,8 +656,8 @@ public class OperationTimeDAO {
 			}
 			sql += w;
 		}
-		
-		return jdbcTemplate.queryForLong(sql);
+
+		return this.jdbcTemplate.queryForLong(sql);
 	}
-	
+
 }
