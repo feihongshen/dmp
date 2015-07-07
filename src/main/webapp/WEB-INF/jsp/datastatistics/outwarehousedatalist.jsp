@@ -225,11 +225,14 @@ function clearSelect(){
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
 		          <%for(Customer c : customerlist){ %>
 		           <option value ="<%=c.getCustomerid() %>" 
-		            <%if(!customeridList.isEmpty()) 
+		             <%if(!customeridList.isEmpty()) 
 			            {for(int i=0;i<customeridList.size();i++){
-			            	
+			            	if(c.getCustomerid()== new Long(customeridList.get(i).toString())){
+			            		%>selected="selected"<%
+			            	 break;
+			            	}
 			            }
-				     }%> ><%=c.getCustomername() %></option>
+				     }%>><%=c.getCustomername() %></option>
 		          <%} %>
 		        </select>
 				[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
