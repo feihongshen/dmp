@@ -136,17 +136,14 @@ function addbill(){
 	if(sumPrice == "默认为赔付金额,可修改"){
 		var sumPrice = $("#add #sumPrice").val("0");
 	}
-	
 	$.ajax({
 		type : "POST",
 		url : $("#creationfrom").attr("action"),
 		data : $("#creationfrom").serialize(),
 		dataType : "json",
 		success : function(data) {
-			if (data.errorCode == 0) {
-				alert(data.error)
-				$('#add').dialog('close');
-				$("#deleteBillForm").submit();
+			if(data != undefined){
+				updateBill(data);
 			}
 		}
 	});
@@ -172,15 +169,19 @@ function deleteBill(){
 	});
 }
 //-----------------------------查看/修改----------------------------------------
-function updatePage(){
+/* function updatePage(){
 	var id = $("#updatePageForm input[name='id']").val();
 	$("#updatePageForm").submit();
-}
-function updateBill(id){
-	var id = $("#updatePageForm input[name='id']").val();
-	if(id ==""){
-		alert("请选择需要查看/修改的记录！")
-		return false;
+} */
+function updateBill(data){
+	if(data == undefined){
+		var id = $("#updatePageForm input[name='id']").val();
+		if(id ==""){
+			alert("请选择需要查看/修改的记录！")
+			return false;
+		}
+	}else{
+		$("#updatePageForm input[name='id']").val(data)
 	}
 	$("#updatePageForm").submit();
 }
@@ -935,9 +936,7 @@ function verify(){
          			<select  name="customerid" style="width: 100%;">
          				<option value="" >---全部---</option>
 						<c:forEach items="${customerList}" var="cus">
-							<%-- <c:if test="${customerid==cus.customerid}"> --%>
-		         				<option value="${cus.customerid}" >${cus.customername}</option>
-		         			<%-- </c:if> --%>
+		         			<option value="${cus.customerid}" >${cus.customername}</option>
 				        </c:forEach>
          			</select>
          		</td>
@@ -946,9 +945,7 @@ function verify(){
          			<select  name="compensatebig" style="width: 100%;">
          				<option value="" >---全部---</option>
 						<c:forEach items="${penalizebigList}" var="big" >
-							<%-- <c:if test="${compensatebig==big.id}"> --%>
-		         				<option value="${big.id}"<c:if test='${compensatebig == big.id}'>selected="selected"</c:if>>${big.text}</option>
-		         			<%-- </c:if> --%>
+		         			<option value="${big.id}"<c:if test='${compensatebig == big.id}'>selected="selected"</c:if>>${big.text}</option>
 						</c:forEach>
 	         		</select>
          		</td>

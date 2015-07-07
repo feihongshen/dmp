@@ -11,8 +11,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.penalizeOutBill;
@@ -125,10 +128,32 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 新增账单信息
 	 */
-	public void addPenalizeOutBill(penalizeOutBill bill) {
-		String sql = "insert into express_ops_penalize_out_bill(billstate,billbatches,customerid,customername,compensateodd,compensatebig,compensatesmall,compensatefee,compensateexplain,founder,createddate) values(?,?,?,?,?,?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, bill.getBillstate(), bill.getBillbatches(), bill.getCustomerid(), bill.getCustomername(), bill.getCompensateodd(), bill.getCompensatebig(),
-				bill.getCompensatesmall(), bill.getCompensatefee(), bill.getCompensateexplain(), bill.getFounder(), bill.getCreateddate());
+
+	public long addPenalizeOutBill(final penalizeOutBill bill) {
+		KeyHolder key = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement("insert into express_ops_penalize_out_bill(billstate,billbatches,customerid,customername,"
+						+ "compensateodd,compensatebig,compensatesmall,compensatefee,compensateexplain,founder,createddate)" + " values(?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+				int i = 1;
+				ps.setInt(i++, bill.getBillstate());
+				ps.setString(i++, bill.getBillbatches());
+				ps.setString(i++, bill.getCustomerid());
+				ps.setString(i++, bill.getCustomername());
+				ps.setString(i++, bill.getCompensateodd());
+				ps.setInt(i++, bill.getCompensatebig());
+				ps.setInt(i++, bill.getCompensatesmall());
+				ps.setBigDecimal(i++, bill.getCompensatefee());
+				ps.setString(i++, bill.getCompensateexplain());
+				ps.setLong(i++, bill.getFounder());
+				ps.setString(i++, bill.getCreateddate());
+
+				return ps;
+			}
+		}, key);
+		return key.getKey().longValue();
 	}
 
 	// 获取最大编号

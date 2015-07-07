@@ -46,7 +46,7 @@ public class PenalizeOutBillService {
 	}
 
 	// 根据条件查询指定订单再新增到对外赔付账单表中
-	public void addPenalizeOutBill(Integer compensatebig, Integer compensatesmall, String compensateodd, String[] customerid, String CreationStartDate, String CreationEndDate, String compensateexplain) {
+	public Long addPenalizeOutBill(Integer compensatebig, Integer compensatesmall, String compensateodd, String[] customerid, String CreationStartDate, String CreationEndDate, String compensateexplain) {
 		penalizeOutBill bill = new penalizeOutBill();
 		String string = StringUtils.join(customerid, ",");
 		if (StringUtils.isNotBlank(string)) {
@@ -73,7 +73,6 @@ public class PenalizeOutBillService {
 			}
 			bill.setCompensatefee(sum);
 		}
-		StringBuffer customerids = new StringBuffer("");
 
 		String number = this.generateBillBatch();
 		String odd = compensateodd.replace("\r\n", ",");
@@ -87,7 +86,8 @@ public class PenalizeOutBillService {
 		bill.setCompensatesmall(compensatesmall);
 		bill.setCustomerid(string);
 		bill.setCreateddate(date);
-		this.PenalizeOutBilldao.addPenalizeOutBill(bill);
+		Long id = this.PenalizeOutBilldao.addPenalizeOutBill(bill);
+		return id;
 	}
 
 	// 将字符串中的回车符换成逗号 并且加上单引号

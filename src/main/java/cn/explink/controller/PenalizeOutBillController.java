@@ -118,18 +118,18 @@ public class PenalizeOutBillController {
 	 * 增加赔付账单
 	 */
 	@RequestMapping("/addPenalizeOutBill")
-	public @ResponseBody String addPenalizeOutBill(@RequestParam(value = "compensatebig", required = false) Integer compensatebig,
-			@RequestParam(value = "compensatesmall", required = false) Integer compensatesmall, @RequestParam(value = "compensateodd", required = false) String compensateodd,
-			@RequestParam(value = "customerid", required = false) String[] customerid, @RequestParam(value = "creationStartDate", required = false) String creationStartDate,
-			@RequestParam(value = "creationEndDate", required = false) String creationEndDate, @RequestParam(value = "compensateexplain", required = false) String compensateexplain,
-			@RequestParam(value = "batchstate", required = false) String batchstate, @RequestParam(value = "dutypersonid", required = false) String dutypersonid,
-			@RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice, @RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark,
-			@RequestParam(value = "checkbox1", required = false) String checkbox1) {
-		this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
+	@ResponseBody
+	public Long addPenalizeOutBill(@RequestParam(value = "compensatebig", required = false) Integer compensatebig, @RequestParam(value = "compensatesmall", required = false) Integer compensatesmall,
+			@RequestParam(value = "compensateodd", required = false) String compensateodd, @RequestParam(value = "customerid", required = false) String[] customerid,
+			@RequestParam(value = "creationStartDate", required = false) String creationStartDate, @RequestParam(value = "creationEndDate", required = false) String creationEndDate,
+			@RequestParam(value = "compensateexplain", required = false) String compensateexplain, @RequestParam(value = "batchstate", required = false) String batchstate,
+			@RequestParam(value = "dutypersonid", required = false) String dutypersonid, @RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice,
+			@RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark, @RequestParam(value = "checkbox1", required = false) String checkbox1) {
+		Long id = this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
 		if ((checkbox1 != "") && (checkbox1 != null)) {
 			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd);
 		}
-		return "{\"errorCode\":0,\"error\":\"添加成功\"}";
+		return id;
 	}
 
 	/**
