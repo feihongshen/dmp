@@ -131,6 +131,7 @@ function cwbexport(){
 </script>
 </head>
 <body style="background:#f5f5f5">
+				<div class="jg_10"></div><div class="jg_10"></div>
 <div class="right_box">
 	<div class="inputselect_box">
 				<span>
@@ -162,6 +163,7 @@ function cwbexport(){
 				</form>
 				</div>
 				<div class="right_title">
+				<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 				<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 					<tr class="font_1">
