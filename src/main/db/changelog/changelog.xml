@@ -7401,6 +7401,12 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='对外赔付账单表';
     	</sql>
     </changeSet>
+    <changeSet id="wangqiang-2015-07-07-01" author="wangqiang">
+    	<sql>
+    		ALTER TABLE `express_ops_penalize_out_bill`   
+  			CHANGE `compensateodd` `compensateodd` TEXT CHARSET utf8 COLLATE utf8_general_ci NULL  COMMENT '赔付单号';
+    	</sql>
+    </changeSet>
     
 
 </databaseChangeLog>
