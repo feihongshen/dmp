@@ -3077,6 +3077,11 @@ public class PDAController {
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrdercheck=cwbDAO.getCwbByCwb(cwb);
+		int changealowflag=cwborderService.getChangealowflagByIdAdd(cwbOrdercheck);
+		if (cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&changealowflag==1) {
+			return cwborderService.responseErrorZhongzhuanrukuLimit();
+		}
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
 
@@ -3741,6 +3746,11 @@ public class PDAController {
 			if(cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
 				explinkResponse.setStatuscode(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getValue()+"");
 				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getText());
+				return explinkResponse;
+			}
+			if (cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()) {
+				explinkResponse.setStatuscode(ExceptionCwbErrorTypeEnum.ShenheweijushouCannotZhongzhuanchuzhan.getValue()+"");
+				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.ShenheweijushouCannotZhongzhuanchuzhan.getText());
 				return explinkResponse;
 			}
 		}

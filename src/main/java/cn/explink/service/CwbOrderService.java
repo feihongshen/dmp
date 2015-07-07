@@ -50,6 +50,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.controller.CwbOrderView;
+import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.OrderFlowExport;
 import cn.explink.dao.AccountCwbDetailDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
@@ -2964,6 +2965,18 @@ public class CwbOrderService {
 		int changealowflag =reason==null?0:reason.getChangealowflag();
 		return changealowflag;
 	}
+	/**
+	 * 通过中转一级原因查询是否需中转
+	 * @param co
+	 * @return
+	 */
+	public int getChangealowflagByIdAdd(CwbOrder co) {
+		long firstchangereasonid =  co.getFirstchangereasonid(); //一级滞留原因
+		Reason reason = reasonDAO.getReasonByReasonid(firstchangereasonid);
+		
+		int changealowflag =reason==null?0:reason.getChangealowflag();
+		return changealowflag;
+	}
 
 	public CwbOrder kdkoutWarehous(User user, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
 			long reasonid) {
@@ -3447,6 +3460,9 @@ public class CwbOrderService {
 
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotLinghuo);
 		}
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
@@ -6707,5 +6723,10 @@ public class CwbOrderService {
 		}
 		return null;
 	}*/
-	
+	public ExplinkResponse responseErrorZhongzhuanrukuLimit(){
+		ExplinkResponse explinkResponse=new ExplinkResponse();
+		explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuanruku.getText());
+		explinkResponse.setStatuscode("11111");
+		return explinkResponse;
+	}
 }
