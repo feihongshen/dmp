@@ -135,11 +135,7 @@ function orderForm(ordername){
 		$("#searchForm").submit();
 	}
 }
-function clearSelect(){
-	$("#strtime").val('');//开始时间
-	$("#endtime").val('');//结束时间
-	$("#isaudit").val(-1);//审核状态
-}
+
 
 var i =<%=request.getAttribute("check")==null?0:Integer.parseInt(request.getAttribute("check").toString())%>;
 function change(){
@@ -189,6 +185,20 @@ function isauditEdit(){
 		$("#isauditLabel").show();
 	}
 	
+}
+function clearSelect(){
+	$("#strtime").val('');//开始时间
+	$("#endtime").val('');//结束时间
+	$("#isaudit").val(-1);//审核状态
+	$("#deliverid").val(-1);//小件员
+	$("#isauditTime").val(0);//时间类型
+	$("#firstlevelid").val(0);//一级原因
+	$("#branchname").val("");
+	$("#ismohu").val(1);//站点名称
+	multiSelectAll('dispatchbranchid',0,'请选择配送站点');//配送站点
+	multiSelectAll('cwbordertypeid',0,'请选择');//订单类型
+	multiSelectAll('customerid',0,'请选择供货商');//订单类型
+
 }
 </script>
 </head>
@@ -269,7 +279,7 @@ function isauditEdit(){
 		          <%} %>
 			</select>
     			 小件员
-			<select name ="deliverid" id ="deliverid" class="select1" onclick="changeBranchDeliver();">
+			<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();" class="select1" >
 		          <option value ="-1">请选择</option>
 		          <%if(deliverlist!=null&&deliverlist.size()>0)for(User u : deliverlist){ %>
 		          	<option value="<%=u.getUserid() %>" <%if(u.getUserid()==(request.getParameter("deliverid")==null?-1:Long.parseLong(request.getParameter("deliverid").toString()))){ %>selected="selected"<%} %>><%=u.getRealname() %></option>

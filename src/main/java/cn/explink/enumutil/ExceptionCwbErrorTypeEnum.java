@@ -44,7 +44,8 @@ public enum ExceptionCwbErrorTypeEnum {
 	GongDanLeiXingWeiZhaoDao(108,"工单类型未找到"), 
 	Chong_Fu_Ling_Huo(109, "重复扫描，派送员已领货！"),
 	FeiDiYiCiRuKuBuNengShiXiao(110,"该订单非第一次入库，不允许失效！"),
-	Tui_huo_chu_zhan_dai_shen_he(111,"退货出站待审核状态,请先进行审核!")
+	Tui_huo_chu_zhan_dai_shen_he(111,"退货出站待审核状态,请先进行审核!"),
+	Fenzhanzhiliustatenotzhongzhanchuzhan(112,"分站滞留的订单不允许中转出站！！")
 	;
 
 	private int value;

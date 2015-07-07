@@ -50,6 +50,7 @@ int loginUserType =  request.getAttribute("loginUserType")==null ? 0 : (Integer)
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 	   //获取下拉框的值
@@ -144,7 +145,11 @@ function delSuccess(data){
 function clearSelect(){
 	$("#strtime").val('');//开始时间
 	$("#endtime").val('');//结束时间
-	
+	$("#customerid").val(0);
+	$("#isnowdata").val(0);
+	multiSelectAll('kufangid',0,'请选择');
+	multiSelectAll('cwbordertypeid',0,'请选择');
+	multiSelectAll('currentBranchid',0,'请选择');
 }
 </script>
 </head>
@@ -167,7 +172,7 @@ function clearSelect(){
 			<select name ="kufangid" id ="kufangid" multiple="multiple" style="width: 300px;">
 		          <%if(kufanglist!=null && kufanglist.size()>0) {%>
 		          <%for(Branch b : kufanglist){ %>
-			 		<option value ="<%=b.getBranchid() %>" 
+			 		<option  value ="<%=b.getBranchid() %>" 
 		          <%if(!kufangidList.isEmpty()) 
 			            {for(int i=0;i<kufangidList.size();i++){
 			            	if(b.getBranchid()== new Long(kufangidList.get(i).toString())){
@@ -184,7 +189,7 @@ function clearSelect(){
 	<td>
 	供货客户
 			<select name ="customerid" id ="customerid" class="select1">
-	          <option value ="">请选择</option>
+	          <option value ="0">请选择</option>
 	          <%if(customerlist!=null&&customerlist.size()>0){ %>
 	            <%for(Customer c : customerlist){ %>
 		          <option value ="<%=c.getCustomerid()%>" <% if(customers!=null&&!"".equals(customers)){if(c.getCustomerid()==Long.parseLong(customers) ){%>selected="selected" <%}} %> ><%=c.getCustomername()%></option>

@@ -3715,6 +3715,14 @@ public class PDAController {
 		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrdercheck=cwbDAO.getCwbByCwb(cwb);
+		if (cwbOrdercheck!=null) {
+			if(cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
+				explinkResponse.setStatuscode(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getValue()+"");
+				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getText());
+				return explinkResponse;
+			}
+		}
 		CwbOrder cwbOrder = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
 				requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, true, false);
 

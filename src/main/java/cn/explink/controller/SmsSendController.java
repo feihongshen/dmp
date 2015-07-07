@@ -171,7 +171,7 @@ public class SmsSendController {
 							if (cwbOrder.getConsigneemobile() != null && !"".equals(cwbOrder.getConsigneemobile())) {
 								logger.info("短信发送，单号：{} 手机号：{}", cwb.trim(), cwbOrder.getConsigneemobile());
 								try {
-									msg = smsSendService.sendSms(cwbOrder.getConsigneemobile(), smsRemack, 1, cwbOrder.getCustomerid(), cwbOrder.getConsigneename(), getSessionUser().getUserid(),
+									msg = smsSendService.sendSms(cwbOrder.getConsigneemobileOfkf(), smsRemack, 1, cwbOrder.getCustomerid(), cwbOrder.getConsigneename(), getSessionUser().getUserid(),
 											HttpUtil.getUserIp(request));
 									logger.info("短信发送，单号：{}  结果：{}", cwb.trim(), msg);
 									if ("发送短信成功".equals(msg)) {

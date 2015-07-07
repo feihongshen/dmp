@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.SalaryFixedDAO;
+import cn.explink.dao.SalaryImportDao;
 import cn.explink.dao.SalaryImportRecordDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SalaryImportRecord;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.ExportService;
@@ -28,6 +30,8 @@ import cn.explink.util.Page;
 @Controller
 @RequestMapping("/salaryQuery")
 public class SalaryQueryController {
+	@Autowired
+	SalaryImportDao salaryImportDao;
 	@Autowired
 	ExportService exportService;
 	@Autowired
@@ -89,10 +93,11 @@ public class SalaryQueryController {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 			fileName = "SalaryAll_" + df.format(new Date()) + ".xlsx"; // 文件名
 		}else {
+			List<SalaryImport> salaryImports=salaryImportDao.getAllSalaryImports();
 			//按照工资条导出
-			String[] cloumnName1 = new String[9]; // 导出的列名
-			String[] cloumnName2 = new String[9]; // 导出的英文列名
-			this.exportService.SetMisspieceFields(cloumnName1, cloumnName2);
+			String[] cloumnName1 = new String[salaryImports.size()]; // 导出的列名
+			String[] cloumnName2 = new String[salaryImports.size()]; // 导出的英文列名
+			this.exportService.setSalaryImportsFields(cloumnName1, cloumnName2,salaryImports);
 			cloumnName = cloumnName1;
 			cloumnName3 = cloumnName2;
 			sheetName = "工资信息（按工资条导出）"; // sheet的名称

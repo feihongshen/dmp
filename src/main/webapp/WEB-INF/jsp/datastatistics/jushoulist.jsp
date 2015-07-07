@@ -130,6 +130,14 @@ function clearSelect(){
 	$("#strtime").val('');//开始时间
 	$("#endtime").val('');//结束时间
 	$("#isaudit").val(-1);//审核状态
+	$("#deliverid").val(-1);//小件员
+	$("#isauditTime").val(0);//时间类型
+	$("#branchname").val("");
+	$("#ismohu").val(1);//站点名称
+	multiSelectAll('dispatchbranchid',0,'请选择配送站点');//配送站点
+	multiSelectAll('cwbordertypeid',0,'请选择');//订单类型
+	multiSelectAll('customerid',0,'请选择供货商');//供货商
+	multiSelectAll('operationOrderResultType',0,'请选择');//配送结果
 }
 
 var i =<%=request.getAttribute("check")==null?0:Integer.parseInt(request.getAttribute("check").toString())%>;

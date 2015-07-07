@@ -16,6 +16,7 @@ import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import scala.collection.mutable.StringBuilder;
 import cn.explink.controller.AbnormalView;
 import cn.explink.controller.ComplaintView;
 import cn.explink.controller.CwbOrderView;
@@ -52,6 +53,7 @@ import cn.explink.domain.PayUp;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.Role;
+import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
@@ -3258,6 +3260,18 @@ public class ExportService {
 		cloumnName2[9] = "Donetime";
 		cloumnName1[10] = "审核状态";
 		cloumnName2[10] = "NowState";
+	}
+	//根据工资条导出(工资查询)（设置一个类与filename对应）
+	public void setSalaryImportsFields(String[] cloumnName1,
+			String[] cloumnName2,List<SalaryImport> salaryImports){
+		for (int i = 0; i < salaryImports.size(); i++) {
+			String filename=salaryImports.get(i).getFilename();
+			String zwName=salaryImports.get(i).getFiletext();
+			cloumnName1[i] = zwName;
+			cloumnName2[i] = (new StringBuilder()).append(Character.toUpperCase(filename.charAt(0))).append(filename.substring(1)).toString();
+		}
+		
+		
 	}
 
 }

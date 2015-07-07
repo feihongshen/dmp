@@ -861,7 +861,12 @@ public class DeliveryController {
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("batchEditDeliveryStateisUseCash",
 				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
-
+		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("isReasonRequired");
+		String isReasonRequired="";
+		if (systemInstall!=null) {
+			isReasonRequired=systemInstall.getValue();
+		}
+		model.addAttribute("isReasonRequired", isReasonRequired);
 		return "delivery/batchEditDeliveryState";
 	}
 
@@ -981,6 +986,13 @@ public class DeliveryController {
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("batchEditDeliveryStateisUseCash",
 				this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue());
+		
+		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("isReasonRequired");
+		String isReasonRequired="";
+		if (systemInstall!=null) {
+			isReasonRequired=systemInstall.getValue();
+		}
+		model.addAttribute("isReasonRequired", isReasonRequired);
 		return "delivery/batchEditSMHDeliveryState";
 	}
 

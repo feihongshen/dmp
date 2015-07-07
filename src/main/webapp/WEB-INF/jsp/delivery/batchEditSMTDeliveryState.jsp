@@ -176,10 +176,17 @@ function sub(){
 		if($(this).attr("checked")=="checked"){
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 				
-				if($("#leavedreasonid").val()==0){
-					alert("请选择滞留原因");
-					return false;
+				if($("#isReasonRequired").val()!="no"){
+					if($("#firstlevelreasonid").val()==0){
+						alert("请选择滞留一级原因");
+						return false;
+					}
+					if($("#leavedreasonid").val()==0){
+						alert("请选择滞留原因");
+						return false;
+					}
 				}
+			
 				var myDate = new Date();
 				var myDatetime = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
 				var myDatetimeArr = myDatetime.split('-');
@@ -283,7 +290,7 @@ function resub(form){
 							
 							一级原因：
 							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
-					        	<option value ="-1">==请选择==</option>
+					        	<option value ="0">==请选择==</option>
 					        	<%if(firstlist!=null&&firstlist.size()>0)
 					        		for(Reason r : firstlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
@@ -321,6 +328,7 @@ function resub(form){
 						<td valign="middle" >&nbsp;&nbsp;
 							订单号： <label for="textfield"></label> 
 							<textarea name="cwbs" cols="25" rows="4" id="cwbs" style="vertical-align: middle;height:60px"  ></textarea>
+								<input type="hidden" id="isReasonRequired" value="<%=isReasonRequired %>" />
 							<input type="button" name="button" id="button" value="确定" class="input_button2" onclick="sub()" />
 							(只能反馈上门退类型的订单)
 						</td>

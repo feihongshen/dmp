@@ -123,16 +123,7 @@ function orderForm(ordername){
 		$("#searchForm").submit();
 	}
 }
-function clearSelect(){
-	$("#strtime").val('');//开始时间
-	$("#endtime").val('');//结束时间
-	$("#startbranchid").val(-1);//站点名称
-	$("#operationOrderResultType").val(1);//配送结果
-	$("#isaudit").val(-1);//审核状态
-	$("#paytype").val(-1);//支付类型
-	
-	
-}
+
 
 
 var i =<%=request.getAttribute("check")==null?0:Integer.parseInt(request.getAttribute("check").toString())%>;
@@ -182,6 +173,25 @@ function isauditEdit(){
 	}else{
 		$("#isauditLabel").show();
 	}
+	
+}
+function clearSelect(){
+	$("#strtime").val('');//开始时间
+	$("#endtime").val('');//结束时间
+	$("#startbranchid").val(-1);//站点名称
+	$("#deliverid").val(-1);//小件员
+	$("#isauditTime").val(0);//时间类型
+	$("#ismohu").val(1);//站点名称
+	$("#branchname").val("");
+	$("#operationOrderResultType").val(1);//配送结果
+	$("#isaudit").val(-1);//审核状态
+	$("#paytype").val(-1);//支付类型
+	$("#paybackfeeIsZero").val(-1);//应收金额
+	$("#exportmould").val(0);
+	multiSelectAll('dispatchbranchid',0,'请选择配送站点');//配送站点
+	multiSelectAll('cwbordertypeid',0,'请选择');//订单类型
+	multiSelectAll('customerid',0,'请选择供货商');//供货商
+	multiSelectAll('operationOrderResultType',0,'请选择');//应收金额
 	
 }
 </script>
@@ -303,7 +313,7 @@ function isauditEdit(){
 		         <%} %>
 			</select>
 			 应收金额
-			 <select name="paybackfeeIsZero" class="select1">
+			 <select name="paybackfeeIsZero" id="paybackfeeIsZero" class="select1">
 						 <option value="-1" >全部</option>
 						 <option value="0" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("0")?"selected":"" %>>=0</option>
 						 <option value="1" <%=request.getParameter("paybackfeeIsZero")!=null&&request.getParameter("paybackfeeIsZero").equals("1")?"selected":"" %>>>0</option>

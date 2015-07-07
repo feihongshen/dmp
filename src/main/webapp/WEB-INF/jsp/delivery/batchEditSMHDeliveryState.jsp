@@ -34,6 +34,7 @@ long successcount = request.getAttribute("successcount")==null?0:Long.parseLong(
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 Switch pl_switch = request.getAttribute("pl_switch")==null?null:(Switch) request.getAttribute("pl_switch");
+String isReasonRequired = request.getAttribute("isReasonRequired").equals("")?"no":(String)request.getAttribute("isReasonRequired").toString();
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -189,11 +190,17 @@ function sub(){
 		if($(this).attr("checked")=="checked"){
 			
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
-				
-				if($("#leavedreasonid").val()==0){
-					alert("请选择滞留原因");
-					return false;
+				if($("#isReasonRequired").val()!="no"){
+					if($("#firstlevelreasonid").val()==0){
+						alert("请选择滞留一级原因");
+						return false;
+					}
+					if($("#leavedreasonid").val()==0){
+						alert("请选择滞留原因");
+						return false;
+					}
 				}
+			
 				var myDate = new Date();
 				var myDatetime = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
 				var myDatetimeArr = myDatetime.split('-');
@@ -212,8 +219,12 @@ function sub(){
 				return;
 				
 			}else if($(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
+				if($("#isReasonRequired").val()!="no"){
 				alert("请选择拒收原因");
 				return false;
+				}
+				$("#subForm").submit();
+				return;
 			}else if($(this).val()==<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>&&$("#paytype").val()==-1){
 				alert("请选择支付方式");
 				return false;
@@ -288,7 +299,7 @@ function resub(form){
 						<em style="display:none">
 							一级原因：
 							 <select name="firstlevelreasonid" id="firstlevelreasonid" onchange="updaterelatelevel('<%=request.getContextPath()%>/delivery/levelreason',this.value)" >
-					        	<option value ="-1">==请选择==</option>
+					        	<option value ="0">==请选择==</option>
 					        	<%if(firstlist!=null&&firstlist.size()>0)
 					        		for(Reason r : firstlist){ %>
 			           				<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
@@ -353,6 +364,7 @@ function resub(form){
 						<td valign="middle" >&nbsp;&nbsp;
 							订单号： <label for="textfield"></label> 
 							<textarea name="cwbs" cols="25" rows="4" id="cwbs" style="vertical-align: middle;height:60px"  ></textarea>
+							<input type="hidden" id="isReasonRequired" value="<%=isReasonRequired %>" />
 							<input type="button" name="button" id="button" value="确定" class="input_button2" onclick="sub()" />
 							(只能反馈上门换类型的订单)
 						</td>

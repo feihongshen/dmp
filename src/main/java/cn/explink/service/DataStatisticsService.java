@@ -224,7 +224,6 @@ public class DataStatisticsService {
 				startbranchid = nextbranchid = new String[] {};
 				flowordertype = 0l;
 			}
-
 			final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
 					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), this.getStrings(kufangid), flowordertype, paywayid, sign,
 					paybackfeeIsZero, servicetype);

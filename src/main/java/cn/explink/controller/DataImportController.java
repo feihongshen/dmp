@@ -654,7 +654,7 @@ public class DataImportController {
 		String msg = "";
 		List<Customer> customerlist = this.customerDAO.getAllCustomers();
 		model.addAttribute("customerlist", customerlist);
-
+		StringBuffer notfoundCwb=new StringBuffer();
 		// 处理批次
 		List<EmailDate> eList = this.emaildateDAO.getEmailDateByCustomerid(customerid);
 		List<AccountArea> aList = this.accountAreaDAO.getAllAccountArea();
@@ -685,10 +685,29 @@ public class DataImportController {
 					return "dataimport/reproducttranscwb";
 				}
 			}
+			if (cwbs.length() > 0) {
+				String[] cwbstr = cwbs.split("\r\n");
+				for (int i = 0; i < cwbstr.length; i++) {
+					if (i == cwbstr.length) {
+						break;
+					}
+					if (cwbstr[i].trim().length() == 0) {
+						continue;
+					}
+					CwbOrder cwbOrder=cwbDAO.getCwbByCwb(cwbstr[i].trim());
+					if (cwbOrder==null) {
+						cwbs=cwbs.replace(cwbstr[i].trim(), "");
+						notfoundCwb.append(cwbstr[i]).append(",");
+					}
+				}
+			}
 			List<CwbOrder> list = this.dataImportService.getListByCwbs(cwbs, emaildateid);
 			try {
 				this.dataImportService.reProduceTranscwb(list, customerlist);
 				msg = "操作成功";
+				if (notfoundCwb.toString().indexOf(",")>=0) {
+					msg="操作成功，其中订单号为:"+notfoundCwb.toString().substring(0,notfoundCwb.length()-1)+"的订单不存在";
+				}
 			} catch (Exception e) {
 				// e.printStackTrace();
 				msg = "生成失败" + e.getMessage();

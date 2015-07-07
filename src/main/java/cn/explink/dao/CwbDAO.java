@@ -601,6 +601,7 @@ public class CwbDAO {
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrder cwbOrder = new CwbOrder();
 			cwbOrder.setOpscwbid(rs.getLong("opscwbid"));
+			cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));;
 			if (CwbDAO.this.getUser().getShowmobileflag() == 1) {
 				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
 			} else {
@@ -2878,6 +2879,38 @@ public class CwbDAO {
 		}
 		return sql;
 	}
+	public String getCwbOrderByPageWhereSqlHuiZongAdd(String sql, String customeridStr, String cwbordertypeidStr, String orderflowcwbs, long flowordertype, long paywayid,
+			String[] operationOrderResultTypes, Integer paybackfeeIsZero) {
+		sql += " where cwb in (" + orderflowcwbs + ") and state=1 ";
+		
+		if ((customeridStr.length() > 0) || (cwbordertypeidStr.length() > 0) || (flowordertype > 0) || (paywayid > 0) || (paybackfeeIsZero > -1)) {
+			StringBuffer w = new StringBuffer();
+			
+			if (customeridStr.length() > 0) {
+				w.append(" and customerid in(" + customeridStr + ")");
+			}
+			
+			if (cwbordertypeidStr.length() > 0) {
+				w.append(" and cwbordertypeid in(" + cwbordertypeidStr + ")");
+			}
+			if (flowordertype > 0) {
+				w.append(" and flowordertype = " + flowordertype);
+			}
+			if (paywayid > 0) {
+				w.append(" and newpaywayid = '" + paywayid + "'");
+			}
+			
+			if (paybackfeeIsZero > -1) {
+				if (paybackfeeIsZero == 0) {
+					w.append(" and receivablefee=0 ");
+				} else {
+					w.append(" and receivablefee>0 ");
+				}
+			}
+			sql += w.toString();
+		}
+		return sql;
+	}
 
 	/**
 	 * 获取相应条件对应的sql组合字符串
@@ -2910,7 +2943,7 @@ public class CwbDAO {
 		}
 
 		if ((begindate.length() > 0) || (enddate.length() > 0) || (customeridStr.length() > 0) || (startbranchidStr.length() > 0) || (nextbranchidStr.length() > 0) || (cwbordertypeidStr.length() > 0)
-				|| (currentBranchidStr.length() > 0) || (dispatchbranchidStr.length() > 0) || (kufangidStr.length() > 0) || (flowordertype > 0) || (paywayid > 0)) {
+				|| (currentBranchidStr.length() > 0) || (dispatchbranchidStr.length() > 0) || (kufangidStr.length() > 0) || (flowordertype > 0) || (paywayid > 0)||(paybackfeeIsZero > -1)) {
 			StringBuffer w = new StringBuffer();
 			if ((begindate.length() > 0) && (sign != 7)) {
 				w.append(" and emaildate >='" + begindate + "'");
