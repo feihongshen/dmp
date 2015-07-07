@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.b2c.amazon.AmazonService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
@@ -133,7 +134,7 @@ public class DeliveryController {
 	AmazonService amazonService;
 	@Autowired
 	HttpSession session;
-	
+
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
 	@Autowired
@@ -142,7 +143,7 @@ public class DeliveryController {
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private ObjectReader dmpOrderFlowMapper = this.objectMapper.reader(CwbOrder.class);
-	
+
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -426,7 +427,7 @@ public class DeliveryController {
 		sdv.setSign_man(StringUtil.nullConvertToEmptyString(ds.getSign_man()));
 		sdv.setSign_time(StringUtil.nullConvertToEmptyString(ds.getSign_time()));
 		sdv.setDeliverytime(ds.getDeliverytime());
-		
+
 		CwbOrder cwbOrder = null;
 		if (clist == null) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(ds.getCwb());
@@ -635,23 +636,23 @@ public class DeliveryController {
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 
-			
+
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
-			
+
 			try {
 				//操作之前判断是否修改了支付方式
 				Map<String, Object> preParams = this.cwborderService.checkIsModifyPayMethod(parameters,paywayParams);
-				
+
 				if((Boolean)preParams.get("flag")){
 					Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
 					Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("newPayWayId"));
-					adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
-					orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
+					this.adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
+					this.orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
 				}
 			} catch (Exception e) {
-				logger.error("财务处理异常cwb="+cwb,e);
+				this.logger.error("财务处理异常cwb="+cwb,e);
 			}
-			
+
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
@@ -728,7 +729,7 @@ public class DeliveryController {
 	}
 
 	/**
-	 *	
+	 *
 	 *
 	 * @param model
 	 * @param request
@@ -842,7 +843,7 @@ public class DeliveryController {
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("paytype", paytype);
 		model.addAttribute("objList", objList);
-		
+
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
 		model.addAttribute("deliverystateid", deliverystate);
@@ -889,6 +890,8 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate, @RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,	@RequestParam(defaultValue = "0", required = false, value = "backreasonid") long backreasonid,
 			@RequestParam(defaultValue = "0", required = false, value = "leavedreasonid") long leavedreasonid,
 			@RequestParam(defaultValue="0",required=false,value="losereasonid") long losereasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "firstchangereasonid") long firstchangereasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "changereasonid") long changereasonid,
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, @RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
@@ -900,6 +903,7 @@ public class DeliveryController {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		List<Reason> firstlist = this.reasonDao.add();
+		List<Reason> firstchangereasonlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.ChangeTrains.getValue());
 
 		long successcount = 0;
 		if (cwbs.split("\r\n").length < 501) {
@@ -933,6 +937,8 @@ public class DeliveryController {
 					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("losereasonid", losereasonid);
 					parameters.put("fankuileixing", "SHANGMENHUAN");//添加的
+					parameters.put("firstchangereasonid", firstchangereasonid);
+					parameters.put("changereasonid", changereasonid);
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
@@ -968,6 +974,7 @@ public class DeliveryController {
 		}
 
 		model.addAttribute("successcount", successcount);
+		model.addAttribute("firstchangereasonlist", firstchangereasonlist);
 		model.addAttribute("objList", objList);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("deliverystate", DeliveryStateEnum.getByValue((int) deliverystate).getText());
@@ -1011,7 +1018,7 @@ public class DeliveryController {
 	 * @return
 	 */
 	@RequestMapping("/batchEditSMTDeliveryState")
-	public String batchEditSMTDeliveryState(Model model, HttpServletRequest request, 
+	public String batchEditSMTDeliveryState(Model model, HttpServletRequest request,
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(defaultValue = "0", required = false, value = "deliverystate") long deliverystate,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
@@ -1026,8 +1033,8 @@ public class DeliveryController {
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 		//以上为添加的
-		
-		
+
+
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
 
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
@@ -1111,7 +1118,7 @@ public class DeliveryController {
 				objList.add(obj);
 			}
 		}
-		
+
 		model.addAttribute("losereasonlist", losereasonlist);
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("losereasonid", losereasonid);
@@ -1153,7 +1160,7 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "0", required = true, value = "firstchangereasonid") long firstchangereasonid,
 			@RequestParam(defaultValue = "0", required = true, value = "changereasonid") long changereasonid,
 			@RequestParam(defaultValue = "0", required = true, value = "leavedreasonid") long leavedreasonid,
-			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime, 
+			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime,
 			@RequestParam(defaultValue = "1", required = false, value = "paytype") long paytype,
 			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark) {
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
@@ -1300,8 +1307,8 @@ public class DeliveryController {
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
 
 		//上面为添加的
-		
-		
+
+
 
 		List<User> deliverList = this.userDAO.getUserByRoleAndBranchid(2, this.getSessionUser().getBranchid());
 
@@ -1481,12 +1488,12 @@ public class DeliveryController {
 					if ((cwbOrder != null) && ((DeliveryStateEnum.ShangMenJuTui.getValue() != deliverystate))) {
 						parameters.put("infactfare", cwbOrder.getShouldfare());
 					}
-					
+
 					if (deliverystate==DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
 						parameters.put("infactfare", cwbOrder.getShouldfare());
 					}
-					
-					logger.info("上门退订单再次批量反馈cwb={},infactfare={},shouldfare="+cwbOrder.getShouldfare(),scancwb,parameters.get("infactfare"));
+
+					this.logger.info("上门退订单再次批量反馈cwb={},infactfare={},shouldfare="+cwbOrder.getShouldfare(),scancwb,parameters.get("infactfare"));
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(scancwb)));
 					obj.put("errorcode", "000000");
@@ -1533,15 +1540,15 @@ public class DeliveryController {
 			objList.add(obj);
 		}
 		List<Reason> backreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue());
-		
+
 		model.addAttribute("leavedreasonid", leavedreasonid);
 		model.addAttribute("losereasonid", losereasonid);
 		model.addAttribute("losereasonlist", losereasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);
 		model.addAttribute("weishuakareasonlist", weishuakareasonlist);
 		//上面为添加的
-		
-		
+
+
 		model.addAttribute("successcount", successcount);
 		model.addAttribute("deliverstateremark", deliverstateremark);
 		model.addAttribute("backreasonid", backreasonid);
@@ -1825,8 +1832,8 @@ public class DeliveryController {
 		}
 		return flag;
 	}
-	
-	
+
+
 	@RequestMapping("/getChangeReason")
 	public @ResponseBody String getChangeReason( @RequestParam(value = "firstchangereasonid", defaultValue = "0", required = false) long firstchangereasonid){
 
@@ -1836,7 +1843,7 @@ public class DeliveryController {
 				return JacksonMapper.getInstance().writeValueAsString(tworeasonlist);
 			} catch (Exception e) {
 				e.printStackTrace();
-			} 
+			}
 			return "[]";
 		} else {
 			return "[]";
