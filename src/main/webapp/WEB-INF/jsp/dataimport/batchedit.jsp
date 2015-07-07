@@ -111,7 +111,7 @@
 			<li><a href="editBatchBranch">批量匹配站</a></li>
 			<li><a href="editBranchonBranch">匹配站按站</a></li>
 			<li><a href="addresslibrarymatching">手动匹配</a></li>
-			<li><a href="batchedit" class="light">批量修改</a></li>
+			<!-- <li><a href="batchedit" class="light">批量修改</a></li> -->
 		</ul>
 	</div>
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">

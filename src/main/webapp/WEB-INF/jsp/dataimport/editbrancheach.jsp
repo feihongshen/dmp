@@ -116,7 +116,7 @@ function searchForm(){
 			<li><a href="editBatchBranch">批量匹配站</a></li>
 			<li><a href="editBranchonBranch" class="light">匹配站按站</a></li>
 			<li><a href="addresslibrarymatching">手动匹配</a></li>
-			<li><a href="batchedit" >批量修改</a></li>
+			<!-- <li><a href="batchedit" >批量修改</a></li> -->
 		</ul>
 	</div>
 	<form name="editBranchForm" id="editBranchForm" method="POST" action="editBranchonBranch"  >

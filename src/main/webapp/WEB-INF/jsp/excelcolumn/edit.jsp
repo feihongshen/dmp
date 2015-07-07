@@ -122,7 +122,7 @@ initEditArray[42]=("<%=columnList.getShouldfareindex() %>,shouldfareindex");
 					<select id="paywayindex" name="paywayindex">
 						<option value="0" selected>未设置</option>
 			        </select></p>
-			        
+			        <div style="height: 60px;"></div>
 			        
 			        
 			        
@@ -188,6 +188,8 @@ initEditArray[42]=("<%=columnList.getShouldfareindex() %>,shouldfareindex");
 					<select id="transwayindex" name="transwayindex">
 						<option value="0" selected>未设置</option>
 			        </select></p>
+			        <div style="height: 65px;"></div>
+			        
 			       	</td>
 					<td>
 					

@@ -420,7 +420,7 @@ function clearSelect(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div style="height:130px"></div>
+	<div style="height:140px"></div>
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 		<table width="1500" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 		   <tr class="font_1">

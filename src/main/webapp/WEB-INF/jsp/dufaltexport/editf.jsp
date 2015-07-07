@@ -21,6 +21,7 @@ $("document").ready(function(){
 	
 	$("#columnSetting input[class='downButton']",parent.document).click(function(){
 		var p=$(this).parents("p");
+		alert(p);
 		var next=p.next();
 		if(next!=null){
 			p.insertAfter(next);
@@ -31,7 +32,7 @@ $("document").ready(function(){
 		var p=$(this).parents("p");
 		var prev=p.prev();
 		if(prev!=null){
-			p.insertBefore(prev);
+			$(p).insertBefore(prev);
 		}
 	});
 	

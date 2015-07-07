@@ -942,7 +942,7 @@ $(function(){
 								<td width="10%" height="26" align="left" valign="top">
 									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 										<tr>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单号33</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>

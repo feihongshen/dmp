@@ -61,8 +61,10 @@ for (int y=1 ; y<27 ;y++){
 						<p><span><font <%=columnKeyAndValue[columnList.getReceivablefeeindex()].equals("未设置")?"":"color = 'red'" %>>应收金额：</font></span><font <%=columnKeyAndValue[columnList.getReceivablefeeindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getReceivablefeeindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getPaybackfeeindex()].equals("未设置")?"":"color = 'red'" %>>应退金额：</font></span><font <%=columnKeyAndValue[columnList.getPaybackfeeindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getPaybackfeeindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getPaywayindex()].equals("未设置")?"":"color = 'red'" %>>支付方式：</font></span><font <%=columnKeyAndValue[columnList.getPaywayindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getPaywayindex()] %></font></p>
+						<div style="height: 60px;"></div>
+					
 					</td>
-					<td>
+					<td  >
 						<p><span><font <%=columnKeyAndValue[columnList.getCargorealweightindex()].equals("未设置")?"":"color = 'red'" %>>实际重量kg：</font></span><font <%=columnKeyAndValue[columnList.getCargorealweightindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getCargorealweightindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getCargosizeindex()].equals("未设置")?"":"color = 'red'" %>>货物尺寸：</font></span><font <%=columnKeyAndValue[columnList.getCargosizeindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getCargosizeindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getSendcargonameindex()].equals("未设置")?"":"color = 'red'" %>>发出商品：</font></span><font <%=columnKeyAndValue[columnList.getSendcargonameindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getSendcargonameindex()] %></font></p>
@@ -78,7 +80,7 @@ for (int y=1 ; y<27 ;y++){
 						<p><span><font <%=columnKeyAndValue[columnList.getSendcargonumindex()].equals("未设置")?"":"color = 'red'" %>>发货数量：</font></span><font <%=columnKeyAndValue[columnList.getSendcargonumindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getSendcargonumindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getBackcargonumindex()].equals("未设置")?"":"color = 'red'" %>>取货数量：</font></span><font <%=columnKeyAndValue[columnList.getBackcargonumindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getBackcargonumindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getTranswayindex()].equals("未设置")?"":"color = 'red'" %>>运输方式：</font></span><font <%=columnKeyAndValue[columnList.getTranswayindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getTranswayindex()] %></font></p>
-						
+							<div style="height: 100px;"></div>
 					</td>
 					<td>
 						<p><span><font <%=columnKeyAndValue[columnList.getCwbprovinceindex()].equals("未设置")?"":"color = 'red'" %>>省：</font></span><font <%=columnKeyAndValue[columnList.getCwbprovinceindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getCwbprovinceindex()] %></font></p>

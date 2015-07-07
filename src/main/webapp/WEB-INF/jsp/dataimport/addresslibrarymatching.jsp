@@ -134,7 +134,7 @@ function getOs()
 					<li><a href="editBatchBranch">批量匹配站</a></li>
 					<li><a href="editBranchonBranch">匹配站按站</a></li>
 					<li><a href="addresslibrarymatching" class="light">手动匹配</a></li>
-					<li><a href="batchedit" >批量修改</a></li>
+					<!-- <li><a href="batchedit" >批量修改</a></li> -->
 				</ul>
 			</div>
 			<form onsubmit="checked(this);return false;" name="addresslibrarymatchingForm" id="addresslibrarymatchingForm" method="POST" action="<%=request.getContextPath()%>/dataimport/addresslibrarymatchingpage">

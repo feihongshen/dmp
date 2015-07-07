@@ -252,7 +252,12 @@ function tohome(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
- 
+  <!-- 新添加 --><div class="saomiao_tab2">
+		<ul>
+			<li><a href="<%=request.getContextPath()%>/PDA/kdkexportwarhouse">逐单操作</a></li>		
+			<li><a href="#"  class="light">批量操作</a></li>
+		</ul>
+	</div><!-- 新添加 -->
 	<div class="saomiao_topnum2">
 		<dl class="blue">
 			<dt>待出库</dt>
