@@ -519,9 +519,9 @@ $(function(){
 					</table></div>
 						
 					<div class="jg_10"></div>
-					<table width="100%" border="0" cellspacing="1" cellpadding="5" class="table_5">
+					<table width="100%"  border="0" cellspacing="1" cellpadding="5" class="table_5" >
 				<tr>
-					<td align="center">
+					<td align="center" >
 					<%if("5".equals(request.getParameter("showLetfOrRight"))){ %>
 						<%if(page_obj.getMaxpage()>1){ %>
 							<a 
@@ -612,10 +612,10 @@ $(function(){
 			        <%} %>
 					</td>
 					<%if("5".equals(request.getParameter("showLetfOrRight"))){ %>
-					<td width="60">
+					<td >
 					<input type="button" name="button4" id="export2" value="导出" class="input_button2"></td>
 					<%}else{ %>
-					<td width="60">
+					<td >
 					<input type="button" name="button4" id="export" value="导出" class="input_button2"></td>
 					<%} %>
 				</tr>
