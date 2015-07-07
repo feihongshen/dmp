@@ -11,7 +11,6 @@
 String [] cwbArray = (String[])request.getAttribute("cwbArray");
 List<CwbOrderWithDeliveryState> allowCods = (List<CwbOrderWithDeliveryState>)request.getAttribute("allowCods");
 List<CwbOrderWithDeliveryState> prohibitedCods = (List<CwbOrderWithDeliveryState>)request.getAttribute("prohibitedCods");
-Long editcwbnum = (Long)request.getAttribute("editcwbnum");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>

@@ -165,7 +165,7 @@ public class EditCwbController {
 		model.addAttribute("cwbArray", cwbArray);
 		String cwbsSql = cwbsSqlBuffer.substring(0, cwbsSqlBuffer.length() - 1);
 		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbsSql);
-		Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
+	//	Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
 
 		/*// 做重置审核状态更改的操作 start
 		if (type == EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue()) {
@@ -390,16 +390,22 @@ public class EditCwbController {
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		//存储在订单修改确认时所需要的参数(在金额修改时需要使用)
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-		long editcwbnum = 0;
+	//	long editcwbnum = 0;
 		if(cwbs!=null&&cwbs.length>0){
 			for (String cwb : cwbs) {
 				FeeWayTypeRemark fr = new FeeWayTypeRemark();
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
+				//修改为代收金额
 				BigDecimal receivablefee = request.getParameter("Receivablefee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_" + cwb));
+				//反馈代收金额
 				BigDecimal cash = request.getParameter("Receivablefee_cash_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_cash_" + cwb));
+				//反馈代收pos
 				BigDecimal pos = request.getParameter("Receivablefee_pos_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_pos_" + cwb));
+				//反馈代收支票
 				BigDecimal checkfee = request.getParameter("Receivablefee_checkfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_checkfee_" + cwb));
+				//反馈代收其他
 				BigDecimal otherfee = request.getParameter("Receivablefee_otherfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Receivablefee_otherfee_" + cwb));
+				//修改为代退金额
 				BigDecimal Paybackfee = request.getParameter("Paybackfee_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Paybackfee_" + cwb));
 				fr.setCwb(cwb);
 				fr.setIsDeliveryState(isDeliveryState);
@@ -437,14 +443,27 @@ public class EditCwbController {
 								zfav.setBranchid((int)co.getCurrentbranchid());
 								zfav.setPaywayid((int)co.getPaywayid());
 								zfav.setApplypaywayid(0);
-								zfav.setReceivablefee(co.getReceivablefee());
-								BigDecimal bd = BigDecimal.ZERO;
-								if(co.getCwbordertypeid()==2){
-									bd = fre.getPaybackfee();
+								BigDecimal bdformer = BigDecimal.ZERO;
+								BigDecimal bdafter = BigDecimal.ZERO;
+								BigDecimal cwbreceivfee = co.getReceivablefee();//订单代收款
+								BigDecimal cwbpaybackfee = co.getPaybackfee();//订单待退款
+								if(co.getCwbordertypeid()==1){
+									bdformer = cwbreceivfee;
+									bdafter = fre.getReceivablefee();
+								}else if(co.getCwbordertypeid()==2){
+									bdformer = cwbpaybackfee;
+									bdafter = fre.getPaybackfee();
 								}else{
-									bd = fre.getReceivablefee();
+									if(fre.getReceivablefee().compareTo(bdformer)>0){
+										bdformer = cwbreceivfee;
+										bdafter = fre.getReceivablefee();
+									}else{
+										bdformer = cwbpaybackfee;
+										bdafter = fre.getPaybackfee();
+									}
 								}
-								zfav.setApplyreceivablefee(bd);
+								zfav.setReceivablefee(bdformer);
+								zfav.setApplyreceivablefee(bdafter);
 								zfav.setApplyway(1);
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
@@ -454,7 +473,7 @@ public class EditCwbController {
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
 								list.add(zfav);
-								editcwbnum+=1;
+	//							editcwbnum+=1;
 							}
 						}
 					}
@@ -464,7 +483,7 @@ public class EditCwbController {
 				}
 			}
 		}
-		model.addAttribute("auditcwbnum",editcwbnum);
+		//model.addAttribute("auditcwbnum",editcwbnum);
 		return "editcwb/start";
 	}
 
@@ -474,7 +493,6 @@ public class EditCwbController {
 			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-		long editcwbnum = 0;
 		if(cwbs!=null&&cwbs.length>0){
 			//5.28新加支付申请-审核-确认流程
 			
@@ -523,7 +541,6 @@ public class EditCwbController {
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
 								list.add(zfav);
-								editcwbnum+=1;
 							}
 						}
 					}
