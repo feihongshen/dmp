@@ -251,7 +251,7 @@ function reserData(){
 								</table>
 							</form>
 						</div>
-						<div style="overflow: scroll;height: 480px;">
+						<div style="overflow: scroll;height: 470px;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
