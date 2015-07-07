@@ -3269,10 +3269,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>GZTL_PJ</label>
-				<addresscustomerid>6</addresscustomerid>
-				<addressid>6</addressid>
-				<addresspassword>gztl</addresspassword>
-				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+				<addresscustomerid>36</addresscustomerid>
+				<addressid>36</addressid>
+				<addresspassword>dmppj</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addressmatchgztl42</addressWebserviceIp>
 			</properties>
 		</profile>
 		
@@ -3297,7 +3297,7 @@
 				<addresscustomerid>6</addresscustomerid>
 				<addressid>6</addressid>
 				<addresspassword>gztl</addresspassword>
-				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+				<addressWebserviceIp>183.61.89.252/addressmatchgztl42</addressWebserviceIp>
 			</properties>
 		</profile>
 		
