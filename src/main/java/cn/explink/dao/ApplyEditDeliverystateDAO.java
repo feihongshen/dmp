@@ -346,8 +346,8 @@ public class ApplyEditDeliverystateDAO {
 		return jdbcTemplate.queryForLong(sql, cwb, shenhestate);
 	}
 	public List<ApplyEditDeliverystate> getApplyEditDeliverys(long page,String begindate,
-			String enddate, long ishandle) {
-		String sql = "SELECT * from express_ops_applyeditdeliverystate where 1=1";
+			String enddate, long ishandle,long branchid) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where applybranchid="+branchid;
 		StringBuffer sb = new StringBuffer("");
 		if(!begindate.equals("")){
 			sb.append(" and applytime >='" + begindate + "' ");

@@ -972,9 +972,9 @@ public class CwbOrderController {
 			@RequestParam(value = "auditstate", defaultValue = "-1", required = false) int auditstate,
 			@RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow
 			) {
-		
 		Page pag = new Page(); 	
-		List<Branch> branchList = new ArrayList<Branch>();
+		List<Branch> branchList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+		List<Branch> branchLists = this.branchDAO.getAllBranches();
 		List<Customer> customerList = new ArrayList<Customer>();
 		List<Reason> reasonList = new ArrayList<Reason>();
 		List<OrderBackRuku> obrsList = new ArrayList<OrderBackRuku>();
@@ -983,11 +983,11 @@ public class CwbOrderController {
 			if(cwbs.length()>0){
 				cwbsStr = cwborderService.getCwbs(cwbs);
 			}
-			branchList = this.branchDAO.getAllEffectBranches();
+			
 			customerList = this.customerDao.getAllCustomers();
 			reasonList = reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZaiTou.getValue());
 			List<OrderBackRuku> obrList = this.orderBackRukuRecordDao.getOrderbackRukus(page, cwbsStr, cwbordertype, customerid, branchid, begintime, endtime, auditstate);
-			obrsList = cwborderService.getOrderBackRukuRecord(obrList,branchList,customerList);
+			obrsList = cwborderService.getOrderBackRukuRecord(obrList,branchLists,customerList);
 			long count = this.orderBackRukuRecordDao.getOrderbackRukusCount(page, cwbsStr, cwbordertype, customerid, branchid, begintime, endtime, auditstate);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
 		}
@@ -1187,10 +1187,10 @@ public class CwbOrderController {
 			) {
 		
 		Page pag = new Page();
-		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
-		model.addAttribute("branchList", branchList);
-		model.addAttribute("customerList", customerList);
+		//model.addAttribute("branchList", branchList);
+		
 		String cwbss = "";
 		if(cwb.length()>0){
 			StringBuffer cwbs = new StringBuffer();
@@ -1228,6 +1228,7 @@ public class CwbOrderController {
 		}
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
+		model.addAttribute("customerList", customerList);
 		model.addAttribute("cwbList",covList);
 		return "auditorderstate/toTuiGongHuoShangSuccess";
 	}

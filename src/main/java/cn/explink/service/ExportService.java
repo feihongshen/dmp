@@ -3260,6 +3260,12 @@ public class ExportService {
 		cloumnName2[9] = "Donetime";
 		cloumnName1[10] = "审核状态";
 		cloumnName2[10] = "NowState";
+		cloumnName1[11] = "修改配送结果";
+		cloumnName2[11] = "Remark2";
+		cloumnName1[12] = "原因备注";
+		cloumnName2[12] = "Remark3";
+		cloumnName1[13] = "备注";
+		cloumnName2[13] = "Remark4";
 	}
 	//根据工资条导出(工资查询)（设置一个类与filename对应）
 	public void setSalaryImportsFields(String[] cloumnName1,

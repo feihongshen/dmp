@@ -573,8 +573,8 @@ public class CwbApplyController {
 			@RequestParam(value = "enddate", defaultValue = "", required = false) String enddate
 			) {
 		Page pag = new Page();
-		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchLists = this.branchDAO.getAllBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	
@@ -595,7 +595,7 @@ public class CwbApplyController {
 				strs = sb.substring(0, sb.length()-1);
 				coList = cwbDAO.getListbyCwbs(strs);
 			}
-			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchList);//获取分页查询的view
+			covList = this.cwborderService.getZhongZhuanCwbOrderView(coList, cwbApplyZhongZhuanlist, customerList,branchLists);//获取分页查询的view
 		}
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);

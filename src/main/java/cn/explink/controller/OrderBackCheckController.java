@@ -270,13 +270,13 @@ public class OrderBackCheckController {
 			) {
 		Page pag = new Page();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
-		//List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
-		List<Branch> branchList = branchDAO.getAllBranches();
+		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+		List<Branch> branchLists = branchDAO.getAllBranches();
 		List<OrderBackCheck> orderbackList = null;
 		String cwbsStr = this.getCwbs(cwbs);
 		if(isnow>0){	
 			List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(page,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
-			orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
+			orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchLists);
 			long count = this.orderBackCheckDAO.getOrderBackChecksCount(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
 		}
@@ -653,12 +653,13 @@ public class OrderBackCheckController {
 				
 				){
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
-			List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+			//List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
+			List<Branch> branchLists = this.branchDAO.getAllBranches();
 			List<OrderBackCheck> orderbackList = null;
 			String cwbsStr = this.getCwbs(cwbs);
 			if(!(cwbs.equals("")&&begindate.equals(""))){	
 				List<OrderBackCheck> obcList = this.orderBackCheckDAO.getOrderBackChecksForpage(-9,cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
-				orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchList);
+				orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchLists);
 			}
 			String[] cloumnName1 = new String[9]; // 导出的列名
 			String[] cloumnName2 = new String[9]; // 导出的英文列名

@@ -164,23 +164,23 @@ function exportField(){
 								<tr class="font_1" height="30" >
 									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">申请时间</td>
-									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
-									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">申请站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">申请站点</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">配送结果</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
-									<td width="130" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
-									<td align="120" valign="middle" bgcolor="#eef6ff">备注</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td align="100" valign="middle" bgcolor="#eef6ff">备注</td>
 								</tr>
 								<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
 								<% CwbOrder co = cwbDAO.getCwbByCwb(adse.getCwb()); %>
 									<tr height="30" >
 										<td width="120" align="center" valign="middle"><%=adse.getCwb() %></td>
 										<td width="120" align="center" valign="middle"><%=adse.getApplytime() %></td>
-										<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-										<td width="120" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+										<td width="100" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
+										<td width="100" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
 										<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
 										<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
 										<td width="100" align="center" valign="middle">

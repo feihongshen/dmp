@@ -246,8 +246,13 @@ public class ApplyEditDeliverystateController {
 		Page pag = new Page();
 		List<User> uslist = userDAO.getAllUser();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
-		
 		List<Branch> branchViewList = branchDAO.getAllEffectBranches();
+		
+		List<Reason> reasonList = reasonDAO.getAllReason();
+		Map<String, String> reasonMap = new HashMap<String, String>();
+		for(Reason reason : reasonList){
+			reasonMap.put(reason.getReasonid()+"", reason.getReasoncontent());
+		}		
 		
 		StringBuffer sb = new StringBuffer("");
 		if(!cwbs.equals("")){
@@ -265,7 +270,7 @@ public class ApplyEditDeliverystateController {
 			applyeditlist = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(page,cwbss,cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
 			long count = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateCount(cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
-			covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchViewList);
+			covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchViewList,reasonMap);
 		}
 		model.addAttribute("page",page);
 		model.addAttribute("page_obj",pag);
@@ -291,11 +296,16 @@ public class ApplyEditDeliverystateController {
 			){
 		List<User> uslist = userDAO.getAllUser();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
+		List<Reason> reasonList = reasonDAO.getAllReason();
+		Map<String, String> reasonMap = new HashMap<String, String>();
+		for(Reason reason : reasonList){
+			reasonMap.put(reason.getReasonid()+"", reason.getReasoncontent());
+		}		
 		String cwbss = getCwbs(cwbs);
 		List<ApplyEditDeliverystate> applyeditlist =  this.applyEditDeliverystateDAO.getAppliedEditDeliverystate(cwbss,cwbtypeid,cwbresultid,isdo,cwbstate,feedbackbranchid );
-		List<CwbOrderView> covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchList);
-		String[] cloumnName1 = new String[11]; // 导出的列名
-		String[] cloumnName2 = new String[11]; // 导出的英文列名
+		List<CwbOrderView> covList = this.cwborderService.getResetCwbOrderView(applyeditlist,uslist,branchList,reasonMap);
+		String[] cloumnName1 = new String[14]; // 导出的列名
+		String[] cloumnName2 = new String[14]; // 导出的英文列名
 		this.exportService.SetResetFeedbackOrderFields(cloumnName1, cloumnName2);
 		String sheetName = "重置反馈状态"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -938,7 +948,8 @@ public class ApplyEditDeliverystateController {
 			long count = 0;
 			if(isnow>0){
 			//List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverystateByWherePage(page, begindate, enddate, getSessionUser().getBranchid(), ishandle, "");
-			List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(page,begindate,enddate,ishandle);
+			long branchid = this.getSessionUser().getBranchid();
+			List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(page,begindate,enddate,ishandle,branchid);
 			applyEditDeliverystateList = this.getapplyeditdeliverysate(applyEditDeliverystateLists, reasonMap);
 			count = applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle);
 			}

@@ -62,7 +62,7 @@ function changeSitetype(){
 			<input type ="text" name ="modelname"  class="input_text1" value = "<%=request.getParameter("modelname")==null?"":request.getParameter("modelname") %>"/>
 			机构类型
 			<select name="sitetype" id="sitetype" class="select1" onchange="changeSitetype()">
-	            <option value="0">全部</option>
+	            <option value="0">==请选择==</option>
 	            <option value="<%=BranchEnum.KuFang.getValue()%>" <%=BranchEnum.KuFang.getValue()==sitetype?"selected":"" %>><%=BranchEnum.KuFang.getText()%></option>
 	            <option value="<%=BranchEnum.ZhanDian.getValue()%>" <%=BranchEnum.ZhanDian.getValue()==sitetype?"selected":"" %>><%=BranchEnum.ZhanDian.getText()%></option>
 	            <option value="<%=BranchEnum.ZhongZhuan.getValue()%>" <%=BranchEnum.ZhongZhuan.getValue()==sitetype?"selected":"" %>><%=BranchEnum.ZhongZhuan.getText()%></option>

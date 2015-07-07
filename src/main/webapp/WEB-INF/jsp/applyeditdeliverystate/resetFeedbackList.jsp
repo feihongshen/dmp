@@ -352,39 +352,46 @@ function resetData(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">结算状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
-									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3">反馈时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">操作人</td>
-									<td width="110" align="center" valign="middle" bgcolor="#E7F4E3">操作时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
+									<td width="2%" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">配送结果</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">订单状态</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">结算状态</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">反馈站点</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">反馈人</td>
+									<td width="8%" align="center" valign="middle" bgcolor="#E7F4E3">反馈时间</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">操作人</td>
+									<td width="8%" align="center" valign="middle" bgcolor="#E7F4E3">操作时间</td>
+									<td width="6%" align="center" valign="middle" bgcolor="#E7F4E3">审核状态</td>
+									<td width="8%" align="center" valign="middle" bgcolor="#E7F4E3">修改配送结果</td>
+									<td width="8%" align="center" valign="middle" bgcolor="#E7F4E3">原因备注</td>
+									<td align="6%" valign="middle" bgcolor="#E7F4E3">备注</td>
 								</tr>
 							</tbody>
 							<tbody>
 							<%if(applyeditlist!=null){
 								for(CwbOrderView aed :applyeditlist){ %>
 									<tr height="30">
-									<td  width="40" align="center" valign="middle">
+									<td  width="2%" align="center" valign="middle">
 										<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=aed.getCwb()%>" />
 									</td>
-									<td width="100" align="center" valign="middle" ><%=aed.getCwb() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getCwbordertypename() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getDeliveryname() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getCwbstatename() %></td>
+									<td width="2%" align="center" valign="middle" ><%=aed.getCwb() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getCwbordertypename() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getDeliveryname() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getCwbstatename() %></td>
 									<!--TODO 结算状态 -->
-									<td width="100" align="center" valign="middle" ></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getBranchname() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getResetfeedusername() %></td>
-									<td width="110" align="center" valign="middle" ><%=aed.getResetfeedtime() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getDonepeople() %></td>
-									<td width="110" align="center" valign="middle" ><%=aed.getDonetime() %></td>
-									<td width="100" align="center" valign="middle" ><%=aed.getNowState() %></td>
+									<td width="6%" align="center" valign="middle" ></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getBranchname() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getResetfeedusername() %></td>
+									<td width="8%" align="center" valign="middle" ><%=aed.getResetfeedtime() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getDonepeople() %></td>
+									<td width="8%" align="center" valign="middle" ><%=aed.getDonetime() %></td>
+									<td width="6%" align="center" valign="middle" ><%=aed.getNowState() %></td>
+									<td width="8%" align="center" valign="middle" ><%=aed.getRemark2() %></td>
+									<td width="8%" align="center" valign="middle" ><%=aed.getRemark3() %></td>
+									<td align="6%" valign="middle" ><%=aed.getRemark4() %></td>
+									
 								</tr>
 								<%} }%>
 						</tbody>

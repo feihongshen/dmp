@@ -234,7 +234,7 @@ function resetData(){
 													<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>
 													<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue()%>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText()%></option>
 											</select>
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											
 											客户名称:
 											<select name ="customerid" id ="customerid" class="select1">
 												<option  value ="0">全部</option>
@@ -286,7 +286,7 @@ function resetData(){
 								</table>
 							</form>
 						</div>
-						<div style="height: 500px;overflow: scroll;">
+						<div style="height: 480px;overflow: scroll;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >

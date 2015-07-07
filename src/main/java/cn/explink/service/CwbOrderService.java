@@ -6599,7 +6599,7 @@ public class CwbOrderService {
 	}
 	//修改状态重置反馈(页面view)
 	public List<CwbOrderView> getResetCwbOrderView(List<ApplyEditDeliverystate> applyeditlist,
-			List<User> uslist,List<Branch> branchList) {
+			List<User> uslist,List<Branch> branchList,Map<String, String> reasonMap) {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (applyeditlist.size() > 0) {
 			for (ApplyEditDeliverystate ot :applyeditlist ){
@@ -6616,6 +6616,9 @@ public class CwbOrderService {
 				cwbOrderView.setDonepeople(this.dataStatisticsService.getQueryUserName(uslist,ot.getEdituserid()));//操作人
 				cwbOrderView.setDonetime(ot.getEdittime());//操作时间
 				cwbOrderView.setNowState(this.getNowstate(ot.getShenhestate()));//订单当前状态
+				cwbOrderView.setRemark2(DeliveryStateEnum.getByValue((int)ot.getEditnowdeliverystate()).getText());//修改配送结果
+				cwbOrderView.setRemark3(reasonMap.get(ot.getReasonid()+""));//原因备注
+				cwbOrderView.setRemark4(ot.getEditreason());//备注
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}

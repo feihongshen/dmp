@@ -18,8 +18,7 @@ List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
   List<User> userList = (List<User>)request.getAttribute("userList");
   Page page_obj = (Page)request.getAttribute("page_obj");
   List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
-  ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
-%>
+  ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); %>
 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -211,11 +210,11 @@ function changereasonremark(obj,opscwbid){
 										</select>
 									</td>
 									<td width="120" align="center" valign="middle">
-										<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 140px">
+										<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 140px"/>
 											<option value="0">==请选择==</option>
-											<%-- <%if(reasonList!=null){for(Reason reason:reasonList){ %>
+											<%if(reasonList!=null){for(Reason reason:reasonList){ %>
 											<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
-											<%} }%> --%>
+											<%} }%>
 										</select>
 									</td>
 									<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>

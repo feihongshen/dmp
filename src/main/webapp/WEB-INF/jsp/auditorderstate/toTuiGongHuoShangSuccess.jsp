@@ -6,7 +6,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 Page page_obj = (Page)request.getAttribute("page_obj");
-List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
