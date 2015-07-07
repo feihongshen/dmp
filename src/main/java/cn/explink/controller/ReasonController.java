@@ -1,5 +1,7 @@
 package cn.explink.controller;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.Array;
 import cn.explink.dao.ReasonDao;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
@@ -127,11 +130,29 @@ public class ReasonController {
 			}
 			
 		}
+		Reason  parentReason1=reasonDao.getReasonByReasonid(parentid);;
 		Reason reason = new Reason();
 		reason.setReasoncontent(reasoncontent);
 		reason.setReasontype(reasontype);
 		reason.setWhichreason(whichreason);
 		reason.setChangealowflag(changealowflag);
+		if (whichreason==2) {
+			if (changealowflag==1) {
+				if (parentReason1.getChangealowflag()!=1) {
+					reasonDao.saveReasonAdd(parentid,1);
+					List<Reason> reasons=reasonDao.getAllSecondLevelReason(parentid);
+					if (reasons.size()>0) {
+						for (Reason reason2 : reasons) {
+							reasonDao.saveReasonAdd(reason2.getReasonid(), 1);
+						}
+					}
+				}
+			}else {
+				if (parentReason1.getChangealowflag()==1) {
+					reason.setChangealowflag(1);
+				}
+			}
+		}
 		if (reasontype == 1||reasontype == 2||reasontype == 13) {
 			reason.setWhichreason(1);
 			if (whichreason == 2) {

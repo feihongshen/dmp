@@ -120,7 +120,7 @@ $(function(){
 	$('#swfupload-control').swfupload({
 		upload_url : $("#form2").attr("action"),
 		file_size_limit : "10240",
-		file_types : "*.img;*.txt",
+		file_types : "*.img;*.txt;*.jpg;*.gif;",
 		file_types_description : "All Files",
 		file_upload_limit : "0",
 		file_queue_limit : "1",
@@ -165,7 +165,7 @@ $(function(){
 	$('#swfupload-control1').swfupload({
 		upload_url : $("#form3").attr("action"),
 		file_size_limit : "10240",
-		file_types : "*.img;*.txt",
+		file_types : "*.img;*.txt;*.jpg;*.gif;",
 		file_types_description : "All Files",
 		file_upload_limit : "0",
 		file_queue_limit : "1",

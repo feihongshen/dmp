@@ -168,9 +168,9 @@ function inserexceldata(){
 	});
 }
 function checkfileValue(object){
-	if($(object).val().indexOf(".txt")<0&&$(object).val().indexOf(".img")<0){
+	if($(object).val().indexOf(".txt")<0&&$(object).val().indexOf(".img")<0&&$(object).val().indexOf(".jpg")<0&&$(object).val().indexOf(".gif")<0){
 		$(object).val("");
-		alert("您所选择的不是.img或.txt格式，请重新选择！！");
+		alert("您所选择的不是.img或.txt或jpg或gif文件格式，请重新选择！！");
 		return;
 	}
 }

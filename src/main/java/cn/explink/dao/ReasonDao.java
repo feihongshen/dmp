@@ -216,5 +216,17 @@ public class ReasonDao {
 		String sql = "select * from express_set_reason where reasonid="+reasonid;
 		return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper());
 	}
+	public void saveReasonAdd(final long reasonid,final int changealowflag) {
+		
+		jdbcTemplate.update("update express_set_reason set changealowflag=? where reasonid=?", new PreparedStatementSetter() {
+
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setInt(1, changealowflag);
+				ps.setLong(2, reasonid);
+				
+			}
+		});
 	
+}
 }

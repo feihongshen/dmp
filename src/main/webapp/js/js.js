@@ -5306,7 +5306,7 @@ function uploadFormInitAdd(form, contextPath) {
 	$('#swfupload-control').swfupload({
 		upload_url : $("#" + form, parent.document).attr("action"),
 		file_size_limit : "10240",
-		file_types : "*.img;*.txt",
+		file_types : "*.img;*.txt;*.jpg;*.gif;",
 		file_types_description : "All Files",
 		file_upload_limit : "0",
 		file_queue_limit : "1",

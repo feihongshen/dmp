@@ -33,7 +33,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>问题件处理详情</h1>
+		<h1><div id="close_box" onclick="closeBox()"></div>问题件处理</h1>
 		<form method="post" id="form1" onSubmit="if(check_describeAndDutyInfo()){submitAbnormalHH(this);}return false;" action="<%=request.getContextPath()%>/abnormalOrder/SubmitHandleabnormal;jsessionid=<%=session.getId()%>" enctype="multipart/form-data">
 			<table width="600" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
