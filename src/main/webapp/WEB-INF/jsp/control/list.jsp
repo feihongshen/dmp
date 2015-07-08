@@ -160,8 +160,8 @@ function actionType(src)
 		        	<option value="<%=FlowOrderTypeEnum.YiFanKui.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.YiFanKui.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.YiFanKui.getText()%></option>
 		        	<option value="<%=FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.UpdateDeliveryBranch.getText()%></option>
 		        	<option value="<%=FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.DaoCuoHuoChuLi.getText()%></option>
-		        	<option value="<%=FlowOrderTypeEnum.BeiZhu.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.BeiZhu.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.BeiZhu.getText()%></option>
-		        	<option value="<%=FlowOrderTypeEnum.GaiDan.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.GaiDan.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.GaiDan.getText()%></option>
+<%-- 		        	<option value="<%=FlowOrderTypeEnum.BeiZhu.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.BeiZhu.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.BeiZhu.getText()%></option>
+ --%>		        	<option value="<%=FlowOrderTypeEnum.GaiDan.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.GaiDan.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.GaiDan.getText()%></option>
 		        	
 		        </select>
 
