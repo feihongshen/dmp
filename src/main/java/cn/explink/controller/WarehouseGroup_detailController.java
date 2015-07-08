@@ -165,7 +165,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 查询入库信息
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param userid
@@ -202,7 +202,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 入库交接单信息打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -245,7 +245,7 @@ public class WarehouseGroup_detailController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param isprint
@@ -324,7 +324,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 出库交接单信息打印和查询 新 按照站点分开
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -404,7 +404,7 @@ public class WarehouseGroup_detailController {
 		 * mapForCustomer.put(cwb.getCustomerid(), cwb); if
 		 * (cwb.getNextbranchid()==Long.parseLong(s)) { orderlist.add(cwb); } }
 		 * map.put(Long.parseLong(s), orderlist); }
-		 * 
+		 *
 		 * }
 		 */
 
@@ -646,7 +646,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 出库信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -669,7 +669,7 @@ public class WarehouseGroup_detailController {
 		List<Branch> removeList = new ArrayList<Branch>();
 		String type=request.getParameter("type");
 		long typeid=1;
-		if (type!=null&&type!="") {
+		if ((type!=null)&&(type!="")) {
 			typeid=Long.parseLong(type);
 		}
 		if (typeid==2) {
@@ -751,8 +751,6 @@ public class WarehouseGroup_detailController {
 						+ PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()));
 		model.addAttribute("printList", printList);
 		model.addAttribute("type", typeid);
-		model.addAttribute("time", "出库时间");
-		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		model.addAttribute("branchids", branchids);
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		model.addAttribute("time", "出库时间");
@@ -763,17 +761,18 @@ public class WarehouseGroup_detailController {
 		 * List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 		 * groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
 		 * if(groupDetails.size()>0){
-		 * 
+		 *
 		 * model.addAttribute("truckid", groupDetails.get(0).getTruckid());
 		 * }else { model.addAttribute("truckid", truckid); }
 		 */
 		model.addAttribute("driverid", driverid);
+		model.addAttribute("truckid", truckid);
 		return "warehousegroup/outdetaillist";
 	}
 
 	/**
 	 * 库对库出库打印
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -832,7 +831,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 中转出站交接单
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -885,7 +884,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 站点出站交接单
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -941,7 +940,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 历史出库信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1012,7 +1011,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 历史出库交接单信息打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1274,7 +1273,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 燕赵出库信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1312,7 +1311,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 燕赵出库交接单信息打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1344,7 +1343,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 分站到货信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param userid
@@ -1370,7 +1369,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 分站到货交接单信息打印和查询
-	 * 
+	 *
 	 * @param outwarehousegroupid
 	 * @param model
 	 * @return
@@ -1393,7 +1392,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 中转出站查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1417,7 +1416,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 中转出站交接单打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1451,7 +1450,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 退货出站信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1499,7 +1498,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 退货出站交接单打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1532,7 +1531,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 历史退货出站信息查询
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1544,7 +1543,7 @@ public class WarehouseGroup_detailController {
 	public String historyreturnlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate) {
-		List<Branch> blist = getNextPossibleBranches();
+		List<Branch> blist = this.getNextPossibleBranches();
 		List<Branch> removeList=new ArrayList<Branch>();
 		for (Branch branch : blist) {
 			if (branch.getSitetype()==4) {
@@ -1552,8 +1551,8 @@ public class WarehouseGroup_detailController {
 			}
 		}
 		blist.removeAll(removeList);
-		model.addAttribute("outwarehousegroupList", outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0,
-				OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, getSessionUser().getBranchid()));
+		model.addAttribute("outwarehousegroupList", this.outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0,
+				OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, this.getSessionUser().getBranchid()));
 		model.addAttribute(
 				"page_obj",
 				new Page(this.outwarehousegroupDao.getOutWarehouseGroupCount(branchid, beginemaildate, endemaildate, 0, OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, this.getSessionUser()
@@ -1568,7 +1567,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 中转站入库查询
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param userid
@@ -1597,7 +1596,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 中转站入库交接单打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1619,7 +1618,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 退货站入库查询
-	 * 
+	 *
 	 * @param page
 	 * @param model
 	 * @param userid
@@ -1648,7 +1647,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 退货站入库交接单打印和查询
-	 * 
+	 *
 	 * @param model
 	 * @param outwarehousegroupid
 	 * @return
@@ -1840,7 +1839,7 @@ public class WarehouseGroup_detailController {
 	 * public Map<String,Map<String,String>>
 	 * getOrderFlowByCredateForDetailAndExportAllTime(List<String>
 	 * cwbs,List<Branch> branchlist){
-	 * 
+	 *
 	 * Map<String,Map<String,String>> map=new HashMap<String,
 	 * Map<String,String>>(); try{ List<OrderFlow> ofList =
 	 * orderFlowDAO.getOrderFlowByCwbs(cwbs); for(OrderFlow of : ofList){
@@ -1911,7 +1910,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 出库信息查询(按包)
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param branchid
@@ -1946,7 +1945,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 出库交接单打印(按包号)
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param isprint
@@ -1968,14 +1967,14 @@ public class WarehouseGroup_detailController {
 		balenos = balenos.length()>0?balenos.substring(0, balenos.length()-1):"'---'";
 
 		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(balenos);
-		
+
 		Map<Long, List<Map<String,Object>>> branchmap = new HashMap<Long, List<Map<String,Object>>>();
-		
-		if(nextbranchids != null && nextbranchids.size()>0){
+
+		if((nextbranchids != null) && (nextbranchids.size()>0)){
 			// 循环包号
 			for (int i = 0; i < nextbranchids.size(); i++) {
 
-				List<String> banchidsbalenos = groupDetailDao.getBalesBybranchid(balenos, nextbranchids.get(i) );
+				List<String> banchidsbalenos = this.groupDetailDao.getBalesBybranchid(balenos, nextbranchids.get(i) );
 				List<Map<String,Object>> bList = new ArrayList<Map<String,Object>>();
 				for(String bale : banchidsbalenos){
 					Map<String,Object> map = new HashMap<String,Object>();
@@ -1995,7 +1994,7 @@ public class WarehouseGroup_detailController {
 						List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
 						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, bale);
 						map.put("cwbListView", cwbListView);
-						map.put("drivername", groupDetailList.get(0).getDriverid()>0? userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
+						map.put("drivername", groupDetailList.get(0).getDriverid()>0? this.userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
 						bList.add(map);
 					}
 				}
@@ -2003,16 +2002,16 @@ public class WarehouseGroup_detailController {
 			}
 		}
 		Map<Long ,String> branchMap = new HashMap<Long,String>();
-	
+
 			List<Branch> branchList2 = this.branchDAO.getAllBranches();
 			for (Branch branch : branchList2) {
 				branchMap.put(branch.getBranchid(), branch.getBranchname());
 			}
-		
+
 		model.addAttribute("branchMap", branchMap);
 		// 获得名称：XXX出仓交接单
 		SystemInstall sy = this.systemInstallDAO.getSystemInstallByName("chukujiaojiedananbao");
-		
+
 		model.addAttribute("nextbranchids", nextbranchids);
 		model.addAttribute("branchname", this.warehouseGroupDetailService.getQueryBranchName(branchList, this.getSessionUser().getBranchid()));
 		model.addAttribute("username",  this.getSessionUser().getRealname());
@@ -2020,7 +2019,7 @@ public class WarehouseGroup_detailController {
 
 		model.addAttribute("balenos", balenos);
 		model.addAttribute("branchmap", branchmap);
-		PrintTemplate printTemplate = printTemplateDAO.getPrintTemplateByType(4);
+		PrintTemplate printTemplate = this.printTemplateDAO.getPrintTemplateByType(4);
 		Map<String,String> tmap = new HashMap<String,String>();
 		if(printTemplate == null){
 			tmap.put("danshu", "danshu");
@@ -2048,16 +2047,16 @@ public class WarehouseGroup_detailController {
 					}
 				}
 			}
-			
+
 		}
 		model.addAttribute("tmap", tmap);
-		
+
 		return "warehousegroup/outbalelist_print";
 	}
 
 	/**
 	 * 更新包号状态为已打印
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param balenos
@@ -2082,7 +2081,7 @@ public class WarehouseGroup_detailController {
 
 	/**
 	 * 出库交接单打印(按包) 历史打印记录
-	 * 
+	 *
 	 * @param model
 	 * @param page
 	 * @param type
@@ -2115,5 +2114,5 @@ public class WarehouseGroup_detailController {
 
 		return "warehousegroup/outbalelist_history";
 	}
-	
+
 }

@@ -358,7 +358,7 @@ public class DataStatisticsController {
 
 		}
 		model.addAttribute("deliverlist", deliverlist);
-		
+
 		List<Reason> levelreasonlist = this.reasonDao.add();
 		List<User> nowUserList = new ArrayList<User>();
 		nowUserList.addAll(this.userDAO.getUserByRole(2));
@@ -373,11 +373,11 @@ public class DataStatisticsController {
 		model.addAttribute("check", 1);
 		model.addAttribute("deliverid", deliverid);
 		model.addAttribute("levelreasonlist",levelreasonlist);
-		
+
 		this.logger.info("滞留订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 1, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
 	}
-	
+
 	/**
 	 * 拒收订单汇总
 	 *
@@ -1038,13 +1038,13 @@ public class DataStatisticsController {
 			 * for(int i = (page-1)*Page.ONE_PAGE_NUMBER ; i <
 			 * Page.ONE_PAGE_NUMBER*page&&i<orderflowList.size() ;i++){
 			 * orderflowpageList.add(orderflowList.get(i)); }
-			 * 
-			 * 
+			 *
+			 *
 			 * for(OrderFlow of : orderflowpageList){
 			 * clist.add(om.readValue(of.getFloworderdetail(),
 			 * CwbOrderWithDeliveryState.class).getCwbOrder()); } count =
 			 * orderflowList.size();
-			 * 
+			 *
 			 * if(isruku.equals("false")){ StringBuffer str = new
 			 * StringBuffer(); String cwbs=""; if(orderflowList.size()>0){
 			 * for(OrderFlow of : orderflowList){
@@ -1127,6 +1127,27 @@ public class DataStatisticsController {
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
+			List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),
+					BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
+			Branch branch=this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
+				if (kufangList.size() == 0) {
+					kufangList.add(branch);
+				} else {
+					if (!this.checkBranchRepeat(kufangList, branch)) {
+						kufangList.add(branch);
+					}
+				}
+			}
+			if((kufangid.length==0)&&(kufangids.length()==0)){
+				for(Branch kf:kufangList)
+				{
+					kufangids+=kf.getBranchid()+",";
+				}
+				if ((kufangids.length() > 0)&&kufangids.contains(",")) {
+					kufangids = kufangids.substring(0, kufangids.length() - 1);
+				}
+			}
 			count = this.cwbDAO.getcwborderCountHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
 
 			sum = this.cwbDAO.getcwborderSumHuiZong(begindate, enddate, customerids, "", "", cwbordertypeids, "", "", "", kufangids, flowordertype, 0, 7, servicetype);
@@ -1329,27 +1350,27 @@ public class DataStatisticsController {
 			 * f.credate>='2013-05-08 15:10:29' AND f.credate<='2013-05-09
 			 * 15:10:29' AND d.startbranchid IN(192) AND d.`carwarehouse`
 			 * IN(186);
-			 * 
+			 *
 			 * 2.获取查到的订单中比这个时间晚的还做到站的订单 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND credate>'2013-05-09 15:10:29' AND flowordertype=7;
-			 * 
+			 *
 			 * 3.获取 把第一步查到订单加上排除掉第二步查到的订单 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND cwb NOT IN('--') AND flowordertype=7;
-			 * 
+			 *
 			 * 4.把第三步查到订单在反馈中查出哪些订单已经反馈 SELECT DISTINCT cwb FROM
 			 * `express_ops_delivery_state` WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND state=1 AND `deliverystate`>0;
-			 * 
+			 *
 			 * 5.获取第三步查到订单排除掉第四步查到的订单并且分页取10个 SELECT DISTINCT cwb FROM
 			 * express_ops_order_flow WHERE cwb IN(
 			 * '213050437951','213053501759','113050535325','213053646051','213050380083','213050592611','11305040007643','9130111063179','13050661483039','13050664551938','13050664576638','13050662866339','13050664901335','13050663012338','33136166','33213224','33185070','6054770549','6059222246','6057476148','6055624389','6058327024','6059322728','6058648587','6055483025','6058381644','6059103204','6058637900','6056668307','6052403787','6043998364','6046242129','6046107920','6048141145')
 			 * AND cwb NOT IN('213050437951') AND flowordertype=7 LIMIT 0,10;
-			 * 
+			 *
 			 * 6.把第五步查到的订单去查订单表的订单详情 SELECT * FROM express_ops_cwb_detail WHERE
 			 * cwb IN(
 			 * '11305040007643','113050535325','13050661483039','13050662866339','13050663012338','13050664551938','13050664576638','13050664901335','213050380083','213050592611');
@@ -2205,7 +2226,7 @@ public class DataStatisticsController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -2453,7 +2474,7 @@ public class DataStatisticsController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 * 
+							 *
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -2471,5 +2492,12 @@ public class DataStatisticsController {
 			e.printStackTrace();
 		}
 	}
-
+	public boolean checkBranchRepeat(List<Branch> branchlist, Branch branch) {
+		for (int i = 0; i < branchlist.size(); i++) {
+			if (branch.getBranchname().equals(branchlist.get(i).getBranchname())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

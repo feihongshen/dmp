@@ -23,6 +23,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.CwbOrderView;
@@ -112,6 +113,12 @@ public class DataStatisticsService {
 	TuihuoRecordDAO tuihuoRecordDAO;
 	@Autowired
 	ComplaintDAO complaintDAO;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -193,7 +200,7 @@ public class DataStatisticsService {
 			Integer paybackfeeIsZero = request.getParameter("paybackfeeIsZero1") == null ? -1 : Integer.parseInt(request.getParameter("paybackfeeIsZero1").toString());
 			String servicetype = request.getParameter("servicetype1") == null ? "全部" : request.getParameter("servicetype1").toString();
 			int firstlevelid = request.getParameter("firstzhiliureasonid") ==null ? 0  : Integer.parseInt(request.getParameter("firstzhiliureasonid"));
-			
+
 			String orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
 					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);
 
@@ -223,6 +230,30 @@ public class DataStatisticsService {
 				begindate = enddate = "";
 				startbranchid = nextbranchid = new String[] {};
 				flowordertype = 0l;
+			}
+			else if(sign==7){
+				List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),
+						BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
+				Branch branch=this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+				if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
+					if (kufangList.size() == 0) {
+						kufangList.add(branch);
+					} else {
+						if (!this.checkBranchRepeat(kufangList, branch)) {
+							kufangList.add(branch);
+						}
+					}
+				}
+				if((kufangid.length==0)){
+					kufangid=new String[kufangList.size()];
+					int i=0;
+					for(Branch kf:kufangList)
+					{
+						kufangid[i]=kf.getBranchid()+"";
+						i++;
+					}
+
+				}
 			}
 			final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
 					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), this.getStrings(kufangid), flowordertype, paywayid, sign,
