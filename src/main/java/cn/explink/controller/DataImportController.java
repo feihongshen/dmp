@@ -789,12 +789,14 @@ public class DataImportController {
 		String zlpop = request.getParameter("zlpop") == null ? "1" : request.getParameter("zlpop");// 是未匹配还是匹配1：未匹配，2：匹配
 		List<CwbOrder> cwblist = new ArrayList<CwbOrder>();
 		Page pageobj = new Page();
+		//long NotSuccess1 = 0;// 未匹配数量
 		long NotSuccess = 0;// 未匹配数量
 		// 合并已匹配的状态1,2,3 为了进页面即显示
 		String AddressCodeEditType = this.gatherAddressEditType();
 
 		long SuccessCount = this.cwbDAO.getEditInfoCountIsNotAddress("", AddressCodeEditType);// 地址库匹配的数量
-		NotSuccess = this.cwbDAO.getEditInfoCountIsNotAddress("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
+		//NotSuccess1 = this.cwbDAO.getEditInfoCountIsNotAddress("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
+		NotSuccess=dataImportService.getWeipipeiCount();
 		String type = "0";
 		List<ExcelImportEdit> listshow = new ArrayList<ExcelImportEdit>();// 已匹配数量对应站点的map
 		if (ifshow > 0) {

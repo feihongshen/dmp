@@ -235,7 +235,7 @@
 		$("#stationId", $detailForm).val(stationId);
 		$("#venderId", $detailForm).val(venderId);
 		if (tdIndex == 4 || tdIndex == 6) {
-			$("#type", $detailForm).val("total")
+			$("#type", $detailForm).val("total");
 		} else {
 			$("#type", $detailForm).val("success");
 		}

@@ -1190,14 +1190,14 @@ function checkwithdiferenttype(type){
 						<tr>
 						<td width="30" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
-						<td width="100" align="center" valign="middle"><font color="red">扣罚总计</font></td>
+						<td width="100" align="center" valign="middle"><strong>扣罚总计</strong></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
-						<td width="100" align="center" valign="middle"><font color="red"><%=punishsumprice==""?0.00:punishsumprice %></font></td>
+						<td width="100" align="center" valign="middle"><strong><%=punishsumprice==""?0.00:punishsumprice %></strong></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>
 						<td width="100" align="center" valign="middle"></td>

@@ -828,6 +828,19 @@ public class DataImportService {
 		}
 		return strs;
 	}
+	public String getInStrings(List<String> strArr) {
+		String prefixAndsuffix="'";
+		String strs = "";
+		if (strArr.size() > 0) {
+			for (String str : strArr) {
+				strs += prefixAndsuffix+str+prefixAndsuffix + ",";
+			}
+		}
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
 
 	public List<CwbOrder> getListByCwbs(String cwbs, long emaildateid) {
 		List<CwbOrder> list = new ArrayList<CwbOrder>();
@@ -849,5 +862,14 @@ public class DataImportService {
 		}
 		return list;
 	}
-
+	public long getWeipipeiCount(){
+		long count=0;
+		List<String> notsuccesscwbList= this.cwbDAO.getEditInfoCountIsNotAddressAdd("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
+		String nosuccesscwbs=this.getInStrings(notsuccesscwbList);
+		List<CwbOrder> orders=cwbDAO.getCwbOrderByDelivery(nosuccesscwbs);
+		if (orders!=null) {
+			count=orders.size();
+		}
+		return count;
+	}
 }

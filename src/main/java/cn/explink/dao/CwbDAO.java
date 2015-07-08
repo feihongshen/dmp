@@ -595,7 +595,14 @@ public class CwbDAO {
 			return obj;
 		}
 	}
+	private  final class StringDataMapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString(1);
+		}
+		
+	}
 	private final class CwbSmalMaper implements RowMapper<CwbOrder> {
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -5192,6 +5199,16 @@ public class CwbDAO {
 		this.logger.info("已匹配sql:" + sql);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
+	public List<String> getEditInfoCountIsNotAddressAdd(String ordercwb, String type) {
+		String sql = "select cwb from express_ops_importedit where 1=1 ";
+		if (ordercwb.trim().length() > 0) {
+			sql += " and cwb=" + ordercwb;
+		} else if (type.length() > 0) {
+			sql += " and addresscodeedittype in(" + type + ")";
+		}
+		this.logger.info("未匹配的sql:" + sql);
+		return this.jdbcTemplate.query(sql, new StringDataMapper());
+	}
 
 	/**
 	 * 根据订单号 和 当前环节
@@ -5557,7 +5574,12 @@ public class CwbDAO {
 	public void updateOrderOutAreaStatus(String[] cwbs, Map<String, Long> branchMap) {
 		// 上报超区时需要改变超区标识和将当前站点改为入库库房站点.
 		String sql = "update express_ops_cwb_detail set outareaflag = 1,flowordertype = 60,nextbranchid = ? where cwb = ?";
-		this.jdbcTemplate.batchUpdate(sql, this.getOutAreaParaList(cwbs, branchMap));
+		try {
+			this.jdbcTemplate.batchUpdate(sql, this.getOutAreaParaList(cwbs, branchMap));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private List<Object[]> getOutAreaParaList(String[] cwbs, Map<String, Long> branchMap) {
@@ -6003,4 +6025,7 @@ public class CwbDAO {
 	public long getCwbByCwbsCount(String cwbs) {
 		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
 	}
+
+
+	
 }

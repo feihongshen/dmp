@@ -6858,7 +6858,7 @@ function BuprintTag(scpath){
 		return false;
 	}else{
 		$("#printcwb",parent.document).attr("src",scpath+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
-		alert(scpath+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
+		
 		return true;
 	}		
 }

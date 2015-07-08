@@ -244,7 +244,7 @@ if(overdueResultVO!=null&&overdueResultVO.getBranchMap()!=null&&overdueResultVO.
 		$("#venderId", $detailForm).val(venderId);
 		$("#showColIndex", $detailForm).val(showColIndex);
 	
-		alert($("#optTimeType").val());
+		/* alert($("#optTimeType").val()); */
 		$("#opeTimeTypeTemp").val($("#optTimeType").val());
 
 		$detailForm.submit();
