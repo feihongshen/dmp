@@ -126,8 +126,8 @@ public class ExportwarhousesummaryController {
 	@RequestMapping("/list")
 	public String getList(Model model, HttpServletRequest request) {
 
-		List<Branch> warhouseList = branchDAO.getAllBranchBySiteType(1);
-		List<Branch> zhandianes = branchDAO.getAllBranchBySiteType(2);
+		List<Branch> warhouseList = this.branchDAO.getAllBranchBySiteType(1);
+		List<Branch> zhandianes = this.branchDAO.getAllBranchBySiteType(2);
 		model.addAttribute("warhouseList", warhouseList);
 		model.addAttribute("zhandianes", zhandianes);
 
@@ -137,11 +137,11 @@ public class ExportwarhousesummaryController {
 	@RequestMapping("/search")
 	public String search(Model model, HttpServletRequest request, @RequestParam(value = "warhouseid", required = false, defaultValue = "") String warhouseid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
-		if (strtime == "" || strtime == null) {
+		if ((strtime == "") || (strtime == null)) {
 			strtime = DateTimeUtil.formatDate(new Date());
 		}
-		List<Branch> warhouseList = branchDAO.getAllBranchBySiteType(1);
-		List<Branch> zhandianes = branchDAO.getAllBranchBySiteType(2);
+		List<Branch> warhouseList = this.branchDAO.getAllBranchBySiteType(1);
+		List<Branch> zhandianes = this.branchDAO.getAllBranchBySiteType(2);
 		model.addAttribute("warhouseList", warhouseList);
 		model.addAttribute("zhandianes", zhandianes);
 		String startbranchid = "'" + warhouseid.replace(",", "','") + "'";
@@ -153,8 +153,8 @@ public class ExportwarhousesummaryController {
 		branchids.substring(0, branchids.length() - 1);
 		model.addAttribute("branchids", branchids);
 		branchids = "'" + branchids.replace(",", "','") + "'";
-		List<Exportwarhousesummary> exs = exDAO.getBranchSum(branchids, startbranchid, strtime, endtime);
-		List<Exportwarhousesummary> exsum = exDAO.getBranchAllSum(branchids, startbranchid, strtime, endtime);
+		List<Exportwarhousesummary> exs = this.exDAO.getBranchSum(branchids, startbranchid, strtime, endtime);
+		List<Exportwarhousesummary> exsum = this.exDAO.getBranchAllSum(branchids, startbranchid, strtime, endtime);
 
 		Set<String> credates = new TreeSet<String>();// 所有日期
 		Map<String, Map<Integer, Integer>> sum = new HashMap<String, Map<Integer, Integer>>();// 所有的站点所有数据
@@ -182,8 +182,8 @@ public class ExportwarhousesummaryController {
 		model.addAttribute("start", strtime);
 		model.addAttribute("end", endtime);
 
-		List<Exportwarhousesummary> warhousesum = exDAO.getWarhouseSum(startbranchid, strtime, endtime);
-		int warhouseAllsum = exDAO.getWarhouseAllSum(startbranchid, strtime, endtime);// 所有库房入库总计
+		List<Exportwarhousesummary> warhousesum = this.exDAO.getWarhouseSum(startbranchid, strtime, endtime);
+		int warhouseAllsum = this.exDAO.getWarhouseAllSum(startbranchid, strtime, endtime);// 所有库房入库总计
 		Map<String, Integer> warhousemap = new HashMap<String, Integer>();// 所有库房每天的总计
 		for (Exportwarhousesummary ex : warhousesum) {
 			warhousemap.put(ex.getCredate(), ex.getBranchSum());
@@ -191,8 +191,8 @@ public class ExportwarhousesummaryController {
 		model.addAttribute("warhousemap", warhousemap);
 		model.addAttribute("warhouseAllsum", warhouseAllsum);
 
-		List<Exportwarhousesummary> branchallday = exDAO.getBranchAllDay(branchids, startbranchid, strtime, endtime);
-		int all = exDAO.getAllBranchAllDay(branchids, startbranchid, strtime, endtime);
+		List<Exportwarhousesummary> branchallday = this.exDAO.getBranchAllDay(branchids, startbranchid, strtime, endtime);
+		int all = this.exDAO.getAllBranchAllDay(branchids, startbranchid, strtime, endtime);
 		Map<Integer, Integer> branchmap = new HashMap<Integer, Integer>();// 所有库房每天的总计
 		for (Exportwarhousesummary ex : branchallday) {
 			branchmap.put(ex.getBranchId(), ex.getBranchSum());
@@ -214,35 +214,35 @@ public class ExportwarhousesummaryController {
 		List<CwbOrder> cwbOrders = null;
 		int count = 0;
 		if (flag.equals("1")) {
-			cwbOrders = exDAO.getCwbsByeveryday(page, branchids, startime);
-			count = exDAO.getCwbsByeverydaycount(branchids, startime);
+			cwbOrders = this.exDAO.getCwbsByeveryday(page, branchids, startime);
+			count = this.exDAO.getCwbsByeverydaycount(branchids, startime);
 		} else if (flag.equals("2")) {
-			cwbOrders = exDAO.getCwbsByBrancheveryday(page, branchids, startime);
-			count = exDAO.getCwbsByBrancheverydaycount(branchids, startime);
+			cwbOrders = this.exDAO.getCwbsByBrancheveryday(page, branchids, startime);
+			count = this.exDAO.getCwbsByBrancheverydaycount(branchids, startime);
 		} else if (flag.equals("3")) {
-			cwbOrders = exDAO.getCwbsByAlleveryday(page, branchids, startime, endtime);
-			count = exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByAlleveryday(page, branchids, startime, endtime);
+			count = this.exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("4")) {
-			cwbOrders = exDAO.getCwbsByALLBrancheveryday(page, branchids, startime, endtime);
-			count = exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByALLBrancheveryday(page, branchids, startime, endtime);
+			count = this.exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("5")) {
-			cwbOrders = exDAO.getCwbsByBranchAllday(page, branchids, startime, endtime);
-			count = exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByBranchAllday(page, branchids, startime, endtime);
+			count = this.exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
 		}
 		String cwbs = "'";
 		for (CwbOrder cwb : cwbOrders) {
 			cwbs += cwb.getCwb() + "','";
 		}
 		cwbs = cwbs.substring(0, cwbs.length() - 2);
-		List<CwbOrder> cOrders = exDAO.getCwbsDetail(cwbs);
+		List<CwbOrder> cOrders = this.exDAO.getCwbsDetail(cwbs);
 
-		List<Customer> cList = customerDAO.getAllCustomers();
-		String showCustomer = systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		List<Customer> cList = this.customerDAO.getAllCustomers();
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
-		List<CwbDetailView> weirukuViewlist = getcwbDetail(cOrders, cList, showCustomerjSONArray, null, 0);
+		List<CwbDetailView> weirukuViewlist = this.getcwbDetail(cOrders, cList, showCustomerjSONArray, null, 0);
 		model.addAttribute("cOrders", weirukuViewlist);
 
-		List<Exportmould> exportmouldlist = exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid());
+		List<Exportmould> exportmouldlist = this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid());
 		model.addAttribute("exportmouldlist", exportmouldlist);
 		model.addAttribute("cwbs", cwbs);
 		model.addAttribute("page", page);
@@ -254,7 +254,7 @@ public class ExportwarhousesummaryController {
 	@RequestMapping("/exportExcle_warhouse")
 	public void exportExcle_warhouse(HttpServletResponse response, @RequestParam(value = "warhouseid", required = false, defaultValue = "") String warhouseid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
-		final List<Branch> zhandianes = branchDAO.getAllBranchBySiteType(2);
+		final List<Branch> zhandianes = this.branchDAO.getAllBranchBySiteType(2);
 		String startbranchid = "'" + warhouseid.replace(",", "','") + "'";
 		String branchids = "";
 		for (Branch branch : zhandianes) {
@@ -262,8 +262,8 @@ public class ExportwarhousesummaryController {
 		}
 		branchids.substring(0, branchids.length() - 1);
 		branchids = "'" + branchids.replace(",", "','") + "'";
-		final List<Exportwarhousesummary> exsum = exDAO.getBranchAllSum(branchids, startbranchid, strtime, endtime);
-		final List<Exportwarhousesummary> exs = exDAO.getBranchSum(branchids, startbranchid, strtime, endtime);
+		final List<Exportwarhousesummary> exsum = this.exDAO.getBranchAllSum(branchids, startbranchid, strtime, endtime);
+		final List<Exportwarhousesummary> exs = this.exDAO.getBranchSum(branchids, startbranchid, strtime, endtime);
 		final Map<String, Map<Integer, Integer>> sum = new HashMap<String, Map<Integer, Integer>>();// 所有的站点所有数据
 		Set<String> credates = new TreeSet<String>();// 所有日期
 		for (Exportwarhousesummary ex : exs) {
@@ -278,25 +278,25 @@ public class ExportwarhousesummaryController {
 				sum.put(credate, everday);
 			}
 		}
-		final List<Exportwarhousesummary> warhousesum = exDAO.getWarhouseSum(startbranchid, strtime, endtime);
+		final List<Exportwarhousesummary> warhousesum = this.exDAO.getWarhouseSum(startbranchid, strtime, endtime);
 		final Map<String, Integer> warhousemap = new HashMap<String, Integer>();// 所有库房每天的总计
 		for (Exportwarhousesummary ex : warhousesum) {
 			warhousemap.put(ex.getCredate(), ex.getBranchSum());
 		}
-		final int warhouseAllsum = exDAO.getWarhouseAllSum(startbranchid, strtime, endtime);
-		final List<Exportwarhousesummary> branchallday = exDAO.getBranchAllDay(branchids, startbranchid, strtime, endtime);
+		final int warhouseAllsum = this.exDAO.getWarhouseAllSum(startbranchid, strtime, endtime);
+		final List<Exportwarhousesummary> branchallday = this.exDAO.getBranchAllDay(branchids, startbranchid, strtime, endtime);
 		final Map<Integer, Integer> branchmap = new HashMap<Integer, Integer>();// 所有库房每天的总计
 		for (Exportwarhousesummary ex : branchallday) {
 			branchmap.put(ex.getBranchId(), ex.getBranchSum());
 		}
-		final int all = exDAO.getAllBranchAllDay(branchids, startbranchid, strtime, endtime);
+		final int all = this.exDAO.getAllBranchAllDay(branchids, startbranchid, strtime, endtime);
 		String[] cloumnName1 = new String[zhandianes.size() + 3]; // 导出的列名
 		String[] cloumnName2 = new String[zhandianes.size() + 3]; // 导出的英文列名
-		SetWarhousesummary(cloumnName1, cloumnName2, zhandianes);
+		this.SetWarhousesummary(cloumnName1, cloumnName2, zhandianes);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		String sheetName = "出库汇总表"; // sheet的名称
+		String sheetName = "Order_warehouse_export"; // sheet的名称
 		String fileName = sheetName + "_" + df + ".xlsx"; // 文件名
 		try {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
@@ -304,17 +304,17 @@ public class ExportwarhousesummaryController {
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 
-					style.setAlignment(style.ALIGN_CENTER);
+					style.setAlignment(CellStyle.ALIGN_CENTER);
 					for (int k = 0; k <= exsum.size(); k++) {
 						Row row = sheet.createRow(k + 1);
-						row.setHeightInPoints((float) 15);
+						row.setHeightInPoints(15);
 						for (int i = 0; i < cloumnName3.length; i++) {
 							sheet.setColumnWidth(i, 15 * 256);
 							Cell cell = row.createCell((short) i);
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = setWarhousesummaryObject(cloumnName3, a, i, k);
+							a = this.setWarhousesummaryObject(cloumnName3, a, i, k);
 
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
@@ -324,17 +324,23 @@ public class ExportwarhousesummaryController {
 				private Object setWarhousesummaryObject(String[] cloumnName3, Object a, int i, int k) {
 
 					if (cloumnName3[i].equals("date")) {
-						if (k == exsum.size())
+						if (k == exsum.size()) {
 							a = "合计";
-						else
+						} else {
 							a = exsum.get(k).getCredate();
+						}
 					}
 					if (cloumnName3[i].equals("inputnumber")) {
-						if (k == exsum.size())
+						if (k == exsum.size()) {
 							a = warhouseAllsum + "";
-						else {
+						} else {
 							String credate = exsum.get(k).getCredate();
-							a = warhousemap.get(credate);
+							if(warhousemap.get(credate)!=null){
+								a = warhousemap.get(credate);
+							}
+							else {
+								a="0";
+							}
 						}
 					}
 					for (Branch branch : zhandianes) {
@@ -414,33 +420,33 @@ public class ExportwarhousesummaryController {
 		if (flag.equals("1")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a," + "express_ops_order_intowarhouse b " + " WHERE a.cwb=b.cwb and a.state=1 AND b.branchid in (" + branchids + ") "
 					+ " and   b.flowordertype='4' " + " and   b.state='1' " + " and   b.credate >= '" + startime + " 00:00:00" + "'" + " and   b.credate <= '" + startime + " 23:59:59" + "'"
-					+ " limit " + (p - 1) * Page.EXCEL_PAGE_NUMBER + " ," + Page.EXCEL_PAGE_NUMBER;
+					+ " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = exDAO.getCwbsByeverydaycount(branchids, startime);
+			count = this.exDAO.getCwbsByeverydaycount(branchids, startime);
 		} else if (flag.equals("2")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 AND" + " b.nextbranchid in (" + branchids + ") "
-					+ " and   b.state='1' " + " and   b.credate >= '" + startime + " 00:00:00" + "'" + " and   b.credate <= '" + startime + " 23:59:59" + "'" + " limit " + (p - 1)
-					* Page.EXCEL_PAGE_NUMBER + " ," + Page.EXCEL_PAGE_NUMBER;
+					+ " and   b.state='1' " + " and   b.credate >= '" + startime + " 00:00:00" + "'" + " and   b.credate <= '" + startime + " 23:59:59" + "'" + " limit " + ((p - 1)
+					* Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = exDAO.getCwbsByBrancheverydaycount(branchids, startime);
+			count = this.exDAO.getCwbsByBrancheverydaycount(branchids, startime);
 		} else if (flag.equals("3")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_order_intowarhouse b  WHERE a.cwb=b.cwb and a.state=1 AND" + " b.branchid in (" + branchids + ") "
-					+ " and   b.flowordertype='4' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + (p - 1)
-					* Page.EXCEL_PAGE_NUMBER + " ," + Page.EXCEL_PAGE_NUMBER;
+					+ " and   b.flowordertype='4' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1)
+					* Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
+			count = this.exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("4")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
-					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + (p - 1) * Page.EXCEL_PAGE_NUMBER
+					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER)
 					+ " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
+			count = this.exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("5")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
-					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + (p - 1) * Page.EXCEL_PAGE_NUMBER
+					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER)
 					+ " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
+			count = this.exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
 		}
 		p++;
 		model.addAttribute("p", p);
@@ -448,7 +454,7 @@ public class ExportwarhousesummaryController {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(exportmould);
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(exportmould);
 		cloumnName1 = new String[listSetExportField.size()];
 		cloumnName2 = new String[listSetExportField.size()];
 		cloumnName3 = new String[listSetExportField.size()];
@@ -471,26 +477,26 @@ public class ExportwarhousesummaryController {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = userDAO.getAllUser();
-					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = branchDAO.getAllBranches();
-					final List<Common> commonList = commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
+					final List<User> uList = ExportwarhousesummaryController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = ExportwarhousesummaryController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = ExportwarhousesummaryController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = ExportwarhousesummaryController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = ExportwarhousesummaryController.this.customWareHouseDAO.getAllCustomWareHouse();
 					List<Remark> remarkList = new ArrayList<Remark>();// remarkDAO.getRemarkByCwbs(cwbs);
-					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = reasonDAO.getAllReason();
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+					final Map<String, Map<String, String>> remarkMap = ExportwarhousesummaryController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = ExportwarhousesummaryController.this.reasonDAO.getAllReason();
+					ExportwarhousesummaryController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
 
-							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
-							recordbatch.add(mapRow);
-							count++;
-							if (count % 100 == 0) {
-								writeBatch();
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
 							}
 
 						}
@@ -498,14 +504,14 @@ public class ExportwarhousesummaryController {
 						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
 								Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints((float) 15);
+							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short)
 								// (5000));
 								// //设置列宽
-								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
+								Object a = ExportwarhousesummaryController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
 										complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
@@ -520,33 +526,33 @@ public class ExportwarhousesummaryController {
 							while (rs.next()) {
 								this.processRow(rs);
 							}
-							writeBatch();
+							this.writeBatch();
 							return null;
 						}
 
 						public void writeBatch() throws SQLException {
-							if (recordbatch.size() > 0) {
+							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : recordbatch) {
+								for (Map<String, Object> mapRow : this.recordbatch) {
 									cwbs.add(mapRow.get("cwb").toString());
 								}
-								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = getComplaintMap(cwbs);
-								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = recordbatch.size();
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = ExportwarhousesummaryController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
-									String cwb = recordbatch.get(i).get("cwb").toString();
-									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp, complaintMap);
 								}
-								recordbatch.clear();
+								this.recordbatch.clear();
 							}
 						}
 
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+							for (TuihuoRecord tuihuoRecord : ExportwarhousesummaryController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
 								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
 							}
 							return map;
@@ -554,7 +560,7 @@ public class ExportwarhousesummaryController {
 
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+							for (DeliveryState deliveryState : ExportwarhousesummaryController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
 								map.put(deliveryState.getCwb(), deliveryState);
 							}
 							return map;
@@ -562,7 +568,7 @@ public class ExportwarhousesummaryController {
 
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+							for (Complaint complaint : ExportwarhousesummaryController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
 								complaintMap.put(complaint.getCwb(), complaint.getContent());
 							}
 							return complaintMap;
@@ -586,7 +592,7 @@ public class ExportwarhousesummaryController {
 	}
 
 	public List<CwbDetailView> getcwbDetail(List<CwbOrder> cwbList, List<Customer> customerList, JSONArray showCustomerjSONArray, List<Branch> branchList, long sign) {
-		Map<String, Map<String, String>> allTime = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(getcwbs(cwbList), branchList);
+		Map<String, Map<String, String>> allTime = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(this.getcwbs(cwbList), branchList);
 		List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();
 		if (cwbList.size() > 0) {
 			for (CwbOrder wco : cwbList) {
@@ -604,8 +610,8 @@ public class ExportwarhousesummaryController {
 				view.setCustomerid(wco.getCustomerid());
 				view.setNextbranchid(wco.getNextbranchid());
 
-				view.setRemarkView(getShowCustomer(showCustomerjSONArray, wco));
-				view.setCustomername(dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
+				view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
+				view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
 				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
 				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
 				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
@@ -650,7 +656,7 @@ public class ExportwarhousesummaryController {
 				String b[] = a.split(",");
 				for (String s : b) {
 					if (String.valueOf(co.getCustomerid()).equals(s)) {
-						remark = ((CwbOrder) co).getClass().getMethod("get" + jSONArray.getJSONObject(i).getString("remark")).invoke((CwbOrder) co);
+						remark = co.getClass().getMethod("get" + jSONArray.getJSONObject(i).getString("remark")).invoke(co);
 						break;
 					}
 				}
@@ -662,7 +668,7 @@ public class ExportwarhousesummaryController {
 	}
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 }
