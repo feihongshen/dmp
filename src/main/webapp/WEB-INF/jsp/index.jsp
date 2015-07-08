@@ -104,7 +104,7 @@
 						<div id="layout_north_kzmbMenu"
 							style="width: 100px; display: none;">
 							<div
-								onclick="addTab('下载管理','${omsUrl}/download/list/1?&clickFunctionId=10000','folder')">
+								onclick="addTab('下载管理','${omsUrl}/download/list/1?&dmpid=<%=session.getId() %>','folder')">
 								<i class="icon-user" style="position: relative; left: -25px;"></i>下载管理
 							</div>
 							<div class="menu-sep"></div>
