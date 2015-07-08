@@ -88,6 +88,7 @@ public class OrderBackRukuRecordDao {
 			sb.append(" and createtime<= '"+endtime+"' ");
 		}
 		sql += sb;
+		sql += " order by createtime desc";
 		if(page != -1){
 			sql += "  limit "+ (page-1)*Page.ONE_PAGE_NUMBER+","+Page.ONE_PAGE_NUMBER;
 		}

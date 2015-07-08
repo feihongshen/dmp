@@ -36,7 +36,7 @@ String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 String batchEditDeliveryStateisUseCash = request.getAttribute("batchEditDeliveryStateisUseCash")==null?"no":(String)request.getAttribute("batchEditDeliveryStateisUseCash");
 String pl_switch = request.getAttribute("pl_switch")==null?"no":(String)request.getAttribute("pl_switch");
-String isReasonRequired = "".equals(request.getAttribute("isReasonRequired"))?"no":(String)request.getAttribute("isReasonRequired");
+String isReasonRequired = ("").equals(request.getAttribute("isReasonRequired"))?"no":(String)request.getAttribute("isReasonRequired");
 
 String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("resendtime"));
 %>

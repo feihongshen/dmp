@@ -38,6 +38,7 @@ import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbApplyZhongZhuanDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
@@ -135,6 +136,8 @@ public class BaleService {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	BaleCwbDao baleCwbDAO;
+	@Autowired
+	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -1226,7 +1229,13 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===中转出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-
+			
+			//首先验证订单号是否在中转出站审核表中被审核通过
+			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,3);
+			if(count==0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
+			}
+			
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			// ==================验证包号End=======================

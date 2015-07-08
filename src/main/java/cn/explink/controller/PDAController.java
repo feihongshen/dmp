@@ -18,13 +18,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -47,7 +44,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
@@ -415,7 +411,8 @@ public class PDAController {
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
-		model.addAttribute("ifshowtag", this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
+		model.addAttribute("ifshowtag", 
+				this.systemInstallDAO.getSystemInstall("ifshowbudatag")==null?null:this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
 		return "pda/intowarhouse";
 	}
 
@@ -3077,11 +3074,7 @@ public class PDAController {
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder cwbOrdercheck=cwbDAO.getCwbByCwb(cwb);
-		int changealowflag=cwborderService.getChangealowflagByIdAdd(cwbOrdercheck);
-		if (cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&changealowflag==1) {
-			return cwborderService.responseErrorZhongzhuanrukuLimit();
-		}
+		
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
 

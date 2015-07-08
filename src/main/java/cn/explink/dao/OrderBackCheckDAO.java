@@ -233,6 +233,7 @@ public class OrderBackCheckDAO {
 				sb.append(" and createtime <= '"+enddate+"'");
 			}
 			sql +=sb;
+			sql += " order by createtime desc";//根据归班反馈时间降序排列
 		}
 		if(page!=-9){
 			sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;

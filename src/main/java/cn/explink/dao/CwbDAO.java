@@ -201,7 +201,7 @@ public class CwbDAO {
 			cwbOrder.setCurrentbranchid(rs.getLong("currentbranchid"));
 			cwbOrder.setBackreasonid(rs.getLong("backreasonid"));
 			cwbOrder.setLeavedreasonid(rs.getLong("leavedreasonid"));
-			cwbOrder.setPackagecode(rs.getString("packagecode"));
+			cwbOrder.setPackagecode(rs.getString(StringUtil.nullConvertToEmptyString("packagecode")));
 			cwbOrder.setMulti_shipcwb(rs.getString("multi_shipcwb"));
 			cwbOrder.setDeliverystate(rs.getInt("deliverystate"));
 			cwbOrder.setBackreturnreason(rs.getString("backreturnreason"));

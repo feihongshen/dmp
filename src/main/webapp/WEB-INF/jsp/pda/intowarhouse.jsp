@@ -849,7 +849,7 @@ function openLogin(){
 					<input type="hidden" id="youhuowudanflag" name="youhuowudanflag" value="0" />
 					<p>
 				<%				
-					if(ifshowtag.equals("yes")){			
+					if(("yes").equals(ifshowtag)){			
 				%> 					
 					<input type="checkbox" id="cwbnohide" />
 					<span>入库标签补签</span>

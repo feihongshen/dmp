@@ -951,7 +951,7 @@ public class ApplyEditDeliverystateController {
 			long branchid = this.getSessionUser().getBranchid();
 			List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(page,begindate,enddate,ishandle,branchid);
 			applyEditDeliverystateList = this.getapplyeditdeliverysate(applyEditDeliverystateLists, reasonMap);
-			count = applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle);
+			count = applyEditDeliverystateDAO.getApplyEditDeliveryCount(begindate, enddate,ishandle,branchid);
 			}
 			model.addAttribute("page",page);
 			model.addAttribute("applyEditDeliverystateList", applyEditDeliverystateList);

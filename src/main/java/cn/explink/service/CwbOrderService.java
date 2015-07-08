@@ -387,7 +387,8 @@ public class CwbOrderService {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	OrderBackRukuRecordDao orderBackRukuRecordDao;
-	
+	@Autowired
+	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -1022,6 +1023,14 @@ public class CwbOrderService {
 
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
+		}
+		
+		CwbOrder cwbOrdercheck=cwbDAO.getCwbByCwb(cwb);
+		int changealowflag=this.getChangealowflagByIdAdd(cwbOrdercheck);
+		long count = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(cwb); 
+		if (cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&changealowflag==1&&count==0) {
+			//return this.responseErrorZhongzhuanrukuLimit();
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuanruku);
 		}
 		
 		//已申请中转出站并且没有做审核的订单不允许中转出站
@@ -3461,7 +3470,8 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
+		long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
+		if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&count==0) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotLinghuo);
 		}
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
@@ -4538,7 +4548,7 @@ public class CwbOrderService {
 			 * 归班审核自动插入申请表记录
 			 */
 			int changealowflag = getChangealowflagById(co);
-			if(changealowflag==1){// 要中转申请，就自动插入一条数据
+			if(changealowflag==1&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){// 要中转申请，就自动插入一条数据
 				OrderFlow of = orderFlowDAO.getOrderFlowCwb(cwb);
 				CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
 				cwbApplyZhongZhuan.setApplybranchid(user.getBranchid());

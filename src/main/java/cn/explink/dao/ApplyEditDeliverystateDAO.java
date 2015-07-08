@@ -381,8 +381,8 @@ public class ApplyEditDeliverystateDAO {
 	}
 	
 	public long getApplyEditDeliveryCount(String begindate,
-			String enddate, long ishandle) {
-		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where 1=1";
+			String enddate, long ishandle,long branchid) {
+		String sql = "SELECT count(1) from express_ops_applyeditdeliverystate where applybranchid="+branchid;
 		StringBuffer sb = new StringBuffer("");
 		if(!begindate.equals("")){
 			sb.append(" and applytime >='" + begindate + "' ");

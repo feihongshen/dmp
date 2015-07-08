@@ -29,7 +29,6 @@ public class CwbApplyZhongZhuanDAO {
 		@Override
 		public CwbApplyZhongZhuan mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
-
 			cwbApplyZhongZhuan.setApplybranchid(rs.getLong("applybranchid"));
 			cwbApplyZhongZhuan.setApplytime(StringUtil.nullConvertToEmptyString(rs.getString("applytime")));
 			cwbApplyZhongZhuan.setApplyzhongzhuanbranchid(rs.getLong("applyzhongzhuanbranchid"));
@@ -121,7 +120,7 @@ public class CwbApplyZhongZhuanDAO {
 	}
 
 	public long getCwbApplyZhongZhuanYiChuLiByCwbCount(String cwb) {
-		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=3 and isstastics =0 and isnow=1";
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=3 and isstastics =0";
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
@@ -327,5 +326,8 @@ public class CwbApplyZhongZhuanDAO {
 		}
 	}
 	
-	
+	public long getCwbApplyZhongZhuanYiChuLiByCwbCounts(String cwb,int ishandle) {
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=? and isstastics =0";
+		return jdbcTemplate.queryForLong(sql, cwb,ishandle);
+	}
 }

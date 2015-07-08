@@ -708,7 +708,7 @@ function yiruku(){
 											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><% for(Customer c:cList){ if(c.getCustomerid()==co.getCustomerid()) {out.print(c.getCustomername());break;} } %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -725,7 +725,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}}  %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -742,7 +742,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 											    <td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}}  %></td>
  												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -759,7 +759,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
  												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
  												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -799,7 +799,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -815,7 +815,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -831,7 +831,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -847,7 +847,7 @@ function yiruku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>

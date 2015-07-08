@@ -264,6 +264,9 @@ public class CwbOrder {
 	}
 
 	public String getPackagecode() {
+		if("null".equals(this.packagecode)){
+			return "";
+		}
 		return this.packagecode;
 	}
 
