@@ -202,7 +202,7 @@ function cwbexport(){
 				<div class="right_title">
 				<div style="height:30px;"></div>
 				<div style="height:380px;width:98%;overflow: auto;">
-				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 					<tr class="font_1">
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
 						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">订单号/包号</td>
