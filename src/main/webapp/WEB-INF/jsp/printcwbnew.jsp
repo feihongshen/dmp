@@ -83,7 +83,7 @@ function cwbscan(scancwb){
 			
 			<table border="0" height="15">
 			<tr>
-				<td  style="font-size:9px" height="7" >
+				<td  style="font-size:9px" height="7" nowrap="nowrap">
 					<sapn><span id="branchname"/></span>&nbsp;
 					<sapn><span id="username" /></span>&nbsp;<br>
 					<sapn><span id="cwb"  class="cwb"/></span>
