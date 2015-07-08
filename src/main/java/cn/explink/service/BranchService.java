@@ -162,7 +162,12 @@ public class BranchService {
 		}else{
 			String branchBail=request.getParameter("branchBail");
 			if((branchBail!=null)&&!branchBail.equals("null")) {
+				try{
 				branch.setBranchBail(new BigDecimal(branchBail));
+				}catch(NumberFormatException e)
+				{
+					branch.setBranchBail(new BigDecimal("0"));
+				}
 			}
 		}
 
