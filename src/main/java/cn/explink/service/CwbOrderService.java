@@ -4110,6 +4110,14 @@ public class CwbOrderService {
 			// 拒收修改订单为配送状态
 			if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 				List<Branch> bList = new ArrayList<Branch>();
+				for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+					bList.add(this.branchDAO.getBranchByBranchid(i));
+				}
+				for (Branch b : bList) {// 获得当前站点的退货站
+					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+						tuihuoNextBranch = b;
+					}
+				}
 				//chechFlag (退货是否需要审核的标识 0：否 ,1：是)
 				if (chechFlag) {
 				//	this.updateCwbState(cwb, CwbStateEnum.PeiShong);
@@ -4129,16 +4137,16 @@ public class CwbOrderService {
 					}
 					
 					
-					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+			/*		for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
-					}
+					}*/
 					
-					//Branch tuihuoNextBranch = null;
+				/*	//Branch tuihuoNextBranch = null;
 					for (Branch b : bList) {// 获得当前站点的退货站
 						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 							tuihuoNextBranch = b;
 						}
-					}
+					}*/
 					if (tuihuoNextBranch == null) {
 						tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
