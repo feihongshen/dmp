@@ -104,6 +104,11 @@
 						<div id="layout_north_kzmbMenu"
 							style="width: 100px; display: none;">
 							<div
+								onclick="addTab('下载管理','${omsUrl}/download/list/1?&clickFunctionId=10000','folder')">
+								<i class="icon-user" style="position: relative; left: -25px;"></i>下载管理
+							</div>
+							<div class="menu-sep"></div>
+							<div
 								onclick="addTab('通讯录','contact/list/1?&clickFunctionId=10000','folder')">
 								<i class="icon-user" style="position: relative; left: -25px;"></i>通讯录
 							</div>
