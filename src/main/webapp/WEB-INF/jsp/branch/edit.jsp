@@ -83,7 +83,7 @@
        			</li>
        			<li>
           			<span>保证金：</span>
-          			<input type="text" name="branchBail" id="branchBail" value ="<%=branch.getBranchBail() %>" maxlength="50"/>元
+          			<input type="text" name="branchBail" id="branchBail" value ="<%=branch.getBranchBail().equals("null")?"0.00":branch.getBranchBail() %>" maxlength="50" onblur="if(!isFloat($(this).val())){ alert('金额输入有误！');$(this).val('0.00');}"/>元
        			</li>
 		        <li>
 		        	<span>负 责 人：</span>
