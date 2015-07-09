@@ -64,7 +64,7 @@ CREATE TABLE `fn_customer_bill` (
   `confirm_user` varchar(30) DEFAULT NULL COMMENT '确认人',
   `verify_time` datetime DEFAULT NULL COMMENT '核销日期',
   `verify_user` varchar(30) DEFAULT NULL COMMENT '核销人',
-  `deliver_org` int(11) DEFAULT '0' COMMENT '发货仓库',
+  `deliver_org` varchar(5000) DEFAULT NULL COMMENT '发货仓库',
   `bill_count` int(11) DEFAULT '0' COMMENT '订单数',
   `bill_amount` decimal(19,2) DEFAULT '0.00' COMMENT '账单金额',
   `actual_amount` decimal(19,2) DEFAULT '0.00' COMMENT '实际金额',
