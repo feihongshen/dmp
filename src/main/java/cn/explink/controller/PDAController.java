@@ -18,10 +18,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -44,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
@@ -307,7 +311,7 @@ public class PDAController {
 		List<CwbOrder> yiTiHuolist = this.cwbDAO.getYiTiByBranchidForList(this.getSessionUser().getBranchid());
 		long weiTiHuoCount = this.cwbDAO.getDaoRubyBranchid(this.getSessionUser().getBranchid(),-1l).getOpscwbid();
 		long yiTiHuoCount = this.cwbDAO.getTiHuobyBranchid(this.getSessionUser().getBranchid(),-1l).getOpscwbid();
-		
+
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("weiTiHuolist", weiTiHuolist);
@@ -411,7 +415,7 @@ public class PDAController {
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
-		model.addAttribute("ifshowtag", 
+		model.addAttribute("ifshowtag",
 				this.systemInstallDAO.getSystemInstall("ifshowbudatag")==null?null:this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
 		return "pda/intowarhouse";
 	}
@@ -2671,9 +2675,9 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwb(
-						cwb, ce.getFlowordertye(), ce.getMessage(), 
-						this.getSessionUser().getBranchid(), 
-						this.getSessionUser().getUserid(), 
+						cwb, ce.getFlowordertye(), ce.getMessage(),
+						this.getSessionUser().getBranchid(),
+						this.getSessionUser().getUserid(),
 						cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
 						0, 0, 0, "");
 				obj.put("cwbOrder", cwbOrder);
@@ -2695,7 +2699,7 @@ public class PDAController {
 		model.addAttribute("yiTiHuolist", yiTiHuolist);
 		model.addAttribute("weiTiHuoCount", weiTiHuoCount);
 		model.addAttribute("yiTiHuoCount", yiTiHuoCount);
-		
+
 		model.addAttribute("SuccessCount", succesCount);// 本次扫描提货成功总数
 		model.addAttribute("ErrorCount", errorCount);// 本次扫描提货失败总数
 
@@ -3078,7 +3082,7 @@ public class PDAController {
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		
+
 		CwbOrder cwbOrder = new CwbOrder();
 		try {
 
@@ -3738,14 +3742,14 @@ public class PDAController {
 		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder cwbOrdercheck=cwbDAO.getCwbByCwb(cwb);
+		CwbOrder cwbOrdercheck=this.cwbDAO.getCwbByCwb(cwb);
 		if (cwbOrdercheck!=null) {
-			if(cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
+			if((cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue())){
 				explinkResponse.setStatuscode(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getValue()+"");
 				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan.getText());
 				return explinkResponse;
 			}
-			if (cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()) {
+			if ((cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.JuShou.getValue())) {
 				explinkResponse.setStatuscode(ExceptionCwbErrorTypeEnum.ShenheweijushouCannotZhongzhuanchuzhan.getValue()+"");
 				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.ShenheweijushouCannotZhongzhuanchuzhan.getText());
 				return explinkResponse;
@@ -4531,7 +4535,7 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
-		
+
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -5164,12 +5168,16 @@ public class PDAController {
 		}
 		model.addAttribute("objList", objList);
 
-		List<CwbOrder> weiChuKuList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
+		//List<CwbOrder> weiChuKuList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), 1);
+		List<CwbOrder> weiChuKuList = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), 1);
 
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("weitghsckList", weiChuKuList);// 待出库数据
 		model.addAttribute("yitghsckList", this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), 1));
-		model.addAttribute("count", this.cwbDAO.getTGYSCKbyBranchid(this.getSessionUser().getBranchid()));// 待出库总数
+		//model.addAttribute("count", this.cwbDAO.getTGYSCKbyBranchid(this.getSessionUser().getBranchid()));// 待出库总数
+		Smtcount smtcount=	this.cwbDAO.getBackYiRukubyBranchidsmt(this.getSessionUser().getBranchid());
+		smtcount=smtcount==null?new Smtcount():smtcount;
+		model.addAttribute("count", smtcount.getCount());
 		model.addAttribute("yichukucount", this.cwbDAO.getTGYSYCK(this.getSessionUser().getBranchid()));// 已出库总数
 		String msg = "";
 		if (cwbs.length() > 0) {
@@ -7950,16 +7958,23 @@ public class PDAController {
 			if (type.length() > 0) {
 				if (type.equals("weichuku")) {
 					if (extype.equals("wall") || extype.isEmpty()) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
+						sqlstr=this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), 0);
+						//sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
 					}
 					if (extype.equals("wshangmengtui")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+
+						//sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
 					}
 					if (extype.equals("wshangmenghuan")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+						//sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+
 					}
 					if (extype.equals("wpeisong")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+						//sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+
 					}
 				}
 				if (type.equals("yichuku")) {
