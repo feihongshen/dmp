@@ -42,6 +42,8 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 	   //获取下拉框的值
@@ -55,6 +57,9 @@
 	         });
 	         $("#controlStr").val(checkval);
 	         if(check()){
+	          	 if($(":checked[name=branchid2]").length==0){
+		        	 multiSelectAll('branchid2',1,'请选择');}
+	        	
 	            $("#isshow").val(1);
 		    	$("#searchForm").submit();
 		    	$("#find").attr("disabled","disabled");

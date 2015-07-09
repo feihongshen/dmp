@@ -62,6 +62,10 @@
 	         });
 	         $("#controlStr").val(checkval);
 	         if(check()){
+	        	 if($(":checked[name=nextbranchid]").length==0){
+		        	 multiSelectAll('nextbranchid',1,'请选择');}
+	        	 if($(":checked[name=kufangid]").length==0){
+		        	 multiSelectAll('kufangid',1,'请选择');}
 	            $("#isshow").val(1);
 		    	$("#searchForm").submit();
 		    	$("#find").attr("disabled","disabled");

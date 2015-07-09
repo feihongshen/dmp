@@ -69,6 +69,9 @@ int loginUserType =  request.getAttribute("loginUserType")==null ? 0 : (Integer)
 	         });
 	         $("#controlStr").val(checkval);
 	         if(check()){
+	        	 if($(":checked[name=dispatchbranchid]").length==0){
+		        	 multiSelectAll('dispatchbranchid',1,'请选择');}
+	        	
 	            $("#isshow").val(1);
 		    	$("#searchForm").submit();
 		    	$("#find").attr("disabled","disabled");
