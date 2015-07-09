@@ -601,7 +601,7 @@ public class CwbDAO {
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
 			return rs.getString(1);
 		}
-		
+
 	}
 	private final class CwbSmalMaper implements RowMapper<CwbOrder> {
 		@Override
@@ -5642,6 +5642,15 @@ public class CwbDAO {
 		return sql;
 	}
 
+	public String getBackYiRukuListbyBranchidSQL(long branchid, long cwbordertypeid) {
+
+		String sql="SELECT * FROM express_ops_cwb_detail WHERE currentbranchid="+branchid+" and flowordertype="+FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()+" and state=1";
+		if(cwbordertypeid>0){
+			sql+="  and cwbordertypeid="+cwbordertypeid;
+		}
+		return sql;
+	}
+
 	public String getSqlExportBackToCustomerYichukuOfcwbtype(long branchid, long cwbordertypeid) {
 		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
 				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 ";
@@ -6027,5 +6036,5 @@ public class CwbDAO {
 	}
 
 
-	
+
 }
