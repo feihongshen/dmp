@@ -237,7 +237,7 @@ function isshowdate(){
 	<tr>
 	<td>
 		<input type="button" id="find" onclick="" value="查询" class="input_button2" />
-		<input type="button"  value="清空" onclick="clearSelect();" class="input_button2" />
+		<input type="reset"  value="清空" onclick="clearSelect();" class="input_button2" />
 	</td>
 	<td>
 	<%if(orderlist != null && orderlist.size()>0){  %>
