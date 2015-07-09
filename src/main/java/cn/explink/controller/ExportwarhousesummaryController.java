@@ -295,9 +295,9 @@ public class ExportwarhousesummaryController {
 		this.SetWarhousesummary(cloumnName1, cloumnName2, zhandianes);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		String sheetName = "Order_warehouse_export"; // sheet的名称
-		String fileName = sheetName + "_" + df + ".xlsx"; // 文件名
+		String sheetName = "出库汇总"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@SuppressWarnings("static-access")
