@@ -2886,6 +2886,10 @@ public class PDAController {
 		}
 		int goodsType = order.getGoodsType();
 		switch (goodsType) {
+		case 1: {
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.DJ));
+			break;
+		}
 		case 2: {
 			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GP));
 			break;

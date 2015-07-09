@@ -1217,7 +1217,7 @@ function checkAll(menu) {
 }
 
 //判断上级下层所有选项未选中，取消当前(岗位权限管理)
-function validataJuniorCheck(menu){
+function validataJuniorCheck(menu,upperMenu){
 	var clearFlag = true;
 	if ($("#menu_" + menu)) {
 		var arrayTemp = $("#menu_" + menu).find("input[type='checkbox']");
@@ -1229,10 +1229,10 @@ function validataJuniorCheck(menu){
 			}
 		});
 		if(clearFlag){
-			$("#menu_" + menu).parent().find("div").hide();
 			$("#cb_" + menu).attr("checked", false);
 		}else{
 			$("#cb_" + menu).attr("checked", true);
+			$("#cb_" + upperMenu).attr("checked", true);
 		}
 	}
 	

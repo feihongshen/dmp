@@ -564,7 +564,12 @@ $(function(){
 function playWav(str){
 	var strSplit=str.split("");
 	for(var i=0;i<strSplit.length;i++) {
-		  (function(i){
+		(function(i){
+			setTimeout(function(){
+				numbervedioplay("<%=request.getContextPath()%>",strSplit[i]);
+			},400*i);
+		})(i);
+		  <%-- (function(i){
 		    setTimeout(function(){
 		    	url="<%=wavPath%>"+strSplit[i]+".wav";
 		    	var src="<EMBED id='wav' name='wav' src='"+url+"' LOOP=false AUTOSTART=true MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>"+
@@ -578,7 +583,7 @@ function playWav(str){
 		    	/* document.getElementById('wav').play(); */
 		    	setTimeout("bofang()",200);
 		  },400*i);
-		 })(i);
+		 })(i); --%>
 	}
 }
 
@@ -642,8 +647,8 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
-				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
-				/* playWav("'"+data.body.successCount+"'"); */
+				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
+				playWav(""+data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);

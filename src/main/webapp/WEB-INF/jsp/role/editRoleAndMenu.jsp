@@ -28,13 +28,15 @@ var initMenuList = new Array();
 							<div class="set_two">
 								<h2 id="pic_<%=menu.getId() %>"  >
 									<label>
-										<input type="checkbox" id="cb_<%=menu.getId() %>" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" >
+										<input type="checkbox" id="cb_<%=menu.getId() %>" upperMenu="-1" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" >
 										<b><%=menu.getName() %></b>
 									</label>
-									<a href="javascript:;" onclick="checkAll(<%=menu.getId() %>)">[全选]</a>
+									<%-- <a href="javascript:;" onclick="checkAll(<%=menu.getId() %>)">[全选]</a> --%>
 								</h2>
 								
 								<div style ="display:none ;" id="menu_<%=menu.getId() %>" class="set_three">
+								<a href="javascript:;" onclick="juniorCheck(<%=menu.getId() %>)">[全选]</a>
+								<a href="javascript:;" onclick="juniorUnCheck(<%=menu.getId() %>)">[全不选]</a>
 								<% for(Menu menu_1: menuList){ 
 									if(menu_1.getParentid()==menu.getId()){
 								%>
@@ -42,7 +44,7 @@ var initMenuList = new Array();
 										<li>
 											<h3 id="pic_<%=menu_1.getId() %>"/>
 											<h3>
-											<input type="checkbox" id="cb_<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val())" value="<%=menu_1.getId() %>" >
+											<input type="checkbox" id="cb_<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val());validataJuniorCheck(<%=menu.getId() %>,<%=menu.getId() %>)"" value="<%=menu_1.getId() %>" >
 											<%=menu_1.getName() %></h3>
 											<%
 											boolean hasChild = false;
@@ -64,7 +66,7 @@ var initMenuList = new Array();
 											%>
 													<li>
 														<label>
-															<input type="checkbox" id="cb_<%=menu_2.getId() %>" name="menu" onclick="checkMenu($(this).val());validataJuniorCheck(<%=menu_1.getId() %>)" value="<%=menu_2.getId() %>" >
+															<input type="checkbox" id="cb_<%=menu_2.getId() %>" upperMenu="<%=menu_1.getId() %>" name="menu" onclick="checkMenu($(this).val());validataJuniorCheck(<%=menu_1.getId() %>,<%=menu.getId() %>)" value="<%=menu_2.getId() %>" >
 															<%=menu_2.getName() %></label>
 													</li>
 												<%}} %>
