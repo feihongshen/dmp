@@ -1180,9 +1180,13 @@ function submitEditRoleAndMenuForm(form) {
 
 function initMenu(role_menu) {
 	$("#cb_" + role_menu).attr("checked", "checked");
+	initShowMenu(role_menu);
 	$("#cb_PDA").attr("checked", "checked");
-	checkMenu(role_menu);
 	checkPDAMenu();
+}
+
+function initShowMenu(menu){
+	$("#menu_" + menu).parent().find("div").show();
 }
 
 function checkMenu(menu) {
