@@ -275,7 +275,7 @@ public class CwbApplyZhongZhuanDAO {
 		return jdbcTemplate.query(sql, new CwbApplyZhongZhuanMapper());
 	}
 	public void updateCwbApplyZhongZhuanResultSuc(String audittime, String auditname, long ishandle, long applyzhongzhuanbranchid, String cwb) {
-		String sql = "update op_cwbapplyzhongzhuan set audittime=?,auditname=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=?";
+		String sql = "update op_cwbapplyzhongzhuan set audittime=?,auditname=?,ishandle=?,applyzhongzhuanbranchid=? where cwb=? order by id desc limit 1";
 		jdbcTemplate.update(sql, audittime, auditname, ishandle, applyzhongzhuanbranchid, cwb);
 	}
 	

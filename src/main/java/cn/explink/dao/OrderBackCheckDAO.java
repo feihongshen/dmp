@@ -150,7 +150,7 @@ public class OrderBackCheckDAO {
 	
 	//审核为站点滞留
 	public void updateOrderBackCheck2(long checkresult,String cwb,String auditname,String audittime) {
-		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=?,auditname=?,audittime=? where cwb =?";
+		String sql = "UPDATE ops_order_back_check SET checkstate=2,checkresult=?,auditname=?,audittime=? where cwb =? order by id desc limit 1";
 		this.jdbcTemplate.update(sql, checkresult, auditname, audittime, cwb);
 	}
 

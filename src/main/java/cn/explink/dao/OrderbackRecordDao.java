@@ -125,7 +125,7 @@ public class OrderbackRecordDao {
 		return jdbcTemplate.queryForLong(sql);
 	}
 	public void updateShenheState(int shenhestate,String cwb,String auditname,String audittime) {
-		String sql = "update express_ops_orderback_record set shenhestate=?,auditname=?,audittime=? where cwb=?";
+		String sql = "update express_ops_orderback_record set shenhestate=?,auditname=?,audittime=? where cwb=? order by id desc limit 1";
 		jdbcTemplate.update(sql,shenhestate,auditname,audittime,cwb);
 	}
 }

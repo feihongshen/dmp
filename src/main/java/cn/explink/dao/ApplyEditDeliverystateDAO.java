@@ -310,13 +310,13 @@ public class ApplyEditDeliverystateDAO {
 	//审核为通过
 	public void updateShenheStatePass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
-		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,ishandle=1 where cwb=? ";
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,ishandle=1 where cwb=? order by id desc limit 1";
 		this.jdbcTemplate.update(sql,edituserid,edittime,cwb);
 	}
 	//审核为不通过
 	public void updateShenheStateNoPass(String cwb,long edituserid,String edittime) {
 		// TODO Auto-generated method stub
-		String sql = "update express_ops_applyeditdeliverystate set shenhestate=2,edituserid=?,edittime=?,ishandle=1 where cwb=? ";
+		String sql = "update express_ops_applyeditdeliverystate set shenhestate=2,edituserid=?,edittime=?,ishandle=1 where cwb=? order by id desc limit 1";
 		this.jdbcTemplate.update(sql,edituserid,edittime,cwb);
 	}
 	//根据订单查询单条信息
@@ -364,8 +364,8 @@ public class ApplyEditDeliverystateDAO {
 	}
 	
 	public List<ApplyEditDeliverystate> getApplyEditDeliverys(String begindate,
-			String enddate, long ishandle) {
-		String sql = "SELECT * from express_ops_applyeditdeliverystate where 1=1";
+			String enddate, long ishandle,long branchid) {
+		String sql = "SELECT * from express_ops_applyeditdeliverystate where applybranchid="+branchid;
 		StringBuffer sb = new StringBuffer("");
 		if(!begindate.equals("")){
 			sb.append(" and applytime >='" + begindate + "' ");
@@ -377,6 +377,7 @@ public class ApplyEditDeliverystateDAO {
 			sb.append(" and ishandle="+ishandle );
 		}
 		sql += sb;
+		sql += " order by applytime desc";
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
 	

@@ -978,7 +978,7 @@ public class ApplyEditDeliverystateController {
 		List<Branch> branchlist = branchDAO.getAllEffectBranches();
 		List<User> userList = userDAO.getAllUser();
 		List<ApplyEditDeliverystate> applyEditDeliverystateList = new ArrayList<ApplyEditDeliverystate>();
-		List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(begindate,enddate,ishandle);
+		List<ApplyEditDeliverystate> applyEditDeliverystateLists = applyEditDeliverystateDAO.getApplyEditDeliverys(begindate,enddate,ishandle,this.getSessionUser().getBranchid());
 		List<String> strList = new ArrayList<String>();
 		if(applyEditDeliverystateLists!=null&&!applyEditDeliverystateLists.isEmpty()){
 			for(ApplyEditDeliverystate aeds : applyEditDeliverystateLists){

@@ -123,7 +123,7 @@ public class OrderBackRukuRecordDao {
 
 	public void updateOrderBackRukuRecort(String cwb, String reasoncontent,
 			String realname, String createtime) {
-		String sql = "update express_orderbackruku_record set auditstate=1,remarkstr=?,auditname=?,audittime=? where cwb=?";
+		String sql = "update express_orderbackruku_record set auditstate=1,remarkstr=?,auditname=?,audittime=? where cwb=? order by id desc limit 1";
 		this.jdbcTemplate.update(sql,reasoncontent,realname,createtime,cwb);
 	}
 	

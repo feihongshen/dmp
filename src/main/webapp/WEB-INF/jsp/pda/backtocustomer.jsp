@@ -73,9 +73,9 @@ function addAndRemoval(cwb,tab,isRemoval){
 	if(isRemoval){
 		$("#"+tab).append(trObj);
 	}else{
-		$("#ViewList #errorTable tr[id='TR"+cwb+"error']").remove();
+		$("#ViewList #errorTable tr[id='ATR"+cwb+"error']").remove();
 		trObj.clone(true).appendTo("#"+tab);
-		$("#ViewList #errorTable tr[id='TR"+cwb+"']").attr("id",trObj.attr("id")+"error");
+		$("#ViewList #errorTable tr[id='ATR"+cwb+"']").attr("id",trObj.attr("id")+"error");
 	}
 }
 
@@ -602,10 +602,10 @@ function chuku(){
 										<table id="weituihuochukuTable" width="100%" border="0" cellspacing="1" cellpadding="2"
 											class="table_2">
 											<%for(CwbOrder co : weitghsckList){ %>
-											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -622,7 +622,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -639,7 +639,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -656,7 +656,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -691,10 +691,10 @@ function chuku(){
 									<div id="yall" style="height: 160px; overflow-y: scroll;display: none;">
 										<table id="successTable" width="100%" border="0" cellspacing="1" cellpadding="2"	class="table_2">
 											<%for(CwbOrder co : yitghsckList){ %>
-											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
+											<tr id="ATR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -710,7 +710,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -726,7 +726,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -742,7 +742,7 @@ function chuku(){
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" nextbranchid="<%=co.getNextbranchid() %>" >
 												<td width="120" align="center"><%=co.getCwb() %></td>
 												<td width="100" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-												<td width="100" align="center"><%=co.getPackagecode() %></td>
+												<td width="100" align="center"><%=co.getPackagecode()==null?"":co.getPackagecode() %></td>
 												<td width="100" align="center"><%for(Customer c:customerlist){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
