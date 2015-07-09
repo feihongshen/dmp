@@ -9,7 +9,10 @@
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 var initMenuList = new Array();
-<%int i=0 ; for(Long role_menu:role_menuList){%>initMenuList[<%=i++ %>]="<%=role_menu %>";<%}%>
+<%int i=0 ; 
+for(Long role_menu:role_menuList){%>
+	initMenuList[<%=i++ %>]="<%=role_menu %>";
+<%}%>
 </script>
 <div id="box_bg"></div>
 <div id="box_contant" style="width:680px">
@@ -28,7 +31,7 @@ var initMenuList = new Array();
 							<div class="set_two">
 								<h2 id="pic_<%=menu.getId() %>"  >
 									<label>
-										<input type="checkbox" id="cb_<%=menu.getId() %>" upperMenu="-1" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" >
+										<input type="checkbox" id="cb_<%=menu.getId() %>" name="menu"  onclick="checkMenu($(this).val())" value="<%=menu.getId() %>" >
 										<b><%=menu.getName() %></b>
 									</label>
 									<%-- <a href="javascript:;" onclick="checkAll(<%=menu.getId() %>)">[全选]</a> --%>
