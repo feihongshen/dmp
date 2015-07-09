@@ -3847,6 +3847,7 @@ public class CwbOrderService {
 			sign_man = co.getConsigneenameOfkf();
 			if((podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue())
 					||(podresultid==DeliveryStateEnum.ShangMenJuTui.getValue())
+					||(podresultid==DeliveryStateEnum.JuShou.getValue())
 					||(podresultid==DeliveryStateEnum.DaiZhongZhuan.getValue())
 					) {
 				paybackedfee=new BigDecimal("0");
