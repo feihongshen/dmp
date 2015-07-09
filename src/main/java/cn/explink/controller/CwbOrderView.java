@@ -267,7 +267,18 @@ public class CwbOrderView {
 	private String applytime;//申请时间
 	private String confirmname;//确认人
 	private String confirmtime;//确认时间
+	private long nowapplystate;//支付信息审核状态与支付信息修改确认的订单当前状态
 	
+	
+	
+	public long getNowapplystate() {
+		return nowapplystate;
+	}
+
+	public void setNowapplystate(long nowapplystate) {
+		this.nowapplystate = nowapplystate;
+	}
+
 	public String getConfirmname() {
 		return confirmname;
 	}

@@ -6483,6 +6483,7 @@ public class CwbOrderService {
 						cwbOrderView.setAuditstatename(this.getAuditname(ot.getShenhestate()));//当前确认状态
 						cwbOrderView.setAuditor(ot.getAuditname());//确认人
 						cwbOrderView.setAudittime(ot.getAudittime());//确认时间
+						cwbOrderView.setNowapplystate(ot.getShenhestate());
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}
@@ -6527,6 +6528,7 @@ public class CwbOrderService {
 				cwbOrderView.setApplytime(ot.getApplytime());//申请时间
 				cwbOrderView.setAuditor(ot.getAuditname());//审核人
 				cwbOrderView.setAudittime(ot.getAudittime());//审核时间
+				cwbOrderView.setNowapplystate(ot.getApplystate());
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}
@@ -6565,6 +6567,7 @@ public class CwbOrderService {
 				cwbOrderView.setAudittime(ot.getAudittime());//审核时间
 				cwbOrderView.setConfirmname(ot.getConfirmname());//确认人
 				cwbOrderView.setConfirmtime(ot.getConfirmtime());//确认时间
+				cwbOrderView.setNowapplystate(ot.getConfirmstate());
 				cwbOrderViewList.add(cwbOrderView);
 			}
 		}
@@ -6610,6 +6613,7 @@ public class CwbOrderService {
 						cwbOrderView.setAuditor(ot.getAuditname());//审核人
 						cwbOrderView.setAudittime(ot.getAudittime());//审核时间
 						cwbOrderView.setAuditstatename(this.getAuditstatename(ot.getIshandle()));//审核状态
+						cwbOrderView.setAuditstate(ot.getIshandle());
 						cwbOrderViewList.add(cwbOrderView);
 					}
 				}

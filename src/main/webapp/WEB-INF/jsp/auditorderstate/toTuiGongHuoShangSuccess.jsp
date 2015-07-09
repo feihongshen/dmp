@@ -137,16 +137,25 @@ function Days(){
 }
 //退客户成功
 function sub(){
+	var yichulinum=0;
+
 	var datavalue = "[";
 	
 	if($('input[name="ischeck"]:checked').size()>0){
 		$('input[name="ischeck"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==1||$("#ishandle"+$(this).val()).val()==2){
+				yichulinum++;
+			}
 			datavalue = datavalue +"\""+$(this).val()+"\",";
 		});
 	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
+	}
+	if(yichulinum>0){
+		alert("已退客户成功与拒收退货的订单不能再次处理！！");
+		return;
 	}
 	datavalue= datavalue + "]";
 	if(datavalue.length>2){
@@ -166,16 +175,24 @@ function sub(){
 
 //退客户成功
 function sub2(){
+	var yichulinum=0;
 	var datavalue = "[";
 	
 	if($('input[name="ischeck"]:checked').size()>0){
 		$('input[name="ischeck"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==1||$("#ishandle"+$(this).val()).val()==2){
+				yichulinum++;
+			}
 			datavalue = datavalue +"\""+$(this).val()+"\",";
 		});
 	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
+	}
+	if(yichulinum>0){
+		alert("已退客户成功与拒收退货的订单不能再次处理！！");
+		return;
 	}
 	datavalue= datavalue + "]";
 	if(datavalue.length>2){
@@ -339,8 +356,8 @@ function resetData(){
 								<td width="100" align="center" valign="middle" ><%=cwb.getAuditor() %></td>
 								<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
 							</tr>
+							<input type="hidden" id="ishandle<%=cwb.getCwb() %>" value="<%=cwb.getNowapplystate()%>"/>
 						<%} }%>
-						
 							</tbody>
 						</table> 
 					</div>

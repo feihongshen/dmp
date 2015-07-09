@@ -85,15 +85,23 @@ function btnClick(){
 
 function applypass(){
 	var datavalue = "";
-	
+	var yishenhenum=0;
 	if($('input[name="checkbox"]:checked').size()>0){
 		$('input[name="checkbox"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==2){
+				yishenhenum++;
+			}
 			datavalue = datavalue +$(this).val()+",";
 		});
 	}
 	if(datavalue.length==0){
 		alert("请选择当前要处理订单！");
+		return;
+	}
+	if(yishenhenum>0){
+		alert("已经确认的订单不能再次处理！！");
+		return;
 	}
 	if(datavalue.length>1){
 		if(confirm("确定要确认通过吗?")){
@@ -119,15 +127,23 @@ function applypass(){
 
 function applynopass(){
 	var datavalue = "";
-	
+	var yishenhenum=0;
 	if($('input[name="checkbox"]:checked').size()>0){
 		$('input[name="checkbox"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==2){
+				yishenhenum++;
+			}
 			datavalue = datavalue+$(this).val()+",";
 		});
 	}
 	if(datavalue.length==0){
 		alert("请选择当前要处理订单！");
+		return;
+	}
+	if(yishenhenum>0){
+		alert("已经确认的订单不能再次处理！！");
+		return;
 	}
 	if(datavalue.length>1){
 		if(confirm("确定要确认不通过吗?")){
@@ -292,6 +308,7 @@ function resetData(){
 										<td width="100" align="center" valign="middle" ><%=zav.getConfirmname() %></td>
 										<td width="120" align="center" valign="middle" ><%=zav.getConfirmtime() %></td>
 									</tr>
+									<input id="ishandle<%=zav.getOpscwbid()%>" value="<%=zav.getNowapplystate() %>" type="hidden"/>
 								<%} }%>
 						</tbody>
 						</table>

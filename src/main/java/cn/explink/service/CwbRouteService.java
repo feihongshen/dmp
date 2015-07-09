@@ -75,7 +75,7 @@ public class CwbRouteService {
 		}
 		if (routtype == 0) {
 			Branch branch = branchDAO.getBranchByBranchid(destinationid);
-			if (branch != null && !"2".equals(branch.getContractflag())) {// 如果不是二及站，直接返回0
+			if (branch != null && !"1".equals(branch.getContractflag())) {// 如果不是二及站，直接返回0
 				return 0L;
 			}
 		}

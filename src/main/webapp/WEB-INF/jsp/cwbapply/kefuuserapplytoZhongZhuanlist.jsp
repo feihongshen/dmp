@@ -35,15 +35,23 @@
 //提交审核按钮
 function subPass(){
 	var ids="";//选中id
+	var num=0;
 	$('input[type="checkbox"][name="checkbox"]').each(
 	       	function() {
 	          	if($(this).attr("checked")=="checked"){
+	          		if($("#ishandle"+$(this).val()).val()==3||$("#ishandle"+$(this).val()).val()==2){
+	          			num++;
+	          		}
 	          		ids+=$(this).val()+",";
 	          	}
 	          }
 	       );
 	if(ids.length==0){
 		alert("请勾选订单");
+		return false;
+	}
+	if(num>0){
+		alert("已经审核过的订单不能再次审核！！");
 		return false;
 	}
 	if(ids.length>0){
@@ -72,15 +80,23 @@ function subPass(){
 
 function subNopass(){
 	var ids="";//选中id
+	var num=0;
 	$('input[type="checkbox"][name="checkbox"]').each(
 	       	function() {
 	          	if($(this).attr("checked")=="checked"){
+	          		if($("#ishandle"+$(this).val()).val()==3||$("#ishandle"+$(this).val()).val()==2){
+	          			num++;
+	          		}
 	          		ids+=$(this).val()+",";
 	          	}
 	          }
 	       );
 	if(ids.length==0){
 		alert("请勾选订单");
+		return false;
+	}
+	if(num>0){
+		alert("已经审核过的订单不能再次审核！！");
 		return false;
 	}
 	if(ids.length>0){
@@ -343,6 +359,7 @@ function resetData(){
 									<td width="100" align="center" valign="middle"><%=cwb.getAudittime() %></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getAuditstatename() %></td>
 								</tr>
+								<input type="hidden" id="ishandle<%=cwb.getOpscwbid()%>" value="<%=cwb.getAuditstate()%>"/>
 							<%} }%> 
 							</tbody>
 						</table>

@@ -67,11 +67,15 @@ $(function(){
 });
 
 function audit(){
+	var yichulinum=0;
 	var datavalue = "[";
 	//var remarkValue = "";
 	if($('input[name="ischeck"]:checked').size()>0){
 		$('input[name="ischeck"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==1){
+				yichulinum++;
+			}
 			var id=$(this).val()+"_cwbremark";
 			if($("#"+id).val()==0){
 				alert("请选择备注!");
@@ -88,6 +92,10 @@ function audit(){
 			} */
 			datavalue = datavalue +"\""+$('#'+id).val()+"\",";
 		});
+	}
+	if(yichulinum>0){
+		alert("已审核的订单不能再次退货再投！！");
+		return;
 	}
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
@@ -336,6 +344,7 @@ function resetData(){
 										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
 										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>
 									</tr>
+									<input type="hidden" id="ishandle<%=cwb.getCwb()%>" value="<%=cwb.getAuditstate()%>"/>
 								<%} }%>
 								
 							</tbody>

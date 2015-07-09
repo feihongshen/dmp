@@ -87,15 +87,24 @@ function btnClick(){
 
 function applypass(){
 	var datavalue = "";
-	
+	var shnehenum=0;
+
 	if($('input[name="checkbox"]:checked').size()>0){
 		$('input[name="checkbox"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==2){
+				shnehenum++;
+			}
 			datavalue = datavalue+$(this).val()+",";
 		});
 	}
 	if(datavalue.length==0){
 		alert("请选择当前要处理订单！");
+		return false;
+	}
+	if(shnehenum>0){
+		alert("已审核的订单不能再次审核！！");
+		return false;
 	}
 	if(datavalue.length>1){
 		if(confirm("确定要审核通过吗?")){
@@ -121,15 +130,23 @@ function applypass(){
 
 function applynopass(){
 	var datavalue = "";
-	
+	var shnehenum=0;
 	if($('input[name="checkbox"]:checked').size()>0){
 		$('input[name="checkbox"]:checked').each(function(index){
 			$(this).attr("checked",false);
+			if($("#ishandle"+$(this).val()).val()==2){
+				shnehenum++;
+			}
 			datavalue = datavalue+$(this).val()+",";
 		});
 	}
 	if(datavalue.length==0){
 		alert("请选择当前要处理订单！");
+		return false;
+	}
+	if(shnehenum>0){
+		alert("已审核的订单不能再次审核！！");
+		return false;
 	}
 	if(datavalue.length>1){
 		if(confirm("确定要审核不通过吗？")){
@@ -290,6 +307,7 @@ function reserData(){
 										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
 										<td width="100" align="center" valign="middle" ><%=zav.getAudittime() %></td>
 									</tr>
+									<input type="hidden" id="ishandle<%=zav.getOpscwbid() %>" value="<%=zav.getNowapplystate()%>"/>
 								<%} }%>
 								
 							</tbody>
