@@ -65,7 +65,7 @@ function CreatePrintPage(cwbs) {
 		var h;//第二页的高度
 		if(i%2==0){	num = i;}
 		if(i%8==0){ h=(parseInt(i)/8)*60;}
-		LODOP.ADD_PRINT_BARCODE(document.getElementById("printcwb"+cwb).offsetTop+document.getElementById("printTable"+num).offsetTop+h+98,
+		LODOP.ADD_PRINT_BARCODE(document.getElementById("printcwb"+cwb).offsetTop+document.getElementById("printTable"+num).offsetTop+h+99,
 				document.getElementById("printcwb"+cwb).offsetLeft+document.getElementById("TD"+cwb).offsetLeft+53,150,30,"128Auto", cwb);
 		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
 	}
