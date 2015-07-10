@@ -25,6 +25,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.ShangMenTuiCwbDetailDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
@@ -61,6 +62,8 @@ public class MatchExceptionHandleService {
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 	@Autowired
+	ShangMenTuiCwbDetailDAO shangMenTuiCwbDetailDAO;
+	@Autowired
 	private OrderFlowDAO orderFlowDAO;
 
 	private ObjectMapper om = new ObjectMapper();
@@ -96,6 +99,8 @@ public class MatchExceptionHandleService {
 			this.logger.error("error while saveing orderflow", e);
 			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
 		}
+		//清空打印时间
+		shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(cwb, "''");
 		// 执行分站到货逻辑.
 		this.exeArriveBranch(cwb, newBranchId);
 		// 添加订单最后流程时间和是否为超区订单.
