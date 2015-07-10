@@ -214,7 +214,7 @@ function sub(){
 			
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 				
-				if(<%=isReasonRequired%>=='yes'&&($("#leavedreasonid").val()==0)){
+				if($("#isReasonRequired").val()=='yes'&&($("#leavedreasonid").val()==0)){
 					alert("请选择滞留原因");
 					return false;
 				}
@@ -235,10 +235,10 @@ function sub(){
 				$("#subForm").submit();
 				return;
 				
-			}else if(<%=isReasonRequired%>=='yes'&&$(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
+			}else if($("#isReasonRequired").val()=='yes'&&$(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
 				alert("请选择拒收原因");
 				return false;
-			}else if(<%=isChorseZhongzhuanReason%>=='yes'&&$(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
+			}else if($("#isChorseZhongzhuanReason").val()=='yes'&&$(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
 				alert("请选择一级中转原因");
 				return false;
 			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#changereasonid").val()==0){
@@ -472,6 +472,8 @@ function resub(form){
 			</form>
 		</div>
 	</div>
+	<input type="hidden" value="${isReasonRequired}" id="isReasonRequired"/>
+	<input type="hidden" value="${isChorseZhongzhuanReason}" id="isChorseZhongzhuanReason"/>
 </body>
 </html>
 
