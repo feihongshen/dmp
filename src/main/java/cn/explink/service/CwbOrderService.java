@@ -4827,6 +4827,8 @@ public class CwbOrderService {
 				if (isypdjusetranscwb == 1) {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 				}
+			}else{
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_DAO_HUO);
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
@@ -4841,6 +4843,7 @@ public class CwbOrderService {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
+		this.validateRepeatScan(co,user,flowOrderTypeEnum);
 		String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
 		String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + comment;
 		try {
@@ -4856,6 +4859,20 @@ public class CwbOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 		}
+	}
+
+	
+	/**
+	 * 退供货商拒收反馈重复扫描判断
+	 * @param co
+	 * @param user 
+	 * @param flowOrderTypeEnum
+	 */
+	private void validateRepeatScan(CwbOrder co,User user, FlowOrderTypeEnum flowOrderTypeEnum) {
+		if(co.getCurrentbranchid() == user.getBranchid() && co.getFlowordertype() == flowOrderTypeEnum.getValue() && co.getScannum() >= 1){
+			throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_DAO_HUO);
+		}
+		
 	}
 
 	/*
