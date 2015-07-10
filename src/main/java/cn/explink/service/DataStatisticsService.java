@@ -1667,7 +1667,7 @@ public class DataStatisticsService {
 
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
-				if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()) {
+				if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()) {
 					continue;
 				}
 				CwbOrderView cwbOrderView = new CwbOrderView();

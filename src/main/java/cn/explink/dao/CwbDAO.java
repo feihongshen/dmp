@@ -233,7 +233,16 @@ public class CwbDAO {
 		}
 
 	}
+	private final class StringTypeMapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			String cwbString=rs.getString(1);
+			return cwbString;
+		}
+		
+	}
 	private final class CwbPayMapper implements RowMapper<JSONObject> {
 
 		@Override
@@ -5793,8 +5802,9 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getMonitorLogByBranchid(String branchids, String customerids, String wheresql, long page) {
+		String effectCwbs=this.getEffectiveCwbString(branchids, customerids, wheresql);
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
-				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " ")+" and cwb not IN("+effectCwbs+")");
 		if (page!=-9) {
 			sql.append("  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		}
@@ -5808,9 +5818,9 @@ public class CwbDAO {
 		}
 		return list;
 	}
-
 	public long getMonitorLogByBranchid(String branchids, String customerids, String wheresql) {
-		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+		String notcwbString=this.getEffectiveCwbString(branchids, customerids, wheresql);
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1 and cwb not IN("+notcwbString+") "
 				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
 
 		System.out.println("-- 生命周期监控查看明细:\n" + sql);
@@ -5827,7 +5837,7 @@ public class CwbDAO {
 	public String getEffectiveCwbString(String branchids, String customerids, String wheresql){
 		String suffer="'";
 		StringBuffer buffer=new StringBuffer();
-		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1 and deliverystate=1 and cwbordertypeid=2  "
 				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
 			List<String> cwbsList=this.jdbcTemplate.query(sql.toString(), new StringTypeColumnMapper());
 			for (String string : cwbsList) {

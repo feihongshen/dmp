@@ -77,11 +77,26 @@ public class MonitorDAO {
 	 * @throws Exception
 	 */
 	public List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
-		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"  GROUP BY customerid");
+		String noteffectCwbsString=this.getEffectCwbsAdd(branchids, customerids, wheresql);
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and cwb not IN("+noteffectCwbsString+") GROUP BY customerid");
 		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
+	}
+	public String getEffectCwbsAdd(String branchids,String customerids,String wheresql){
+		StringBuffer buffer=new StringBuffer();
+		String zhuiString="'";
+		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and deliverystate=1 and cwbordertypeid=2  GROUP BY customerid");
+		List<String> calculateNumList=this.jdbcTemplate.query(sql.toString(), new StringTypeMapper());
+		for (String string : calculateNumList) {
+			buffer.append(zhuiString).append(string).append(zhuiString).append(",");
+		}
+		if (buffer.indexOf(",")>=0) {
+			return buffer.substring(0, buffer.length()-1).toString();
+		}else {
+			return "''";
+		}
 	}
 	/**
 	 * 站点在站资金的情况(订单生命周期监控)
@@ -195,8 +210,9 @@ public class MonitorDAO {
 		return count;
 	}
 	public long getMonitorLogByTypeAndNotInCount(String flowordertypes ,String branchids,String customerid) {
+		String noteffectcwbsString=this.getEffectCwbs(flowordertypes, branchids, customerid, -9);
 		StringBuffer sql = new StringBuffer(
-				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"    flowordertype in("+flowordertypes+") and branchid not in("+branchids+")") ;
+				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"    flowordertype in("+flowordertypes+") and branchid not in("+branchids+") and cwb not IN("+noteffectcwbsString+")") ;
 
 		long count = jdbcTemplate.queryForLong(sql.toString());
 
