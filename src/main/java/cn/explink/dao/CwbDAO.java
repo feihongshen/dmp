@@ -2275,6 +2275,16 @@ public class CwbDAO {
 			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		}
+		
+		// 今日待领货订单(拒收)
+		public List<String> getTodayWeiLingJuShouByWhereList(String deliveryStates, long currentbranchid, String cwbs, long deliverid) {
+			String sql = "select cwb from express_ops_cwb_detail where deliverystate IN("+deliveryStates+") and currentbranchid=" + currentbranchid + " and state=1 and flowordertype="
+					+ FlowOrderTypeEnum.YiShenHe.getValue() + " and cwb in(" + cwbs + ")";
+			if (deliverid > 0) {
+				sql += " and deliverid=" + deliverid;
+			}
+			return this.jdbcTemplate.queryForList(sql, String.class);
+		}
 
 	public List<CwbOrder> getTodayWeiLingZhiliuByWhereList(long deliveryState, long currentbranchid, String cwbs) {
 		String sql = "select * from express_ops_cwb_detail where deliverystate =? and currentbranchid=? and state=1 and flowordertype=? and cwb in(" + cwbs + ")";

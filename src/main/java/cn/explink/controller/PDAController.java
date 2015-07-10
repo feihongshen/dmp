@@ -8187,9 +8187,37 @@ public class PDAController {
 						todayzhiliulist = this.cwbDAO.getTodayWeiLingZhiliuCwbsByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(), this.getSessionUser().getBranchid(),
 								this.getStrings(todayzhiliucwbs), deliverid);
 					}
+					
+					//今日待中转
+					List<String> todaydaizhongzhuanlist = new ArrayList<String>();
+					List<String>  todayAppZhongZhuanList=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
+					if (todayAppZhongZhuanList.size() > 0) {
+						todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuCwbsByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanList),
+								deliverid);
+					}
+					
+					
+					//今日退货审核不通过统计
+					List<String> todayjushoulist = new ArrayList<String>();
+					List<String>  todayJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
+					String deliverystates=DeliveryStateEnum.JuShou.getValue()+","+DeliveryStateEnum.BuFenTuiHuo.getValue()+","+DeliveryStateEnum.ShangMenJuTui.getValue();
+					if (todayJuShouCwbs.size() > 0) {
+						todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
+								deliverid);
+					}
+					
+					
+					
+					
+					////////////////////////////////////////////////
+					
+					
 					List<String> todaycwbslist = new ArrayList<String>();
 					todaycwbslist.addAll(todaydaohuolist);
 					todaycwbslist.addAll(todayzhiliulist);
+					todaycwbslist.addAll(todaydaizhongzhuanlist);
+					todaycwbslist.addAll(todayjushoulist);
+					
 					StringBuffer str = new StringBuffer();
 					String cwbs = "";
 					if ((todaycwbslist != null) && (todaycwbslist.size() > 0)) {

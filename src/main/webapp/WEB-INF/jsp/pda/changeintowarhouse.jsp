@@ -624,7 +624,7 @@ $(function(){
  	}
  	$.ajax({
  		type: "POST",
- 		url:"<%=request.getContextPath()%>/bale/balezhongzhuandaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid=0",
+ 		url:"<%=request.getContextPath()%>/bale/balezhongzhuandaohuo/"+$("#baleno").val()+"/"+scancwb+"?driverid=0&customerid="+$("#customerid").val(),
  		data:{
 			"comment":comment
 		},

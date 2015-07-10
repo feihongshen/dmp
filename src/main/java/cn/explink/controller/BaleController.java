@@ -33,6 +33,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BaleStateEnum;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
@@ -290,8 +291,10 @@ public class BaleController {
 					long errorCount = 0;
 					for (CwbOrder co : cwbOrderList) {
 						try {
-							// 订单出库
-							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, false,
+							// 订单出库 只有分站中转给中转站的订单 才传入true
+							boolean iszhongzhuanout = getIsZhongZhuanOutFlag(branchid);
+							
+							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, iszhongzhuanout,
 									true);
 							successCount++;
 
@@ -348,6 +351,16 @@ public class BaleController {
 			}
 		}
 		return explinkResponse;
+	}
+
+	private boolean getIsZhongZhuanOutFlag(long branchid) {
+		boolean iszhongzhuanout=false;
+		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		Branch zzbranch=branchDAO.getBranchByBranchid(branchid);
+		if(branch.getSitetype()==BranchEnum.ZhanDian.getValue()&&zzbranch.getSitetype()==BranchEnum.ZhongZhuan.getValue()){
+			iszhongzhuanout=true;
+		}
+		return iszhongzhuanout;
 	}
 	/**
 	 * 按包 中转库房出库扫描
@@ -607,7 +620,8 @@ public class BaleController {
 	@RequestMapping("/balezhongzhuandaohuo/{baleno}/{cwb}")
 	public @ResponseBody
 	ExplinkResponse balezhongzhuandaohuo(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("baleno") String baleno, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
@@ -625,6 +639,11 @@ public class BaleController {
 				try {
 					// 订单到货
 					CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
+					String scancwb = cwb;
+					cwb = this.cwbOrderService.translateCwb(cwb);
+					
+					cwbOrder = this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
+					
 					// cwbOrder=cwborderService.intoWarehous(getSessionUser(),cwb,cwb,customerid,
 					// driverid, requestbatchno,comment,"");
 					// 更改包的状态
