@@ -852,7 +852,7 @@ public class BaleService {
 				}
 			}
 			operationOrderResultTypes[0] = DeliveryStateEnum.FenZhanZhiLiu.getValue() + "";
-			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
+			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
 					zhiliucheck, customerids, firstlevelid);
 			if (orderFlowList.size() > 0) {
 
@@ -881,7 +881,7 @@ public class BaleService {
 					jushouCheck = 0;
 				}
 			}
-			List<String> orderFlowList = deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
+			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid,
 					jushouCheck, customerids,firstlevelid);
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.getOrderFlowCwbs(orderFlowList);
@@ -1069,7 +1069,7 @@ public class BaleService {
 	 * 订单的包验证（库房出库扫描、中转站出库扫描、退货出站）
 	 */
 	public void validateCwbBaleCheck(User user, String baleno, String cwb, CwbOrder co, long branchid, long flowOrderTypeEnum) {
-		if (!"".equals(co.getPackagecode()) && co.getPackagecode() != null) {
+		if (!"".equals(co.getPackagecode()) && (co.getPackagecode() != null)) {
 			Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 			Branch userbranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 			Branch balebranch = this.branchDAO.getBranchByBranchid(coBale.getBranchid());
@@ -1148,10 +1148,12 @@ public class BaleService {
 				// 计算下一站
 				long compariBranchid = nextBranch.getSitetype() == BranchEnum.ZhanDian.getValue() ? co.getNextbranchid() : co.getDeliverybranchid();
 				// 计算的下一站！=所选的下一站 && 计算的下一站!=0
-				if ((compariBranchid != branchid) && (compariBranchid != 0)) {
+				List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(branchid, co.getDeliverybranchid(), 2);
+				if(null==routelist)
+				{if ((compariBranchid != branchid) && (compariBranchid != 0)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(
 							nextBranch.getSitetype() == BranchEnum.ZhanDian.getValue() ? co.getNextbranchid() : co.getDeliverybranchid()).getBranchname());
-				}
+				}}
 			}
 
 			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
@@ -1236,13 +1238,13 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===中转出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-			
+
 			//首先验证订单号是否在中转出站审核表中被审核通过
 			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,3);
 			if(count==0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
 			}
-			
+
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			// ==================验证包号End=======================
@@ -1260,8 +1262,8 @@ public class BaleService {
 			if ("no".equalsIgnoreCase(isPeisongAllowtoZhongZhuan) && (co.getCwbstate() == CwbStateEnum.PeiShong.getValue())) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Peisong_Bu_YunXu_ZhongZhuan);
 			}
-			Branch ifBranch = branchDAO.getQueryBranchByBranchid(currentbranchid);
-			Branch nextBranch = branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
+			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
+			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
 			boolean aflag = false;
 			if ((ifBranch != null) && (ifBranch.getSitetype() == 2)) {
 				List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(currentbranchid, branchid, 2);
