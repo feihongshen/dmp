@@ -3474,12 +3474,12 @@ public class CwbOrderService {
 
 		if (this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb)!=null) {
 			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
-			if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&count==0) {
+			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count==0)) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotLinghuo);
 			}
 
 		}
-		
+
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
@@ -3570,7 +3570,7 @@ public class CwbOrderService {
 		}
 
 		//单件领货 重复判断（同一个小件员）(一票多件已经处理)
-		if( (ds != null) && deliveryUser.getUserid() == ds.getDeliveryid()&&co.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue() && co.getScannum() == 1 && (co.getSendcarnum() == 1 || co.getBackcarnum() == 1)){
+		if( (ds != null) && (deliveryUser.getUserid() == ds.getDeliveryid())&&(co.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()) && (co.getScannum() == 1) && ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1))){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Ling_Huo);
 		}
 
@@ -3772,7 +3772,7 @@ public class CwbOrderService {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_HUAN_DING_DAN);
 			}
 			// 上门退订单批量反馈,验证是否为上门退订单
-			if (((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())||(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
+			if (fankuileixing.equals("SHANGMENTUI") &&((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())||(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_TUI_DING_DAN);
 			}
 			// 已反馈订单不允许批量反馈
