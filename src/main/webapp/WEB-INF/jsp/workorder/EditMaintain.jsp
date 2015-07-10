@@ -30,7 +30,7 @@
 						<select class="select1" name="consigneeType" id="skhfl">
 							<option value="-1">选择客户分类</option>
 								<%for(Reason r:reasonList) {%>					
-								<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent()%></option>	
+								<option value="<%=r.getReasonid()%>" <%if(r.getReasonid()==ccf.getConsigneeType()){%> selected="selected" <%} %>><%=r.getReasoncontent()%></option>	
 								<%}%>
 			 			</select></td>
 						<td noWrap="noWrap"><font color="red">*</font>性别:
