@@ -4183,7 +4183,7 @@ public class CwbOrderService {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
-					Branch tuihuoNextBranch = null;
+					
 					for (Branch b : bList) {// 获得当前站点的退货站
 						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 							tuihuoNextBranch = b;
