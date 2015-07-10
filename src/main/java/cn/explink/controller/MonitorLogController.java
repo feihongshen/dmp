@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.explink.core.pager.Pager;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -107,6 +108,12 @@ public class MonitorLogController {
 	DataStatisticsService dataStatisticsService;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	/**
+	 * 控制查询条件线程变量
+	 */
+	public static final ThreadLocal<String[]> QUERY_CONDITION = new ThreadLocal<String[]>();
+	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -132,6 +139,7 @@ public class MonitorLogController {
 		for (Customer cut : clist) {                             
 			cmap.put(cut.getCustomerid(), cut.getCustomername());
 		}
+		
 		List<String> customeridList = this.dataStatisticsService.getList(customeridStr); //把前台传入的供货商ID字符串数组储存成集合形式
 		model.addAttribute("customeridStr", customeridList);
 		List<Branch>  blist = branchDAO.getBranchAllzhandian(BranchEnum.KuFang.getValue()+""); //获取所有库房的信息
@@ -155,14 +163,6 @@ public class MonitorLogController {
 				branchids2 += ","+branch.getBranchid();
 			}
 		}
-		String customerids =getStrings(customeridStr); //把供货商id存储成in()所需格式
-		if(customerids.length()>0){
-			List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids); //获取所有选中的供货商信息
-			cmap =new HashMap<Long , String>();
-			for (Customer cut : cPlist) {
-				cmap.put(cut.getCustomerid(), cut.getCustomername());  //把所有选中的供货商id 和 供货商名称对应存入map集合
-			}
-		}
 		Map<Long ,MonitorLogSim> weidaohuoMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> tihuoMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> rukuMap = new HashMap<Long,MonitorLogSim>();
@@ -177,7 +177,30 @@ public class MonitorLogController {
 		Map<Long ,MonitorLogSim> zhongzhuankuyichuweidaozhanMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> tuihuokutuihuozaitouweidaozhanMap = new HashMap<Long,MonitorLogSim>();
 		Map<Long ,MonitorLogSim> tuikehuweishoukuanMap = new HashMap<Long,MonitorLogSim>();
+		
+		String customerids = "";
+		
 		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") ){
+			
+			
+//			if(customeridStr.length > 0 || customeridStr != null ){
+//				QUERY_CONDITION.set(customeridStr);
+//			}
+			if( customeridStr.length > 0 ){
+				QUERY_CONDITION.set(customeridStr);
+			}
+			
+			customeridStr = QUERY_CONDITION.get() == null? customeridStr : QUERY_CONDITION.get() ;
+			
+			customerids =getStrings(customeridStr); //把供货商id存储成in()所需格式
+			if(customerids.length()>0){
+				List<Customer> cPlist =   customerDAO.getCustomerByIds(customerids); //获取所有选中的供货商信息
+				cmap =new HashMap<Long , String>();
+				for (Customer cut : cPlist) {
+					cmap.put(cut.getCustomerid(), cut.getCustomername());  //把所有选中的供货商id 和 供货商名称对应存入map集合
+				}
+			}
+			
 			//未到货
 			List<MonitorLogSim> weidaohuoList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype=1 ");
 			if(weidaohuoList != null && weidaohuoList.size()>0){    //获取订单是该供货商总数以及receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
@@ -277,6 +300,7 @@ public class MonitorLogController {
 				}
 			}
 		}else{
+			QUERY_CONDITION.set(null);
 			cmap =new HashMap<Long , String>();
 		}
 		model.addAttribute("tuihuoyichuzhanMap", tuihuoyichuzhanMap);
