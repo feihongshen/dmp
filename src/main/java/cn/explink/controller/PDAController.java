@@ -7956,10 +7956,10 @@ public class PDAController {
 			// 查询出数据
 			String sqlstr = "";
 			if (type.length() > 0) {
+				
 				if (type.equals("weichuku")) {
 					if (extype.equals("wall") || extype.isEmpty()) {
 						sqlstr=this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), 0);
-						//sqlstr = this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
 					}
 					if (extype.equals("wshangmengtui")) {
 						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
@@ -7979,16 +7979,20 @@ public class PDAController {
 				}
 				if (type.equals("yichuku")) {
 					if (extype.equals("yall") || extype.isEmpty()) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
+						sqlstr = this.cwbDAO.getTuiGongHuoShangYiChuKuSql(this.getSessionUser().getBranchid(),0);
+//						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), 0);
 					}
 					if (extype.equals("yshangmengtui")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+						sqlstr = this.cwbDAO.getTuiGongHuoShangYiChuKuSql(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
+//						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
 					}
 					if (extype.equals("yshangmenghuan")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+						sqlstr = this.cwbDAO.getTuiGongHuoShangYiChuKuSql(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
+//						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
 					}
 					if (extype.equals("ypeisong")) {
-						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+						sqlstr = this.cwbDAO.getTuiGongHuoShangYiChuKuSql(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
+//						sqlstr = this.cwbDAO.getSqlExportBackToCustomerYichukuOfcwbtype(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
 					}
 				}
 			}

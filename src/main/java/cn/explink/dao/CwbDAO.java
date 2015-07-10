@@ -4790,6 +4790,17 @@ public class CwbDAO {
 		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	/**
+	 * 退供货商 已出库导出sql（change by gaoll）
+	 */
+	public String getTuiGongHuoShangYiChuKuSql(long branchid,long cwbordertypeid) {
+		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
+				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 ";
+		if(cwbordertypeid>0){
+			sql+="  AND cwbordertypeid="+cwbordertypeid;
+		}
+		return sql;
+	}
 
 	public List<CwbOrder> getTuiGongHuoShangYiChuKu(long branchid, long page, long cwbordertypeid) {
 		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
