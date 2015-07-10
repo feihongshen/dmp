@@ -4179,7 +4179,7 @@ public class CwbOrderService {
 					}
 					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 
-				}/* else {
+				} else {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
@@ -4198,7 +4198,7 @@ public class CwbOrderService {
 					}
 					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 					this.logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
-				}*/
+				}
 
 			} else {
 				this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
