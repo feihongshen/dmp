@@ -49,6 +49,8 @@
 	   //获取下拉框的值
 	   $("#find").click(function(){
 			if(check()){
+				 if($(":checked[name=branchid]").length==0){
+		        	 multiSelectAll('branchid',1,'请选择');}
 				$("#isshow").val(1);
 		    	$("#searchForm").submit();
 		    	$("#find").attr("disabled","disabled");
