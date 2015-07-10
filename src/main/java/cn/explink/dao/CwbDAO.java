@@ -770,7 +770,15 @@ public class CwbDAO {
 			return cwbOrder;
 		}
 	}
+	private final class StringTypeColumnMapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String cwb=rs.getString(1);
+			return cwb;
+		}
+		
+	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -5786,10 +5794,18 @@ public class CwbDAO {
 
 	public List<CwbOrder> getMonitorLogByBranchid(String branchids, String customerids, String wheresql, long page) {
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
-				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " ") + "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
-
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
+		if (page!=-9) {
+			sql.append("  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		}
 		System.out.println("-- 生命周期监控查看明细:\n" + sql);
-		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
+		List<CwbOrder> list=new ArrayList<CwbOrder>();
+		try {
+			list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return list;
 	}
 
@@ -5800,7 +5816,29 @@ public class CwbDAO {
 		System.out.println("-- 生命周期监控查看明细:\n" + sql);
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
-
+	public long getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(String branchids, String customerids, String wheresql) {
+		String effectiveCwbsString=this.getEffectiveCwbString(branchids, customerids, wheresql);
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " ")+" and cwb not in("+effectiveCwbsString+")");
+		
+		System.out.println("-- 生命周期监控查看明细:\n" + sql);
+		return this.jdbcTemplate.queryForLong(sql.toString());
+	}
+	public String getEffectiveCwbString(String branchids, String customerids, String wheresql){
+		String suffer="'";
+		StringBuffer buffer=new StringBuffer();
+		StringBuffer sql = new StringBuffer("SELECT count(1) FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " AND state=1  "
+				+ (customerids.length() > 0 ? (" and customerid in(" + customerids + ") ") : " "));
+			List<String> cwbsList=this.jdbcTemplate.query(sql.toString(), new StringTypeColumnMapper());
+			for (String string : cwbsList) {
+				buffer.append(suffer).append(string).append(suffer).append(",");
+			}
+			if (buffer.indexOf(",")>=0) {
+				return buffer.substring(0, buffer.length()-1).toString();
+			}else {
+				return "''";
+			}
+	}
 	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid, long page, String branchids) {
 
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  " + wheresql + " and "

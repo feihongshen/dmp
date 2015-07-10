@@ -272,7 +272,7 @@ public class MonitorLogController {
 				}
 			}
 			//站点在站资金
-			List<MonitorLogSim> zhandianzaizhanzijinList =   monitorLogService.getMonitorLogByBranchid(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
+			List<MonitorLogSim> zhandianzaizhanzijinList =   monitorLogService.getMonitorLogByBranchidWithZhanDianZaiZhanZiJin(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
 			if(zhandianzaizhanzijinList != null && zhandianzaizhanzijinList.size()>0){
 				for (MonitorLogSim mon: zhandianzaizhanzijinList) {
 					zhandianzaizhanzijinMap.put(mon.getCustomerid(), mon);
@@ -364,6 +364,11 @@ public class MonitorLogController {
 		model.addAttribute("cwborderList", cwborderList);
 		
 		long count = monitorLogService.getMonitorLogByTypeCount(branchids,branchids1,branchids2,customerid,type);
+/*		long count=0;
+		List<CwbOrderView>  cwborderListCount =   monitorLogService.getMonitorLogByType(branchids,branchids1,branchids2,customerid,type,-9);
+		*//*if (cwborderListCount.size()>0) {
+			count=cwborderListCount.size();
+		}*/
 		Page pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		
 		model.addAttribute("page_obj", pageparm);

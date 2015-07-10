@@ -57,7 +57,16 @@ public class MonitorDAO {
 			return menu;
 		}
 	}
+	private final class StringTypeMapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			String cwbString=rs.getString(1);
+			return cwbString;
+		}
+		
+	}
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
@@ -68,11 +77,41 @@ public class MonitorDAO {
 	 * @throws Exception
 	 */
 	public List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
-		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" GROUP BY customerid");
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"  GROUP BY customerid");
 		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
+	}
+	/**
+	 * 站点在站资金的情况(订单生命周期监控)
+	 * @param branchids
+	 * @param customerids
+	 * @param wheresql
+	 * @return
+	 */
+	public List<MonitorLogSim> getMonitorLogByBranchidWithZhandianzaiZhanZiJin(String branchids,String customerids,String wheresql) {
+		String cwbsString=this.getExpectZhandianZaiZhanZiJinCwb(branchids,customerids,wheresql);
+		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" AND cwb NOT IN("+cwbsString+") GROUP BY customerid");
+		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
+		System.out.println("-- 生命周期监控:\n"+sql);
+		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
+		return list;
+	}
+	public String getExpectZhandianZaiZhanZiJinCwb(String branchids,String customerids,String wheresql){
+		String suffer="'";
+		StringBuffer buffer=new StringBuffer();
+		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" AND deliverystate=1 AND newpaywayid=2 GROUP BY customerid");
+		System.out.println("-- 生命周期监控--->>:\n"+sql);
+		List<String> stringlist=jdbcTemplate.query(sql.toString(),new StringTypeMapper());
+		for (String string : stringlist) {
+			buffer.append(suffer).append(string).append(suffer).append(",");
+		}
+		if (buffer.indexOf(",")>=0) {
+			return buffer.substring(0, buffer.length()-1).toString();
+		}else {
+			return "''";
+		}
 	}
 	public List<MonitorLogSim> getMonitorLogByExpBranchid(String branchids,String customerids,String wheresql) {
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and branchid not in("+branchids+")  GROUP BY customerid");
@@ -102,13 +141,34 @@ public class MonitorDAO {
 		return list;
 	}
 	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid,long page) {
+		String effectCwbs=this.getEffectCwbs(flowordertypes, branchids, customerid, page);
 		StringBuffer sql = new StringBuffer(
-				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")" +
-						" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")"+" and cwb NOT IN ("+effectCwbs+")" );
+		if (page!=-9) {
+			sql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		}
 
 		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
 
 		return list;
+	}
+	public String getEffectCwbs(String flowordertypes ,String branchids,String customerid,long page){
+		StringBuffer buffer=new StringBuffer();
+		String zhuiString="'";
+		StringBuffer sql = new StringBuffer(
+				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")"+" and deliverystate=1 and cwbordertypeid=2" );
+		if (page!=-9) {
+			sql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		}
+		List<String> calculateNumList=this.jdbcTemplate.query(sql.toString(), new StringTypeMapper());
+		for (String string : calculateNumList) {
+			buffer.append(zhuiString).append(string).append(zhuiString).append(",");
+		}
+		if (buffer.indexOf(",")>=0) {
+			return buffer.substring(0, buffer.length()-1).toString();
+		}else {
+			return "''";
+		}
 	}
 	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid) {
 		StringBuffer sql = new StringBuffer(

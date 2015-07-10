@@ -1667,8 +1667,10 @@ public class DataStatisticsService {
 
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
+				if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()) {
+					continue;
+				}
 				CwbOrderView cwbOrderView = new CwbOrderView();
-
 				cwbOrderView.setCwb(c.getCwb());
 				cwbOrderView.setEmaildate(c.getEmaildate());
 				cwbOrderView.setCarrealweight(c.getCarrealweight());
@@ -1777,6 +1779,8 @@ public class DataStatisticsService {
 				}
 				cwbOrderViewList.add(cwbOrderView);
 
+			
+			
 			}
 		}
 		return cwbOrderViewList;

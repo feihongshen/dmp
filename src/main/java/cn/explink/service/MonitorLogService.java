@@ -59,6 +59,9 @@ public class MonitorLogService {
 	public  List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
 		return monitorDAO.getMonitorLogByBranchid(branchids,customerids,wheresql) ;
 	}
+	public  List<MonitorLogSim> getMonitorLogByBranchidWithZhanDianZaiZhanZiJin(String branchids,String customerids,String wheresql) {
+		return monitorDAO.getMonitorLogByBranchidWithZhandianzaiZhanZiJin(branchids,customerids,wheresql) ;
+	}
 	public  List<MonitorKucunSim> getMonitorKucunByBranchid(String branchids,String wheresql) {
 		
 		return monitorKucunDAO.getMonitorLogByBranchid(branchids,wheresql);
@@ -205,7 +208,7 @@ public class MonitorLogService {
 		}
 		
 		if("zhandianzaizhanzijin".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype IN(7,8,9,29,38) ");
+			count = cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", " flowordertype IN(7,8,9,29,38) ");
 		}
 		if("zhongzhuankuyichuweidaozhan".equals(type)){
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and `startbranchid` IN("+branchids1+") or flowordertype=14");
@@ -227,7 +230,7 @@ public class MonitorLogService {
 					" OR fncustomerbillverifyflag=0" +
 					") ";
 			
-			count +=   cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", wheresql);;
+			count +=   cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", wheresql);;
 		}
 		
 		

@@ -354,7 +354,7 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/tuikehuweishoukuan/1"><%=tuikehuweishoukuanCountsum %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuikehuweishoukuanCaramountsum %></td>		   		
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=customerids%>/all/1"><%= weidaohuoCountsum+tihuoCountsum+rukuCountsum
-					   		+chukuCountsum+daozhanCountsum+ 
+					   		+chukuCountsum+
 					   		tuihuoyichuzhanCountsum+zhongzhuanyichuzhanCountsum+zhongzhanrukuCountsum
 					   		+tuihuorukuCountsum+tuigonghuoshangCountsum
 					   		+zhandianzaizhanzijinCountsum+zhongzhuankuyichuweidaozhanCountsum
@@ -362,7 +362,7 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="right" valign="middle" >
 			   		<%=weidaohuoCaramountsum.add(tihuoCaramountsum).
 					   		add(tihuoCaramountsum).add(rukuCaramountsum).add(chukuCaramountsum).
-					   		add(daozhanCaramountsum).add(tuihuoyichuzhanCaramountsum).add(zhongzhuanyichuzhanCaramountsum)
+					   		add(tuihuoyichuzhanCaramountsum).add(zhongzhuanyichuzhanCaramountsum)
 					   		.add(zhongzhuanrukuCaramountsum).add(tuihuorukuCaramountsum).
 					   		add(tuigonghuoshangCaramountsum).add(zhandianzaizhanzijinCaramountsum).
 					   		add(zhongzhuankuyichuweidaozhanCaramountsum).
