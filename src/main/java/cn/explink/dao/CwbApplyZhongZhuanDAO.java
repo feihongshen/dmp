@@ -330,4 +330,21 @@ public class CwbApplyZhongZhuanDAO {
 		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle=? and isstastics =0";
 		return jdbcTemplate.queryForLong(sql, cwb,ishandle);
 	}
+	
+	public long getCwbApplyZhongZhuanYiChuLiByCwbCountss(String cwb) {
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle in(0,2) and isstastics =0";
+		return jdbcTemplate.queryForLong(sql, cwb);
+	}
+	
+	public long getCwbApplyZhongZhuanYiChuLiByCwbCounts(String cwb) {
+		String sql = "select count(1) from op_cwbapplyzhongzhuan where cwb=? and ishandle in(0,3) and isstastics =0";
+		return jdbcTemplate.queryForLong(sql, cwb);
+	}
+	
+	public List<CwbApplyZhongZhuan> getCwbApplyZhongZhuanYiChuLi(String cwb) {
+		String sql = "select * from op_cwbapplyzhongzhuan where cwb=?and isstastics =0";
+		return jdbcTemplate.query(sql,new CwbApplyZhongZhuanMapper(), cwb);
+	}
+	
+	
 }

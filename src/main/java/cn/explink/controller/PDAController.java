@@ -4712,38 +4712,60 @@ public class PDAController {
 					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, co.getNextbranchid());
 				}
 				
-				}else{
+			}else{
 				if ((op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
-				long branchid = 0;
-				if (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
-					branchid = op.getBranchid();
-				} else {
-					branchid = op.getNextbranchid();
-				}
-				cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
+					long branchid = 0;
+					if (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
+						branchid = op.getBranchid();
+					} else {
+						branchid = op.getNextbranchid();
+					}
+					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
 				} else if ((op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
-				if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
-					Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
-					if ((branch == null) || (branch.getSitetype() != BranchEnum.ZhongZhuan.getValue())) {
+					if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+						Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
+						if ((branch == null) || (branch.getSitetype() != BranchEnum.ZhongZhuan.getValue())) {
+							throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
+						}
+					}
+					long branchid = 0;
+					if (op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+						branchid = op.getBranchid();
+					} else {
+						branchid = op.getNextbranchid();
+					}
+					cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 1, branchid);
+				} else {
+					long count = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);
+					if(count!=0){
+						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuoruku);
+					}
+					/*long count2 = this.orderBackCheckDAO.getOrderbackResult(cwb,1);
+					if(count2!=0){
+						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuo);
+					}*/
+					//long countnull = this.orderBackCheckDAO.getOrderbackResult(cwb);
+					/*if(countnull==0){
+						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuoruku);
+					}*/
+					
+					long count3 = this.orderBackCheckDAO.getOrderbackResult(cwb,2);
+					if(count3!=0){
+						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
+					}
+					long count2=this.orderBackCheckDAO.getOrderbackResult(cwb,1);
+					/*if(this.orderBackCheckDAO.getOrderbackResult(cwb,1)>0){
+						count2=this.orderBackCheckDAO.getOrderbackResult(cwb,1);
+					}*/
+					long countnull = this.orderBackCheckDAO.getOrderbackResult(cwb);
+					if (co.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()||count2!=0||countnull==0) {
+						cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, co.getNextbranchid());
+					}
+					if (co.getFlowordertype()!=FlowOrderTypeEnum.DingDanLanJie.getValue()&&(count2==0&&countnull!=0)) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
 					}
 				}
-				long branchid = 0;
-				if (op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
-					branchid = op.getBranchid();
-				} else {
-					branchid = op.getNextbranchid();
-				}
-				cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 1, branchid);
-			} else {
-				if (co.getFlowordertype()!=FlowOrderTypeEnum.DingDanLanJie.getValue()) {
-					throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
-				}
-				if (co.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()) {
-					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, co.getNextbranchid());
-				}
-				}
-				}
+			}
 		} else {
 			if (checktype == 2) {
 				if (co.getCustomerid() != customerid) {

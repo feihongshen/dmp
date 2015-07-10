@@ -330,16 +330,16 @@ function resetData(){
 												<%=cwb.getRemarkstr() %>
 										<input type="hidden" id="<%=cwb.getCwb() %>_cwbremark" name="<%=cwb.getCwb() %>_cwbremark" value="<%=cwb.getCwb() %>_s_0"/>
 										<%}else{ %>
-										<%if(!"".equals(cwb.getRemarkstr())){ %>
-											<input value="<%=cwb.getRemarkstr() %>" />
-										<%}else{ %>
-											<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
-												<option value="0">请选择退货再投原因</option>
-												<%for(Reason r :reasonList) {%>
-													<option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option>
-												<%} %>
-											</select>
-										<%} }%>
+											<%if(!"".equals(cwb.getRemarkstr())){ %>
+												<input value="<%=cwb.getRemarkstr() %>" />
+											<%}else{ %>
+												<select name="<%=cwb.getCwb() %>_cwbremark" id="<%=cwb.getCwb() %>_cwbremark">
+													<option value="0">请选择退货再投原因</option>
+													<%for(Reason r :reasonList) {%>
+														<option value="<%=cwb.getCwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option>
+													<%} %>
+												</select>
+											<%} }%>
 										</td>
 										<td width="80" align="center" valign="middle" ><%=cwb.getAuditname() %></td>
 										<td width="100" align="center" valign="middle" ><%=cwb.getAudittime() %></td>

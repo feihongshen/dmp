@@ -104,9 +104,18 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
-	
+	//待审核
 	public OrderBackCheck getOrderBackCheckByCheckstate(String cwb) {
 		String sql = "select * from ops_order_back_check where checkstate=1  and cwb = ? ";
+		try {
+			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	//站点配送
+	public OrderBackCheck getOrderBackCheckByCheckresult(String cwb) {
+		String sql = "select * from ops_order_back_check where checkresult=2  and cwb = ? ";
 		try {
 			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
 		} catch (Exception e) {
@@ -312,5 +321,26 @@ public class OrderBackCheckDAO {
 			jdbcTemplate.update(sql,  cwb);
 		}
 		
-	
+		public long getOrderbackChecks(String cwb){
+			String sql = "select count(1) from ops_order_back_check where cwb=? and (checkstate=1 or checkresult=1) and isstastics=0";
+			return this.jdbcTemplate.queryForLong(sql,cwb); 
+		}
+		public long getOrderbackCheckss(String cwb){
+			String sql = "select count(1) from ops_order_back_check where cwb=? and (checkstate=1 or checkresult=2) and isstastics=0";
+			return this.jdbcTemplate.queryForLong(sql,cwb); 
+		}
+		
+		public long getOrderbackCheck(String cwb,int checkstate){
+			String sql = "select count(1) from ops_order_back_check where checkstate=? and cwb=? and isstastics=0";
+			return this.jdbcTemplate.queryForLong(sql,checkstate,cwb); 
+		}
+		public long getOrderbackResult(String cwb,int checkresult){
+			String sql = "select count(1) from ops_order_back_check where checkresult=? and cwb=? and isstastics=0";
+			return this.jdbcTemplate.queryForLong(sql,checkresult,cwb); 
+		}
+		
+		public long getOrderbackResult(String cwb){
+			String sql = "select count(1) from ops_order_back_check where cwb=? and isstastics=0";
+			return this.jdbcTemplate.queryForLong(sql,cwb); 
+		}
 }

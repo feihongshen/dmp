@@ -126,6 +126,18 @@ public class OrderBackRukuRecordDao {
 		String sql = "update express_orderbackruku_record set auditstate=1,remarkstr=?,auditname=?,audittime=? where cwb=? order by id desc limit 1";
 		this.jdbcTemplate.update(sql,reasoncontent,realname,createtime,cwb);
 	}
+
+
+	public OrderBackRuku getBackrukuRecord(String cwb) {
+		try{
+			String sql = "select * from express_orderbackruku_record where cwb=? and auditstate=0";
+			return this.jdbcTemplate.queryForObject(sql, new OrderBackRukuRowMapper(),cwb);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 	
 	
 }

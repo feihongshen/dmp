@@ -1022,14 +1022,19 @@ public class CwbOrderService {
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
 		}
-
 		CwbOrder cwbOrdercheck=this.cwbDAO.getCwbByCwb(cwb);
 		int changealowflag=this.getChangealowflagByIdAdd(cwbOrdercheck);
-		long count = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCount(cwb);
-		if ((cwbOrdercheck.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(changealowflag==1)&&(count==0)) {
-			//return this.responseErrorZhongzhuanrukuLimit();
+		long count1 = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0); 
+		
+		//未审核的订单不允许中转入库（审核申请表中存在）
+		if(count1>0&&changealowflag==1&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuanruku);
+		}
+		long count2 = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2); 
+		if(count2>0&&changealowflag==1&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuanruku);
 		}
+		//List<CwbApplyZhongZhuan> cazzList = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLi(cwb); 
 
 		//已申请中转出站并且没有做审核的订单不允许中转出站
 		CwbApplyZhongZhuan cazz = this.cwbApplyZhongZhuanDAO.getCwbapplyZZ(cwb);
@@ -1574,19 +1579,21 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
-		//有效订单存入退货站入库记录表
-		OrderBackRuku obr = new OrderBackRuku();
-		obr.setCwb(co.getCwb());
-		obr.setCustomerid(co.getCustomerid());//供货商id
-		obr.setBranchid(co.getDeliverybranchid());//上一站（配送站） 当前站为退货站(配送到达的站点)
-		obr.setCwbordertypeid(co.getCwbordertypeid());//订单类型
-		obr.setConsigneename(co.getConsigneename());//收件人名字
-		obr.setConsigneeaddress(co.getConsigneeaddress());//收件人地址
-		obr.setCreatetime(this.getNowtime());//当前时间
-		obr.setCwbstate((int)co.getCwbstate());
-		this.orderBackRukuRecordDao.creOrderbackRuku(obr);//导入到退货站入库记录表
-
+		//查询是否在退货入库表中有记录
+		OrderBackRuku obrobj =  this.orderBackRukuRecordDao.getBackrukuRecord(cwb);
+		if(obrobj==null){
+			//有效订单存入退货站入库记录表
+			OrderBackRuku obr = new OrderBackRuku();
+			obr.setCwb(co.getCwb());
+			obr.setCustomerid(co.getCustomerid());//供货商id
+			obr.setBranchid(co.getDeliverybranchid());//上一站（配送站） 当前站为退货站(配送到达的站点)
+			obr.setCwbordertypeid(co.getCwbordertypeid());//订单类型
+			obr.setConsigneename(co.getConsigneename());//收件人名字
+			obr.setConsigneeaddress(co.getConsigneeaddress());//收件人地址
+			obr.setCreatetime(getNowtime());//当前时间
+			obr.setCwbstate((int)co.getCwbstate());
+			this.orderBackRukuRecordDao.creOrderbackRuku(obr);//导入到退货站入库记录表
+		}
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
 		if ((cwbBranch.getBranchid() != currentbranchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
@@ -2087,10 +2094,28 @@ public class CwbOrderService {
 	 */
 	public CwbOrder changeoutWarehous(User user, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
 			long reasonid, boolean iszhongzhuanout, boolean anbaochuku) {
-
+		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.ZhongZhuanZhanRuKu;
 		this.logger.info("开始中转站出库处理,cwb:{}", cwb);
-
 		cwb = this.translateCwb(cwb);
+		CwbOrder cwbOrdercheck=this.cwbDAO.getCwbByCwb(cwb);
+		int changealowflag=this.getChangealowflagByIdAdd(cwbOrdercheck);
+		long count1 = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0); 
+		
+		//未审核的订单不允许中转入库（审核申请表中存在）
+		if(count1>0&&changealowflag==1&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuanchuku);
+		}
+		long count2 = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2); 
+		if(count2>0&&changealowflag==1&&cwbOrdercheck.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuanchuku);
+		}
+		//List<CwbApplyZhongZhuan> cazzList = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLi(cwb); 
+
+		/*//已申请中转出站并且没有做审核的订单不允许中转出站
+		CwbApplyZhongZhuan cazz = this.cwbApplyZhongZhuanDAO.getCwbapplyZZ(cwb);
+		if(cazz!=null){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error);
+		}*/
 
 		return this.changeOutWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout,
 				System.currentTimeMillis(), anbaochuku);
@@ -2473,6 +2498,14 @@ public class CwbOrderService {
 
 		cwb = this.translateCwb(cwb);
 
+		OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
+		if(obc!=null){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_dai_shen_he);
+		}
+		OrderBackCheck obc2 = this.orderBackCheckDAO.getOrderBackCheckByCheckresult(cwb);
+		if(obc2!=null){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
+		}
 		return this.outWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout,
 				System.currentTimeMillis(), anbaochuku);
 	}
@@ -3171,6 +3204,10 @@ public class CwbOrderService {
 		if(obc!=null){
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_dai_shen_he);
 		}
+		OrderBackCheck obc2 = this.orderBackCheckDAO.getOrderBackCheckByCheckresult(cwb);
+		if(obc2!=null){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
+		}
 		return this.outUntreadWarehousHandle(user, user.getBranchid(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagename, anbaochuku);
 	}
 
@@ -3473,11 +3510,16 @@ public class CwbOrderService {
 		}
 
 		if (this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb)!=null) {
+			//long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb);
+			//if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&count!=0) {
 			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
 			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count==0)) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotLinghuo);
 			}
-
+		}
+		long countOC = this.orderBackCheckDAO.getOrderbackChecks(cwb);
+		if(countOC!=0){
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
@@ -4698,6 +4740,12 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
+		
+		long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
+		if(count!=0){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
+		}
+		
 		if (co.getCustomerid() != customerid) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU, this.customerDAO.getCustomerById(
 					co.getCustomerid()).getCustomername());

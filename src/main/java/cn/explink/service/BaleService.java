@@ -43,6 +43,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PayWayDao;
 import cn.explink.dao.ReasonDao;
@@ -138,6 +139,8 @@ public class BaleService {
 	BaleCwbDao baleCwbDAO;
 	@Autowired
 	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDAO;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -1194,7 +1197,11 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-
+			//未审核或者审核为站点配送的
+			long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
+			if(count!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
+			}
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
 			// ==================验证包号End=======================
@@ -1240,8 +1247,8 @@ public class BaleService {
 			this.logger.info("开始验证包号" + baleno);
 
 			//首先验证订单号是否在中转出站审核表中被审核通过
-			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,3);
-			if(count==0){
+			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCountss(cwb);
+			if(count!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
 			}
 
@@ -1341,6 +1348,11 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
+			
+			long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
+			if(count!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
+			}
 
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
