@@ -1092,8 +1092,15 @@ public class BaleService {
 							errorstate = ft.getText();
 						}
 					}
-					// 操作失败，此订单已经在{0}包号{1}!
-					throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_Error1, cwb, co.getPackagecode(), errorstate);
+					
+					if(coBale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()&&coBale.getBranchid()!=userbranch.getBranchid()){
+						
+					}else{
+						// 操作失败，此订单已经在{0}包号{1}!
+						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_Error1, cwb, co.getPackagecode(), errorstate);
+					}
+					
+					
 				}
 			}
 		}
@@ -1375,8 +1382,15 @@ public class BaleService {
 				if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
 					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), cwb);
 				}
+				
+				//如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
+				if (baleno!=co.getPackagecode()&&baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()&&baleOld.getBranchid()!=branchid) {
+					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), cwb);
+				}
 			}
 
+			
+			
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
 			if (bale == null) {
 				this.logger.info("创建包号" + baleno);
