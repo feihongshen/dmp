@@ -3773,7 +3773,7 @@ public class CwbOrderService {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_HUAN_DING_DAN);
 			}
 			// 上门退订单批量反馈,验证是否为上门退订单
-			if (fankuileixing.equals("SHANGMENTUI") &&((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())||(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
+			if (fankuileixing.equals("SHANGMENTUI") /*&&((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())||(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()))*/ && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_SHANG_MEN_TUI_DING_DAN);
 			}
 			// 已反馈订单不允许批量反馈
