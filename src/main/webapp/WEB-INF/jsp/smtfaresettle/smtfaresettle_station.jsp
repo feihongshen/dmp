@@ -358,7 +358,9 @@
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
 				</tr>
 			</table>
-			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+		</div>
+		<div class="iframe_bottom">
+		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
 						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/1');$('#searchForm').submit();">第一页</a>
@@ -382,8 +384,7 @@
 					</select>页</td>
 				</tr>
 			</table>
-		</div>
-
+			</div>
 		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_s/1"
 			method="post">
 			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
@@ -393,6 +394,7 @@
 				id="type" name="type" />
 
 		</form>
+		
 </body>
 </html>
 
