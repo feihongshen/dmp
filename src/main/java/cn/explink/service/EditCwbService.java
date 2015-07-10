@@ -33,6 +33,7 @@ import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.PayUpDAO;
+import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbDetail;
@@ -114,6 +115,8 @@ public class EditCwbService {
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
 	@Autowired
 	ExceptionCwbDAO exceptionDAO;
+	@Autowired
+	ReturnCwbsDAO returnCwbsDAO;
 
 	/**
 	 * 修改订单 之 重置审核状态
@@ -209,6 +212,9 @@ public class EditCwbService {
 				+ " and currentbranchid=0 and cwbstate=" + CwbStateEnum.PeiShong.getValue() + " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue() + " and opscwbid=" + co.getOpscwbid());
 
 		exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), getSessionUser(), "重置审核状态");
+		//删除返单表
+		returnCwbsDAO.deleteReturnCwbByCwb(cwb);
+		
 		/**
 		 * 云订单重置审核状态
 		 */
