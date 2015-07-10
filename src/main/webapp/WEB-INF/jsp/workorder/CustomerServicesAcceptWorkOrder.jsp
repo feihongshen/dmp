@@ -74,6 +74,7 @@ function showWorkorder(page){
 		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWOByCWB/'+page,
 		datatype:'json',
 		success:function(data){
+			var pageFlag = false;
 			var thStr1 = "<tr class='font_1'>" +
 			"<th bgcolor='#eef6ff'>工单号</th>" +
 			"<th bgcolor='#eef6ff'>订单号</th>" +
@@ -83,6 +84,7 @@ function showWorkorder(page){
 			"<th bgcolor='#eef6ff'>受理内容</th>" +
 			"<th bgcolor='#eef6ff'>工单状态</th></tr>";
 			$.each(data.list,function(ind,ele){
+				pageFlag = true;
 				var dataTrStr1 = "";
 					var contentTemp = ele.content;								
 					contentTemp = contentTemp.substring(0,10);					
@@ -101,8 +103,10 @@ function showWorkorder(page){
 			"<a href='javascript:showWorkorder("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
 			"<a href='javascript:showWorkorder("+data.page_obj.next+")'>"+'下一页'+"</a>" +
 			"<a href='javascript:showWorkorder("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
-			"</tr>";			
-			$("#pageWo").html(apage);
+			"</tr>";
+			if(pageFlag){
+				$("#pageWo").html(apage);
+			}
 			selectcolorofwo();
 			}
 		});	
@@ -355,6 +359,7 @@ function SelectdetailForm(page){
 		datatype:'json',
 		url:'<%=request.getContextPath()%>/workorder/SelectdetalForm/'+page,
 		success:function(data){					
+				var pageFlag = false;
 				var thStr = "<tr>" +
 							"<th bgcolor='#eef6ff'>订单号</th>" +
 							"<th bgcolor='#eef6ff'>运单号</th>" +
@@ -366,7 +371,7 @@ function SelectdetailForm(page){
 							"<th bgcolor='#eef6ff'>当前状态</th></tr>";
 				$.each(data.list,function(ind,ele){
 				
-				
+					pageFlag = true;
 					var dataTrStr = "";
 					dataTrStr = "<tr onclick='gettrValue("+ele.id+")' id='eleid'>" +
 							"<td id='cwb"+ele.id+"'><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.cwb+"' target='_Blank'>"+ele.cwb+"</a></td>" +
@@ -382,15 +387,15 @@ function SelectdetailForm(page){
 					
 				});
 				$("#CsAcceptDg").html(thStr);
-				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:SelectdetailForm(1)'>"+'第一页'+"</a>" +
-				"<a href='javascript:SelectdetailForm("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
-				"<a href='javascript:SelectdetailForm("+data.page_obj.next+")'>"+'下一页'+"</a>" +
-				"<a href='javascript:SelectdetailForm("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:SelectdetailForm(1)'>"+'第一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+				"<a href='javascript:SelectdetailForm("+data.page_obj.previous+")'>"+'上一页'+"</a>&nbsp;&nbsp;&nbsp;"+
+				"<a href='javascript:SelectdetailForm("+data.page_obj.next+")'>"+'下一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+				"<a href='javascript:SelectdetailForm("+data.page_obj.maxpage+")'>"+'最后一页'+"</a>&nbsp;&nbsp;<td>"+
 				"</tr>";
 				
-				$("#pageid").html(apage);
-			
-					
+				if(pageFlag){
+					$("#pageid").html(apage);
+				}
 			
 				selectcolor();			
 		}
@@ -417,6 +422,7 @@ function submitselect(page){
 		url:$('#selectF').attr('action')+"/"+page,
 		dataType:'json',
 		success:function(data){
+			var pageFlag = false;
 			var thStr = "<tr>" +
 			"<th bgcolor='#eef6ff'>订单号</th>" +
 			"<th bgcolor='#eef6ff'>运单号</th>" +
@@ -426,28 +432,32 @@ function submitselect(page){
 			"<th bgcolor='#eef6ff'>收货地址</th>" +
 			"<th bgcolor='#eef6ff'>手机</th>" +
 			"<th bgcolor='#eef6ff'>当前状态</th></tr>";
-$.each(data.list,function(ind,ele){
-	var dataTrStr = "";
-	dataTrStr = "<tr onclick='gettrValue("+ ele.id +")' id='eleid'>" +
-			"<td id='cwb"+ele.id+"'><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.cwb+"' target='_Blank'>"+ele.cwb+"</a></td>" +
-			"<td>"+ele.transcwb+"</td>" +
-			"<td>"+ele.customername+"</td>" +
-			"<td>"+ele.emaildate+"</td>" +
-			"<td>"+ele.consigneename+"</td>" +
-			"<td>"+ele.consigneeaddress+"</td>" +
-			"<td>"+ele.consigneemobile+"</td>" +
-			"<td>"+ele.cwbstate+"</td></tr>";
-	thStr += dataTrStr;
+			
+			
+			$.each(data.list,function(ind,ele){
+				pageFlag = true;
+				var dataTrStr = "";
+				dataTrStr = "<tr onclick='gettrValue("+ ele.id +")' id='eleid'>" +
+						"<td id='cwb"+ele.id+"'><a href='<%=request.getContextPath()%>/order/queckSelectOrder/"+ele.cwb+"' target='_Blank'>"+ele.cwb+"</a></td>" +
+						"<td>"+ele.transcwb+"</td>" +
+						"<td>"+ele.customername+"</td>" +
+						"<td>"+ele.emaildate+"</td>" +
+						"<td>"+ele.consigneename+"</td>" +
+						"<td>"+ele.consigneeaddress+"</td>" +
+						"<td>"+ele.consigneemobile+"</td>" +
+						"<td>"+ele.cwbstate+"</td></tr>";
+				thStr += dataTrStr;
 	
 });
 	$("#CsAcceptDg").html(thStr);
-	var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect(1)'>"+'第一页'+"</a>" +
-	"<a href='javascript:submitselect("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
-	"<a href='javascript:submitselect("+data.page_obj.next+")'>"+'下一页'+"</a>" +
-	"<a href='javascript:submitselect("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+	var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect(1)'>"+'第一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+	"<a href='javascript:submitselect("+data.page_obj.previous+")'>"+'上一页'+"</a>&nbsp;&nbsp;&nbsp;"+
+	"<a href='javascript:submitselect("+data.page_obj.next+")'>"+'下一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+	"<a href='javascript:submitselect("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>&nbsp;&nbsp;&nbsp;"+
 	"</tr>";
-	
-	$("#pageid").html(apage);
+	if(pageFlag){
+		$("#pageid").html(apage);
+	}
 	
 
 
@@ -468,6 +478,7 @@ function submitselect2(page){    //通过手机号查询工单
 		url:'<%=request.getContextPath()%>/workorder/findGoOnAcceptWO/'+page,
 			dataType : 'json',
 			success : function(data) {
+				var pageFlag = false;
 				var thStr1 = "<tr class='font_1'>"
 						+ "<th bgcolor='#eef6ff'>工单号</th>"
 						+ "<th bgcolor='#eef6ff'>订单号</th>"
@@ -477,6 +488,7 @@ function submitselect2(page){    //通过手机号查询工单
 						+ "<th bgcolor='#eef6ff'>受理内容</th>"
 						+ "<th bgcolor='#eef6ff'>工单状态</th></tr>";
 				$.each(data.list,function(ind, ele) {
+							pageFlag = true;
 							var dataTrStr1 = "";
 								var contentTemp = ele.content;								
 								contentTemp = contentTemp.substring(0,10);
@@ -495,12 +507,14 @@ function submitselect2(page){    //通过手机号查询工单
 						});
 
 				$("#showWO").html(thStr1);
-				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect2(1)'>"+'第一页'+"</a>" +
-				"<a href='javascript:submitselect2("+data.page_obj.previous+")'>"+'上一页'+"</a>"+
-				"<a href='javascript:submitselect2("+data.page_obj.next+")'>"+'下一页'+"</a>" +
-				"<a href='javascript:submitselect2("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>"+
+				var apage="<tr><td height='38' align='center' valign='middle' bgcolor='#eef6ff'><a href='javascript:submitselect2(1)'>"+'第一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+				"<a href='javascript:submitselect2("+data.page_obj.previous+")'>"+'上一页'+"</a>&nbsp;&nbsp;&nbsp;"+
+				"<a href='javascript:submitselect2("+data.page_obj.next+")'>"+'下一页'+"</a>&nbsp;&nbsp;&nbsp;" +
+				"<a href='javascript:submitselect2("+data.page_obj.maxpage+")'>"+'最后一页'+"</a><td>&nbsp;&nbsp;&nbsp;"+
 				"</tr>";			
-				$("#pageWo").html(apage);
+				if(pageFlag){
+					$("#pageWo").html(apage);
+				}
 				selectcolorofwo();
 
 			}
