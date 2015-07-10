@@ -99,7 +99,7 @@ function carrealweightPrint(){
 				<td>扫描单号：<input type="text" id="scancwb" name="scancwb" ><br/></td>
 			</tr>
 			<tr>
-				<td><input type="submit" value="保存"><input type="button" value="清空" onclick="resetform();"></td>
+				<td><input type="submit" value="保存"><input type="reset" value="清空" onclick="resetform();"></td>
 			</tr>
 		</table>
 	</form>

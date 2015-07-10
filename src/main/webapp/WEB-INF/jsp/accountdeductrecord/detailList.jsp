@@ -248,7 +248,7 @@ function exportField(){
 						<textarea name="cwb" rows="3" id="cwb" style="vertical-align:middle"><%=request.getParameter("cwb")==null?"":request.getParameter("cwb")%></textarea>
 						<input type="hidden" name="flowordertype" id="flowordertype" value="<%=flowordertype%>"/>
 						<input name="button" type="button" class="input_button2" onclick="search()" value="查询" />
-						<input name="button" type="button" class="input_button2" onclick="clearSelect()" value="清空" />
+						<input name="button" type="reset" class="input_button2" onclick="clearSelect()" value="清空" />
 					</form></td>
 				<td>
 				<%if(detailList!=null&&!detailList.isEmpty()){%>

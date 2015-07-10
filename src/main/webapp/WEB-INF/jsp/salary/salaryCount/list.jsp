@@ -208,7 +208,7 @@ function check(flag)
 	</div>
 	</c:if>
 <!-- 新增层显示 -->
-<div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
+<div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save',modal:true" style="width:700px;height:220px;">
 <form action="${ctx}/salaryCount/credata" method="post" id="credatafrom">
 <table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr>
@@ -271,7 +271,7 @@ function check(flag)
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${edit==1 }">
-<div  id="save" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save'" style="width:800px;height:220px;">
+<div  id="save" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true" style="width:800px;height:220px;">
 <form action="${ctx}/salaryCount/save" method="post" id="savefrom">
 <table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr>
@@ -365,7 +365,7 @@ function check(flag)
 </div>
 </c:if>
 <!-- 查询层显示 -->
-	<div  id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save'" style="width:700px;height:220px;">
+	<div  id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save',modal:true" style="width:700px;height:220px;">
 	<form action="${ctx}/salaryCount/list/1" method="post" id="searchForm" >
          	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>

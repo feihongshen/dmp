@@ -132,7 +132,7 @@ $(function(){
 			<tr>
 				<td>
 					<input type="button" value="打印" onclick="submitChangeCwbForPrint($('#cwb').val());"/>
-					<input type="button" value="清空" onclick="resetform();">
+					<input type="reset" value="清空" onclick="resetform();">
 				</td>
 			</tr>
 		</table>

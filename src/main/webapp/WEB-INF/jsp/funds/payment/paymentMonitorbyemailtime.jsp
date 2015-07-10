@@ -323,7 +323,7 @@ function clickEmaildate(t){
                  <option value='-1'>发货仓库</option></select>
       <br/> 入库时间：<input type ="text" name ="rukuStartTime" id="startime"  value ="<%=StringUtil.nullConvertToEmptyString(request.getAttribute("rukuStartTime")) %>">
                                 到     <input type ="text" name ="rukuEndTime" id="endtime"  value ="<%=StringUtil.nullConvertToEmptyString(request.getAttribute("rukuEndTime")) %>">
-                <input type="button" value="清空" onclick="$('#startime').val('');$('#endtime').val('');" class="input_button2" />
+                <input type="reset" value="清空" onclick="$('#startime').val('');$('#endtime').val('');" class="input_button2" />
                 订单类型：<select name="cwbOrderType">
                 	<option value="<%=CwbOrderTypeIdEnum.Peisong.getValue()  %>" <%="1".equals(request.getParameter("cwbOrderType"))?"selected":"" %>><%=CwbOrderTypeIdEnum.Peisong.getText()%></option>
                 	<option value="<%=CwbOrderTypeIdEnum.Shangmentui.getValue()  %>" <%="2".equals(request.getParameter("cwbOrderType"))?"selected":"" %>><%=CwbOrderTypeIdEnum.Shangmentui.getText()%></option>

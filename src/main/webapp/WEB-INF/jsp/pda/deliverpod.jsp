@@ -78,7 +78,7 @@ Switch pl_switch = (Switch) request.getAttribute("pl_switch");
 		</div>
 		<div align="center">
         <input onclick='if($("#scancwb_p").val().length>0){deliverpod("<%=request.getContextPath()%>",$("#deliverid").val(),$("#scancwb_p").val(),$("#podresultid_p").val(),$("#paywayid_p").val(),$("#backreasonid_p").val(),$("#leavedreasonid_p").val(),"","Y");}' type="button" value="确定">
-        <input type="button" value="清空" onclick='$("#scancwb").val("");'>
+        <input type="reset" value="清空" onclick='$("#scancwb").val("");'>
         </div>
 	</div>
 </div>
