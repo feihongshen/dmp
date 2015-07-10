@@ -22,6 +22,8 @@ long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.g
 long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid");
 String deliverstateremark = request.getAttribute("deliverstateremark")==null?"":request.getAttribute("deliverstateremark").toString();
 String batchEditDeliveryStateisUseCash = request.getAttribute("batchEditDeliveryStateisUseCash")==null?"no":(String)request.getAttribute("batchEditDeliveryStateisUseCash");
+String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":(String)request.getAttribute("isReasonRequired");
+String isChorseZhongzhuanReason = request.getAttribute("isChorseZhongzhuanReason")==null?"no":(String)request.getAttribute("isChorseZhongzhuanReason");
 String resendtime = StringUtil.nullConvertToEmptyString(request.getParameter("resendtime"));
 long firstchangereasonid = request.getAttribute("firstchangereasonid")==null?0:(Long)request.getAttribute("firstchangereasonid");
 long changereasonid = request.getAttribute("changereasonid")==null?0:(Long)request.getAttribute("changereasonid");
@@ -212,7 +214,7 @@ function sub(){
 			
 			if($(this).val()==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 				
-				if($("#leavedreasonid").val()==0){
+				if(<%=isReasonRequired%>=='yes'&&($("#leavedreasonid").val()==0)){
 					alert("请选择滞留原因");
 					return false;
 				}
@@ -233,10 +235,10 @@ function sub(){
 				$("#subForm").submit();
 				return;
 				
-			}else if($(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
+			}else if(<%=isReasonRequired%>=='yes'&&$(this).val()==<%=DeliveryStateEnum.JuShou.getValue() %>&&$("#backreasonid").val()==0){
 				alert("请选择拒收原因");
 				return false;
-			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
+			}else if(<%=isChorseZhongzhuanReason%>=='yes'&&$(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#firstchangereasonid").val()==0){
 				alert("请选择一级中转原因");
 				return false;
 			}else if($(this).val()==<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>&&$("#changereasonid").val()==0){

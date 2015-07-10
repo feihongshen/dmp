@@ -204,7 +204,7 @@ function sub(){
 				$("#subForm").submit();
 				return;
 				
-			}else if($(this).val()==<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>&&($("#backreasonid").val()==0||$("#backreasonid").val()==null)){
+			}else if($("#isReasonRequired").val()!="no"&&$(this).val()==<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>&&($("#backreasonid").val()==0||$("#backreasonid").val()==null)){
 				alert("请选择拒退原因");
 				return false;
 			}else if($(this).val()==<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>&&$("#losereasonid").val()==0){
