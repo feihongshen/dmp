@@ -256,7 +256,7 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="right" valign="middle" ><%=chukuCaramountsum1%></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/daozhan/1"> <%=daozhanCountsum1%></a></td>
 			   		<td  align="right" valign="middle" ><%=daozhanCaramountsum1 %></td>
-			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/yichuzhan/1"> <%=tuihuoyichuzhanCountsum1 %></a></td>
+			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/tuihuoyichuzhan/1"> <%=tuihuoyichuzhanCountsum1 %></a></td>
 			   		<td  align="right" valign="middle" ><%=tuihuoyichuzhanCaramountsum1  %></td>
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/show/<%=mo.getKey()%>/zhongzhuanyichuzhan/1"><%=zhongzhuanyichuzhanCountsum1 %></a></td>		   		
 			   		<td  align="right" valign="middle" ><%=zhongzhuanyichuzhanCaramountsum1  %></td>
