@@ -97,7 +97,7 @@ function bdprint(id,printtemplateid){
 							<%} %>
 				        </select>
 				      <input type="submit" id="find" value="查询" class="input_button2" />
-				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1?type=${type}">返回未打印列表 >></a>
+				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/zhandianoutlist/1?type=${type}">返回未打印列表 >></a>
 				</form>
 				</div>
 				<div class="right_title">
