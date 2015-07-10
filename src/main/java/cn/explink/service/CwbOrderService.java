@@ -1453,7 +1453,7 @@ public class CwbOrderService {
 			// ========================到错货=====================================
 			if (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
 				if ((nextbranch.getAccounttype() == 3) || (userbranch.getAccounttype() == 3)) {
-					// 流程检查 (到货扫描不允许做到错货)
+					// 流程检查 (到货扫描操作之后不允许做到错货)
 					long count = this.cwbStateControlDAO.getCountFromstateTostate(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue());
 					if (count > 0) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.KouKuanLiuChengJianCha);
@@ -3541,7 +3541,8 @@ public class CwbOrderService {
 
 		if (userbranch.getAccounttype() == 3) {
 			long count = this.cwbStateControlDAO.getCountFromstateTostate(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), FlowOrderTypeEnum.FenZhanLingHuo.getValue());
-			if (count > 0) {
+			// 到错货订单：已做处理，可以领货；未作处理，不可领货；
+			if (count > 0 && co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() ) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.KouKuanLiuChengJianCha2);
 			}
 		}
