@@ -11,7 +11,7 @@ public class ReturnCwbs {
 	private long type; // 操作类型，具体对应枚举类ReturnCwbsTypeEnum
 	private long customerid;// 供货商id
 	private long tobranchid;// 去往的站点id
-	private String isnow;// 是否是当前状态0为否
+	private String isnow;// 是否是当前状态  0为当前状态
 
 	public long getId() {
 		return id;

@@ -243,8 +243,8 @@ public class ReturnCwbsController {
 
 	
 	
-	public List<CwbOrder> getyifandanrukulist(long type, long tobranchid, String nowtime, long timetype, String starttime, String endtime, long customerid){
-		List<CwbOrder> list = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, timetype, starttime, endtime, customerid);
+	public List<CwbOrder> getyifandanrukulist(long type, long branchid, String nowtime, long timetype, String starttime, String endtime, long customerid){
+		List<CwbOrder> list = cwbDAO.getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, branchid,nowtime, timetype, starttime, endtime, customerid);
 		return list;
 	}
 
@@ -266,8 +266,8 @@ public class ReturnCwbsController {
 
 		List<CwbOrder> weifandanrukulist = cwbDAO.getCwbOrderByReturncwbsforTypeAndToBranchidAndIsnow(ReturnCwbsTypeEnum.FanDanChuZhan.getValue(), getSessionUser().getBranchid(), nowtime, timetype,
 				starttime, endtime, customerid);
-		List<CwbOrder> yifandanrukulist = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, timetype, starttime, endtime, customerid);
-		List<CwbOrder> yifandansuccessList = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), 0, nowtime, 5, starttime, endtime, 0);
+		List<CwbOrder> yifandanrukulist = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), getSessionUser().getBranchid() , nowtime, timetype, starttime, endtime, customerid);
+		List<CwbOrder> yifandansuccessList = getyifandanrukulist(ReturnCwbsTypeEnum.FanDanRuKu.getValue(), getSessionUser().getBranchid(), nowtime, 5, starttime, endtime, 0);
 
 		List<CwbOrder> yifandanrukulistView = new ArrayList<CwbOrder>();
 		if (yifandanrukulist != null && !yifandanrukulist.isEmpty()) {

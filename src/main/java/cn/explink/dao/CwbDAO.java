@@ -4524,6 +4524,42 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, tobranchid);
 	}
+	
+	/**
+	 * 得到待返单入库的订单信息New
+	 * 
+	 * @param type
+	 * @param tobranchid
+	 * @param branchid
+	 * @param nowtime
+	 * @param timetype
+	 * @param starttime
+	 * @param endtime
+	 * @param customerid
+	 * @return
+	 */
+	public List<CwbOrder> getCwbOrderByReturncwbsforTypeAndBranchidAndIsnow(long type, long tobranchid,long branchid, String nowtime, long timetype, String starttime, String endtime, long customerid) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT cd.*,ds.deliverytime as fankuitime,ds.auditingtime as shenhetime,rc.createtime as chuzhantime FROM ops_returncwbs rc,express_ops_cwb_detail cd,express_ops_delivery_state ds WHERE rc.`cwb`=cd.`cwb` AND rc.cwb=ds.cwb"
+				+ " AND rc.`type`=? AND rc.`tobranchid`=? AND rc.`branchid`=? AND cd.`state`=1 ");
+		if ((timetype == 1) && !"".equals(starttime) && !"".equals(endtime)) {// 发货时间
+			sb.append(" and cd.emaildate>='" + starttime + " 00:00:00' and cd.emaildate<='" + endtime + " 59:59:59' ");
+		} else if ((timetype == 2) && !"".equals(starttime) && !"".equals(endtime)) {// 反馈时间
+			sb.append(" and ds.deliverytime>='" + starttime + " 00:00:00' and ds.deliverytime<='" + endtime + " 59:59:59' ");
+		} else if ((timetype == 3) && !"".equals(starttime) && !"".equals(endtime)) {// 审核时间
+			sb.append(" and ds.auditingtime>='" + starttime + " 00:00:00' and ds.auditingtime<='" + endtime + " 59:59:59' ");
+		} else if ((timetype == 4) && !"".equals(starttime) && !"".equals(endtime)) {// 出站
+			sb.append(" and rc.createtime>='" + starttime + " 00:00:00' and rc.createtime<='" + endtime + " 59:59:59' ");
+		} else {// 今天待返单
+			sb.append(" and rc.createtime>='" + nowtime + "' ");
+		}
+		if (customerid > 0) {
+			sb.append(" and rc.customerid=" + customerid);
+		}
+			sb.append(" AND rc.`isnow`='0' ");
+
+		return this.jdbcTemplate.query(sb.toString(), new CwbFDMapper(), type, tobranchid , branchid);
+	}
 
 	/**
 	 * 返单待入库
