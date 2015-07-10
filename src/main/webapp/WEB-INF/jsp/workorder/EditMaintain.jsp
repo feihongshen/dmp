@@ -46,7 +46,7 @@
 				</table>
 				<div>
 				<label><font color="red">*</font>备注:</label>
-				<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name=callerremark" id="callerremark"><%=ccf.getCallerremark()==null?"":ccf.getCallerremark()%></textarea>																	
+				<textarea onkeyup="checkLen(this)" style="width: 60%;height: 118px;margin-left: 60px" name="callerremark" id="callerremark"><%=ccf.getCallerremark()==null?"":ccf.getCallerremark()%></textarea>																	
 				<div>您还可以输入<font id="count" color="red">150</font>个文字</div>
 				</div>
 				
