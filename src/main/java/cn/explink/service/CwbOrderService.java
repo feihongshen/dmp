@@ -2501,14 +2501,7 @@ public class CwbOrderService {
 
 		cwb = this.translateCwb(cwb);
 
-		OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCheckstate(cwb);
-		if(obc!=null){
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_dai_shen_he);
-		}
-		OrderBackCheck obc2 = this.orderBackCheckDAO.getOrderBackCheckByCheckresult(cwb);
-		if(obc2!=null){
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
-		}
+		
 		return this.outWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout,
 				System.currentTimeMillis(), anbaochuku);
 	}
