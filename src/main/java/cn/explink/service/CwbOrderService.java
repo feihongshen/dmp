@@ -1023,6 +1023,9 @@ public class CwbOrderService {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
 		}
 		CwbOrder cwbOrdercheck=this.cwbDAO.getCwbByCwb(cwb);
+		if(cwbOrdercheck == null){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
 		int changealowflag=this.getChangealowflagByIdAdd(cwbOrdercheck);
 		long count1 = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0); 
 		
