@@ -384,19 +384,23 @@ function callfunction(cwb){//getEmailDateByIds
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
 									}else if(data.statuscode=="101"){
-										if(confirm("无数据，有货无单,确定要入库吗？")){
+										if(!confirm("无数据，有货无单,是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
-											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 											data.wavList = [];
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}else{
+											$("#scancwb").val("");
+											$("#msg").html("（异常扫描）" + data.errorinfo);
 										}
-										$("#scancwb").val("");
 									}else if(data.statuscode=="102"){
-										if(confirm("尚未匹配站点，确定要入库吗？")){
+										if(!confirm("尚未匹配站点，是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
-											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 											data.wavList = [];
+											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
+										}else{
+											$("#scancwb").val("");
+											$("#msg").html("（异常扫描）" + data.errorinfo);
 										}
-										$("#scancwb").val("");
 									}else{
 										$("#scancwb").val("");
 										$("#msg").html("（异常扫描）" + data.errorinfo);
