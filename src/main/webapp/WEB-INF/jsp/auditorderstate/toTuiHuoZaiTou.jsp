@@ -68,17 +68,18 @@ $(function(){
 
 function audit(){
 	var yichulinum=0;
+	var beizhunum=0;
 	var datavalue = "[";
 	//var remarkValue = "";
 	if($('input[name="ischeck"]:checked').size()>0){
 		$('input[name="ischeck"]:checked').each(function(index){
-			$(this).attr("checked",false);
+			//$(this).attr("checked",false);
 			if($("#ishandle"+$(this).val()).val()==1){
 				yichulinum++;
 			}
 			var id=$(this).val()+"_cwbremark";
 			if($("#"+id).val()==0){
-				alert("请选择备注!");
+				beizhunum++;
 				return false;
 			}
 			//remarkValue = $("#"+id).val();
@@ -97,6 +98,15 @@ function audit(){
 		alert("已审核的订单不能再次退货再投！！");
 		return;
 	}
+	if(beizhunum>0){
+		alert("当前已选择的订单有没有选择备注的，请选择后再执行操作！！");
+		return;
+	}
+	if(datavalue.length==1){
+		alert("请选择要退货再投的订单！！");
+		return;
+	}
+
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 	}
