@@ -271,13 +271,13 @@ public class MonitorLogController {
 					tuigonghuoshangMap.put(mon.getCustomerid(), mon);
 				}
 			}
-			//站点在站资金
+		/*	//站点在站资金
 			List<MonitorLogSim> zhandianzaizhanzijinList =   monitorLogService.getMonitorLogByBranchidWithZhanDianZaiZhanZiJin(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
 			if(zhandianzaizhanzijinList != null && zhandianzaizhanzijinList.size()>0){
 				for (MonitorLogSim mon: zhandianzaizhanzijinList) {
 					zhandianzaizhanzijinMap.put(mon.getCustomerid(), mon);
 				}
-			}
+			}*/
 			//中转库已出未到站
 			List<MonitorLogSim> zhongzhuankuyichuweidaozhanList =   monitorLogService.getMonitorLogByBranchid(branchids1,customerids," flowordertype=6 and startbranchid IN("+branchids1+")  or flowordertype=14");
 			if(zhongzhuankuyichuweidaozhanList != null && zhongzhuankuyichuweidaozhanList.size()>0){

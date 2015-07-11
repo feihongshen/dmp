@@ -112,7 +112,7 @@ public class MonitorLogService {
 		if("tuigonghuoshang".equals(type)){
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ", page);
 		}
-		if("zhandianzaizhanzijin".equals(type)){
+/*		if("zhandianzaizhanzijin".equals(type)){
 			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, page);
 			String cwbs ="";
 			if (cwbList.size() > 0) {
@@ -122,7 +122,7 @@ public class MonitorLogService {
 			}
 			clist = cwbDAO.getCwbOrderByCwbs(cwbs);
 		
-		}
+		}*/
 		if("zhongzhuankuyichuweidaozhan".equals(type)){
 			clist = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and `startbranchid` IN("+branchids1+") or flowordertype=14", page);
 		}
@@ -135,7 +135,7 @@ public class MonitorLogService {
 		
 		if("all".equals(type)){
 			
-			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, page);
+			cwbList =   monitorDAO.getMonitorLogByTypeAndNotIn("7,8,9,35,36", branchids,customerid, -9);
 			String cwbs ="";
 			if (cwbList.size() > 0) {
 				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
@@ -143,12 +143,21 @@ public class MonitorLogService {
 				cwbs = "'--'";
 			}
 			
-			String wheresql = " (flowordertype IN(1,2,6,12,14,15,27) " +
+	/*		String wheresql = " (flowordertype IN(1,2,6,12,14,15,27) " +
 					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
 					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
 					" OR cwb IN("+cwbs+")" +
-					" OR flowordertype=6 and `startbranchid` IN("+branchids1+")" +
-					" OR flowordertype=6 and startbranchid IN("+branchids2+") " +
+					" OR (flowordertype=6 and `startbranchid` IN("+branchids1+"))" +
+					" OR (flowordertype=6 and startbranchid IN("+branchids2+")) " +
+					" OR (fncustomerbillverifyflag=0 and flowordertype=34)" +
+					") ";*/
+			
+			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
+					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
+					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
+					" OR ((flowordertype=6 and `startbranchid` IN("+branchids1+")) or flowordertype=14) " +
+					" OR cwb IN("+cwbs+")" +
+					" OR (flowordertype=6 and startbranchid IN("+branchids2+") )" +
 					" OR (fncustomerbillverifyflag=0 and flowordertype=34)" +
 					") ";
 			
@@ -207,11 +216,11 @@ public class MonitorLogService {
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=27 ");
 		}
 		
-		if("zhandianzaizhanzijin".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", " flowordertype IN(7,8,9,29,38) ");
-		}
+	/*	if("zhandianzaizhanzijin".equals(type)){
+			count = cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", " flowordertype IN(7,8,9,35,36) ");
+		}*/
 		if("zhongzhuankuyichuweidaozhan".equals(type)){
-			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and `startbranchid` IN("+branchids1+") or flowordertype=14");
+			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", "( flowordertype=6 and `startbranchid` IN("+branchids1+")) or flowordertype=14");
 		}
 		if("tuihuokutuihuozaitouweidaozhan".equals(type)){
 			count = cwbDAO.getMonitorLogByBranchid(branchids, customerid+"", " flowordertype=6 and startbranchid IN("+branchids2+") ");
@@ -225,12 +234,13 @@ public class MonitorLogService {
 			String wheresql = " (flowordertype IN(1,2,6,12,15,27) " +
 					" OR (flowordertype = 4 AND currentbranchid IN("+branchids+" ) ) " +
 					" OR (flowordertype IN(14,40)  AND  startbranchid NOT IN("+branchids+"))" +
-					" OR flowordertype=6 and `startbranchid` IN("+branchids1+")" +
-					" OR flowordertype=6 and startbranchid IN("+branchids2+") " +
+					" OR ((flowordertype=6 and `startbranchid` IN("+branchids1+")) or flowordertype=14) " +
+					" OR (flowordertype=6 and startbranchid IN("+branchids2+") )" +
 					" OR (fncustomerbillverifyflag=0 and flowordertype=34)" +
 					") ";
 			
-			count +=   cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", wheresql);;
+			long count2 =   cwbDAO.getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(branchids, customerid+"", wheresql);
+			count = count + count2;
 		}
 		
 		
