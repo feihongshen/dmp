@@ -111,6 +111,7 @@ CREATE TABLE `fn_order_recharge` (
   `bill_detail_id` bigint(20) NOT NULL COMMENT '账单明细id',
   `recharge_id` bigint(20) NOT NULL COMMENT '充值记录id',
   `recharge_amount` decimal(19,2) DEFAULT '0.00' COMMENT '冲抵金额',
+  `record_bill_id` bigint(20) DEFAULT '0' COMMENT '调整单id',
   PRIMARY KEY (`id`),
   KEY `index_recharge_id` (`recharge_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17599 DEFAULT CHARSET=utf8;
