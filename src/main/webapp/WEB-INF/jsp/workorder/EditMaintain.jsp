@@ -21,7 +21,7 @@
 					<td><span>电话2</span><input type="text" name="phoneonTwo" value="<%=ccf.getPhoneonTwo()==null?"":ccf.getPhoneonTwo()%>" onblur=" ifphoneNum(this.value)"/></td>
 					</tr>
 					<tr>
-					<td><span>邮箱</span><input type="text" name="mailBox" value="<%=ccf.getMailBox()==null?"":ccf.getMailBox()%>" id="mailBoxid" onblur="isEmailValue(this.value)" maxlength="30"/></td>
+					<td><span>邮箱</span><input type="text" name="mailBox" value="<%=ccf.getMailBox()==null?"":ccf.getMailBox()%>" id="mailBoxid" onblur="if(this.value){isEmailValue(this.value)}" maxlength="30"/></td>
 					<td><span><font color="red">*</font>省份</span><input type="text" name="province" value="<%=ccf.getProvince()%>" id="cprovince" onblur="isChineseValue(this.value)" maxlength="30"/></td>
 					<t  d><span><font color="red">*</font>城市</span><input type="text" name="city" value="<%=ccf.getCity()%>" id="ccity" onblur="isChineseValue1(this.value)" maxlength="30"/></td>					
 					</tr>

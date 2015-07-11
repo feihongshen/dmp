@@ -143,7 +143,7 @@ $(function() {
 		var date2 = new Date(str1);
 		var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
 		//计算出相差hours
-		var hours=Math.floor((date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var hours=(date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
 		var heshiTime=$('#heshiTime').val();
 		if(hours>heshiTime){
 			if($('#FormV').val()==""){
@@ -152,18 +152,17 @@ $(function() {
 			}
 			getAddBox2();
 		}else{
-		if($('#FormV').val()==""){
-			alert('请选择一条记录');
-			return false;
-		}else if($('#ComStateV').val()==$('#DaiHeShi').val()){
-			alert('本条数据未核实不能结案');
-			return false;
-		}else if($('#ComStateV').val()==$('#YiJieAn').val()){
-			alert('本条数据已经结案不能再次结案');
-			return false;
-		}
-		
-		getAddBox2();
+			if($('#FormV').val()==""){
+				alert('请选择一条记录');
+				return false;
+			}else if($('#ComStateV').val()==$('#DaiHeShi').val()){
+				alert('本条数据未核实不能结案');
+				return false;
+			}else if($('#ComStateV').val()==$('#YiJieAn').val()){
+				alert('本条数据已经结案不能再次结案');
+				return false;
+			}
+			getAddBox2();
 		}
 	});
 	

@@ -2555,6 +2555,12 @@ public class CwbOrderService {
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
+		//若当前  归班反馈  反馈为待中转，失效该记录
+		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+		if(ds != null && DeliveryStateEnum.DaiZhongZhuan.getValue() == ds.getDeliverystate() && ds.getDeliverybranchid() == currentbranchid){
+			this.inactiveDeliveryStateByCwb(user, ds);
+		}
+		
 		// =====加入按包出库标识 zs=====
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && !anbaochuku) {
 			return this.handleOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co,
@@ -2573,6 +2579,7 @@ public class CwbOrderService {
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
+		
 
 		// 原包号处理
 		// disposePackageCode(packagecode, scancwb, user, co);

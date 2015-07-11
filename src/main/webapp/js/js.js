@@ -5976,9 +5976,11 @@ function submitHeShi(form){
 		$(form).attr("enctype", "");
 		$(form).attr("action", "workorder/HeshiChangeComplaintState");
 		submitCreateForm(form);
+		closeBox();
 		return;
 	}
 
+	closeBox();
 	$("#update")[0].contentWindow.submitsubmitHeShiLoad();
 }
 //问题件结案处理
