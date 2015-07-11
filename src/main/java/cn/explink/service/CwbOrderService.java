@@ -1099,7 +1099,7 @@ public class CwbOrderService {
 		
 		
 		
-		validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);
+		validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
 		
 
 		if (!isauto) {
@@ -3586,15 +3586,13 @@ public class CwbOrderService {
 		 * 中转申请中 、中转申请通过 订单不允许做领货
 		 * isstastics=0 
 		 */
-		validateAppZhongZhuanLinghuo(cwb, co);
+		validateAppZhongZhuanLinghuo(cwb, co,flowOrderTypeEnum);//中转领货校验
 		
 		/**
 		 * 退货订单流程校验
 		 * 退货待审核状态不允许做 领货
 		 */
-		validateAppTuihuoCheckStatus(cwb);
-		
-		
+		validateAppTuihuoCheckStatus(cwb,flowOrderTypeEnum);//退货领货校验
 		
 		
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
@@ -3693,25 +3691,30 @@ public class CwbOrderService {
 		}
 	}
 
-	private void validateAppTuihuoCheckStatus(String cwb) {
-		long countOC = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);//退货出站审核待确认
-		if(countOC!=0){
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+	private void validateAppTuihuoCheckStatus(String cwb,FlowOrderTypeEnum flowOrderTypeEnum) {
+		OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
+		if(obc!=null){
+			if(obc.getCheckstate()==1){//待审核
+				throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+			}
+			if(obc.getCheckresult()==1){//审核为确认退货
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+			}
 		}
 	}
 
-	private void validateAppZhongZhuanLinghuo(String cwb, CwbOrder co) {
+	private void validateAppZhongZhuanLinghuo(String cwb, CwbOrder co,FlowOrderTypeEnum flowOrderTypeEnum) {
 		CwbApplyZhongZhuan cwbApplyZhongZhuan = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
 		if(cwbApplyZhongZhuan!=null){
 		  long ishandle = cwbApplyZhongZhuan.getIshandle();
 		  if(ishandle==0){
 			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
-					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
 			  }
 		  }
 		  if(ishandle==3){
 			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
-				  throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
+				  throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
 			  }
 		  }
 		}
@@ -4276,7 +4279,7 @@ public class CwbOrderService {
 						// 更改下一站为退货站
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
 					}
-					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 
 				} else {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {

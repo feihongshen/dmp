@@ -90,7 +90,7 @@ function bdprint(id,printtemplateid){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 			<tr class="font_1">
 <!-- 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
- -->				<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+ -->			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">上次打印时间</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">操作类型</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">打印交接单</td>
@@ -103,7 +103,7 @@ function bdprint(id,printtemplateid){
 					 	<%for(Customer c:customerlist){if(og.getCustomerid()==c.getCustomerid()){ %>
 							<%=c.getCustomername() %>
 					     <%}} %>
-					     </td>
+					    </td>
 						<td width="20%" align="center" valign="middle" ><%=og.getCredate() %></td>
 						  <%for(OutwarehousegroupOperateEnum ooe : OutwarehousegroupOperateEnum.values()){
     	                     if(og.getOperatetype()==ooe.getValue()){%>
@@ -111,11 +111,11 @@ function bdprint(id,printtemplateid){
 					       <% }
 					    }%>
 						<td width="20%" align="center" valign="middle" >
-					<%-- 		<select name="printtemplateid<%=og.getId() %>" id="printtemplateid<%=og.getId() %>">
-					  			<%for(PrintTemplate pt : pList){ %>
-					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
-					  			<%} %>
-							</select> --%>
+							<select name="printtemplateid<%=og.getId() %>" id="printtemplateid<%=og.getId() %>">
+						  			<%for(PrintTemplate pt : pList){ %>
+						  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
+						  			<%} %>
+							</select> 
 							<a href ="javascript:;" onclick="bdprint(<%=og.getId() %>,$('#printtemplateid<%=og.getId() %>').val());">退供货商出库交接单打印</a>
 							<%if(og.getPrinttime().length()!=0){ %>
 							（<%=og.getPrinttime() %>已打印）

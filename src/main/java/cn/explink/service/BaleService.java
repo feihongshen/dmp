@@ -1133,14 +1133,14 @@ public class BaleService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
 
-			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
+			/*long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
 			if(count1!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuankuhebaochuku);
 			}
 			long count2 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
 			if(count2!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuankuhebaochuku);
-			}
+			}*/
 			
 			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
@@ -1376,11 +1376,11 @@ public class BaleService {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
 			
-			long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
+		/*	long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
 			if(count!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
 			}
-
+		 */
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
 			// ==================验证包号End=======================

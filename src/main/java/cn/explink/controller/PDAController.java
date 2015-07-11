@@ -4736,32 +4736,32 @@ public class PDAController {
 					}
 					cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 1, branchid);
 				} else {
-					long count = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);
+					/*long count = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);
 					if(count!=0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuoruku);
 					}
-					/*long count2 = this.orderBackCheckDAO.getOrderbackResult(cwb,1);
+					long count2 = this.orderBackCheckDAO.getOrderbackResult(cwb,1);
 					if(count2!=0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuo);
-					}*/
+					}
 					//long countnull = this.orderBackCheckDAO.getOrderbackResult(cwb);
-					/*if(countnull==0){
+					if(countnull==0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuoruku);
-					}*/
+					}
 					
 					long count3 = this.orderBackCheckDAO.getOrderbackResult(cwb,2);
 					if(count3!=0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
 					}
 					long count2=this.orderBackCheckDAO.getOrderbackResult(cwb,1);
-					/*if(this.orderBackCheckDAO.getOrderbackResult(cwb,1)>0){
+					if(this.orderBackCheckDAO.getOrderbackResult(cwb,1)>0){
 						count2=this.orderBackCheckDAO.getOrderbackResult(cwb,1);
-					}*/
-					long countnull = this.orderBackCheckDAO.getOrderbackResult(cwb);
-					if (co.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()||count2!=0||countnull==0) {
+					}
+					long countnull = this.orderBackCheckDAO.getOrderbackResult(cwb);*/
+					if (co.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()/*||count2!=0||countnull==0*/) {
 						cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, co.getNextbranchid());
 					}
-					if (co.getFlowordertype()!=FlowOrderTypeEnum.DingDanLanJie.getValue()&&(count2==0&&countnull!=0)) {
+					if (co.getFlowordertype()!=FlowOrderTypeEnum.DingDanLanJie.getValue()/*&&(count2==0&&countnull!=0)*/) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
 					}
 				}
