@@ -4787,10 +4787,10 @@ public class CwbDAO {
 	public String getSqlExportByBranchidweichuku(long branchid, Branch b, int cwbstate) {
 		String sql = "";
 		if (branchid > 0) {
-			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid=" + branchid + "  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid=" + branchid + "  and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()
 					+ " and state=1 ";
 		} else {
-			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue() + " and state=1 ";
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + "   and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() + " and state=1 ";
 		}
 		if (cwbstate > -1) {
 			sql += " and cwbstate=" + cwbstate;
