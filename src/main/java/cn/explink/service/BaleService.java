@@ -1133,6 +1133,15 @@ public class BaleService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
 
+			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
+			if(count1!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuankuhebaochuku);
+			}
+			long count2 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
+			if(count2!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuankuhebaochuku);
+			}
+			
 			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
 			boolean aflag = false;
@@ -1197,10 +1206,15 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-			//未审核或者审核为站点配送的
-			long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
+			//待审核
+			long count = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);
 			if(count!=0){
-				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_dai_shen_he);
+			}
+			//审核为站点配送
+			long count2 = this.orderBackCheckDAO.getOrderbackResult(cwb,2);
+			if(count2!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Tui_huo_chu_zhan_shen_he_shenhe_zhandianpeisong);
 			}
 			// ==================验证包号=======================
 			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
@@ -1247,9 +1261,13 @@ public class BaleService {
 			this.logger.info("开始验证包号" + baleno);
 
 			//首先验证订单号是否在中转出站审核表中被审核通过
-			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCountss(cwb);
-			if(count!=0){
-				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
+			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
+			if(count1!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuhebaochuku);
+			}
+			long count2 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
+			if(count2!=0){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuhebaochuku);
 			}
 
 			// ==================验证包号=======================
