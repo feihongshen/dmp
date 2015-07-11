@@ -1332,7 +1332,7 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			if (!"".equals(co.getPackagecode())) {
+			if (co.getPackagecode()!=null&&!"".equals(co.getPackagecode())) {
 				Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 				Branch nextbranch = this.branchDAO.getBranchByBranchid(coBale.getNextbranchid());
 				if ((coBale != null) && (nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
