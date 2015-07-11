@@ -201,7 +201,7 @@ function btnClick(){
 		$("#selectbtn").text("全选");
 	}else{
 		$("[name='checkbox']").attr("checked","checked");
-		$("#selectbtn").text("反选");
+		$("#selectbtn").text("取消");
 	}
 }
 
@@ -323,7 +323,7 @@ function resetData(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">反选</a></td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>

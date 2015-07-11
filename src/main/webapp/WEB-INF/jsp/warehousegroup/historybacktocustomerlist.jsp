@@ -80,7 +80,7 @@ function bdprint(id,printtemplateid){
 			<%} %>
 		</select>
 		 上次打印时间：从<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>&nbsp;到
-					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
+			<input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
 			<input type="submit" id="find" value="查询" class="input_button2" />
 			<a href="<%=request.getContextPath() %>/warehousegroup/backtocustomerlist/1">返回未打印列表 >></a>
 	</form>
@@ -89,41 +89,41 @@ function bdprint(id,printtemplateid){
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 			<tr class="font_1">
-<!-- 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
- -->			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
+<!-- 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
+	-->			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">供货商</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">上次打印时间</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">操作类型</td>
 				<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">打印交接单</td>
 			</tr>
 <!-- 		</table>
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table"> -->
-					   <% for(OutWarehouseGroup og : outwarehousegroupList){ %>
-					 <tr>
-					 	<td width="20%" align="center" valign="middle">
-					 	<%for(Customer c:customerlist){if(og.getCustomerid()==c.getCustomerid()){ %>
-							<%=c.getCustomername() %>
-					     <%}} %>
-					    </td>
-						<td width="20%" align="center" valign="middle" ><%=og.getCredate() %></td>
-						  <%for(OutwarehousegroupOperateEnum ooe : OutwarehousegroupOperateEnum.values()){
-    	                     if(og.getOperatetype()==ooe.getValue()){%>
-					    		<td width="20%" align="center" valign="middle">  <%=ooe.getText()%></td>
-					       <% }
-					    }%>
-						<td width="20%" align="center" valign="middle" >
-							<select name="printtemplateid<%=og.getId() %>" id="printtemplateid<%=og.getId() %>">
-						  			<%for(PrintTemplate pt : pList){ %>
-						  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
-						  			<%} %>
-							</select> 
-							<a href ="javascript:;" onclick="bdprint(<%=og.getId() %>,$('#printtemplateid<%=og.getId() %>').val());">退供货商出库交接单打印</a>
-							<%if(og.getPrinttime().length()!=0){ %>
-							（<%=og.getPrinttime() %>已打印）
-							<%} %>
-						</td>
-					</tr>
+		 <% for(OutWarehouseGroup og : outwarehousegroupList){ %>
+			 <tr>
+			 	<td width="20%" align="center" valign="middle">
+			 	<%for(Customer c:customerlist){if(og.getCustomerid()==c.getCustomerid()){ %>
+					<%=c.getCustomername() %>
+			     <%}} %>
+			    </td>
+				<td width="20%" align="center" valign="middle" ><%=og.getCredate() %></td>
+				  <%for(OutwarehousegroupOperateEnum ooe : OutwarehousegroupOperateEnum.values()){
+	 	                     if(og.getOperatetype()==ooe.getValue()){%>
+			    		<td width="20%" align="center" valign="middle">  <%=ooe.getText()%></td>
+			       <% }
+			    }%>
+				<td width="20%" align="center" valign="middle" >
+					<select name="printtemplateid<%=og.getId() %>" id="printtemplateid<%=og.getId() %>">
+				  			<%for(PrintTemplate pt : pList){ %>
+				  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
+				  			<%} %>
+					</select> 
+					<a href ="javascript:;" onclick="bdprint(<%=og.getId() %>,$('#printtemplateid<%=og.getId() %>').val());">退供货商出库交接单打印</a>
+					<%if(og.getPrinttime().length()!=0){ %>
+					(<%=og.getPrinttime() %>已打印)
 					<%} %>
-				</table>
+				</td>
+			</tr>
+		<%} %>
+		</table>
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>
