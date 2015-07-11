@@ -115,7 +115,7 @@ public class OrderBackCheckDAO {
 	}
 	//站点配送
 	public OrderBackCheck getOrderBackCheckByCheckresult(String cwb) {
-		String sql = "select * from ops_order_back_check where checkresult=2  and cwb = ? ";
+		String sql = "select * from ops_order_back_check where checkresult=2  and cwb = ? and isstastics=0 ";
 		try {
 			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
 		} catch (Exception e) {
