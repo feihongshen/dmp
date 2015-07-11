@@ -1087,7 +1087,7 @@ function checkwithdiferenttype(type){
 									</td>
 									<td>
 									<label for="select2"></label>
-										<select name="cwbstate" id="cwbstate"  style="width: 100%;">
+										<select name="cwbstate" id="cwbstate" class="select1" style="width: 100%;">
 										<option value="0">请选择订单状态</option>
 										<%for(FlowOrderTypeEnum flowOrderTypeEnum:FlowOrderTypeEnum.values()) {%>
 											<option value="<%=flowOrderTypeEnum.getValue()%>"><%=flowOrderTypeEnum.getText() %></option>
