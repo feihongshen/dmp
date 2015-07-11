@@ -1,9 +1,11 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<CwbDetailView> weirukuList = (List<CwbDetailView>)request.getAttribute("weirukulist");
 List<CwbDetailView> yirukulist = (List<CwbDetailView>)request.getAttribute("yirukulist");
@@ -20,25 +22,24 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 String isprintnew = request.getAttribute("isprintnew").toString();
 String ifshowtag=(String)request.getAttribute("ifshowtag");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA"
-	width=0 height=0>
+<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
 	<param name="CompanyName" value="北京易普联科信息技术有限公司" />
 	<param name="License" value="653717070728688778794958093190" />
-	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 CompanyName="北京易普联科信息技术有限公司" 
-	License="653717070728688778794958093190"></embed>
+	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 CompanyName="北京易普联科信息技术有限公司" License="653717070728688778794958093190"></embed>
 </object>
-<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <title>中转入库扫描（明细）</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script type="text/javascript">
+
+var App = {ctx:"${pageContext.request.contextPath}"};
 
 $(function(){
 	$("#cwbnohide").click(function(){
@@ -349,10 +350,11 @@ function callfunction(cwb){//getEmailDateByIds
 										if (rk_switch == "rkbq_01") {
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
 										}else if (rk_switch == "rkbq_03") {
-											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date());
+											printIntowarehouse(scancwb);
+											/* $("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date()); */
 										}else if (rk_switch == "rkbq_04") {						
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
-										}
+										} 
 									}
 
 									$("#scansuccesscwb").val(scancwb);

@@ -5030,6 +5030,38 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
+	
+	@RequestMapping("/cwbscancwbbranchnew1")
+	public @ResponseBody
+	ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
+		String cwb = request.getParameter("cwb");
+		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+
+		JSONObject obj = new JSONObject();
+		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		PrintStyle print = new PrintStyle();
+
+		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
+		try {
+			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		obj.put("print", print);
+		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
+		if (branch != null) {
+			obj.put("branchcode", branch.getBranchcode());
+		}
+		obj.put("username", cwbOrder.getExceldeliver());
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+		} else {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+		}
+		return explinkResponse;
+	}
 
 	@RequestMapping("/cwbscancwbbranchruku/{cwb}")
 	public @ResponseBody

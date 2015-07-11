@@ -6859,6 +6859,8 @@ function punishExcelImportSuccess(systemflag,contextPath,appendObject,pathurl){
 function BuprintTag(scpath){
 
 	var scancwb=$("#scancwbprint").val();
+	printIntowarehouse(scancwb);
+	/*	
 	if(scancwb==null){
 		alert("请输入单号！");
 		return false;
@@ -6866,7 +6868,7 @@ function BuprintTag(scpath){
 		$("#printcwb",parent.document).attr("src",scpath+"/printcwb/printCwbruku?scancwb="+ scancwb + "&a=" + new Date());
 		
 		return true;
-	}		
+	}		*/
 }
 
 
