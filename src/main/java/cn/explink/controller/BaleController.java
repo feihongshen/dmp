@@ -638,14 +638,10 @@ public class BaleController {
 			} else {
 				try {
 					// 订单到货
-					CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, cwb, 0, driverid, 0, comment, "", true);
 					String scancwb = cwb;
 					cwb = this.cwbOrderService.translateCwb(cwb);
+					this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
 					
-					cwbOrder = this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
-					
-					// cwbOrder=cwborderService.intoWarehous(getSessionUser(),cwb,cwb,customerid,
-					// driverid, requestbatchno,comment,"");
 					// 更改包的状态
 					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
