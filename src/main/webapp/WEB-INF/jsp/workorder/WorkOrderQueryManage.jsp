@@ -117,8 +117,8 @@ $(function() {
 		var str1=CurentTime();
 		str1 = str1.replace(/-/g,"/");
 		var date2 = new Date(str1);
-		var date3=date2.getTime()-date1.getTime();  //时间差的毫秒数
-		var hours=Math.floor((date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var date3 = date2.getTime()-date1.getTime();  //时间差的毫秒数
+		var hours = (date3 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
 		var heshiTime=$('#heshiTime').val();
 		if(hours>heshiTime){
 			alert("此工单已经过了可核实时间 ！ ");
