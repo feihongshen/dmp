@@ -70,7 +70,7 @@ public class CwbApplyZhongZhuanDAO {
 
 	public CwbApplyZhongZhuan getCwbApplyZhongZhuanByCwb(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from op_cwbapplyzhongzhuan where cwb=?  limit 0,1", new CwbApplyZhongZhuanMapper(), cwb);
+			return jdbcTemplate.queryForObject("SELECT * from op_cwbapplyzhongzhuan where cwb=? and isstastics=0  limit 0,1", new CwbApplyZhongZhuanMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

@@ -3508,26 +3508,6 @@ public class CwbOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 
-		if (this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb)!=null) {
-			//long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb);
-			//if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&count!=0) {
-			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
-			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count!=0)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
-			}
-			long count2 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,3);
-			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count2!=0)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
-			}
-		}
-		long countOC = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);//退货出站审核待确认
-		if(countOC!=0){
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
-		}
-		long countOC2 = this.orderBackCheckDAO.getOrderbackResult(cwb,1);//审核为退货确认成功
-		if(countOC2!=0){
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
-		}
 		
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
@@ -3579,6 +3559,23 @@ public class CwbOrderService {
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 
+		
+		/**
+		 * 中转订单流程校验 
+		 * 中转申请中 、中转申请通过 订单不允许做领货
+		 * isstastics=0 
+		 */
+		validateAppZhongZhuanStatus(cwb, co);
+		
+		/**
+		 * 退货订单流程校验
+		 * 退货待审核状态不允许做 领货
+		 */
+		validateAppTuihuoCheckStatus(cwb);
+		
+		
+		
+		
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		// 扣款结算 流程检查 (到错货不允许做领货扫描)
 
@@ -3637,6 +3634,14 @@ public class CwbOrderService {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.QING_ZUO_DAO_HUO_SAO_MIAO, co.getCurrentbranchid(), deliveryUser.getBranchid());
 		}
 
+	
+		
+		
+		
+		
+		
+		
+		
 		if (ds != null) {
 			// 如果换小件员，则失效上一条记录
 			if ((ds.getGcaid() <= 0) && (ds.getDeliverystate() == 0)) {
@@ -3664,6 +3669,30 @@ public class CwbOrderService {
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
+		}
+	}
+
+	private void validateAppTuihuoCheckStatus(String cwb) {
+		long countOC = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);//退货出站审核待确认
+		if(countOC!=0){
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+		}
+	}
+
+	private void validateAppZhongZhuanStatus(String cwb, CwbOrder co) {
+		CwbApplyZhongZhuan cwbApplyZhongZhuan = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
+		if(cwbApplyZhongZhuan!=null){
+		  long ishandle = cwbApplyZhongZhuan.getIshandle();
+		  if(ishandle==0){
+			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
+			  }
+		  }
+		  if(ishandle==3){
+			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
+				  throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
+			  }
+		  }
 		}
 	}
 
