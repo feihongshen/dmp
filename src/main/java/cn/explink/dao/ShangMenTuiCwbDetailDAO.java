@@ -119,8 +119,8 @@ public class ShangMenTuiCwbDetailDAO {
 	}
 
 	public void saveShangMenTuiCwbDetailForPrinttime(String cwb, String printtime) {
-		String sql = "update shangmentuicwb_detail set printtime=? where cwb=? ";
-		jdbcTemplate.update(sql, printtime, cwb);
+		String sql = "update shangmentuicwb_detail set printtime='"+printtime+"' where cwb=? ";
+		 jdbcTemplate.update(sql, cwb);
 	}
 
 	public List<ShangMenTuiCwbDetail> getShangMenTuiCwbDetailByCwbs(String cwbs) {

@@ -5750,6 +5750,11 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.queryForInt(sql, cwb);
 	}
+	public int updatePrinteTime(String cwb,String time) {
+		String sql = "update express_ops_cwb_detail set printtime ='"+time+"' where cwb = ?";
+		
+		return this.jdbcTemplate.update(sql, cwb);
+	}
 
 	public String getCwbByCwbId(long cwbId) {
 		String sql = "select cwb from express_ops_cwb_detail where opscwbid = ?";

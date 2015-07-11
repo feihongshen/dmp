@@ -83,10 +83,12 @@ public class MatchExceptionHandleService {
 		// this.resetOrderFlow(cwbOrder);
 		// 更新订单状态.
 		this.updateOrderDeliverBranch(cwbOrder, newBranchId);
+        cwbDAO.updatePrinteTime(cwb, "");		
 		// 插入异常匹配已处理流程.
 		try {
 			DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
+			cwbOrder.setPrinttime("");
 			cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 			cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
 			cwbOrder.setConsigneemobile(cwbOrder.getConsigneemobileOfkf());
@@ -99,13 +101,13 @@ public class MatchExceptionHandleService {
 			this.logger.error("error while saveing orderflow", e);
 			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
 		}
-		//清空打印时间
-		shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(cwb, "''");
 		// 执行分站到货逻辑.
 		this.exeArriveBranch(cwb, newBranchId);
 		// 添加订单最后流程时间和是否为超区订单.
 		this.fillExtraData(obj, cwbOrder, orderFlow);
-
+		
+		//清空打印时间
+		shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(cwb, "");
 		return obj;
 	}
 
