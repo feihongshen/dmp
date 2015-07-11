@@ -3518,16 +3518,24 @@ public class CwbOrderService {
 		if (this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb)!=null) {
 			//long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb);
 			//if (co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()&&count!=0) {
-			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,2);
-			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count==0)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotLinghuo);
+			long count = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
+			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count!=0)) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
+			}
+			long count2 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,3);
+			if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())&&(count2!=0)) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
 			}
 		}
-		long countOC = this.orderBackCheckDAO.getOrderbackChecks(cwb);
+		long countOC = this.orderBackCheckDAO.getOrderbackCheck(cwb,1);//退货出站审核待确认
 		if(countOC!=0){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
 		}
-
+		long countOC2 = this.orderBackCheckDAO.getOrderbackResult(cwb,1);//审核为退货确认成功
+		if(countOC2!=0){
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+		}
+		
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {

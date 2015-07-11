@@ -54,7 +54,7 @@ public enum ExceptionCwbErrorTypeEnum {
 	Weishenhebuxutuihuoruku(118,"未审核的订单不允许退货入库！！"),
 	Shenheweiquerentuihuo(119,"审核为确认退货的订单请先进性退货出站！！"),
 	Shenheweizhandianpeisong(120,"审核为站点配送或者待审核的订单不允许退货出站或退货入库或退货再投或退客户出库！！"),
-	Shenheweiquerentuihuosuccess(121,"待退货出站审核以及审核确认退货的订单不可以进行领货操作！！"),
+	Shenheweiquerentuihuosuccess(121,"待退货出站审核的订单不可以进行领货操作！！"),
 	Weishenhebuxuzhongzhuanchuku(122,"未审核的订单不允许中转出站！！"),
 	Shenhebutongguobuyunxuzhongzhuanchuku(123,"审核不通过的订单不允许中转出站！！"),
 	Weishenhebuxuhebaochuku(124,"未审核的订单不允许合包出站！！"),
@@ -64,6 +64,9 @@ public enum ExceptionCwbErrorTypeEnum {
 	Weishenhebuxuzhongzhuankuhebaochuku(128,"未审核的订单不允许中转库合包出库！！"),
 	Shenhebutongguobuyunxuzhongzhuankuhebaochuku(129,"审核不通过的订单不允许中转库合包出库！！"),
 	Tui_huo_chu_zhan_shen_he_shenhe_zhandianpeisong(130,"审核为站点陪送的订单不允许退货出站!"),
+	DaizhongzhuanshenheCannotlinghuo(131,"待中转审核的订单不允许领货"),
+	ShenhetongguoCannotlinghuo(132,"审核通过的订单不允许领货"),
+	Tuihuoquerensuccess(133,"审核确认退货的订单不可以进行领货操作！！"),
 	;
 
 	private int value;
