@@ -1259,6 +1259,9 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===中转出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
+			
+		
+				
 
 			//首先验证订单号是否在中转出站审核表中被审核通过
 			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
@@ -1355,6 +1358,12 @@ public class BaleService {
 					}
 				}
 			}
+			
+			//分站滞留的订单不允许操作中转出站
+			if((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue())){
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan);
+			}
+			
 		}
 	}
 
