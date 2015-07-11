@@ -761,5 +761,16 @@ public class DateTimeUtil {
 		cal.add(Calendar.DATE, day);
 		return cal.getTime();
 	}
+	public static long StringToMill(String date){
+		try {
+			SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			return dateFormat.parse(date).getTime();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
 
 }

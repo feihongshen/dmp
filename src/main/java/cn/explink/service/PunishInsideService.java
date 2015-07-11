@@ -1,6 +1,7 @@
 package cn.explink.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -559,12 +560,12 @@ public class PunishInsideService {
 			if (systeminstall!=null) {
 				PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
 				String credate=penalizeInside.getCreDate();
-				long cretime=DateTimeUtil.StringToDate(credate).getTime();
+				long cretime=DateTimeUtil.StringToMill(credate);
 				String shixiao=systeminstall.getValue();
 				if (shixiao==null||shixiao.equals("")) {
 					return true;
 				}
-				long shixiaotime=Long.parseLong(shixiao);
+				Double shixiaotime=Double.parseDouble(shixiao);
 				if ((cretime+shixiaotime*1000*60*60)<System.currentTimeMillis()) {
 					return false;
 				}
@@ -573,7 +574,7 @@ public class PunishInsideService {
 		}
 		public boolean checkisshenhe(long id){
 			PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
-			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()) {
+			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.daishenhe.getValue()) {
 				return true;
 			}
 		

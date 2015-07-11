@@ -296,7 +296,7 @@ public class PunishInsideController {
 				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
 			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
 				
-				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经失效！！\"}";
+				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经超过时效！！\"}";
 			}else {
 				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
 				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
@@ -345,7 +345,7 @@ public class PunishInsideController {
 			if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[0]))) {
 				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
 			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
-				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经失效！！\"}";
+				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经超过时效！！\"}";
 			}else {
 				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
 				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
