@@ -614,6 +614,25 @@
 				</executions> <configuration> <entries> <entry> <prefix>SVN</prefix> </entry> </entries> </configuration> 
 				</plugin> -->
 			<plugin>
+					<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+					<artifactId>svn-revision-number-maven-plugin</artifactId>
+					<version>1.13</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<entries>
+							<entry>
+								<prefix>SVN</prefix>
+							</entry>
+						</entries>
+					</configuration>
+				</plugin>
+			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>2.0.3</version>
@@ -640,11 +659,11 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.222:3306/dmp_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>pj</expressurl.user>
-				<expressurl.password>pjexplink</expressurl.password>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42_xscs?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
 				<wavPath>D:\file\wav\</wavPath>
 				<filePath>D:\file\moule\</filePath>
@@ -657,7 +676,7 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.222:9528/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
