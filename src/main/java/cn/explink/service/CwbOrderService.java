@@ -1455,7 +1455,7 @@ public class CwbOrderService {
 			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 		}
 
-		this.baleDaoHuo(co);
+		this.baleDaoHuo_fzdh(co);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -1831,6 +1831,15 @@ public class CwbOrderService {
 			Bale isbale = this.baleDAO.getBaleByBaleno(co.getPackagecode(), BaleStateEnum.KeYong.getValue());
 			if (isbale != null) {
 				this.baleDAO.saveForBalestate(co.getPackagecode(), BaleStateEnum.YiDaoHuo.getValue(), BaleStateEnum.KeYong.getValue());
+			}
+		}
+	}
+
+	public void baleDaoHuo_fzdh(CwbOrder co) {
+		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
+			Bale isbale = this.baleDAO.getBaleByBaleno(co.getPackagecode(), BaleStateEnum.YiFengBaoChuKu.getValue());
+			if (isbale != null) {
+				this.baleDAO.saveForBalestate(co.getPackagecode(), BaleStateEnum.YiDaoHuo.getValue(), BaleStateEnum.YiFengBaoChuKu.getValue());
 			}
 		}
 	}
