@@ -33,9 +33,11 @@ import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.pos.tools.JacksonMapper;
 
@@ -57,6 +59,8 @@ public class GztlService {
 	DataImportDAO_B2c dataImportDAO_B2c;
 	@Autowired
 	DataImportService_B2c dataImportService_B2c;
+	@Autowired
+	CustomWareHouseDAO customWareHouseDAO;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -187,7 +191,13 @@ public class GztlService {
 			xmlMap.put("transcwb", transcwb);// 子单号或客户单号
 
 			xmlMap.put("customerid", this.getCustomerIdByCode(customerlist, order) + "");// 供应商ID
-
+			String customerwarehouseid="";
+			try {
+				customerwarehouseid = this.getCustomer_warehouse(order.getConsignoraddress(), this.getCustomerIdByCode(customerlist, order) + "");
+			} catch (Exception e) {
+			
+			}
+			xmlMap.put("customerwarehouseid", customerwarehouseid);
 			xmlMap.put("consigneename", order.getCustomername());// 收货人
 			xmlMap.put("consigneeaddress", order.getCustomeraddress());// 收货人地址
 			String consigneemobile="";
@@ -217,13 +227,19 @@ public class GztlService {
 			}
 			xmlMap.put("caramount", caramount);// 退货货物价格或配送货物价格
 			xmlMap.put("cargorealweight", order.getWeight());// 重量
-			String receivablefee = "";
+			String receivablefee =order.getShouldreceive();
 			if (order.getTypeid().equals("1") || order.getTypeid().equals("3")) {
-				receivablefee = order.getShouldreceive();
-				xmlMap.put("receivablefee", BigDecimal.valueOf(Double.parseDouble(receivablefee))+"");// 应收金额
+				if (receivablefee=="") {
+					receivablefee="0.00";
+				}
+				receivablefee=BigDecimal.valueOf(Double.parseDouble(receivablefee))+"";
+				xmlMap.put("receivablefee", receivablefee);// 应收金额
 				xmlMap.put("paybackfee", "0");// 应退款
 			} else {
-				receivablefee = Math.abs(Double.parseDouble(order.getShouldreceive()))+"";
+				if (receivablefee=="") {
+					receivablefee="0.00";
+				}
+				receivablefee = Math.abs(Double.parseDouble(receivablefee))+"";
 				xmlMap.put("receivablefee", "0");// 应收金额
 				xmlMap.put("paybackfee", receivablefee);// 应退款
 			}
@@ -314,7 +330,24 @@ public class GztlService {
 
 		return xml;
 	}
-
+	public String getCustomer_warehouse(String warehouse_name,String customerid){
+		String warhouseid="";
+		if (warehouse_name!="") {
+			CustomWareHouse customWareHouse= customWareHouseDAO.getCustomWareHouseByName(warehouse_name, customerid);
+			if(customWareHouse==null){
+				CustomWareHouse custwarehouse=new CustomWareHouse();
+				custwarehouse.setCustomerid(Long.valueOf(customerid));
+				custwarehouse.setCustomerwarehouse(warehouse_name);
+				custwarehouse.setWarehouse_no(warehouse_name);
+				custwarehouse.setWarehouseremark("");
+				custwarehouse.setIfeffectflag(1);
+				customWareHouseDAO.creCustomer(custwarehouse);
+				 customWareHouse= customWareHouseDAO.getCustomWareHouseByName(warehouse_name, customerid);
+			}
+			 warhouseid=customWareHouse.getWarehouseid()+"";
+		}
+		return warhouseid;
+	}
 	/*public static void main(String[] args) throws JAXBException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><MSD><Orders><Order><typeid>1</typeid><orderid>14062502938911</orderid><sclientcode>14062502938911</sclientcode><shipperid>广州唯品会</shipperid><consignorname/><consignoraddress/><consignormobile/><consignorphone/><customername>沈晓庆</customername><customeraddress>沈晓庆</customeraddress><customermobile>138****6001</customermobile><customerphone>****</customerphone><deliverygoods/><returngoods/><deliverygoodsprice/><returngoodsprice/><weight>0.0</weight><shouldreceive>0.0</shouldreceive><accuallyreceive/><remark/><arrivedate>2014-06-25 18:34:49</arrivedate><pushtime>2014-06-25 18:34:49</pushtime><goodsnum>1</goodsnum><deliverarea/><extPayType>0</extPayType><orderBatchNo>BTH140625077453</orderBatchNo><otherservicefee/><orderDate>2014-06-26 10:05:39</orderDate></Order></Orders></MSD>";
 		GztlService gztlService = new GztlService();

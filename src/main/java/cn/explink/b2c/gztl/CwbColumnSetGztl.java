@@ -12,6 +12,7 @@ public class CwbColumnSetGztl {
 	public ExcelColumnSet getEexcelColumnSetByB2c(String b2cFlag) {
 		// TODO Auto-generated method stub
 		ExcelColumnSet excelColumnSet = new ExcelColumnSet();
+		excelColumnSet.setWarehousenameindex(1);
 		excelColumnSet.setCwbordertypeidindex(1);
 		excelColumnSet.setCwbindex(1);
 		excelColumnSet.setTranscwbindex(1);
