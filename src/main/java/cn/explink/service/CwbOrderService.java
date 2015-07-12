@@ -3712,20 +3712,28 @@ public class CwbOrderService {
 	}
 
 	private void validateAppZhongZhuanLinghuo(String cwb, CwbOrder co,FlowOrderTypeEnum flowOrderTypeEnum) {
-		CwbApplyZhongZhuan cwbApplyZhongZhuan = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
-		if(cwbApplyZhongZhuan!=null){
-		  long ishandle = cwbApplyZhongZhuan.getIshandle();
-		  if(ishandle==0){
-			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
-					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
-			  }
-		  }
-		  if(ishandle==3){
-			  if ((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())) {
-				  throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
-			  }
-		  }
+		
+		if(co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+			
+			int changealowflag = this.getChangealowflagById(co); //中转是否要申请
+			if(changealowflag==0){  //不需要审核,领货提示不能操作
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanCannotlinghuo);
+			}
+			
+			CwbApplyZhongZhuan cwbApplyZhongZhuan = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
+			
+			if(cwbApplyZhongZhuan!=null){
+				  long ishandle = cwbApplyZhongZhuan.getIshandle();
+				  if(ishandle==0){
+							throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanshenheCannotlinghuo);
+				  }
+				  if(ishandle==3){
+						  throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShenhetongguoCannotlinghuo);
+				  }
+			}
 		}
+		
+		
 	}
 
 	/**
