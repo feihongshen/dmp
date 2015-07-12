@@ -241,7 +241,6 @@ h1, h2, h3, h4, h5, h6 {
 	</div>
 	<div class="row login-footer" style="margin: 0px;">
 		<div class="container copyright">
-			<div>版本：<%=ManifestUtil.getSvnRevision(request) %></div>
 			<label>©2015&nbsp;北京易普联科信息技术有限公司</label>
 		</div>
 	</div>
