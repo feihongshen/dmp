@@ -1795,8 +1795,8 @@ public class CwbOrderService {
 		}
 	}
 
-	private void validateDeliveryStateForZhiLiu(CwbOrder co, FlowOrderTypeEnum flowordertype) {
 		// 在数据库增加一个状态和操作的对应表，只有有记录的才允许操作
+	private void validateDeliveryStateForZhiLiu(CwbOrder co, FlowOrderTypeEnum flowordertype) {
 		DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getCwb());
 		if ((deliveryState != null) && (deliveryState.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())) {
 			if (flowordertype == FlowOrderTypeEnum.TuiHuoChuZhan) {
@@ -3695,18 +3695,24 @@ public class CwbOrderService {
 	}
 
 	private void validateAppTuihuoCheckStatus(String cwb,FlowOrderTypeEnum flowOrderTypeEnum) {
-		OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
-		if(obc!=null){
-			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-			if(co.getCwbstate()!=1){
-				if(obc.getCheckstate()==1){//待审核
-					throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
-				}
-				if(obc.getCheckresult()==1){//审核为确认退货
-					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+
+		Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
+		boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
+		if(chechFlag){
+			OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
+			if(obc!=null){
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				if(co.getCwbstate()!=1){
+					if(obc.getCheckstate()==1){//待审核
+						throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+					}
+					if(obc.getCheckresult()==1){//审核为确认退货
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+					}
 				}
 			}
 		}
+		
 	}
 
 	private void validateAppZhongZhuanLinghuo(String cwb, CwbOrder co,FlowOrderTypeEnum flowOrderTypeEnum) {
