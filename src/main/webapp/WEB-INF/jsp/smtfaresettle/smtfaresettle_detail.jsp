@@ -63,7 +63,8 @@
 </head>
 
 <body style="background: #f5f5f5">
-	<div class="search_div">
+<div class="right_box">
+	<div class="inputselect_box">
 		<form id="searchForm" name="searchForm" class="search_form"
 			action="${ctx_path}/smtfaresettle/export/${result.detail}" method="post">
 			<input type="hidden" name="optTimeType" value="${cond.optTimeType}" /> <input type="hidden"
@@ -74,11 +75,10 @@
 				value="${cond.type}" /> <input type="button" id="btnval" value="返回" class="input_button2"
 				onclick="javascript:history.back(-1);" /> <input type="button" id="btnval" value="导出"
 				class="input_button2" onclick="exportData()" />
-
 		</form>
-	</div>
-	<div class="table_div">
-		<div style="width: 100%">
+		</div>
+			<div class="right_title">
+			<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 			<table style="width: 100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
 				id="static_table">
 				<tr class="font_1">
@@ -138,6 +138,7 @@
 					</select>页</td>
 				</tr>
 			</table>
+		</div>
 		</div>
 </body>
 </html>
