@@ -35,6 +35,7 @@ import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -4786,14 +4787,41 @@ public class CwbDAO {
 	 */
 	public String getSqlExportByBranchidweichuku(long branchid, Branch b, int cwbstate) {
 		String sql = "";
-		if (branchid > 0) {
-			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid=" + branchid + "  and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()
-					+ " and state=1 ";
-		} else {
-			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + "   and flowordertype=" + FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + " and state=1 ";
-		}
-		if (cwbstate > -1) {
-			sql += " and cwbstate=" + cwbstate;
+		//退货库（退货再投操作）
+		if( BranchEnum.TuiHuo.getValue() ==  b.getSitetype()){
+			if (branchid > 0) {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" 
+						+ b.getBranchid() + " and nextbranchid=" + branchid 
+						+ " and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+						+ " and state=1 ";
+			} else {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() 
+						+ " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+						+ " and state=1 ";
+			}
+		//分拣库出库操作
+		}else if(BranchEnum.KuFang.getValue() == b.getSitetype()){
+			if (branchid > 0) {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid=" + branchid + "  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
+						+ " and state=1 ";
+			} else {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue() + " and state=1 ";
+			}
+			if (cwbstate > -1) {
+				sql += " and cwbstate=" + cwbstate;
+			}
+		//中转库出库操作
+		}else if( BranchEnum.ZhongZhuan.getValue() == b.getSitetype()){
+			if (branchid > 0) {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() 
+						+ " and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() 
+						+ " and state=1 "
+						+ " and nextbranchid=" + branchid;
+			} else {
+				sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() 
+						+ " and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() 
+						+ " and state=1 ";
+			}
 		}
 		return sql;
 	}
