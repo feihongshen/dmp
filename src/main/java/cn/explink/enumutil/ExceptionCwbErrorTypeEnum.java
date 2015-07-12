@@ -63,7 +63,7 @@ public enum ExceptionCwbErrorTypeEnum {
 	Shenhebutongguobuyunxuzhongzhuankuchuku(127,"审核不通过的订单不允许中转库出库！！"),
 	Weishenhebuxuzhongzhuankuhebaochuku(128,"未审核的订单不允许中转库合包出库！！"),
 	Shenhebutongguobuyunxuzhongzhuankuhebaochuku(129,"审核不通过的订单不允许中转库合包出库！！"),
-	Tui_huo_chu_zhan_shen_he_shenhe_zhandianpeisong(130,"审核为站点陪送的订单不允许退货出站!"),
+	Tui_huo_chu_zhan_shen_he_shenhe_zhandianpeisong(130,"审核为站点配送的订单不允许退货出站!"),
 	
 	DaizhongzhuanshenheCannotlinghuo(131,"待中转审核的订单不允许领货"),
 	ShenhetongguoCannotlinghuo(132,"审核通过的订单不允许领货"),

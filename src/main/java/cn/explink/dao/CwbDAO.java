@@ -6101,7 +6101,7 @@ public class CwbDAO {
 	}
 	public CwbOrder getCwborder(String cwb) {
 		try{
-			String sql = "select * from  express_ops_cwb_detail  where cwb=?";
+			String sql = "select * from  express_ops_cwb_detail  where cwb=? and state=1";
 			return this.jdbcTemplate.queryForObject(sql, new CwbMapper(),cwb);
 		}catch(Exception e){
 			e.printStackTrace();
