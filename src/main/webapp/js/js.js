@@ -6174,7 +6174,7 @@ function createbycwbinit(cwb)
 		data:{"cwb":cwb},
 		success:function(data){
 		$("#flowordertype").val(data.flowordertyleText);
-		$("#cwbprice").val(data.receivablefee);
+		$("#cwbprice").val(data.caramount);
 		$("#cwbstate").val(data.flowordertyleValue);
 
 
