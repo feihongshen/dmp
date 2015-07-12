@@ -210,7 +210,11 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 					if(data.statuscode=="000000"){
 						$("#cwbgaojia").hide();
 						if(data.body.cwbOrder.deliverybranchid!=0){
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname==undefined?'':data.body.cwbbranchname);
+							var cwbbname = data.body.cwbbranchname;
+							if(isNull(cwbbname)){
+								cwbbname = '';
+							}
+							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+cwbbname);
 						}else{
 							$("#excelbranch").html("尚未匹配站点");
 						}
@@ -259,6 +263,16 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 		}
 	}
 }
+
+function isNull(obj){
+	if(typeof(obj) == "undefined" || "" == obj || "undefined" == obj){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+
 function goodCounts(counts,val)
 {
 	//alert(counts+","+val);
