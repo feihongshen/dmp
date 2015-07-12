@@ -580,6 +580,14 @@ public class PunishInsideService {
 		
 			return false;
 		}
+		public boolean checkisshenheAdd(long id){
+			PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
+			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()) {
+				return true;
+			}
+			
+			return false;
+		}
 		public String checkkoufajine(long state,String price){
 			String koufajine="";
 			if (state==PunishInsideStateEnum.koufachengli.getValue()||state==PunishInsideStateEnum.koufachexiao.getValue()) {

@@ -484,7 +484,7 @@ public class PunishInsideController {
 			){
 		User user=this.getSessionUser();
 		String id=StringUtil.nullConvertToEmptyString(request.getParameter("id")).trim();
-		if (punishInsideService.checkisshenhe(Long.parseLong(id))) {
+		if (punishInsideService.checkisshenheAdd(Long.parseLong(id))) {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经审核过，不允许再次审核\"}";
 
 		}
@@ -512,7 +512,7 @@ public class PunishInsideController {
 	public @ResponseBody String submitHandleShenheResult(HttpServletRequest request){
 		User user=this.getSessionUser();
 		String id=StringUtil.nullConvertToEmptyString(request.getParameter("id")).trim();
-		if (punishInsideService.checkisshenhe(Long.parseLong(id))) {
+		if (punishInsideService.checkisshenheAdd(Long.parseLong(id))) {
 			return "{\"errorCode\":1,\"error\":\"对内扣罚单已经审核过，不允许再次审核\"}";
 
 		}
