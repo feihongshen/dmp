@@ -7359,6 +7359,7 @@ public class PDAController {
 			String sqlstr = "";
 			Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 			if (type.length() > 0) {
+				//待出库明细
 				if (type.equals("weichuku")) {
 					int cwbstate = 1;
 //					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
@@ -7369,15 +7370,35 @@ public class PDAController {
 					}
 					sqlstr = this.cwbDAO.getSqlExportByBranchidweichuku(branchid, b, cwbstate);
 				}
+				//已出库明细
 				if (type.equals("yichuku")) {
-					int flowordertypeid = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
-					if (b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
+					int flowordertypeid = 0;
+					//分拣库出库
+					if(BranchEnum.KuFang.getValue() == b.getSitetype()){
+						flowordertypeid = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+					//中转库出库
+					}else if(BranchEnum.ZhongZhuan.getValue() == b.getSitetype()){
 						flowordertypeid = FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+					//(退货再投)退货库
+					}else if(BranchEnum.TuiHuo.getValue() == b.getSitetype()){
+						flowordertypeid = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
 					}
 					sqlstr = this.cwbDAO.getSqlExportByBranchidyichuku(b.getBranchid(), branchid, flowordertypeid);
 				}
+				//一票多件缺件明细
 				if (type.equals("ypdj")) {
-					List<String> ypdjCwbs = this.ypdjHandleRecordDAO.getSQLExportforchukuypdj(this.getSessionUser().getBranchid(), branchid);
+					int flowordertypeid = 0;
+					//分拣库出库
+					if(BranchEnum.KuFang.getValue() == b.getSitetype()){
+						flowordertypeid = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+						//中转库出库
+					}else if(BranchEnum.ZhongZhuan.getValue() == b.getSitetype()){
+						flowordertypeid = FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+						//(退货再投)退货库
+					}else if(BranchEnum.TuiHuo.getValue() == b.getSitetype()){
+						flowordertypeid = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+					}
+					List<String> ypdjCwbs = this.ypdjHandleRecordDAO.getSQLExportforchukuypdj(this.getSessionUser().getBranchid(), branchid, flowordertypeid);
 					String orderflowcwbs = "";
 					if (ypdjCwbs.size() > 0) {
 						orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(ypdjCwbs);

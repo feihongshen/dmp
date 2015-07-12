@@ -198,10 +198,10 @@ public class YpdjHandleRecordDAO {
 	 * @return
 	 */
 	public List<String> getSQLExportforypdj(long branchid, long customerid, long emaildateid) {
-		String sql = "SELECT yp.cwb,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid="
+		String sql = "SELECT yp.cwb,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb WHERE  yp.branchid="
 				+ branchid + " AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =" + FlowOrderTypeEnum.RuKu.getValue();
 		if (customerid > 0) {
-			sql += " and customerid =" + customerid;
+			sql += " and cd.customerid =" + customerid;
 		}
 		if (emaildateid > 0) {
 			sql += " and cd.emaildateid =" + emaildateid;
@@ -222,10 +222,18 @@ public class YpdjHandleRecordDAO {
 	 * @param branchid2
 	 * @return
 	 */
-	public List<String> getSQLExportforchukuypdj(long branchid, long nextbranchid) {
-		String sql = "SELECT cwb FROM `ops_ypdjhandlerecord` WHERE branchid=" + branchid + " AND flowordertype =" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+	public List<String> getSQLExportforchukuypdj(long branchid, long nextbranchid, int flowordertypeid) {
+//		String sql = "SELECT cwb FROM `ops_ypdjhandlerecord` WHERE branchid=" + branchid + " AND flowordertype =" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+//		if (nextbranchid > 0) {
+//			sql += " and nextbranchid =" + nextbranchid;
+//		}
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail` cd "
+				 + " ON yp.cwb=cd.cwb "
+				 + " WHERE  yp.branchid = " + branchid
+				 + " AND cd.state=1 "
+				 + " AND yp.flowordertype = " + flowordertypeid;
 		if (nextbranchid > 0) {
-			sql += " and nextbranchid =" + nextbranchid;
+			sql += " AND yp.nextbranchid = " + nextbranchid;
 		}
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}

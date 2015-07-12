@@ -4838,10 +4838,18 @@ public class CwbDAO {
 	 * @return
 	 */
 	public String getSqlExportByBranchidyichuku(long startbranchid, long nextbranchid, int flowordertype) {
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE startbranchid=" + startbranchid + " and flowordertype=" + flowordertype + " and state=1 ";
+		
+		String sql = "SELECT cwb.* FROM express_ops_cwb_detail AS cwb LEFT JOIN express_ops_operation_time ope ON cwb.cwb = ope.cwb "
+			 	 + " WHERE ope.branchid= " + startbranchid 
+				 + " AND ope.flowordertype = " + flowordertype;
 		if (nextbranchid > 0) {
-			sql += " and nextbranchid=" + nextbranchid;
+			sql += " AND ope.nextbranchid=" + nextbranchid;
 		}
+		
+//		String sql = "SELECT * FROM express_ops_cwb_detail WHERE startbranchid=" + startbranchid + " and flowordertype=" + flowordertype + " and state=1 ";
+//		if (nextbranchid > 0) {
+//			sql += " and nextbranchid=" + nextbranchid;
+//		}
 		return sql;
 	}
 
