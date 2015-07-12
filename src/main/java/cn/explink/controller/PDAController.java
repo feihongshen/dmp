@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
@@ -2638,53 +2639,58 @@ public class PDAController {
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		long succesCount = 0l;
 		long errorCount = 0l;
-		for (String cwb : cwbs.split("\r\n")) {
-			if (cwb.trim().length() == 0) {
-				continue;
-			}
-			JSONObject obj = new JSONObject();
-			cwb = this.cwborderService.translateCwb(cwb);
-			CwbOrder cwbOrder = new CwbOrder();
-			obj.put("cwb", cwb);
-			try {// 成功订单
-				cwbOrder = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, 0, customerid);
-				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-				obj.put("errorcode", "000000");
-				succesCount++;
-			} catch (CwbException ce) {// 出现验证错误
-				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-				if (cwbOrder != null) {
-					errorCount++;
-					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-					List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
-					String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
-					String[] showcustomer = list.get(0).getCustomerid().split(",");
-					Object a = "";
-					for (String s : showcustomer) {
-						if (s.equals(cwbcustomerid)) {
+		String gloableError = null;
+		if( customerid < 1 ){
+			gloableError = "请选择供货商！";
+		}else{
+			for (String cwb : cwbs.split("\r\n")) {
+				if (cwb.trim().length() == 0) {
+					continue;
+				}
+				JSONObject obj = new JSONObject();
+				cwb = this.cwborderService.translateCwb(cwb);
+				CwbOrder cwbOrder = new CwbOrder();
+				obj.put("cwb", cwb);
+				try {// 成功订单
+					cwbOrder = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, 0, customerid);
+					obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+					obj.put("errorcode", "000000");
+					succesCount++;
+				} catch (CwbException ce) {// 出现验证错误
+					cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+					if (cwbOrder != null) {
+						errorCount++;
+						String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+						List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+						String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+						String[] showcustomer = list.get(0).getCustomerid().split(",");
+						Object a = "";
+						for (String s : showcustomer) {
 							if (s.equals(cwbcustomerid)) {
-								try {
-									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
-								} catch (Exception e) {
-									e.printStackTrace();
-									a = "Erro";
+								if (s.equals(cwbcustomerid)) {
+									try {
+										a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
+									} catch (Exception e) {
+										e.printStackTrace();
+										a = "Erro";
+									}
 								}
 							}
 						}
+						obj.put("showRemark", a);
 					}
-					obj.put("showRemark", a);
+					this.exceptionCwbDAO.createExceptionCwb(
+							cwb, ce.getFlowordertye(), ce.getMessage(),
+							this.getSessionUser().getBranchid(),
+							this.getSessionUser().getUserid(),
+							cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
+									0, 0, 0, "");
+					obj.put("cwbOrder", cwbOrder);
+					obj.put("errorcode", ce.getError().getValue());
+					obj.put("errorinfo", ce.getMessage());
 				}
-				this.exceptionCwbDAO.createExceptionCwb(
-						cwb, ce.getFlowordertye(), ce.getMessage(),
-						this.getSessionUser().getBranchid(),
-						this.getSessionUser().getUserid(),
-						cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-						0, 0, 0, "");
-				obj.put("cwbOrder", cwbOrder);
-				obj.put("errorcode", ce.getError().getValue());
-				obj.put("errorinfo", ce.getMessage());
+				objList.add(obj);
 			}
-			objList.add(obj);
 		}
 		model.addAttribute("objList", objList);
 
@@ -2699,7 +2705,7 @@ public class PDAController {
 		model.addAttribute("yiTiHuolist", yiTiHuolist);
 		model.addAttribute("weiTiHuoCount", weiTiHuoCount);
 		model.addAttribute("yiTiHuoCount", yiTiHuoCount);
-
+		model.addAttribute("gloableError",gloableError);
 		model.addAttribute("SuccessCount", succesCount);// 本次扫描提货成功总数
 		model.addAttribute("ErrorCount", errorCount);// 本次扫描提货失败总数
 
@@ -3601,7 +3607,7 @@ public class PDAController {
 		if (cwbOrder.getDeliverybranchid() != 0) {
 			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
 			obj.put("cwbdeliverybranchname", branch.getBranchname());
-			if (branch.getBranchwavfile() != null) {
+			if ( !StringUtils.isEmpty(branch.getBranchwavfile()) ) {
 				explinkResponse.addLastWav(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
 			}else{
 				explinkResponse.addLongWav(wavPath);
