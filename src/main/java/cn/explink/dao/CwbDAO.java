@@ -4790,7 +4790,7 @@ public class CwbDAO {
 			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + " and nextbranchid=" + branchid + "  and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()
 					+ " and state=1 ";
 		} else {
-			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + "   and flowordertype=" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() + " and state=1 ";
+			sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + b.getBranchid() + "   and flowordertype=" + FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + " and state=1 ";
 		}
 		if (cwbstate > -1) {
 			sql += " and cwbstate=" + cwbstate;
