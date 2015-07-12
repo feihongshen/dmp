@@ -4799,6 +4799,9 @@ public class CwbDAO {
 						+ " and nextbranchid<>0  and flowordertype<>" + FlowOrderTypeEnum.TiHuo.getValue()
 						+ " and state=1 ";
 			}
+			if (cwbstate > -1) {
+				sql += " and cwbstate=" + cwbstate;
+			}
 		//分拣库出库操作
 		}else if(BranchEnum.KuFang.getValue() == b.getSitetype()){
 			if (branchid > 0) {

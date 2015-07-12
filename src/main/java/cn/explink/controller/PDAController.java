@@ -7361,9 +7361,9 @@ public class PDAController {
 			if (type.length() > 0) {
 				if (type.equals("weichuku")) {
 					int cwbstate = 1;
-					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
-						cwbstate = CwbStateEnum.PeiShong.getValue();
-					}
+//					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+//						cwbstate = CwbStateEnum.PeiShong.getValue();
+//					}
 					if (b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) {
 						cwbstate = CwbStateEnum.ZhongZhuan.getValue();
 					}
