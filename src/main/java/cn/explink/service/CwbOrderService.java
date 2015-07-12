@@ -3697,11 +3697,14 @@ public class CwbOrderService {
 	private void validateAppTuihuoCheckStatus(String cwb,FlowOrderTypeEnum flowOrderTypeEnum) {
 		OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
 		if(obc!=null){
-			if(obc.getCheckstate()==1){//待审核
-				throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
-			}
-			if(obc.getCheckresult()==1){//审核为确认退货
-				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+			CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+			if(co.getCwbstate()!=1){
+				if(obc.getCheckstate()==1){//待审核
+					throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+				}
+				if(obc.getCheckresult()==1){//审核为确认退货
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+				}
 			}
 		}
 	}
