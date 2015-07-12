@@ -349,6 +349,7 @@ function resetData(){
 								</table>
 							</form>
 						</div>
+						<div style="height: 480px;overflow: scroll;" >
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
@@ -396,6 +397,7 @@ function resetData(){
 								<%} }%>
 						</tbody>
 						</table>
+						</div>
 					</div>
 					<div style="height:130px"></div>
 					<br>
