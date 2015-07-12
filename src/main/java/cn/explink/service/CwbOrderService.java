@@ -2744,7 +2744,7 @@ public class CwbOrderService {
 			int changealowflag = this.getChangealowflagById(co);
 			
 			if((changealowflag ==1) && (co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())){
-				CwbApplyZhongZhuan cwbApplyZhongZhuan = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(scancwb);
+				CwbApplyZhongZhuan cwbApplyZhongZhuan = cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
 				if(cwbApplyZhongZhuan.getIshandle() == 0){
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuanchuku);
 				}
