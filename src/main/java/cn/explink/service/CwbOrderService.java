@@ -2273,7 +2273,7 @@ public class CwbOrderService {
 		}
 
 		if ((userbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue()) && (co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue())) { // 如果当前站是中转站，并且cwbstate=中转
-			this.cwbDAO.updateCwbState(scancwb, CwbStateEnum.PeiShong);
+			this.cwbDAO.updateCwbState(cwb, CwbStateEnum.PeiShong);
 		}
 
 		if (!isauto) {
