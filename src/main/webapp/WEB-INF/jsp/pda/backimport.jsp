@@ -210,7 +210,7 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 					if(data.statuscode=="000000"){
 						$("#cwbgaojia").hide();
 						if(data.body.cwbOrder.deliverybranchid!=0){
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname==undefined?'':data.body.cwbbranchname);
 						}else{
 							$("#excelbranch").html("尚未匹配站点");
 						}
