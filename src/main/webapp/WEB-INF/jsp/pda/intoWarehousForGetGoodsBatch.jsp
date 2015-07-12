@@ -13,7 +13,6 @@ long weiTiHuoCount = request.getAttribute("weiTiHuoCount")==null?0:Long.parseLon
 long yiTiHuoCount = request.getAttribute("yiTiHuoCount")==null?0:Long.parseLong(request.getAttribute("yiTiHuoCount").toString());
 long SuccessCount = request.getAttribute("SuccessCount")==null?0:Long.parseLong(request.getAttribute("SuccessCount").toString());
 long ErrorCount = request.getAttribute("ErrorCount")==null?0:Long.parseLong(request.getAttribute("ErrorCount").toString());
-String gloableError = request.getAttribute("gloableError")==null?"":request.getAttribute("gloableError").toString();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -235,12 +234,8 @@ function sub(){
 					</p>
 				</div>
 				<div class="saomiao_right2">
-					<%if(gloableError != ""){%>
-						<p id="gloableError" name="gloableError" >扫描异常：<%=gloableError %></p>
-					<% }else{%>
-						<p id="msg" name="msg" ><%if(SuccessCount>0){ %>扫描成功<%=SuccessCount %>单<%} %></p>
-						<p id="errormsg" name="errormsg" ><%if(ErrorCount>0){ %>扫描失败<%=ErrorCount%>单<%} %></p>
-					<% } %>
+					<p id="msg" name="msg" ><%if(SuccessCount>0){ %>扫描成功<%=SuccessCount %>单<%} %></p>
+					<p id="errormsg" name="errormsg" ><%if(ErrorCount>0){ %>扫描失败<%=ErrorCount%>单<%} %></p>
 				</div>
 			</div></form>
 		</div>

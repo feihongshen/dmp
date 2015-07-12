@@ -705,9 +705,10 @@ public class CwbOrderService {
 			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, CwbFlowOrderTypeEnum.WeiDaoHuo.getValue(), CwbStateEnum.WUShuju.getValue());
 			co = this.cwbDAO.getCwbByCwb(cwb);
 		} else {
-			if( co.getCustomerid() != customerid ){
-				throw new CwbException(cwb, FlowOrderTypeEnum.TiHuo.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU,this.customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
-			}
+//			//选择了供货商，但是非本供货商
+//			if( customerid < 1 && co.getCustomerid() != customerid ){
+//				throw new CwbException(cwb, FlowOrderTypeEnum.TiHuo.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU,this.customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
+//			}
 			if (co.getFlowordertype() == FlowOrderTypeEnum.TiHuo.getValue()) {
 				if (this.tryIncreaseScanNum(co)) {
 					return co;

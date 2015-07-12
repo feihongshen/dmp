@@ -2639,58 +2639,53 @@ public class PDAController {
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		long succesCount = 0l;
 		long errorCount = 0l;
-		String gloableError = null;
-		if( customerid < 1 ){
-			gloableError = "请选择供货商！";
-		}else{
-			for (String cwb : cwbs.split("\r\n")) {
-				if (cwb.trim().length() == 0) {
-					continue;
-				}
-				JSONObject obj = new JSONObject();
-				cwb = this.cwborderService.translateCwb(cwb);
-				CwbOrder cwbOrder = new CwbOrder();
-				obj.put("cwb", cwb);
-				try {// 成功订单
-					cwbOrder = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, 0, customerid);
-					obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-					obj.put("errorcode", "000000");
-					succesCount++;
-				} catch (CwbException ce) {// 出现验证错误
-					cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					if (cwbOrder != null) {
-						errorCount++;
-						String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-						List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
-						String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
-						String[] showcustomer = list.get(0).getCustomerid().split(",");
-						Object a = "";
-						for (String s : showcustomer) {
+		for (String cwb : cwbs.split("\r\n")) {
+			if (cwb.trim().length() == 0) {
+				continue;
+			}
+			JSONObject obj = new JSONObject();
+			cwb = this.cwborderService.translateCwb(cwb);
+			CwbOrder cwbOrder = new CwbOrder();
+			obj.put("cwb", cwb);
+			try {// 成功订单
+				cwbOrder = this.cwborderService.intoWarehousForGetGoods(this.getSessionUser(), cwb, 0, customerid);
+				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+				obj.put("errorcode", "000000");
+				succesCount++;
+			} catch (CwbException ce) {// 出现验证错误
+				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				errorCount++;
+				if (cwbOrder != null) {
+					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+					List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+					String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+					String[] showcustomer = list.get(0).getCustomerid().split(",");
+					Object a = "";
+					for (String s : showcustomer) {
+						if (s.equals(cwbcustomerid)) {
 							if (s.equals(cwbcustomerid)) {
-								if (s.equals(cwbcustomerid)) {
-									try {
-										a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
-									} catch (Exception e) {
-										e.printStackTrace();
-										a = "Erro";
-									}
+								try {
+									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
+								} catch (Exception e) {
+									e.printStackTrace();
+									a = "Erro";
 								}
 							}
 						}
-						obj.put("showRemark", a);
 					}
-					this.exceptionCwbDAO.createExceptionCwb(
-							cwb, ce.getFlowordertye(), ce.getMessage(),
-							this.getSessionUser().getBranchid(),
-							this.getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-									0, 0, 0, "");
-					obj.put("cwbOrder", cwbOrder);
-					obj.put("errorcode", ce.getError().getValue());
-					obj.put("errorinfo", ce.getMessage());
+					obj.put("showRemark", a);
 				}
-				objList.add(obj);
+				this.exceptionCwbDAO.createExceptionCwb(
+						cwb, ce.getFlowordertye(), ce.getMessage(),
+						this.getSessionUser().getBranchid(),
+						this.getSessionUser().getUserid(),
+						cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
+								0, 0, 0, "");
+				obj.put("cwbOrder", cwbOrder);
+				obj.put("errorcode", ce.getError().getValue());
+				obj.put("errorinfo", ce.getMessage());
 			}
+			objList.add(obj);
 		}
 		model.addAttribute("objList", objList);
 
@@ -2705,7 +2700,6 @@ public class PDAController {
 		model.addAttribute("yiTiHuolist", yiTiHuolist);
 		model.addAttribute("weiTiHuoCount", weiTiHuoCount);
 		model.addAttribute("yiTiHuoCount", yiTiHuoCount);
-		model.addAttribute("gloableError",gloableError);
 		model.addAttribute("SuccessCount", succesCount);// 本次扫描提货成功总数
 		model.addAttribute("ErrorCount", errorCount);// 本次扫描提货失败总数
 
