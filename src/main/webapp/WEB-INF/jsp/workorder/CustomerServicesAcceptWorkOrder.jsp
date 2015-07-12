@@ -261,26 +261,20 @@ function addCci(){
 	if($('#phoneonOne').val()==""){
 		alert('请输入电话号码');
 		return false;
-	}
-	else if($('#consigneeType').val()=="-1"){
+	}else if($('#consigneeType').val()=="-1"){
 		alert('请选择客户类型');
 		return false;
-	}
-	else if($('#sex1').val()==""&&$('#sex').val()==""){
+/* 	}else if($('#sex1').val()==""&&$('#sex').val()==""){ */
+	}else if($("input[name='sex']:checked").val() == undefined ){
 		alert('请选择性别');
 		return false;
-	}
-	else if($('#province').val()==""){
+	}else if($('#province').val()==""){
 		alert('请输入省份');
 		return false;
-	}
-
-	else if($('#city').val()==""){
+	}else if($('#city').val()==""){
 		alert('请输入城市');
 		return false;
-	}
-
-	else if($('#name').val()==""){
+	}else if($('#dname').val()==""){
 		alert('请输入姓名');
 		return false;
 	}
