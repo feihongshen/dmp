@@ -32,7 +32,7 @@ $(function(){
 	$('#chongzhi').click(function(){
 		$('#phoneonOne').val('');
 		$('#name').val('');
-		
+		$('#svc').val(-1);
 		
 		
 	});
@@ -92,8 +92,6 @@ function deleteidValue(){
 								<c:forEach items="${KeHuLeiXingAllReason}" var="k">
 									<option value="${k.reasonid}">${k.reasoncontent}</option>	
 								</c:forEach>
-							
-											
 							</select>
 					</td>
 				</tr>
