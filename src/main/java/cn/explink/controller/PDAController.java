@@ -2817,7 +2817,7 @@ public class PDAController {
 				}
 			}
 			//添加前台提示音播放列表(前台按照声音顺序进行播放)
-			if (cwbOrder.getDeliverybranchid() != 0) {
+			if (cwbOrder.getDeliverybranchid() != 0 ) {
 				//如果存在站点声音，忽略通用提示音
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
 				obj.put("cwbdeliverybranchname", branch.getBranchname());
@@ -2825,9 +2825,12 @@ public class PDAController {
 					String fullPath = this.getWavFullPath(request, branch.getBranchwavfile());
 					resp.addLastWav(fullPath);
 					obj.put("cwbdeliverybranchnamewav", fullPath);
+				}else{
+					//存在站点,但未设置声音，也使用通用提示音
+					resp.addLongWav(wavPath);
 				}
 			} else {
-				//如果不存在站点声音，忽略通用提示音
+				//如果不存在站点声音，使用通用提示音
 				resp.addLongWav(wavPath);
 				obj.put("cwbdeliverybranchname", "");
 				obj.put("cwbdeliverybranchnamewav", "");
