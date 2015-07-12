@@ -6873,7 +6873,7 @@ public class CwbOrderService {
 	public List<OrderBackRuku> getOrderBackRukuRecord(
 			List<OrderBackRuku> obrList, List<Branch> branchList,
 			List<Customer> customerList) {
-		if(obrList!=null){
+		if(obrList!=null&&obrList.size()>0){
 			for(OrderBackRuku obr : obrList){
 				obr.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(obr.getCwbordertypeid()));//订单类型
 				obr.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, obr.getCustomerid()));//客户名称

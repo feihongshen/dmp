@@ -67,56 +67,112 @@ public class OrderBackRukuRecordDao {
 	
 	
 	public List<OrderBackRuku> getOrderbackRukus(long page,String cwb,int cwbordertype,long customerid,long branchid,String begintime,String endtime,int auditstate){
-		String sql = "select * from express_orderbackruku_record where auditstate="+auditstate;
-		StringBuffer sb = new StringBuffer();
-		if(!"".equals(cwb)){
-			sb.append(" and cwb in("+cwb+")");
+		String sql = "";
+		if(auditstate==0){
+			sql = "select re.* from express_orderbackruku_record as re left join express_ops_cwb_detail as de on re.cwb = de.cwb"
+					+" where de.state=1 and re.auditstate =0 and de.flowordertype =15";
+			StringBuffer sb = new StringBuffer();
+			if(!"".equals(cwb)){
+				sb.append(" and re.cwb in("+cwb+")");
+			}
+			if(cwbordertype>0){
+				sb.append(" and re.cwbordertypeid="+cwbordertype);
+			}
+			if(customerid>0){
+				sb.append(" and re.customerid="+customerid);
+			}
+			if(branchid>0){
+				sb.append(" and re.branchid="+branchid);
+			}
+			if(!"".equals(begintime)){
+				sb.append(" and re.createtime>= '"+begintime+"' ");
+			}
+			if(!"".equals(endtime)){
+				sb.append(" and re.createtime<= '"+endtime+"' ");
+			}
+			sql += sb;
+			sql += " order by re.createtime desc";
+		}else{
+			sql = "select * from express_orderbackruku_record where auditstate=1";
+			StringBuffer sb = new StringBuffer();
+			if(!"".equals(cwb)){
+				sb.append(" and cwb in("+cwb+")");
+			}
+			if(cwbordertype>0){
+				sb.append(" and cwbordertypeid="+cwbordertype);
+			}
+			if(customerid>0){
+				sb.append(" and customerid="+customerid);
+			}
+			if(branchid>0){
+				sb.append(" and branchid="+branchid);
+			}
+			if(!"".equals(begintime)){
+				sb.append(" and createtime>= '"+begintime+"' ");
+			}
+			if(!"".equals(endtime)){
+				sb.append(" and createtime<= '"+endtime+"' ");
+			}
+			sql += sb;
+			sql += " order by createtime desc";
 		}
-		if(cwbordertype>0){
-			sb.append(" and cwbordertypeid="+cwbordertype);
-		}
-		if(customerid>0){
-			sb.append(" and customerid="+customerid);
-		}
-		if(branchid>0){
-			sb.append(" and branchid="+branchid);
-		}
-		if(!"".equals(begintime)){
-			sb.append(" and createtime>= '"+begintime+"' ");
-		}
-		if(!"".equals(endtime)){
-			sb.append(" and createtime<= '"+endtime+"' ");
-		}
-		sql += sb;
-		sql += " order by createtime desc";
-		if(page != -1){
-			sql += "  limit "+ (page-1)*Page.ONE_PAGE_NUMBER+","+Page.ONE_PAGE_NUMBER;
-		}
+
+			if(page != -1){
+				sql += "  limit "+ (page-1)*Page.ONE_PAGE_NUMBER+","+Page.ONE_PAGE_NUMBER;
+			}
 		return jdbcTemplate.query(sql, new OrderBackRukuRowMapper());
 	}
 	
 	public long getOrderbackRukusCount(long page,String cwb,int cwbordertype,long customerid,long branchid,String begintime,String endtime,int auditstate){
-		String sql = "select count(1) from express_orderbackruku_record where auditstate="+auditstate;
-		StringBuffer sb = new StringBuffer();
-		if(!"".equals(cwb)){
-			sb.append(" and cwb in("+cwb+")");
+		String sql = "";
+		if(auditstate==0){
+			sql = "select count(1) from express_orderbackruku_record as re left join express_ops_cwb_detail as de on re.cwb = de.cwb"
+					+" where de.state=1 and re.auditstate =0 and de.flowordertype =15";
+			StringBuffer sb = new StringBuffer();
+			if(!"".equals(cwb)){
+				sb.append(" and re.cwb in("+cwb+")");
+			}
+			if(cwbordertype>0){
+				sb.append(" and re.cwbordertypeid="+cwbordertype);
+			}
+			if(customerid>0){
+				sb.append(" and re.customerid="+customerid);
+			}
+			if(branchid>0){
+				sb.append(" and re.branchid="+branchid);
+			}
+			if(!"".equals(begintime)){
+				sb.append(" and re.createtime>= '"+begintime+"' ");
+			}
+			if(!"".equals(endtime)){
+				sb.append(" and re.createtime<= '"+endtime+"' ");
+			}
+			sql += sb;
+			
+		}else{
+			sql = "select count(1) from express_orderbackruku_record where auditstate=1";
+			StringBuffer sb = new StringBuffer();
+			if(!"".equals(cwb)){
+				sb.append(" and cwb in("+cwb+")");
+			}
+			if(cwbordertype>0){
+				sb.append(" and cwbordertypeid="+cwbordertype);
+			}
+			if(customerid>0){
+				sb.append(" and customerid="+customerid);
+			}
+			if(branchid>0){
+				sb.append(" and branchid="+branchid);
+			}
+			if(!"".equals(begintime)){
+				sb.append(" and createtime>= '"+begintime+"' ");
+			}
+			if(!"".equals(endtime)){
+				sb.append(" and createtime<= '"+endtime+"' ");
+			}
+			sql += sb;
 		}
-		if(cwbordertype>0){
-			sb.append(" and cwbordertypeid="+cwbordertype);
-		}
-		if(customerid>0){
-			sb.append(" and customerid="+customerid);
-		}
-		if(branchid>0){
-			sb.append(" and branchid="+branchid);
-		}
-		if(!"".equals(begintime)){
-			sb.append(" and createtime>= '"+begintime+"' ");
-		}
-		if(!"".equals(endtime)){
-			sb.append(" and createtime<= '"+endtime+"' ");
-		}
-		sql += sb;
+		
 		return jdbcTemplate.queryForLong(sql);
 	}
 
