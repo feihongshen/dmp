@@ -1677,7 +1677,7 @@ public class CwbOrderService {
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 		
 		
-		validateTuihuoCheck(scancwb, flowOrderTypeEnum);//退货申请校验
+		validateTuihuoCheck(cwb, flowOrderTypeEnum);//退货申请校验
 
 		if (requestbatchno > 0) {
 			this.produceGroupDetail(user, cwb, requestbatchno, false, flowOrderTypeEnum.getValue(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid(), (int) driverid, 0, "");
