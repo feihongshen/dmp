@@ -63,8 +63,10 @@ public class VipshopInsertCwbDetailTimmer {
 				logger.info("未开启vipshop[" + b2ckey + "]临时表插入主表");
 				return;
 			}
+			String lefengCustomerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
+			
+			List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids()+","+lefengCustomerid);
 
-			List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids());
 			if (cwbOrderList == null) {
 				return;
 			}

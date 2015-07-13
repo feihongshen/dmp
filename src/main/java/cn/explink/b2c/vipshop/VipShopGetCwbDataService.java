@@ -1,5 +1,7 @@
 package cn.explink.b2c.vipshop;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import scala.math.BigInt;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -94,14 +97,19 @@ public class VipShopGetCwbDataService {
 		vipshop.setForward_hours(Integer.parseInt(request.getParameter("forward_hours")));
 		vipshop.setIsTuoYunDanFlag(Integer.parseInt(request.getParameter("isTuoYunDanFlag")));
 		vipshop.setIsShangmentuiFlag(Integer.parseInt(request.getParameter("isShangmentuiFlag").equals("") ? "0" : request.getParameter("isShangmentuiFlag")));
+		
 		String cancelOrIntercept=request.getParameter("cancelOrIntercept").equals("")?"0":request.getParameter("cancelOrIntercept");
 		vipshop.setCancelOrIntercept(Integer.parseInt(cancelOrIntercept));
 		
 		String isOpenLefengflag=request.getParameter("isOpenLefengflag").equals("")?"0":request.getParameter("isOpenLefengflag");
 		vipshop.setIsOpenLefengflag(Integer.parseInt(isOpenLefengflag));
-		
+
 		String resuseReasonFlag=request.getParameter("resuseReasonFlag").equals("")?"0":request.getParameter("resuseReasonFlag");
 		vipshop.setResuseReasonFlag(Integer.parseInt(resuseReasonFlag));
+		String lefengCustomerid=request.getParameter("lefengCustomerid");
+		vipshop.setLefengCustomerid(lefengCustomerid);
+		
+		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
 
@@ -115,6 +123,7 @@ public class VipShopGetCwbDataService {
 		} else {
 			try {
 				oldCustomerids = this.getVipShop(joint_num).getCustomerids();
+				oldLefengCustomerids = this.getVipShop(joint_num).getLefengCustomerid();
 			} catch (Exception e) {
 			}
 			jointEntity.setJoint_num(joint_num);
@@ -123,6 +132,7 @@ public class VipShopGetCwbDataService {
 		}
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerDAO.updateB2cEnumByJoint_num(lefengCustomerid, oldLefengCustomerids, joint_num);
 	}
 
 	public void updateMaxSEQ(int joint_num, VipShop vipshop) {
@@ -141,6 +151,7 @@ public class VipShopGetCwbDataService {
 		vip.setIsTuoYunDanFlag(vipshop.getIsTuoYunDanFlag());
 		vip.setIsShangmentuiFlag(vipshop.getIsShangmentuiFlag());
 		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
+		vip.setLefengCustomerid(vipshop.getLefengCustomerid());
 		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -219,39 +230,55 @@ public class VipShopGetCwbDataService {
 		}
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
-			try {
-				long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
-				this.dataImportService_B2c.Analizy_DataDealByB2c(Long.parseLong(vipshop.getCustomerids()), B2cEnum.VipShop_beijing.getMethod(), orderlist, warehouseid, true);
-				this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
-
-				this.updateMaxSEQ(vipshop_key, vipshop);
-				this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
-			} catch (Exception e) {
-				this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);
-				e.printStackTrace();
+			
+			for (Map<String, String> dataMap : orderlist) {
+				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap);
 			}
+			
 		} else {
 			for (Map<String, String> dataMap : orderlist) {
-				List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
-				onelist.add(dataMap);
-				try {
-					String emaildate = dataMap.get("remark4").toString();
-					long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
-					this.dataImportService_B2c
-							.Analizy_DataDealByB2cByEmaildate(Long.parseLong(vipshop.getCustomerids()), B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-
-					this.updateMaxSEQ(vipshop_key, vipshop);
-					this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
-				} catch (Exception e) {
-					this.logger.error("vipshop调用数据导入接口异常!cwb=" + dataMap.get("cwb").toString(), e);
-
-				}
-
+				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap);
 			}
 		}
 
 		return 1;
 
+	}
+	
+	private void extractedDataImportByEmaildate(int vipshop_key,
+			VipShop vipshop, Map<String, String> dataMap) {
+		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
+		onelist.add(dataMap);
+		long customerid = Long.valueOf(dataMap.get("customerid"));
+		try {
+			String emaildate = dataMap.get("remark4").toString();
+			long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
+			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
+
+			this.updateMaxSEQ(vipshop_key, vipshop);
+			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
+		} catch (Exception e) {
+			this.logger.error("vipshop调用数据导入接口异常!cwb=" + dataMap.get("cwb").toString(), e);
+
+		}
+	}
+	
+	private void extractedDataImport(int vipshop_key, VipShop vipshop,
+			List<Map<String, String>> orderlist, Map<String, String> dataMap) {
+		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
+		onelist.add(dataMap);
+		long customerid = Long.valueOf(dataMap.get("customerid"));
+		try {
+			long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
+			this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
+			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
+
+			this.updateMaxSEQ(vipshop_key, vipshop);
+			this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
+		} catch (Exception e) {
+			this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);
+			
+		}
 	}
 
 	/**
@@ -402,6 +429,7 @@ public class VipShopGetCwbDataService {
 			int paywayid = ext_pay_type.equals("1") ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String attemper_no = VipShopGetCwbDataService.convertEmptyString("attemper_no", datamap); // 托运单号，根据此字段生成批次.
 			String created_dtm_loc = VipShopGetCwbDataService.convertEmptyString("created_dtm_loc", datamap); // 批次时间，绑定托运单号
+
 			String rec_create_time = VipShopGetCwbDataService.convertEmptyString("rec_create_time", datamap); // 生成时间
 
 			String order_delivery_batch = VipShopGetCwbDataService.convertEmptyString("order_delivery_batch", datamap); // 1（默认）-一配订单：2-二配订单
@@ -427,6 +455,8 @@ public class VipShopGetCwbDataService {
 			
 			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号
 			
+			String last_fetch_time = VipShopGetCwbDataService.convertEmptyString("last_fetch_time", datamap); // 简易最迟配送时间
+			
 			// : 新建
 			// edit:修改
 			// cancel
@@ -442,6 +472,12 @@ public class VipShopGetCwbDataService {
 				}
 			}
 			
+			if ((created_dtm_loc == null) || created_dtm_loc.isEmpty()) {
+				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
+			}
+			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
+			
+			
 			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
 				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))
 						&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))
@@ -450,12 +486,12 @@ public class VipShopGetCwbDataService {
 					return seq_arrs;
 				}
 			}
-
-			if ((created_dtm_loc == null) || created_dtm_loc.isEmpty()) {
-				created_dtm_loc = DateTimeUtil.getNowDate() + " 00:00:00";
-			}
-			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
+			String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
 			
+			if((customer_name!=null&&customer_name.contains("乐蜂")))
+			{
+				customerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
+			}
 			
 			dataMap.put("cwb", order_sn);
 			dataMap.put("transcwb", transcwb);
@@ -466,12 +502,14 @@ public class VipShopGetCwbDataService {
 			dataMap.put("consigneepostcode", post_code);
 			dataMap.put("consigneeaddress", buyer_address);
 			dataMap.put("receivablefee", money);
-			dataMap.put("customercommand", transport_day + "," + order_delivery_batch + "," + remarkFreight);
+			
+			dataMap.put("customercommand", "送货时间要求:" + transport_day + ",订单配送批次:" + order_delivery_batch + "," + remarkFreight + "  建议最晚揽件时间:" + last_fetch_time);
 			
 			dataMap.put("sendcargoname", "[发出商品]");
-			dataMap.put("customerid", vipshop.getCustomerids());
+			dataMap.put("customerid", customerid);
 			dataMap.put("remark1", order_batch_no); // 交接单号
 			dataMap.put("remark2", rec_create_time); // 2015-01-08修改为生成时间
+
 			dataMap.put("cargorealweight", original_weight); // 重量
 			dataMap.put("paywayid", String.valueOf(paywayid)); // 支付方式
 			dataMap.put("remark3", "托运单号:" + attemper_no); // 托运单号
@@ -594,7 +632,10 @@ public class VipShopGetCwbDataService {
 	}
 
 	// 得到最大的值。
-	public long getMaxSEQ(String[] seq_arrs) {
+	public static long  getMaxSEQ(String[] seq_arrs) {
+		
+		
+		
 		long max = 0;
 		if ((seq_arrs != null) && (seq_arrs.length > 0)) {
 			for (int i = 0; i < seq_arrs.length; i++) {
@@ -605,6 +646,11 @@ public class VipShopGetCwbDataService {
 			}
 		}
 		return max;
+	}
+	public static void main(String[] args) {
+		String[] seq_arrs={"110000011787834","110000011787835","110000011787838","110000011787840"};
+		
+		System.out.println(getMaxSEQ(seq_arrs));
 	}
 
 }
