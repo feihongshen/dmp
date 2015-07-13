@@ -11,6 +11,8 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 
 %>
 
+
+
 <script type="text/javascript">
 
 
@@ -51,6 +53,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
+						</li>
+						<li><span>乐蜂id：</span>
+							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value="<%=vipshop.getLefengCustomerid() %>"  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
 							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1" <%if(vipshop.getIsopendownload()==1){%>checked<%}%>  >开启
@@ -114,6 +119,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="300">
 						</li>
+						<li><span>乐蜂id：</span>
+							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value=""  maxlength="300">
+						</li>
 						<li><span>是否订单下载：</span>
 							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1"  checked>开启
 							<input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   >关闭
@@ -136,11 +144,11 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isOpenLefengflag1" name ="isOpenLefengflag" value="0"  >关闭
 							<input type ="radio" id="isOpenLefengflag2" name ="isOpenLefengflag" value="1"  >开启
 						</li>
-						
 						<li><span>拒收原因回传：</span>
 							<input type ="radio" id="resuseReasonFlag1" name ="resuseReasonFlag" value="0" checked>回传
 							<input type ="radio" id="resuseReasonFlag2" name ="resuseReasonFlag" value="1" >不回传
 						</li>
+						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
