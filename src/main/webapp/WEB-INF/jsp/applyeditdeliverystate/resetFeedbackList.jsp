@@ -202,10 +202,13 @@ function resetfeedbackNoPass(){
 					alert(data.error);
 					$("#searchForm").submit();
 					//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass";
-				}else{
+				}else if(data.errorCode==1){
 					alert(data.error);
 					$("#searchForm").submit();
     				//location.href="<%=request.getContextPath()%>/applyeditdeliverystate/getCheckboxDealNoPass";
+				}else if(data.errorCode==2){
+					alert(data.error);
+					$("#searchForm").submit();
 				}
 			}
 		});
@@ -349,7 +352,7 @@ function resetData(){
 								</table>
 							</form>
 						</div>
-						<div style="height: 480px;overflow: scroll;" >
+						<div style="height: 390px;overflow: scroll;" >
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >

@@ -321,26 +321,35 @@ public class ApplyEditDeliverystateController {
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
 			long errorcount=0;
+			String cwbStr = "已做过重置审核订单:";
 			if(cwbdata.length()>0){
 				for(String cwb:cwbdata.split(",")){
 					try {
 					long edituserid =  this.getSessionUser().getUserid();
 					String edittime = DateTimeUtil.getNowTime();
-					ApplyEditDeliverystate aeds = applyEditDeliverystateDAO.getApplyED(cwb);
-					//重置审核的最终方法
-					EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
-					applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);//更改审核状态
+					ApplyEditDeliverystate aeds = this.applyEditDeliverystateDAO.getApplyED(cwb);
+					if(aeds!=null){
+						//重置审核的最终方法
+						EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
+						this.applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);//更改审核状态
+					}else{
+						cwbStr += cwb+",";
+					}
 				} catch (Exception e) {
 					errorcount++;
 				}
 				}
 			}
+		if(cwbStr.length()>10){
+			String cwbstr = cwbStr.substring(0, cwbStr.length()-1);
+			return "{\"errorCode\":2,\"error\":\""+cwbstr+"\"}";
+		}
 		if (errorcount==0) {
 			return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
 		}else if (errorcount==cwbdata.split(",").length) {
-			return "{\"errorCode\":1,\"error\":\"审核单全部失败（有些订单已经审核或不是审核状态）\"}";
+			return "{\"errorCode\":1,\"error\":\"审核单全部失败(有些订单已经审核或不是审核状态)\"}";
 		}else {
-			return "{\"errorCode\":1,\"error\":\"审核单部分失败（可能有些订单已经审核或不是审核状态）\"}";
+			return "{\"errorCode\":1,\"error\":\"审核单部分失败(可能有些订单已经审核或不是审核状态)\"}";
 		}
 		
 
@@ -350,15 +359,30 @@ public class ApplyEditDeliverystateController {
 	public @ResponseBody String getCheckboxDealNoPass(
 			@RequestParam(value="cwbdata",defaultValue="",required = false) String cwbdata
 			){
-		if(cwbdata.length()>0){
-			for(String cwb:cwbdata.split(",")){
-				long edituserid =  this.getSessionUser().getUserid();
-				String edittime = DateTimeUtil.getNowTime();
-				applyEditDeliverystateDAO.updateShenheStateNoPass(cwb,edituserid,edittime);
+		String cwbStr = "已做过重置审核订单:";
+		try{
+			if(cwbdata.length()>0){
+				for(String cwb:cwbdata.split(",")){
+					long edituserid =  this.getSessionUser().getUserid();
+					String edittime = DateTimeUtil.getNowTime();
+					ApplyEditDeliverystate aeds = this.applyEditDeliverystateDAO.getApplyED(cwb);
+					if(aeds!=null){
+						applyEditDeliverystateDAO.updateShenheStateNoPass(cwb,edituserid,edittime);
+					}else{
+						cwbStr += cwb+",";
+					}
+				}
+				if(cwbStr.length()>10){
+					String cwbstr = cwbStr.substring(0, cwbStr.length()-1);
+					return "{\"errorCode\":2,\"error\":\""+cwbstr+"\"}";
+				}
+				return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 			}
-			return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{\"errorCode\":1,\"error\":\"审核为不通过失败\"}";
 		}
-		return "{\"errorCode\":1,\"error\":\"审核为不通过失败\"}";
+		return "";
 	}
 	
 	/**

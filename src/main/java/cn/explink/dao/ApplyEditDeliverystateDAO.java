@@ -321,8 +321,14 @@ public class ApplyEditDeliverystateDAO {
 	}
 	//根据订单查询单条信息
 	public ApplyEditDeliverystate getApplyED(String cwb){
-		String sql = "select * from express_ops_applyeditdeliverystate where cwb=? order by id desc limit 1";
-		return jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper(),cwb);
+		try{
+			String sql = "select * from express_ops_applyeditdeliverystate where cwb=? and ishandle=0 order by id desc limit 1";
+			return jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper(),cwb);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 	public List<ApplyEditDeliverystate> getApplyEditDeliverystates(String cwbs, long ishandle) {
