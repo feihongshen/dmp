@@ -181,16 +181,17 @@ function clearSelect(){
 			
 	</td>
 	<td>
-	<%if(exportmouldlist!=null&&exportmouldlist.size()>0){%>
 	导出模板
 	<select name ="exportmould" id ="exportmould" class="select1">
-	          <option value ="0">默认导出模板</option>
-	          <%for(Exportmould e:exportmouldlist){%>
-	           <option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
-	          <%} %>
-			</select><%} %>
-			 <%if(count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0)==1){ %>
-				&nbsp;&nbsp;<input type ="button" id="btnval0" value="导出1-<%=count %>" class="input_button1" onclick="exportField('0','0');"/>
+    	<option value ="0">默认导出模板</option>
+			<%if(exportmouldlist!=null&&exportmouldlist.size()>0){%>
+	          	<%for(Exportmould e:exportmouldlist){%>
+	        		<option value ="<%=e.getMouldfieldids()%>"><%=e.getMouldname() %></option>
+	        	<%} %>
+        	<%} %>
+		</select>	
+	 	<%if(count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0)==1){ %>
+			&nbsp;&nbsp;<input type ="button" id="btnval0" value="导出1-<%=count %>" class="input_button1" onclick="exportField('0','0');"/>
 			<%}else{for(int j=0;j<count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0);j++){ %>
 				<%if(j==0){ %>
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出1-<%=((j+1)*Page.EXCEL_PAGE_NUMBER)/10000.0 %>万" class="input_button1" onclick="exportField('0','<%=j%>');"/>
@@ -199,7 +200,7 @@ function clearSelect(){
 				<%}else if(j==(count/Page.EXCEL_PAGE_NUMBER+(count%Page.EXCEL_PAGE_NUMBER>0?1:0)-1)){ %>
 				&nbsp;&nbsp;<input type ="button" id="btnval<%=j %>" value="导出<%=j*Page.EXCEL_PAGE_NUMBER+1 %>-<%=count %>" class="input_button1" onclick="exportField('<%=j*Page.EXCEL_PAGE_NUMBER %>','<%=j%>');"/>
 				<%} %>
-			<%}} %>
+		<%}} %>
 	</td>
 	</tr>
 </table>
