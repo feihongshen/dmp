@@ -1290,6 +1290,7 @@ src/main/java/cn/explink/enumutil/CwbOrderPDAEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderTypeIdEnum.java -text
 src/main/java/cn/explink/enumutil/CwbStateEnum.java -text
+src/main/java/cn/explink/enumutil/DateTypeEnum.java -text
 src/main/java/cn/explink/enumutil/DeliverPayupArrearageapprovedEnum.java -text
 src/main/java/cn/explink/enumutil/DeliverPayuptypeEnum.java -text
 src/main/java/cn/explink/enumutil/DeliveridEnum.java -text
@@ -1314,6 +1315,7 @@ src/main/java/cn/explink/enumutil/JobCodeEnum.java -text
 src/main/java/cn/explink/enumutil/KuaiDiPayEnum.java -text
 src/main/java/cn/explink/enumutil/OperationTimeEnum.java -text
 src/main/java/cn/explink/enumutil/OpertaionResultEnum.java -text
+src/main/java/cn/explink/enumutil/OrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/OutWarehouseGroupEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehouseEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
