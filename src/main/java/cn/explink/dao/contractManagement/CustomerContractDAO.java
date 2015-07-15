@@ -86,19 +86,66 @@ public class CustomerContractDAO {
 	 * @param createContract
 	 * @return
 	 */
-	public void createContract(CustomerContractManagement contractManagement) {
+
+	public void createContract(CustomerContractManagement contract) {
 		String sql = "insert into express_set_customer_contract_management(number,contractstatus,contractstartdate,contractenddate,customerid,partyaname,yifangquancheng,"
 				+ "contracttype,loanssettlementcycle,Loansandsettlementway,othercontractors,paifeisettlementcycle,paifeisettlementtype,whetherhavedeposit,marketingprincipal,"
-				+ "invoicetype,taxrate,collectionloanbank,collectionloanbankaccount,expensebank,expensebankaccount,contractdescription,depositpaymentdate,depositpaymentperson,"
-				+ "depositpaymentamount,depositgatherperson,contractaccessory) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, contractManagement.getNumber(), contractManagement.getContractstatus(), contractManagement.getContractstartdate(), contractManagement.getContractenddate(),
-				contractManagement.getCustomerid(), contractManagement.getPartyaname(), contractManagement.getYifangquancheng(), contractManagement.getContracttype(),
-				contractManagement.getLoanssettlementcycle(), contractManagement.getLoansandsettlementway(), contractManagement.getOthercontractors(), contractManagement.getPaifeisettlementcycle(),
-				contractManagement.getPaifeisettlementtype(), contractManagement.getWhetherhavedeposit(), contractManagement.getMarketingprincipal(), contractManagement.getInvoicetype(),
-				contractManagement.getTaxrate(), contractManagement.getCollectionloanbank(), contractManagement.getCollectionloanbankaccount(), contractManagement.getExpensebank(),
-				contractManagement.getExpensebankaccount(), contractManagement.getContractdescription(), contractManagement.getDepositpaymentdate(), contractManagement.getDepositpaymentperson(),
-				contractManagement.getDepositpaymentamount(), contractManagement.getDepositgatherperson(), contractManagement.getContractaccessory());
+				+ "invoicetype,taxrate,collectionloanbank,collectionloanbankaccount,expensebank,expensebankaccount,contractdescription,contractname,contractaccessory,"
+				+ "depositpaymentdate,depositpaymentperson,depositpaymentamount,depositgatherperson) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, contract.getNumber(), contract.getContractstatus(), contract.getContractstartdate(), contract.getContractenddate(), contract.getCustomerid(),
+				contract.getPartyaname(), contract.getYifangquancheng(), contract.getContracttype(), contract.getLoanssettlementcycle(), contract.getLoansandsettlementway(),
+				contract.getOthercontractors(), contract.getPaifeisettlementcycle(), contract.getPaifeisettlementtype(), contract.getWhetherhavedeposit(), contract.getMarketingprincipal(),
+				contract.getInvoicetype(), contract.getTaxrate(), contract.getCollectionloanbank(), contract.getCollectionloanbankaccount(), contract.getExpensebank(),
+				contract.getExpensebankaccount(), contract.getContractdescription(), contract.getContractname(), contract.getContractaccessory(), contract.getDepositpaymentdate(),
+				contract.getDepositpaymentperson(), contract.getDepositpaymentamount(), contract.getDepositgatherperson());
 	}
+
+	/*
+	 * public long createContract(final CustomerContractManagement
+	 * contractManagement) { KeyHolder key = new GeneratedKeyHolder();
+	 * this.jdbcTemplate.update(new PreparedStatementCreator() {
+	 * 
+	 * @Override public PreparedStatement
+	 * createPreparedStatement(java.sql.Connection con) throws SQLException {
+	 * PreparedStatement ps = null; ps = con.prepareStatement(
+	 * "insert into express_set_customer_contract_management(number,contractstatus,contractstartdate,contractenddate,customerid,partyaname,yifangquancheng,"
+	 * +
+	 * "contracttype,loanssettlementcycle,Loansandsettlementway,othercontractors,paifeisettlementcycle,paifeisettlementtype,whetherhavedeposit,marketingprincipal,"
+	 * +
+	 * "invoicetype,taxrate,collectionloanbank,collectionloanbankaccount,expensebank,expensebankaccount,contractdescription,depositpaymentdate,depositpaymentperson,"
+	 * +
+	 * "depositpaymentamount,depositgatherperson,contractaccessory) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	 * , new String[] { "id" }); int i = 1; ps.setString(i++,
+	 * contractManagement.getNumber()); ps.setInt(i++,
+	 * contractManagement.getContractstatus()); ps.setString(i++,
+	 * contractManagement.getContractstartdate()); ps.setString(i++,
+	 * contractManagement.getContractenddate()); ps.setLong(i++,
+	 * contractManagement.getCustomerid()); ps.setString(i++,
+	 * contractManagement.getPartyaname()); ps.setString(i++,
+	 * contractManagement.getYifangquancheng()); ps.setInt(i++,
+	 * contractManagement.getContracttype()); ps.setInt(i++,
+	 * contractManagement.getLoanssettlementcycle()); ps.setLong(i++,
+	 * contractManagement.getLoansandsettlementway()); ps.setString(i++,
+	 * contractManagement.getOthercontractors()); ps.setInt(i++,
+	 * contractManagement.getPaifeisettlementcycle()); ps.setInt(i++,
+	 * contractManagement.getPaifeisettlementtype()); ps.setInt(i++,
+	 * contractManagement.getWhetherhavedeposit()); ps.setString(i++,
+	 * contractManagement.getMarketingprincipal()); ps.setInt(i++,
+	 * contractManagement.getInvoicetype()); ps.setDouble(i++,
+	 * contractManagement.getTaxrate()); ps.setString(i++,
+	 * contractManagement.getCollectionloanbank()); ps.setString(i++,
+	 * contractManagement.getCollectionloanbankaccount()); ps.setString(i++,
+	 * contractManagement.getExpensebank()); ps.setString(i++,
+	 * contractManagement.getExpensebankaccount()); ps.setString(i++,
+	 * contractManagement.getContractdescription()); ps.setString(i++,
+	 * contractManagement.getDepositpaymentdate()); ps.setString(i++,
+	 * contractManagement.getDepositpaymentperson()); ps.setString(i++,
+	 * contractManagement.getDepositpaymentamount()); ps.setString(i++,
+	 * contractManagement.getDepositgatherperson()); ps.setString(i++,
+	 * contractManagement.getContractaccessory());
+	 * 
+	 * return ps; } }, key); return key.getKey().longValue(); }
+	 */
 
 	// 删除字表记录
 	public void deleteContractId(Long id) {

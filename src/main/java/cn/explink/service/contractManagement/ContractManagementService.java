@@ -12,15 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.contractManagement.CustomerContractDAO;
 import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.domain.customerCoutract.DepositInformation;
 import cn.explink.util.BeanUtilsSelfDef;
 import cn.explink.util.DateTimeUtil;
-import cn.explink.util.ResourceBundleUtil;
-import cn.explink.util.ServiceUtil;
 
 /**
  * @author wangqiang
@@ -33,26 +30,6 @@ public class ContractManagementService {
 	public List<CustomerContractManagement> getCustomerContractList(CustomerContractManagement contractManagement, String createStatrtTime, String createEndTime, String overStartTime,
 			String overEndTime, String sort, String method, Long page) {
 		return this.customerContractDAO.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method, page);
-	}
-
-	public String loadexceptfile(MultipartFile file) {
-		String name = "";
-		try {
-			if ((file != null) && !file.isEmpty()) {
-				String filePath = ResourceBundleUtil.FILEPATH;
-				name = file.getOriginalFilename();
-				if (name.indexOf(".") != -1) {
-					String suffix = name.substring(name.lastIndexOf("."));
-					name = System.currentTimeMillis() + suffix;
-				} else {
-					name = System.currentTimeMillis() + "";
-				}
-				ServiceUtil.uploadWavFile(file, filePath, name);
-			}
-		} catch (Exception e) {
-			// this.logger.error("问题件添加到指定路径下出现错误");
-		}
-		return name;
 	}
 
 	@Transactional

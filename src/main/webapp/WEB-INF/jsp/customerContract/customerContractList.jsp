@@ -1,4 +1,3 @@
-
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.customerCoutract.CustomerContractManagement"%>
 <%@page import="cn.explink.domain.customerCoutract.DepositInformation"%>
@@ -13,6 +12,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <%
+	Page page_obj = (Page)request.getAttribute("page_obj");
 	List<Customer> customerList = (List<Customer>)request.getAttribute("contractList");
 	List<CustomerContractManagement> customerContractList =request.getAttribute("customerContractList")==null? null : (List<CustomerContractManagement>)request.getAttribute("customerContractList");
 %>
@@ -172,6 +172,9 @@ function submitCreateForm(form) {
 function update(){
 	$("#contractstatus").removeAttr("disabled");
 	
+	if(!verify()){
+		return false;
+	}
 	
 		if(getBranchContractDetailVOList()){
 			var depositInformationStr = JSON.stringify(getBranchContractDetailVOList());
@@ -370,7 +373,7 @@ function  demandContract(){
 				$("#file").attr("href","<%=request.getContextPath()%>/customerContract/download?filepathurl=" +data.contractaccessory);
 			}
 			if(data.whetherhavedeposit == 1){
-				$("#firstDepositTr").css('display' ,'');  
+				$("#firstDepositTr").css('display' ,'');
 		        $("#secondDepositTr").css('display' ,'');
 		        $("#depositMessage").css('display' ,'');
 		        $("#depositButton").css('display' ,'');
@@ -433,7 +436,10 @@ function verify(){
 		alert("合同开始时间不能大于结束时间！");
 		return  false;
 	}
-	
+	if($("#taxrate").val()==""){
+		alert("税率不能为空！");
+		return false;
+	}
 	 var regTime = /^(\d{1,2}(\.\d{1,2})?|99.99)$/;
 	var parameterValue = document.getElementById("taxrate").value;
 	var fla = regTime.test(parameterValue);
@@ -446,10 +452,7 @@ function verify(){
 		alert("合同编号不能为空！");
 		return false;
 	}
-	if($("#taxrate").val()==""){
-		alert("税率不能为空！");
-		return false;
-	}
+	
 	if($("#number").val().length > 20){
 		alert("合同编号长度不能超过20位字符！")
 	}
@@ -611,7 +614,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left">营销负责人:</th>'+
 		'						<td>'+
-		'							<input type="text" id="marketingprincipal" name="marketingprincipal" maxlength="20" style="width:150px"/>'+
+		'							<input type="text" id="marketingprincipal"  value="" name="marketingprincipal" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'						<th align="left">发票类型:</th>'+
 		'						<td>'+
@@ -629,27 +632,27 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left">代收货款银行:</th>'+
 		'						<td>'+
-		'							<input type="text" id="collectionloanbank" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
+		'							<input type="text" id="collectionloanbank" value="" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'						<th align="left">代收货款银行账户:</th>'+
 		'						<td>'+
-		'							<input type="text" id="collectionloanbankaccount" onblur="account(\'bank\');" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
+		'							<input type="text" id="collectionloanbankaccount" value="" onblur="account(\'bank\');" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
 		'						<th align="left">费用银行:</th>'+
 		'						<td>'+
-		'							<input type="text" id="expensebank" name="expensebank" maxlength="20" style="width:150px"/>'+
+		'							<input type="text" id="expensebank" name="expensebank" value=""  maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'						<th align="left">费用银行账户:</th>'+
 		'						<td>'+
-		'							<input type="text" id="expensebankaccount" onblur="account(\'expensebank\');" name="expensebankaccount" maxlength="20"style="width:150px" />'+
+		'							<input type="text" id="expensebankaccount" value="" onblur="account(\'expensebank\');" name="expensebankaccount" maxlength="20"style="width:150px" />'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
 		'						<th align="left">合同详细描述:</th>'+
 		'						<td colspan="5">'+
-		'							<textarea style="width:100%;height:60px;resize: none;" name="contractdescription" id="contractdescription" style="width:150px"></textarea>'+
+		'							<textarea style="width:100%;height:60px;resize: none;" value="" name="contractdescription" id="contractdescription" style="width:150px"></textarea>'+
 		'						</td>'+
 		'					</tr>'+
 		'					  <tr>'+
@@ -1089,13 +1092,12 @@ function showBox(data){
 						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.previous<1?1:page_obj.previous}');$('#queryContractForm').submit();">上一页</a>　
 						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.next<1?1:page_obj.next }');$('#queryContractForm').submit();" >下一页</a>　
 						<a href="javascript:$('#queryContractForm').attr('action','<%=request.getContextPath()%>/customerContract/customerContractList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryContractForm').submit();" >最后一页</a>
-						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
-								id="selectPg"
-								onchange="$('#queryContractForm').attr('action',$(this).val());$('#searchForm').submit()">
-								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
-								</c:forEach>
-								</select>页
+						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
+							<select id="selectPg" onchange="$('#queryContractForm').attr('action',$(this).val());$('#queryContractForm').submit()">
+								<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+									<option value="<%=i %>"><%=i %></option>
+								<% } %>
+							</select>页
 						</td>
 					</tr>
 				</table>

@@ -30,6 +30,7 @@ import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.service.contractManagement.ContractManagementService;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.ServiceUtil;
 
 /**
  *
@@ -122,8 +123,36 @@ public class CustomerContractController {
 			String number = this.contractManagementService.getNumber();
 			cm.setNumber(number);
 		}
-		String filepath = this.contractManagementService.loadexceptfile(file);
-		cm.setContractaccessory(filepath);
+		String name = "";
+		String filename = "";
+		try {
+			if ((file != null) && !file.isEmpty()) {
+				String filePath = ResourceBundleUtil.FILEPATH;
+				name = file.getOriginalFilename();
+				if (name.indexOf(".") != -1) {
+					int lenght = name.lastIndexOf(".");
+					filename = name.substring(0, lenght);
+					String suffix = name.substring(name.lastIndexOf("."));
+					name = System.currentTimeMillis() + suffix;
+				} else {
+					name = System.currentTimeMillis() + "";
+				}
+				ServiceUtil.uploadWavFile(file, filePath, name);
+			}
+		} catch (Exception e) {
+			// this.logger.error("问题件添加到指定路径下出现错误");
+		}
+		if (cm.getPartyaname() == null) {
+			cm.setPartyaname("");
+		}
+		if (cm.getMarketingprincipal() == null) {
+			cm.setMarketingprincipal("");
+		}
+		if (cm.getOthercontractors() == null) {
+			cm.setOthercontractors("");
+		}
+		cm.setContractaccessory(name);
+		cm.setContractname(filename);
 		this.customerContractDAO.createContract(cm);
 		return "{\"errorCode\":0,\"error\":\"添加成功\"}";
 	}
