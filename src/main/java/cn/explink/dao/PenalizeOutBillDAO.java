@@ -3,6 +3,7 @@
  */
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -103,12 +104,12 @@ public class PenalizeOutBillDAO {
 				querySql.append(" and billstate ='" + bill.getBillstate() + "'");
 			}
 			if ((billCreationStartDate != null) && (billCreationStartDate != "") && (billCreationEndDate != null) && (billCreationEndDate != "")) {
-				querySql.append(" and '" + billCreationStartDate + "'< createddate");
-				querySql.append(" and createddate < '" + billCreationEndDate + "'");
+				querySql.append(" and '" + billCreationStartDate + "'<= createddate");
+				querySql.append(" and createddate <= '" + billCreationEndDate + "'");
 			}
 			if ((billVerificationStrartDate != null) && (billVerificationStrartDate != "") && (billVerificationEndDate != null) && (billVerificationEndDate != "")) {
-				querySql.append(" and '" + billVerificationStrartDate + "' < verificationdate");
-				querySql.append(" and verificationdate < '" + billVerificationEndDate + "'");
+				querySql.append(" and '" + billVerificationStrartDate + "' <= verificationdate");
+				querySql.append(" and verificationdate <= '" + billVerificationEndDate + "'");
 			}
 			if ((bill.getCustomerid() != null) && (bill.getCustomerid() != "")) {
 				querySql.append(" and customerid = '" + bill.getCustomerid() + "'");
@@ -128,7 +129,6 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 新增账单信息
 	 */
-
 	public long addPenalizeOutBill(final penalizeOutBill bill) {
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -182,9 +182,13 @@ public class PenalizeOutBillDAO {
 			updatesql.append(", compensateexplain = ?");
 			param.add(bill.getCompensateexplain());
 		}
-		if ((bill.getCompensateodd() != null) && (bill.getCompensateodd() != "")) {
+		if (bill.getCompensateodd() != null) {
 			updatesql.append(", compensateodd = ?");
 			param.add(bill.getCompensateodd());
+		}
+		if (bill.getCompensatefee() != null) {
+			updatesql.append(", compensatefee = ?");
+			param.add(bill.getCompensatefee());
 		}
 		if ((bill.getChecktime() != null) && (bill.getChecktime() != "")) {
 			updatesql.append(", checktime = ?");
@@ -213,8 +217,8 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 添加指定账单的单号
 	 */
-	public void addpenalizeOutDetail(Integer id, String compensateodd) {
-		String sql = "update express_ops_penalize_out_bill set compensateodd='" + compensateodd + "' where id='" + id + "'";
+	public void addpenalizeOutDetail(Integer id, String compensateodd, BigDecimal sumBigDecimal) {
+		String sql = "update express_ops_penalize_out_bill set compensateodd='" + compensateodd + "' ,compensatefee ='" + sumBigDecimal + "' where id='" + id + "'";
 		this.jdbcTemplate.update(sql);
 	}
 

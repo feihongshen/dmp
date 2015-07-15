@@ -209,16 +209,38 @@ public class PenalizeOutBillService {
 	public void addpenalizeOutBillList(Integer id, String compensateodd) {
 		penalizeOutBill outBill = this.PenalizeOutBilldao.queryById(id);
 		String oddstr = outBill.getCompensateodd();
+		BigDecimal sumBigDecimal = new BigDecimal(0);
 		if (StringUtils.isNotBlank(compensateodd)) {
 			if (StringUtils.isNotBlank(oddstr)) {
 				compensateodd = oddstr + "," + compensateodd;
 			}
+			String order = PenalizeOutBillService.spiltString(compensateodd);
+			List<PenalizeOut> penalizeList = this.penalizeOutDAO.getPenalizeOutByid(order);
+			for (int i = 0; i < penalizeList.size(); i++) {
+				PenalizeOut out = penalizeList.get(i);
+				BigDecimal fee = out.getPenalizeOutfee();
+				sumBigDecimal = sumBigDecimal.add(fee);
+			}
 		}
-		this.PenalizeOutBilldao.addpenalizeOutDetail(id, compensateodd);
+		this.PenalizeOutBilldao.addpenalizeOutDetail(id, compensateodd, sumBigDecimal);
 	}
 
 	// 修改指定账单信息
 	public void penalizeOutBillUpdate(penalizeOutBill bill) {
+		BigDecimal sumBigDecimal = new BigDecimal(0);
+		if (StringUtils.isNotBlank(bill.getCompensateodd())) {
+			String order = PenalizeOutBillService.spiltString(bill.getCompensateodd());
+			List<PenalizeOut> penalizeList = this.penalizeOutDAO.getPenalizeOutByid(order);
+			for (int i = 0; i < penalizeList.size(); i++) {
+				PenalizeOut out = penalizeList.get(i);
+				BigDecimal fee = out.getPenalizeOutfee();
+				sumBigDecimal = sumBigDecimal.add(fee);
+			}
+			bill.setCompensatefee(sumBigDecimal);
+		} else {
+
+			bill.setCompensatefee(sumBigDecimal);
+		}
 		this.PenalizeOutBilldao.penalizeOutBillUpdate(bill);
 	}
 

@@ -320,8 +320,8 @@ public class PenalizeOutBillController {
 		model.addAttribute("creationEndDate", creationEndDate);
 		model.addAttribute("compensatebig", compensatebig);
 		model.addAttribute("compensatesmall", compensatesmall);
-		compensateodd.replace(",", "\r\n");
-		model.addAttribute("compensateodd", compensateodd);
+		compensateodd = compensateodd.replace(",", "\r\n");
+		model.addAttribute("compen", compensateodd);
 
 		return "penalizeOutBill/penalizeOutBillPage";
 	}

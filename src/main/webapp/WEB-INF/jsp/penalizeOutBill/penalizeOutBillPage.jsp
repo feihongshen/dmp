@@ -22,6 +22,7 @@
 <script src="${ctx}/js/workorder/csPushSmsList.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+
 $(function(){
 	$("#customerselect").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
 	$('#add').dialog('close');
@@ -155,18 +156,26 @@ function deleteBill(){
 		alert("请选择需要删除的记录！")
 		return false;
 	}
-	$.ajax({
-		type : "POST",
-		url : '${ctx}/penalizeOutBill/deletePenalizeOutBill',
-		data : {id : id},
-		dataType : "json",
-		success : function(data) {
-			if (data.errorCode == 0) {
-				alert(data.error);
-				$("#deleteBillForm").submit();
+	var state = $("#updatePageForm input[name='billstate']").val();
+	var weishenhe = "<%=PunishBillStateEnum.WeiShenHe.getValue()%>";
+	if(state != weishenhe){
+		alert("只有未审核状态的合同才能进行删除!");
+		return false;
+	}
+	if(confirm("确定要删除吗？")){
+		$.ajax({
+			type : "POST",
+			url : '${ctx}/penalizeOutBill/deletePenalizeOutBill',
+			data : {id : id},
+			dataType : "json",
+			success : function(data) {
+				if (data.errorCode == 0) {
+					alert(data.error);
+					$("#deleteBillForm").submit();
+				}
 			}
-		}
-	});
+		});
+	}
 }
 //-----------------------------查看/修改----------------------------------------
 /* function updatePage(){
@@ -244,8 +253,9 @@ function findbigSort(self,chufaobject){
 	$("#addForm select[name='punishbigsort'] option[value='"+parent+"']").attr("selected","selected");
 }
 
-function setId(data){
+function setId(data,billstate){
 	$("#updatePageForm input[name='id']").val(data);
+	$("#updatePageForm input[name='billstate']").val(billstate);
 }
 
 function allchecked()
@@ -386,7 +396,7 @@ function verify(){
 </head>
 
 <body style="background:#eef9ff">
-
+	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
 <div class="right_box">
 	<div class="inputselect_box">
 		<table style="width: 60%">
@@ -420,7 +430,7 @@ function verify(){
 		<td align="center" valign="middle"style="font-weight: bold;"> 审核日期 </td>
 	</tr>
 	<c:forEach items="${billList}" var="bill">
-	<tr onclick="setId(${bill.id})">
+	<tr onclick="setId(${bill.id},${bill.billstate})">
 		<%-- <td height="30px" align="center"  valign="middle"><input type="checkbox" id="id" value="${bill.id}" /> </td> --%>
 		<td align="center" valign="middle" >${bill.billbatches}</td>
 		<td align="center" valign="middle" >
@@ -463,7 +473,10 @@ function verify(){
 	</tr>
 	</c:forEach>
 	</table>
-		<div class="jg_10"></div><div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+	</div>
+</div>
 		<div class="iframe_bottom"> 
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
@@ -483,8 +496,7 @@ function verify(){
 				</tr>
 			</table>
 		</div>
-	</div>
-</div>
+	
 <!-- 新增层显示 -->
 <div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:350px;">
 	<form action="${ctx}/penalizeOutBill/addPenalizeOutBill" method="post" id="creationfrom">
@@ -722,11 +734,12 @@ function verify(){
 	         		<input type="hidden" name="compensateodd" value="${bill.compensateodd}">
 	         	</td>
          	</tr>
-         	<tr>
-         		<td colspan="8">
+         	 </table>
+      </form>
+      <div>
 		         	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideTable" >
 						<tr>
-							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideListTable')"/> </td>
+							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideTable')"/> </td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单编号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 赔付单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单状态</td>
@@ -754,11 +767,8 @@ function verify(){
 							</tr>
          				</c:forEach>
 					</table>
-					
-				</td>
-			</tr>
-         </table>
-      </form>
+        </div>
+        
       <div class="iframe_bottom"> 
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
@@ -771,7 +781,7 @@ function verify(){
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.maxpage<1?1:page_o.maxpage}');$('#updatePageForm').submit();" >最后一页</a>
 					　共${page_o.maxpage}页　共${page_o.total}条记录 　当前第<select
 							id="selectPg"
-							onchange="$('##updatePageForm').attr('action',$(this).val());$('#searchForm').submit()">
+							onchange="$('#updatePageForm').attr('action',$(this).val());$('#updatePageForm').submit()">
 							<c:forEach var="i" begin="1" end="${page_o.maxpage}">
 							<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 							</c:forEach>
@@ -819,7 +829,7 @@ function verify(){
 			         	</td>
 		         		<td nowrap="nowrap" align="left">订单号</td>
 		         		<td>
-		        		 	<textarea name="compensateodd" style="width:100%;height:40px;resize:none;"></textarea>
+		        		 	<textarea name="compensateodd" style="width:100%;height:40px;resize:none;">${compen}</textarea>
 		        		</td>
 				  </tr>
 				  <tr>
@@ -884,7 +894,7 @@ function verify(){
 						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryPenalizeInsideListForm').submit();" >最后一页</a>
 						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
 								id="selectPg"
-								onchange="$('#queryPenalizeInsideListForm').attr('action',$(this).val());$('#searchForm').submit()">
+								onchange="$('#queryPenalizeInsideListForm').attr('action',$(this).val());$('#queryPenalizeInsideListForm').submit()">
 								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
 								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>
@@ -985,6 +995,7 @@ function verify(){
 <div id="updatePageDiv">
 	<form action="<%=request.getContextPath()%>/penalizeOutBill/queryById/1" method="post" id="updatePageForm">
 		<input type="hidden" name="id" value="">
+		<input type="hidden" name="billstate" value="">
 	</form>
 </div>
 <div id="addpenalizeOutDiv">
