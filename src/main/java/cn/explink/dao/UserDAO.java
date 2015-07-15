@@ -321,12 +321,6 @@ public class UserDAO {
 		return userList;
 	}
 
-	public List<User> getAllUserName() {
-		String sql = "select * from express_set_user where userDeleteFlag=1";
-		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
-		return userList;
-	}
-
 	public List<User> getAllUserByuserDeleteFlag() {
 		String sql = "select * from express_set_user where userDeleteFlag=1 order by CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
