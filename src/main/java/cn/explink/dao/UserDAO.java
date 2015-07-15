@@ -321,6 +321,11 @@ public class UserDAO {
 		return userList;
 	}
 
+	public List<User> getAllUserName() {
+		String sql = "select * from express_set_user where userDeleteFlag=1";
+		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
+		return userList;
+	}
 
 	public List<User> getAllUserByuserDeleteFlag() {
 		String sql = "select * from express_set_user where userDeleteFlag=1 order by CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
@@ -445,6 +450,24 @@ public class UserDAO {
 	public List<User> getAllUserByBranchIds(String branchids) {
 		List<User> list = new ArrayList<User>();
 		String sql = "SELECT * FROM express_set_user WHERE branchid in (" + branchids + ") and userDeleteFlag=1 ";
+		try {
+			list = this.jdbcTemplate.query(sql, new UserRowMapper());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * 根据站点 查询该站点下所有的小件员
+	 *
+	 * @param branchids
+	 * @return
+	 */
+	public List<User> queryAllUserByBranchId(long branchid) {
+		List<User> list = new ArrayList<User>();
+		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and userDeleteFlag=1 ";
 		try {
 			list = this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (DataAccessException e) {
@@ -876,20 +899,19 @@ public class UserDAO {
 			return null;
 		}
 	}
-	
-	
-	public List<User> getBeiTouSuRen(long branchid){
-		
+
+	public List<User> getBeiTouSuRen(long branchid) {
+
 		try {
-			String sql="select * from express_set_user where branchid=?";
-			return this.jdbcTemplate.query(sql, new UserRowMapper(),branchid);
+			String sql = "select * from express_set_user where branchid=?";
+			return this.jdbcTemplate.query(sql, new UserRowMapper(), branchid);
 		} catch (Exception e) {
 			return null;
-		}		
+		}
 	}
-	
-	public User getbranchidbyuserid(long userid){
-		String sql="select * from express_set_user where userid=?";
-		return this.jdbcTemplate.queryForObject(sql,new UserRowMapper(),userid);
+
+	public User getbranchidbyuserid(long userid) {
+		String sql = "select * from express_set_user where userid=?";
+		return this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), userid);
 	}
 }
