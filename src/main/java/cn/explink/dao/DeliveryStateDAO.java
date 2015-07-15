@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -79,7 +78,7 @@ public class DeliveryStateDAO {
 			deliveryState.setPushtime(rs.getString("pushtime"));
 			deliveryState.setPushstate(rs.getLong("pushstate"));
 			deliveryState.setPushremarks(rs.getString("pushremarks"));
-
+			deliveryState.setCwbordertypeid(rs.getString("cwbordertypeid"));
 			deliveryState.setDeliverytime(rs.getString("deliverytime"));
 			deliveryState.setAuditingtime(rs.getString("auditingtime"));
 			deliveryState.setCodpos(rs.getBigDecimal("codpos") == null ? BigDecimal.ZERO : rs.getBigDecimal("codpos"));
@@ -227,7 +226,6 @@ public class DeliveryStateDAO {
 		stringBuilder.append(") and state=1  ");
 		return this.jdbcTemplate.query(stringBuilder.toString(), new DeliveryStateRowMapper());
 	}
-
 
 	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
@@ -401,16 +399,15 @@ public class DeliveryStateDAO {
 		this.jdbcTemplate.update(sql, sign_man, sign_time);
 	}
 
-	public void saveDeliveyStateIsautolinghuoByCwb(long isautolinghuo, String cwb ) {
+	public void saveDeliveyStateIsautolinghuoByCwb(long isautolinghuo, String cwb) {
 		String sql = "update express_ops_delivery_state set isautolinghuo=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, isautolinghuo, cwb);
 	}
 
-	public void saveDeliveyStateIsautolinghuoByCwb2(long isautolinghuo, String cwb ,int firstlevelreasonid) {
+	public void saveDeliveyStateIsautolinghuoByCwb2(long isautolinghuo, String cwb, int firstlevelreasonid) {
 		String sql = "update express_ops_delivery_state set isautolinghuo=?,firstlevelid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, isautolinghuo, firstlevelreasonid, cwb);
 	}
-
 
 	public void saveDeliveyStateByCwb(String cwb, long deliverystate, String createtime) {
 		String sql = "update express_ops_delivery_state set deliverystate=?,createtime=? where cwb=? and state=1";
@@ -1130,7 +1127,7 @@ public class DeliveryStateDAO {
 			sql += " and auditingtime <= '" + enddate + "' ";
 		}
 
-		if ((dispatchbranchids.length > 0) || (operationOrderResultTypes.length > 0) || (deliverid > 0) || (isaudit >= 0) ) {
+		if ((dispatchbranchids.length > 0) || (operationOrderResultTypes.length > 0) || (deliverid > 0) || (isaudit >= 0)) {
 			StringBuffer deliverystatesql = new StringBuffer();
 			if (isTuotou > 0) {
 				deliverystatesql.append(" and state=1 ");
@@ -1165,8 +1162,8 @@ public class DeliveryStateDAO {
 				deliverystatesql.append(" and gcaid>0");
 			}
 
-			if (firstlevelid>0){
-				deliverystatesql.append(" and firstlevelid= "+ firstlevelid );
+			if (firstlevelid > 0) {
+				deliverystatesql.append(" and firstlevelid= " + firstlevelid);
 			}
 			sql += deliverystatesql.toString();
 		}
@@ -1460,38 +1457,118 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.queryForObject(sql, new DeliveryStateRowMapper(), cwb);
 	}
 
-	public List<DeliveryState> getDeliverystates(String cwbs){
+	public List<DeliveryState> getDeliverystates(String cwbs) {
 		String sql = "select * from express_ops_delivery_state where deliverystate=4 and cwb in(?)";
 
-		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper(),cwbs);
+		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper(), cwbs);
 	}
-	public Map<String,Object> getDeliverystatesOfSalaryCounts(String deliveryid,String starttime,String endtime){
-		String sql="select deliverystate,count(1) as counts from express_ops_delivery_state where deliveryid=? and deliverystate in(1,2,3) and gcaid>0 and deliverytime>=? and deliverytime<=? GROUP BY deliverystate";
-		return this.jdbcTemplate.queryForMap(sql, new DeliverySalaryCountsMapper(),deliveryid,starttime,endtime);
+
+	public Map<String, Object> getDeliverystatesOfSalaryCounts(String deliveryid, String starttime, String endtime) {
+		String sql = "select deliverystate,count(1) as counts from express_ops_delivery_state where deliveryid=? and deliverystate in(1,2,3) and gcaid>0 and deliverytime>=? and deliverytime<=? GROUP BY deliverystate";
+		return this.jdbcTemplate.queryForMap(sql, new DeliverySalaryCountsMapper(), deliveryid, starttime, endtime);
 	}
-	private final class DeliverySalaryCountsMapper implements RowMapper<Map<Integer,Integer >> {
+
+	private final class DeliverySalaryCountsMapper implements RowMapper<Map<Integer, Integer>> {
 		@Override
-		public Map<Integer,Integer>mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Map<Integer,Integer> map=new HashMap<Integer, Integer>();
+		public Map<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 			map.put(rs.getInt("deliverystate"), rs.getInt("counts"));
 			return map;
 		}
 	}
-	
-	
-	
-	
-	
-	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate){
-		String sql="select * from express_ops_delivery_state where cwb in("+cwbs+") and deliverytime>'"+startdate+"' and deliverytime<'"+enddate+"'";
-		List<DeliveryState> cwblist=jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		return cwblist;
-	}
-	
-	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs,String startdate,String enddate){
-		String sql="select * from express_ops_delivery_state where cwb in("+cwbs+") and auditingtime>'"+startdate+"' and auditingtime<'"+enddate+"'";
-		List<DeliveryState> cwblist=jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+
+	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs, String startdate, String enddate) {
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 
+	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs, String startdate, String enddate) {
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+		return cwblist;
+	}
+
+	/**
+	 * 配送员派费账单 生成时所指定的订单(反馈日期)
+	 */
+	public List<DeliveryState> queryOrderByDeliveryid(Integer site, Integer orderType, Integer diliverymanid, String startDate, String endDate) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * FROM express_ops_delivery_state where 1=1");
+		if (site != null) {
+			sql.append(" and deliverybranchid = '" + site + "'");
+		}
+		if (orderType != null) {
+			sql.append(" and cwbordertypeid= '" + orderType + "'");
+		}
+		if (diliverymanid != null) {
+			sql.append(" and deliveryid='" + diliverymanid + "'");
+		}
+		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+			sql.append(" and deliverytime > '" + startDate + "'");
+			sql.append(" and deliverytime < '" + endDate + "'");
+		}
+		sql.append(" and gcaid >0");
+		sql.append(" and whethergeneratedeliverymanbill = 0");
+		sql.append(" and deliverystate not in ('6','9');");
+		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
+	}
+
+	/**
+	 * 配送员派费账单 生成时所指定的订单(发货日期)
+	 */
+	public List<DeliveryState> queryOrderByFaHuo(Integer site, Integer orderType, Integer diliverymanid, String startDate, String endDate) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * FROM express_ops_delivery_state d,express_ops_cwb_detail c where d.cwb = c.cwb");
+		if (site != null) {
+			sql.append(" and d.deliverybranchid = '" + site + "'");
+		}
+		if (orderType != null) {
+			sql.append(" and d.cwbordertypeid= '" + orderType + "'");
+		}
+		if (diliverymanid != null) {
+			sql.append(" and d.deliveryid='" + diliverymanid + "'");
+		}
+		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+			sql.append(" and c.emaildate > '" + startDate + "'");
+			sql.append(" and c.emaildate < '" + endDate + "'");
+		}
+		sql.append(" and d.gcaid >0");
+		sql.append(" and whethergeneratedeliverymanbill = 0");
+		sql.append(" and d.deliverystate not in ('6','9');");
+		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
+	}
+
+	/**
+	 * 配送员派费账单 生成时所指定的订单(入库日期)
+	 */
+	public List<DeliveryState> queryOrderByRuKu(Integer site, Integer orderType, Integer diliverymanid, String startDate, String endDate) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * FROM express_ops_delivery_state d,express_ops_order_intowarhouse i where d.cwb = i.cwb");
+		if (site != null) {
+			sql.append(" and d.deliverybranchid = '" + site + "'");
+		}
+		if (orderType != null) {
+			sql.append(" and d.cwbordertypeid= '" + orderType + "'");
+		}
+		if (diliverymanid != null) {
+			sql.append(" and d.deliveryid='" + diliverymanid + "'");
+		}
+		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+			sql.append(" and i.credate > '" + startDate + "'");
+			sql.append(" and i.credate < '" + endDate + "'");
+		}
+		sql.append(" and d.gcaid >0");
+		sql.append(" and whethergeneratedeliverymanbill = 0");
+		sql.append(" and d.deliverystate not in ('6','9');");
+		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
+	}
+
+	/**
+	 * 将已经生成过配送员账单的订单标识字段改为1
+	 */
+	public void setWhetherGenerateDeliveryManBill(String cwbs) {
+		String sql = "update express_ops_delivery_state set whethergeneratedeliverymanbill = 1 where cwb in (" + cwbs + ")";
+		this.jdbcTemplate.update(sql);
+	}
 }
