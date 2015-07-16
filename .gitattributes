@@ -990,6 +990,7 @@ src/main/java/cn/explink/dao/RoleDAO.java -text
 src/main/java/cn/explink/dao/SalaryCountDAO.java -text
 src/main/java/cn/explink/dao/SalaryErrorDAO.java -text
 src/main/java/cn/explink/dao/SalaryFixedDAO.java -text
+src/main/java/cn/explink/dao/SalaryGatherDao.java -text
 src/main/java/cn/explink/dao/SalaryImportDao.java -text
 src/main/java/cn/explink/dao/SalaryImportRecordDAO.java -text
 src/main/java/cn/explink/dao/ScheduledTaskDAO.java -text
