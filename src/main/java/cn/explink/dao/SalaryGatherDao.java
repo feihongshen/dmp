@@ -15,6 +15,7 @@ public class SalaryGatherDao {
 			SalaryGather salary = new SalaryGather();
 			salary.setId(rs.getLong("id"));
 			salary.setAgejob(rs.getBigDecimal("agejob"));
+			salary.setBatchid(StringUtil.nullConvertToEmptyString(rs.getString("batchid")));
 			salary.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
 			salary.setIdcard(StringUtil.nullConvertToEmptyString(rs.getString("idcard")));
 			salary.setAccountSingle(rs.getBigDecimal("accountSingle"));

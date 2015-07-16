@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 public class SalaryGather {
 	/**主键id**/
 	private long id;
-	/**站点id**/
-	private long	branchid;
+	/**批次编号**/
+	private String batchid;
 	/**姓名**/
 	private String	realname;
 	/**身份证号码**/
@@ -126,16 +126,16 @@ public class SalaryGather {
 		this.id = id;
 	}
 	/**
-	 * @return the branchid
+	 * @return batchid
 	 */
-	public long getBranchid() {
-		return this.branchid;
+	public String getBatchid() {
+		return batchid;
 	}
 	/**
-	 * @param branchid the branchid to set
+	 * @param batchid
 	 */
-	public void setBranchid(long branchid) {
-		this.branchid = branchid;
+	public void setBatchid(String batchid) {
+		this.batchid = batchid;
 	}
 	/**
 	 * @return the realname
