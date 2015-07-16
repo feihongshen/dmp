@@ -1339,6 +1339,7 @@ src/main/java/cn/explink/enumutil/OrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/OutWarehouseGroupEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehouseEnum.java -text
 src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
+src/main/java/cn/explink/enumutil/PaiFeiBuZhuTypeEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleStateEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTabEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTypeEnum.java -text
