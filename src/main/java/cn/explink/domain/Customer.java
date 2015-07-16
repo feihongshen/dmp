@@ -22,11 +22,27 @@ public class Customer {
 	private int isFeedbackcwb;// 是否进行返单操作
 	private int smschannel;// 短信渠道0默认 1亿美
 	private long isqufendaxiaoxie;// 单号是否区分大小写0不区分 1区分
+	private long pfruleid;// 派费规则id
+
+
+	/**
+	 * @return the pfruleid
+	 */
+	public long getPfruleid() {
+		return this.pfruleid;
+	}
+
+	/**
+	 * @param pfruleid the pfruleid to set
+	 */
+	public void setPfruleid(long pfruleid) {
+		this.pfruleid = pfruleid;
+	}
 
 	private String wavFilePath = null;// 声音文件路径.
 
 	public int getIsFeedbackcwb() {
-		return isFeedbackcwb;
+		return this.isFeedbackcwb;
 	}
 
 	public void setIsFeedbackcwb(int isFeedbackcwb) {
@@ -34,7 +50,7 @@ public class Customer {
 	}
 
 	public String getB2cEnum() {
-		return b2cEnum;
+		return this.b2cEnum;
 	}
 
 	public void setB2cEnum(String b2cEnum) {
@@ -42,7 +58,7 @@ public class Customer {
 	}
 
 	public String getCustomercode() {
-		return customercode;
+		return this.customercode;
 	}
 
 	public void setCustomercode(String customercode) {
@@ -50,7 +66,7 @@ public class Customer {
 	}
 
 	public long getIfeffectflag() {
-		return ifeffectflag;
+		return this.ifeffectflag;
 	}
 
 	public void setIfeffectflag(long ifeffectflag) {
@@ -58,7 +74,7 @@ public class Customer {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -66,7 +82,7 @@ public class Customer {
 	}
 
 	public String getCustomername() {
-		return customername;
+		return this.customername;
 	}
 
 	public void setCustomername(String customername) {
@@ -74,7 +90,7 @@ public class Customer {
 	}
 
 	public String getCompanyname() {
-		return companyname;
+		return this.companyname;
 	}
 
 	public void setCompanyname(String companyname) {
@@ -82,7 +98,7 @@ public class Customer {
 	}
 
 	public String getCustomeraddress() {
-		return customeraddress;
+		return this.customeraddress;
 	}
 
 	public void setCustomeraddress(String customeraddress) {
@@ -90,7 +106,7 @@ public class Customer {
 	}
 
 	public String getCustomercontactman() {
-		return customercontactman;
+		return this.customercontactman;
 	}
 
 	public void setCustomercontactman(String customercontactman) {
@@ -98,7 +114,7 @@ public class Customer {
 	}
 
 	public String getCustomerphone() {
-		return customerphone;
+		return this.customerphone;
 	}
 
 	public void setCustomerphone(String customerphone) {
@@ -106,7 +122,7 @@ public class Customer {
 	}
 
 	public long getPaytype() {
-		return paytype;
+		return this.paytype;
 	}
 
 	public void setPaytype(long paytype) {
@@ -114,7 +130,7 @@ public class Customer {
 	}
 
 	public long getIsypdjusetranscwb() {
-		return isypdjusetranscwb;
+		return this.isypdjusetranscwb;
 	}
 
 	public void setIsypdjusetranscwb(long isypdjusetranscwb) {
@@ -122,7 +138,7 @@ public class Customer {
 	}
 
 	public long getIsUsetranscwb() {
-		return isUsetranscwb;
+		return this.isUsetranscwb;
 	}
 
 	public void setIsUsetranscwb(long isUsetranscwb) {
@@ -130,7 +146,7 @@ public class Customer {
 	}
 
 	public long getIsAutoProductcwb() {
-		return isAutoProductcwb;
+		return this.isAutoProductcwb;
 	}
 
 	public void setIsAutoProductcwb(long isAutoProductcwb) {
@@ -138,7 +154,7 @@ public class Customer {
 	}
 
 	public String getAutoProductcwbpre() {
-		return autoProductcwbpre;
+		return this.autoProductcwbpre;
 	}
 
 	public void setAutoProductcwbpre(String autoProductcwbpre) {
@@ -146,7 +162,7 @@ public class Customer {
 	}
 
 	public int getSmschannel() {
-		return smschannel;
+		return this.smschannel;
 	}
 
 	public void setSmschannel(int smschannel) {
@@ -154,7 +170,7 @@ public class Customer {
 	}
 
 	public long getIsqufendaxiaoxie() {
-		return isqufendaxiaoxie;
+		return this.isqufendaxiaoxie;
 	}
 
 	public void setIsqufendaxiaoxie(long isqufendaxiaoxie) {
@@ -162,7 +178,7 @@ public class Customer {
 	}
 
 	public int getNeedchecked() {
-		return needchecked;
+		return this.needchecked;
 	}
 
 	public void setNeedchecked(int needchecked) {
@@ -170,7 +186,7 @@ public class Customer {
 	}
 
 	public String getWavFilePath() {
-		return wavFilePath;
+		return this.wavFilePath;
 	}
 
 	public void setWavFilePath(String wavFilePath) {

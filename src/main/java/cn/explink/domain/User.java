@@ -41,7 +41,22 @@ public class User implements Serializable {
 	private BigDecimal usersalary = BigDecimal.ZERO;
 	private String lastLoginIp;
 	private String lastLoginTime;
+	private long pfruleid;// 派费规则id
 
+
+	/**
+	 * @return the pfruleid
+	 */
+	public long getPfruleid() {
+		return this.pfruleid;
+	}
+
+	/**
+	 * @param pfruleid the pfruleid to set
+	 */
+	public void setPfruleid(long pfruleid) {
+		this.pfruleid = pfruleid;
+	}
 	public String getLastLoginIp() {
 		return this.lastLoginIp;
 	}

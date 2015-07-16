@@ -74,11 +74,26 @@ public class Branch {
 	private long prescription48;// 48小时时效
 
 	private long backtime;// 退货出站超时时效：
-	
-	private BigDecimal branchBail;//站点保证金
 
+	private BigDecimal branchBail;//站点保证金
+	private long pfruleid;// 派费规则id
+
+
+	/**
+	 * @return the pfruleid
+	 */
+	public long getPfruleid() {
+		return this.pfruleid;
+	}
+
+	/**
+	 * @param pfruleid the pfruleid to set
+	 */
+	public void setPfruleid(long pfruleid) {
+		this.pfruleid = pfruleid;
+	}
 	public long getBacktime() {
-		return backtime;
+		return this.backtime;
 	}
 
 	public void setBacktime(long backtime) {
@@ -86,7 +101,7 @@ public class Branch {
 	}
 
 	public BigDecimal getBalancevirt() {
-		return balancevirt;
+		return this.balancevirt;
 	}
 
 	public void setBalancevirt(BigDecimal balancevirt) {
@@ -94,7 +109,7 @@ public class Branch {
 	}
 
 	public BigDecimal getDebtvirt() {
-		return debtvirt;
+		return this.debtvirt;
 	}
 
 	public void setDebtvirt(BigDecimal debtvirt) {
@@ -102,7 +117,7 @@ public class Branch {
 	}
 
 	public BigDecimal getCredituse() {
-		return credituse;
+		return this.credituse;
 	}
 
 	public void setCredituse(BigDecimal credituse) {
@@ -110,7 +125,7 @@ public class Branch {
 	}
 
 	public BigDecimal getDebt() {
-		return debt;
+		return this.debt;
 	}
 
 	public void setDebt(BigDecimal debt) {
@@ -118,7 +133,7 @@ public class Branch {
 	}
 
 	public BigDecimal getCredit() {
-		return credit;
+		return this.credit;
 	}
 
 	public void setCredit(BigDecimal credit) {
@@ -126,7 +141,7 @@ public class Branch {
 	}
 
 	public BigDecimal getBalance() {
-		return balance;
+		return this.balance;
 	}
 
 	public void setBalance(BigDecimal balance) {
@@ -134,7 +149,7 @@ public class Branch {
 	}
 
 	public long getAccountbranch() {
-		return accountbranch;
+		return this.accountbranch;
 	}
 
 	public void setAccountbranch(long accountbranch) {
@@ -142,7 +157,7 @@ public class Branch {
 	}
 
 	public int getAccounttype() {
-		return accounttype;
+		return this.accounttype;
 	}
 
 	public void setAccounttype(int accounttype) {
@@ -150,7 +165,7 @@ public class Branch {
 	}
 
 	public int getAccountexcesstype() {
-		return accountexcesstype;
+		return this.accountexcesstype;
 	}
 
 	public void setAccountexcesstype(int accountexcesstype) {
@@ -158,7 +173,7 @@ public class Branch {
 	}
 
 	public BigDecimal getAccountexcessfee() {
-		return accountexcessfee;
+		return this.accountexcessfee;
 	}
 
 	public void setAccountexcessfee(BigDecimal accountexcessfee) {
@@ -166,7 +181,7 @@ public class Branch {
 	}
 
 	public int getBindmsksid() {
-		return bindmsksid;
+		return this.bindmsksid;
 	}
 
 	public void setBindmsksid(int bindmsksid) {
@@ -174,7 +189,7 @@ public class Branch {
 	}
 
 	public BigDecimal getArrearagepayupaudit() {
-		return arrearagepayupaudit;
+		return this.arrearagepayupaudit;
 	}
 
 	public void setArrearagepayupaudit(BigDecimal arrearagepayupaudit) {
@@ -182,7 +197,7 @@ public class Branch {
 	}
 
 	public BigDecimal getPosarrearagepayupaudit() {
-		return posarrearagepayupaudit;
+		return this.posarrearagepayupaudit;
 	}
 
 	public void setPosarrearagepayupaudit(BigDecimal posarrearagepayupaudit) {
@@ -190,7 +205,7 @@ public class Branch {
 	}
 
 	public long getZhongzhuanid() {
-		return zhongzhuanid;
+		return this.zhongzhuanid;
 	}
 
 	public void setZhongzhuanid(long zhongzhuanid) {
@@ -198,7 +213,7 @@ public class Branch {
 	}
 
 	public long getTuihuoid() {
-		return tuihuoid;
+		return this.tuihuoid;
 	}
 
 	public void setTuihuoid(long tuihuoid) {
@@ -206,7 +221,7 @@ public class Branch {
 	}
 
 	public long getCaiwuid() {
-		return caiwuid;
+		return this.caiwuid;
 	}
 
 	public void setCaiwuid(long caiwuid) {
@@ -214,7 +229,7 @@ public class Branch {
 	}
 
 	public BigDecimal getArrearagehuo() {
-		return arrearagehuo;
+		return this.arrearagehuo;
 	}
 
 	public void setArrearagehuo(BigDecimal arrearagehuo) {
@@ -222,7 +237,7 @@ public class Branch {
 	}
 
 	public BigDecimal getArrearagepei() {
-		return arrearagepei;
+		return this.arrearagepei;
 	}
 
 	public void setArrearagepei(BigDecimal arrearagepei) {
@@ -230,7 +245,7 @@ public class Branch {
 	}
 
 	public BigDecimal getArrearagefa() {
-		return arrearagefa;
+		return this.arrearagefa;
 	}
 
 	public void setArrearagefa(BigDecimal arrearagefa) {
@@ -238,7 +253,7 @@ public class Branch {
 	}
 
 	public String getBranchmatter() {
-		return branchmatter;
+		return this.branchmatter;
 	}
 
 	public void setBranchmatter(String branchmatter) {
@@ -246,7 +261,7 @@ public class Branch {
 	}
 
 	public int getAccountareaid() {
-		return accountareaid;
+		return this.accountareaid;
 	}
 
 	public void setAccountareaid(int accountareaid) {
@@ -254,7 +269,7 @@ public class Branch {
 	}
 
 	public int getCheckremandtype() {
-		return checkremandtype;
+		return this.checkremandtype;
 	}
 
 	public void setCheckremandtype(int checkremandtype) {
@@ -262,7 +277,7 @@ public class Branch {
 	}
 
 	public int getSendstartbranchid() {
-		return sendstartbranchid;
+		return this.sendstartbranchid;
 	}
 
 	public void setSendstartbranchid(int sendstartbranchid) {
@@ -270,7 +285,7 @@ public class Branch {
 	}
 
 	public String getBranchprovince() {
-		return branchprovince;
+		return this.branchprovince;
 	}
 
 	public void setBranchprovince(String branchprovince) {
@@ -278,7 +293,7 @@ public class Branch {
 	}
 
 	public String getBranchcity() {
-		return branchcity;
+		return this.branchcity;
 	}
 
 	public void setBranchcity(String branchcity) {
@@ -286,7 +301,7 @@ public class Branch {
 	}
 
 	public String getBranchaddress() {
-		return branchaddress;
+		return this.branchaddress;
 	}
 
 	public void setBranchaddress(String branchaddress) {
@@ -294,7 +309,7 @@ public class Branch {
 	}
 
 	public String getBranchcontactman() {
-		return branchcontactman;
+		return this.branchcontactman;
 	}
 
 	public void setBranchcontactman(String branchcontactman) {
@@ -302,7 +317,7 @@ public class Branch {
 	}
 
 	public String getBranchphone() {
-		return branchphone;
+		return this.branchphone;
 	}
 
 	public void setBranchphone(String branchphone) {
@@ -310,7 +325,7 @@ public class Branch {
 	}
 
 	public String getBranchmobile() {
-		return branchmobile;
+		return this.branchmobile;
 	}
 
 	public void setBranchmobile(String branchmobile) {
@@ -318,7 +333,7 @@ public class Branch {
 	}
 
 	public String getBranchfax() {
-		return branchfax;
+		return this.branchfax;
 	}
 
 	public void setBranchfax(String branchfax) {
@@ -326,7 +341,7 @@ public class Branch {
 	}
 
 	public String getBranchemail() {
-		return branchemail;
+		return this.branchemail;
 	}
 
 	public void setBranchemail(String branchemail) {
@@ -334,7 +349,7 @@ public class Branch {
 	}
 
 	public String getContractflag() {
-		return contractflag;
+		return this.contractflag;
 	}
 
 	public void setContractflag(String contractflag) {
@@ -342,7 +357,7 @@ public class Branch {
 	}
 
 	public String getCwbtobranchid() {
-		return cwbtobranchid;
+		return this.cwbtobranchid;
 	}
 
 	public void setCwbtobranchid(String cwbtobranchid) {
@@ -350,7 +365,7 @@ public class Branch {
 	}
 
 	public String getPayfeeupdateflag() {
-		return payfeeupdateflag;
+		return this.payfeeupdateflag;
 	}
 
 	public void setPayfeeupdateflag(String payfeeupdateflag) {
@@ -358,7 +373,7 @@ public class Branch {
 	}
 
 	public String getBacktodeliverflag() {
-		return backtodeliverflag;
+		return this.backtodeliverflag;
 	}
 
 	public void setBacktodeliverflag(String backtodeliverflag) {
@@ -366,7 +381,7 @@ public class Branch {
 	}
 
 	public String getBranchpaytoheadflag() {
-		return branchpaytoheadflag;
+		return this.branchpaytoheadflag;
 	}
 
 	public void setBranchpaytoheadflag(String branchpaytoheadflag) {
@@ -374,7 +389,7 @@ public class Branch {
 	}
 
 	public String getBranchfinishdayflag() {
-		return branchfinishdayflag;
+		return this.branchfinishdayflag;
 	}
 
 	public void setBranchfinishdayflag(String branchfinishdayflag) {
@@ -382,7 +397,7 @@ public class Branch {
 	}
 
 	public BigDecimal getBranchinsurefee() {
-		return branchinsurefee;
+		return this.branchinsurefee;
 	}
 
 	public void setBranchinsurefee(BigDecimal branchinsurefee) {
@@ -390,7 +405,7 @@ public class Branch {
 	}
 
 	public String getBranchwavfile() {
-		return branchwavfile;
+		return this.branchwavfile;
 	}
 
 	public void setBranchwavfile(String branchwavfile) {
@@ -398,7 +413,7 @@ public class Branch {
 	}
 
 	public BigDecimal getCreditamount() {
-		return creditamount;
+		return this.creditamount;
 	}
 
 	public void setCreditamount(BigDecimal creditamount) {
@@ -406,7 +421,7 @@ public class Branch {
 	}
 
 	public String getBrancheffectflag() {
-		return brancheffectflag;
+		return this.brancheffectflag;
 	}
 
 	public void setBrancheffectflag(String brancheffectflag) {
@@ -414,7 +429,7 @@ public class Branch {
 	}
 
 	public BigDecimal getContractrate() {
-		return contractrate;
+		return this.contractrate;
 	}
 
 	public void setContractrate(BigDecimal contractrate) {
@@ -422,7 +437,7 @@ public class Branch {
 	}
 
 	public String getBranchcode() {
-		return branchcode;
+		return this.branchcode;
 	}
 
 	public void setBranchcode(String branchcode) {
@@ -430,7 +445,7 @@ public class Branch {
 	}
 
 	public String getNoemailimportflag() {
-		return noemailimportflag;
+		return this.noemailimportflag;
 	}
 
 	public void setNoemailimportflag(String noemailimportflag) {
@@ -438,7 +453,7 @@ public class Branch {
 	}
 
 	public String getErrorcwbdeliverflag() {
-		return errorcwbdeliverflag;
+		return this.errorcwbdeliverflag;
 	}
 
 	public void setErrorcwbdeliverflag(String errorcwbdeliverflag) {
@@ -446,7 +461,7 @@ public class Branch {
 	}
 
 	public String getErrorcwbbranchflag() {
-		return errorcwbbranchflag;
+		return this.errorcwbbranchflag;
 	}
 
 	public void setErrorcwbbranchflag(String errorcwbbranchflag) {
@@ -454,7 +469,7 @@ public class Branch {
 	}
 
 	public String getBranchcodewavfile() {
-		return branchcodewavfile;
+		return this.branchcodewavfile;
 	}
 
 	public void setBranchcodewavfile(String branchcodewavfile) {
@@ -462,7 +477,7 @@ public class Branch {
 	}
 
 	public String getImportwavtype() {
-		return importwavtype;
+		return this.importwavtype;
 	}
 
 	public void setImportwavtype(String importwavtype) {
@@ -470,7 +485,7 @@ public class Branch {
 	}
 
 	public String getExportwavtype() {
-		return exportwavtype;
+		return this.exportwavtype;
 	}
 
 	public void setExportwavtype(String exportwavtype) {
@@ -478,7 +493,7 @@ public class Branch {
 	}
 
 	public String getNoemaildeliverflag() {
-		return noemaildeliverflag;
+		return this.noemaildeliverflag;
 	}
 
 	public void setNoemaildeliverflag(String noemaildeliverflag) {
@@ -488,7 +503,7 @@ public class Branch {
 	String functionids;
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -496,7 +511,7 @@ public class Branch {
 	}
 
 	public String getBranchname() {
-		return branchname;
+		return this.branchname;
 	}
 
 	public void setBranchname(String branchname) {
@@ -504,7 +519,7 @@ public class Branch {
 	}
 
 	public String getFunctionids() {
-		return functionids;
+		return this.functionids;
 	}
 
 	public void setFunctionids(String functionids) {
@@ -512,7 +527,7 @@ public class Branch {
 	}
 
 	public int getSitetype() {
-		return sitetype;
+		return this.sitetype;
 	}
 
 	public void setSitetype(int sitetype) {
@@ -520,7 +535,7 @@ public class Branch {
 	}
 
 	public String getBankcard() {
-		return bankcard;
+		return this.bankcard;
 	}
 
 	public void setBankcard(String bankcard) {
@@ -529,14 +544,15 @@ public class Branch {
 
 	public String getSitetypeName() {
 		for (BranchEnum be : BranchEnum.values()) {
-			if (be.getValue() == this.sitetype)
+			if (be.getValue() == this.sitetype) {
 				return be.getText();
+			}
 		}
 		return "";
 	}
 
 	public long getPrescription24() {
-		return prescription24;
+		return this.prescription24;
 	}
 
 	public void setPrescription24(long prescription24) {
@@ -544,7 +560,7 @@ public class Branch {
 	}
 
 	public long getPrescription48() {
-		return prescription48;
+		return this.prescription48;
 	}
 
 	public void setPrescription48(long prescription48) {
@@ -552,10 +568,10 @@ public class Branch {
 	}
 
 	public String getBrancharea() {
-		if (null == brancharea) {
-			brancharea = "";
+		if (null == this.brancharea) {
+			this.brancharea = "";
 		}
-		return brancharea;
+		return this.brancharea;
 	}
 
 	public void setBrancharea(String brancharea) {
@@ -563,10 +579,10 @@ public class Branch {
 	}
 
 	public String getBranchstreet() {
-		if (null == branchstreet) {
-			branchstreet = "";
+		if (null == this.branchstreet) {
+			this.branchstreet = "";
 		}
-		return branchstreet;
+		return this.branchstreet;
 	}
 
 	public void setBranchstreet(String branchstreet) {
@@ -574,7 +590,7 @@ public class Branch {
 	}
 
 	public BigDecimal getBranchBail() {
-		return branchBail;
+		return this.branchBail;
 	}
 
 	public void setBranchBail(BigDecimal branchBail) {

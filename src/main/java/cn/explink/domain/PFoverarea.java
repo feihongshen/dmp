@@ -3,7 +3,6 @@
  */
 package cn.explink.domain;
 
-import java.math.BigDecimal;
 
 /**
  * @author Administrator
@@ -11,7 +10,7 @@ import java.math.BigDecimal;
  */
 public class PFoverarea {
 	private long id;
-	private BigDecimal overareafee;
+	private int state;
 	private int typeid;
 	private long pfruleid;
 	private int tabid;
@@ -39,17 +38,18 @@ public class PFoverarea {
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	/**
-	 * @return the overareafee
+	 * @return the state
 	 */
-	public BigDecimal getOverareafee() {
-		return this.overareafee;
+	public int getState() {
+		return this.state;
 	}
 	/**
-	 * @param overareafee the overareafee to set
+	 * @param state the state to set
 	 */
-	public void setOverareafee(BigDecimal overareafee) {
-		this.overareafee = overareafee;
+	public void setState(int state) {
+		this.state = state;
 	}
 	/**
 	 * @return the typeid
