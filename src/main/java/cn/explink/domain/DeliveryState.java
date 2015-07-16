@@ -33,6 +33,7 @@ public class DeliveryState {
 	private long pos_feedback_flag;
 	private long userid;
 	private long gcaid;
+	private String cwbordertypeid;
 	private int sign_typeid; // 是否签收 0未签收，1已签收
 	private String sign_man; // 签收人
 	private String sign_time; // 签收时间
@@ -60,7 +61,7 @@ public class DeliveryState {
 	private String shangmenlanshoutime;// 上门揽收时间
 
 	public String getShangmenlanshoutime() {
-		return shangmenlanshoutime;
+		return this.shangmenlanshoutime;
 	}
 
 	public void setShangmenlanshoutime(String shangmenlanshoutime) {
@@ -68,7 +69,7 @@ public class DeliveryState {
 	}
 
 	public String getDeliverystateStr() {
-		return deliverystateStr;
+		return this.deliverystateStr;
 	}
 
 	public void setDeliverystateStr(String deliverystateStr) {
@@ -76,11 +77,11 @@ public class DeliveryState {
 	}
 
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
 
 	public int getSign_typeid() {
-		return sign_typeid;
+		return this.sign_typeid;
 	}
 
 	public void setSign_typeid(int sign_typeid) {
@@ -88,7 +89,7 @@ public class DeliveryState {
 	}
 
 	public String getSign_man() {
-		return sign_man;
+		return this.sign_man;
 	}
 
 	public void setSign_man(String sign_man) {
@@ -96,7 +97,7 @@ public class DeliveryState {
 	}
 
 	public String getSign_time() {
-		return sign_time;
+		return this.sign_time;
 	}
 
 	public void setSign_time(String sign_time) {
@@ -108,7 +109,7 @@ public class DeliveryState {
 	}
 
 	public long getDeliveryid() {
-		return deliveryid;
+		return this.deliveryid;
 	}
 
 	public void setDeliveryid(long deliveryid) {
@@ -116,7 +117,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getReceivedfee() {
-		return receivedfee;
+		return this.receivedfee;
 	}
 
 	public void setReceivedfee(BigDecimal receivedfee) {
@@ -124,7 +125,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getReturnedfee() {
-		return returnedfee;
+		return this.returnedfee;
 	}
 
 	public void setReturnedfee(BigDecimal returnedfee) {
@@ -132,7 +133,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getBusinessfee() {
-		return businessfee;
+		return this.businessfee;
 	}
 
 	public void setBusinessfee(BigDecimal businessfee) {
@@ -140,7 +141,7 @@ public class DeliveryState {
 	}
 
 	public long getDeliverystate() {
-		return deliverystate;
+		return this.deliverystate;
 	}
 
 	public void setDeliverystate(long deliverystate) {
@@ -148,7 +149,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getCash() {
-		return cash;
+		return this.cash;
 	}
 
 	public void setCash(BigDecimal cash) {
@@ -156,7 +157,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getPos() {
-		return pos;
+		return this.pos;
 	}
 
 	public void setPos(BigDecimal pos) {
@@ -164,7 +165,7 @@ public class DeliveryState {
 	}
 
 	public String getPosremark() {
-		return posremark;
+		return this.posremark;
 	}
 
 	public void setPosremark(String posremark) {
@@ -172,7 +173,7 @@ public class DeliveryState {
 	}
 
 	public Date getMobilepodtime() {
-		return mobilepodtime;
+		return this.mobilepodtime;
 	}
 
 	public void setMobilepodtime(Date mobilepodtime) {
@@ -180,7 +181,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getCheckfee() {
-		return checkfee;
+		return this.checkfee;
 	}
 
 	public void setCheckfee(BigDecimal checkfee) {
@@ -188,15 +189,23 @@ public class DeliveryState {
 	}
 
 	public String getCheckremark() {
-		return checkremark;
+		return this.checkremark;
 	}
 
 	public void setCheckremark(String checkremark) {
 		this.checkremark = checkremark;
 	}
 
+	public String getCwbordertypeid() {
+		return this.cwbordertypeid;
+	}
+
+	public void setCwbordertypeid(String cwbordertypeid) {
+		this.cwbordertypeid = cwbordertypeid;
+	}
+
 	public long getReceivedfeeuser() {
-		return receivedfeeuser;
+		return this.receivedfeeuser;
 	}
 
 	public void setReceivedfeeuser(long receivedfeeuser) {
@@ -204,7 +213,7 @@ public class DeliveryState {
 	}
 
 	public String getCreatetime() {
-		return createtime == null ? "" : createtime;
+		return this.createtime == null ? "" : this.createtime;
 	}
 
 	public void setCreatetime(String createtime) {
@@ -212,7 +221,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getOtherfee() {
-		return otherfee;
+		return this.otherfee;
 	}
 
 	public void setOtherfee(BigDecimal otherfee) {
@@ -220,7 +229,7 @@ public class DeliveryState {
 	}
 
 	public long getPodremarkid() {
-		return podremarkid;
+		return this.podremarkid;
 	}
 
 	public void setPodremarkid(long podremarkid) {
@@ -228,7 +237,7 @@ public class DeliveryState {
 	}
 
 	public String getDeliverstateremark() {
-		return deliverstateremark;
+		return this.deliverstateremark;
 	}
 
 	public void setDeliverstateremark(String deliverstateremark) {
@@ -236,7 +245,7 @@ public class DeliveryState {
 	}
 
 	public String getBackreason() {
-		return backreason;
+		return this.backreason;
 	}
 
 	public void setBackreason(String backreason) {
@@ -244,7 +253,7 @@ public class DeliveryState {
 	}
 
 	public String getLeavedreason() {
-		return leavedreason;
+		return this.leavedreason;
 	}
 
 	public void setLeavedreason(String leavedreason) {
@@ -252,7 +261,7 @@ public class DeliveryState {
 	}
 
 	public long getIsout() {
-		return isout;
+		return this.isout;
 	}
 
 	public void setIsout(long isout) {
@@ -260,7 +269,7 @@ public class DeliveryState {
 	}
 
 	public long getPos_feedback_flag() {
-		return pos_feedback_flag;
+		return this.pos_feedback_flag;
 	}
 
 	public void setPos_feedback_flag(long pos_feedback_flag) {
@@ -268,7 +277,7 @@ public class DeliveryState {
 	}
 
 	public long getUserid() {
-		return userid;
+		return this.userid;
 	}
 
 	public void setUserid(long userid) {
@@ -276,7 +285,7 @@ public class DeliveryState {
 	}
 
 	public long getGcaid() {
-		return gcaid;
+		return this.gcaid;
 	}
 
 	public void setGcaid(long gcaid) {
@@ -284,7 +293,7 @@ public class DeliveryState {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -292,7 +301,7 @@ public class DeliveryState {
 	}
 
 	public long getDeliverybranchid() {
-		return deliverybranchid;
+		return this.deliverybranchid;
 	}
 
 	public void setDeliverybranchid(long deliverybranchid) {
@@ -300,7 +309,7 @@ public class DeliveryState {
 	}
 
 	public String getDeliverytime() {
-		return deliverytime;
+		return this.deliverytime;
 	}
 
 	public void setDeliverytime(String deliverytime) {
@@ -308,7 +317,7 @@ public class DeliveryState {
 	}
 
 	public String getAuditingtime() {
-		return auditingtime;
+		return this.auditingtime;
 	}
 
 	public void setAuditingtime(String auditingtime) {
@@ -316,7 +325,7 @@ public class DeliveryState {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -324,7 +333,7 @@ public class DeliveryState {
 	}
 
 	public long getPayupid() {
-		return payupid;
+		return this.payupid;
 	}
 
 	public void setPayupid(long payupid) {
@@ -332,7 +341,7 @@ public class DeliveryState {
 	}
 
 	public long getIssendcustomer() {
-		return issendcustomer;
+		return this.issendcustomer;
 	}
 
 	public void setIssendcustomer(long issendcustomer) {
@@ -340,7 +349,7 @@ public class DeliveryState {
 	}
 
 	public long getIsautolinghuo() {
-		return isautolinghuo;
+		return this.isautolinghuo;
 	}
 
 	public void setIsautolinghuo(long isautolinghuo) {
@@ -348,7 +357,7 @@ public class DeliveryState {
 	}
 
 	public String getPushtime() {
-		return pushtime;
+		return this.pushtime;
 	}
 
 	public void setPushtime(String pushtime) {
@@ -356,7 +365,7 @@ public class DeliveryState {
 	}
 
 	public long getPushstate() {
-		return pushstate;
+		return this.pushstate;
 	}
 
 	public void setPushstate(long pushstate) {
@@ -364,7 +373,7 @@ public class DeliveryState {
 	}
 
 	public String getPushremarks() {
-		return pushremarks;
+		return this.pushremarks;
 	}
 
 	public void setPushremarks(String pushremarks) {
@@ -372,7 +381,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getCodpos() {
-		return codpos;
+		return this.codpos;
 	}
 
 	public void setCodpos(BigDecimal codpos) {
@@ -380,7 +389,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getShouldfare() {
-		return shouldfare;
+		return this.shouldfare;
 	}
 
 	public void setShouldfare(BigDecimal shouldfare) {
@@ -388,7 +397,7 @@ public class DeliveryState {
 	}
 
 	public BigDecimal getInfactfare() {
-		return infactfare;
+		return this.infactfare;
 	}
 
 	public void setInfactfare(BigDecimal infactfare) {
@@ -397,13 +406,14 @@ public class DeliveryState {
 
 	@Override
 	public String toString() {
-		return "DeliveryState [id=" + id + ", cwb=" + cwb + ", deliveryid=" + deliveryid + ", receivedfee=" + receivedfee + ", returnedfee=" + returnedfee + ", businessfee=" + businessfee
-				+ ", deliverystate=" + deliverystate + ", cash=" + cash + ", pos=" + pos + ", posremark=" + posremark + ", checkfee=" + checkfee + ", checkremark=" + checkremark
-				+ ", receivedfeeuser=" + receivedfeeuser + ", createtime=" + createtime + ", otherfee=" + otherfee + ", podremarkid=" + podremarkid + ", deliverstateremark=" + deliverstateremark
-				+ ", isout=" + isout + ", pos_feedback_flag=" + pos_feedback_flag + ", userid=" + userid + ", gcaid=" + gcaid + ", sign_typeid=" + sign_typeid + ", sign_man=" + sign_man
-				+ ", sign_time=" + sign_time + ", backreason=" + backreason + ", leavedreason=" + leavedreason + ", deliverybranchid=" + deliverybranchid + ", deliverystateStr=" + deliverystateStr
-				+ ", deliverytime=" + deliverytime + ", auditingtime=" + auditingtime + ", pushtime=" + pushtime + ", pushstate=" + pushstate + ", pushremarks=" + pushremarks + ", customerid="
-				+ customerid + ", payupid=" + payupid + ", issendcustomer=" + issendcustomer + ", isautolinghuo=" + isautolinghuo + "]";
+		return "DeliveryState [id=" + this.id + ", cwb=" + this.cwb + ", deliveryid=" + this.deliveryid + ", receivedfee=" + this.receivedfee + ", returnedfee=" + this.returnedfee + ", businessfee="
+				+ this.businessfee + ", deliverystate=" + this.deliverystate + ", cash=" + this.cash + ", pos=" + this.pos + ", posremark=" + this.posremark + ", checkfee=" + this.checkfee
+				+ ", checkremark=" + this.checkremark + ", receivedfeeuser=" + this.receivedfeeuser + ", createtime=" + this.createtime + ", otherfee=" + this.otherfee + ", podremarkid="
+				+ this.podremarkid + ", deliverstateremark=" + this.deliverstateremark + ", isout=" + this.isout + ", pos_feedback_flag=" + this.pos_feedback_flag + ", userid=" + this.userid
+				+ ", gcaid=" + this.gcaid + ", sign_typeid=" + this.sign_typeid + ", sign_man=" + this.sign_man + ", sign_time=" + this.sign_time + ", backreason=" + this.backreason
+				+ ", leavedreason=" + this.leavedreason + ", deliverybranchid=" + this.deliverybranchid + ", deliverystateStr=" + this.deliverystateStr + ", deliverytime=" + this.deliverytime
+				+ ", auditingtime=" + this.auditingtime + ", pushtime=" + this.pushtime + ", pushstate=" + this.pushstate + ", pushremarks=" + this.pushremarks + ", customerid=" + this.customerid
+				+ ", payupid=" + this.payupid + ", issendcustomer=" + this.issendcustomer + ", isautolinghuo=" + this.isautolinghuo + "]";
 	}
 
 }
