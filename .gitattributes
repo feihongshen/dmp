@@ -1342,6 +1342,7 @@ src/main/java/cn/explink/enumutil/OutwarehousegroupOperateEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleStateEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTabEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTypeEnum.java -text
+src/main/java/cn/explink/enumutil/PaiFeiTypeEnum.java -text
 src/main/java/cn/explink/enumutil/PayMethodSwitchEnum.java -text
 src/main/java/cn/explink/enumutil/PaytypeEnum.java -text
 src/main/java/cn/explink/enumutil/PenalizeSateEnum.java -text

@@ -32,6 +32,7 @@ import cn.explink.domain.PaifeiRuleTH;
 import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
+import cn.explink.enumutil.PaiFeiTypeEnum;
 
 @SuppressWarnings("unchecked")
 /**
@@ -157,7 +158,7 @@ public class PaiFeiRuleService {
 	 * @param pf
 	 */
 	private void ISNULL(Object obj) {
-		//验证该记录是否已经存在了！
+		// 验证该记录是否已经存在了！
 		if (obj instanceof PFbasic) {
 			PFbasic pf = (PFbasic) obj;
 			PFbasic pftemp = this.pFbasicDAO.getPFbasicByRTC(pf.getPfruleid(), pf.getTypeid(), pf.getTabid(), pf.getCustomerid());
@@ -178,48 +179,81 @@ public class PaiFeiRuleService {
 				this.pFcollectionDAO.credata(pf);
 			}
 		}
-		if(obj instanceof  PFbusiness){
+		if (obj instanceof PFbusiness) {
 			PFbusiness pf = (PFbusiness) obj;
 			PFbusiness pftemp = this.pFbusinessDAO.getPFbusinessByRTC(pf.getPfruleid(), pf.getTypeid(), pf.getTabid());
 			if (pftemp != null) {
 				pf.setId(pftemp.getId());
 				this.pFbusinessDAO.updatePFbusiness(pf);
-			}else {
+			} else {
 				this.pFbusinessDAO.credata(pf);
 			}
 		}
-		if(obj instanceof  PFinsertion){
-			PFinsertion pf=(PFinsertion) obj;
-			PFinsertion pftemp=this.pFinsertionDAO.getPFinsertionByRTC(pf.getPfruleid(), pf.getTypeid(), pf.getTabid(),pf.getMincount(),pf.getMaxcount());
+		if (obj instanceof PFinsertion) {
+			PFinsertion pf = (PFinsertion) obj;
+			PFinsertion pftemp = this.pFinsertionDAO.getPFinsertionByRTC(pf.getPfruleid(), pf.getTypeid(), pf.getTabid(), pf.getMincount(), pf.getMaxcount());
 			if (pftemp != null) {
 				pf.setId(pftemp.getId());
 				this.pFinsertionDAO.updatePFinsertion(pf);
-			}else {
+			} else {
 				this.pFinsertionDAO.credata(pf);
 			}
 		}
-	/*	if(obj instanceof  PFoverarea){
-			PFoverarea pf=(PFoverarea) obj;
-		}*/
+		/*
+		 * if(obj instanceof PFoverarea){ PFoverarea pf=(PFoverarea) obj; }
+		 */
 
 	}
 
-/*	@Test
-	public void test() throws Exception, JsonMappingException, IOException {
-		JSONObject json = JSONObject
-				.fromObject("{\"ps\":{\"collection\":{\"PFfees\":[],\"showflag\":\"yes\"},\"basic\":{\"PFfees\":[{\"customerid\":\"1\",\"basicPFfee\":\"12321\",\"remark\":\"11\"}],\"showflag\":\"yes\"}}}");
-		PaifeiRuleJson pj = (PaifeiRuleJson) JSONObject.toBean(json, PaifeiRuleJson.class);
-		List<PFbasic> pfList = pj.getPs().getBasic().getPFfees();
-		JSONArray list = JSONArray.fromObject(pfList);
-		List<PFbasic> pfList1 = (List<PFbasic>) JSONArray.toCollection(list, PFbasic.class);
-		System.out.println(pfList1);
-
-	}*/
+	/*
+	 * @Test public void test() throws Exception, JsonMappingException,
+	 * IOException { JSONObject json = JSONObject .fromObject(
+	 * "{\"ps\":{\"collection\":{\"PFfees\":[],\"showflag\":\"yes\"},\"basic\":{\"PFfees\":[{\"customerid\":\"1\",\"basicPFfee\":\"12321\",\"remark\":\"11\"}],\"showflag\":\"yes\"}}}"
+	 * ); PaifeiRuleJson pj = (PaifeiRuleJson) JSONObject.toBean(json,
+	 * PaifeiRuleJson.class); List<PFbasic> pfList =
+	 * pj.getPs().getBasic().getPFfees(); JSONArray list =
+	 * JSONArray.fromObject(pfList); List<PFbasic> pfList1 = (List<PFbasic>)
+	 * JSONArray.toCollection(list, PFbasic.class); System.out.println(pfList1);
+	 *
+	 * }
+	 */
 
 	public static String createPaifeiNo(String flag) {
 		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyyMMddHHmmssSSS");
 		java.util.Date d = new java.util.Date();
 		return flag + df.format(d);
 
+	}
+
+	/**
+	 * 根据费用类型获取相应的派费
+	 * @param pfruleid 派费规则
+	 *
+	 * @param tab
+	 *            费用类型
+	 * @param cwb
+	 *            订单号
+	 * @return 派费
+	 */
+	public BigDecimal getPFRulefee(String pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
+
+		return new BigDecimal("0");
+	}
+
+	/**
+	 *
+	 * @param pfruleid
+	 *            派费规则
+	 * @param tab
+	 *            费用类型
+	 * @param type
+	 *            补助类型
+	 * @param cwb
+	 *            订单号
+	 * @return
+	 */
+	public BigDecimal getPFTypefeeByType(String pfruleid, PaiFeiRuleTabEnum tab, PaiFeiTypeEnum type, String cwb) {
+
+		return new BigDecimal("0");
 	}
 }

@@ -362,7 +362,7 @@
 					<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
 						cellpadding="0">
 						<tr id="ps_basic_tr">
-							<td  style="width: 13%;"><input type="checkbox" id="ps_basic_flag"/>基本派费</td>
+							<td  style="width: 14%;"><input type="checkbox" id="ps_basic_flag"/>基本派费</td>
 							<td><select onchange="showflag('ps_basic',$(this).val())">
 									<option value="yes">按供货商区分</option>
 									<option value="no">不按供货商区分</option>
@@ -405,7 +405,7 @@
 								</div></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" />区域属性助费</td>
+							<td><input type="checkbox" />区域属性补助费</td>
 							<td>
 								<div>
 									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -452,7 +452,7 @@
 					<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
 						cellpadding="0">
 						<tr id="th_basic_tr">
-							<td style="width: 13%;"><input type="checkbox" id="th_basic_flag" />基本派费</td>
+							<td style="width: 14%;"><input type="checkbox" id="th_basic_flag" />基本派费</td>
 							<td><select onchange="showflag('th_basic',$(this).val())">
 									<option value="yes">按供货商区分</option>
 									<option value="no">不按供货商区分</option>
@@ -494,7 +494,7 @@
 								</div></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" />区域属性助费</td>
+							<td><input type="checkbox" />区域属性补助费</td>
 							<td>
 								<div>
 									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -541,7 +541,7 @@
 					<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
 						cellpadding="0">
 						<tr id="zz_basic_tr">
-							<td style="width: 13%;"><input type="checkbox" id="zz_basic_flag" />基本派费</td>
+							<td style="width: 14%;"><input type="checkbox" id="zz_basic_flag" />基本派费</td>
 							<td><select onchange="showflag('zz_basic',$(this).val())">
 									<option value="yes">按供货商区分</option>
 									<option value="no">不按供货商区分</option>
@@ -583,7 +583,7 @@
 								</div></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" />区域属性助费</td>
+							<td><input type="checkbox" />区域属性补助费</td>
 							<td>
 								<div>
 									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
