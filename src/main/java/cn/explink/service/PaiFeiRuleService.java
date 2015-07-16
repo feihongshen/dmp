@@ -227,7 +227,9 @@ public class PaiFeiRuleService {
 
 	/**
 	 * 根据费用类型获取相应的派费
-	 * @param pfruleNO 派费规则
+	 *
+	 * @param pfruleid
+	 *            派费规则
 	 *
 	 * @param tab
 	 *            费用类型
@@ -235,14 +237,14 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return 派费
 	 */
-	public BigDecimal getPFRulefee(String pfruleNO, PaiFeiRuleTabEnum tab, String cwb) {
+	public BigDecimal getPFRulefee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 
 		return new BigDecimal("0");
 	}
 
 	/**
 	 *
-	 * @param pfruleNO
+	 * @param pfruleid
 	 *            派费规则
 	 * @param tab
 	 *            费用类型
@@ -252,7 +254,7 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return
 	 */
-	public BigDecimal getPFTypefeeByType(String pfruleNO, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, String cwb) {
+	public BigDecimal getPFTypefeeByType(long pfruleid, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, String cwb) {
 
 		return new BigDecimal("0");
 	}
