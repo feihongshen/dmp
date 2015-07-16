@@ -31,8 +31,8 @@ import cn.explink.domain.PaifeiRulePS;
 import cn.explink.domain.PaifeiRuleTH;
 import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
+import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
-import cn.explink.enumutil.PaiFeiTypeEnum;
 
 @SuppressWarnings("unchecked")
 /**
@@ -227,7 +227,7 @@ public class PaiFeiRuleService {
 
 	/**
 	 * 根据费用类型获取相应的派费
-	 * @param pfruleid 派费规则
+	 * @param pfruleNO 派费规则
 	 *
 	 * @param tab
 	 *            费用类型
@@ -235,14 +235,14 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return 派费
 	 */
-	public BigDecimal getPFRulefee(String pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
+	public BigDecimal getPFRulefee(String pfruleNO, PaiFeiRuleTabEnum tab, String cwb) {
 
 		return new BigDecimal("0");
 	}
 
 	/**
 	 *
-	 * @param pfruleid
+	 * @param pfruleNO
 	 *            派费规则
 	 * @param tab
 	 *            费用类型
@@ -252,7 +252,7 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return
 	 */
-	public BigDecimal getPFTypefeeByType(String pfruleid, PaiFeiRuleTabEnum tab, PaiFeiTypeEnum type, String cwb) {
+	public BigDecimal getPFTypefeeByType(String pfruleNO, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, String cwb) {
 
 		return new BigDecimal("0");
 	}
