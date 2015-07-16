@@ -98,7 +98,7 @@ public class PaiFeiRuleService {
 					pf.setTabid(pfenum.getValue());
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
-					this.ISNULL(pf);
+					this.save(pf);
 				}
 			} else {
 				PFbasic pf = new PFbasic();
@@ -108,7 +108,7 @@ public class PaiFeiRuleService {
 				pf.setBasicPFfee(basic.getPFfee());
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
-					this.ISNULL(pf);
+					this.save(pf);
 				}
 			}
 		}
@@ -121,7 +121,7 @@ public class PaiFeiRuleService {
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
 					// 验证是否已经存在相应的规则
-					this.ISNULL(pf);
+					this.save(pf);
 
 				}
 			} else {
@@ -132,7 +132,7 @@ public class PaiFeiRuleService {
 				pf.setCollectionPFfee(collection.getPFfee());
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
-					this.ISNULL(pf);
+					this.save(pf);
 				}
 			}
 		}
@@ -141,7 +141,7 @@ public class PaiFeiRuleService {
 			pf.setPfruleid(pfruleid);
 			pf.setTabid(pfenum.getValue());
 			pf.setTypeid(pfruletypeid);
-			this.ISNULL(pf);
+			this.save(pf);
 		}
 		if (tab.getSubsidyfee() != null) {
 			BigDecimal subsidyfee = tab.getSubsidyfee();
@@ -150,14 +150,14 @@ public class PaiFeiRuleService {
 			pf.setPfruleid(pfruleid);
 			pf.setTabid(pfenum.getValue());
 			pf.setTypeid(pfruletypeid);
-			this.ISNULL(pf);
+			this.save(pf);
 		}
 	}
 
 	/**
 	 * @param pf
 	 */
-	private void ISNULL(Object obj) {
+	private void save(Object obj) {
 		// 验证该记录是否已经存在了！
 		if (obj instanceof PFbasic) {
 			PFbasic pf = (PFbasic) obj;
