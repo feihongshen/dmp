@@ -3,21 +3,13 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
-import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 @Component
 public class SalaryGatherDao {
@@ -27,13 +19,14 @@ public class SalaryGatherDao {
 			SalaryGather salary = new SalaryGather();
 			salary.setId(rs.getLong("id"));
 			salary.setAgejob(rs.getBigDecimal("agejob"));
-			salary.setBatchid(StringUtil.nullConvertToEmptyString(rs.getString("batchid")));
+			salary.setBatchid(StringUtil.nullConvertToEmptyString(rs.getString("batchid")));//批次编号
 			salary.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
 			salary.setIdcard(StringUtil.nullConvertToEmptyString(rs.getString("idcard")));
+			salary.setBranchid(rs.getLong("branchid"));
 			salary.setAccountSingle(rs.getBigDecimal("accountSingle"));
 			salary.setSalarybasic(rs.getBigDecimal("salarybasic"));
 			salary.setSalaryjob(rs.getBigDecimal("salaryjob"));
-			salary.setSalarypush(rs.getBigDecimal("salarypush"));//绩效奖金
+			salary.setPushcash(rs.getBigDecimal("pushcash"));//绩效奖金
 		//	salary.setBonusfixed(rs.getBigDecimal("bonusfixed"));
 			salary.setBonusphone(rs.getBigDecimal("bonusphone"));
 			salary.setBonusweather(rs.getBigDecimal("bonusweather"));
@@ -78,44 +71,11 @@ public class SalaryGatherDao {
 			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
 			salary.setFoul_import(rs.getBigDecimal("foul_import"));
 			salary.setSalaradd(rs.getBigDecimal("salaradd"));//提成
-			salary.setBranchid(rs.getLong("branchid"));
-			salary.setBranchname(branchDAO.getbranchname(rs.getLong("branchid"))==null?"":branchDAO.getbranchname(rs.getLong("branchid")).getBranchname());
 			return salary;
 		}
 	}
 	@Autowired
-	JdbcTemplate jdbcTemplate;
-	@Autowired
-	BranchDAO branchDAO;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	public List<SalaryGather> findSalaryGathersWithQuery(long page,String batchnum,String distributionmember,String idcard,long branchid){
-		List<SalaryGather> salaryGathers=new ArrayList<SalaryGather>();
-		String sql="select * from express_ops_salarygather_detail where 1=1 ";
-		if (branchid>0) {
-			sql+=" and branchid="+branchid;
-		}
-		if (!"".equals(batchnum)) {
-			sql+=" and batchid  like '%"+batchnum+"%' ";
-		}
-		if (!"".equals(distributionmember)) {
-			sql+=" and realname like '%"+distributionmember+"%'";
-		}
-		if (!"".equals(idcard)&&!"undefined".equals(idcard)) {
-			sql+=" and idcard like '%"+distributionmember+"%'";
-		}
-		if (sql.indexOf("and")>=0) {
-			try {
-				if (page!=-9) {
-					sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-				}
-				salaryGathers=this.jdbcTemplate.query(sql, new SalaryGatherRowMapper());
-			} catch (DataAccessException e) {
-				this.logger.error("工资查询出现异常", e);
-			}
-		}
-		return salaryGathers;
-		
-	}
+	private JdbcTemplate jdbcTemplate;
 	
 	public int cresalaryGather(final SalaryCount salaryCount ) {
 		return this.jdbcTemplate.update("INSERT INTO `express_ops_salarygather_detail` (batchid,branchid) VALUES (?,?)",
