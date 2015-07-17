@@ -1,5 +1,6 @@
 package cn.explink.service;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -23,6 +24,7 @@ import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.DeliveryStateView;
 import cn.explink.controller.PenalizeInsideView;
 import cn.explink.controller.UserView;
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ReasonDao;
@@ -53,6 +55,7 @@ import cn.explink.domain.PayUp;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.Role;
+import cn.explink.domain.SalaryGather;
 import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.TuihuoRecord;
@@ -3277,6 +3280,23 @@ public class ExportService {
 			cloumnName2[i] = (new StringBuilder()).append(Character.toUpperCase(filename.charAt(0))).append(filename.substring(1)).toString();
 		}
 		
+		
+	}
+	//工资字段的全部查询
+	public  void setSalaryAllExport(
+			String[] cloumnName1,
+			String[] cloumnName2,Object object,String  flag){
+		Field[] fields=object.getClass().getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			cloumnName2[i]=StringUtils.upperFirst(fields[i].getName());
+			if (flag.equals("SalaryGather")) {
+				String salaryGatherNames=cn.explink.domain.SalaryGatherExport.getAllNames();
+				String[] salaryGatherNamesAll=salaryGatherNames.split("_");
+				for (int j = 0; j < salaryGatherNamesAll.length; j++) {
+					cloumnName1[j]=salaryGatherNamesAll[j];
+				}
+			}
+		}
 		
 	}
 

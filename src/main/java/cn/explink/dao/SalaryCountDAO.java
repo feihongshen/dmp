@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,15 @@ public class SalaryCountDAO {
 			return salary;
 		}
 	}
+	private final class StringRowMapper implements RowMapper<String>{
 
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			return rs.getString(1);
+		}
+		
+	}
 	/**
 	 * @param page
 	 * @param batchid
@@ -125,6 +134,27 @@ public class SalaryCountDAO {
 	public SalaryCount getSalaryCountBybatchid(String batchid) {
 		String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
 		return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
+	}
+	/**
+	 * @param branchid
+	 * @return
+	 */
+	public List<String> getSalaryCountBybranchid(long branchid,String batchnum) {
+		String sql="select * from express_ops_salaryCount_detail where ";
+		if (branchid>0) {
+			sql+=" and branchid= "+branchid;
+		}
+		if (!"".equals(batchnum)&&!"模糊匹配".equals(batchnum)) {
+			sql+=" and batchid like '%"+batchnum+"%'";
+		}
+		try {
+			if (sql.indexOf("and")<0) {
+				return null;
+			}
+			return this.jdbcTemplate.query(sql, new StringRowMapper());
+		} catch (DataAccessException e) {
+			return null;
+		}
 	}
 	/**
 	 * @param ids

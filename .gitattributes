@@ -1201,6 +1201,7 @@ src/main/java/cn/explink/domain/SalaryCount.java -text
 src/main/java/cn/explink/domain/SalaryError.java -text
 src/main/java/cn/explink/domain/SalaryFixed.java -text
 src/main/java/cn/explink/domain/SalaryGather.java -text
+src/main/java/cn/explink/domain/SalaryGatherExport.java -text
 src/main/java/cn/explink/domain/SalaryImport.java -text
 src/main/java/cn/explink/domain/SalaryImportRecord.java -text
 src/main/java/cn/explink/domain/ScheduledTask.java -text
@@ -1669,6 +1670,7 @@ src/main/java/cn/explink/service/PunishinsideBillService.java -text
 src/main/java/cn/explink/service/ResultCollector.java -text
 src/main/java/cn/explink/service/ResultCollectorManager.java -text
 src/main/java/cn/explink/service/RoleService.java -text
+src/main/java/cn/explink/service/SalaryQueryService.java -text
 src/main/java/cn/explink/service/ScheduledTaskService.java -text
 src/main/java/cn/explink/service/SmsConfigModelService.java -text
 src/main/java/cn/explink/service/SmsConfigService.java -text

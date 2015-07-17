@@ -120,6 +120,7 @@
 		<intercept-url pattern="/SettlementContract/**" access="permitAll" />
 		<intercept-url pattern="/CustomerBillContract/**" access="permitAll" />
 		<intercept-url pattern="/branchContract/**" access="permitAll" />
+		<intercept-url pattern="/gztl/**" access="permitAll" />
 
 
 

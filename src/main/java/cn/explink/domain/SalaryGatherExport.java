@@ -2,13 +2,7 @@ package cn.explink.domain;
 
 import java.math.BigDecimal;
 
-public class SalaryGather {
-	/**主键id**/
-	private long id;
-	/**批次编号**/
-	private String batchid;
-	/**站点id**/
-	private long branchid;
+public class SalaryGatherExport {
 	/**站点名**/
 	private String branchname;
 	/**姓名**/
@@ -117,30 +111,6 @@ public class SalaryGather {
 	private BigDecimal	foul_import;
 	/**提成**/
 	private BigDecimal	salaradd;
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return this.id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
-	/**
-	 * @return batchid
-	 */
-	public String getBatchid() {
-		return batchid;
-	}
-	/**
-	 * @param batchid
-	 */
-	public void setBatchid(String batchid) {
-		this.batchid = batchid;
-	}
 	/**
 	 * @return the realname
 	 */
@@ -779,11 +749,7 @@ public class SalaryGather {
 	public void setBranchname(String branchname) {
 		this.branchname = branchname;
 	}
-	
-	public long getBranchid() {
-		return branchid;
-	}
-	public void setBranchid(long branchid) {
-		this.branchid = branchid;
+	public static String getAllNames(){
+		return "站点名_姓名_身份证号码_结算单量_基本工资_岗位工资_绩效奖金_工龄_固定补贴_话费补贴_高温寒冷补贴_扣款撤销_其它补贴_其它补贴2_其它补贴3_其它补贴4_其它补贴5_其它补贴6_加班_考勤扣款_个人社保扣款_个人公积金扣款_违纪违规扣罚_货物赔偿_宿舍费用_其它扣罚_其它扣罚2_其它扣罚3_其它扣罚4_其它扣罚5_其它扣罚6_货物预付款_其它预付款_其它预付款2_其它预付款3_其它预付4_其它预付5_其它预付款6_应发工资_个税_实发工资_导入人员_导入标识_岗位津贴_住房补贴_全勤补贴_餐费补贴_交通补贴_车子租用_车子维修_油/电费用_扣款撤销(导入)_违纪扣款扣罚(导入)_提成";
 	}
 }
