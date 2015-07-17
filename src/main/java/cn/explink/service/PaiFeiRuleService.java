@@ -98,7 +98,7 @@ public class PaiFeiRuleService {
 					pf.setTabid(pfenum.getValue());
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
-					this.save(pf);
+					this.savedata(pf);
 				}
 			} else {
 				PFbasic pf = new PFbasic();
@@ -108,7 +108,7 @@ public class PaiFeiRuleService {
 				pf.setBasicPFfee(basic.getPFfee());
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
-					this.save(pf);
+					this.savedata(pf);
 				}
 			}
 		}
@@ -121,7 +121,7 @@ public class PaiFeiRuleService {
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
 					// 验证是否已经存在相应的规则
-					this.save(pf);
+					this.savedata(pf);
 
 				}
 			} else {
@@ -132,16 +132,18 @@ public class PaiFeiRuleService {
 				pf.setCollectionPFfee(collection.getPFfee());
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
-					this.save(pf);
+					this.savedata(pf);
 				}
 			}
 		}
-		List<PFinsertion> pFinsertions = (List<PFinsertion>) JSONArray.toCollection(JSONArray.fromObject(tab.getInsertion()), PFinsertion.class);
-		for (PFinsertion pf : pFinsertions) {
-			pf.setPfruleid(pfruleid);
-			pf.setTabid(pfenum.getValue());
-			pf.setTypeid(pfruletypeid);
-			this.save(pf);
+		if (tab.getInsertion() != null) {
+			List<PFinsertion> pFinsertions = (List<PFinsertion>) JSONArray.toCollection(JSONArray.fromObject(tab.getInsertion()), PFinsertion.class);
+			for (PFinsertion pf : pFinsertions) {
+				pf.setPfruleid(pfruleid);
+				pf.setTabid(pfenum.getValue());
+				pf.setTypeid(pfruletypeid);
+				this.savedata(pf);
+			}
 		}
 		if (tab.getSubsidyfee() != null) {
 			BigDecimal subsidyfee = tab.getSubsidyfee();
@@ -150,14 +152,14 @@ public class PaiFeiRuleService {
 			pf.setPfruleid(pfruleid);
 			pf.setTabid(pfenum.getValue());
 			pf.setTypeid(pfruletypeid);
-			this.save(pf);
+			this.savedata(pf);
 		}
 	}
 
 	/**
 	 * @param pf
 	 */
-	private void save(Object obj) {
+	private void savedata(Object obj) {
 		// 验证该记录是否已经存在了！
 		if (obj instanceof PFbasic) {
 			PFbasic pf = (PFbasic) obj;
@@ -205,18 +207,7 @@ public class PaiFeiRuleService {
 
 	}
 
-	/*
-	 * @Test public void test() throws Exception, JsonMappingException,
-	 * IOException { JSONObject json = JSONObject .fromObject(
-	 * "{\"ps\":{\"collection\":{\"PFfees\":[],\"showflag\":\"yes\"},\"basic\":{\"PFfees\":[{\"customerid\":\"1\",\"basicPFfee\":\"12321\",\"remark\":\"11\"}],\"showflag\":\"yes\"}}}"
-	 * ); PaifeiRuleJson pj = (PaifeiRuleJson) JSONObject.toBean(json,
-	 * PaifeiRuleJson.class); List<PFbasic> pfList =
-	 * pj.getPs().getBasic().getPFfees(); JSONArray list =
-	 * JSONArray.fromObject(pfList); List<PFbasic> pfList1 = (List<PFbasic>)
-	 * JSONArray.toCollection(list, PFbasic.class); System.out.println(pfList1);
-	 *
-	 * }
-	 */
+
 
 	public static String createPaifeiNo(String flag) {
 		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyyMMddHHmmssSSS");

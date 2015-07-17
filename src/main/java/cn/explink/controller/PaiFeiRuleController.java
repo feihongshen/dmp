@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -101,8 +99,8 @@ public class PaiFeiRuleController {
 			@RequestParam(value = "pfruletypeid", required = false, defaultValue = "0") int pfruletypeid,
 			@RequestParam(value = "pfruleid", required = false, defaultValue = "0") long pfruleid
 			){
-		JSONObject object=JSONObject.fromObject(json);
-		this.paiFeiRuleService.save(object,pfruletypeid,pfruleid);
+		//JSONObject object=JSONObject.fromObject(json);
+		//this.paiFeiRuleService.save(object,pfruletypeid,pfruleid);
 		return "{\"errorCode\":1,\"error\":\"增加成功！\"}";
 			}
 	@RequestMapping("/credata")

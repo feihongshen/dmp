@@ -23,7 +23,7 @@ public class PFoverareaDAO {
 		public PFoverarea mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PFoverarea pf = new PFoverarea();
 			pf.setId(rs.getLong("id"));
-			pf.setOverareafee(rs.getBigDecimal("overareafee"));
+			pf.setState(rs.getInt("state"));
 			pf.setPfruleid(rs.getLong("pfruleid"));
 			pf.setTypeid(rs.getInt("typeid"));
 			pf.setTabid(rs.getInt("tabid"));
