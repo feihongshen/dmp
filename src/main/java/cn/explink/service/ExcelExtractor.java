@@ -1056,7 +1056,7 @@ public abstract class ExcelExtractor {
 	public void extractSalary(InputStream f, long importflag, User user) {
 		List<SalaryFixed> salaryList = new ArrayList<SalaryFixed>();
 		List<User> userList = this.userDAO.getAllUser();
-		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();
+		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryExports();
 		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
 		int successCounts = 0;
