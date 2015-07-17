@@ -121,7 +121,7 @@ public class SalaryGatherDao {
 			sql+=" and realname like '%"+distributionmember+"%'";
 		}
 		if (!"".equals(idcard)&&!"undefined".equals(idcard)) {
-			sql+=" and idcard like '%"+distributionmember+"%'";
+			sql+=" and idcard like '%"+idcard+"%'";
 		}
 		if (sql.indexOf("and")>=0) {
 			try {

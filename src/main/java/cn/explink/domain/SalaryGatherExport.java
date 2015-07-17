@@ -16,7 +16,7 @@ public class SalaryGatherExport {
 	/**岗位工资**/
 	private BigDecimal	salaryjob;
 	/**绩效奖金**/
-	private BigDecimal	salarypush;
+	private BigDecimal	pushcash;
 	/**工龄**/
 	private BigDecimal	agejob;
 	/**固定补贴**/
@@ -171,17 +171,12 @@ public class SalaryGatherExport {
 	public void setSalaryjob(BigDecimal salaryjob) {
 		this.salaryjob = salaryjob;
 	}
-	/**
-	 * @return the salarypush
-	 */
-	public BigDecimal getSalarypush() {
-		return this.salarypush;
+	
+	public BigDecimal getPushcash() {
+		return pushcash;
 	}
-	/**
-	 * @param salarypush the salarypush to set
-	 */
-	public void setSalarypush(BigDecimal salarypush) {
-		this.salarypush = salarypush;
+	public void setPushcash(BigDecimal pushcash) {
+		this.pushcash = pushcash;
 	}
 	/**
 	 * @return the agejob

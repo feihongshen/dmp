@@ -133,8 +133,8 @@ function onBlurOnclick(obj){
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="right_title">
-	<div style="overflow: auto;">
-	<table width="250%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+	<div style="overflow:scroll;">
+	<table width="250%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table" >
 	<tr>
 	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 站点</td>
@@ -231,11 +231,12 @@ function onBlurOnclick(obj){
 	</div>
 	</div>
 	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
+	<div style="height: 10px;">
 	<c:if test='${page_obj.maxpage>1}'>
 	<div class="iframe_bottom">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 	<tr>
-		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+		<td height="20" align="center" valign="middle" bgcolor="#eef6ff">
 			<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','${page_obj.previous < 1 ? 1 : page_obj.previous}');$('#searchForm').submit();">上一页</a>　
 			<a href="javascript:$('#searchForm').attr('action','${page_obj.next < 1 ? 1 : page_obj.next }');$('#searchForm').submit();" >下一页</a>　
@@ -252,6 +253,7 @@ function onBlurOnclick(obj){
 	</table>
 	</div>
 	</c:if>
+	</div>
 	<form action="<%=request.getContextPath()%>/salaryQuery/exportExceldata/0" method="post" id="exportform">
 		<input type="hidden" name="batchnum1" value="${batchnum}"/>
 		<input type="hidden" name="branch1" value="${branchid}"/>
