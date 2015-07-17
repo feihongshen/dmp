@@ -52,10 +52,13 @@ function exportByCondation(sign){
 	$("#exportform").submit();
 }
 function clearData(){
-	$("#batchnum").val("");
+	$("#batchnum").val("模糊匹配");
 	$("#branch").val(0);
-	$("#distributionmember").val("");
-	$("#idcard").val("");
+	$("#distributionmember").val("模糊匹配");
+	$("#idcard").val("模糊匹配");
+	$("#batchnum").css('color','#CCCCCC');
+	$("#distributionmember").css('color','#CCCCCC');
+	$("#idcard").css('color','#CCCCCC');
 }
 function onfocusOnclick(obj){
 	if($(obj).val()=='模糊匹配'){
