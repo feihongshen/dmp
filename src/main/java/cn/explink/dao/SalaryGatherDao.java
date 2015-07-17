@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -113,4 +116,26 @@ public class SalaryGatherDao {
 		return salaryGathers;
 		
 	}
+	
+	public int cresalaryGather(final SalaryCount salaryCount ) {
+		return this.jdbcTemplate.update("INSERT INTO `express_ops_salarygather_detail` (batchid,branchid) VALUES (?,?)",
+				new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, salaryCount.getBatchid());
+						ps.setLong(2,salaryCount.getBranchid());
+					}
+				});
+	}
+
+	public SalaryGather getSalaryByIdcard(String idcard) {
+		try {
+			String sql = "select * from express_ops_salarygather_detail where idcard=" + idcard + " limit 1;";
+			return this.jdbcTemplate.queryForObject(sql, new SalaryGatherRowMapper());
+		} catch (Exception e) {
+			return null;
+
+		}
+	}
+
 }
