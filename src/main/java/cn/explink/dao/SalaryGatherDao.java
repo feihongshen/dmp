@@ -77,7 +77,7 @@ public class SalaryGatherDao {
 			salary.setCarfuel(rs.getBigDecimal("carfuel"));
 			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
 			salary.setFoul_import(rs.getBigDecimal("foul_import"));
-			salary.setSalaradd(rs.getBigDecimal("salaradd"));//提成
+			salary.setSalarypush(rs.getBigDecimal("salaradd"));//提成
 			salary.setBranchid(rs.getLong("branchid"));
 			salary.setBranchname(branchDAO.getbranchname(rs.getLong("branchid"))==null?"":branchDAO.getbranchname(rs.getLong("branchid")).getBranchname());
 			return salary;

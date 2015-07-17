@@ -114,7 +114,7 @@ public class SalaryGather {
 	/**违纪扣款扣罚(导入)**/
 	private BigDecimal	foul_import;
 	/**提成**/
-	private BigDecimal	salaradd;
+	private BigDecimal	salarypush;
 	
 	/**站点名=====用于显示**/
 	private String branchname;
@@ -678,11 +678,12 @@ public class SalaryGather {
 	public void setBonusallday(BigDecimal bonusallday) {
 		this.bonusallday = bonusallday;
 	}
-	public BigDecimal getSalaradd() {
-		return salaradd;
+	
+	public BigDecimal getSalarypush() {
+		return salarypush;
 	}
-	public void setSalaradd(BigDecimal salaradd) {
-		this.salaradd = salaradd;
+	public void setSalarypush(BigDecimal salarypush) {
+		this.salarypush = salarypush;
 	}
 	/**
 	 * @return the bonusfood

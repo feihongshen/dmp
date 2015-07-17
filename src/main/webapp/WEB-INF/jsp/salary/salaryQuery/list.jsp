@@ -189,7 +189,7 @@ function onBlurOnclick(obj){
 		<td align="center" valign="middle">${salary.accountSingle}</td>
 		<td align="center" valign="middle">${salary.salarybasic}</td>
 		<td align="center" valign="middle">${salary.salaryjob}</td>
-		<td align="center" valign="middle">${salary.salaradd}</td>
+		<td align="center" valign="middle">${salary.salarypush}</td>
 		<td align="center" valign="middle">${salary.agejob}</td>
 		<td align="center" valign="middle">${salary.carfuel}</td>
 		<td align="center" valign="middle">${salary.bonusfixed}</td>
