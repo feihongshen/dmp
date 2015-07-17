@@ -9,8 +9,6 @@ public class SalaryGather {
 	private String batchid;
 	/**站点id**/
 	private long branchid;
-	/**站点名**/
-	private String branchname;
 	/**姓名**/
 	private String	realname;
 	/**身份证号码**/
@@ -22,7 +20,7 @@ public class SalaryGather {
 	/**岗位工资**/
 	private BigDecimal	salaryjob;
 	/**绩效奖金**/
-	private BigDecimal	salarypush;
+	private BigDecimal	pushcash;
 	/**工龄**/
 	private BigDecimal	agejob;
 	/**固定补贴**/
@@ -117,6 +115,9 @@ public class SalaryGather {
 	private BigDecimal	foul_import;
 	/**提成**/
 	private BigDecimal	salaradd;
+	
+	/**站点名=====用于显示**/
+	private String branchname;
 	/**
 	 * @return the id
 	 */
@@ -201,17 +202,12 @@ public class SalaryGather {
 	public void setSalaryjob(BigDecimal salaryjob) {
 		this.salaryjob = salaryjob;
 	}
-	/**
-	 * @return the salarypush
-	 */
-	public BigDecimal getSalarypush() {
-		return this.salarypush;
+	
+	public BigDecimal getPushcash() {
+		return pushcash;
 	}
-	/**
-	 * @param salarypush the salarypush to set
-	 */
-	public void setSalarypush(BigDecimal salarypush) {
-		this.salarypush = salarypush;
+	public void setPushcash(BigDecimal pushcash) {
+		this.pushcash = pushcash;
 	}
 	/**
 	 * @return the agejob
