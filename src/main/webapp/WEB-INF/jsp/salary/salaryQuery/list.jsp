@@ -136,8 +136,8 @@ function onBlurOnclick(obj){
 	<div style="overflow:scroll;">
 	<table width="250%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table" >
 	<tr>
-	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
-	<td align="center" valign="middle"style="font-weight: bold;"> 站点</td>
+<!-- 	<td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall()"/> </td>
+ -->	<td align="center" valign="middle"style="font-weight: bold;"> 站点</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 姓名</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 身份证号</td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 结算单量</td>
@@ -182,8 +182,8 @@ function onBlurOnclick(obj){
 	</tr>
 	<c:forEach items="${salaryGathers}" var="salary">
 	<tr> 
-		<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
-		<td align="center" valign="middle">${salary.branchname}</td>
+<%-- 		<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
+ --%>		<td align="center" valign="middle">${salary.branchname}</td>
 		<td align="center" valign="middle">${salary.realname}</td>
 		<td align="center" valign="middle">${salary.idcard}</td>
 		<td align="center" valign="middle">${salary.accountSingle}</td>
