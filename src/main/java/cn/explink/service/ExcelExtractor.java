@@ -33,6 +33,7 @@ import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
 import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
+import cn.explink.dao.SalaryGatherDao;
 import cn.explink.dao.SalaryImportDao;
 import cn.explink.dao.SalaryImportRecordDAO;
 import cn.explink.dao.ServiceAreaDAO;
@@ -56,6 +57,7 @@ import cn.explink.domain.PenalizeType;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
 import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.SalaryGather;
 import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SalaryImportRecord;
 import cn.explink.domain.ServiceArea;
@@ -143,6 +145,8 @@ public abstract class ExcelExtractor {
 	AbnormalOrderDAO abnormalOrderDAO;
 	@Autowired
 	AbnormalService abnormalService;
+	@Autowired
+	SalaryGatherDao salaryGatherDao;
 
 
 	public String strtovalid(String str) {
@@ -1056,7 +1060,7 @@ public abstract class ExcelExtractor {
 	public void extractSalary(InputStream f, long importflag, User user) {
 		List<SalaryFixed> salaryList = new ArrayList<SalaryFixed>();
 		List<User> userList = this.userDAO.getAllUser();
-		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryExports();
+		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();
 		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
 		int successCounts = 0;
@@ -1377,13 +1381,333 @@ public abstract class ExcelExtractor {
 		abnormalImportView.setSystemtime(systemTime);
 		return abnormalImportView;
 	}
-public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes){
-	Map<String, Long> abnormalMaps=new HashMap<String, Long>();
-	for (Iterator<AbnormalType> iterator = abnormalTypes.iterator(); iterator.hasNext();) {
-		AbnormalType abnormalType = iterator.next();
-		abnormalMaps.put(abnormalType.getName(), abnormalType.getId());
+	public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes){
+		Map<String, Long> abnormalMaps=new HashMap<String, Long>();
+		for (Iterator<AbnormalType> iterator = abnormalTypes.iterator(); iterator.hasNext();) {
+			AbnormalType abnormalType = iterator.next();
+			abnormalMaps.put(abnormalType.getName(), abnormalType.getId());
+		}
+		return abnormalMaps;
 	}
-	return abnormalMaps;
-}
+
+	/*
+	 * importflag
+	 * 
+	 */
+	@Transactional
+	public void extractSalaryGather(InputStream input, long importflag, User user) {
+		List<SalaryGather> salaryList = new ArrayList<SalaryGather>();
+		List<User> userList = this.userDAO.getAllUser();
+		List<SalaryFixed> fixedList = this.salaryFixedDAO.getAllFixed();
+		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();//固定值设置描述
+		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
+		Map<String, User> userMap = this.SetMapUser(userList);
+		Map<String,SalaryFixed> fixedMap = this.setMapFixed(fixedList);
+		int successCounts = 0;
+		int failCounts = 0;
+		int totalCounts = 0;
+		SalaryImportRecord record=new SalaryImportRecord();
+		for (Object row : this.getRows(input)) {
+			totalCounts++;
+			try {
+				SalaryGather salary = this.getSalaryGatherAccordingtoConf(row, userMap, importflag,improtMap,fixedMap);
+				if(salary!=null){
+					salaryList.add(salary);
+				}
+				else {
+					failCounts++;
+				}
+			} catch (Exception e) {
+				failCounts++;
+				this.salaryErrorDAO.creSalaryError(this.getXRowCellData(row, 1), this.getXRowCellData(row, 1), "未知异常", importflag);
+				continue;
+			}
+		}
+		record.setImportFlag(importflag);
+		record.setUserid(user.getUserid());
+		record.setTotalCounts(totalCounts);
+		record.setSuccessCounts(successCounts);
+		record.setFailCounts(failCounts);
+		this.salaryImportRecordDAO.creSalaryImportRecord(record);
+	}
+
+	private Map<String, SalaryFixed> setMapFixed(List<SalaryFixed> fixedList){
+		Map<String, SalaryFixed> fixedMap = new HashMap<String, SalaryFixed>();
+		for(SalaryFixed sf : fixedList){
+			fixedMap.put(sf.getIdcard(), sf);
+		}
+		return fixedMap;
+	}
+	
+	/**
+	 * @param row
+	 * @param userMap
+	 * @param importflag
+	 * @return
+	 */
+	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap) {
+		SalaryGather salary = new SalaryGather();
+		String realname = this.getXRowCellData(row, 1);
+		String idcard = this.getXRowCellData(row, 2);
+		User user = userMap.get(realname);
+		if (user == null) {
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员不存在！", importflag);
+			return null;
+		}
+		else {
+			if(!idcard.equals(user.getIdcardno()))
+			{
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码有误！", importflag);
+				return null;
+			}
+		}
+		salary.setBranchid(user.getBranchid());
+		salary.setRealname(realname);
+		salary.setIdcard(idcard);
+		SalaryFixed sf = fixedMap.get(idcard);
+		try{
+			
+			//结算单量
+			salary.setAccountSingle(0);
+			
+			if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==1)) {//基本工资
+				salary.setSalarybasic(new BigDecimal(this.getXRowCellData(row, 3)));
+			}else{
+				salary.setSalarybasic(sf.getSalarybasic());
+			}
+			if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==1)) {//岗位工资
+				salary.setSalaryjob(new BigDecimal(this.getXRowCellData(row, 4)));
+			}else{
+				salary.setSalaryjob(sf.getSalaryjob());
+			}
+			if((null!=map.get("pushcash"))&&(map.get("pushcash")==1)) {//绩效奖金pushcash
+				salary.setPushcash(new BigDecimal(this.getXRowCellData(row, 5)));
+			}else{
+				salary.setPushcash(sf.getPushcash());
+			}
+			if((null!=map.get("jobpush"))&&(map.get("jobpush")==1)) {//岗位津贴
+				salary.setJobpush(new BigDecimal(this.getXRowCellData(row, 6)));
+			}else{
+				salary.setJobpush(sf.getJobpush());
+			}
+
+			//提成
+			salary.setSalarypush(BigDecimal.ZERO);
+			
+			
+			if((null!=map.get("agejob"))&&(map.get("agejob")==1)) {//工龄
+				salary.setAgejob(new BigDecimal(this.getXRowCellData(row, 7)));
+			}else{
+				salary.setAgejob(sf.getAgejob());
+			}
+			
+			if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==1)) {//住房补贴
+				salary.setBonusroom(new BigDecimal(this.getXRowCellData(row, 8)));
+			}else{
+				salary.setBonusroom(sf.getBonusroom());
+			}
+			if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==1)) {//全勤补贴
+				salary.setBonusallday(new BigDecimal(this.getXRowCellData(row, 9)));
+			}else{
+				salary.setBonusallday(sf.getBonusallday());
+			}
+			if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==1)) {//餐费补贴
+				salary.setBonusfood(new BigDecimal(this.getXRowCellData(row, 10)));
+			}else{
+				salary.setBonusfood(sf.getBonusfood());
+			}
+			if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==1)) {//交通补贴
+				salary.setBonustraffic(new BigDecimal(this.getXRowCellData(row, 11)));
+			}else{
+				salary.setBonustraffic(sf.getBonustraffic());
+			}
+			if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==1)) {//通讯补贴
+				salary.setBonusphone(new BigDecimal(this.getXRowCellData(row, 12)));
+			}else{
+				salary.setBonusphone(salary.getBonusphone());
+			}
+			if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==1)) {//高温寒冷补贴
+				salary.setBonusweather(new BigDecimal(this.getXRowCellData(row, 13)));
+			}else{
+				salary.setBonusweather(sf.getBonusweather());
+			}
+			
+			//扣款撤销
+			salary.setPenalizecancel(BigDecimal.ZERO);
+			
+			if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
+				salary.setPenalizecancel_import(new BigDecimal(this.getXRowCellData(row, 14)));
+			}else{
+				salary.setPenalizecancel_import(sf.getPenalizecancel_import());
+			}
+			if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==1)) {//其他补贴
+				salary.setBonusother1(new BigDecimal(this.getXRowCellData(row, 15)));
+			}else{
+				salary.setBonusother1(sf.getBonusother1());
+			}
+			if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==1)) {//其他补贴2
+				salary.setBonusother2(new BigDecimal(this.getXRowCellData(row, 16)));
+			}else{
+				salary.setBonusother2(sf.getBonusother2());
+			}
+			if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==1)) {//其他补贴3
+				salary.setBonusother3(new BigDecimal(this.getXRowCellData(row, 17)));
+			}else{
+				salary.setBonusother3(sf.getBonusother3());
+			}
+			if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==1)) {//其他补贴4
+				salary.setBonusother4(new BigDecimal(this.getXRowCellData(row, 18)));
+			}else{
+				salary.setBonusother4(sf.getBonusother4());
+			}
+			if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==1)) {//其他补贴5
+				salary.setBonusother5(new BigDecimal(this.getXRowCellData(row, 19)));
+			}else{
+				salary.setBonusother5(sf.getBonusother5());
+			}
+			if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==1)) {//其他补贴6
+				salary.setBonusother6(new BigDecimal(this.getXRowCellData(row, 20)));
+			}else{
+				salary.setBonusother6(sf.getBonusother6());
+			}
+			if((null!=map.get("overtimework"))&&(map.get("overtimework")==1)) {//加班费
+				salary.setOvertimework(new BigDecimal(this.getXRowCellData(row, 21)));
+			}else{
+				salary.setOvertimework(sf.getOvertimework());
+			}
+			if((null!=map.get("attendance"))&&(map.get("attendance")==1)) {//考勤扣款
+				salary.setAttendance(new BigDecimal(this.getXRowCellData(row, 22)));
+			}else{
+				salary.setAttendance(sf.getAttendance());
+			}
+			if((null!=map.get("security"))&&(map.get("security")==1)) {//个人社保扣款
+				salary.setSecurity(new BigDecimal(this.getXRowCellData(row, 23)));
+			}else{
+				salary.setSecurity(sf.getSecurity());
+			}
+			if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==1)) {//个人公积金扣款
+				salary.setGongjijin(new BigDecimal(this.getXRowCellData(row, 24)));
+			}else{
+				salary.setGongjijin(sf.getGongjijin());
+			}
+			
+			//违纪扣款扣罚
+			salary.setFoul(BigDecimal.ZERO);
+			
+			
+			if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
+				salary.setFoul_import(new BigDecimal(this.getXRowCellData(row, 25)));
+			}else{
+				salary.setFoul_import(sf.getFoul_import());
+			}
+			
+			//货损赔偿
+			salary.setGoods(BigDecimal.ZERO);
+			
+			if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用
+				salary.setDorm(new BigDecimal(this.getXRowCellData(row, 26)));
+			}else{
+				salary.setDorm(sf.getDorm());
+			}
+			if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==1)) {//其他扣罚
+				salary.setPenalizeother1(new BigDecimal(this.getXRowCellData(row, 27)));
+			}else{
+				salary.setPenalizeother1(sf.getPenalizeother1());
+			}
+			if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==1)) {//其他扣罚2
+				salary.setPenalizeother2(new BigDecimal(this.getXRowCellData(row, 28)));
+			}else{
+				salary.setPenalizeother2(sf.getPenalizeother2());
+			}
+			if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==1)) {//其他扣罚3
+				salary.setPenalizeother3(new BigDecimal(this.getXRowCellData(row, 29)));
+			}else{
+				salary.setPenalizeother3(sf.getPenalizeother3());
+			}
+			if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==1)) {//其他扣罚4
+				salary.setPenalizeother4(new BigDecimal(this.getXRowCellData(row, 30)));
+			}else{
+				salary.setPenalizeother4(sf.getPenalizeother4());
+			}
+			if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==1)) {//其他扣罚5
+				salary.setPenalizeother5(new BigDecimal(this.getXRowCellData(row, 31)));
+			}else{
+				salary.setPenalizeother5(sf.getPenalizeother5());
+			}
+			if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==1)) {//其他扣罚6
+				salary.setPenalizeother6(new BigDecimal(this.getXRowCellData(row, 32)));
+			}else{
+				salary.setPenalizeother6(sf.getPenalizeother6());
+			}
+			
+			//货物预付款
+			salary.setImprestgoods(BigDecimal.ZERO);
+			
+			if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==1)) {//其他预付款
+				salary.setImprestother1(new BigDecimal(this.getXRowCellData(row, 33)));
+			}else{
+				salary.setImprestother1(sf.getImprestother1());
+			}
+			if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==1)) {//其他预付款2
+				salary.setImprestother2(new BigDecimal(this.getXRowCellData(row, 34)));
+			}else{
+				salary.setImprestother2(sf.getImprestother2());
+			}
+			if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==1)) {//其他预付款3
+				salary.setImprestother3(new BigDecimal(this.getXRowCellData(row, 35)));
+			}else{
+				salary.setImprestother3(sf.getImprestother3());
+			}
+			if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==1)) {//其他预付款4
+				salary.setImprestother4(new BigDecimal(this.getXRowCellData(row, 36)));
+			}else{
+				salary.setImprestother4(sf.getImprestother5());
+			}
+			if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==1)) {//其他预付款5
+				salary.setImprestother5(new BigDecimal(this.getXRowCellData(row, 37)));
+			}else{
+				salary.setImprestother5(sf.getImprestother5());
+			}
+			if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==1)) {//其他预付款6
+				salary.setImprestother6(new BigDecimal(this.getXRowCellData(row, 38)));
+			}else{
+				salary.setImprestother6(sf.getImprestother6());
+			}
+			
+			if((null!=map.get("carrent"))&&(map.get("carrent")==1)) {//租用车辆费用
+				salary.setCarrent(new BigDecimal(this.getXRowCellData(row, 39)));
+			}else{
+				salary.setCarrent(sf.getCarrent());
+			}
+			if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==1)) {//车子维修给用
+				salary.setCarmaintain(new BigDecimal(this.getXRowCellData(row, 40)));
+			}else{
+				salary.setCarmaintain(sf.getCarmaintain());
+			}
+			if((null!=map.get("carfuel"))&&(map.get("carfuel")==1)) {//油/电费用
+				salary.setCarfuel(new BigDecimal(this.getXRowCellData(row, 41)));
+			}else{
+				salary.setCarfuel(sf.getCarfuel());
+			}
+			
+			//应发金额
+			salary.setSalaryaccrual(BigDecimal.ZERO);
+			//个税
+			salary.setTax(BigDecimal.ZERO);
+			//实发金额
+			salary.setSalary(BigDecimal.ZERO);
+			
+		}catch(Exception e){
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "数据格式有误", importflag);
+			ExcelExtractor.logger.error("人事数据导入异常",e);
+			return null;
+		}
+		return salary;
+	}
+
+
+
+
+
 
 }

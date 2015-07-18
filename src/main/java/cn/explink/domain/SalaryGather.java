@@ -14,7 +14,7 @@ public class SalaryGather {
 	/**身份证号码**/
 	private String	idcard;
 	/**结算单量**/
-	private BigDecimal	accountSingle;
+	private long accountSingle;
 	/**基本工资**/
 	private BigDecimal	salarybasic;
 	/**岗位工资**/
@@ -166,16 +166,11 @@ public class SalaryGather {
 	public void setIdcard(String idcard) {
 		this.idcard = idcard;
 	}
-	/**
-	 * @return the accountSingle
-	 */
-	public BigDecimal getAccountSingle() {
-		return this.accountSingle;
+
+	public long getAccountSingle() {
+		return accountSingle;
 	}
-	/**
-	 * @param accountSingle the accountSingle to set
-	 */
-	public void setAccountSingle(BigDecimal accountSingle) {
+	public void setAccountSingle(long accountSingle) {
 		this.accountSingle = accountSingle;
 	}
 	/**

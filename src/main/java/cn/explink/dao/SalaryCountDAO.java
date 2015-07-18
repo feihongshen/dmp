@@ -77,7 +77,7 @@ public class SalaryCountDAO {
 			String orderbyway) {
 		String sql="select * from express_ops_salaryCount_detail where 1=1 ";
 		sql +=this.creConditions(batchid, batchstate, branchids, starttime, endtime, userid, operationTime, orderbyname, orderbyway);
-		sql += "  limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new SalaryCountRowMapper());
 	}
 	public int getSalaryCountByCount(String batchid, int batchstate, String branchids, String starttime, String endtime, String userid, String operationTime, String orderbyname,
@@ -132,8 +132,13 @@ public class SalaryCountDAO {
 	 * @return
 	 */
 	public SalaryCount getSalaryCountBybatchid(String batchid) {
-		String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
-		return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
+		try{
+			String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
+			return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	/**
 	 * @param branchid
@@ -163,6 +168,10 @@ public class SalaryCountDAO {
 	public long deleteSalarCountyByids(String ids) {
 		String sql="delete from express_ops_salaryCount_detail where batchid in(?) and batchstate=? ";
 		return this.jdbcTemplate.update(sql,ids,BatchSateEnum.Weihexiao.getValue());
+	}
+	public void updatesalaryCount(SalaryCount salaryCount) {
+		String sql = "update express_ops_salaryCount_detail set remark=? where batchid=?";
+		this.jdbcTemplate.update(sql,salaryCount.getRemark(),salaryCount.getBatchid());
 	}
 
 }

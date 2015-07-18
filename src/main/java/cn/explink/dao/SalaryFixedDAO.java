@@ -33,10 +33,10 @@ public class SalaryFixedDAO {
 			salary.setAgejob(rs.getBigDecimal("agejob"));
 			salary.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
 			salary.setIdcard(StringUtil.nullConvertToEmptyString(rs.getString("idcard")));
-			salary.setAccountSingle(rs.getBigDecimal("accountSingle"));
+			salary.setAccountSingle(rs.getLong("accountSingle"));
 			salary.setSalarybasic(rs.getBigDecimal("salarybasic"));
 			salary.setSalaryjob(rs.getBigDecimal("salaryjob"));
-			salary.setSalarypush(rs.getBigDecimal("salarypush"));
+			salary.setSalarypush(rs.getBigDecimal("salarypush"));//提成
 			salary.setBonusfuel(rs.getBigDecimal("bonusfuel"));
 			salary.setBonusfixed(rs.getBigDecimal("bonusfixed"));
 			salary.setBonusphone(rs.getBigDecimal("bonusphone"));
@@ -81,7 +81,7 @@ public class SalaryFixedDAO {
 			salary.setCarfuel(rs.getBigDecimal("carfuel"));
 			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
 			salary.setFoul_import(rs.getBigDecimal("foul_import"));
-			salary.setPushcash(rs.getBigDecimal("pushcash"));
+			salary.setPushcash(rs.getBigDecimal("pushcash"));//绩效奖金
 			return salary;
 		}
 	}
@@ -101,7 +101,7 @@ public class SalaryFixedDAO {
 								ps.setLong(1, salary.getBranchid());
 								ps.setString(2, salary.getRealname());
 								ps.setString(3, salary.getIdcard());
-								ps.setBigDecimal(4, salary.getAccountSingle());
+								ps.setLong(4, salary.getAccountSingle());
 								ps.setBigDecimal(5, salary.getSalarybasic());
 								ps.setBigDecimal(6, salary.getSalaryjob());
 								ps.setBigDecimal(7, salary.getSalarypush());
@@ -205,5 +205,10 @@ public class SalaryFixedDAO {
 			return null;
 
 		}
+	}
+
+	public List<SalaryFixed> getAllFixed() {
+		String sql = "select * from express_ops_salaryFixed_detail";
+		return this.jdbcTemplate.query(sql, new SalaryFixedRowMapper());
 	}
 }

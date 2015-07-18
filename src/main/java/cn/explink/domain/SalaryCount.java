@@ -17,6 +17,23 @@ private long usercount;//配送人员人数
 private long userid;//核销人
 private String operationTime;//核销日期
 private String remark;//备注
+//用于显示字段
+private String branchname;
+
+//用于页面传值时判断使用
+private int isnow;
+public int getIsnow() {
+	return isnow;
+}
+public void setIsnow(int isnow) {
+	this.isnow = isnow;
+}
+public String getBranchname() {
+	return branchname;
+}
+public void setBranchname(String branchname) {
+	this.branchname = branchname;
+}
 /**
  * @return the batchid
  */

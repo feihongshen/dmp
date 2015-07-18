@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-
 import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
 import cn.explink.util.Page;
@@ -27,10 +26,10 @@ public class SalaryGatherDao {
 			SalaryGather salary = new SalaryGather();
 			salary.setId(rs.getLong("id"));
 			salary.setAgejob(rs.getBigDecimal("agejob"));
-			salary.setBatchid(StringUtil.nullConvertToEmptyString(rs.getString("batchid")));
+			salary.setBatchid(StringUtil.nullConvertToEmptyString(rs.getString("batchid")));//批次编号
 			salary.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
 			salary.setIdcard(StringUtil.nullConvertToEmptyString(rs.getString("idcard")));
-			salary.setAccountSingle(rs.getBigDecimal("accountSingle"));
+			salary.setAccountSingle(rs.getLong("accountSingle"));
 			salary.setSalarybasic(rs.getBigDecimal("salarybasic"));
 			salary.setSalaryjob(rs.getBigDecimal("salaryjob"));
 			salary.setPushcash(rs.getBigDecimal("pushcash"));//绩效奖金
@@ -64,9 +63,9 @@ public class SalaryGatherDao {
 			salary.setImprestother4(rs.getBigDecimal("imprestother4"));
 			salary.setImprestother5(rs.getBigDecimal("imprestother5"));
 			salary.setImprestother6(rs.getBigDecimal("imprestother6"));
-			salary.setSalaryaccrual(rs.getBigDecimal("salaryaccrual"));
-			//salary.setTax(rs.getBigDecimal("tax"));
-			//salary.setSalary(rs.getBigDecimal("salary"));
+			salary.setSalaryaccrual(rs.getBigDecimal("salaryaccrual"));//应发金额
+			salary.setTax(rs.getBigDecimal("tax"));//个税
+			salary.setSalary(rs.getBigDecimal("salary"));//实发金额
 			salary.setJobpush(rs.getBigDecimal("jobpush"));
 			salary.setBonusroom(rs.getBigDecimal("bonusroom"));
 			salary.setBonusallday(rs.getBigDecimal("bonusallday"));
@@ -77,17 +76,19 @@ public class SalaryGatherDao {
 			salary.setCarfuel(rs.getBigDecimal("carfuel"));
 			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
 			salary.setFoul_import(rs.getBigDecimal("foul_import"));
-			salary.setSalarypush(rs.getBigDecimal("salaradd"));//提成
+			salary.setSalarypush(rs.getBigDecimal("salarpush"));//提成
 			salary.setBranchid(rs.getLong("branchid"));
 			salary.setBranchname(branchDAO.getbranchname(rs.getLong("branchid"))==null?"":branchDAO.getbranchname(rs.getLong("branchid")).getBranchname());
 			return salary;
 		}
 	}
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	BranchDAO branchDAO;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());	
+
+	
 	public int cresalaryGather(final SalaryCount salaryCount ) {
 		return this.jdbcTemplate.update("INSERT INTO `express_ops_salarygather_detail` (batchid,branchid) VALUES (?,?)",
 				new PreparedStatementSetter() {

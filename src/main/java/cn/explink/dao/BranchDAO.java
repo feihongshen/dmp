@@ -535,7 +535,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
-
+	
 	public List<Branch> getBranchAllzhandian(String sitetype) {
 		try {
 			String sql = "select * from express_set_branch where sitetype in(" + sitetype + ") order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
@@ -952,9 +952,9 @@ public class BranchDAO {
 		String sql = "SELECT * from express_set_branch  WHERE sitetype=?  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
 	}
-	public List<Branch> getBranchsBycontractflag(String contractflag) {
-		String sql = "SELECT * from express_set_branch  WHERE contractflag in("+contractflag+")  and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper());
+	public List<Branch> getBranchssBycontractflag(String contractflag) {
+		String sql = "SELECT * from express_set_branch  WHERE contractflag=?  and brancheffectflag='1' ";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag);
 	}
 	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype,String contractflag){
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=?  and brancheffectflag='1' ";
