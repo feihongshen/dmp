@@ -4725,7 +4725,7 @@ public class PDAController {
 					}
 					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
 				} else if ((op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
-					if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+					if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()&&co.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()) {
 						Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
 						if ((branch == null) || (branch.getSitetype() != BranchEnum.ZhongZhuan.getValue())) {
 							throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
