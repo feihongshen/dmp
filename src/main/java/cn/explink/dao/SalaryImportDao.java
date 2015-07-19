@@ -31,6 +31,11 @@ public class SalaryImportDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
+	public List<SalaryImport> getAllSalaryImports(){
+		String sql = "select * from express_set_salary";
+		return this.jdbcTemplate.query(sql, new SalaryImportRowMapper());
+	}	
+	
 	public List<SalaryImport> getAllSalaryExports(){
 		String sql = "select * from express_set_salary where ischecked=1";
 		return jdbcTemplate.query(sql, new SalaryImportRowMapper());
