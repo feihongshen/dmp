@@ -141,6 +141,18 @@ public class PaiFeiRuleDAO {
 			return null;
 		}
 	}
+	/**
+	 * @param pfruleNO
+	 * @return
+	 */
+	public PaiFeiRule getPaiFeiRuleById(long pfruleid) {
+		String sql = "select * from express_ops_paifeirule where  id='"+pfruleid+"' limit 1;";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * @param no

@@ -101,4 +101,19 @@ public class PFcollectionDAO {
 		String sql = "delete from paifeirule_collection where id=? ";
 		this.jdbcTemplate.update(sql, id);
 	}
+
+	/**
+	 * @param pfruleid
+	 * @param value
+	 * @return
+	 */
+	public PFcollection getPFcollectionByPfruleidAndtabid(long pfruleid, int tabid) {
+		String sql = "select * from paifeirule_collection where pfruleid=? and tabid=?";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFcollectionRowMapper(), pfruleid, tabid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

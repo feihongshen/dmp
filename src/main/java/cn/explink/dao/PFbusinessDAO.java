@@ -99,4 +99,18 @@ public class PFbusinessDAO {
 		});
 	}
 
+	/**
+	 * @param pfruleid
+	 * @param value
+	 * @return
+	 */
+	public PFbusiness getPFbusinessByRTC(long pfruleid, int tabid) {
+		String sql = "select * from paifeirule_business where  pfruleid=?  and tabid=?";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFbusinessRowMapper(), pfruleid, tabid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 }

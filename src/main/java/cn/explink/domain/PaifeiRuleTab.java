@@ -16,6 +16,7 @@ public abstract class PaifeiRuleTab {
 	 List<PFinsertion> insertion;
 	 BigDecimal subsidyfee;
 	 int overarea;
+	 List<PFareaJson> area;
 	/**
 	 * @return the collection
 	 */
@@ -76,4 +77,17 @@ public abstract class PaifeiRuleTab {
 	public void setOverarea(int overarea) {
 		this.overarea = overarea;
 	}
+	/**
+	 * @return the area
+	 */
+	public  List<PFareaJson> getArea() {
+		return this.area;
+	}
+	/**
+	 * @param area the area to set
+	 */
+	public void setArea( List<PFareaJson> area) {
+		this.area = area;
+	}
+
 }

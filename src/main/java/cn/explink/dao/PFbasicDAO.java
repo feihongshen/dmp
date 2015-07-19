@@ -107,4 +107,22 @@ public class PFbasicDAO {
 		String sql = "delete from paifeirule_basic where id=? ";
 		this.jdbcTemplate.update(sql, id);
 	}
+	public PFbasic getPFbasicByPfruleid(long pfruleid) {
+		String sql = "select * from paifeirule_basic where pfruleid=? ";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public PFbasic getPFbasicByPfruleidAndtabid(long pfruleid,int tabid) {
+		String sql = "select * from paifeirule_basic where pfruleid=? and tabid=?";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid,tabid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

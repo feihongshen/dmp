@@ -155,7 +155,7 @@
 			}
 		}
 		//alert(JSON.stringify(jsontab));
-		/* $.ajax({
+		 $.ajax({
 			type : "post",
 			url : dmpurl + "/paifeirule/save",
 			data : {
@@ -170,7 +170,7 @@
 				}
 				alert(obj.error);
 			}
-		}); */
+		}); 
 	}
 	function getOverarea(tab, type) {
 		if ($("#" + tab + "_" + type + "_tr input[type='checkbox']")[0].checked == true) {
@@ -218,23 +218,29 @@
 		return "";
 	}
 	function getJsonOfArea(tab) {
-		var json = {};
+		var jsonArea={};
+			var areas=new Array();
 		if ($("#" + tab + "_area_flag")[0].checked) {
-			 var areafee=$("#areafee").val();
+			$("#" + tab + "_area_div>table").each(function(){
+			var json = {};
+			 var areafee=$(this).find("#areafee").val();
 			 var overbig=new Array();
-			 $("#" + tab + "_overbig_table tr[id!=thead]").each(function() {
+			 $(this).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
 				 overbig.push($(this).serializeObject());
 				});
 			 var overweight=new Array();
-			 $("#" + tab + "_overweight_table tr[id!=thead]").each(function() {
+			 $(this).find("[id*=" + tab + "_overweight] tr[id!=thead]").each(function() {
 				 overweight.push($(this).serializeObject());
 				});
 			 json.areafee=areafee;
 			 json.overbig=overbig;
 			 json.overweight=overweight;
 			
+			areas.push(json);
+		});
+			jsonArea=areas;
 		}
-		return json;
+		return jsonArea;
 	}
 	function showflag(flag, val) {
 		$("#" + flag + "_yes").attr('style', 'display:none');
@@ -242,10 +248,27 @@
 		$("#" + flag + "_" + val).removeAttr('style');
 	}
 	function addArea(tab,areaname,areaid)
-	{
+	{	if($("tr [id="+tab+"_"+areaid+"]")[0].style.background==undefined||$("tr [id="+tab+"_"+areaid+"]")[0].style.background==''){
+		$("tr [id="+tab+"_"+areaid+"]")[0].style.background='yellow';
 		var $area_table=$("#area_table").clone();
-	//	area_table.removeAttr('style');
+		$area_table[0].id=tab+"_area_table";
+		$area_table.find("#areaid").val(areaid);
+		$area_table.find("#areaname").text(areaname);
+		var overbig="overbig"+areaid;
+		var overweight="overweight"+areaid;
+		$area_table.find("#overbig_table")[0].id=tab+"_"+overbig+"_table";
+		$area_table.find("#overweight_table")[0].id=tab+"_"+overweight+"_table";
+		
+		$area_table.find("#overbig_checbox").attr('onclick','AllTR("'+tab+'","'+overbig+'")');
+		$area_table.find("#overweight_checbox").attr('onclick','AllTR("'+tab+'","'+overweight+'")');
+		
+		$area_table.find("#overbig_remove").attr('onclick','removeTR("'+tab+'","'+overbig+'")');
+		$area_table.find("#overweight__remove").attr('onclick','removeTR("'+tab+'","'+overweight+'")');
+		
+		$area_table.find("#overweight_add").attr('onclick','addTROfOverArea("'+tab+'","'+overweight+'")');
+		$area_table.find("#overbig_add").attr('onclick','addTROfOverArea("'+tab+'","'+overbig+'")');
 		$("#"+tab+"_area_div").append($area_table);
+	}
 	}
 </script>
 </head>
@@ -403,8 +426,8 @@
 						<td id="s_remark" colspan="5"><textarea rows="3" style="width: 100%; resize: none;">${rule.remark }</textarea></td>
 					</tr>
 				</table>
-				<div id="tt" class="easyui-tabs">
-					<div title=" 配送费规则">
+				<div id="tt" class="easyui-tabs" style="height:450px; overflow: scroll;">
+					<div title=" 配送费规则" >
 						<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
 							cellpadding="0">
 							<tr id="ps_basic_tr">
@@ -466,7 +489,7 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="area_1" onclick="addArea('ps','广东','area_1')">
+											<tr id="ps_111" onclick="addArea('ps','广东','111')" >
 											<td>广东</td>
 											<td>广州</td>
 											<td>是</td>
@@ -474,7 +497,7 @@
 											<td>否</td>
 											<td>广东省是个好地方</td>
 											</tr>
-											<tr id="area_2" onclick="addArea('ps','北京','area_2')">
+											<tr id="ps_222" onclick="addArea('ps','北京','222')">
 											<td>朝阳</td>
 											<td>北京</td>
 											<td>否</td>
@@ -565,22 +588,41 @@
 												type="button" onclick="removeTR('th','collection')" value="移除" />
 										</div></td>
 								</tr>
-								<tr>
-									<td><input type="checkbox" />区域属性补助费</td>
+								<tr id="th_area_tr">
+									<td><input type="checkbox" id="th_area_flag"  />区域属性补助费</td>
 									<td>
 										<div>
-											<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
-												id="gd_table">
-												<tr>
-													<td style="width: 10%" align="center"><input type="checkbox" /></td>
-													<td style="width: 20%" align="center">区域</td>
-													<td style="width: 15%" align="center">启用区域补助</td>
-													<td style="width: 15%" align="center">启用超大补助</td>
-													<td style="width: 15%" align="center">启用超重补助</td>
-													<td style="width: 25%" align="center">备注</td>
-												</tr>
-											</table>
-										</div> <input type="button" value="添加" /> <input type="button" value="移除" />
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
+											id="gd_table">
+											<tr>
+												<td style="width: 10%" align="center">城市</td>
+												<td style="width: 20%" align="center">区/县</td>
+												<td style="width: 15%" align="center">启用区域补助</td>
+												<td style="width: 15%" align="center">启用超大补助</td>
+												<td style="width: 15%" align="center">启用超重补助</td>
+												<td style="width: 25%" align="center">备注</td>
+											</tr>
+											<tr id="th_111" onclick="addArea('th','广东','111')" >
+											<td>广东</td>
+											<td>广州</td>
+											<td>是</td>
+											<td>是</td>
+											<td>否</td>
+											<td>广东省是个好地方</td>
+											</tr>
+											<tr id="th_222" onclick="addArea('th','北京','222')">
+											<td>朝阳</td>
+											<td>北京</td>
+											<td>否</td>
+											<td>是</td>
+											<td>否</td>
+											<td>我爱北京天安门</td>
+											</tr>
+										</table>
+										<div id="th_area_div">
+										
+											</div>
+										</div> 
 									</td>
 								</tr>
 								<tr id="th_overarea_tr">
@@ -660,22 +702,41 @@
 												type="button" onclick="removeTR('zz','collection')" value="移除" />
 										</div></td>
 								</tr>
-								<tr>
-									<td><input type="checkbox" />区域属性补助费</td>
+								<tr id="zz_area_tr">
+									<td><input type="checkbox" id="zz_area_flag"  />区域属性补助费</td>
 									<td>
 										<div>
 											<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
-												id="gd_table">
-												<tr>
-													<td style="width: 10%" align="center"><input type="checkbox" /></td>
-													<td style="width: 20%" align="center">区域</td>
-													<td style="width: 15%" align="center">启用区域补助</td>
-													<td style="width: 15%" align="center">启用超大补助</td>
-													<td style="width: 15%" align="center">启用超重补助</td>
-													<td style="width: 25%" align="center">备注</td>
-												</tr>
-											</table>
-										</div> <input type="button" value="添加" /> <input type="button" value="移除" />
+											id="gd_table">
+											<tr>
+												<td style="width: 10%" align="center">城市</td>
+												<td style="width: 20%" align="center">区/县</td>
+												<td style="width: 15%" align="center">启用区域补助</td>
+												<td style="width: 15%" align="center">启用超大补助</td>
+												<td style="width: 15%" align="center">启用超重补助</td>
+												<td style="width: 25%" align="center">备注</td>
+											</tr>
+											<tr id="zz_111" onclick="addArea('zz','广东','111')" >
+											<td>广东</td>
+											<td>广州</td>
+											<td>是</td>
+											<td>是</td>
+											<td>否</td>
+											<td>广东省是个好地方</td>
+											</tr>
+											<tr id="zz_222" onclick="addArea('zz','北京','222')">
+											<td>朝阳</td>
+											<td>北京</td>
+											<td>否</td>
+											<td>是</td>
+											<td>否</td>
+											<td>我爱北京天安门</td>
+											</tr>
+										</table>
+										<div id="zz_area_div">
+										
+											</div>
+										</div> 
 									</td>
 								</tr>
 								<tr id="zz_overarea_tr">
@@ -763,7 +824,7 @@
 											id="area_table">
 											<tr>
 												<td align="center" >区域名称：</td>
-												<td align="left">广东<input type="hidden" id="areaid" value="1"/> </td>
+												<td align="left"><span id="areaname"></span><input type="hidden" id="areaid" value="1"/> </td>
 											</tr>
 											<tr>
 												<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
@@ -772,31 +833,31 @@
 											<tr>
 												<td align="left"  valign="bottom"><input type="checkbox" />超大补助</td>
 												<td align="left" ><table align="left" width="100%" border="0"  cellspacing="1" cellpadding="0" class="table_2"
-													id="ps_overbig_table">
+													id="overbig_table">
 														<tr id="thead">
-															<td style="width: 10%" align="center"><input type="checkbox" onclick="AllTR('ps','overbig')"/></td>
+															<td style="width: 10%" align="center"><input type="checkbox" id="overbig_checbox" onclick="AllTR('ps','overbig')"/></td>
 															<td style="width: 20%" align="center">开始体积数(cm3)</td>
 															<td style="width: 15%" align="center">截至体积数(cm3)</td>
 															<td style="width: 15%" align="center">补助金额(元)</td>
 															<td style="width: 25%" align="center">备注</td>
 														</tr>
 													</table> 
-													<input type="button" value="添加"onclick="addTROfOverArea('ps','overbig')" /> <input onclick="removeTR('ps','overbig')"  type="button" value="移除" />
+													<input type="button" id="overbig_add" value="添加"onclick="addTROfOverArea('ps','overbig')" /> <input id="overbig_remove" onclick="removeTR('ps','overbig')"  type="button" value="移除" />
 												</td>
 											</tr>
 											<tr>
 												<td align="left" ><input type="checkbox" />超重补助</td>
 												<td align="left" ><table align="left"  width="100%" border="0"  cellspacing="1" cellpadding="0" class="table_2"
-													id="ps_overweight_table">
+													id="overweight_table">
 														<tr id="thead">
-															<td style="width: 10%" align="center"><input type="checkbox" onclick="AllTR('ps','overweight')"  /></td>
+															<td style="width: 10%" align="center"><input type="checkbox" id="overweight_checbox" onclick="AllTR('ps','overweight')"  /></td>
 															<td style="width: 20%" align="center">开始超重数(kg)</td>
 															<td style="width: 15%" align="center">截至超重数(kg)</td>
 															<td style="width: 15%" align="center">补助金额(元)</td>
 															<td style="width: 25%" align="center">备注</td>
 														</tr>
 													</table> 
-													<input type="button" value="添加" onclick="addTROfOverArea('ps','overweight')" /> <input onclick="removeTR('ps','overweight')" type="button" value="移除" />
+													<input type="button" id="overweight_add" value="添加" onclick="addTROfOverArea('ps','overweight')" /> <input id="overweight_add" onclick="removeTR('ps','overweight')" type="button" value="移除" />
 												</td>
 											</tr>
 											</table>
