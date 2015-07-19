@@ -51,6 +51,7 @@ public class CustomerDAO {
 			customer.setSmschannel(rs.getInt("smschannel"));
 			customer.setIsqufendaxiaoxie(rs.getLong("isqufendaxiaoxie"));
 			customer.setNeedchecked(rs.getInt("needchecked"));
+			customer.setPfruleid(rs.getLong("pfruleid"));
 			customer.setWavFilePath(rs.getString("wav_filepath"));
 			return customer;
 		}
@@ -123,7 +124,7 @@ public class CustomerDAO {
 	}
 
 	public void creCustomer(final Customer customer) {
-		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath,pfruleid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -145,6 +146,7 @@ public class CustomerDAO {
 				ps.setInt(14, customer.getSmschannel());
 				ps.setLong(15, customer.getIsqufendaxiaoxie());
 				ps.setString(16, customer.getWavFilePath());
+				ps.setLong(17, customer.getPfruleid());
 				return ps;
 			}
 		}, keyHolder);
@@ -169,7 +171,7 @@ public class CustomerDAO {
 	public void save(final Customer customer) {
 
 		this.jdbcTemplate
-				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=?"
+				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=? ,pfruleid=?"
 						+ " where customerid = ? ", new PreparedStatementSetter() {
 
 					@Override
@@ -191,7 +193,8 @@ public class CustomerDAO {
 						ps.setLong(14, customer.getIsqufendaxiaoxie());
 						ps.setInt(15, customer.getNeedchecked());
 						ps.setString(16, customer.getWavFilePath());
-						ps.setLong(17, customer.getCustomerid());
+						ps.setLong(17, customer.getPfruleid());
+						ps.setLong(18, customer.getCustomerid());
 					}
 				});
 

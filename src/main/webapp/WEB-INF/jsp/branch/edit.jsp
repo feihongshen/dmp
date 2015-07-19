@@ -1,4 +1,5 @@
 <%@page import="cn.explink.domain.Menu"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%@page import="cn.explink.domain.AccountArea"%>
 <%@ page import="cn.explink.domain.Branch,cn.explink.domain.Function,cn.explink.util.ServiceUtil,cn.explink.domain.SystemInstall,cn.explink.b2c.maisike.branchsyn_json.Stores"%>
 <%@page import="cn.explink.enumutil.BranchEnum"%>
@@ -16,6 +17,7 @@
 	SystemInstall bindmsksid=(SystemInstall)request.getAttribute("bindmsksid");
 	List<Stores> mskbranchlist = (List<Stores>) request.getAttribute("mskbranchlist");
 	List<Branch> accountbranchList = (List<Branch>) request.getAttribute("accountbranchList");//结算对象
+	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 %>
 
 <script type="text/javascript" >
@@ -210,6 +212,14 @@
 	             <option value ="<%=BranchTypeEnum.JiaMengErJi.getValue()%>" <%=branch.getContractflag().equals("4")?"selected":"" %>><%=BranchTypeEnum.JiaMengErJi.getText()%></option>
 	             <option value ="<%=BranchTypeEnum.JiaMengSanJi.getValue()%>" <%=branch.getContractflag().equals("5")?"selected":"" %>><%=BranchTypeEnum.JiaMengSanJi.getText()%></option>
 	           </select></li>
+	           	<li><span>派费规则：</span>
+				<select id ="pfruleid" name ="pfruleid" >
+				<option value="0">请选择</option>
+				<%for(PaiFeiRule pf:pfrulelist){ %>
+				<option value="<%=pf.getId()%>" <%if(branch.getPfruleid()==pf.getId()){%>selected="selected"<%} %>><%=pf.getName() %></option>
+					<%} %>
+		           </select>
+		        </li>
 	           <%if(bindmsksid.getValue().equals("1")){ %>
 	        	 <li><span>绑定迈思可站点：</span>
 	        	 <select name="bindmsksid" id="bindmsksid">

@@ -24,11 +24,13 @@ import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MenuDAO;
+import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.BranchService;
 import cn.explink.service.ExplinkUserDetail;
@@ -64,6 +66,8 @@ public class BranchController {
 	ScheduledTaskService scheduledTaskService;
 	@Autowired
 	SystemInstallService systemInstallService;
+	@Autowired
+	PaiFeiRuleDAO pfFeiRuleDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -97,6 +101,7 @@ public class BranchController {
 
 		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
 		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()));
 
 		// 站点结算对象设置
 		String accountBranch = "";
@@ -317,6 +322,7 @@ public class BranchController {
 		model.addAttribute("zhongzhuanList", this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()));
 		model.addAttribute("tuihuoList", this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()));
 		model.addAttribute("caiwuList", this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()));
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()));
 
 		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
 		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());

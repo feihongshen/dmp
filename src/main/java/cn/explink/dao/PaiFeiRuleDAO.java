@@ -162,4 +162,16 @@ public class PaiFeiRuleDAO {
 		String sql="delete from express_ops_paifeirule where  pfruleNO='"+pfruleNO+"'";
 		return this.jdbcTemplate.update(sql);
 	}
+
+	/**
+	 * @return
+	 */
+	public List<PaiFeiRule> getPaiFeiRuleByType(int typeid) {
+		String sql = "select * from express_ops_paifeirule where  type=? ";
+		try {
+			return this.jdbcTemplate.query(sql, new PaiFeiRuleRowMapper(), typeid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

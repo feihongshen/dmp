@@ -514,6 +514,7 @@ function init_branch() {
 	$("#remandtype").parent().hide();
 	$("#branchmatter").parent().hide();
 	$("#contractflag").parent().hide();
+	$("#pfruleid").parent().hide();
 	$("#bankcard").parent().hide();
 	$("#zhongzhuanid").parent().hide();
 	$("#tuihuoid").parent().hide();
@@ -548,6 +549,7 @@ function zhandianObj() {
 	$("#branchmobile").parent().show();
 	$("#branchemail").parent().show();
 	$("#contractflag").parent().show();
+	$("#pfruleid").parent().show();
 	$("#bankcard").parent().show();
 	$("#zhongzhuanid").parent().show();
 	$("#tuihuoid").parent().show();
@@ -803,6 +805,7 @@ function submitBranchLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'remandtype', $("#remandtype", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchmatter', $("#branchmatter", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'contractflag', $("#contractflag", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'pfruleid', $("#pfruleid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'bankcard', $("#bankcard", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'zhongzhuanid', $("#zhongzhuanid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'tuihuoid', $("#tuihuoid", parent.document).val());

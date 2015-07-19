@@ -7417,7 +7417,179 @@ CREATE TABLE `cs_complaint_accept` (
 		    ALTER table `express_ops_zhifu_apply` modify column `feewaytyperemark` varchar(1500) ;
     	</sql>
     </changeSet>
-
+	<changeSet id="wangyonghe-2015-07-19-01" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `express_ops_paifeirule`;
+	CREATE TABLE `express_ops_paifeirule` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `pfruleNO` varchar(50) DEFAULT '0' COMMENT '派费结算规则编号',
+	  `name` varchar(200) DEFAULT '0' COMMENT '派费规则名称',
+	  `type` int(20) DEFAULT '0' COMMENT '派费规则类型',
+	  `state` int(20) DEFAULT '0' COMMENT '派费规则状态',
+	  `jushouPFfee` decimal(18,2) DEFAULT NULL COMMENT '拒收派费金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+		`creuserid` bigint(50) NOT NULL DEFAULT '0' COMMENT '创建人',
+	  PRIMARY KEY (`id`),
+	  KEY `pfruleid_idx` (`pfruleNO`),
+	  KEY `name_idx` (`name`),
+	  KEY `type_idx` (`type`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-02" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_basic`;
+	CREATE TABLE `paifeirule_basic` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `customerid` bigint(50) DEFAULT '0' COMMENT '供货商id',
+	  `basicPFfee` decimal(18,2) DEFAULT NULL COMMENT '基本派费金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `customerid_idx` (`customerid`),
+	  KEY `pfruleid_idx` (`pfruleid`),
+	  KEY `typeid_idx` (`typeid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-03" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_collection`;
+	CREATE TABLE `paifeirule_collection` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `customerid` bigint(50) DEFAULT '0' COMMENT '供货商id',
+	  `collectionPFfee` decimal(18,2) DEFAULT NULL COMMENT '代收补助金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `customerid_idx` (`customerid`),
+	  KEY `pfruleid_idx` (`pfruleid`),
+	  KEY `typeid_idx` (`typeid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-04" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_business`;
+	CREATE TABLE `paifeirule_business` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `subsidyfee` decimal(18,2) DEFAULT NULL COMMENT '业务补助金额',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `pfruleid_idx` (`pfruleid`),
+	  KEY `typeid_idx` (`typeid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-05" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_insertion`;
+	CREATE TABLE `paifeirule_insertion` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `mincount` bigint(50) DEFAULT '0' COMMENT '拖件数下限',
+	  `maxcount` bigint(50) DEFAULT '0' COMMENT '拖件数上限',
+	  `insertionfee` decimal(18,2) DEFAULT NULL COMMENT '补助金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `pfruleid_idx` (`pfruleid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-06" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_overarea`;
+	CREATE TABLE `paifeirule_overarea` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `state` int(10) DEFAULT '0' COMMENT '是否申请超区补助',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `pfruleid_idx` (`pfruleid`),
+	  KEY `typeid_idx` (`typeid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-07" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_area`;
+	CREATE TABLE `paifeirule_area` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `areaid` bigint(50) DEFAULT '0' COMMENT '区域id',
+	  `areaname` varchar(500) DEFAULT '' COMMENT '区域名称',
+	  `areafee` decimal(18,2) DEFAULT NULL COMMENT '区域补助金额',
+	  `overbigflag` int(10) DEFAULT '0' COMMENT '是否申请超大标识',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `typeid` int(10) DEFAULT '0' COMMENT '规则类型',
+	  `pfruleid` bigint(50) DEFAULT '0' COMMENT '派费规则id',
+	  `tabid`  int(50) DEFAULT '0' COMMENT '区分配送、提货、中转',
+	  PRIMARY KEY (`id`),
+	  KEY `pfruleid_idx` (`pfruleid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-08" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_overbig`;
+	CREATE TABLE `paifeirule_overbig` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `mincount` bigint(50) DEFAULT '0' COMMENT '开始体积数(cm3)',
+	  `maxcount` bigint(50) DEFAULT '0' COMMENT '截至体积数(cm3)',
+	  `subsidyfee` decimal(18,2) DEFAULT NULL COMMENT '补助金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `areaid` int(10) DEFAULT '0' COMMENT '区域id',
+	  PRIMARY KEY (`id`),
+	  KEY `areaid_idx` (`areaid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	
+	<changeSet id="wangyonghe-2015-07-19-09" author="wangyonghe">
+	<sql>
+	DROP TABLE IF EXISTS `paifeirule_overweight`;
+	CREATE TABLE `paifeirule_overweight` (
+	  `id` bigint(50) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `mincount` bigint(50) DEFAULT '0' COMMENT '开始超重数(kg)',
+	  `maxcount` bigint(50) DEFAULT '0' COMMENT '截至超重数(kg)	',
+	  `subsidyfee` decimal(18,2) DEFAULT NULL COMMENT '补助金额',
+	  `remark` varchar(500) DEFAULT '' COMMENT '备注',
+	  `areaid` int(10) DEFAULT '0' COMMENT '区域id',
+	  PRIMARY KEY (`id`),
+	  KEY `areaid_idx` (`areaid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2015-07-19-10" author="wangyonghe">
+	<sql>
+	ALTER TABLE `express_set_branch`
+	ADD COLUMN `pfruleid`  bigint(20) NULL COMMENT '派费规则id' AFTER `branch_bail`;
+	
+	ALTER TABLE `express_set_customer_info`
+	ADD COLUMN `pfruleid`  bigint(20) NULL COMMENT '派费规则id' AFTER `wav_filepath`;
+	
+	ALTER TABLE `express_set_user`
+	ADD COLUMN `pfruleid`  bigint(20) NULL COMMENT '派费规则id' AFTER `showmobileflag`;
+	
+	</sql>
+	</changeSet>
 </databaseChangeLog>
 
 

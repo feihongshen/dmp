@@ -1,5 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-
+<%@page import="cn.explink.domain.PaiFeiRule"%>
+<%
+List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+%>
 
 
 <div id="box_bg"></div>
@@ -24,6 +27,14 @@
 							<option value="2">按配送结果结算</option>
 						</select>*
 					</li>
+					<li><span>派费规则：</span>
+					<select id ="pfruleid" name ="pfruleid" >
+					<option value="0">请选择</option>
+					<%for(PaiFeiRule pf:pfrulelist){ %>
+					<option value="<%=pf.getId()%>"><%=pf.getName() %></option>
+						<%} %>
+			           </select>
+			        </li>
 					<li><span>一票多件用运单号：</span>
 						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
 							<option value="0">否</option>

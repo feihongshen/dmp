@@ -1,8 +1,10 @@
 <%@page import="cn.explink.domain.Customer"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 Customer customer = (Customer)request.getAttribute("customer");
-%>
+List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+	%>
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
@@ -25,6 +27,14 @@ Customer customer = (Customer)request.getAttribute("customer");
 							<option value="2" <%if(customer.getPaytype()==2){ %>selected<%} %>>按配送结果结算</option>
 						</select>*
 					</li>
+						<li><span>派费规则：</span>
+					<select id ="pfruleid" name ="pfruleid" >
+					<option value="0">请选择</option>
+					<%for(PaiFeiRule pf:pfrulelist){ %>
+					<option value="<%=pf.getId()%>" <%if(customer.getPfruleid()==pf.getId()){%>selected="selected"<%} %>><%=pf.getName() %></option>
+						<%} %>
+			           </select>
+			        </li>
 					<li><span>一票多件用运单号：</span>
 						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
 							<option value="0" <%if(customer.getIsypdjusetranscwb()==0){ %>selected<%} %>>否</option>

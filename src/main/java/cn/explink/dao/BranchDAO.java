@@ -100,6 +100,7 @@ public class BranchDAO {
 			branch.setBranchstreet(rs.getString("branchstreet"));
 			branch.setBacktime(rs.getLong("backtime"));
 			branch.setBranchBail(rs.getBigDecimal("branch_bail"));
+			branch.setPfruleid(rs.getLong("pfruleid"));
 			return branch;
 		}
 	}
@@ -232,7 +233,7 @@ public class BranchDAO {
 						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,branchwavfile=?,"
 						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
-						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,backtime=?,branch_bail=? "
+						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,backtime=?,branch_bail=?,pfruleid=? "
 						+ " where branchid=?", new PreparedStatementSetter() {
 
 					@Override
@@ -285,7 +286,8 @@ public class BranchDAO {
 
 						ps.setLong(44, branch.getBacktime());
 						ps.setBigDecimal(45, branch.getBranchBail());
-						ps.setLong(46, branch.getBranchid());
+						ps.setLong(46, branch.getPfruleid());
+						ps.setLong(47, branch.getBranchid());
 
 					}
 				});
@@ -301,7 +303,7 @@ public class BranchDAO {
 				+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 				+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 				+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
-				+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? "
+				+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?"
 				+ " where branchid=?", new PreparedStatementSetter() {
 
 			@Override
@@ -360,7 +362,8 @@ public class BranchDAO {
 				ps.setString(48, branch.getBranchstreet());
 				ps.setLong(49, branch.getBacktime());
 				ps.setBigDecimal(50, branch.getBranchBail());
-				ps.setLong(51, branch.getBranchid());
+				ps.setLong(51, branch.getPfruleid());
+				ps.setLong(52, branch.getBranchid());
 			}
 		});
 
@@ -407,8 +410,8 @@ public class BranchDAO {
 						+ "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag,"
 						+ "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag,"
 						+ "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid,"
-						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -460,6 +463,7 @@ public class BranchDAO {
 				ps.setString(49, branch.getBranchstreet());
 				ps.setLong(50, branch.getBacktime());
 				ps.setBigDecimal(51,branch.getBranchBail());
+				ps.setLong(52,branch.getPfruleid());
 				return ps;
 			}
 		}, key);
@@ -535,7 +539,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
-	
+
 	public List<Branch> getBranchAllzhandian(String sitetype) {
 		try {
 			String sql = "select * from express_set_branch where sitetype in(" + sitetype + ") order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
@@ -952,7 +956,7 @@ public class BranchDAO {
 		String sql = "SELECT * from express_set_branch  WHERE sitetype=?  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
 	}
-	
+
 	public List<Branch> getBranchsBycontractflag(String contractflag) {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag in("+contractflag+")  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());

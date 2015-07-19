@@ -128,6 +128,7 @@ public class BranchService {
 		// 结算业务设置
 		branch.setAccounttype(Integer.parseInt(request.getParameter("accounttype") == null ? "0" : request.getParameter("accounttype")));
 		branch.setAccountexcesstype(Integer.parseInt(request.getParameter("accountexcesstype") == null ? "0" : request.getParameter("accountexcesstype")));
+		branch.setPfruleid(Long.parseLong(request.getParameter("pfruleid") == null ? "0" : request.getParameter("pfruleid")));
 		if ((request.getParameter("accountexcessfee") == null) || request.getParameter("accountexcessfee").toString().equals("")) {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat("0")));
 		} else {

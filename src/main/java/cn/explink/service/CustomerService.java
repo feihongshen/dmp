@@ -15,7 +15,6 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.SystemInstall;
-import cn.explink.domain.User;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -37,9 +36,9 @@ public class CustomerService {
 		customer.setCustomerid(customerid);
 		return customer;
 	}
-	
 
-	
+
+
 
 	public Customer loadFormForCustomer(HttpServletRequest request, MultipartFile file) {
 		Customer customer = new Customer();
@@ -58,13 +57,14 @@ public class CustomerService {
 		customer.setNeedchecked(Integer.parseInt(request.getParameter("needchecked")));
 		customer.setSmschannel(Integer.parseInt(request.getParameter("smschannel")));
 		customer.setIsqufendaxiaoxie(Long.parseLong(request.getParameter("isqufendaxiaoxie")));
+		customer.setPfruleid(Long.parseLong(request.getParameter("pfruleid")));
 		customer.setWavFilePath(this.saveFile(request, file));
 
 		return customer;
 	}
 
 	private String saveFile(HttpServletRequest request, MultipartFile file) {
-		if (file != null && !file.isEmpty()) {
+		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = file.getOriginalFilename();
 			ServiceUtil.uploadWavFile(file, filePath, name);
@@ -76,10 +76,10 @@ public class CustomerService {
 
 	public void initCustomerList() {
 		try {
-			SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
-			SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
+			SystemInstall omsPathUrl = this.systemInstallDAO.getSystemInstallByName("omsPathUrl");
+			SystemInstall omsUrl = this.systemInstallDAO.getSystemInstallByName("omsUrl");
 			String url1 = "";
-			if (omsPathUrl != null && omsUrl != null) {
+			if ((omsPathUrl != null) && (omsUrl != null)) {
 //				url1 = omsPathUrl.getValue() + omsUrl.getValue();
 				url1 = omsUrl.getValue();
 			} else {
@@ -89,17 +89,17 @@ public class CustomerService {
 
 			String success = JSONReslutUtil.getResultMessage(url + "/handfeedback/init_customerlist", "flag=1", "POST").toString();
 
-			logger.info("供货商设置修改同步oms成功，success={},url={}", success, url + "/handfeedback/init_customerlist");
+			this.logger.info("供货商设置修改同步oms成功，success={},url={}", success, url + "/handfeedback/init_customerlist");
 
-			courierService.customerUpdate();
+			this.courierService.customerUpdate();
 		} catch (Exception e) {
-			logger.error("dmp供货商修改调用oms重置异常", e);
+			this.logger.error("dmp供货商修改调用oms重置异常", e);
 		}
 
 	}
-	
+
 	public List<Customer> getPageCash() {
-		
+
 		return this.customerdao.getAllCustomers();
 	}
 
