@@ -181,8 +181,10 @@ function saveform(){
 	$("#saveform").submit();
 	$('#save').dialog('close');
 }
-
-
+function submitform(){
+	alert("弹出来");
+	$("#importForm").submit();
+}
 </script>
 </head>
 
@@ -343,8 +345,8 @@ function saveform(){
 <!-- 查看/修改层显示 -->
 <%-- <c:if test="${edit==1 }"> --%>
 	<div  id="save" hidden="hidden" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true" style="width:800px;height:220px;">
-	<form action="${ctx}/salaryCount/save" method="post" id="saveform">
-		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
+	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
+		<form action="${ctx}/salaryCount/save" method="post" id="saveform">
         	<tr>
 	         	<td colspan="5"  align="left" valign="bottom">
 		         	<input type="button" class="input_button2" value="返回" onclick="$('#save').dialog('close');"/>
@@ -356,17 +358,20 @@ function saveform(){
 	         		<input type="button"  style="width:110px;" class="input_button2" id="imp"  onclick="showUp()" value="人事数据导入"/>
 	         	</td>
          	</tr>
+     	</form>    	
+		<form id="importForm" name="importForm"  action="${pageContext.request.contextPath}/salaryCount/importData" method="post" enctype="multipart/form-data" >
          	<tr>
 		    	<td colspan="6">
 					<div id="fileup"  style="display: none;">
-					<table>
-						<form id="penalizeOut_cre_Form" name="penalizeOut_import_Form"  action="${pageContext.request.contextPath}/salaryCount/importData" method="post" enctype="multipart/form-data" >
+						<table>
 							<tr>
 								<td>
 									<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
+									<input type="hidden" name="hiddenbatchid" value="${salary.batchid}" />
+									<input type="hidden" name="hiddenbranchid" value="${salary.branchid}"/>
 								</td>
 								<td>
-									<input type="submit" class="input_button2" value="确认" disabled="disabled" id="subfile"/>
+									<input type="button" class="input_button2" value="确认" disabled="disabled" id="subfile" onclick="submitform();"/>
 								</td>
 								<c:if test="${importflag>0 }" >	
 								 	<td>
@@ -384,17 +389,17 @@ function saveform(){
 									</td>
 								</c:if>	
 							</tr>
-						</form>
 						</table>
 					</div>
 				</td>					
 			</tr>
+		</form>
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 10%;">
          			批次编号：
          		</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         			<input id="batchid" name="batchid" type="text" style="width: 100%;" <!-- readonly="readonly" --> <!-- disabled="disabled" --> value="${salary.batchid}"/> 
+         			<input id="batchid" name="batchid" type="text" style="width: 100%;"  value="${salary.batchid}"/> <!-- readonly="readonly" --> <!-- disabled="disabled" -->
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;">
          			批次状态：
@@ -443,7 +448,7 @@ function saveform(){
          	<tr>
          		<div class="right_title">
 				<div style="overflow: auto;">
-				<table width="700%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+			<table width="700%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				<tr>
 					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="all" onclick="checkit()"/> </td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 50px;"> 姓名</td>
@@ -546,7 +551,7 @@ function saveform(){
 					</tr>
 				</c:forEach> --%>
 				</table>
-					<input type="button" onclick="allchecked()" value="移除"/>
+					<input type="button" onclick="" value="移除"/>
 				</div>
 				</div>
          	</tr>

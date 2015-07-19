@@ -112,7 +112,7 @@ function checkall()
 	    <td  align="right">身份证号：</td>
 	    <td  align="left"><input type="text" name="idcard" value="${idcard}"/></td>
 	    </tr>
-	    </form>
+	 </form>
 		<tr>
 		<td colspan="4" height="25px">
 		<div id="fileup"  ${importflag>0 ? '' : 'style="display : none;"' }>

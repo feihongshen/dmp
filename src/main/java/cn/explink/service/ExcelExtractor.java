@@ -1395,7 +1395,7 @@ public abstract class ExcelExtractor {
 	 * 
 	 */
 	@Transactional
-	public void extractSalaryGather(InputStream input, long importflag, User user) {
+	public void extractSalaryGather(InputStream input, long importflag, User user,String batchid,long branchid) {
 		List<SalaryGather> salaryList = new ArrayList<SalaryGather>();
 		List<User> userList = this.userDAO.getAllUser();
 		List<SalaryFixed> fixedList = this.salaryFixedDAO.getAllFixed();
@@ -1410,7 +1410,7 @@ public abstract class ExcelExtractor {
 		for (Object row : this.getRows(input)) {
 			totalCounts++;
 			try {
-				SalaryGather salary = this.getSalaryGatherAccordingtoConf(row, userMap, importflag,improtMap,fixedMap);
+				SalaryGather salary = this.getSalaryGatherAccordingtoConf(row, userMap, importflag,improtMap,fixedMap,batchid,branchid);
 				if(salary!=null){
 					salaryList.add(salary);
 				}
@@ -1421,6 +1421,11 @@ public abstract class ExcelExtractor {
 				failCounts++;
 				this.salaryErrorDAO.creSalaryError(this.getXRowCellData(row, 1), this.getXRowCellData(row, 1), "未知异常", importflag);
 				continue;
+			}
+		}
+		if(salaryList!=null&&salaryList.size()>0&&!salaryList.isEmpty()){
+			for(SalaryGather sg : salaryList){
+				salaryGatherDao.cresalaryGather(sg);
 			}
 		}
 		record.setImportFlag(importflag);
@@ -1445,7 +1450,7 @@ public abstract class ExcelExtractor {
 	 * @param importflag
 	 * @return
 	 */
-	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap) {
+	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap,String batchid,long branchid) {
 		SalaryGather salary = new SalaryGather();
 		String realname = this.getXRowCellData(row, 1);
 		String idcard = this.getXRowCellData(row, 2);
@@ -1461,7 +1466,8 @@ public abstract class ExcelExtractor {
 				return null;
 			}
 		}
-		salary.setBranchid(user.getBranchid());
+		salary.setBatchid(batchid);//批次编号
+		salary.setBranchid(branchid);//直营站点
 		salary.setRealname(realname);
 		salary.setIdcard(idcard);
 		SalaryFixed sf = fixedMap.get(idcard);

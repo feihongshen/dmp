@@ -142,7 +142,7 @@ public class SalaryCountController {
 		}else{
 			salaryCount.setBatchid(System.currentTimeMillis()+"");
 			this.salaryCountDAO.cresalaryCount(salaryCount);
-			this.salaryGatherDao.cresalaryGather(salaryCount);
+			/*this.salaryGatherDao.cresalaryGather(salaryCount);*/
 			SalaryCount salary=this.salaryCountDAO.getSalaryCountBybatchid(salaryCount.getBatchid());
 			List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
 			List<User> userList=this.userDAO.getAllUser();
@@ -155,11 +155,6 @@ public class SalaryCountController {
 		return "salary/salaryCount/list";
 	}
 	
-	
-	@RequestMapping("/updatecredata")
-	public void updatecredata(SalaryCount salaryCount) {
-		
-	}
 	
 	
 	@RequestMapping("/seeOralter")
@@ -201,14 +196,17 @@ public class SalaryCountController {
 	}
 	
 	@RequestMapping("/importData")
-	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file) throws Exception {
+	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file,
+			 @RequestParam(value = "hiddenbatchid", required = false,defaultValue="") String batchid,
+			 @RequestParam(value = "branchid", required = false,defaultValue="0") long branchid
+			) throws Exception {
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
 		final User user=this.getSessionUser();
 		final long importflag=System.currentTimeMillis();
 		if (excelExtractor != null) {
 
-			this.processFile(excelExtractor, inputStream,importflag,user);
+			this.processFile(excelExtractor, inputStream,importflag,user,batchid,branchid);
 
 		} else {
 			return "redirect:list/1";
@@ -227,8 +225,8 @@ public class SalaryCountController {
 	}
 	
 	//人事数据导入
-	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user) {
-		excelExtractor.extractSalaryGather(inputStream,importflag,user);
+	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user,String batchid,long branchid) {
+		excelExtractor.extractSalaryGather(inputStream,importflag,user,batchid,branchid);
 
 	}
 	

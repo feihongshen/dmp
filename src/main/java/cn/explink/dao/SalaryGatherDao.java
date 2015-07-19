@@ -89,17 +89,71 @@ public class SalaryGatherDao {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());	
 
 	
-	public int cresalaryGather(final SalaryCount salaryCount ) {
-		return this.jdbcTemplate.update("INSERT INTO `express_ops_salarygather_detail` (batchid,branchid) VALUES (?,?)",
+	public int cresalaryGather(final SalaryGather salaryGather) {
+		return this.jdbcTemplate.update("INSERT INTO `express_ops_salarygather_detail` (batchid,branchid,realname,idcard,salarybasic,salaryjob,jobpush,"
+				+ "agejob,bonusroom,bonusallday,bonusfood,bonustraffic,bonusphone,bonusweather,penalizecancel,penalizecancel_import,bonusother1,bonusother2,bonusother3,"
+				+ "bonusother4,bonusother5,bonusother6,overtimework,attendance,security,gongjijin,foul,foul_import,goods,dorm,penalizeother1,penalizeother2,penalizeother3,"
+				+ "penalizeother4,penalizeother5,penalizeother6,imprestgoods,imprestother1,imprestother2,imprestother3,imprestother4,imprestother5,imprestother6,salaryaccrual,"
+				+ "carrent,carmaintain,carfuel,pushcash,salarypush,tax,salary,accountSingle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, salaryCount.getBatchid());
-						ps.setLong(2,salaryCount.getBranchid());
+						ps.setString(1, salaryGather.getBatchid());
+						ps.setLong(2,salaryGather.getBranchid());
+						ps.setString(3,salaryGather.getRealname());
+						ps.setString(4, salaryGather.getIdcard());
+						ps.setBigDecimal(5, salaryGather.getSalarybasic());
+						ps.setBigDecimal(6, salaryGather.getSalaryjob());
+						ps.setBigDecimal(7, salaryGather.getJobpush());
+						ps.setBigDecimal(8, salaryGather.getAgejob());
+						ps.setBigDecimal(9, salaryGather.getBonusroom());
+						ps.setBigDecimal(10, salaryGather.getBonusallday());
+						ps.setBigDecimal(11, salaryGather.getBonusfood());
+						ps.setBigDecimal(12, salaryGather.getBonustraffic());
+						ps.setBigDecimal(13, salaryGather.getBonusphone());
+						ps.setBigDecimal(14, salaryGather.getBonusweather());
+						ps.setBigDecimal(15, salaryGather.getPenalizecancel());
+						ps.setBigDecimal(16, salaryGather.getPenalizecancel_import());
+						ps.setBigDecimal(17, salaryGather.getBonusother1());
+						ps.setBigDecimal(18, salaryGather.getBonusother2());
+						ps.setBigDecimal(19, salaryGather.getBonusother3());
+						ps.setBigDecimal(20, salaryGather.getBonusother4());
+						ps.setBigDecimal(21, salaryGather.getBonusother5());
+						ps.setBigDecimal(22, salaryGather.getBonusother6());
+						ps.setBigDecimal(23, salaryGather.getOvertimework());
+						ps.setBigDecimal(24, salaryGather.getAttendance());
+						ps.setBigDecimal(25, salaryGather.getSecurity());
+						ps.setBigDecimal(26, salaryGather.getGongjijin());
+						ps.setBigDecimal(27, salaryGather.getFoul());
+						ps.setBigDecimal(28, salaryGather.getFoul_import());
+						ps.setBigDecimal(29, salaryGather.getGoods());
+						ps.setBigDecimal(30, salaryGather.getDorm());
+						ps.setBigDecimal(31, salaryGather.getPenalizeother1());
+						ps.setBigDecimal(32, salaryGather.getPenalizeother2());
+						ps.setBigDecimal(33, salaryGather.getPenalizeother3());
+						ps.setBigDecimal(34, salaryGather.getPenalizeother4());
+						ps.setBigDecimal(35, salaryGather.getPenalizeother5());
+						ps.setBigDecimal(36, salaryGather.getPenalizeother6());
+						ps.setBigDecimal(37, salaryGather.getImprestgoods());
+						ps.setBigDecimal(38, salaryGather.getImprestother1());
+						ps.setBigDecimal(39, salaryGather.getImprestother2());
+						ps.setBigDecimal(40, salaryGather.getImprestother3());
+						ps.setBigDecimal(41, salaryGather.getImprestother4());
+						ps.setBigDecimal(42, salaryGather.getImprestother5());
+						ps.setBigDecimal(43, salaryGather.getImprestother6());
+						ps.setBigDecimal(44, salaryGather.getSalaryaccrual());
+						ps.setBigDecimal(45, salaryGather.getCarrent());
+						ps.setBigDecimal(46, salaryGather.getCarmaintain());
+						ps.setBigDecimal(47, salaryGather.getCarfuel());
+						ps.setBigDecimal(48, salaryGather.getPushcash());
+						ps.setBigDecimal(49, salaryGather.getSalarypush());
+						ps.setBigDecimal(50, salaryGather.getTax());
+						ps.setBigDecimal(51, salaryGather.getSalary());
+						ps.setLong(52, salaryGather.getAccountSingle());
 					}
 				});
 	}
-
+	
 	public SalaryGather getSalaryByIdcard(String idcard) {
 		try {
 			String sql = "select * from express_ops_salarygather_detail where idcard=" + idcard + " limit 1;";
