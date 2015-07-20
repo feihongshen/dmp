@@ -67,6 +67,7 @@ public class UserDAO {
 			user.setIsImposedOutWarehouse(rs.getInt("isImposedOutWarehouse"));
 			user.setLastLoginIp(rs.getString("lastip"));
 			user.setLastLoginTime(rs.getString("lasttime"));
+			user.setPfruleid(rs.getLong("pfruleid"));
 			return user;
 		}
 
@@ -221,7 +222,7 @@ public class UserDAO {
 
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
-				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?)",
+				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -244,6 +245,7 @@ public class UserDAO {
 						ps.setInt(17, user.getIsImposedOutWarehouse());
 						ps.setLong(18, user.getShownameflag());
 						ps.setLong(19, user.getShowmobileflag());
+						ps.setLong(20, user.getPfruleid());
 
 					}
 
@@ -254,7 +256,7 @@ public class UserDAO {
 	public void saveUser(final User user) {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
 				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
-				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,showmobileflag=?" + " where userid=? and userDeleteFlag=1 ",
+				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,showmobileflag=?,pfruleid=?" + " where userid=? and userDeleteFlag=1 ",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -277,7 +279,8 @@ public class UserDAO {
 						ps.setInt(17, user.getIsImposedOutWarehouse());
 						ps.setLong(18, user.getShownameflag());
 						ps.setLong(19, user.getShowmobileflag());
-						ps.setLong(20, user.getUserid());
+						ps.setLong(20, user.getPfruleid());
+						ps.setLong(21, user.getUserid());
 					}
 
 				});

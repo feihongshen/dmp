@@ -20,11 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.explink.b2c.weisuda.CourierService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MenuDAO;
+import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.User;
+import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ScheduledTaskService;
@@ -60,6 +62,8 @@ public class UserController {
 	ScheduledTaskService scheduledTaskService;
 	@Autowired
 	SystemInstallService systemInstallService;
+	@Autowired
+	PaiFeiRuleDAO pfFeiRuleDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -112,6 +116,7 @@ public class UserController {
 	public String add(Model model) throws Exception {
 		model.addAttribute("branches", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("roles", this.roleDAO.getRoles());
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		return "user/add";
 	}
 
@@ -210,6 +215,7 @@ public class UserController {
 		model.addAttribute("branches", this.branchDAO.getAllBranches());
 		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		model.addAttribute("roles", this.roleDAO.getRoles());
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		return "user/edit";
 	}
 
@@ -330,6 +336,7 @@ public class UserController {
 	@RequestMapping("/addBranch")
 	public String addBranch(Model model) throws Exception {
 		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		return "user/addbranch";
 	}
 
@@ -373,6 +380,7 @@ public class UserController {
 	public String editBranch(@PathVariable("id") long userid, Model model) {
 		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
 		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
+		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		return "user/editbranch";
 	}
 

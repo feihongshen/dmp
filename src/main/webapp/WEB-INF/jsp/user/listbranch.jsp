@@ -1,5 +1,6 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Role,cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%
 Branch branch = (Branch)request.getAttribute("branch") ;
 	List<User> userList = (List<User>)request.getAttribute("userList");

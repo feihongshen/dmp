@@ -1,8 +1,10 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
+	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -38,6 +40,14 @@
 							<option value="0">否</option>
 						</select>
 					</li>
+					<li><span>派费规则：</span>
+					<select id ="pfruleid" name ="pfruleid" >
+					<option value="0">请选择</option>
+					<%for(PaiFeiRule pf:pfrulelist){ %>
+					<option value="<%=pf.getId()%>"><%=pf.getName() %></option>
+						<%} %>
+			           </select>
+			        </li>
 					<li id="pda_title" ><span>用户对货物操作权限</span>（PDA）：(机构的“组织的货物操作权限”与角色的“货物操作权限”的交集)</li>
 					<ul id="pda" class="checkedbox1"></ul>
 					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="" maxlength="50"/>*</li>

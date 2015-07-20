@@ -1,9 +1,11 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.util.ResourceBundleUtil"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	User u = (User)request.getAttribute("user"); 
 	Branch branch = (Branch)request.getAttribute("branch") ;
+	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 %>
 <%if(request.getAttribute("user")!=null){%>
 <script type="text/javascript">
@@ -26,7 +28,15 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 					<li><span>所属机构：</span><%=branch.getBranchname() %></li>
 	           		<li><span>用户角色：</span>小件员</li>
 					<li><span>姓名：</span><input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>*</li>
-					 <li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50"/>*</li>
+					<li><span>派费规则：</span>
+					<select id ="pfruleid" name ="pfruleid" >
+					<option value="0">请选择</option>
+					<%for(PaiFeiRule pf:pfrulelist){ %>
+					<option value="<%=pf.getId()%>" <%if(u.getPfruleid()==pf.getId()){%>selected="selected"<%} %>><%=pf.getName() %></option>
+						<%} %>
+			           </select>
+			        </li>
+					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50"/>*</li>
 					 <li><span>登录密码：</span><input type="text" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认密码：</span><input type="text" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			        <li><span>工作状态：</span>

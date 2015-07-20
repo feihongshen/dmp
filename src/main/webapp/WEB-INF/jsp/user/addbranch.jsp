@@ -1,7 +1,9 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="cn.explink.domain.PaiFeiRule"%>
 <%
 	Branch branch = (Branch)request.getAttribute("branch") ;
+List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -15,6 +17,14 @@
 				<ul>
 	           		<li><span>所属机构：</span><%=branch.getBranchname() %></li>
 	           		<li><span>用户角色：</span>小件员</li>
+	           		<li><span>派费规则：</span>
+					<select id ="pfruleid" name ="pfruleid" >
+					<option value="0">请选择</option>
+					<%for(PaiFeiRule pf:pfrulelist){ %>
+					<option value="<%=pf.getId()%>"><%=pf.getName() %></option>
+						<%} %>
+			           </select>
+			        </li>
 	           		<li><span>姓名：</span><input type="text" id="realname" name="realname" value="" maxlength="50"/>*</li>
 					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="" maxlength="50"/>*</li>
 					<li><span>登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
