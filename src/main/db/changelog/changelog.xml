@@ -7634,7 +7634,51 @@ CREATE TABLE `cs_complaint_accept` (
 				) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
     	</sql>
     </changeSet>
+	<changeSet id="wangqiang-2015-07-20-01" author="wangqiang">
+    	<sql>
+    		DROP TABLE IF EXISTS `express_ops_diliveryman_paifei_bill`;
+			CREATE TABLE `express_ops_diliveryman_paifei_bill` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+			  `billbatch` varchar(20) DEFAULT NULL COMMENT '账单批次',
+			  `billstate` int(4) DEFAULT NULL COMMENT '账单状态',
+			  `diliveryman` int(10) DEFAULT NULL COMMENT '配送员',
+			  `theirsite` int(10) DEFAULT NULL COMMENT '所属站点',
+			  `billestablishdate` varchar(20) DEFAULT NULL COMMENT '账单创建日期',
+			  `billverificationdate` varchar(20) DEFAULT NULL COMMENT '账单核销日期',
+			  `ordertype` int(4) DEFAULT NULL COMMENT '订单类型',
+			  `ordersum` int(11) DEFAULT NULL COMMENT '对应订单数',
+			  `paifeimoney` decimal(18,2) DEFAULT NULL COMMENT '派费金额',
+			  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+			  `orderids` text COMMENT '订单号',
+			  `daterange` varchar(100) DEFAULT NULL COMMENT '日期范围',
+			  PRIMARY KEY (`id`),
+			  KEY `billbatch_ids` (`billbatch`)
+			) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8;
+		</sql>
+    </changeSet>
+    
+    <changeSet id="wangqiang-2015-07-20-02" author="wangqiang">
+    	<sql>
+    		DROP TABLE IF EXISTS `express_ops_diliveryman_paifei_order`;
+			CREATE TABLE `express_ops_diliveryman_paifei_order` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+			  `ordernumber` varchar(25) DEFAULT NULL COMMENT '订单号',
+			  `orderstatus` int(4) DEFAULT NULL COMMENT '订单状态',
+			  `ordertype` int(4) DEFAULT NULL COMMENT '订单类型',
+			  `timeofdelivery` varchar(40) DEFAULT NULL COMMENT '到货时间',
+			  `deliverytime` varchar(40) DEFAULT NULL COMMENT '发货时间',
+			  `paymentmode` int(4) DEFAULT NULL COMMENT '付款方式',
+			  `dateoflodgment` varchar(20) DEFAULT NULL COMMENT '签收日期',
+			  `paifeicombined` decimal(18,2) DEFAULT NULL COMMENT '派费合计',
+			  `basicpaifei` decimal(18,2) DEFAULT NULL COMMENT '基本派费',
+			  `subsidiesfee` decimal(18,2) DEFAULT NULL COMMENT '代收补助费',
+			  `areasubsidies` decimal(18,2) DEFAULT NULL COMMENT '区域属性补助费',
+			  `beyondareasubsidies` decimal(18,2) DEFAULT NULL COMMENT '超出区域补助费',
+			  `businesssubsidies` decimal(18,2) DEFAULT NULL COMMENT '业务补助',
+			  `delaysubsidies` decimal(18,2) DEFAULT NULL COMMENT '拖单补助',
+			  PRIMARY KEY (`id`),
+			  KEY `ordernumber_id` (`ordernumber`)
+			) ENGINE=InnoDB AUTO_INCREMENT=782 DEFAULT CHARSET=utf8;
+		</sql>
+    </changeSet>
 </databaseChangeLog>
-
-
- 
