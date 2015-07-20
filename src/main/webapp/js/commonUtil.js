@@ -63,6 +63,7 @@ function initEnumSelect(data){
 	var enumName = s.attr("initDataKey");
 	var viewField = s.attr("viewField");
 	var saveField = s.attr("saveField");
+	var readonly = s.attr("readonly");
 	var enumData = initEnumData(enumName,viewField,saveField);
 	s.combobox({
 	    valueField:saveField,
@@ -75,6 +76,11 @@ function initEnumSelect(data){
 			return row[opts.textField].indexOf(q) >= 0;
 		}
 	});
+	if(!isNull(readonly)){
+		s.combobox({
+			disabled:true
+		})
+	}
 	if(!isNull(ifClear)){
 		s.after(clear);
 		clear.bind('click',function(){
@@ -98,6 +104,7 @@ function initTABLESelect(data){
 	var filterVal = s.attr("filterVal");
 	var linkageEleId = s.attr("linkageEleId");
 	var linkageField = s.attr("linkageField");
+	var readonly = s.attr("readonly");
 	var entityData = initEntityData(entityName);
 	var viewData = [];
 	var uniqueValidate = {};
@@ -138,6 +145,11 @@ function initTABLESelect(data){
 					return row[opts.textField].indexOf(q) >= 0;
 				}
 			});
+			if(!isNull(readonly)){
+				s.combobox({
+					disabled:true
+				})
+			}
 			if(!isNull(ifClear)){
 				s.after(clear);
 				clear.bind('click',function(){
@@ -161,6 +173,11 @@ function initTABLESelect(data){
 				return row[opts.textField].indexOf(q) >= 0;
 			}
 		});
+		if(!isNull(readonly)){
+			s.combobox({
+				disabled:true
+			})
+		}
 		if(!isNull(ifClear)){
 			s.after(clear);
 			clear.bind('click',function(){
