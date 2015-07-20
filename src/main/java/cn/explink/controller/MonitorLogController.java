@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -110,9 +111,9 @@ public class MonitorLogController {
 	private JdbcTemplate jdbcTemplate;
 	
 	/**
-	 * 控制查询条件线程变量
+	 * 控制查询条件成员变量（超大清空）
 	 */
-	public static final ThreadLocal<String[]> QUERY_CONDITION = new ThreadLocal<String[]>();
+	private Map<HttpSession,String[]> QUERY_CONDITION = new HashMap<HttpSession,String[]>();
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -187,10 +188,10 @@ public class MonitorLogController {
 //				QUERY_CONDITION.set(customeridStr);
 //			}
 			if( customeridStr.length > 0 ){
-				QUERY_CONDITION.set(customeridStr);
+				QUERY_CONDITION.put(request.getSession(), customeridStr);
 			}
 			
-			customeridStr = QUERY_CONDITION.get() == null? customeridStr : QUERY_CONDITION.get() ;
+			customeridStr = QUERY_CONDITION.get(request.getSession()) == null? customeridStr : QUERY_CONDITION.get(request.getSession()) ;
 			
 			customerids =getStrings(customeridStr); //把供货商id存储成in()所需格式
 			if(customerids.length()>0){
@@ -300,7 +301,10 @@ public class MonitorLogController {
 				}
 			}
 		}else{
-			QUERY_CONDITION.set(null);
+			QUERY_CONDITION.remove(request.getSession());
+			if ( QUERY_CONDITION.size() > 100 ) {
+				QUERY_CONDITION.clear();
+			}
 			cmap =new HashMap<Long , String>();
 		}
 		model.addAttribute("tuihuoyichuzhanMap", tuihuoyichuzhanMap);
