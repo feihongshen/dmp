@@ -7681,4 +7681,17 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB AUTO_INCREMENT=782 DEFAULT CHARSET=utf8;
 		</sql>
     </changeSet>
+    <changeSet id="lansheng-2015-07-20-01" author="lansheng">
+    	<sql>
+    		INSERT INTO dmp40_function VALUES('8090','1','赔付扣罚结算','8090','','80');
+			INSERT INTO dmp40_function VALUES('809020','2','对内扣罚账单','809020','punishinsideBill/punishinsideBillList?','8090');
+			INSERT INTO dmp40_function VALUES('809010','2','对外赔付账单','809010','penalizeOutBill/penalizeOutBillPage/1?','8090');
+			INSERT INTO `dmp40_function` VALUES('806050',2,'工资查询','806050','salaryQuery/list/1?','8060');
+			INSERT INTO `dmp40_function` VALUES('806060',2,'工资业务补助设置','806060','paybusinessbenefits/list/1?','8060');
+			INSERT INTO dmp40_function VALUES('8080','1','派费结算','8080','','80');
+			INSERT INTO dmp40_function VALUES('808010','2','客户合同管理','808010','customerContract/customerContractList/1?','8080');
+			INSERT INTO dmp40_function VALUES('808020','2','加盟商合同管理','808020','branchContract/branchContractList?','8080');
+			INSERT INTO dmp40_function VALUES ('808050', '2', '配送员派费账单', '808050', 'diliverymanpaifeibill/diliverymanpaifeibillPage/1?', '8080' );
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
