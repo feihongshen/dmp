@@ -1246,9 +1246,12 @@ src/main/java/cn/explink/domain/TuihuoSiteTodaylog.java -text
 src/main/java/cn/explink/domain/User.java -text
 src/main/java/cn/explink/domain/UserBranch.java -text
 src/main/java/cn/explink/domain/UserDeleteCwb.java -text
+src/main/java/cn/explink/domain/VO/CustomerBillContractFindConditionVO.java -text
+src/main/java/cn/explink/domain/VO/CustomerBillContractVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressOpsPunishinsideBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
+src/main/java/cn/explink/domain/VO/SerachCustomerBillContractVO.java -text
 src/main/java/cn/explink/domain/WarehouseKey.java -text
 src/main/java/cn/explink/domain/WarehouseToBranch.java -text
 src/main/java/cn/explink/domain/WarehouseToCommen.java -text
@@ -1366,6 +1369,7 @@ src/main/java/cn/explink/enumutil/RealFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ReasonTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/ReturnCwbsTypeEnum.java -text
+src/main/java/cn/explink/enumutil/SequenceEnum.java -text
 src/main/java/cn/explink/enumutil/ShenHeResultEnum.java -text
 src/main/java/cn/explink/enumutil/ShenHeStateEnum.java -text
 src/main/java/cn/explink/enumutil/SignStateEnmu.java -text

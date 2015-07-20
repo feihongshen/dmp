@@ -1,13 +1,13 @@
-package cn.explink.domain;
+package cn.explink.domain.VO;
 
 import java.math.BigDecimal;
 
-public class CustomerBillContract {
+public class CustomerBillContractVO {
 	
 		private long id;
 		private String billBatches;//账单批次
-		private long billState;//账单状态
-		private long customerId;//客户名称
+		private String billState;//账单状态
+		private String customername;//客户名称
 		private String dateRange;//日期范围
 		private long correspondingCwbNum;//对应订单数
 		private BigDecimal deliveryMoney; //提货费
@@ -19,7 +19,6 @@ public class CustomerBillContract {
 		private String dateCreateBill;//创建日期
 		private String dateVerificationBill; //核销日期
 		private long cwbOrderType; //订单类型
-		private long dateState;
 		private String cwbs;
 		
 		
@@ -30,12 +29,6 @@ public class CustomerBillContract {
 		}
 		public void setCwbs(String cwbs) {
 			this.cwbs = cwbs;
-		}
-		public long getDateState() {
-			return dateState;
-		}
-		public void setDateState(long dateState) {
-			this.dateState = dateState;
 		}
 		public long getCwbOrderType() {
 			return cwbOrderType;
@@ -69,13 +62,7 @@ public class CustomerBillContract {
 		public void setBillBatches(String billBatches) {
 			this.billBatches = billBatches;
 		}
-		public long getBillState() {
-			return billState;
-		}
-		public void setBillState(long billState) {
-			this.billState = billState;
-		}
-
+	
 		public String getDateRange() {
 			return dateRange;
 		}
@@ -83,11 +70,18 @@ public class CustomerBillContract {
 			this.dateRange = dateRange;
 		}
 
-		public long getCustomerId() {
-			return customerId;
+	
+		public String getBillState() {
+			return billState;
 		}
-		public void setCustomerId(long customerId) {
-			this.customerId = customerId;
+		public void setBillState(String billState) {
+			this.billState = billState;
+		}
+		public String getCustomername() {
+			return customername;
+		}
+		public void setCustomername(String customername) {
+			this.customername = customername;
 		}
 		public long getCorrespondingCwbNum() {
 			return correspondingCwbNum;

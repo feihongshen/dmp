@@ -23,14 +23,14 @@ public enum BillStateEnum {
 		this.text = text;
 	}
 	
-	public static BillStateEnum getByValue(int cwbordertypeid) {
+	public static BillStateEnum getByValue(long cwbordertypeid) {
 		for (BillStateEnum cotie : BillStateEnum.values()) {
 			if (cotie.getValue() == cwbordertypeid)
 				return cotie;
 		}
 		return null;
 	}
-	public static String getTextByValue(int value) {
+	public static String getTextByValue(long value) {
 		for (BillStateEnum cotie : BillStateEnum.values()) {
 			if (cotie.getValue() == value){
 				return cotie.getText();

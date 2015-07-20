@@ -33,6 +33,7 @@ import cn.explink.domain.MatchExceptionOrder;
 import cn.explink.domain.SmtOrder;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.SerachCustomerBillContractVO;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
@@ -1519,6 +1520,11 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbByCwbs(String cwbs) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
+				new CwbMapper());
+	}
+	
+	public List<CwbOrder> getCwbByCwbsByPage(String cwbs,int start,int pageSize) {
 		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
 				new CwbMapper());
 	}
@@ -3953,7 +3959,18 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getAllCwbOrderByCwb(String cwb) {/*state=1*/
-		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbSmalMaper(), cwb);
+		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  where state=1 and cwb =?", new CwbMapper(), cwb);
+	}
+	
+	public List<CwbOrder> getAllCwbOrderByCwbPage(String cwb,int start,int pageSize) {/*state=1*/
+		String sql="select * from express_ops_cwb_detail  where state=1 and cwb like '%"+cwb+"%' limit "+start+","+pageSize;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+		
+		
+	}
+	
+	public long getAllCwbOrderByCwbPageCount(String cwb) {/*state=1*/
+		return this.jdbcTemplate.queryForLong("select count(1) from express_ops_cwb_detail  where state=1 and cwb like '%"+cwb+"%'");
 	}
 
 	/*public CwbOrder getAllCwbOrderByCwb1(String cwb) {state=1
@@ -4258,7 +4275,6 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbByCwbsPage(long page, String cwbs) {
 		String sql = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println(sql);
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
@@ -5839,7 +5855,6 @@ public class CwbDAO {
 			sql += " DESC";
 		}
 		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
-		System.out.println(sql);
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
 	}
 
@@ -6149,7 +6164,7 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> findCwbByCustomerid(long customerid){
-		String sql="select * from express_ops_cwb_detail  where customerid="+customerid;
+		String sql="select * from express_ops_cwb_detail where customerid="+customerid;
 
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
@@ -6166,22 +6181,53 @@ public class CwbDAO {
 		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	public List<CwbOrder> findcwbByCwbsAndDatePage(String cwbs,String startdate,String enddate,int start,int pageSize){
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' limit "+start+","+pageSize;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
 	public long findcwbByCwbsAndDateCount(String cwbs,String startdate,String enddate){
 		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	public List<CwbOrder> getCwbByCwbsAndType(String cwbs,String cwbtypeid) {
-		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in("+cwbs+") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
+				new CwbMapper());
+	}
+	public List<CwbOrder> getCwbByCwbsAndTypeByPage(String cwbs,String cwbtypeid,int start,int pageSize) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in("+cwbs+") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC limit "+start+","+pageSize,
 				new CwbMapper());
 	}
 	public long getCwbByCwbsAndTypeCount(String cwbs,String cwbtypeid) {
-		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
+		return this.jdbcTemplate.queryForLong("SELECT count(1) from express_ops_cwb_detail where cwb in("+cwbs+") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
 	}
 	public long getCwbByCwbsCount(String cwbs) {
-		return this.jdbcTemplate.queryForLong("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
+		return this.jdbcTemplate.queryForLong("SELECT count(1) from express_ops_cwb_detail where cwb in("+cwbs+") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC");
 	}
 
+	public List<CwbOrder> getCwbByCwbsAndTypePage(String cwbs, String cwbtypeid,int start,int pageSize) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in("+cwbs+") and cwbordertypeid='"+cwbtypeid+"' and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC limit "+start+","+pageSize,
+				new CwbMapper());
+	}
+
+	public List<CwbOrder> getCwbByCwbsPage(String cwbs, int start, int number) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC limit "+start+","+number,
+				new CwbMapper());
+	}
+
+	public List<CwbOrder> findcwbByCwbsAndDateAndtypePage(String cwbs,
+			String startdate, String enddate, String cwbOrderType, int start,
+			int number) {
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbOrderType+"' limit "+start+","+number;
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
+	public List<CwbOrder> getAllCwbOrder(int start, int number) {
+		return this.jdbcTemplate.query("select * from express_ops_cwb_detail where state=1 limit "+start+","+number, new CwbMapper());
+	}
+	public long getAllCwbOrderCount() {
+		return this.jdbcTemplate.queryForLong("select count(1) from express_ops_cwb_detail where state=1");
+	}
 
 
 }

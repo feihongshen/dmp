@@ -7,7 +7,7 @@
 </script>
 
 <!-- easyui皮肤 -->
-<link href="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-theme/<c:out value="${cookie.themeName.value}" default="default"/>/easyui.css" rel="stylesheet" type="text/css" />
+<link href="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-theme/<c:out value="${cookie.themeName.value}" default="bootstrap"/>/easyui.css" rel="stylesheet" type="text/css" />
 <link href="${ctx}/js/easyui-extend/plugins/easyui/jquery-easyui-theme/icon.css" rel="stylesheet" type="text/css" />
 <link href="${ctx}/js/easyui-extend/plugins/easyui/icons/icon-all.css" rel="stylesheet" type="text/css" />
 

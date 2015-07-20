@@ -40,7 +40,7 @@ $(window).ready(function() {
 });
 
 /**
- * 
+ * 动态加载select控件
  * @param id
  * @param type
  */
