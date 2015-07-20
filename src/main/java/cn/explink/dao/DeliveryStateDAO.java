@@ -1498,17 +1498,17 @@ public class DeliveryStateDAO {
 		if (site != null) {
 			sql.append(" and deliverybranchid = '" + site + "'");
 		}
-		if (orderType != null) {
+		if ((orderType != null) && (orderType != 0)) {
 			sql.append(" and cwbordertypeid= '" + orderType + "'");
 		}
 		if (diliverymanid != null) {
 			sql.append(" and deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and deliverytime > '" + startDate + "'");
-			sql.append(" and deliverytime < '" + endDate + "'");
+			sql.append(" and deliverytime >= '" + startDate + "'");
+			sql.append(" and deliverytime <= '" + endDate + "'");
 		}
-		sql.append(" and gcaid >0");
+		sql.append(" and gcaid > 0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
 		sql.append(" and deliverystate not in ('6','9');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
@@ -1523,15 +1523,15 @@ public class DeliveryStateDAO {
 		if (site != null) {
 			sql.append(" and d.deliverybranchid = '" + site + "'");
 		}
-		if (orderType != null) {
+		if ((orderType != null) && (orderType != 0)) {
 			sql.append(" and d.cwbordertypeid= '" + orderType + "'");
 		}
 		if (diliverymanid != null) {
 			sql.append(" and d.deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and c.emaildate > '" + startDate + "'");
-			sql.append(" and c.emaildate < '" + endDate + "'");
+			sql.append(" and c.emaildate >= '" + startDate + "'");
+			sql.append(" and c.emaildate <= '" + endDate + "'");
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
@@ -1548,15 +1548,15 @@ public class DeliveryStateDAO {
 		if (site != null) {
 			sql.append(" and d.deliverybranchid = '" + site + "'");
 		}
-		if (orderType != null) {
+		if ((orderType != null) && (orderType != 0)) {
 			sql.append(" and d.cwbordertypeid= '" + orderType + "'");
 		}
 		if (diliverymanid != null) {
 			sql.append(" and d.deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and i.credate > '" + startDate + "'");
-			sql.append(" and i.credate < '" + endDate + "'");
+			sql.append(" and i.credate >= '" + startDate + "'");
+			sql.append(" and i.credate <= '" + endDate + "'");
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
