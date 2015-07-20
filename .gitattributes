@@ -709,6 +709,7 @@ src/main/java/cn/explink/controller/DeliveryPercentController.java -text
 src/main/java/cn/explink/controller/DeliveryPercentForEmaildateDTO.java -text
 src/main/java/cn/explink/controller/DeliveryStateDTO.java -text
 src/main/java/cn/explink/controller/DeliveryStateView.java -text
+src/main/java/cn/explink/controller/DiliverymanPaifeiBillController.java -text
 src/main/java/cn/explink/controller/EditCwbController.java -text
 src/main/java/cn/explink/controller/EmailDateController.java -text
 src/main/java/cn/explink/controller/ExceedFeeController.java -text
@@ -916,6 +917,7 @@ src/main/java/cn/explink/dao/DeliveryPercentDAO.java -text
 src/main/java/cn/explink/dao/DeliveryResultChangeDAO.java -text
 src/main/java/cn/explink/dao/DeliveryStateDAO.java -text
 src/main/java/cn/explink/dao/DepartDAO.java -text
+src/main/java/cn/explink/dao/DiliverymanPaifeiBillDAO.java -text
 src/main/java/cn/explink/dao/EditCwbDAO.java -text
 src/main/java/cn/explink/dao/EmailDateDAO.java -text
 src/main/java/cn/explink/dao/ExceedFeeDAO.java -text
@@ -1110,6 +1112,8 @@ src/main/java/cn/explink/domain/DeliveryResultChange.java -text
 src/main/java/cn/explink/domain/DeliveryState.java -text
 src/main/java/cn/explink/domain/DeliveryStations.java -text
 src/main/java/cn/explink/domain/Department.java -text
+src/main/java/cn/explink/domain/DiliverymanPaifeiBill.java -text
+src/main/java/cn/explink/domain/DiliverymanPaifeiOrder.java -text
 src/main/java/cn/explink/domain/EdtiCwb_DeliveryStateDetail.java -text
 src/main/java/cn/explink/domain/EmailDate.java -text
 src/main/java/cn/explink/domain/ExceedFee.java -text
@@ -1641,6 +1645,7 @@ src/main/java/cn/explink/service/DataStatisticsService.java -text
 src/main/java/cn/explink/service/DeleteCwbService.java -text
 src/main/java/cn/explink/service/DeliveryCashService.java -text
 src/main/java/cn/explink/service/DeliverypercentService.java -text
+src/main/java/cn/explink/service/DiliverymanPaifeiBillService.java -text
 src/main/java/cn/explink/service/EditCwbService.java -text
 src/main/java/cn/explink/service/EditService.java -text
 src/main/java/cn/explink/service/EmailDateService.java -text
@@ -2148,6 +2153,7 @@ src/main/webapp/WEB-INF/jsp/delivery/sub.jsp -text
 src/main/webapp/WEB-INF/jsp/delivery/viewOldSub.jsp -text
 src/main/webapp/WEB-INF/jsp/deliverycash/deliverycashlist.jsp -text
 src/main/webapp/WEB-INF/jsp/deliverycash/show.jsp -text
+src/main/webapp/WEB-INF/jsp/diliverymanpaifeibill/diliverymanpaifeibillPage.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/editf.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/listf.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/viewf.jsp -text
