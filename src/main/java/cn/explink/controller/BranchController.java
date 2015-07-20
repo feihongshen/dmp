@@ -411,7 +411,7 @@ public class BranchController {
 		// TODO 增加同步代码
 		String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 		if ((adressenabled != null) && adressenabled.equals("1")) {
-			String brancheffectflag = this.branchDAO.getBranchById(branchid).getBrancheffectflag();
+			String brancheffectflag = this.branchDAO.getBranchByBranchid(branchid).getBrancheffectflag();
 			if ("0".equals(brancheffectflag)) {
 				this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_DELETE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 			} else {
