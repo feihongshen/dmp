@@ -16,12 +16,22 @@
 
 
 <script type="text/javascript">
+ 
+
 	$(function() {
+		var dmpurl = $("#dmpurl").val();
 		$('#find').dialog('close');
 		$('#add').dialog('close');
 		$('#edit').dialog('close');
 		//$("[id*=_yes]").attr('style','display:none');
 		$("[id*=_no]").attr('style', 'display:none');
+		$('#edit_rule').panel({ 
+			onClose: function(event, ui) {
+			window.location=dmpurl+"/paifeirule/list/1";
+			}
+		});
+		showflag('ps_basic',$("#ps_showflag_basic").val());
+		showflag('ps_collection',$("#ps_showflag_collection").val());
 	});
 	function addInit() {
 		//无处理
@@ -87,7 +97,7 @@
 				+ "initDataType='TABLE'" + "initDataKey='Customer' " + "viewField='customername'" + "saveField='customerid'" + "/>";
 		var PFfee = "<input style='width: 100%;' type='text'  id='" + type + "PFfee' name='" + type + "PFfee'/>";
 		var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
-		var tr = "<tr>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>" + customer + "</td>" + "<td  align='center'>"
+		var tr = "<tr><input type='hidden' name='showflag' value='1'/>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>" + customer + "</td>" + "<td  align='center'>"
 				+ PFfee + "</td>" + "<td  align='center'>" + remark + "</td>" + "</tr>";
 		$("#" + pf + "_" + type + "_table").append(tr);
 		//  tr.appendTo(basictr);   
@@ -251,7 +261,7 @@
 	{	if($("tr [id="+tab+"_"+areaid+"]")[0].style.background==undefined||$("tr [id="+tab+"_"+areaid+"]")[0].style.background==''){
 		$("tr [id="+tab+"_"+areaid+"]")[0].style.background='yellow';
 		var $area_table=$("#area_table").clone();
-		$area_table[0].id=tab+"_area_table";
+		$area_table[0].id=tab+"_area_table_"+areaid;
 		$area_table.find("#areaid").val(areaid);
 		$area_table.find("#areaname").text(areaname);
 		var overbig="overbig"+areaid;
@@ -269,6 +279,91 @@
 		$area_table.find("#overbig_add").attr('onclick','addTROfOverArea("'+tab+'","'+overbig+'")');
 		$("#"+tab+"_area_div").append($area_table);
 	}
+	else if($("tr [id="+tab+"_"+areaid+"]")[0].style.background=='yellow')
+		{
+		$("tr [id="+tab+"_"+areaid+"]")[0].style.background='';
+		$("#"+tab+"_area_div table[id="+tab+"_area_table_"+areaid+"]").remove();
+		}
+	}
+	function  editRule(ruleid)
+	{	$("#rule_table tr[id!=thead]").each(function(){
+		$(this)[0].style.background='';
+	});
+		if($("#"+ruleid)[0].style.background==undefined||$("#"+ruleid)[0].style.background=='')
+		{
+			$("#"+ruleid)[0].style.background='yellow';
+			$("#edit_ruleid").val(ruleid);
+			$("#edit_form").submit();
+		}
+
+/* 		 $.ajax({
+				type : "post",
+				url : dmpurl + "/paifeirule/edit",
+				data : {
+					"pfruleid" : ruleid
+				},
+				dataType : "json",
+				success : function(obj) {
+					if (obj.errorCode == 1) {
+						$('#save').dialog('close');
+					}
+					alert(obj.error);
+				}
+			});  */
+	}
+	function subEidt(formId,tab,edittype)
+	{    var dmpurl = $("#dmpurl").val();
+		 var json={};
+		 var ruleid=$("#edit_rule_id").val();
+		 var typeid=$("#edit_ruletype").val();
+		 json=$("#"+formId).serializeObject();
+		if(edittype=="basic"){
+			var objs=new Array();
+			$("#"+formId+" tr[id!=thead]").each(function() {
+				 objs.push($(this).serializeObject());
+				// objs.
+			});
+			json=objs;
+		}
+	//alert(JSON.stringify(json));
+		 $.ajax({
+				type : "post",
+				url : dmpurl + "/paifeirule/edittype",
+				data : {
+					"json":JSON.stringify(json),
+					"type":tab+"_"+edittype,
+					"rulejson":JSON.stringify($("#edit_rule_from").serializeObject())
+				},
+				dataType : "json",
+				success : function(obj) {
+		
+				}
+			}); 
+	}
+	function subBasicOrCollection(formId,edittype,tab)
+	{    var dmpurl = $("#dmpurl").val();
+		var json={};
+		
+		var objs=new Array();
+			$("#"+formId+" tr[id!=thead]").each(function() {
+				 objs.push($(this).serializeObject());
+				// objs.
+			});
+			json=objs;
+			
+	//alert(JSON.stringify(json));
+		 $.ajax({
+				type : "post",
+				url : dmpurl + "/paifeirule/edittype",
+				data : {
+					"json":JSON.stringify(json),
+					"type":tab+"_"+edittype
+				},
+				dataType : "json",
+				success : function(obj) {
+		
+				}
+			}); 
 	}
 </script>
 </head>
@@ -296,8 +391,8 @@
 		<div class="jg_10"></div>
 		<div class="right_title">
 			<div style="overflow: auto;">
-				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
-					<tr>
+				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="rule_table">
+					<tr id="thead">
 						<td height="30px" valign="middle"><input type="checkbox" id="all" onclick="checkall()" />
 						</td>
 						<td align="center" valign="middle" style="font-weight: bold;">结算规则名称</td>
@@ -306,7 +401,7 @@
 						<td align="center" valign="middle" style="font-weight: bold;">备注</td>
 					</tr>
 					<c:forEach items="${paiFeiRules}" var="pf">
-						<tr>
+						<tr id="${pf.id }" onclick="editRule('${pf.id }')">
 							<td align="center" valign="middle"><input type="checkbox" id="id" value="${pf.pfruleNO}" /></td>
 							<td align="center" valign="middle">${pf.name}</td>
 							<c:forEach items="${PaiFeiRuleTypeEnum}" var="t">
@@ -389,10 +484,10 @@
 		</form>
 	</div>
 	<!-- 查看/修改层显示 -->
-	<c:if test="${edit==1 }">
-		<div id="save" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true"
+	<c:if test="${save==1 }">
+		<div id="save" class="easyui-dialog" title="保存" data-options="iconCls:'icon-save',modal:true"
 			style="width: 800px;">
-			<form action="${ctx}/salaryCount/save" method="post" id="save_from">
+			<form action="" method="post" id="save_from">
 				<input type="hidden" id="s_ruleid" value="${rule.id}" />
 				<table width="85%" border="0" cellspacing="1" cellpadding="0"
 					style="margin-top: 10px; margin-left: 25px; font-size: 10px;">
@@ -403,27 +498,27 @@
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right">规则类型：</td>
-						<td><select style="width: 100%;" id="s_ruletypeid">
+						<td><select style="width: 100%;" id="s_ruletypeid" disabled="disabled">
 								<c:forEach items="${PaiFeiRuleTypeEnum}" var="type">
 									<option value="${type.value}" ${type.value==rule.type ? 'selected=selected' : '' }>${type.text}</option>
 								</c:forEach>
 						</select></td>
 						<td align="right">状态：</td>
-						<td><select style="width: 100%;" id="s_state">
+						<td><select style="width: 100%;" id="s_state" disabled="disabled">
 								<c:forEach items="${PaiFeiRuleStateEnum}" var="state">
 									<option value="${state.value}" ${state.value==rule.state ? 'selected=selected' : '' }>${state.text}</option>
 								</c:forEach>
 						</select></td>
 						<td align="right">拒收派费(元)：</td>
-						<td><input type="text" id="s_jushouPFfee" value="${rule.jushouPFfee }" /></td>
+						<td><input type="text" id="s_jushouPFfee" value="${rule.jushouPFfee }" disabled="disabled" /></td>
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right">结算规则名称：</td>
-						<td colspan="5"><input style="width: 100%" type="text" id="s_name" value="${rule.name}" /></td>
+						<td colspan="5"><input style="width: 100%" type="text" id="s_name" value="${rule.name}" disabled="disabled"/></td>
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right" valign="middle">备注：</td>
-						<td id="s_remark" colspan="5"><textarea rows="3" style="width: 100%; resize: none;">${rule.remark }</textarea></td>
+						<td id="s_remark" colspan="5"><textarea rows="3" style="width: 100%; resize: none;" disabled="disabled">${rule.remark }</textarea></td>
 					</tr>
 				</table>
 				<div id="tt" class="easyui-tabs" style="height:450px; overflow: scroll;">
@@ -774,6 +869,463 @@
 		</div>
 
 	</c:if>
+	
+<!-- 	编辑页面 -->
+	<c:if test="${edit==1 }">
+		<div id="edit_rule" class="easyui-dialog" title="编辑/修改" data-options="iconCls:'icon-save',modal:true" style="width: 800px;">
+			<form action="" method="post" id="edit_rule_from">
+				<input type="hidden" id="edit_rule_id" name="id" value="${rule.id}" />
+				
+				<table width="85%" border="0" cellspacing="1" cellpadding="0"
+					style="margin-top: 10px; margin-left: 25px; font-size: 10px;">
+					<tr>
+					<td></td>
+						<td ><input
+							type="button" class="input_button2" value="返回" onclick="$('#edit_rule').dialog('close');" /> </td>
+					</tr>
+					<tr>
+						<td style="line-height: 30px" align="right">规则类型：</td>
+						<td><%-- <select style="width: 100%;" name="type" id="edit_type" disabled="disabled">
+								<c:forEach items="${PaiFeiRuleTypeEnum}" var="type">
+									<option value="${type.value}" ${type.value==rule.type ? 'selected=selected' : '' }>${type.text}</option>
+								</c:forEach>
+						</select> --%>
+						 <input type="text" name="type" id="edit_ruletype" readonly="true"  class="easyui-validatebox" 
+						 	data-options="width:150,prompt: '规则类型'"
+						 	initDataType="ENUM" 
+						 	initDataKey="cn.explink.enumutil.PaiFeiRuleTypeEnum"
+						 	viewField="text" 
+						 	saveField="value"
+						 	readonly="true"
+						 	value="${rule.type}"
+							/>
+						</td>
+						<td align="right">状态：</td>
+						<td><%-- <select style="width: 100%;" id="s_state" name="state" >
+								<c:forEach items="${PaiFeiRuleStateEnum}" var="state">
+									<option value="${state.value}" ${state.value==rule.state ? 'selected=selected' : '' }>${state.text}</option>
+								</c:forEach>
+						</select> --%>
+						 <input type="text" name="state" id="edit_state" readonly="true"  class="easyui-validatebox" 
+						 	data-options="width:150,prompt: '状态'"
+						 	initDataType="ENUM" 
+						 	initDataKey="cn.explink.enumutil.PaiFeiRuleStateEnum"
+						 	viewField="text" 
+						 	saveField="value"
+						 	value="${rule.state}"
+						 	readonly="true"
+							/>
+						</td>
+						<td align="right">拒收派费(元)：</td>
+						<td><input type="text" id="edit_jushouPFfee" name="jushouPFfee" value="${rule.jushouPFfee }"  /></td>
+					</tr>
+					<tr>
+						<td style="line-height: 30px" align="right">结算规则名称：</td>
+						<td colspan="5"><input style="width: 100%" type="text" id="edit_name" name="name" value="${rule.name}" /></td>
+					</tr>
+					<tr>
+						<td style="line-height: 30px" align="right" valign="middle">备注：</td>
+						<td id="edit_remark" colspan="5"><textarea rows="3" name="remark" style="width: 100%; resize: none;" >${rule.remark }</textarea></td>
+					</tr>
+					<tr><td><td><input
+							type="button" class="input_button2" value="保存" onclick="subEidt('edit_rule_from','','rule')" /></td></tr>
+				</table>
+				</form>
+				<div id="tt" class="easyui-tabs" style="height:450px; overflow: scroll;">
+					<div title=" 配送费规则" >
+						<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
+							cellpadding="0">
+							<tr id="ps_basic_tr">
+								<td style="width: 14%;"><input type="checkbox" id="ps_basic_flag"  ${basicPS!=null||basicListPS!=null?'checked=checked':'' } />基本派费</td>
+								<td><select onchange="showflag('ps_basic',$(this).val())" id="ps_showflag_basic">
+										<option  ${ps_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
+										<option  ${ps_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
+								</select><span id="ps_basic_no"><input type="text" style="margin-top: -5px" name="basicPFfee"
+										id="ps_basicPFfee" value="${basicPS.basicPFfee }"/>元</span>
+									<div id="ps_basic_yes">
+									<form action="" id="edit_ps_basic_from">
+									
+										<table id="ps_basic_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+											class="table_2" id="gd_table">
+											<tr id="thead">
+												<th style="width: 10%" align="center"><input type="checkbox"
+													onclick="AllTR('ps','basic')" /></th>
+												<th style="width: 25%" align="center">供货商</th>
+												<th style="width: 25%" align="center">基本派费金额</th>
+												<th style="width: 40%" align="center">备注</th>
+											</tr>
+											<c:forEach items="${basicListPS}" var="basic" > 
+											<tr>
+											<input type='hidden' name='showflag' value='1'/>
+											<td  align='center'><input type='checkbox'/></td>
+											<td>
+											<input type="text" id="${basic.customerid }" name="customerid" class="easyui-validatebox" style="width: 100%;"		
+											initDataType="TABLE" 
+											initDataKey="Customer" 
+											viewField="customername"
+											saveField="customerid"
+											value="${basic.customerid}"
+											/>
+											</td>
+											<td><input style='width: 100%;' type='text'  id='basicPFfee' name='basicPFfee' value="${basic.basicPFfee }"/></td>
+											<td><input style='width: 100%;' type='text'  id='remark' name='remark' value="${basic.remark }"/></td>
+											</tr>
+											</c:forEach>
+										</table>
+										<input type="button" value="添加" onclick="addTR('ps','basic')" /> 
+										<input type="button" value="移除" onclick="removeTR('ps','basic')" />
+										<input type="button" value="保存" onclick="subEidt('edit_ps_basic_from','ps','basic')"/>
+									</form></div></td>
+							</tr>
+							<tr id="ps_collection_tr">
+								<td><input type="checkbox" id="ps_collection_flag" ${collectionPS!=null||collectionListPS!=null?'checked=checked':'' }/>代收补助费</td>
+								<td><select onchange="showflag('ps_collection',$(this).val())" id="ps_showflag_collection">
+										<option ${ps_showflag_collection=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
+										<option ${ps_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
+								</select><span id="ps_collection_no"><input type="text" id="ps_collectionPFfee"
+										name="ps_collectionPFfee" value="${collectionPS.collectionPFfee }" style="margin-top: -5px" />元</span>
+									<div id="ps_collection_yes">
+										<table id="ps_collection_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+											class="table_2" id="gd_table">
+											<tr id="thead">
+												<td style="width: 10%" align="center"><input type="checkbox"
+													onclick="AllTR('ps','collection')" /></td>
+												<td style="width: 25%" align="center">供货商</td>
+												<td style="width: 25%" align="center">基本派费金额</td>
+												<td style="width: 40%" align="center">备注</td>
+											</tr>
+											<c:forEach items="${collectionListPS}" var="collection" > 
+											<tr>
+											<td  align='center'><input type='checkbox'/></td>
+											<td>
+											<input type="text" id="${collection.customerid }" name="customerid" class="easyui-validatebox" style="width: 100%;"		
+											initDataType="TABLE" 
+											initDataKey="Customer" 
+											viewField="customername"
+											saveField="customerid"
+											value="${collection.customerid}"
+											/>
+											</td>
+											<td><input style='width: 100%;' type='text'  id='collectionPFfee' name='collectionPFfee' value="${collection.collectionPFfee}"/></td>
+											<td><input style='width: 100%;' type='text'  id='remark' name='remark' value="${collection.remark}"/></td>
+											</tr>
+											</c:forEach>
+										</table>
+										<input type="button" value="添加" onclick="addTR('ps','collection')" /> <input
+											type="button" value="移除" onclick="removeTR('ps','collection')" />
+									</div></td>
+							</tr>
+							<tr id="ps_area_tr">
+								<td><input type="checkbox" id="ps_area_flag" />区域属性补助费</td>
+								<td>
+									<div>
+										<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
+											id="gd_table">
+											<tr>
+												<td style="width: 10%" align="center">城市</td>
+												<td style="width: 20%" align="center">区/县</td>
+												<td style="width: 15%" align="center">启用区域补助</td>
+												<td style="width: 15%" align="center">启用超大补助</td>
+												<td style="width: 15%" align="center">启用超重补助</td>
+												<td style="width: 25%" align="center">备注</td>
+											</tr>
+											<tr id="ps_111" onclick="addArea('ps','广东','111')" >
+											<td>广东</td>
+											<td>广州</td>
+											<td>是</td>
+											<td>是</td>
+											<td>否</td>
+											<td>广东省是个好地方</td>
+											</tr>
+											<tr id="ps_222" onclick="addArea('ps','北京','222')">
+											<td>朝阳</td>
+											<td>北京</td>
+											<td>否</td>
+											<td>是</td>
+											<td>否</td>
+											<td>我爱北京天安门</td>
+											</tr>
+										</table>
+										<div id="ps_area_div">
+										
+											</div>
+									</div> 
+								</td>
+							</tr>
+							<tr id="ps_overarea_tr">
+								<td><input type="checkbox" value="1" ${overareaPS!=null?'checked=checked':'' }/>超区补助</td>
+							</tr>
+							<tr id="ps_business_tr">
+								<td><input type="checkbox" id="ps_business_flag" ${buFbusinessPS!=null?'checked=checked':''  } />业务补助</td>
+								<td><input value="${buFbusinessPS.subsidyfee}" type="text" id="ps_business_subsidyfee" /></td>
+							</tr>
+							<tr id="ps_insertion_tr">
+								<td><input type="checkbox" id="ps_insertion_flag"  ${insertionListPS!=null?'checked=checked':''  }/>托单补助</td>
+								<td>
+									<div>
+										<table id="ps_insertion_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+											class="table_2" id="gd_table">
+											<tr id="thead">
+												<td style="width: 10%" align="center"><input type="checkbox"
+													onclick="AllTR('ps','insertion')" /></td>
+												<td style="width: 20%" align="center">托单数下限</td>
+												<td style="width: 20%" align="center">托单数上限</td>
+												<td style="width: 20%" align="center">补助金额(元)</td>
+												<td style="width: 30%" align="center">备注</td>
+											</tr>
+											<c:forEach items="${insertionListPS}" var="insertion">
+											<tr>
+											<td  align='center'><input type='checkbox'/></td>
+											<td><input style='width: 100%;' type='text' value="${insertion.mincount}"  id='mincount' name='mincount'/></td>
+											<td><input style='width: 100%;' type='text' value="${insertion.maxcount}" id='maxcount' name='maxcount'/></td>
+											<td><input style='width: 100%;' type='text' value="${insertion.insertionfee}" id='insertionfee' name='insertionfee'/></td>
+											<td><input style='width: 100%;' type='text' value="${insertion.remark}" id='remark' name='remark'/></td>
+											</tr>
+											</c:forEach>
+										</table>
+									</div> <input type="button" value="添加" onclick="addTROfinsertion('ps','insertion')" /> <input
+									type="button" onclick="removeTR('ps','insertion')" value="移除" />
+								</td>
+							</tr>
+						</table>
+					</div>
+					<c:if test="${rule.type==1||rule.type==2}">
+						<div title="提货费规则" id="edit_th">
+							<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
+								cellpadding="0">
+								<tr id="th_basic_tr">
+									<td style="width: 14%;"><input type="checkbox" id="th_basic_flag" />基本派费</td>
+									<td><select onchange="showflag('th_basic',$(this).val())">
+											<option value="yes">按供货商区分</option>
+											<option value="no">不按供货商区分</option>
+									</select><span id="th_basic_no"><input type="text" style="margin-top: -5px"
+											name="th_basicPFfee" id="th_basicPFfee" />元</span>
+										<div id="th_basic_yes">
+											<table id="th_basic_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<th style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('th','basic')" /></th>
+													<th style="width: 25%" align="center">供货商</th>
+													<th style="width: 25%" align="center">基本派费金额</th>
+													<th style="width: 40%" align="center">备注</th>
+												</tr>
+											</table>
+											<input type="button" value="添加" onclick="addTR('th','basic')" /> <input type="button"
+												onclick="removeTR('th','basic')" value="移除" />
+										</div></td>
+								</tr>
+								<tr id="th_collection_tr">
+									<td><input type="checkbox" id="th_collection_flag" />代收补助费</td>
+									<td><select onchange="showflag('th_collection',$(this).val())">
+											<option value="yes">按供货商区分</option>
+											<option value="no">不按供货商区分</option>
+									</select><span id="th_collection_no"><input type="text" id="th_collectionPFfee"
+											name="th_collectionPFfee" style="margin-top: -5px" />元</span>
+										<div id="th_collection_yes">
+											<table id="th_collection_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<td style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('th','collection')" /></td>
+													<td style="width: 25%" align="center">供货商</td>
+													<td style="width: 25%" align="center">基本派费金额</td>
+													<td style="width: 40%" align="center">备注</td>
+												</tr>
+											</table>
+											<input type="button" value="添加" onclick="addTR('th','collection')" /> <input
+												type="button" onclick="removeTR('th','collection')" value="移除" />
+										</div></td>
+								</tr>
+								<tr id="th_area_tr">
+									<td><input type="checkbox" id="th_area_flag"  />区域属性补助费</td>
+									<td>
+										<div>
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
+											id="gd_table">
+											<tr>
+												<td style="width: 10%" align="center">城市</td>
+												<td style="width: 20%" align="center">区/县</td>
+												<td style="width: 15%" align="center">启用区域补助</td>
+												<td style="width: 15%" align="center">启用超大补助</td>
+												<td style="width: 15%" align="center">启用超重补助</td>
+												<td style="width: 25%" align="center">备注</td>
+											</tr>
+											<tr id="th_111" onclick="addArea('th','广东','111')" >
+											<td>广东</td>
+											<td>广州</td>
+											<td>是</td>
+											<td>是</td>
+											<td>否</td>
+											<td>广东省是个好地方</td>
+											</tr>
+											<tr id="th_222" onclick="addArea('th','北京','222')">
+											<td>朝阳</td>
+											<td>北京</td>
+											<td>否</td>
+											<td>是</td>
+											<td>否</td>
+											<td>我爱北京天安门</td>
+											</tr>
+										</table>
+										<div id="th_area_div">
+										
+											</div>
+										</div> 
+									</td>
+								</tr>
+								<tr id="th_overarea_tr">
+									<td><input type="checkbox" value="1" />超区补助</td>
+								</tr>
+								<tr id="th_business_tr">
+									<td><input type="checkbox" id="th_business_flag" />业务补助</td>
+									<td><input type="text" id="th_business_subsidyfee" value="${}"/></td>
+								</tr>
+								<tr id="th_insertion_tr">
+									<td><input type="checkbox" id="th_insertion_flag" />托单补助</td>
+									<td>
+										<div>
+											<table id="th_insertion_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<td style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('th','insertion')" /></td>
+													<td style="width: 20%" align="center">托单数下限</td>
+													<td style="width: 20%" align="center">托单数上限</td>
+													<td style="width: 20%" align="center">补助金额(元)</td>
+													<td style="width: 30%" align="center">备注</td>
+												</tr>
+											</table>
+										</div> <input type="button" value="添加" onclick="addTROfinsertion('th','insertion')" /> <input
+										onclick="removeTR('th','insertion')" type="button" value="移除" />
+									</td>
+								</tr>
+							</table>
+						</div>
+					</c:if>
+					<c:if test="${rule.type==2}">
+						<div title="中转费规则" id="edit_zz">
+							<table style="width: 100%; margin-top: 10px; font-size: 10px;" border="0" cellspacing="1"
+								cellpadding="0">
+								<tr id="zz_basic_tr">
+									<td style="width: 14%;"><input type="checkbox" id="zz_basic_flag" />基本派费</td>
+									<td><select onchange="showflag('zz_basic',$(this).val())">
+											<option value="yes">按供货商区分</option>
+											<option value="no">不按供货商区分</option>
+									</select><span id="zz_basic_no"><input type="text" style="margin-top: -5px"
+											name="zz_basicPFfee" id="zz_basicPFfee" />元</span>
+										<div id="zz_basic_yes">
+											<table id="zz_basic_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<th style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('zz','basic')" /></th>
+													<th style="width: 25%" align="center">供货商</th>
+													<th style="width: 25%" align="center">基本派费金额</th>
+													<th style="width: 40%" align="center">备注</th>
+												</tr>
+											</table>
+											<input type="button" value="添加" onclick="addTR('zz','basic')" /> <input type="button"
+												onclick="removeTR('zz','basic')" value="移除" />
+										</div></td>
+								</tr>
+								<tr id="zz_collection_tr">
+									<td><input type="checkbox" id="zz_collection_flag" />代收补助费</td>
+									<td><select onchange="showflag('zz_collection',$(this).val())">
+											<option value="yes">按供货商区分</option>
+											<option value="no">不按供货商区分</option>
+									</select><span id="zz_collection_no"><input type="text" id="zz_collectionPFfee"
+											name="zz_collectionPFfee" style="margin-top: -5px" />元</span>
+										<div id="zz_collection_yes">
+											<table id="zz_collection_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<td style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('zz','collection')" /></td>
+													<td style="width: 25%" align="center">供货商</td>
+													<td style="width: 25%" align="center">基本派费金额</td>
+													<td style="width: 40%" align="center">备注</td>
+												</tr>
+											</table>
+											<input type="button" value="添加" onclick="addTR('zz','collection')" /> <input
+												type="button" onclick="removeTR('zz','collection')" value="移除" />
+										</div></td>
+								</tr>
+								<tr id="zz_area_tr">
+									<td><input type="checkbox" id="zz_area_flag"  />区域属性补助费</td>
+									<td>
+										<div>
+											<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
+											id="gd_table">
+											<tr>
+												<td style="width: 10%" align="center">城市</td>
+												<td style="width: 20%" align="center">区/县</td>
+												<td style="width: 15%" align="center">启用区域补助</td>
+												<td style="width: 15%" align="center">启用超大补助</td>
+												<td style="width: 15%" align="center">启用超重补助</td>
+												<td style="width: 25%" align="center">备注</td>
+											</tr>
+											<tr id="zz_111" onclick="addArea('zz','广东','111')" >
+											<td>广东</td>
+											<td>广州</td>
+											<td>是</td>
+											<td>是</td>
+											<td>否</td>
+											<td>广东省是个好地方</td>
+											</tr>
+											<tr id="zz_222" onclick="addArea('zz','北京','222')">
+											<td>朝阳</td>
+											<td>北京</td>
+											<td>否</td>
+											<td>是</td>
+											<td>否</td>
+											<td>我爱北京天安门</td>
+											</tr>
+										</table>
+										<div id="zz_area_div">
+										
+											</div>
+										</div> 
+									</td>
+								</tr>
+								<tr id="zz_overarea_tr">
+									<td><input type="checkbox" value="1" />超区补助</td>
+
+								</tr>
+								<tr id="zz_business_tr">
+									<td><input type="checkbox" id="zz_business_flag" />业务补助</td>
+									<td><input type="text" id="zz_business_subsidyfee" /></td>
+								</tr>
+								<tr id="zz_insertion_tr">
+									<td><input type="checkbox" id="zz_insertion_flag" />托单补助</td>
+									<td>
+										<div>
+											<table id="zz_insertion_table" width="100%" border="0" cellspacing="1" cellpadding="0"
+												class="table_2" id="gd_table">
+												<tr id="thead">
+													<td style="width: 10%" align="center"><input type="checkbox"
+														onclick="AllTR('zz','insertion')" /></td>
+													<td style="width: 20%" align="center">托单数下限</td>
+													<td style="width: 20%" align="center">托单数上限</td>
+													<td style="width: 20%" align="center">补助金额(元)</td>
+													<td style="width: 30%" align="center">备注</td>
+												</tr>
+											</table>
+										</div> <input type="button" value="添加" onclick="addTROfinsertion('zz','insertion')" /> <input
+										onclick="removeTR('zz','insertion')" type="button" value="移除" />
+									</td>
+								</tr>
+							</table>
+						</div>
+					</c:if>
+				</div>
+		<!-- 	</form> -->
+		</div>
+
+	</c:if>
+	
+	
+	
 	<!-- 查询层显示 -->
 	<div id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save',modal:true"
 		style="width: 700px; height: 220px;">
@@ -862,6 +1414,9 @@
 											</tr>
 											</table>
 	</div>
+	<form action="1" id="edit_form">
+	<input type="hidden" id="edit_ruleid" name="edit_ruleid"/>
+	</form>
 </body>
 </html>
 

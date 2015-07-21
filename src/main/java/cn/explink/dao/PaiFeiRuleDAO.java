@@ -174,4 +174,24 @@ public class PaiFeiRuleDAO {
 			return null;
 		}
 	}
+
+	/**
+	 * @param rule
+	 * @return
+	 */
+	public int updatePaiFeiRule(final PaiFeiRule pf) {
+		String sql = "update `express_ops_paifeirule` set   `name`=?, `type`=?, `state`=?, `jushouPFfee`=?, `remark`=?,`creuserid`=? where id=?";
+		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, pf.getName());
+				ps.setInt(2, pf.getType());
+				ps.setInt(3, pf.getState());
+				ps.setBigDecimal(4, pf.getJushouPFfee());
+				ps.setString(5, pf.getRemark());
+				ps.setLong(6, pf.getCreuserid());
+				ps.setLong(7, pf.getId());
+			}
+		});
+	}
 }

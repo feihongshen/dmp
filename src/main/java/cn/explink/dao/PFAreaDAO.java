@@ -6,6 +6,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -85,7 +86,7 @@ public class PFAreaDAO {
 	 * @param pf
 	 */
 	public int credata(final PFarea pf) {
-		String sql = "insert  INTO `paifeirule_area` (`areaid`, `areaname`, `areafee`, `overbigflag`) VALUES (?, ?, ?, ?); ";
+		String sql = "insert  INTO `paifeirule_area` (`areaid`, `areaname`, `areafee`, `overbigflag`,`typeid`,`pfruleid`,`tabid`) VALUES (?, ?, ?, ? ,? ,? ,?); ";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -94,6 +95,9 @@ public class PFAreaDAO {
 				ps.setString(2, pf.getAreaname());
 				ps.setBigDecimal(3, pf.getAreafee());
 				ps.setInt(4, pf.getOverbigflag());
+				ps.setInt(5, pf.getTypeid());
+				ps.setLong(6, pf.getPfruleid());
+				ps.setInt(7, pf.getTabid());
 
 			}
 		});
@@ -104,11 +108,20 @@ public class PFAreaDAO {
 	 * @param value
 	 * @return
 	 */
-	public PFarea getPFareaByPairuleAnd(long pfruleid, int tabid) {
+	public List<PFarea> getPFareaByPfruleidAndTabid(long pfruleid, int tabid) {
 
 		String sql = "select * from paifeirule_area where  pfruleid=?  and tabid=? ";
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFareaRowMapper(), pfruleid,tabid);
+			return this.jdbcTemplate.query(sql, new PFareaRowMapper(), pfruleid,tabid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public PFarea getPFareaBypfruleidAndTabidAndAreaid(long pfruleid, int tabid,long areaid) {
+
+		String sql = "select * from paifeirule_area where  pfruleid=?  and tabid=? and areaid=? ";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFareaRowMapper(), pfruleid,tabid,areaid);
 		} catch (Exception e) {
 			return null;
 		}

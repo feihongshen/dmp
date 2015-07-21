@@ -6,6 +6,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -113,6 +114,20 @@ public class PFinsertionDAO {
 		String sql = "select * from paifeirule_insertion where mincount<=? and maxcount>=? and pfruleid=? and tabid=?";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PFinsertionRowMapper(), count, count, pfruleid, tabid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @param pfruleid
+	 * @param value
+	 * @return
+	 */
+	public List<PFinsertion> getPFinsertionByPfruleidAndTabid(long pfruleid, int tabid) {
+		String sql = "select * from paifeirule_insertion where pfruleid=? and tabid=?";
+		try {
+			return this.jdbcTemplate.query(sql, new PFinsertionRowMapper(), pfruleid, tabid);
 		} catch (Exception e) {
 			return null;
 		}

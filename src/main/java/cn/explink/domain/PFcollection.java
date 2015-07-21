@@ -17,6 +17,7 @@ public class PFcollection {
 	private int typeid;
 	private long pfruleid;
 	private int tabid;
+	private int showflag;
 	/**
 	 * @return the tabid
 	 */
@@ -100,6 +101,18 @@ public class PFcollection {
 	 */
 	public void setPfruleid(long pfruleid) {
 		this.pfruleid = pfruleid;
+	}
+	/**
+	 * @return the showflag
+	 */
+	public int getShowflag() {
+		return this.showflag;
+	}
+	/**
+	 * @param showflag the showflag to set
+	 */
+	public void setShowflag(int showflag) {
+		this.showflag = showflag;
 	}
 
 }

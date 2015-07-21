@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.PFAreaDAO;
+import cn.explink.dao.PFbasicDAO;
+import cn.explink.dao.PFbusinessDAO;
+import cn.explink.dao.PFcollectionDAO;
+import cn.explink.dao.PFinsertionDAO;
+import cn.explink.dao.PFoverareaDAO;
+import cn.explink.dao.PFoverbigDAO;
+import cn.explink.dao.PFoverweightDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -49,6 +59,22 @@ public class PaiFeiRuleController {
 	PaiFeiRuleDAO paiFeiRuleDAO;
 	@Autowired
 	PaiFeiRuleService paiFeiRuleService;
+	@Autowired
+	PFbasicDAO pFbasicDAO;
+	@Autowired
+	PFcollectionDAO pFcollectionDAO;
+	@Autowired
+	PFinsertionDAO pFinsertionDAO;
+	@Autowired
+	PFbusinessDAO pFbusinessDAO;
+	@Autowired
+	PFoverareaDAO pFoverareaDAO;
+	@Autowired
+	PFAreaDAO pFareaDAO;
+	@Autowired
+	PFoverbigDAO pFoverbigDAO;
+	@Autowired
+	PFoverweightDAO pFoverweightDAO;
 	// private Logger logger = LoggerFactory.getLogger(this.getClass());
 	 User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -63,7 +89,8 @@ public class PaiFeiRuleController {
 			@RequestParam(value = "state", required = false, defaultValue = "0") int state,
 			@RequestParam(value = "orderby", required = false, defaultValue = "") String orderby,
 			@RequestParam(value = "orderbyType", required = false, defaultValue = "") String orderbyType,
-			@RequestParam(value = "pfruleNO", required = false, defaultValue = "") String pfruleNO
+			@RequestParam(value = "pfruleNO", required = false, defaultValue = "") String pfruleNO,
+			@RequestParam(value = "edit_ruleid", required = false, defaultValue = "0") long pfruleid
 			){
 		List<Customer> customerList=this.customerDAO.getAllCustomers();
 		String contractflag=BranchTypeEnum.JiaMeng.getValue()+","+BranchTypeEnum.JiaMengErJi.getValue()+","+BranchTypeEnum.JiaMengSanJi.getValue();
@@ -72,7 +99,10 @@ public class PaiFeiRuleController {
 		{
 			PaiFeiRule rule=this.paiFeiRuleDAO.getPaiFeiRuleByNO(pfruleNO);
 			model.addAttribute("rule", rule);
-			model.addAttribute("edit", 1);
+			model.addAttribute("save", 1);
+		}
+		if(pfruleid>0){
+			this.paiFeiRuleService.getEditData(model, pfruleid);
 		}
 		List<PaiFeiRule> paiFeiRules=this.paiFeiRuleDAO.getPaiFeiRules(page,name,state,type,remark,orderby,orderbyType);
 		int count=this.paiFeiRuleDAO.getPaiFeiRulesCounts(name,state,type,remark,orderby,orderbyType);
@@ -95,6 +125,7 @@ public class PaiFeiRuleController {
 
 		return "paifeiCount/rule/list";
 	}
+
 	@RequestMapping("/save")
 	public @ResponseBody String save(Model model,
 			@RequestParam(value = "json", required = false, defaultValue = "") String json,
@@ -136,4 +167,15 @@ public class PaiFeiRuleController {
 		map.put("counts", counts);
 		return map;
 	}
+	@RequestMapping("/edittype")
+	public @ResponseBody String edittype(
+			@RequestParam(value = "json", required = false, defaultValue = "{}") String json,
+			@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
+			@RequestParam(value = "type", required = false, defaultValue = "") String type,
+			Model model,HttpServletRequest request){
+
+		this.paiFeiRuleService.editType(json,rulejson,type,model);
+		return "";
+	}
+
 }

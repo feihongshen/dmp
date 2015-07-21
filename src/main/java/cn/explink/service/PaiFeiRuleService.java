@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -46,6 +47,7 @@ import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
+import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 
 @SuppressWarnings("unchecked")
 /**
@@ -122,6 +124,7 @@ public class PaiFeiRuleService {
 					pf.setTabid(pfenum.getValue());
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
+					pf.setShowflag(1);
 					this.savedata(pf);
 				}
 			} else {
@@ -130,6 +133,7 @@ public class PaiFeiRuleService {
 				pf.setPfruleid(pfruleid);
 				pf.setTypeid(pfruletypeid);
 				pf.setBasicPFfee(basic.getPFfee());
+				pf.setShowflag(0);
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
 					this.savedata(pf);
@@ -145,6 +149,7 @@ public class PaiFeiRuleService {
 					pf.setTabid(pfenum.getValue());
 					pf.setPfruleid(pfruleid);
 					pf.setTypeid(pfruletypeid);
+					pf.setShowflag(1);
 					// 验证是否已经存在相应的规则
 					this.savedata(pf);
 
@@ -154,6 +159,7 @@ public class PaiFeiRuleService {
 				pf.setTabid(pfenum.getValue());
 				pf.setPfruleid(pfruleid);
 				pf.setTypeid(pfruletypeid);
+				pf.setShowflag(0);
 				pf.setCollectionPFfee(collection.getPFfee());
 				for (Customer customer : customers) {
 					pf.setCustomerid(customer.getCustomerid());
@@ -357,18 +363,18 @@ public class PaiFeiRuleService {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((co != null) && (pf != null)) {
-			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByPfruleidAndtabid(pfruleid, tab.getValue());
+			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
 			if (baFbasic != null) {// 获取基本补助
 				fee.add(baFbasic.getBasicPFfee());
 			}
-			PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByPfruleidAndtabid(pfruleid, tab.getValue());
+			PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
 			if (pFcollection != null) {// 获取代收补助
 				fee.add(pFcollection.getCollectionPFfee());
 			}
 			// 获取区域补助
 			// 需要获取订单中的区域
 			long areaid = 0;
-			PFarea pFarea = this.pFareaDAO.getPFareaByPairuleAnd(pfruleid, tab.getValue());
+			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 			if (pFarea != null) {
 				fee.add(pFarea.getAreafee());
 				if (pFarea.getOverbigflag() == 1) {
@@ -420,13 +426,13 @@ public class PaiFeiRuleService {
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((co != null) && (pf != null)) {
 			if (type == PaiFeiBuZhuTypeEnum.Basic) {
-				PFbasic baFbasic = this.pFbasicDAO.getPFbasicByPfruleidAndtabid(pfruleid, tab.getValue());
+				PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
 				if (baFbasic != null) {// 获取基本补助
 					return baFbasic.getBasicPFfee();
 				}
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Collection) {
-				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByPfruleidAndtabid(pfruleid, tab.getValue());
+				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
 				if (pFcollection != null) {// 获取代收补助
 					return pFcollection.getCollectionPFfee();
 				}
@@ -436,7 +442,7 @@ public class PaiFeiRuleService {
 			if (type == PaiFeiBuZhuTypeEnum.Area) {
 				long areaid = 0;
 				BigDecimal areafee = new BigDecimal("0");
-				PFarea pFarea = this.pFareaDAO.getPFareaByPairuleAnd(pfruleid, tab.getValue());
+				PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 				if (pFarea != null) {
 					areafee.add(pFarea.getAreafee());
 					if (pFarea.getOverbigflag() == 1) {
@@ -478,12 +484,158 @@ public class PaiFeiRuleService {
 		return fee;
 
 	}
+	//货物超大补助
+	public BigDecimal getOverbigFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		long areaid = 0;
+		BigDecimal areafee = new BigDecimal("0");
+		if (co != null) {
+			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
+			if (pFarea != null) {
+				if (pFarea.getOverbigflag() == 1) {
+					// 需要调用申请表
+				} else {
+					// 货物体积
+					PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, 0);
+					if (pFoverbig != null) {
+						areafee.add(pFoverbig.getSubsidyfee());
+					}
+				}
+			}
+		}
+		return areafee;
+	}
+	//货物超重补助
+	public BigDecimal getOverweightFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		long areaid = 0;
+		BigDecimal areafee = new BigDecimal("0");
+		if (co != null) {
+			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
+			if (pFarea != null) {
+				PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, 0);
+				if (pFoverweight != null) {
+					areafee.add(pFoverweight.getSubsidyfee());
+				}
+			}
+		}
+		return areafee;
+	}
+
+	/**
+	 * @param model
+	 * @param pfruleid
+	 */
+	public void getEditData(Model model, long pfruleid) {
+		PaiFeiRule rule = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
+
+		// 查询基本补助
+		List<PFbasic> basicListPS = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		String showflag_basic = "no";
+		if (basicListPS != null) {
+			showflag_basic = this.getShowflagBasic(basicListPS, showflag_basic);
+			model.addAttribute("basicPS", basicListPS.get(0));
+		}
+		model.addAttribute("ps_showflag_basic", showflag_basic);
+		model.addAttribute("basicListPS", basicListPS);
+
+		// 查询代收补助
+		List<PFcollection> collectionListPS = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		String showflag_collectionPS = "no";
+		if (collectionListPS != null) {
+			showflag_collectionPS = this.getShowflagCollection(collectionListPS, showflag_collectionPS);
+			model.addAttribute("collectionPS", collectionListPS.get(0));
+		}
+		model.addAttribute("ps_showflag_collection", showflag_collectionPS);
+		model.addAttribute("collectionListPS", collectionListPS);
+
+		List<PFarea> pfareaListPS = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		model.addAttribute("pfareaListPS", pfareaListPS);
+
+		PFbusiness buFbusinessPS = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		model.addAttribute("buFbusinessPS", buFbusinessPS);
+
+		PFoverarea overareaPS = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		model.addAttribute("overareaPS", overareaPS);
+
+		List<PFinsertion> insertionListPS = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		model.addAttribute("insertionListPS", insertionListPS);
+
+		model.addAttribute("rule", rule);
+		model.addAttribute("edit", 1);
+	}
+
+	/**
+	 * @param basicListPS
+	 * @param showflag_basic
+	 * @return
+	 */
+	private String getShowflagBasic(List<PFbasic> basicList, String showflag_basic) {
+		for (PFbasic pf : basicList) {
+			if (pf.getShowflag() == 1) {
+				showflag_basic = "yes";
+				break;
+			}
+		}
+		return showflag_basic;
+	}
+
+	private String getShowflagCollection(List<PFcollection> PFcollection, String showflag_collection) {
+		for (PFcollection pf : PFcollection) {
+			if (pf.getShowflag() == 1) {
+				showflag_collection = "yes";
+				break;
+			}
+		}
+		return showflag_collection;
+	}
+
+	/**
+	 * @param model
+	 * @param request
+	 */
+	@Transactional
+	public void editType(String json, String rulejson, String type, Model model) {
+		// String edittype=request.getParameter("edittype");
+		JSONObject object = JSONObject.fromObject(rulejson);
+		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(object, PaiFeiRule.class);
+		if (type.equals("_rule")) {
+			this.paiFeiRuleDAO.updatePaiFeiRule(rule);
+			model.addAttribute("rule", rule);
+		}
+		if (type.contains("_")) {
+			String flags[] = type.split("_");
+			String tabs = flags[0];
+			String bztype = flags[1];
+			if (tabs.equals("ps")) {
+				if (bztype.equals("basic")) {
+					List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(JSONArray.fromObject(json), PFbasic.class);
+					if (pfbasicList != null) {
+
+						this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), PaiFeiRuleTabEnum.Paisong.getValue());
+
+						for (PFbasic pf : pfbasicList) {
+							pf.setPfruleid(rule.getId());
+							pf.setTypeid(rule.getType());
+							pf.setTabid(PaiFeiRuleTabEnum.Paisong.getValue());
+							this.savedata(pf);
+						}
+					}
+				}
+			}
+		}
+
+	}
 
 	@Test
-	public void test() {// ,
-						// {\"areaid\":\"3123\",\"overbigflag\":\"3123\",\"areaname\":\"3123\",\"areafee\":\"3123\"}
-		String json = "{'ps':{'area':[{'areafee':'3123','overbig':[{'mincount':'213','maxcount':'213','subsidyfee':'213','remark':'123'}],'overweight':[{'mincount':'123','maxcount':'123','subsidyfee':'123','remark':'123'}]},{'areafee':'99999','overbig':[{'mincount':'9999','maxcount':'999','subsidyfee':'999','remark':'999'},{'mincount':'9999','maxcount':'9999','subsidyfee':'999','remark':'99999'}],'overweight':[{'mincount':'9999','maxcount':'9999','subsidyfee':'9999','remark':'99999'}]}]}}";
-		PaifeiRuleJson ruleJson = (PaifeiRuleJson) JSONObject.toBean(JSONObject.fromObject(json), PaifeiRuleJson.class);
-		System.out.println(ruleJson);
+	public void test() {
+		JSONArray jsonStrs = new JSONArray();
+		jsonStrs.add(0, "2011-01-01");
+		jsonStrs.add(1, "2011-01-03");
+		jsonStrs.add(2, "2011-01-04 11:11:11");
+		String json = "[{\"showflag\":\"1\",\"customerid\":\"1\",\"basicPFfee\":\"1111.00\",\"remark\":\"1111\"},{\"customerid\":\"2\",\"basicPFfee\":\"222\",\"remark\":\"222\"}]";
+		JSONArray array = JSONArray.fromObject(json);
+		List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(array, PFbasic.class);
+		System.out.println(pfbasicList);
 	}
 }

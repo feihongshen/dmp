@@ -6,6 +6,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +39,7 @@ public class PFcollectionDAO {
 			pf.setPfruleid(rs.getLong("pfruleid"));
 			pf.setTypeid(rs.getInt("typeid"));
 			pf.setTabid(rs.getInt("tabid"));
+			pf.setShowflag(rs.getInt("showflag"));
 			pf.setRemark(StringUtil.nullConvertToEmptyString(rs.getString("remark")));
 			return pf;
 		}}
@@ -46,7 +48,7 @@ public class PFcollectionDAO {
 	 * @param pfb
 	 */
 	public int credata(final PFcollection pfb) {
-		String sql = "insert  INTO `paifeirule_collection` (`customerid`, `collectionPFfee`, `remark`, `typeid`, `pfruleid`,`tabid`) VALUES (?, ?, ?, ?, ?, ?); ";
+		String sql = "insert  INTO `paifeirule_collection` (`customerid`, `collectionPFfee`, `remark`, `typeid`, `pfruleid`,`tabid`,`showflag`) VALUES (?,?, ?, ?, ?, ?, ?); ";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -57,6 +59,7 @@ public class PFcollectionDAO {
 				ps.setInt(4, pfb.getTypeid());
 				ps.setLong(5, pfb.getPfruleid());
 				ps.setInt(6, pfb.getTabid());
+				ps.setInt(7, pfb.getShowflag());
 
 			}
 		});
@@ -79,7 +82,7 @@ public class PFcollectionDAO {
 		}
 	}
 	public int updatePFcollection(final PFcollection pfb) {
-		String sql = "update `paifeirule_collection` set `customerid`=?, `collectionPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? where id=?";
+		String sql = "update `paifeirule_collection` set `customerid`=?, `collectionPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? ,`showflag`=? where id=?";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -90,7 +93,8 @@ public class PFcollectionDAO {
 				ps.setInt(4, pfb.getTypeid());
 				ps.setLong(5, pfb.getPfruleid());
 				ps.setInt(6, pfb.getTabid());
-				ps.setLong(7, pfb.getId());
+				ps.setInt(7, pfb.getShowflag());
+				ps.setLong(8, pfb.getId());
 			}
 		});
 	}
@@ -107,11 +111,26 @@ public class PFcollectionDAO {
 	 * @param value
 	 * @return
 	 */
-	public PFcollection getPFcollectionByPfruleidAndtabid(long pfruleid, int tabid) {
+	public PFcollection getPFcollectionByPfruleidAndtabid(long pfruleid, int tabid,long customeird) {
+		String sql = "select * from paifeirule_collection where pfruleid=? and tabid=? and customeird=?";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFcollectionRowMapper(), pfruleid, tabid,customeird);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @param pfruleid
+	 * @param value
+	 * @return
+	 */
+	public List<PFcollection> getPFcollectionByPfruleidAndTabid(long pfruleid, int tabid) {
 		String sql = "select * from paifeirule_collection where pfruleid=? and tabid=?";
 
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFcollectionRowMapper(), pfruleid, tabid);
+			return this.jdbcTemplate.query(sql, new PFcollectionRowMapper(), pfruleid, tabid);
 		} catch (Exception e) {
 			return null;
 		}

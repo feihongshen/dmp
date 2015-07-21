@@ -6,6 +6,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,6 +44,7 @@ public class PFbasicDAO {
 			pf.setPfruleid(rs.getLong("pfruleid"));
 			pf.setTypeid(rs.getInt("typeid"));
 			pf.setTabid(rs.getInt("tabid"));
+			pf.setShowflag(rs.getInt("showflag"));
 			pf.setRemark(StringUtil.nullConvertToEmptyString(rs.getString("remark")));
 			return pf;
 		}
@@ -52,7 +54,7 @@ public class PFbasicDAO {
 	 * @param pfb
 	 */
 	public int credata(final PFbasic pfb) {
-		String sql = "insert  INTO `paifeirule_basic` (`customerid`, `basicPFfee`, `remark`, `typeid`, `pfruleid`,`tabid`) VALUES (?, ?, ?, ?, ?, ?); ";
+		String sql = "insert  INTO `paifeirule_basic` (`customerid`, `basicPFfee`, `remark`, `typeid`, `pfruleid`,`tabid`,`showflag`) VALUES (?,?, ?, ?, ?, ?, ?); ";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -63,6 +65,7 @@ public class PFbasicDAO {
 				ps.setInt(4, pfb.getTypeid());
 				ps.setLong(5, pfb.getPfruleid());
 				ps.setInt(6, pfb.getTabid());
+				ps.setInt(7, pfb.getShowflag());
 
 			}
 		});
@@ -85,7 +88,7 @@ public class PFbasicDAO {
 		}
 	}
 	public int updatePFbasic(final PFbasic pfb) {
-		String sql = "update `paifeirule_basic` set `customerid`=?, `basicPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? where id=?";
+		String sql = "update `paifeirule_basic` set `customerid`=?, `basicPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? ,`showflag`=? where id=?";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -96,7 +99,8 @@ public class PFbasicDAO {
 				ps.setInt(4, pfb.getTypeid());
 				ps.setLong(5, pfb.getPfruleid());
 				ps.setInt(6, pfb.getTabid());
-				ps.setLong(7, pfb.getId());
+				ps.setInt(7, pfb.getShowflag());
+				ps.setLong(8, pfb.getId());
 			}
 		});
 	}
@@ -107,20 +111,24 @@ public class PFbasicDAO {
 		String sql = "delete from paifeirule_basic where id=? ";
 		this.jdbcTemplate.update(sql, id);
 	}
-	public PFbasic getPFbasicByPfruleid(long pfruleid) {
-		String sql = "select * from paifeirule_basic where pfruleid=? ";
+	public int deletePFbasicByPfRuleidAndTabid(long pfruleid,int tabid) {
+		String sql = "delete from paifeirule_basic where pfruleid=? and tabid=? ";
+		return 	this.jdbcTemplate.update(sql, pfruleid,tabid);
+	}
+	public List<PFbasic> getPFbasicByPfruleidAndTabid(long pfruleid,long tabid) {
+		String sql = "select * from paifeirule_basic where pfruleid=? and tabid=? ";
 
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid);
+			return this.jdbcTemplate.query(sql, new PFbasicRowMapper(), pfruleid,tabid);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	public PFbasic getPFbasicByPfruleidAndtabid(long pfruleid,int tabid) {
-		String sql = "select * from paifeirule_basic where pfruleid=? and tabid=?";
+	public PFbasic getPFbasicByPfruleidAndtabidAndCustomerid(long pfruleid,int tabid,long customerid) {
+		String sql = "select * from paifeirule_basic where pfruleid=? and tabid=? and customerid=?";
 
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid,tabid);
+			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid,tabid,customerid);
 		} catch (Exception e) {
 			return null;
 		}

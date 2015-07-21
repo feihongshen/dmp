@@ -17,6 +17,7 @@ private String remark;
 private int typeid;
 private int tabid;
 private long pfruleid;
+private int showflag;
 /**
  * @return the id
  */
@@ -100,6 +101,18 @@ public int getTabid() {
  */
 public void setTabid(int tabid) {
 	this.tabid = tabid;
+}
+/**
+ * @return the showflag
+ */
+public int getShowflag() {
+	return this.showflag;
+}
+/**
+ * @param showflag the showflag to set
+ */
+public void setShowflag(int showflag) {
+	this.showflag = showflag;
 }
 
 }
