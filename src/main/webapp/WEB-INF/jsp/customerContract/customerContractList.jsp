@@ -528,22 +528,22 @@ function showBox(data){
 		'			<form method="post" onSubmit="addContract(this);return false;" action="<%=request.getContextPath()%>/customerContract/addCustomerContractfile;jsessionid=<%=session.getId()%>" id="addcallerForm" enctype="multipart/form-data">'+
 		'		 	<table>'+
 		'					<tr>'+
-		'						<th align="left"><font color="red">*</font>编号:</th>'+
+		'						<td align="left" style="font-size:13px">编号:</td>'+
 		'						<td><input type="text" id="number" name="number" maxlength="20" value="[自动生成]" style="width:150px"></input></td>'+
-		'						<th align="left">合同状态:</th>'+
+		'						<th align="left" style="font-size:13px">合同状态:</th>'+
 		'						<td>'+
 		'							<input type="text" id="contractstatus" name="contractstatus" value="1" style="display: none"></input>'+		
 		'							<input type="text"  value="新建" disabled="disabled"  style="background-color:#DCDCDC;width:150px"></input>'+		
 		'		           		</td>'+
-		'						<th align="left"><font color="red">*</font>合同日期范围:</th>'+
-		'						<td>'+
+		'						<th align="left" style="font-size:13px"><font color="red">*</font>合同日期范围:</th>'+
+		'						<td style="font-size:13px">'+
 		'							<input type="text" name="contractstartdate" id="contractstartdate"style="width:68px"  maxlength="10">'+
 		'							至'+
 		'							<input type="text" name="contractenddate" id="contractenddate"style="width:67px"  maxlength="10">'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">客户名称:</th>'+
+		'						<th align="left" style="font-size:13px">客户名称:</th>'+
 		'						<td>'+
 		'							<select id="customerid" name="customerid" style="width:155px">'+
 		'								<%for(Customer br : customerList){ %>'+
@@ -551,14 +551,14 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">合同类型:</th>'+
+		'						<th align="left" style="font-size:13px">合同类型:</th>'+
 		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype" style="width:155px">'+
 		'								<%for(ContracTypeEnum br : ContracTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">是否有押金:</th>'+
+		'						<th align="left" style="font-size:13px">是否有押金:</th>'+
 		'						<td>'+
 		'							<select id="whetherhavedeposit" name ="whetherhavedeposit" onchange="show();" style="width:155px" >'+
 		'								<%for(WhetherHaveDepositEnum br : WhetherHaveDepositEnum.values()){ %>'+
@@ -568,15 +568,15 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">甲方全称:</th>'+
+		'						<th align="left" style="font-size:13px">甲方全称:</th>'+
 		'						<td><input type="text" name="partyaname" value="" id="partyaname" maxlength="20"style="width:150px" /></td>'+
-		'						<th align="left">乙方全称</th>'+
+		'						<th align="left" style="font-size:13px">乙方全称</th>'+
 		'						<td><input type="text" name="yifangquancheng" value="" id="yifangquancheng" maxlength="20" style="width:150px"/></td>'+
-		'						<th align="left" id="contractors" style="display: none"><font color="red">*</font>其他合同商:</th>'+
+		'						<th align="left" id="contractors" style="font-size:13px;display: none"><font color="red">*</font>其他合同商:</th>'+
 		'						<td><input type="text" style="display: none" name="othercontractors" value="" id="othercontractors" maxlength="20" style="width:150px"/></td>'+
 		'					</tr>'+			
 		'					<tr>'+
-		'						<th align="left">代收货款结算周期:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款结算周期:</th>'+
 		'						<td>'+
 		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -584,7 +584,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">货款结算方式:</th>'+
+		'						<th align="left" style="font-size:13px">货款结算方式:</th>'+
 		'						<td>'+
 		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -594,7 +594,7 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">派费结算周期:</th>'+
+		'						<th align="left" style="font-size:13px">派费结算周期:</th>'+
 		'						<td>'+
 		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -602,7 +602,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">派费结算方式:</th>'+
+		'						<th align="left" style="font-size:13px">派费结算方式:</th>'+
 		'						<td>'+
 		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -612,11 +612,11 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">营销负责人:</th>'+
+		'						<th align="left" style="font-size:13px">营销负责人:</th>'+
 		'						<td>'+
 		'							<input type="text" id="marketingprincipal"  value="" name="marketingprincipal" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">发票类型:</th>'+
+		'						<th align="left" style="font-size:13px">发票类型:</th>'+
 		'						<td>'+
 		'							<select id="invoicetype" name ="invoicetype" style="width:155px" >'+
 		'								<%for(InvoiceTypeEnum br : InvoiceTypeEnum.values()){ %>'+
@@ -624,39 +624,39 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">税率(%):</th>'+
+		'						<th align="left" style="font-size:13px">税率(%):</th>'+
 		'						<td>'+
 		'							<input type="text" id="taxrate" name="taxrate" maxlength="20" value="0" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">代收货款银行:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbank" value="" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">代收货款银行账户:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbankaccount" value="" onblur="account(\'bank\');" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">费用银行:</th>'+
+		'						<th align="left" style="font-size:13px">费用银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="expensebank" name="expensebank" value=""  maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">费用银行账户:</th>'+
+		'						<th align="left" style="font-size:13px">费用银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="expensebankaccount" value="" onblur="account(\'expensebank\');" name="expensebankaccount" maxlength="20"style="width:150px" />'+
-		'						</td>'+
+		'						</td>'+ 
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">合同详细描述:</th>'+
+		'						<th align="left" style="font-size:13px">合同详细描述:</th>'+
 		'						<td colspan="5">'+
 		'							<textarea style="width:100%;height:60px;resize: none;" value="" name="contractdescription" id="contractdescription" style="width:150px"></textarea>'+
 		'						</td>'+
 		'					</tr>'+
 		'					  <tr>'+
-		' 						<th align="left" for="fileField" >上传附件：</th>'+
+		' 						<th align="left" for="fileField" style="font-size:13px">上传附件：</th>'+
 		'						<td> '+
 		'							<span id="swfupload-control">&nbsp;&nbsp;&nbsp;<input type="text" id="txtFileName"  disabled="true" style="border: solid 1px; background-color: #FFFFFF;width:150px" />'+
 		'						</td>'+
@@ -665,25 +665,25 @@ function showBox(data){
 		'						</td>'+
 		'					</tr> '+
 		'					 <tr id="firstDepositTr" >'+
-		'						<th align="left"><font color="red">*</font>押金支付日期:</th>'+
+		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金支付日期:</th>'+
 		'						<td><input type="text" name="depositpaymentdate" id="depositpaymentdate" value="" style="width:150px"/></td>'+
-		'						<th align="left"><font color="red">*</font>押金支付金额:</th>'+
+		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金支付金额:</th>'+
 		'						<td><input type="text" name="depositpaymentamount" value="" id="depositpaymentamount" maxlength="20"  style="width:150px"/></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>					'+
 		'					<tr id="secondDepositTr">'+
-		'						<th align="left"><font color="red">*</font>押金支付人:</th>'+
+		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金支付人:</th>'+
 		'						<td><input type="text" name="depositpaymentperson" value="" id="depositpaymentperson" maxlength="20" style="width:150px"/></td>'+
-		'						<th align="left"><font color="red">*</font>押金收取人:</th>'+
+		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金收取人:</th>'+
 		'						<td><input type="text" name="depositgatherperson" value="" id="depositgatherperson" maxlength="20" style="width:150px" /></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>'+
 		'			</table>'+
 		'			<div align="center">'+
-		'	 			<input type="submit" value="保存" align="center" class="button">'+
-		'				<input type="button" value="返回" class="button" align="center" onclick="closeBox()"/>'+
+		'	 			<input type="submit" value="保存" align="center" class="input_button2">'+
+		'				<input type="button" value="返回"  align="center" class="input_button2" onclick="closeBox()"/>'+
 		'			</div>'+
 		'		</form>	'+
 		'	</div>'+
@@ -720,9 +720,9 @@ function showBox(data){
 		'		 	<table>'+
 		'					<tr>'+
 		'						<input type="hidden" name="id" id="id" >'+
-		'						<th align="left">编号:</th>'+
+		'						<th align="left" style="font-size:13px">编号:</th>'+
 		'						<td><input type="text" id="number" name="number" maxlength="20"  readonly="readonly" style="background-color:#DCDCDC;width:150px"></input></td>'+
-		'						<th align="left">合同状态:</th>'+
+		'						<th align="left" style="font-size:13px">合同状态:</th>'+
 		'						<td>'+
 		'							<select id="contractstatus" name ="contractstatus" disabled="disabled" style="background-color:#DCDCDC;width:155px" readonly="readonly">'+
 		'								<%for(ContractStateEnum br : ContractStateEnum.values()){ %>'+
@@ -730,7 +730,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'		           		</td>'+
-		'						<th align="left">合同日期范围:</th>'+
+		'						<th align="left" style="font-size:13px">合同日期范围:</th>'+
 		'						<td>'+
 		'							<input type="text" name="contractstartdate"  id="contractstartdate" style="display: none"  maxlength="10">'+
 		'							<input type="text" name="contractenddate" id="contractenddate" style="display: none"  maxlength="10">'+
@@ -738,7 +738,7 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">客户名称:</th>'+
+		'						<th align="left" style="font-size:13px">客户名称:</th>'+
 		'						<td>'+
 		'							<select id="customerid" name="customerid"  disabled="disabled" style="background-color:#DCDCDC;width:155px">'+
 		'								<%for(Customer br : customerList){ %>'+
@@ -746,14 +746,14 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">合同类型:</th>'+
+		'						<th align="left" style="font-size:13px">合同类型:</th>'+
 		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype"style="background-color:#DCDCDC;width:155px"  disabled="disabled">'+
 		'								<%for(ContracTypeEnum br : ContracTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">是否有押金:</th>'+
+		'						<th align="left" style="font-size:13px">是否有押金:</th>'+
 		'						<td>'+
 		'							<select id="whetherhavedeposit" name ="whetherhavedeposit" onchange="show();" style="background-color:#DCDCDC;width:155px" disabled="disabled" >'+
 		'								<%for(WhetherHaveDepositEnum br : WhetherHaveDepositEnum.values()){ %>'+
@@ -763,15 +763,15 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">甲方全称:</th>'+
+		'						<th align="left" style="font-size:13px">甲方全称:</th>'+
 		'						<td><input type="text" name="partyaname"  id="partyaname" maxlength="20" style="width:150px"/></td>'+
-		'						<th align="left">乙方全称</th>'+
+		'						<th align="left" style="font-size:13px">乙方全称</th>'+
 		'						<td><input type="text" name="yifangquancheng"  id="yifangquancheng" maxlength="20" style="width:150px"/></td>'+
-		'						<th align="left" id="contractors" style="display: none">其他合同商:</th>'+
+		'						<th align="left" id="contractors" style="display: none;font-size:13px">其他合同商:</th>'+
 		'						<td><input type="text" style="display: none" name="othercontractors"  id="othercontractors" maxlength="20" style="width:150px"/></td>'+
 		'					</tr>'+		
 		'					<tr>'+
-		'						<th align="left">代收货款结算周期:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款结算周期:</th>'+
 		'						<td>'+
 		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -779,7 +779,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">货款结算方式:</th>'+
+		'						<th align="left" style="font-size:13px">货款结算方式:</th>'+
 		'						<td>'+
 		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -789,7 +789,7 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">派费结算周期:</th>'+
+		'						<th align="left" style="font-size:13px">派费结算周期:</th>'+
 		'						<td>'+
 		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:155px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
@@ -797,7 +797,7 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">派费结算方式:</th>'+
+		'						<th align="left" style="font-size:13px">派费结算方式:</th>'+
 		'						<td>'+
 		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:155px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
@@ -807,11 +807,11 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">营销负责人:</th>'+
+		'						<th align="left" style="font-size:13px">营销负责人:</th>'+
 		'						<td>'+
 		'							<input type="text" id="marketingprincipal" name="marketingprincipal" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">发票类型:</th>'+
+		'						<th align="left" style="font-size:13px">发票类型:</th>'+
 		'						<td>'+
 		'							<select id="invoicetype" name ="invoicetype" style="width:155px">'+
 		'								<%for(InvoiceTypeEnum br : InvoiceTypeEnum.values()){ %>'+
@@ -819,55 +819,55 @@ function showBox(data){
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
-		'						<th align="left">税率(%):</th>'+
+		'						<th align="left" style="font-size:13px">税率(%):</th>'+
 		'						<td>'+
 		'							<input type="text" id="taxrate" name="taxrate" maxlength="20" style="width:155px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">代收货款银行:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbank" name="collectionloanbank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">代收货款银行账户:</th>'+
+		'						<th align="left" style="font-size:13px">代收货款银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="collectionloanbankaccount" name="collectionloanbankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">费用银行:</th>'+
+		'						<th align="left" style="font-size:13px">费用银行:</th>'+
 		'						<td>'+
 		'							<input type="text" id="expensebank" name="expensebank" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
-		'						<th align="left">费用银行账户:</th>'+
+		'						<th align="left" style="font-size:13px">费用银行账户:</th>'+
 		'						<td>'+
 		'							<input type="text" id="expensebankaccount" name="expensebankaccount" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
-		'						<th align="left">合同详细描述:</th>'+
+		'						<th align="left" style="font-size:13px">合同详细描述:</th>'+
 		'						<td colspan="5">'+
 		'							<textarea style="width:100%;height:60px;resize: none;" name="contractdescription" id="contractdescription"></textarea>'+
 		'						</td>'+
 		'					</tr>'+
 		'					 <tr id="contractFile" style="display: none">'+
-		'						<th align="left">合同附件:</th>'+
+		'						<th align="left" style="font-size:13px">合同附件:</th>'+
 		'						<td colspan="5">'+
-		'							<span><a href="" id="file" >附件下载</a></span>'+
+		'							<span style="font-size:13px"><a href="" id="file" >附件下载</a></span>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr id="firstDepositTr" style="display: none">'+
-		'						<th align="left">押金支付日期:</th>'+
+		'						<th align="left" style="font-size:13px">押金支付日期:</th>'+
 		'						<td><input type="text" name="depositpaymentdate" id="depositpaymentdate" style="background-color:#DCDCDC;width:150px" readonly="readonly"/></td>'+
-		'						<th align="left">押金支付金额:</th>'+
+		'						<th align="left" style="font-size:13px">押金支付金额:</th>'+
 		'						<td><input type="text" name="depositpaymentamount"  id="depositpaymentamount" maxlength="20" style="background-color:#DCDCDC;width:150px" readonly="readonly" /></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>					'+
 		'					<tr id="secondDepositTr" style="display: none">'+
-		'						<th align="left">押金支付人:</th>'+
+		'						<th align="left" style="font-size:13px">押金支付人:</th>'+
 		'						<td><input type="text" name="depositpaymentperson" style="background-color:#DCDCDC;width:150px" id="depositpaymentperson" maxlength="20"  readonly="readonly"/></td>'+
-		'						<th align="left">押金收取人:</th>'+
+		'						<th align="left" style="font-size:13px">押金收取人:</th>'+
 		'						<td><input type="text"  name="depositgatherperson" id="depositgatherperson" maxlength="20" style="width:150px"/></td>'+
 		'						<th></th>'+
 		'						<td></td>'+
@@ -878,11 +878,11 @@ function showBox(data){
 		'								<tbody>'+
 		'									<tr>'+
 		'										<td align="center"><input type="checkbox" name="checkAllTrs" onclick="javascript:checkAllTrCheckboxes();"/></td>'+
-		'										<td align="center"  width="120px">押金退换日期</td>'+
-		'										<td align="center"  width="120px">押金退还金额</td>'+
-		'										<td align="center"  width="120px">退款人</td>'+
-		'										<td align="center"  width="120px">收款人</td>'+
-		'										<td align="center"  width="180px">备注</td>'+
+		'										<td align="center"  width="120px" style="font-size:13px">押金退换日期</td>'+
+		'										<td align="center"  width="120px" style="font-size:13px">押金退还金额</td>'+
+		'										<td align="center"  width="120px" style="font-size:13px">退款人</td>'+
+		'										<td align="center"  width="120px" style="font-size:13px">收款人</td>'+
+		'										<td align="center"  width="180px" style="font-size:13px">备注</td>'+
 		'									</tr>'+
 		'								</tbody>'+
 		'							</table>'+
@@ -898,8 +898,8 @@ function showBox(data){
 		'		</form>	'+
 		'		</div>'+
 		'		<div align="center">'+
-		'			<input type="button" value="保存" class="button" align="center" onclick="update()">'+
-		'			<input type="button" value="返回" class="button" align="center" onclick="closeBox()"/>'+
+		'			<input type="button" value="保存" class="input_button2" align="center" onclick="update()">'+
+		'			<input type="button" value="返回" class="input_button2" align="center" onclick="closeBox()"/>'+
 		'		</div>'+
 		'		</div>';
 			
@@ -917,11 +917,11 @@ function showBox(data){
 		'			<form action="<%=request.getContextPath()%>/customerContract/customerContractList/1" id="queryContract">'+
 		'		 	<table>'+
 		'					<tr>'+
-		'				<th align="left">编号:</th>'+
+		'				<th align="left" style="font-size:13px">编号:</th>'+
 		'				<td>'+
 		'					<input type="text"  id="number" name="number"  style="width:150px"/>'+
 		'				</td>'+
-		'				<th align="left">合同状态:</th>'+
+		'				<th align="left" style="font-size:13px">合同状态:</th>'+
 		'				<td>'+
 		'					<select id="contractstatus" name ="contractstatus"  style="width:155px">'+
 		'				<option value="0" selected>----全部----</option>'+
@@ -932,7 +932,7 @@ function showBox(data){
 		'				</td>'+
 		'		</tr>'+
 		'		<tr>'+
-		'		<th align="left">客户名称:</th>'+
+		'		<th align="left" style="font-size:13px">客户名称:</th>'+
 		'		<td>'+
 		'			<select id="customerid" name="customerid" style="width:155px">'+
 		'				<option value="0" selected>----全部----</option>'+
@@ -941,27 +941,27 @@ function showBox(data){
 		'				<%} %>'+
 		'			</select>'+
 		'		</td>'+
-		'		<th align="left"> 甲方全称：</th>'+
+		'		<th align="left" style="font-size:13px"> 甲方全称：</th>'+
 		'			<td>'+
 		'				<input type="text" id="partyaname" name="partyaname" style="width:150px"/>'+
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
-		'			<th align="left">营销负责人:</th>'+
+		'			<th align="left" style="font-size:13px">营销负责人:</th>'+
 		'			<td>'+
 		'				<input type="text" id="marketingprincipal" name="marketingprincipal" style="width:150px"/>'+
 		'			</td>'+
-		'			<th align="left">其他合同商:</th>'+
+		'			<th align="left" style="font-size:13px">其他合同商:</th>'+
 		'			<td>'+
 		'				<input type="text" id="othercontractors" name="othercontractors" style="width:150px"/>'+
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
-		'			<th align="left">合同详细描述:</th>'+
+		'			<th align="left" style="font-size:13px">合同详细描述:</th>'+
 		'			<td>'+
 		'				<input type="text" id="contractdescription" name="contractdescription"  style="width:150px"/>'+
 		'			</td>'+
-		'			<th align="left">货款类型:</th>'+
+		'			<th align="left" style="font-size:13px">货款类型:</th>'+
 		'			<td>'+
 		'				<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
 		'				<option value="0" selected>----全部----</option>'+
@@ -972,17 +972,17 @@ function showBox(data){
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
-		'			<th align="left">合同开始时间:</th>'+
+		'			<th align="left" style="font-size:13px">合同开始时间:</th>'+
 		'			<td>'+
 		'				<input type="text" style="width:68px" id="createStatrtTime" name="createStatrtTime"  />至<input type="text"style="width:67px" id="createEndTime" name="createEndTime" value="${createEndTime}"/>'+
 		'			</td>'+
-		'			<th align="left">合同结束时间:</th>'+
+		'			<th align="left" style="font-size:13px">合同结束时间:</th>'+
 		'			<td>'+
 		'				<input type="text" style="width:68px" id="overStartTime" name="overStartTime" value="${overStartTime}"/>至<input type="text"style="width:67px" id="overEndTime" name="overEndTime" value="${overEndTime}"/>'+
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
-		'			<th align="left">是否有押金:</th>'+
+		'			<th align="left" style="font-size:13px">是否有押金:</th>'+
 		'			<td>'+
 		'				<select id="whetherhavedeposit" name ="whetherhavedeposit" style="width:155px">'+
 		'				 <option value="0" selected>----全部----</option>'+
@@ -991,7 +991,7 @@ function showBox(data){
 		'					<%} %>'+
 		'				</select>'+
 		'			</td>'+
-		'			<th align="left">排序:</th>'+
+		'			<th align="left" style="font-size:13px">排序:</th>'+
 		'			<td>'+
 		'				<select style="width:80px" id="sort" name ="sort" >'+
 		'					<option value="number" >编号</option>'+
@@ -1000,8 +1000,8 @@ function showBox(data){
 		'					<option value="partyaname" >甲方名称</option>'+
 		'				</select>'+
 		'				<select style="width:70px" id="method" name ="method" >'+
-		'					<option value="ASC" >升序</option>'+
 		'					<option value="DESC" >降序</option>'+
+		'					<option value="ASC" >升序</option>'+
 		'				</select>'+
 		'			</td>'+
 		'		</tr>'+
