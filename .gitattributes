@@ -753,6 +753,7 @@ src/main/java/cn/explink/controller/ParameterDetailController.java -text
 src/main/java/cn/explink/controller/PayUpController.java -text
 src/main/java/cn/explink/controller/PayUpDTO.java -text
 src/main/java/cn/explink/controller/PayWayController.java -text
+src/main/java/cn/explink/controller/PaybusinessbenefitsController.java -text
 src/main/java/cn/explink/controller/PaymetDTO.java -text
 src/main/java/cn/explink/controller/PenalizeInsideView.java -text
 src/main/java/cn/explink/controller/PenalizeOutBillController.java -text
@@ -977,6 +978,7 @@ src/main/java/cn/explink/dao/PaiFeiRuleDAO.java -text
 src/main/java/cn/explink/dao/ParameterDetailDAO.java -text
 src/main/java/cn/explink/dao/PayUpDAO.java -text
 src/main/java/cn/explink/dao/PayWayDao.java -text
+src/main/java/cn/explink/dao/PaybusinessbenefitsDao.java -text
 src/main/java/cn/explink/dao/PenalizeOutBillDAO.java -text
 src/main/java/cn/explink/dao/PenalizeOutDAO.java -text
 src/main/java/cn/explink/dao/PenalizeOutImportErrorRecordDAO.java -text
@@ -1192,6 +1194,7 @@ src/main/java/cn/explink/domain/PairList.java -text
 src/main/java/cn/explink/domain/ParameterDetail.java -text
 src/main/java/cn/explink/domain/PayUp.java -text
 src/main/java/cn/explink/domain/PayWay.java -text
+src/main/java/cn/explink/domain/Paybusinessbenefits.java -text
 src/main/java/cn/explink/domain/PenalizeInside.java -text
 src/main/java/cn/explink/domain/PenalizeInsideShenhe.java -text
 src/main/java/cn/explink/domain/PenalizeOut.java -text
@@ -1677,6 +1680,7 @@ src/main/java/cn/explink/service/OrgBillAdjustmentRecordService.java -text
 src/main/java/cn/explink/service/PaiFeiRuleService.java -text
 src/main/java/cn/explink/service/ParameterDetailService.java -text
 src/main/java/cn/explink/service/PayUpService.java -text
+src/main/java/cn/explink/service/PaybusinessbenefitsService.java -text
 src/main/java/cn/explink/service/PenalizeOutBillService.java -text
 src/main/java/cn/explink/service/PenalizeOutService.java -text
 src/main/java/cn/explink/service/PosPayMoneyService.java -text
@@ -2441,6 +2445,7 @@ src/main/webapp/WEB-INF/jsp/sMSConf/setsmsview.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/save.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/smsModelview.jsp -text
 src/main/webapp/WEB-INF/jsp/sMSSetModel/smsSetModel.jsp -text
+src/main/webapp/WEB-INF/jsp/salary/paybusinessbenefits/list.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryCount/list.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryCount/showfind.jsp -text
 src/main/webapp/WEB-INF/jsp/salary/salaryFixed/errorRecords.jsp -text

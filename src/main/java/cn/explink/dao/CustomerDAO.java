@@ -323,4 +323,12 @@ public class CustomerDAO {
 		String sql = "select * from express_set_customer_info ";
 		return this.jdbcTemplate.query(sql, new CustomerRowMapper());
 	}
+	public List<Customer> getCustomerByCustomerName(String customername) {
+		String sql = "select * from express_set_customer_info";
+		if (customername.length() > 0) {
+			sql += " where customername like '%" + customername + "%'";
+		}
+		List<Customer> customerList = this.jdbcTemplate.query(sql, new CustomerRowMapper());
+		return customerList;
+	}
 }
