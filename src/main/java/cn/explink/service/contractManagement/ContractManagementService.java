@@ -104,7 +104,7 @@ public class ContractManagementService {
 			for (int i = 0; i < contractList.size(); i++) {
 				CustomerContractManagement contract = contractList.get(i);
 				String maxNumber = contract.getNumber();
-				if ((maxNumber.length() == 14) && "C_J".equals(maxNumber.substring(0, 3))) {
+				if ((maxNumber.length() == 14) && "C_K".equals(maxNumber.substring(0, 3))) {
 					String partContractNo = maxNumber.substring(0, 11);
 					String maxOrderStr = maxNumber.substring(11);
 					int maxOrderInt = Integer.valueOf(maxOrderStr);
@@ -119,7 +119,7 @@ public class ContractManagementService {
 			}
 		}
 		if (StringUtils.isBlank(number)) {
-			String rule = "C_J";
+			String rule = "C_K";
 			String date = DateTimeUtil.getCurrentDate();
 			String orderStr = "001";
 			number = rule + date + orderStr;
