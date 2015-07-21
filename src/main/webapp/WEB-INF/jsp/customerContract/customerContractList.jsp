@@ -545,14 +545,14 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">客户名称:</th>'+
 		'						<td>'+
-		'							<select id="customerid" name="customerid" style="width:155px">'+
+		'							<select id="customerid" name="customerid" style="width:150px">'+
 		'								<%for(Customer br : customerList){ %>'+
 		'										<option value="<%=br.getCustomerid() %>" ><%=br.getCustomername()%></option>'+
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">合同类型:</th>'+
-		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype" style="width:155px">'+
+		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype" style="width:150px">'+
 		'								<%for(ContracTypeEnum br : ContracTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -560,7 +560,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">是否有押金:</th>'+
 		'						<td>'+
-		'							<select id="whetherhavedeposit" name ="whetherhavedeposit" onchange="show();" style="width:155px" >'+
+		'							<select id="whetherhavedeposit" name ="whetherhavedeposit" onchange="show();" style="width:150px" >'+
 		'								<%for(WhetherHaveDepositEnum br : WhetherHaveDepositEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -578,7 +578,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">代收货款结算周期:</th>'+
 		'						<td>'+
-		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
+		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:150px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -586,7 +586,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">货款结算方式:</th>'+
 		'						<td>'+
-		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
+		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:150px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -596,7 +596,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">派费结算周期:</th>'+
 		'						<td>'+
-		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:155px">'+
+		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:150px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -604,7 +604,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">派费结算方式:</th>'+
 		'						<td>'+
-		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:155px">'+
+		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:150px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -618,7 +618,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">发票类型:</th>'+
 		'						<td>'+
-		'							<select id="invoicetype" name ="invoicetype" style="width:155px" >'+
+		'							<select id="invoicetype" name ="invoicetype" style="width:150px" >'+
 		'								<%for(InvoiceTypeEnum br : InvoiceTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -724,7 +724,7 @@ function showBox(data){
 		'						<td><input type="text" id="number" name="number" maxlength="20"  readonly="readonly" style="background-color:#DCDCDC;width:150px"></input></td>'+
 		'						<th align="left" style="font-size:13px">合同状态:</th>'+
 		'						<td>'+
-		'							<select id="contractstatus" name ="contractstatus" disabled="disabled" style="background-color:#DCDCDC;width:155px" readonly="readonly">'+
+		'							<select id="contractstatus" name ="contractstatus" disabled="disabled" style="background-color:#DCDCDC;width:150px" readonly="readonly">'+
 		'								<%for(ContractStateEnum br : ContractStateEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -734,20 +734,20 @@ function showBox(data){
 		'						<td>'+
 		'							<input type="text" name="contractstartdate"  id="contractstartdate" style="display: none"  maxlength="10">'+
 		'							<input type="text" name="contractenddate" id="contractenddate" style="display: none"  maxlength="10">'+
-		'							<input type="text" name="contractdate" id="contractdate"  maxlength="10" disabled="disabled" style="background-color:#DCDCDC;width:150px">'+
+		'							<input type="text" name="contractdate" id="contractdate"  maxlength="10" disabled="disabled" style="background-color:#DCDCDC;width:155px">'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">客户名称:</th>'+
 		'						<td>'+
-		'							<select id="customerid" name="customerid"  disabled="disabled" style="background-color:#DCDCDC;width:155px">'+
+		'							<select id="customerid" name="customerid"  disabled="disabled" style="background-color:#DCDCDC;width:150px">'+
 		'								<%for(Customer br : customerList){ %>'+
 		'									<option value="<%=br.getCustomerid() %>" ><%=br.getCustomername()%></option>'+
 		'								<%} %>'+
 		'							</select>'+
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">合同类型:</th>'+
-		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype"style="background-color:#DCDCDC;width:155px"  disabled="disabled">'+
+		'						<td><select id="contracttype" onclick="showOthercontractors();" name="contracttype"style="background-color:#DCDCDC;width:150px"  disabled="disabled">'+
 		'								<%for(ContracTypeEnum br : ContracTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -773,7 +773,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">代收货款结算周期:</th>'+
 		'						<td>'+
-		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:155px">'+
+		'							<select id="loanssettlementcycle" name ="loanssettlementcycle" style="width:150px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -781,7 +781,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">货款结算方式:</th>'+
 		'						<td>'+
-		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
+		'							<select id="loansandsettlementway" name ="loansandsettlementway" style="width:150px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -791,7 +791,7 @@ function showBox(data){
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">派费结算周期:</th>'+
 		'						<td>'+
-		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:155px">'+
+		'							<select id="paifeisettlementcycle" name ="paifeisettlementcycle" style="width:150px">'+
 		'								<%for(SettlementPeriodEnum br : SettlementPeriodEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -799,7 +799,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">派费结算方式:</th>'+
 		'						<td>'+
-		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:155px">'+
+		'							<select id="paifeisettlementtype" name ="paifeisettlementtype" style="width:150px">'+
 		'								<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -813,7 +813,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">发票类型:</th>'+
 		'						<td>'+
-		'							<select id="invoicetype" name ="invoicetype" style="width:155px">'+
+		'							<select id="invoicetype" name ="invoicetype" style="width:150px">'+
 		'								<%for(InvoiceTypeEnum br : InvoiceTypeEnum.values()){ %>'+
 		'									<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
 		'								<%} %>'+
@@ -821,7 +821,7 @@ function showBox(data){
 		'						</td>'+
 		'						<th align="left" style="font-size:13px">税率(%):</th>'+
 		'						<td>'+
-		'							<input type="text" id="taxrate" name="taxrate" maxlength="20" style="width:155px"/>'+
+		'							<input type="text" id="taxrate" name="taxrate" maxlength="20" style="width:150px"/>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr>'+
@@ -923,7 +923,7 @@ function showBox(data){
 		'				</td>'+
 		'				<th align="left" style="font-size:13px">合同状态:</th>'+
 		'				<td>'+
-		'					<select id="contractstatus" name ="contractstatus"  style="width:155px">'+
+		'					<select id="contractstatus" name ="contractstatus"  style="width:150px">'+
 		'				<option value="0" selected>----全部----</option>'+
 		'						<%for(ContractStateEnum br : ContractStateEnum.values()){ %>'+
 		'							<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
@@ -934,7 +934,7 @@ function showBox(data){
 		'		<tr>'+
 		'		<th align="left" style="font-size:13px">客户名称:</th>'+
 		'		<td>'+
-		'			<select id="customerid" name="customerid" style="width:155px">'+
+		'			<select id="customerid" name="customerid" style="width:150px">'+
 		'				<option value="0" selected>----全部----</option>'+
 		'				<%for(Customer br : customerList){ %>'+
 		'					<option value="<%=br.getCustomerid() %>" ><%=br.getCustomername()%></option>'+
@@ -963,7 +963,7 @@ function showBox(data){
 		'			</td>'+
 		'			<th align="left" style="font-size:13px">货款类型:</th>'+
 		'			<td>'+
-		'				<select id="loansandsettlementway" name ="loansandsettlementway" style="width:155px">'+
+		'				<select id="loansandsettlementway" name ="loansandsettlementway" style="width:150px">'+
 		'				<option value="0" selected>----全部----</option>'+
 		'					<%for(LoanTypeEnum br : LoanTypeEnum.values()){ %>'+
 		'						<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
@@ -973,18 +973,18 @@ function showBox(data){
 		'		</tr>'+
 		'		<tr>'+
 		'			<th align="left" style="font-size:13px">合同开始时间:</th>'+
-		'			<td>'+
+		'			<td style="font-size:13px">'+
 		'				<input type="text" style="width:68px" id="createStatrtTime" name="createStatrtTime"  />至<input type="text"style="width:67px" id="createEndTime" name="createEndTime" value="${createEndTime}"/>'+
 		'			</td>'+
 		'			<th align="left" style="font-size:13px">合同结束时间:</th>'+
-		'			<td>'+
+		'			<td style="font-size:13px">'+
 		'				<input type="text" style="width:68px" id="overStartTime" name="overStartTime" value="${overStartTime}"/>至<input type="text"style="width:67px" id="overEndTime" name="overEndTime" value="${overEndTime}"/>'+
 		'			</td>'+
 		'		</tr>'+
 		'		<tr>'+
 		'			<th align="left" style="font-size:13px">是否有押金:</th>'+
 		'			<td>'+
-		'				<select id="whetherhavedeposit" name ="whetherhavedeposit" style="width:155px">'+
+		'				<select id="whetherhavedeposit" name ="whetherhavedeposit" style="width:150px">'+
 		'				 <option value="0" selected>----全部----</option>'+
 		'					<%for(WhetherHaveDepositEnum br : WhetherHaveDepositEnum.values()){ %>'+
 		'						<option value="<%=br.getValue() %>" ><%=br.getText() %></option>'+
@@ -1009,8 +1009,8 @@ function showBox(data){
 		'		</form>	'+
 		'		</div>'+
 		'		<div align="center">'+
-		'			<input type="button" value="查询" class="button" align="center" onclick="query()">'+
-		'			<input type="button" value="关闭" class="button" align="center" onclick="closeBox()"/>'+
+		'			<input type="button" value="查询" class="input_button2" align="center" onclick="query()">'+
+		'			<input type="button" value="关闭" class="input_button2" align="center" onclick="closeBox()"/>'+
 		'		</div>'+
 		'		</div>';
 		$("#box_contant").append(str);
