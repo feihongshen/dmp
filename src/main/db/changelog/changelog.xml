@@ -7694,4 +7694,13 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO dmp40_function VALUES ('808050', '2', '配送员派费账单', '808050', 'diliverymanpaifeibill/diliverymanpaifeibillPage/1?', '8080' );
     	</sql>
     </changeSet>
+    <changeSet id="wangyonghe-2015-07-21-01" author="wangyonghe">
+		<sql>
+		ALTER TABLE `paifeirule_basic`
+		ADD COLUMN `showflag`  int(20) NULL COMMENT '是否区分供货商' AFTER `tabid`;
+		
+		ALTER TABLE `paifeirule_collection`
+		ADD COLUMN `showflag`  int(20) NULL COMMENT '是否区分供货商' AFTER `tabid`;
+		</sql>
+		</changeSet>
 </databaseChangeLog>
