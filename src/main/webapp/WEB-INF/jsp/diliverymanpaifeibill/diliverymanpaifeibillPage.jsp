@@ -200,7 +200,7 @@ function addbill()
 		alert("请选择所属站点！");
 		return false;
 	}
-	/* if($("#creationfrom input[name='startDate']").val() == ""){
+	if($("#creationfrom input[name='startDate']").val() == ""){
 		alert("请选择开始时间！");
 		return false;
 	}
@@ -215,7 +215,7 @@ function addbill()
 	if(!Days($("#creationfrom input[name='startDate']").val(),$("#creationfrom input[name='endDate']").val())||($("#creationfrom input[name='startDate']").val()=='' &&$("#creationfrom input[name='endDate']").val()!='')||($("#creationfrom input[name='startDate']").val()!='' &&$("#creationfrom input[name='endDate']").val()=='')){
 		alert("时间跨度不能大于两个月！");
 		return false;
-	} */
+	}
 
 	
 	if(!verify())
