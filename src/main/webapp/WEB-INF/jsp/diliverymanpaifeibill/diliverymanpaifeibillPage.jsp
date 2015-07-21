@@ -263,26 +263,28 @@ function deleteorder(){
 		alert("请选择要移除的订单！");
 		return false;
 	}
-	$.ajax({
-		type : "post",
-		dataType : "json",
-		url : "${ctx}/diliverymanpaifeibill/deleteorder",
-		data : {
-			ordernumber : ordernumber,
-			id : id
-		},
-		success : function(data) {
-			if(data.errorCode == 0){
-				$("#updatePageForm").submit();
-				/* $(chkBoxes).each(function() {
-					if ($(this)[0].checked == true)
-					{
-						$(this).parent().parent().remove();
-					}
-				});  */
+	if(confirm("确定要移除吗？")){
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "${ctx}/diliverymanpaifeibill/deleteorder",
+			data : {
+				ordernumber : ordernumber,
+				id : id
+			},
+			success : function(data) {
+				if(data.errorCode == 0){
+					$("#updatePageForm").submit();
+					/* $(chkBoxes).each(function() {
+						if ($(this)[0].checked == true)
+						{
+							$(this).parent().parent().remove();
+						}
+					});  */
+				}
 			}
-		}
-	});
+		});
+	}
 }
 
 
