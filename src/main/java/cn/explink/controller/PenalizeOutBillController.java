@@ -120,7 +120,7 @@ public class PenalizeOutBillController {
 	@RequestMapping("/addPenalizeOutBill")
 	@ResponseBody
 	public Long addPenalizeOutBill(@RequestParam(value = "compensatebig", required = false) Integer compensatebig, @RequestParam(value = "compensatesmall", required = false) Integer compensatesmall,
-			@RequestParam(value = "compensateodd", required = false) String compensateodd, @RequestParam(value = "customerid", required = false) String[] customerid,
+			@RequestParam(value = "compensateodd", required = false) String compensateodd, @RequestParam(value = "customerid", required = false) String customerid,
 			@RequestParam(value = "creationStartDate", required = false) String creationStartDate, @RequestParam(value = "creationEndDate", required = false) String creationEndDate,
 			@RequestParam(value = "compensateexplain", required = false) String compensateexplain, @RequestParam(value = "batchstate", required = false) String batchstate,
 			@RequestParam(value = "dutypersonid", required = false) String dutypersonid, @RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice,

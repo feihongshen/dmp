@@ -182,7 +182,7 @@ public class PenalizeOutBillDAO {
 			updatesql.append(", compensateexplain = ?");
 			param.add(bill.getCompensateexplain());
 		}
-		if (bill.getCompensateodd() != null) {
+		if (bill.getCompensateodd() != null&& bill.getCompensateodd()!="") {
 			updatesql.append(", compensateodd = ?");
 			param.add(bill.getCompensateodd());
 		}
@@ -195,6 +195,14 @@ public class PenalizeOutBillDAO {
 			param.add(bill.getChecktime());
 		} else {
 			updatesql.append(", checktime= null");
+		}
+		if(bill.getVerifier()!=null){
+			updatesql.append(", verifier = ?");
+			param.add(bill.getVerifier());
+		}
+		if(bill.getVerificationperson()!=null){
+			updatesql.append(", verificationperson=?");
+			param.add(bill.getVerificationperson());
 		}
 		if ((bill.getVerificationdate() != null) && (bill.getVerificationdate() != "")) {
 			updatesql.append(", verificationdate= ?");

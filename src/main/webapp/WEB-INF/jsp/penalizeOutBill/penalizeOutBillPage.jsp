@@ -24,7 +24,7 @@
 <script type="text/javascript">
 
 $(function(){
-	$("#customerselect").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+	/* $("#customerselect").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' }); */
 	$('#add').dialog('close');
 	$('#find').dialog('close');
 	
@@ -439,7 +439,11 @@ function verify(){
 			</c:forEach>
 		</td>
 		<td align="center" valign="middle" >
-			${bill.customername}
+			<c:forEach items="${customerList}" var="customer">
+   				<c:if test="${bill.customerid==customer.customerid}">
+					${customer.customername}
+				</c:if>
+			</c:forEach>
 		</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${penalizebigList}" var="pl">
@@ -456,7 +460,7 @@ function verify(){
 		</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${userList}" var="user">
-				<c:if test="${bill.founder==user.userid}">${user.username }</c:if>
+				<c:if test="${bill.founder==user.userid}">${user.realname }</c:if>
 			</c:forEach>
 		</td>
 		<td align="center" valign="middle" >
@@ -464,7 +468,7 @@ function verify(){
 		</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${userList}" var="user">
-				<c:if test="${bill.verifier==user.userid}">${user.username }</c:if>
+				<c:if test="${bill.verifier==user.userid}">${user.realname }</c:if>
 			</c:forEach>
 		</td>
 		<td align="center" valign="middle" >
@@ -533,7 +537,7 @@ function verify(){
          	<tr >
          		<td nowrap="nowrap" align="right" >客户名称：</td>
          		<td nowrap="nowrap"  >
-         			 <select multiple="multiple" id="customerselect" name="customerid" style="width: 100%;" >
+         			 <select  id="customerselect" name="customerid" style="width: 100%;" >
 						<c:forEach items="${customerList}" var="cus">
 				          <option value="${cus.customerid}"  ${cus.customerid==customerid?'selected=selected':'' }>${cus.customername}</option>
 				        </c:forEach>
@@ -686,13 +690,21 @@ function verify(){
        		<tr>
        			<td align="right" nowrap="nowrap" style="width: 10%;">客户名称：</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         			<input type="text" id="customerid" name="customerid"  value="${bill.customername} "style="width: 100%;background-color:#DCDCDC" readonly="readonly"/>
+         			<select id="customerid" name="customerid"  style="width: 100%;background-color:#DCDCDC" disabled="disabled">
+	         			<c:forEach items="${customerList}" var="customer">
+	         				<c:if test="${bill.customerid==customer.customerid}">
+								<option value="${user.userid}" selected="selected">${customer.customername}</option>
+							</c:if>
+						</c:forEach>
+					</select>
         		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;">创建人：</td>
          		<td nowrap="nowrap" style="width: 20%;">
          			<select id="founder" name="founder"  style="width: 100%;background-color:#DCDCDC" disabled="disabled">
 	         			<c:forEach items="${userList}" var="user">
-							<option value="${user.userid}" >${user.username}</option>
+							<c:if test="${bill.founder==user.userid}">
+								<option value="${user.userid}" selected="selected">${user.realname}</option>
+							</c:if>
 						</c:forEach>
 					</select>
          		</td>
@@ -701,7 +713,7 @@ function verify(){
          			<select id="verifier" name="verifier"  style="width: 100%;background-color:#DCDCDC" disabled="disabled">
 	         			<c:forEach items="${userList}" var="user">
 	         				<c:if test="${bill.verifier==user.userid}">
-								<option value="${user.userid}" selected="selected">${user.username}</option>
+								<option value="${user.userid}" selected="selected">${user.realname}</option>
 							</c:if>
 						</c:forEach>
 					</select>
@@ -711,7 +723,7 @@ function verify(){
          			<select id="verificationperson" name="verificationperson"  style="width: 100%;background-color:#DCDCDC" disabled="disabled">
 	         			<c:forEach items="${userList}" var="user">
 	         				<c:if test="${bill.verificationperson==user.userid}">
-								<option value="${user.userid}" selected="selected">${user.username}</option>
+								<option value="${user.userid}" selected="selected">${user.realname}</option>
 							</c:if>
 						</c:forEach>
 					</select>
@@ -970,8 +982,8 @@ function verify(){
 			    		<option value="createddate">创建日期</option>
 			    	</select>
 			    	<select style="width:30%;" name="method">
-			    		<option  value="asc">升序</option>
 			    		<option  value="desc">降序</option>
+			    		<option  value="asc">升序</option>
 			    	</select>
 		        </td>
 		        <input type="hidden" name="query" value="1"></input>

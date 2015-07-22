@@ -45,6 +45,23 @@ public class penalizeOutBill {
 	private String verificationdate;
 	private List<PenalizeOut> penalizeOutList;
 
+	
+	public Integer getVerifier() {
+		return verifier;
+	}
+
+	public void setVerifier(Integer verifier) {
+		this.verifier = verifier;
+	}
+
+	public Integer getVerificationperson() {
+		return verificationperson;
+	}
+
+	public void setVerificationperson(Integer verificationperson) {
+		this.verificationperson = verificationperson;
+	}
+
 	public Integer getId() {
 		return this.id;
 	}
@@ -141,13 +158,6 @@ public class penalizeOutBill {
 		this.createddate = createddate;
 	}
 
-	public Integer getVerifier() {
-		return this.verifier;
-	}
-
-	public void setVerifier(Integer verifier) {
-		this.verifier = verifier;
-	}
 
 	public String getChecktime() {
 		return this.checktime;
@@ -157,13 +167,6 @@ public class penalizeOutBill {
 		this.checktime = checktime;
 	}
 
-	public Integer getVerificationperson() {
-		return this.verificationperson;
-	}
-
-	public void setVerificationperson(Integer verificationperson) {
-		this.verificationperson = verificationperson;
-	}
 
 	public String getVerificationdate() {
 		return this.verificationdate;

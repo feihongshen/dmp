@@ -46,17 +46,12 @@ public class PenalizeOutBillService {
 	}
 
 	// 根据条件查询指定订单再新增到对外赔付账单表中
-	public Long addPenalizeOutBill(Integer compensatebig, Integer compensatesmall, String compensateodd, String[] customerid, String CreationStartDate, String CreationEndDate, String compensateexplain) {
+	public Long addPenalizeOutBill(Integer compensatebig, Integer compensatesmall, String compensateodd, String customerid, String CreationStartDate, String CreationEndDate, String compensateexplain) {
 		penalizeOutBill bill = new penalizeOutBill();
-		String string = StringUtils.join(customerid, ",");
-		if (StringUtils.isNotBlank(string)) {
-			List<Customer> customers = this.customerDao.getCustomerByIds(PenalizeOutBillService.spiltString(string));
-			String customerName = "";
-			for (int i = 0; i < customers.size(); i++) {
-				customerName += customers.get(i).getCustomername() + ",";
-			}
-			String customerStr = customerName.substring(0, customerName.length() - 1);
-			bill.setCustomername(customerStr);
+		if (StringUtils.isNotBlank(customerid)) {
+			Customer customer = this.customerDao.findcustomername(Long.parseLong(customerid));
+			String customerName = customer.getCustomername();
+			bill.setCustomername(customerName);
 		}
 		String date = DateTimeUtil.getNowTime();
 		if (StringUtils.isNotBlank(compensateodd)) {
@@ -84,7 +79,7 @@ public class PenalizeOutBillService {
 		bill.setCompensateexplain(compensateexplain);
 		bill.setCompensatebig(compensatebig);
 		bill.setCompensatesmall(compensatesmall);
-		bill.setCustomerid(string);
+		bill.setCustomerid(customerid);
 		bill.setCreateddate(date);
 		Long id = this.PenalizeOutBilldao.addPenalizeOutBill(bill);
 		return id;
@@ -238,9 +233,16 @@ public class PenalizeOutBillService {
 			}
 			bill.setCompensatefee(sumBigDecimal);
 		} else {
-
 			bill.setCompensatefee(sumBigDecimal);
 		}
+		if(bill.getBillstate() != PunishBillStateEnum.WeiShenHe.getValue()){
+			if(bill.getBillstate() == PunishBillStateEnum.YiShenHe.getValue()){
+				bill.setVerifier((int) this.getSessionUser().getUserid());
+			}else if(bill.getBillstate() == PunishBillStateEnum.YiHeXiao.getValue()){
+				bill.setVerificationperson((int)this.getSessionUser().getUserid());
+			}
+		}
+		
 		this.PenalizeOutBilldao.penalizeOutBillUpdate(bill);
 	}
 
