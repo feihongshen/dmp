@@ -1,5 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+<%@page import="cn.explink.enumutil.BillStateEnum"%>
 <script src="${ctx}/js/commonUtil.js" type="text/javascript"></script>
 <script src="${ctx}/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -47,24 +48,6 @@
 		});		                        		   
 	});
 	  
-/* 	  
- function form1Method() {
-	 
-	 var dataParam = {};
-	 dataParam['billBatches'] = $('#billBatchesfm1').val()=="" ? ""  : $('#billBatchesfm1').val() ;
-	 dataParam['billState'] = $('#billStatefm1').val()=="" ? "-1" :$('#billStatefm1').val();
-	 dataParam['crestartdate'] = $('#crestartdatefm1').val()=="" ? "" : $('#crestartdatefm1').val();
-	 dataParam['creenddate'] = $('#creenddatefm1').val()=="" ? ""  : $('#creenddatefm1').val();
-	 dataParam['verificationstratdate'] = $('#verificationstratdatefm1').val();
-	 dataParam['verificationenddate'] = $('#verificationenddatefm1').val();
-	 dataParam['customerId'] = $('#customerIdfm1').val()=="" ? "-1" :$('#customerIdfm1').val();
-	 dataParam['cwbOrderType'] = $('#cwbOrderTypefm1').val()=="" ? "-1" :$('#cwbOrderTypefm1').val();
-	 dataParam['condition'] = $('#conditionfm1').val()=="" ? ""  : $('#conditionfm1').val();
-	 dataParam['sequence'] = $('#sequencefm1').val();
-	 $('#dg').datagrid('load',dataParam);     
- }
- */
- 
  function form1Method(){
 	 var jsoninfo =  JSON.stringify($('#fm1').serializeObject());
 	 $('#dg').datagrid('load',{"jsoninfo":jsoninfo}); 
@@ -94,19 +77,7 @@
 	  					}); 
 	  					$('#dlg').dialog('close');
 	  					$('#dg').datagrid('reload');
-	  				/* 	$('#dlg').dialog('close');
-	  					$('#billBatchess').val(data.billBatches);
-	  					$('#billState').val(data.billState);
-	  					$('#dateRange').val(data.dateRange);
-	  					$('#totalCharge').val(data.totalCharge);
-	  					$('#correspondingCwbNum').val(data.correspondingCwbNum);
-	  					$('#customernames').val(data.customername);
-	  					$('#deliveryMoney').val(data.deliveryMoney);
-	  					$('#distributionMoney').val(data.distributionMoney);
-	  					$('#transferMoney').val(data.transferMoney);
-	  					$('#remark').val(data.remark);
-	  					$('#dlg').dialog('close');		// close the dialog
-	  					$('#dg').datagrid('reload'); */
+	  				
 	  				} 
 	  			}
 	  		});
@@ -121,36 +92,25 @@
 	  	/**
 	  	编辑框弹出  初始化
 	  	*/
-	  	function initMethod(){
+	  	/* function initMethod(){
 	  		initDynamicSelect(customernames);
 	  		initDynamicSelect(billState);
-	  	}
-	  	
+	  	} */
+	 
 	 	function neweditbill(){		
-	 	 	var row = $('#dg').datagrid('getSelected');			
+	 	 	var row = $('#dg').datagrid('getSelected');		
+	 	 	
 			if (row){
-				$('#dlgedit').dialog('open').dialog('setTitle','查看修改表单');
-				$('#fm2').form('load', {billBatches:row.billBatches});
-				$('#fm2').form('submit', {
-					url:'${pageContext.request.contextPath}/CustomerBillContract/findCustomerBillContractVOByBillBatches',
-					onSubmit: function(){
-						return true;
-					},
-					success: function(data){
-						 var data = eval('(' + data + ')');  
-						$('#billBatchess').val(data.billBatches);
-	  					$('#billState1').val(data.billState);
-	  					$('#dateRange').val(data.dateRange);
-	  					$('#totalCharge').val(data.totalCharge);
-	  					$('#correspondingCwbNum').val(data.correspondingCwbNum);
-	  					$('#customernames').val(data.customerId);
-	  					$('#deliveryMoney').val(data.deliveryMoney);
-	  					$('#distributionMoney').val(data.distributionMoney);
-	  					$('#transferMoney').val(data.transferMoney);
-	  					$('#remark').val(data.remark);	
-					}
-				});
 				
+				$('#dlgedit').dialog('open').dialog('setTitle','查看修改表单');
+				$('#fm2').form('load', {billBatches:row.billBatches});					
+				$('#hv').val(row.billBatches);
+				
+				checkState(row.billState);
+			
+				findCustomerBillContractByBatches();
+				
+				$('#dg').datagrid('reload');
 				$('#dga').datagrid({    
 					method: "POST",
 				    url:'${pageContext.request.contextPath}/CustomerBillContract/editAboutContent?billBatches='+row.billBatches, 
@@ -182,19 +142,70 @@
 				    
 				    toolbar:'#tbNewAddofEdit'
 				});
-				/* $('#fm2').form('onLoadSuccess',initMethod());
-				url = '${pageContext.request.contextPath}/CustomerBillContract/editBill?id='+row.id; */
+				 $('#fm2').form('onLoadSuccess',initMethod());
+				url = '${pageContext.request.contextPath}/CustomerBillContract/editBill?id='+row.id; 
 				} 
 			
 
 
 		}
+	 	
+	 	 function checkState(){
+				if($('#hv1').val()==1){
+					
+					 $("#quxiaoshenhe").hide();
+					 $("#hexiaowancheng").hide();
+					 $("#quxiaohexiao").hide();
+					 $('#kehudingdandaoru').hide();
+					 $('#xianshichayibaogao').hide();
+
+				}else if($('#hv1').val()==2){
+					
+					 $("#baocun").hide();
+					 $("#shenhe").hide();
+					 $("#quxiaohexiao").hide();
+				}else if($('#hv1').val()==3){
+					 $("#quxiaoshenhe").hide();
+					 $("#hexiaowancheng").hide();
+					 $('#kehudingdandaoru').hide();
+					 $('#xianshichayibaogao').hide();
+					 $("#baocun").hide();
+					 $("#shenhe").hide();
+
+				}
+		  }	
 	
+	 	function findCustomerBillContractByBatches(){
+	 		$('#fm2').form('submit', {
+				url:'${pageContext.request.contextPath}/CustomerBillContract/findCustomerBillContractVOByBillBatches',
+				onSubmit: function(){
+					return true;
+				},
+				success: function(data){
+					 var data = eval('(' + data + ')');  
+					$('#billBatchess').val(data.billBatches);
+  					$('#billState').val(data.billState);
+  					$('#dateRange').val(data.dateRange);
+  					$('#totalCharge').val(data.totalCharge);
+  					$('#correspondingCwbNum').val(data.correspondingCwbNum);
+  					$('#customernames').val(data.customername);
+  					$('#deliveryMoney').val(data.deliveryMoney);
+  					$('#distributionMoney').val(data.distributionMoney);
+  					$('#transferMoney').val(data.transferMoney);
+  					$('#remark').val(data.remark);	
+				}
+			});
+	 	}
+	 	
+	 	
 	  	function clearAndCloseEdit(){
 	  		$('#dlgedit').dialog('close');
 			$('#fm2').form('clear');
 	  	}
 	  	
+	
+	
+	 	
 	  	
 	 /* 删除账单  */ 
  function removeBill(){
@@ -229,11 +240,10 @@
 	function dlgNewAddofEdit(){
 		$('#dlgAddofEdit').dialog('open').dialog('setTitle','查询表单');
 		$('#fmAddofEdit').form('clear');
-		/*  var jsoninfo =  JSON.stringify($('#fmAddofEdit').serializeObject());
-		 $('#dlgAddofEdit').datagrid('load',{"cwb":jsoninfo});  */
+	/* 	var jsoninfo =  JSON.stringify($('#fmAddofEdit').serializeObject()); */
 		 dgofEdit=$('#dgofEdit').datagrid({    
 			method: "POST",
-		    url:'${pageContext.request.contextPath}/CustomerBillContract/newAddofEditList', 
+		    url:'${pageContext.request.contextPath}/CustomerBillContract/newAddofEditList?billBatches='+$('#hv').val(), 
 		    fit : true,
 			fitColumns : true,
 			border : true,
@@ -258,10 +268,51 @@
 				        {field:'refuseMoney',title:'拒收派费',sortable:true,width:75,align:'center'},
 				        {field:'totalCharge',title:'派费合计',sortable:true,width:75,align:'center'},				        
 				    ]],
-		   
-
-		});		               
+		});		
+		
+	
 	}
+	
+	
+	
+	 function addBillCwbNum(){
+		 var row = $('#dgofEdit').datagrid('getSelected');
+			
+			if (row){
+				$.messager.confirm('提示','你确定要添加订单吗?',function(r){
+					if (r){
+						$.post('${pageContext.request.contextPath}/CustomerBillContract/addCwbInEdit',{billBatches:$('#hv').val(),cwb:row.cwb},function(result){
+							if (result.success==0){
+	
+								$.messager.show({	// show success message
+									title: '添加 ',
+									msg: result.successdata
+								});// reload the data
+							
+					
+							} else if(result.success==1){
+								$.messager.show({	// show success message
+									title: '添加Error ',
+									msg: result.successdata
+								});// reload the data
+						}							
+							findCustomerBillContractByBatches();
+							$('#dg').datagrid('reload');	
+							$('#dga').datagrid('reload');						
+							$('#fm2').form('reload');
+							$('#hv').val('');
+							$('#hv1').val('');
+						
+							
+							
+							},'json');
+						}
+				});
+			
+			}
+			
+			$('#dlgAddofEdit').dialog('close');
+		}
 	
 	function SerachAddofEdit(){
 		
@@ -287,9 +338,11 @@
 							
 					
 							} 
-							$('#dga').datagrid('reload');
-							$('#dg').datagrid('reload');
+							findCustomerBillContractByBatches();
+							$('#dga').datagrid('reload');		
+							$('#dg').datagrid('reload')
 							$('#fm2').form('reload');
+							
 						},'json');
 					}
 				});
@@ -297,6 +350,77 @@
 		}
 			
 		
+	 
+	 function changeBillState(v){
+		 var statevalue=v;
+				$.messager.confirm('提示','你确定要改变账单状态吗?',function(r){
+						$.post('${pageContext.request.contextPath}/CustomerBillContract/changeBillState',{billState:statevalue,billBatches:$('#hv').val()},function(result){
+							if (result.success==0){
+	
+								$.messager.show({	// show success message
+									title: '修改',
+									msg: result.successdata
+								});// reload the data
+							
+					
+							} 							
+							findCustomerBillContractByBatches();
+							$('#dg').datagrid('reload');	
+							$('#dga').datagrid('reload');						
+							$('#fm2').form('reload');
+						},'json');
+					
+				});
+			
+			
+		}
+	 
+	 function uploadExcel(){
+
+		   var fileName= $('#uploadExcel').val();  
+		   var a = $('#hv').val();
+		   $('#uploadbillBatches').val(a);
+
+              if(fileName==""){     
+                 $.messager.alert('提示','请选择上传文件！','info');   
+              }else{  
+            	  var d1=/\.[^\.]+$/.exec(fileName);   
+                          
+            	  $('#questionTypesManage').form('submit',{
+      	  			url:'${pageContext.request.contextPath}/CustomerBillContract/getupdateExcel',
+      	  			onSubmit: function(){
+      	  			if(d1==".xls"||d1==".xlsx"){
+      	  			 
+      	  				return true;
+      	  			}else{
+      	  				return false;
+      	  				}
+      	  			},
+      	  			success: function(data){
+      	  				var data = eval('('+data+')');
+      	  				if (data.success==0){
+      	  					$.messager.show({
+      	  		 			title: '上传成功',
+      	  						msg: data.successdata
+      	  					}); 
+      	  					
+      	  					$('#dga').datagrid('reload');
+      	  				
+      	  				} 
+      	  			}
+      	  		});
+                 /*  //对文件格式进行校验  
+                  var d1=/\.[^\.]+$/.exec(fileName);   
+                  if(d1==".xls"||d1==".xlsx"){                   
+                       $('#questionTypesManage').submit();     
+                       $.messager.alert('提示','操作成功！','info');          
+                 }else{  
+                     $.messager.alert('提示','请选择xls格式文件！','info');   
+                     $('#uploadExcel').val("");
+                 }  */
+              }    
+         
+	 }
 	</script>
 </head>
 <body>
@@ -306,6 +430,7 @@
 		<a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="neweditbill()">查看/修改</a>  
 		<a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeBill()">删除</a>  
 		<a id="btn3" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="newaddsearchbill()">查询</a>  
+		 
 	</div>	
 	
 	<!-- datagrid list -->
@@ -454,15 +579,23 @@
 	<!-- 新增、编辑界面 -->
 	<div id="dlgedit" class="easyui-dialog" style="width:900px;height:600px;padding:10px 20px" closed="true">
 		<!-- 操作按钮区域 -->
+				<form id="questionTypesManage" method="post" enctype="multipart/form-data">  
+  					 选择文件：<input type="file" id="uploadExcel" name="uploadExcel" class="easyui-filebox" style="2cm" data-options="prompt:'请选择文件...'">       
+       　			　		 <input name="billBatches" id="uploadbillBatches" type="hidden"  > 
+       				<a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="uploadExcel()" >客户订单导入</a>　　　　　        
+					
+				</form>	
+		
 		<table>
 			<tr>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()">返回</a></td>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:editbill()">保存</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">审核</a>OR
-				<a href="#" class="easyui-linkbutton" iconCls="icon-ok">取消审核</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">核销完成</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok">客户订单导入</a>
-				<a href="#" class="easyui-linkbutton" iconCls="icon-ok">显示差异报告</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()" id="fanhui">返回</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:editbill()" id="baocun">保存</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="shenhe" onclick="javascript:changeBillState('<%=BillStateEnum.YiShenHe.getValue()%>')">审核</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaoshenhe" onclick="javascript:changeBillState('<%=BillStateEnum.WeiShenHe.getValue()%>')">取消审核</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="hexiaowancheng" onclick="javascript:changeBillState('<%=BillStateEnum.YiHeXiao.getValue()%>')">核销完成</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaohexiao" onclick="javascript:changeBillState('<%=BillStateEnum.WeiHeXiao.getValue()%>')">取消核销</a></td>				
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="xianshichayibaogao">显示差异报告</a></td>
+<!-- 				<td><a href="#" class="easyui-linkbutton" style="width:122px" onclick="uploadExcel()" >客户订单导入</a></td> -->
 			</tr>
 		</table>
 		<!-- 新增一级弹窗查询数据回显（根据查询结果动态拼接） -->
@@ -471,15 +604,16 @@
 						<tr>
 							<td align="right" style="width:90px;">账单批次</td><td style="width:30px;" ><input name="billBatches" id="billBatchess" class="easyui-validatebox" readonly="readonly"></td>
 							<td align="right" style="width:90px;">账单状态</td><td style="width:30px;">
-							<!-- <input name="billState" id="billState" class="easyui-validatebox" readonly="readonly"> -->
-							<input type="text" name="billState" id="billState1" class="easyui-validatebox" 
-									 	data-options="width:150,prompt: '账单批次'"
+							<input name="billState" id="billState" class="easyui-validatebox" disabled="disabled">
+							<!-- <input type="text" name="billState" id="billState1" class="easyui-validatebox" 
+									 	data-options="width:150,prompt: '账单状态'"
 									 	initDataType="ENUM" 
 									 	initDataKey="cn.explink.enumutil.BillStateEnum"
 									 	viewField="text" 
 									 	saveField="value"
+									 	value="-1"
 									 	
-								/>
+								/> -->
 							</td>
 							<td align="right" style="width:90px;">日期范围</td><td style="width:30px;"><input name="dateRange" id="dateRange" class="easyui-validatebox" readonly="readonly"></td>
 						</tr>
@@ -487,16 +621,17 @@
 							<td align="right" style="width:90px;">派费合计(元)</td><td style="width:30px;"><input name="totalCharge" id="totalCharge" class="easyui-validatebox" readonly="readonly"></td>
 							<td align="right" style="width:90px;">对应订单数</td><td style="width:30px;"><input name="correspondingCwbNum" id="correspondingCwbNum" class="easyui-validatebox" readonly="readonly"></td>
 							<td align="right" style="width:90px;">客户名称</td><td style="width:30px;">
-							<!-- <input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly"> -->
-							<input type="text" name="customerId" class="easyui-validatebox"						
+							<input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly">
+							<!-- <input type="text" name="customerId" class="easyui-validatebox"						
 									id="customernames"
-								 	data-options="width:150,prompt: '客户名称'"
+								 	data-options="width:150"
 								 	initDataType="TABLE" 
 								 	initDataKey="Customer"
 								 	viewField="customername" 
 								 	saveField="customerid"
+								 	value="-1"
 								 	
-								/>
+								/> -->
 							</td>
 						</tr>
 						<tr>
@@ -535,9 +670,12 @@
 	</div>
 	<!-- 新增一级弹窗  操作区域 -->
 	<div id="dlgAddofEdit-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:">确认</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNum()">确认</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgAddofEdit').dialog('close')">取消</a>
 	</div>
+<input type="hidden" id="hv"/> <!--批次  -->
+<input type="hidden" id="hv1"/>
+<input type="hidden" id="hv2"/>
 
 </body>
 </html>

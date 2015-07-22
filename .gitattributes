@@ -1138,6 +1138,7 @@ src/main/java/cn/explink/domain/Function.java -text
 src/main/java/cn/explink/domain/GotoClassAuditing.java -text
 src/main/java/cn/explink/domain/GotoClassOld.java -text
 src/main/java/cn/explink/domain/GroupDetail.java -text
+src/main/java/cn/explink/domain/ImportBillExcel.java -text
 src/main/java/cn/explink/domain/ImportCwbOrderType.java -text
 src/main/java/cn/explink/domain/ImportField.java -text
 src/main/java/cn/explink/domain/ImportValidationManager.java -text

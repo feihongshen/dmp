@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.CustomerBillContract;
+import cn.explink.domain.ImportBillExcel;
 import cn.explink.domain.VO.CustomerBillContractVO;
 import cn.explink.domain.VO.SerachCustomerBillContractVO;
 
@@ -118,7 +119,7 @@ public class CustomerBillContractDao {
 			
 			){
 				StringBuilder sb = new StringBuilder();
-				String sql="update customerbillcontract set cwbs=?,corresponding_cwb_num=?,delivery_money=?,distribution_money=?,transfer_money=?,refuse_money=?,total_charge=?";				
+				String sql="update customerbillcontract set cwbs=?,corresponding_cwb_num=?,delivery_money=?,distribution_money=?,transfer_money=?,refuse_money=?,total_charge=? where bill_batches='"+billBatches+"'";				
 				
 				this.jdbcTemplate.update(sql,cwbs,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge);
 			}
@@ -328,5 +329,43 @@ public class CustomerBillContractDao {
 				 String sql="delete from customerbillcontractvo where bill_batches='"+billbatches+"'";
 				 this.jdbcTemplate.update(sql);
 			}
+			
+			public void changeBillState(long state,String batches){
+				String sql="update customerbillcontract set bill_state="+state+" where bill_batches='"+batches+"'";
+				 this.jdbcTemplate.update(sql);
+			}
+			
+		private final class BillloadExcelmapper implements RowMapper<ImportBillExcel>{
+
+			@Override
+			public ImportBillExcel mapRow(ResultSet rs, int rowNum)
+					throws SQLException {
+				ImportBillExcel i = new ImportBillExcel();
+					i.setCwb(rs.getString("cwb"));
+					i.setJijiaMoney(rs.getBigDecimal("jijia_money"));
+					i.setXuzhongMoney(rs.getBigDecimal("xuzhong_money"));
+					i.setFandanMoney(rs.getBigDecimal("fandan_money"));
+					i.setFanchengMoney(rs.getBigDecimal("fancheng_money"));
+					i.setDaishoukuanshouxuMoney(rs.getBigDecimal("daishoukuanshouxu_money"));
+					i.setPosShouxuMoney(rs.getBigDecimal("pos_shouxu_money"));
+					i.setBaojiaMoney(rs.getBigDecimal("baojia_money"));
+					i.setBaozhuangMoney(rs.getBigDecimal("baozhuang_money"));
+					i.setGanxianbutieMoney(rs.getBigDecimal("ganxianbutie_money"));
+					i.setBillBatches(rs.getString("bill_batches"));
+				return i;
+			}
+			
+		}	
+		
+		public void addBillloadExcel(ImportBillExcel i,String billBatches){
+			String sql="insert into importbillexcel(cwb,jijia_money,xuzhong_money,fandan_money,fancheng_money,daishoukuanshouxu_money,pos_shouxu_money,baojia_money,baozhuang_money,ganxianbutie_money,bill_batches) values(?,?,?,?,?,?,?,?,?,?,?)";
+			this.jdbcTemplate.update(sql,i.getCwb(),i.getJijiaMoney(),i.getXuzhongMoney(),i.getFandanMoney(),i.getFanchengMoney(),i.getDaishoukuanshouxuMoney(),i.getPosShouxuMoney(),i.getBaojiaMoney(),i.getBaozhuangMoney(),i.getGanxianbutieMoney(),billBatches);
+		}
+		
+		public List<ImportBillExcel> findImportBillExcelByBatches(String batches){
+				String sql="select * from importbillexcel where bill_batches='"+batches+"'";
+				
+			return this.jdbcTemplate.query(sql, new BillloadExcelmapper());		
+		}
 
 }
