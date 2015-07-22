@@ -3,15 +3,20 @@
  */
 package cn.explink.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PFcollection;
@@ -63,6 +68,28 @@ public class PFcollectionDAO {
 
 			}
 		});
+	}
+	/**
+	 * @param pfb
+	 */
+	public long credataOfID(final PFcollection pfb) {
+		final String sql = "insert  INTO `paifeirule_collection` (`customerid`, `collectionPFfee`, `remark`, `typeid`, `pfruleid`,`tabid`,`showflag`) VALUES (?,?, ?, ?, ?, ?, ?); ";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, pfb.getCustomerid());
+				ps.setBigDecimal(2, pfb.getCollectionPFfee());
+				ps.setString(3, pfb.getRemark());
+				ps.setInt(4, pfb.getTypeid());
+				ps.setLong(5, pfb.getPfruleid());
+				ps.setInt(6, pfb.getTabid());
+				ps.setInt(7, pfb.getShowflag());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
 	}
 
 	/**
@@ -134,5 +161,15 @@ public class PFcollectionDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @param id
+	 * @param value
+	 */
+	public int deletePFcollectionByPfRuleidAndTabid(long pfruleid, int tabid) {
+		String sql = "delete from paifeirule_collection where pfruleid=? and tabid=? ";
+		return this.jdbcTemplate.update(sql, pfruleid, tabid);
+
 	}
 }

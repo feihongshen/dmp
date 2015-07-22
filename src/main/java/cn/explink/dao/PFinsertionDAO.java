@@ -3,15 +3,20 @@
  */
 package cn.explink.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PFinsertion;
@@ -103,6 +108,28 @@ public class PFinsertionDAO {
 			}
 		});
 	}
+	/**
+	 * @param pf
+	 */
+	public long credataOfID(final PFinsertion pf) {
+		final String sql = "insert  INTO `paifeirule_insertion` (`mincount`, `maxcount`, `insertionfee`, `typeid`, `pfruleid`,`tabid`,`remark`) VALUES (?, ?, ?, ?, ?, ?,?); ";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, pf.getMincount());
+				ps.setLong(2, pf.getMaxcount());
+				ps.setBigDecimal(3, pf.getInsertionfee());
+				ps.setInt(4, pf.getTypeid());
+				ps.setLong(5, pf.getPfruleid());
+				ps.setInt(6, pf.getTabid());
+				ps.setString(7, pf.getRemark());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
+	}
 
 	/**
 	 * @param pfruleid
@@ -131,5 +158,15 @@ public class PFinsertionDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @param id
+	 * @param value
+	 */
+	public int deletePFinsertionByPfRuleidAndTabid(long pfruleid, int tabid) {
+		String sql="delete from paifeirule_insertion where pfruleid=? and tabid=?";
+		return this.jdbcTemplate.update(sql,pfruleid,tabid);
+
 	}
 }

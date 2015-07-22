@@ -3,14 +3,19 @@
  */
 package cn.explink.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PFoverbig;
@@ -95,6 +100,23 @@ public class PFoverbigDAO {
 
 			}
 		});
+	}
+	public long credataOfID(final PFoverbig pf) {
+		final String sql = "insert  INTO `paifeirule_overbig` (`mincount`, `maxcount`, `subsidyfee`, `remark`,`areaid`) VALUES (?, ?, ?, ?, ?); ";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, pf.getMincount());
+				ps.setLong(2, pf.getMaxcount());
+				ps.setBigDecimal(3, pf.getSubsidyfee());
+				ps.setString(4, pf.getRemark());
+				ps.setLong(5, pf.getAreaid());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
 	}
 
 	/**

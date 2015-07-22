@@ -3,14 +3,19 @@
  */
 package cn.explink.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PFbusiness;
@@ -97,6 +102,26 @@ public class PFbusinessDAO {
 				ps.setInt(4, pf.getTabid());
 			}
 		});
+	}
+	/**
+	 * @param pf
+	 */
+	public long credataOfID(final PFbusiness pf) {
+
+		final String sql = "insert  INTO `paifeirule_business` (`subsidyfee`,`typeid`,`pfruleid`,`tabid`) VALUES (?, ?, ?, ?); ";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setBigDecimal(1, pf.getSubsidyfee());
+				ps.setInt(2, pf.getTypeid());
+				ps.setLong(3, pf.getPfruleid());
+				ps.setInt(4, pf.getTabid());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
 	}
 
 	/**

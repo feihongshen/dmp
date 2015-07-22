@@ -245,8 +245,7 @@ public class PaiFeiRuleService {
 				this.pFbasicDAO.updatePFbasic(pf);
 				return pf.getId();
 			} else {
-				this.pFbasicDAO.credata(pf);
-				return pf.getId();
+				return this.pFbasicDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFcollection) {
@@ -257,8 +256,7 @@ public class PaiFeiRuleService {
 				this.pFcollectionDAO.updatePFcollection(pf);
 				return pf.getId();
 			} else {
-				this.pFcollectionDAO.credata(pf);
-				return pf.getId();
+				return	this.pFcollectionDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFbusiness) {
@@ -269,8 +267,7 @@ public class PaiFeiRuleService {
 				this.pFbusinessDAO.updatePFbusiness(pf);
 				return pf.getId();
 			} else {
-				this.pFbusinessDAO.credata(pf);
-				return pf.getId();
+				return	this.pFbusinessDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFinsertion) {
@@ -281,8 +278,7 @@ public class PaiFeiRuleService {
 				this.pFinsertionDAO.updatePFinsertion(pf);
 				return pf.getId();
 			} else {
-				this.pFinsertionDAO.credata(pf);
-				return pf.getId();
+				return	this.pFinsertionDAO.credataOfID(pf);
 			}
 		}
 
@@ -290,11 +286,11 @@ public class PaiFeiRuleService {
 			PFoverarea pf = (PFoverarea) obj;
 			PFoverarea pftemp = this.pFoverareaDAO.getPFoverareaByRTC(pf.getPfruleid(), pf.getTypeid(), pf.getTabid(), pf.getState());
 			if (pftemp != null) {
-				// pf.setId();
+				pf.setId(pftemp.getId());
+				this.pFoverareaDAO.updatePFoverareaByPfruleidAndTabid(pf);
 				return pf.getId();
 			} else {
-				this.pFoverareaDAO.credata(pf);
-				return pf.getId();
+				return	this.pFoverareaDAO.credataOfID(pf);
 			}
 		}
 
@@ -306,8 +302,7 @@ public class PaiFeiRuleService {
 				this.pFareaDAO.updatePFarea(pf);
 				return pf.getId();
 			} else {
-				this.pFareaDAO.credata(pf);
-				return pf.getId();
+				return	this.pFareaDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFoverbig) {
@@ -318,8 +313,7 @@ public class PaiFeiRuleService {
 				this.pFoverbigDAO.updatePFoverbig(pf);
 				return pf.getId();
 			} else {
-				this.pFoverbigDAO.credata(pf);
-				return pf.getId();
+				return	this.pFoverbigDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFoverweight) {
@@ -330,8 +324,7 @@ public class PaiFeiRuleService {
 				this.pFoverweightDAO.updatePFoverweight(pf);
 				return pf.getId();
 			} else {
-				this.pFoverweightDAO.credata(pf);
-				return pf.getId();
+				return	this.pFoverweightDAO.credataOfID(pf);
 			}
 		}
 		return 0;
@@ -484,7 +477,8 @@ public class PaiFeiRuleService {
 		return fee;
 
 	}
-	//货物超大补助
+
+	// 货物超大补助
 	public BigDecimal getOverbigFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
@@ -505,7 +499,8 @@ public class PaiFeiRuleService {
 		}
 		return areafee;
 	}
-	//货物超重补助
+
+	// 货物超重补助
 	public BigDecimal getOverweightFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
@@ -531,35 +526,99 @@ public class PaiFeiRuleService {
 
 		// 查询基本补助
 		List<PFbasic> basicListPS = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
-		String showflag_basic = "no";
+		String ps_showflag_basic = "no";
 		if (basicListPS != null) {
-			showflag_basic = this.getShowflagBasic(basicListPS, showflag_basic);
-			model.addAttribute("basicPS", basicListPS.get(0));
+			ps_showflag_basic = this.getShowflagBasic(basicListPS, ps_showflag_basic);
+			if (basicListPS.size() > 0) {
+				model.addAttribute("basicPS", basicListPS.get(0));
+			}
 		}
-		model.addAttribute("ps_showflag_basic", showflag_basic);
+		model.addAttribute("ps_showflag_basic", ps_showflag_basic);
 		model.addAttribute("basicListPS", basicListPS);
+
+		List<PFbasic> basicListTH = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		String th_showflag_basic = "no";
+		if (basicListTH != null) {
+			th_showflag_basic = this.getShowflagBasic(basicListTH, th_showflag_basic);
+			if (basicListTH.size() > 0) {
+				model.addAttribute("basicTH", basicListTH.get(0));
+			}
+		}
+		model.addAttribute("th_showflag_basic", th_showflag_basic);
+		model.addAttribute("basicListTH", basicListTH);
+
+		List<PFbasic> basicListZZ = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		String zz_showflag_basic = "no";
+		if (basicListZZ != null) {
+			zz_showflag_basic = this.getShowflagBasic(basicListZZ, zz_showflag_basic);
+			if (basicListZZ.size() > 0) {
+				model.addAttribute("basicZZ", basicListZZ.get(0));
+			}
+		}
+		model.addAttribute("zz_showflag_basic", zz_showflag_basic);
+		model.addAttribute("basicListZZ", basicListZZ);
 
 		// 查询代收补助
 		List<PFcollection> collectionListPS = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
-		String showflag_collectionPS = "no";
+		String ps_showflag_collection = "no";
 		if (collectionListPS != null) {
-			showflag_collectionPS = this.getShowflagCollection(collectionListPS, showflag_collectionPS);
-			model.addAttribute("collectionPS", collectionListPS.get(0));
+			ps_showflag_collection = this.getShowflagCollection(collectionListPS, ps_showflag_collection);
+			if (collectionListPS.size() > 0) {
+				model.addAttribute("collectionPS", collectionListPS.get(0));
+			}
 		}
-		model.addAttribute("ps_showflag_collection", showflag_collectionPS);
+		model.addAttribute("ps_showflag_collection", ps_showflag_collection);
 		model.addAttribute("collectionListPS", collectionListPS);
+
+		List<PFcollection> collectionListTH = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		String th_showflag_collection = "no";
+		if (collectionListTH != null) {
+			th_showflag_collection = this.getShowflagCollection(collectionListTH, th_showflag_collection);
+			if (collectionListTH.size() > 0) {
+				model.addAttribute("collectionTH", collectionListTH.get(0));
+			}
+		}
+		model.addAttribute("th_showflag_collection", th_showflag_collection);
+		model.addAttribute("collectionListTH", collectionListTH);
+
+		List<PFcollection> collectionListZZ = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		String zz_showflag_collection = "no";
+		if (collectionListZZ != null) {
+			zz_showflag_collection = this.getShowflagCollection(collectionListZZ, zz_showflag_collection);
+			if (collectionListZZ.size() > 0) {
+				model.addAttribute("collectionZZ", collectionListZZ.get(0));
+			}
+		}
+		model.addAttribute("zz_showflag_collection", zz_showflag_collection);
+		model.addAttribute("collectionListZZ", collectionListZZ);
 
 		List<PFarea> pfareaListPS = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
 		model.addAttribute("pfareaListPS", pfareaListPS);
+		List<PFarea> pfareaListTH = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		model.addAttribute("pfareaListTH", pfareaListTH);
+		List<PFarea> pfareaListZZ = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		model.addAttribute("pfareaListZZ", pfareaListZZ);
 
 		PFbusiness buFbusinessPS = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
 		model.addAttribute("buFbusinessPS", buFbusinessPS);
+		PFbusiness buFbusinessTH = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		model.addAttribute("buFbusinessTH", buFbusinessTH);
+		PFbusiness buFbusinessZZ = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		model.addAttribute("buFbusinessZZ", buFbusinessZZ);
 
 		PFoverarea overareaPS = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
 		model.addAttribute("overareaPS", overareaPS);
+		PFoverarea overareaTH = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		model.addAttribute("overareaTH", overareaTH);
+		PFoverarea overareaZZ = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		model.addAttribute("overareaZZ", overareaZZ);
 
 		List<PFinsertion> insertionListPS = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
 		model.addAttribute("insertionListPS", insertionListPS);
+		List<PFinsertion> insertionListTH = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		model.addAttribute("insertionListTH", insertionListTH);
+		List<PFinsertion> insertionListZZ = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		model.addAttribute("insertionListZZ", insertionListZZ);
 
 		model.addAttribute("rule", rule);
 		model.addAttribute("edit", 1);
@@ -595,36 +654,137 @@ public class PaiFeiRuleService {
 	 * @param request
 	 */
 	@Transactional
-	public void editType(String json, String rulejson, String type, Model model) {
-		// String edittype=request.getParameter("edittype");
+	public int editType(String json, String rulejson, String type, Model model) {
+		List<Customer> customers = this.customerDAO.getAllCustomers();
 		JSONObject object = JSONObject.fromObject(rulejson);
+		int count=0;
 		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(object, PaiFeiRule.class);
 		if (type.equals("_rule")) {
-			this.paiFeiRuleDAO.updatePaiFeiRule(rule);
+			count=this.paiFeiRuleDAO.updatePaiFeiRule(rule);
 			model.addAttribute("rule", rule);
+			return count;
 		}
 		if (type.contains("_")) {
 			String flags[] = type.split("_");
 			String tabs = flags[0];
 			String bztype = flags[1];
+			int tabid = 0;
 			if (tabs.equals("ps")) {
-				if (bztype.equals("basic")) {
+				tabid = PaiFeiRuleTabEnum.Paisong.getValue();
+			} else if (tabs.equals("th")) {
+				tabid = PaiFeiRuleTabEnum.Tihuo.getValue();
+			} else if (tabs.equals("zz")) {
+				tabid = PaiFeiRuleTabEnum.Zhongzhuan.getValue();
+			}
+			if (bztype.contains("basic")) {// 修改基本补助
+				if (bztype.equals("basicno")) {
+					PFbasic pf = (PFbasic) JSONObject.toBean(JSONObject.fromObject(json), PFbasic.class);
+					pf.setTabid(tabid);
+					pf.setPfruleid(rule.getId());
+					pf.setTypeid(rule.getType());
+					pf.setShowflag(0);
+					for (Customer customer : customers) {
+						pf.setCustomerid(customer.getCustomerid());
+						long id=this.savedata(pf);
+						if(id>0){
+							count++;
+						}
+					}
+
+					return count;
+				} else {
 					List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(JSONArray.fromObject(json), PFbasic.class);
 					if (pfbasicList != null) {
 
-						this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), PaiFeiRuleTabEnum.Paisong.getValue());
+						this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
 
 						for (PFbasic pf : pfbasicList) {
 							pf.setPfruleid(rule.getId());
 							pf.setTypeid(rule.getType());
-							pf.setTabid(PaiFeiRuleTabEnum.Paisong.getValue());
-							this.savedata(pf);
+							pf.setTabid(tabid);
+							long id=this.savedata(pf);
+							if(id>0){
+								count++;
+							}
 						}
+						return count;
 					}
 				}
-			}
-		}
+			} else if (bztype.contains("collection")) {// 修改代收补助
+				if (bztype.equals("collectionno")) {
+					PFcollection pf = (PFcollection) JSONObject.toBean(JSONObject.fromObject(json), PFcollection.class);
+					pf.setTabid(tabid);
+					pf.setPfruleid(rule.getId());
+					pf.setTypeid(rule.getType());
+					pf.setShowflag(0);
+					for (Customer customer : customers) {
+						pf.setCustomerid(customer.getCustomerid());
+						long id=this.savedata(pf);
+						if(id>0){
+							count++;
+						}
+					}
+					return count;
+				} else {
+					List<PFcollection> pfcollectionList = (List<PFcollection>) JSONArray.toCollection(JSONArray.fromObject(json), PFcollection.class);
+					if (pfcollectionList != null) {
 
+						this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(rule.getId(), tabid);
+
+						for (PFcollection pf : pfcollectionList) {
+							pf.setPfruleid(rule.getId());
+							pf.setTypeid(rule.getType());
+							pf.setTabid(tabid);
+							long id=this.savedata(pf);
+							if(id>0){
+								count++;
+							}
+						}
+						return count;
+					}
+				}
+			} else if (bztype.equals("overarea")) {// 超区补助
+				PFoverarea pf = (PFoverarea) JSONObject.toBean(JSONObject.fromObject(json), PFoverarea.class);
+				this.pFoverareaDAO.deletePFoverareaByPfRuleidAndTabid(rule.getId(), tabid);
+				pf.setPfruleid(rule.getId());
+				pf.setTypeid(rule.getType());
+				pf.setTabid(tabid);
+				long id=this.savedata(pf);
+				if(id>0){
+					count++;
+				}
+				return count;
+			} else if (bztype.equals("business")) {// 业务补助
+				PFbusiness pf = (PFbusiness) JSONObject.toBean(JSONObject.fromObject(json), PFbusiness.class);
+				pf.setPfruleid(rule.getId());
+				pf.setTypeid(rule.getType());
+				pf.setTabid(tabid);
+				long id=this.savedata(pf);
+				if(id>0){
+					count++;
+				}
+				return count;
+			} else if (bztype.equals("insertion")) {// 托单补助
+				List<PFinsertion> pfinsertionList = (List<PFinsertion>) JSONArray.toCollection(JSONArray.fromObject(json), PFinsertion.class);
+				if (pfinsertionList != null) {
+
+					this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(rule.getId(), tabid);
+
+					for (PFinsertion pf : pfinsertionList) {
+						pf.setPfruleid(rule.getId());
+						pf.setTypeid(rule.getType());
+						pf.setTabid(tabid);
+						long id=this.savedata(pf);
+						if(id>0){
+							count++;
+						}
+					}
+					return count;
+				}
+			}
+
+		}
+		return count;
 	}
 
 	@Test

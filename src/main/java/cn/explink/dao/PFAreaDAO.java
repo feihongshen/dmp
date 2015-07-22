@@ -3,15 +3,20 @@
  */
 package cn.explink.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PFarea;
@@ -101,6 +106,28 @@ public class PFAreaDAO {
 
 			}
 		});
+	}
+	/**
+	 * @param pf
+	 */
+	public long credataOfID(final PFarea pf) {
+		final String sql = "insert  INTO `paifeirule_area` (`areaid`, `areaname`, `areafee`, `overbigflag`,`typeid`,`pfruleid`,`tabid`) VALUES (?, ?, ?, ? ,? ,? ,?); ";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, pf.getAreaid());
+				ps.setString(2, pf.getAreaname());
+				ps.setBigDecimal(3, pf.getAreafee());
+				ps.setInt(4, pf.getOverbigflag());
+				ps.setInt(5, pf.getTypeid());
+				ps.setLong(6, pf.getPfruleid());
+				ps.setInt(7, pf.getTabid());
+				return ps;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
 	}
 
 	/**
