@@ -573,7 +573,7 @@ function showBox(data){
 		'						<th align="left" style="font-size:13px">乙方全称</th>'+
 		'						<td><input type="text" name="yifangquancheng" value="" id="yifangquancheng" maxlength="20" style="width:150px"/></td>'+
 		'						<th align="left" id="contractors" style="font-size:13px;display: none"><font color="red">*</font>其他合同商:</th>'+
-		'						<td><input type="text" style="display: none" name="othercontractors" value="" id="othercontractors" maxlength="20" style="width:150px"/></td>'+
+		'						<td><input type="text" style="display:none" name="othercontractors" value="" id="othercontractors"  style="width:150px"/></td>'+
 		'					</tr>'+			
 		'					<tr>'+
 		'						<th align="left" style="font-size:13px">代收货款结算周期:</th>'+
@@ -696,7 +696,9 @@ function showBox(data){
 		$('#number').focus(function(){
 			$('#number').val('');
 		}).blur(function(){
-			$('#number').val('[自动生成]');
+			if($('#number').val()==""){
+				$('#number').val('[自动生成]');
+			}
 		});
 		$("#alert_box").show();
 		centerBox();
