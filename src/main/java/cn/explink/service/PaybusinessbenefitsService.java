@@ -24,7 +24,7 @@ public class PaybusinessbenefitsService {
 				buffer.append(joint).append(customer.getCustomerid()).append(joint).append(",");
 			}
 		}
-		return buffer.substring(0,buffer.length()-1).toString();
+		return buffer.length()>1?buffer.substring(0,buffer.length()-1).toString():"''";
 	}
 	public List<Paybusinessbenefits> addCustomerNameCustomers(List<Customer> customers,List<Paybusinessbenefits> paybusinessbenefits){
 		for (Paybusinessbenefits paybusinessbenefit : paybusinessbenefits) {
@@ -40,5 +40,13 @@ public class PaybusinessbenefitsService {
 			paybusinessbenefit.setCustomername(customername);
 		}
 		return paybusinessbenefits;
+	}
+	public boolean checkIsCreateByCustomerid(long customerid){
+		boolean flag=false;
+		int count=paybusinessbenefitsDao.getPaybusinessbenefitsByCustomerid(customerid);
+		if (count>0) {
+			flag=true;
+		}
+		return flag;
 	}
 }

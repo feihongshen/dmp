@@ -39,13 +39,13 @@ public class PaybusinessbenefitsDao {
 	 * @param customerids
 	 * @return
 	 */
-	public List<Paybusinessbenefits> getPaybusinessbenefitsbyCustomerName(long page,String customerids){
+	public List<Paybusinessbenefits> getPaybusinessbenefitsbyCustomerName(long page,String customerids,long rows){
 		String sql="select * from express_ops_paybusiness_benefits where 1=1";
 		if (customerids.length()>0) {
 			sql+=" and customerid IN("+customerids+")";
 		}
 		if (page!=-9) {
-			sql+=" limit  "+(page-1)*Page.ONE_PAGE_NUMBER+","+Page.ONE_PAGE_NUMBER;
+			sql+=" limit  "+(page-1)*rows+","+rows;
 		}
 		try {
 			return this.jdbcTemplate.query(sql, new PaybusinessbenefitsRowMapper());
@@ -81,5 +81,15 @@ public class PaybusinessbenefitsDao {
 		} catch (DataAccessException e) {
 			return 0;
 		}
+	}
+	/**
+	 * 根据customerid查询是否供货商已经创建
+	 * @param customerid
+	 * @return
+	 */
+	public int getPaybusinessbenefitsByCustomerid(long customerid){
+		String sql="select count(1) from express_ops_paybusiness_benefits where customerid=?";
+		return this.jdbcTemplate.queryForInt(sql, customerid);
+		
 	}
 }
