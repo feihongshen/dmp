@@ -7706,7 +7706,7 @@ CREATE TABLE `cs_complaint_accept` (
     <changeSet id="wangqiang-2015-07-21-01" author="wangqiang">
 		<sql>
 		ALTER TABLE `express_ops_delivery_state`   
-  		ADD COLUMN `whethergeneratedeliverymanbill` INT(4) DEFAULT 0  NULL  COMMENT '是否已生成配送员派费账单' AFTER `whethergeneratedeliverymanbill`;
+  		ADD COLUMN `whethergeneratedeliverymanbill` INT(4) DEFAULT 0  NULL  COMMENT '是否已生成配送员派费账单' AFTER `firstlevelid`;
 		</sql>
 		</changeSet>
 </databaseChangeLog>
