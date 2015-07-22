@@ -318,8 +318,8 @@ public class PenalizeOutBillController {
 
 		model.addAttribute("creationStartDate", creationStartDate);
 		model.addAttribute("creationEndDate", creationEndDate);
-		model.addAttribute("compensatebig", compensatebig);
-		model.addAttribute("compensatesmall", compensatesmall);
+		model.addAttribute("satebig", compensatebig);
+		model.addAttribute("satesmall", compensatesmall);
 		compensateodd = compensateodd.replace(",", "\r\n");
 		model.addAttribute("compen", compensateodd);
 

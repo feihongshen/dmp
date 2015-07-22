@@ -57,8 +57,10 @@ $(function(){
 	$("#deleteBillForm input[name='compensatebig']").val("${compensatebig}");
 	$("#deleteBillForm input[name='sort']").val("${sort}");
 	$("#deleteBillForm input[name='method']").val("${method}");
-	
 	$("#updatePageForm input[name='id']").val("${bill.id}");
+	$("#queryPenalizeInsideListForm select[name='compensatebig']").val("${satebig}");
+	$("#queryPenalizeInsideListForm select[name='compensatesmall']").val("${satesmall}");
+	
 });
 function queryPenalizeOutBill(){
 	$('#find').dialog('open')
@@ -823,9 +825,9 @@ function verify(){
 			         	</td>
 			         	<td nowrap="nowrap" align="left">创建日期</td>
 	         			<td nowrap="nowrap">
-			         		<input type="text" name="creationStartDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${creationStartDate}"/>
+			         		<input type="text" name="creationStartDate" value="${creationStartDate }" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${creationStartDate}"/>
 			         		至 
-		   	       		 	<input type="text" name="creationEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${creationEndDate}"/>
+		   	       		 	<input type="text" name="creationEndDate" value="${creationEndDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${creationEndDate}"/>
 		         		</td>
 		         	</tr>
 		         	<tr>
