@@ -355,6 +355,11 @@ public class CustomerContractDAO {
 
 				String sqlString = whereSql.append(orderBuffer).toString();
 				return sqlString;
+			}else{
+				StringBuffer orderBuffer = new StringBuffer();
+				orderBuffer.append(" order by number  DESC");
+				String sqlString = whereSql.append(orderBuffer).toString();
+				return sqlString;
 			}
 
 		}
