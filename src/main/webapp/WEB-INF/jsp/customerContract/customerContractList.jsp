@@ -175,7 +175,6 @@ function update(){
 	if(!verify()){
 		return false;
 	}
-	
 		if(getBranchContractDetailVOList()){
 			var depositInformationStr = JSON.stringify(getBranchContractDetailVOList());
 			$('#depositInformationStr').val(depositInformationStr);
@@ -467,6 +466,12 @@ function verify(){
 			alert("当有押金时，押金信息不能为空！");
 			return false;
 		}
+	 var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
+      var isMoneyFormatRight = reg.test($("#depositpaymentamount").val());
+      if(!isMoneyFormatRight){
+    	  alert("押金支付金额只能为数字，并不能为负数，允许保留两位小数！");
+    	  return false;
+      }
 	}
 	if($("#contractdescription").val().length > 100){
 		alert("合同详细描述不能大于100位字符！");
