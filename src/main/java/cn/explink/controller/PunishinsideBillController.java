@@ -271,6 +271,7 @@ public class PunishinsideBillController {
 		model.addAttribute("punishsmallsortList", punishsmallsortList);
 		model.addAttribute("updatePage", 1);
 		model.addAttribute("penalizeInsidePage", 1);
+		model.addAttribute("penalizeInsideQueryConditionVO", punishinsideBillVO);
 		return "punishinsideBill/punishinsideBillList";
 	}
 

@@ -783,7 +783,7 @@ function changeBillState(state){
 	
 <!-- 扣罚单finder层显示 -->
 <c:if test="${penalizeInsidePage==1}">
-<div  id="penalizeInsidePage" class="easyui-dialog" title="扣罚单" data-options="iconCls:'icon-save'" style="width:700px;height:600px;">
+<div  id="penalizeInsidePage" class="easyui-dialog" title="扣罚单" data-options="iconCls:'icon-save'" style="width:800px;height:500px;">
 	<div style="width:100%;">
 		<form action="<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/1" method="post" id="queryPenalizeInsideListForm">
 			<table width="80%" style="margin-top: 10px;font-size: 10px;">
@@ -793,15 +793,20 @@ function changeBillState(state){
 			         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'queryPenalizeInsideListForm');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishbigsortList}" var="bigsort">
-			         				<option value="${bigsort.id}">${bigsort.text}</option>
+				         			<c:if test="${penalizeInsideQueryConditionVO.punishbigsort==bigsort.id}">
+										<option value="${bigsort.id}" selected="selected">${bigsort.text}</option>
+									</c:if>
+				         			<c:if test="${penalizeInsideQueryConditionVO.punishbigsort!=bigsort.id}">
+										<option value="${bigsort.id}">${bigsort.text}</option>
+									</c:if>
 								</c:forEach>
 			         		</select>
 			         	</td>
 			         	<td align="left">创建日期</td>
 	         			<td>
-			         		<input type="text" name="punishNoCreateBeginDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${punishinsideBillVO.punishNoCreateBeginDate}"/>
+			         		<input type="text" name="punishNoCreateBeginDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${penalizeInsideQueryConditionVO.punishNoCreateBeginDate}"/>
 			         		至 
-		   	       		 	<input type="text" name="punishNoCreateEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${punishinsideBillVO.punishNoCreateEndDate}"/>
+		   	       		 	<input type="text" name="punishNoCreateEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${penalizeInsideQueryConditionVO.punishNoCreateEndDate}"/>
 		         		</td>
 		         	</tr>
 		         	<tr>
@@ -810,13 +815,18 @@ function changeBillState(state){
 			         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'queryPenalizeInsideListForm');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishsmallsortList}" var="smallsort">
-			         				<option value="${smallsort.id}">${smallsort.text}</option>
+			         				<c:if test="${penalizeInsideQueryConditionVO.punishsmallsort==smallsort.id}">
+			         					<option value="${smallsort.id}" selected="selected">${smallsort.text}</option>
+			         				</c:if>
+			         				<c:if test="${penalizeInsideQueryConditionVO.punishsmallsort!=smallsort.id}">
+			         					<option value="${smallsort.id}">${smallsort.text}</option>
+			         				</c:if>
 								</c:forEach>
 			         		</select>
 			         	</td>
 		         		<td align="left">订单号</td>
 		         		<td>
-		        		 	<textarea style="width:100%;height:40px;resize:none;" name="cwbs"></textarea>
+		        		 	<textarea style="width:100%;height:40px;resize:none;" name="cwbs">${penalizeInsideQueryConditionVO.cwbs}</textarea>
 		        		</td>
 				  </tr>
 				  <tr>

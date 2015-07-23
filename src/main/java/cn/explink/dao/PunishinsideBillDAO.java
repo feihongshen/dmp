@@ -294,20 +294,20 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getPunishsmallsort() + "' ";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateFrom())) {
-				sql += " and pb.createDate>= '"
-						+ punishinsideBillVO.getCreateDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateTo())) {
-				sql += " and pb.createDate<= '"
-						+ punishinsideBillVO.getCreateDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateFrom())) {
-				sql += " and pb.heXiaoDate>= '"
-						+ punishinsideBillVO.getHeXiaoDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateTo())) {
-				sql += " and pb.heXiaoDate<= '"
-						+ punishinsideBillVO.getHeXiaoDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
 				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
@@ -363,20 +363,20 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getPunishsmallsort() + "' ";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateFrom())) {
-				sql += " and pb.createDate>= '"
-						+ punishinsideBillVO.getCreateDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateTo())) {
-				sql += " and pb.createDate<= '"
-						+ punishinsideBillVO.getCreateDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateFrom())) {
-				sql += " and pb.heXiaoDate>= '"
-						+ punishinsideBillVO.getHeXiaoDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateTo())) {
-				sql += " and pb.heXiaoDate<= '"
-						+ punishinsideBillVO.getHeXiaoDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
 				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
@@ -419,10 +419,10 @@ public class PunishinsideBillDAO {
 			sql += " And dutypersonid=" + dutybranchid;
 		}
 		if (StringUtils.isNotBlank(punishNoCreateBeginDate)) {
-			sql += " And creDate>='" + punishNoCreateBeginDate + "'";
+			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+punishNoCreateBeginDate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (StringUtils.isNotBlank(punishNoCreateEndDate)) {
-			sql += " And creDate<='" + punishNoCreateEndDate + "'";
+			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+punishNoCreateEndDate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (punishcwbstate != -1) {
 			sql += " And punishcwbstate=" + punishcwbstate;
