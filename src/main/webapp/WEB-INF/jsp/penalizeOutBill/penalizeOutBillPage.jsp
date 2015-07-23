@@ -151,6 +151,27 @@ function addbill(){
 		}
 	});
 }
+
+//责任机构下拉框联动
+function selectbranchUsers(){
+	var dutyPersonEle = $("#creationfrom select[name='dutypersonid']");
+	var url = "<%=request.getContextPath()%>/abnormalOrder/getbranchusers";
+	$.ajax({
+		url:url,
+		type:"POST",
+		data:"dutybranchid="+$("#creationfrom select[name='batchstate']").val(),
+	dataType:'json',
+	success:function (json){
+		dutyPersonEle.empty();
+		var optstr = "<option value ='0'>请选择责任人</option>";
+		dutyPersonEle.append(optstr);// 添加下拉框的option
+		for (var j = 0; j < json.length; j++) {
+			optstr = "<option value='"+ json[j].userid +"'>"+json[j].realname+"</option>";
+			dutyPersonEle.append(optstr);
+		}
+	}
+	});
+}
 //删除
 function deleteBill(){
 	var id = $("#updatePageForm input[name='id']").val();
@@ -524,19 +545,21 @@ function verify(){
          		<tr >
 	         		<td align="right" nowrap="nowrap" style="width: 10%;">赔付大类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
-	         			<select  name="compensatebig" style="width: 100%;" onchange="findsmall($(this).val())">
+	         			<select style="width: 100%" id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
+							<option value ="0">请选择</option>
 							<c:forEach items="${penalizebigList}" var="big" >
-							<option value="${big.id}" ${big.id==compensatebig?'selected=selected':''}>${big.text}</option>
+								<option value="${big.id}">${big.text}</option>
 							</c:forEach>
-		         		</select>
+						</select>
          			</td>
 	         		<td nowrap="nowrap" align="right" style="width: 10%;">赔付小类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
-		         		<select  name="compensatesmall" style="width: 100%;"  onchange="findbig()">
+	         			<select style="width: 100%" id="penalizesmall" name="penalizeOutsmall" onchange="findbig()">
+							<option value ="0">请选择</option>
 							<c:forEach items="${penalizesmallList}" var="small">
-							<option value="${small.id}"  title="${small.parent}" ${small.id==compensatesmall?'selected=selected':''}>${small.text}</option>
+								<option value="${small.id}"  id="${small.parent }">${small.text}</option>
 							</c:forEach>
-		         		</select>
+						</select>
 	         		</td>
          	</tr>
          <!--  -->
@@ -578,15 +601,17 @@ function verify(){
          	<tr style="display: none" id="punishInside">
          		<td align="right" nowrap="nowrap">责任机构:</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         			<select name="batchstate" style="width: 100%;">
+         			<select name="batchstate" style="width: 100%;" onchange="selectbranchUsers();">
 	         			<c:forEach items="${branchList}" var="branch">
 	         				<option value="${branch.branchid}" ${branch.branchid==batchstate?'selected=seleted':''}>${branch.branchname}</option>
 						</c:forEach>
 		         	</select>
          		</td>
          		<td nowrap="nowrap" align="right">责任人:</td>
-         		<td nowrap="nowrap" style="width: 20%;">
-         			<input  type="text" id="dutypersonid" name="dutypersonid" style="width: 100%;"/>
+       			<td>
+         			<select  name="dutypersonid" name = "dutypersonid" class="select1">
+						<option value='0' selected="selected">请选择责任人</option>
+					</select>
          		</td>
          		<td nowrap="nowrap" align="right">扣罚金额:</td>
          		<td nowrap="nowrap" style="width: 20%;">
