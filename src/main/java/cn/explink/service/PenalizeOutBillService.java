@@ -116,12 +116,12 @@ public class PenalizeOutBillService {
 			List<penalizeOutBill> contractList = this.PenalizeOutBilldao.getMaxNumber();
 			String maxNumber = "";
 			String partContractNo = "";
-			String orderStr = "001";
+			String orderStr = "0001";
 			if ((contractList != null) && !contractList.isEmpty()) {
 				for (int i = 0; i < contractList.size(); i++) {
 					penalizeOutBill contract = contractList.get(i);
 					 maxNumber = contract.getBillbatches();
-					if ((maxNumber.length() == 12) && "P".equals(maxNumber.substring(0, 1))) {
+					if ((maxNumber.length() == 13) && "P".equals(maxNumber.substring(0, 1))) {
 						 partContractNo = maxNumber.substring(0, 11);
 						String str = partContractNo.substring(3);
 						if(!str.equals( DateTimeUtil.getCurrentDate())){
@@ -134,7 +134,7 @@ public class PenalizeOutBillService {
 							int maxOrderInt = Integer.valueOf(maxOrderStr);
 							maxOrderInt++;
 							 orderStr = String.valueOf(maxOrderInt);
-							while (orderStr.length() != 3) {
+							while (orderStr.length() != 4) {
 								orderStr = "0" + orderStr;
 							}
 							number = partContractNo + orderStr;
@@ -146,17 +146,11 @@ public class PenalizeOutBillService {
 			if (StringUtils.isBlank(number)) {
 				String rule = "P";
 				String date = DateTimeUtil.getCurrentDate();
-				 orderStr = "001";
+				 orderStr = "0001";
 				number = rule + date + orderStr;
 				}
 			return number;
 		}
-	public String generateBillBatch() {
-		String rule = "P";
-		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
-		String billBatch = rule + nowTime;
-		return billBatch;
-	}
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
