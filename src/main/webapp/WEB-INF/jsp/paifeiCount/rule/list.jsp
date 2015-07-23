@@ -27,7 +27,7 @@
 			<table style="width: 60%">
 				<tr>
 					<td><input class="input_button2" type="button" onclick="$('#add').dialog('open')"
-						value="新增" /> <input class="input_button2" type="button" value="查看/修改" /> <input
+						value="新增" /> <input class="input_button2" type="button" value="查看/修改" onclick="joineditRule()" /> <input
 						class="input_button2" type="button" onclick="allchecked()" value="删除" /> <input
 						class="input_button2" type="button" onclick="$('#find').dialog('open')" value="查询" /></td>
 				</tr>
