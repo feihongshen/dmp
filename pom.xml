@@ -461,7 +461,18 @@
 		    <groupId>commons-codec</groupId> 
 		    <artifactId>commons-codec</artifactId> 
 		    <version>20041127.091804</version> 
-		</dependency> 
+		</dependency>
+		
+		<!--
+		Attention: Be sure nothing pulls in an old dependency with groupId
+		"freemarker" (without the "org."), because then you will end up with
+		two freemarker.jar-s and unpredictable behavior!
+		-->
+		<dependency>
+		  <groupId>org.freemarker</groupId>
+		  <artifactId>freemarker</artifactId>
+		  <version>2.3.23</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
@@ -637,12 +648,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<tomcat.manager.url></tomcat.manager.url>
+				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42_xscs?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42_wzy?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
-				<expressurl.password>root</expressurl.password>
+				<expressurl.password>explink</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
