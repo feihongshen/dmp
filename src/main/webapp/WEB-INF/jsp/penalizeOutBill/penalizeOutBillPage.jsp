@@ -60,7 +60,6 @@ $(function(){
 	$("#updatePageForm input[name='id']").val("${bill.id}");
 	$("#queryPenalizeInsideListForm select[name='compensatebig']").val("${satebig}");
 	$("#queryPenalizeInsideListForm select[name='compensatesmall']").val("${satesmall}");
-	
 });
 function queryPenalizeOutBill(){
 	$('#find').dialog('open')
@@ -554,7 +553,7 @@ function verify(){
          			</td>
 	         		<td nowrap="nowrap" align="right" style="width: 10%;">赔付小类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
-	         			<select style="width: 100%" id="penalizesmall" name="penalizeOutsmall" onchange="findbig()">
+	         			<select style="width: 100%" id="penalizesmall" name="compensatesmall" onchange="findbig()">
 							<option value ="0">请选择</option>
 							<c:forEach items="${penalizesmallList}" var="small">
 								<option value="${small.id}"  id="${small.parent }">${small.text}</option>
@@ -842,16 +841,15 @@ function verify(){
 		<form action="<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillList/1" method="post" id="queryPenalizeInsideListForm">
 			<table width="60%" style="margin-top: 10px;font-size: 10px;">
 				  <tr>
-				  	<input type="hidden" name="customerid" value="${bill.customerid}"></input>
+				  
 						<td nowrap="nowrap" align="left">赔付大类</td>
 		         		<td>
-			         		<select name="compensatebig" >
-			         			<c:forEach items="${penalizebigList}" var="bigsort">
-			         				<%-- <c:if test="${compensatebig==bigsort.id}"> --%>
-				         				<option value="${bigsort.id}" >${bigsort.text}</option>
-				         			<%-- </c:if> --%>
+		         			<select  id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
+								<option value ="0">请选择</option>
+								<c:forEach items="${penalizebigList}" var="big" >
+									<option value="${big.id}">${big.text}</option>
 								</c:forEach>
-			         		</select>
+							</select>
 			         	</td>
 			         	<td nowrap="nowrap" align="left">创建日期</td>
 	         			<td nowrap="nowrap">
@@ -863,13 +861,12 @@ function verify(){
 		         	<tr>
 		         		<td nowrap="nowrap" align="left">赔付小类</td>
 		         		<td>
-			         		<select name="compensatesmall" >
-			         			<c:forEach items="${penalizesmallList}" var="smallsort">
-			         				<%-- <c:if test="${compensatesmall==smallsort.id}"> --%>
-				         				<option value="${smallsort.id}" >${smallsort.text}</option>
-				         			<%-- </c:if> --%>
+		         			<select style="width: 100%" id="penalizesmall" name="compensatesmall" onchange="findbig()">
+								<option value ="0">请选择</option>
+								<c:forEach items="${penalizesmallList}" var="small">
+									<option value="${small.id}"  id="${small.parent }">${small.text}</option>
 								</c:forEach>
-			         		</select>
+							</select>
 			         	</td>
 		         		<td nowrap="nowrap" align="left">订单号</td>
 		         		<td>
@@ -877,6 +874,7 @@ function verify(){
 		        		</td>
 				  </tr>
 				  <tr>
+				  	<input type="hidden" name="customerid" value="${bill.customerid }"></input>
 				  	<td colspan="4">
 				  		<input type="hidden" name="id" value="${bill.id}">
 				  		<input class="input_button2" type="button" onclick="queryPenalizeInsideList()" value="查询"/>
