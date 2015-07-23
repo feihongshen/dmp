@@ -866,7 +866,7 @@ public class UserDAO {
 	}
 
 	public Map<Long, String> getDeliverNameMapByBranch(long branchId) {
-		String sql = "select userid,realname from express_set_user where roleid in (2,4) and branchid = ?";
+		String sql = "select userid,realname from express_set_user where roleid in (2) and branchid = ?";
 		Map<Long, String> deliverNameMap = new HashMap<Long, String>();
 		Object[] paras = new Object[] { branchId };
 		this.jdbcTemplate.query(sql, paras, new UserIdNameRCH(deliverNameMap));
