@@ -42,7 +42,7 @@
 		<div class="jg_10"></div>
 		<div class="jg_10"></div>
 		<div class="right_title">
-			<div style="overflow: auto;">
+			<div style="height: 380px;overflow: auto;" >
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="rule_table">
 					<tr id="thead">
 						<td height="30px" valign="middle"><input type="checkbox" id="all" onclick="checkall()" />
