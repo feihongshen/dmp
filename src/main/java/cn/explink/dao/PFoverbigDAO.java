@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -101,13 +102,14 @@ public class PFoverbigDAO {
 			}
 		});
 	}
+
 	public long credataOfID(final PFoverbig pf) {
 		final String sql = "insert  INTO `paifeirule_overbig` (`mincount`, `maxcount`, `subsidyfee`, `remark`,`areaid`) VALUES (?, ?, ?, ?, ?); ";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, pf.getMincount());
 				ps.setLong(2, pf.getMaxcount());
 				ps.setBigDecimal(3, pf.getSubsidyfee());
@@ -130,6 +132,32 @@ public class PFoverbigDAO {
 			return this.jdbcTemplate.queryForObject(sql, new PFoverbigRowMapper(), count, count, areaid);
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public List<PFoverbig> getPFoverbigByAreaidAndTabid(long areaid) {
+		String sql = "select * from paifeirule_overbig where  areaid=? ";
+		try {
+			return this.jdbcTemplate.query(sql, new PFoverbigRowMapper(), areaid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @param areaid
+	 * @return
+	 */
+	public int deletePFoverbigByAreaid(long areaid) {
+		String sql = "delete from paifeirule_overbig where  areaid=? ";
+		try {
+			return this.jdbcTemplate.update(sql, areaid);
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 }

@@ -172,10 +172,12 @@ public class PaiFeiRuleController {
 
 	@RequestMapping("/edittype")
 	public @ResponseBody
-	String edittype(@RequestParam(value = "json", required = false, defaultValue = "{}") String json, @RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
+	String edittype(@RequestParam(value = "json", required = false, defaultValue = "{}") String json,
+			@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
+			@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type, Model model, HttpServletRequest request) {
 
-		int count = this.paiFeiRuleService.editType(json, rulejson, type, model);
+		int count = this.paiFeiRuleService.editType(json, rulejson, type,areaid, model);
 		if (count > 0) {
 			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
 		} else {

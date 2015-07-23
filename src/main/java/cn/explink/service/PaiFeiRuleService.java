@@ -4,7 +4,9 @@
 package cn.explink.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -219,12 +221,13 @@ public class PaiFeiRuleService {
 								this.savedata(big);
 							}
 						}
-						List<PFoverweight> weights = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(areajson.getOverweight()), PFoverweight.class);
-						if (weights != null) {
-							for (PFoverweight weight : weights) {
-								weight.setAreaid(id);
-								this.savedata(weight);
-							}
+
+					}
+					List<PFoverweight> weights = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(areajson.getOverweight()), PFoverweight.class);
+					if (weights != null) {
+						for (PFoverweight weight : weights) {
+							weight.setAreaid(id);
+							this.savedata(weight);
 						}
 					}
 				}
@@ -256,7 +259,7 @@ public class PaiFeiRuleService {
 				this.pFcollectionDAO.updatePFcollection(pf);
 				return pf.getId();
 			} else {
-				return	this.pFcollectionDAO.credataOfID(pf);
+				return this.pFcollectionDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFbusiness) {
@@ -267,7 +270,7 @@ public class PaiFeiRuleService {
 				this.pFbusinessDAO.updatePFbusiness(pf);
 				return pf.getId();
 			} else {
-				return	this.pFbusinessDAO.credataOfID(pf);
+				return this.pFbusinessDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFinsertion) {
@@ -278,7 +281,7 @@ public class PaiFeiRuleService {
 				this.pFinsertionDAO.updatePFinsertion(pf);
 				return pf.getId();
 			} else {
-				return	this.pFinsertionDAO.credataOfID(pf);
+				return this.pFinsertionDAO.credataOfID(pf);
 			}
 		}
 
@@ -290,7 +293,7 @@ public class PaiFeiRuleService {
 				this.pFoverareaDAO.updatePFoverareaByPfruleidAndTabid(pf);
 				return pf.getId();
 			} else {
-				return	this.pFoverareaDAO.credataOfID(pf);
+				return this.pFoverareaDAO.credataOfID(pf);
 			}
 		}
 
@@ -302,7 +305,7 @@ public class PaiFeiRuleService {
 				this.pFareaDAO.updatePFarea(pf);
 				return pf.getId();
 			} else {
-				return	this.pFareaDAO.credataOfID(pf);
+				return this.pFareaDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFoverbig) {
@@ -313,7 +316,7 @@ public class PaiFeiRuleService {
 				this.pFoverbigDAO.updatePFoverbig(pf);
 				return pf.getId();
 			} else {
-				return	this.pFoverbigDAO.credataOfID(pf);
+				return this.pFoverbigDAO.credataOfID(pf);
 			}
 		}
 		if (obj instanceof PFoverweight) {
@@ -324,7 +327,7 @@ public class PaiFeiRuleService {
 				this.pFoverweightDAO.updatePFoverweight(pf);
 				return pf.getId();
 			} else {
-				return	this.pFoverweightDAO.credataOfID(pf);
+				return this.pFoverweightDAO.credataOfID(pf);
 			}
 		}
 		return 0;
@@ -593,10 +596,46 @@ public class PaiFeiRuleService {
 		model.addAttribute("collectionListZZ", collectionListZZ);
 
 		List<PFarea> pfareaListPS = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
+		Map<Long, List<PFoverbig>> overbigMapPS = new HashMap<Long, List<PFoverbig>>();
+		for (PFarea area : pfareaListPS) {
+			List<PFoverbig> pFoverbigList = this.pFoverbigDAO.getPFoverbigByAreaidAndTabid(area.getId());
+			overbigMapPS.put(area.getId(), pFoverbigList);
+		}
+		Map<Long, List<PFoverweight>> overweightMapPS = new HashMap<Long, List<PFoverweight>>();
+		for (PFarea area : pfareaListPS) {
+			List<PFoverweight> overweightList = this.pFoverweightDAO.getPFoverweightByAreaidAndTabid(area.getId());
+			overweightMapPS.put(area.getId(), overweightList);
+		}
 		model.addAttribute("pfareaListPS", pfareaListPS);
+		model.addAttribute("overbigMapPS", overbigMapPS);
+		model.addAttribute("overweightMapPS", overweightMapPS);
 		List<PFarea> pfareaListTH = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Tihuo.getValue());
+		Map<Long, List<PFoverbig>> overbigMapTH = new HashMap<Long, List<PFoverbig>>();
+		for (PFarea area : pfareaListTH) {
+			List<PFoverbig> pFoverbigList = this.pFoverbigDAO.getPFoverbigByAreaidAndTabid(area.getId());
+			overbigMapTH.put(area.getId(), pFoverbigList);
+		}
+		Map<Long, List<PFoverweight>> overweightMapTH = new HashMap<Long, List<PFoverweight>>();
+		for (PFarea area : pfareaListTH) {
+			List<PFoverweight> overweightList = this.pFoverweightDAO.getPFoverweightByAreaidAndTabid(area.getId());
+			overweightMapTH.put(area.getId(), overweightList);
+		}
 		model.addAttribute("pfareaListTH", pfareaListTH);
+		model.addAttribute("overbigMapTH", overbigMapTH);
+		model.addAttribute("overweightMapTH", overweightMapTH);
 		List<PFarea> pfareaListZZ = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Zhongzhuan.getValue());
+		Map<Long, List<PFoverbig>> overbigMapZZ = new HashMap<Long, List<PFoverbig>>();
+		for (PFarea area : pfareaListZZ) {
+			List<PFoverbig> pFoverbigList = this.pFoverbigDAO.getPFoverbigByAreaidAndTabid(area.getId());
+			overbigMapZZ.put(area.getId(), pFoverbigList);
+		}
+		Map<Long, List<PFoverweight>> overweightMapZZ = new HashMap<Long, List<PFoverweight>>();
+		for (PFarea area : pfareaListZZ) {
+			List<PFoverweight> overweightList = this.pFoverweightDAO.getPFoverweightByAreaidAndTabid(area.getId());
+			overweightMapZZ.put(area.getId(), overweightList);
+		}
+		model.addAttribute("overbigMapZZ", overbigMapZZ);
+		model.addAttribute("overweightMapZZ", overweightMapZZ);
 		model.addAttribute("pfareaListZZ", pfareaListZZ);
 
 		PFbusiness buFbusinessPS = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, PaiFeiRuleTabEnum.Paisong.getValue());
@@ -650,17 +689,18 @@ public class PaiFeiRuleService {
 	}
 
 	/**
+	 * @param areaid
 	 * @param model
 	 * @param request
 	 */
 	@Transactional
-	public int editType(String json, String rulejson, String type, Model model) {
+	public int editType(String json, String rulejson, String type, long areaid, Model model) {
 		List<Customer> customers = this.customerDAO.getAllCustomers();
 		JSONObject object = JSONObject.fromObject(rulejson);
-		int count=0;
+		int count = 0;
 		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(object, PaiFeiRule.class);
 		if (type.equals("_rule")) {
-			count=this.paiFeiRuleDAO.updatePaiFeiRule(rule);
+			count = this.paiFeiRuleDAO.updatePaiFeiRule(rule);
 			model.addAttribute("rule", rule);
 			return count;
 		}
@@ -683,10 +723,12 @@ public class PaiFeiRuleService {
 					pf.setPfruleid(rule.getId());
 					pf.setTypeid(rule.getType());
 					pf.setShowflag(0);
+					this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
+
 					for (Customer customer : customers) {
 						pf.setCustomerid(customer.getCustomerid());
-						long id=this.savedata(pf);
-						if(id>0){
+						long id = this.savedata(pf);
+						if (id > 0) {
 							count++;
 						}
 					}
@@ -696,14 +738,17 @@ public class PaiFeiRuleService {
 					List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(JSONArray.fromObject(json), PFbasic.class);
 					if (pfbasicList != null) {
 
-						this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
-
+						int i=this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
+						if((i>0)&&(pfbasicList.size()==0))
+						{
+							count=i;
+						}
 						for (PFbasic pf : pfbasicList) {
 							pf.setPfruleid(rule.getId());
 							pf.setTypeid(rule.getType());
 							pf.setTabid(tabid);
-							long id=this.savedata(pf);
-							if(id>0){
+							long id = this.savedata(pf);
+							if (id > 0) {
 								count++;
 							}
 						}
@@ -719,8 +764,8 @@ public class PaiFeiRuleService {
 					pf.setShowflag(0);
 					for (Customer customer : customers) {
 						pf.setCustomerid(customer.getCustomerid());
-						long id=this.savedata(pf);
-						if(id>0){
+						long id = this.savedata(pf);
+						if (id > 0) {
 							count++;
 						}
 					}
@@ -729,14 +774,17 @@ public class PaiFeiRuleService {
 					List<PFcollection> pfcollectionList = (List<PFcollection>) JSONArray.toCollection(JSONArray.fromObject(json), PFcollection.class);
 					if (pfcollectionList != null) {
 
-						this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(rule.getId(), tabid);
-
+						int i=this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(rule.getId(), tabid);
+						if((i>0)&&(pfcollectionList.size()==0))
+						{
+							count=i;
+						}
 						for (PFcollection pf : pfcollectionList) {
 							pf.setPfruleid(rule.getId());
 							pf.setTypeid(rule.getType());
 							pf.setTabid(tabid);
-							long id=this.savedata(pf);
-							if(id>0){
+							long id = this.savedata(pf);
+							if (id > 0) {
 								count++;
 							}
 						}
@@ -749,8 +797,8 @@ public class PaiFeiRuleService {
 				pf.setPfruleid(rule.getId());
 				pf.setTypeid(rule.getType());
 				pf.setTabid(tabid);
-				long id=this.savedata(pf);
-				if(id>0){
+				long id = this.savedata(pf);
+				if (id > 0) {
 					count++;
 				}
 				return count;
@@ -759,8 +807,8 @@ public class PaiFeiRuleService {
 				pf.setPfruleid(rule.getId());
 				pf.setTypeid(rule.getType());
 				pf.setTabid(tabid);
-				long id=this.savedata(pf);
-				if(id>0){
+				long id = this.savedata(pf);
+				if (id > 0) {
 					count++;
 				}
 				return count;
@@ -768,19 +816,54 @@ public class PaiFeiRuleService {
 				List<PFinsertion> pfinsertionList = (List<PFinsertion>) JSONArray.toCollection(JSONArray.fromObject(json), PFinsertion.class);
 				if (pfinsertionList != null) {
 
-					this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(rule.getId(), tabid);
-
+					int i=this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(rule.getId(), tabid);
+					if((i>0)&&(pfinsertionList.size()==0))
+					{
+						count=i;
+					}
 					for (PFinsertion pf : pfinsertionList) {
 						pf.setPfruleid(rule.getId());
 						pf.setTypeid(rule.getType());
 						pf.setTabid(tabid);
-						long id=this.savedata(pf);
-						if(id>0){
+						long id = this.savedata(pf);
+						if (id > 0) {
 							count++;
 						}
 					}
 					return count;
 				}
+			} else if (bztype.equals("overbig")) {
+				List<PFoverbig> pfoverbigList = (List<PFoverbig>) JSONArray.toCollection(JSONArray.fromObject(json), PFoverbig.class);
+				if(pfoverbigList.size()==0)
+				{
+					count=this.pFoverbigDAO.deletePFoverbigByAreaid(areaid);
+				}
+				if ((pfoverbigList != null) && (pfoverbigList.size() > 0)) {
+					this.pFoverbigDAO.deletePFoverbigByAreaid(pfoverbigList.get(0).getAreaid());
+					for (PFoverbig pf : pfoverbigList) {
+						long id = this.pFoverbigDAO.credataOfID(pf);
+						if (id > 0) {
+							count++;
+						}
+					}
+				}
+				return count;
+			} else if (bztype.equals("overweight")) {
+				List<PFoverweight> pfoverweightList = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(json), PFoverweight.class);
+				if(pfoverweightList.size()==0)
+				{
+					count=this.pFoverweightDAO.deletePFoverweightByAreaid(areaid);
+				}
+				if ((pfoverweightList != null) && (pfoverweightList.size() > 0)) {
+					this.pFoverweightDAO.deletePFoverweightByAreaid(pfoverweightList.get(0).getAreaid());
+					for (PFoverweight pf : pfoverweightList) {
+						long id = this.pFoverweightDAO.credataOfID(pf);
+						if (id > 0) {
+							count++;
+						}
+					}
+				}
+				return count;
 			}
 
 		}

@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -133,6 +134,31 @@ public class PFoverweightDAO {
 			return this.jdbcTemplate.queryForObject(sql, new PFoverweightRowMapper(), count, count, areaid);
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public List<PFoverweight> getPFoverweightByAreaidAndTabid(long areaid) {
+		String sql = "select * from paifeirule_overweight where  areaid=? ";
+		try {
+			return this.jdbcTemplate.query(sql, new PFoverweightRowMapper(), areaid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * @param id
+	 * @return
+	 */
+	public int deletePFoverweightByAreaid(long areaid) {
+		String sql = "delete from paifeirule_overweight where  areaid=? ";
+		try {
+			return this.jdbcTemplate.update(sql, areaid);
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 }

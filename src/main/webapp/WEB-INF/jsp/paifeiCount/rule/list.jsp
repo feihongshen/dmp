@@ -146,7 +146,7 @@
 					<tr>
 						<td style="line-height: 30px" colspan="2" align="center" valign="bottom"><input
 							type="button" class="input_button2" value="返回" onclick="$('#add').dialog('close');" /> <input
-							type="button" class="input_button2" value="保存" onclick="sub()" /></td>
+							type="button" class="input_button2" value="保存" onclick="sub(${rule.type})" /></td>
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right">规则类型：</td>
@@ -646,7 +646,7 @@
 											class="table_2" id="gd_table">
 											<tr id="thead">
 												<th style="width: 10%" align="center"><input type="checkbox"
-													onclick="AllTR('ps','collecti')" /></th>
+													onclick="AllTR('ps','collection')" /></th>
 												<th style="width: 25%" align="center">供货商</th>
 												<th style="width: 25%" align="center">基本派费金额</th>
 												<th style="width: 40%" align="center">备注</th>
@@ -686,7 +686,7 @@
 											<td style="width: 15%" align="center">启用超重补助</td>
 											<td style="width: 25%" align="center">备注</td>
 										</tr>
-										<tr id="ps_111" onclick="addArea('ps','广东','111')">
+										<tr id="ps_111" onclick="showArea($(this),'edit_area_ps_1','广东')">
 											<td>广东</td>
 											<td>广州</td>
 											<td>是</td>
@@ -694,16 +694,89 @@
 											<td>否</td>
 											<td>广东省是个好地方</td>
 										</tr>
-										<tr id="ps_222" onclick="addArea('ps','北京','222')">
-											<td>朝阳</td>
+										<tr id="ps_222" onclick="showArea($(this),'edit_area_ps_2','北京')">
 											<td>北京</td>
+											<td>朝阳</td>
 											<td>否</td>
 											<td>是</td>
 											<td>否</td>
 											<td>我爱北京天安门</td>
 										</tr>
 									</table>
-									<div id="ps_area_div"></div>
+									<div id="ps_area_div">
+		<c:forEach items="${pfareaListPS}" var="area">
+		<div id="edit_area_ps_${area.id}">
+		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
+			class="table_2" id="area_table">
+			<tr>
+				<td align="center">区域名称：</td>
+				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
+			</tr>
+			<tr>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
+			</tr>
+			<tr>
+				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="ps_overbig_${area.id }_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overbig_checbox"
+								onclick="AllTR('ps','overbig_${area.id }')" /></td>
+							<td style="width: 20%" align="center">开始体积数(cm3)</td>
+							<td style="width: 15%" align="center">截至体积数(cm3)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+						<c:forEach items="${overbigMapPS[area.id]}" var="big">
+						
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('ps','overbig_${area.id}')" />
+					<input id="overbig_remove" onclick="removeTR('ps','overbig_${area.id}')" type="button" value="移除" />
+					<input type="button" value="保存"
+										onclick="subEidt('ps_overbig_${area.id }_table','ps','overbig')" />
+					</td>
+			</tr>
+			<tr>
+				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="ps_overweight_${area.id}_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overweight_checbox"
+								onclick="AllTR('ps','overweight_${area.id}')" /></td>
+							<td style="width: 20%" align="center">开始超重数(kg)</td>
+							<td style="width: 15%" align="center">截至超重数(kg)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+							<c:forEach items="${overweightMapPS[area.id]}" var="weight">
+							
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overweight_add" value="添加"
+					onclick="addTROfOverAreaEdit('ps','overweight_${area.id}')" /> <input id="overweight_add"
+					onclick="removeTR('ps','overweight_${area.id}')" type="button" value="移除" />
+							<input type="button" value="保存"
+										onclick="subEidt('ps_overweight_${area.id }_table','ps','overweight')" />
+					</td>
+			</tr>
+		</table>
+	</div>
+	</c:forEach>
+									</div>
 								</div>
 							</td>
 						</tr>
@@ -869,7 +942,7 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="th_111" onclick="addArea('th','广东','111')">
+											<tr id="th_111" onclick="showArea($(this),'edit_area_th_1','广东')">
 												<td>广东</td>
 												<td>广州</td>
 												<td>是</td>
@@ -877,7 +950,7 @@
 												<td>否</td>
 												<td>广东省是个好地方</td>
 											</tr>
-											<tr id="th_222" onclick="addArea('th','北京','222')">
+											<tr id="th_222" onclick="showArea($(this),'edit_area_th_2','北京')">
 												<td>朝阳</td>
 												<td>北京</td>
 												<td>否</td>
@@ -886,7 +959,80 @@
 												<td>我爱北京天安门</td>
 											</tr>
 										</table>
-										<div id="th_area_div"></div>
+										<div id="th_area_div">
+										<c:forEach items="${pfareaListTH}" var="area">
+		<div id="edit_area_th_${area.id}">
+		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
+			class="table_2" id="area_table">
+			<tr>
+				<td align="center">区域名称：</td>
+				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
+			</tr>
+			<tr>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
+			</tr>
+			<tr>
+				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="th_overbig_${area.id }_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overbig_checbox"
+								onclick="AllTR('th','overbig_${area.id }')" /></td>
+							<td style="width: 20%" align="center">开始体积数(cm3)</td>
+							<td style="width: 15%" align="center">截至体积数(cm3)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+						<c:forEach items="${overbigMapTH[area.id]}" var="big">
+						
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('th','overbig_${area.id}')" />
+					<input id="overbig_remove" onclick="removeTR('th','overbig_${area.id}')" type="button" value="移除" />
+					<input type="button" value="保存"
+										onclick="subEidt('th_overbig_${area.id }_table','th','overbig')" />
+					</td>
+			</tr>
+			<tr>
+				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="th_overweight_${area.id}_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overweight_checbox"
+								onclick="AllTR('th','overweight_${area.id}')" /></td>
+							<td style="width: 20%" align="center">开始超重数(kg)</td>
+							<td style="width: 15%" align="center">截至超重数(kg)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+							<c:forEach items="${overweightMapPS[area.id]}" var="weight">
+							
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overweight_add" value="添加"
+					onclick="addTROfOverAreaEdit('th','overweight_${area.id}')" /> <input id="overweight_add"
+					onclick="removeTR('th','overweight_${area.id}')" type="button" value="移除" />
+							<input type="button" value="保存"
+										onclick="subEidt('th_overweight_${area.id }_table','th','overweight')" />
+					</td>
+			</tr>
+		</table>
+	</div>
+	</c:forEach>
+										</div>
 									</div>
 								</td>
 							</tr>
@@ -926,9 +1072,9 @@
 												<c:forEach items="${insertionListTH}" var="insertion">
 													<tr>
 														<td align='center'><input type='checkbox' /></td>
-														<td><input style='width: 100%;' type='text' value="${insertion.mincount}"
+														<td><input style='width: 100%;' type='text' value="${insertion.mincount}" onblur="comparaTo($(this),'min')"
 															id='mincount' name='mincount' /></td>
-														<td><input style='width: 100%;' type='text' value="${insertion.maxcount}"
+														<td><input style='width: 100%;' type='text' value="${insertion.maxcount}" onblur="comparaTo($(this),'max')"
 															id='maxcount' name='maxcount' /></td>
 														<td><input style='width: 100%;' type='text' value="${insertion.insertionfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															id='insertionfee' name='insertionfee' /></td>
@@ -1054,7 +1200,7 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="zz_111" onclick="addArea('zz','广东','111')">
+											<tr id="zz_111" onclick="showArea($(this),'edit_area_zz_1','广东')">
 												<td>广东</td>
 												<td>广州</td>
 												<td>是</td>
@@ -1062,7 +1208,7 @@
 												<td>否</td>
 												<td>广东省是个好地方</td>
 											</tr>
-											<tr id="zz_222" onclick="addArea('zz','北京','222')">
+											<tr id="zz_222" onclick="showArea($(this),'edit_area_zz_1','北京')">
 												<td>朝阳</td>
 												<td>北京</td>
 												<td>否</td>
@@ -1071,7 +1217,80 @@
 												<td>我爱北京天安门</td>
 											</tr>
 										</table>
-										<div id="zz_area_div"></div>
+										<div id="zz_area_div">
+										<c:forEach items="${pfareaListZZ}" var="area">
+		<div id="edit_area_zz_${area.id}">
+		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
+			class="table_2" id="area_table">
+			<tr>
+				<td align="center">区域名称：</td>
+				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
+			</tr>
+			<tr>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
+			</tr>
+			<tr>
+				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="zz_overbig_${area.id }_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overbig_checbox"
+								onclick="AllTR('zz','overbig_${area.id }')" /></td>
+							<td style="width: 20%" align="center">开始体积数(cm3)</td>
+							<td style="width: 15%" align="center">截至体积数(cm3)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+						<c:forEach items="${overbigMapZZ[area.id]}" var="big">
+						
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('zz','overbig_${area.id}')" />
+					<input id="overbig_remove" onclick="removeTR('zz','overbig_${area.id}')" type="button" value="移除" />
+					<input type="button" value="保存"
+										onclick="subEidt('zz_overbig_${area.id }_table','zz','overbig')" />
+					</td>
+			</tr>
+			<tr>
+				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
+						cellpadding="0" class="table_2" id="zz_overweight_${area.id}_table">
+						<tr id="thead">
+							<td style="width: 10%" align="center"><input type="checkbox" id="overweight_checbox"
+								onclick="AllTR('zz','overweight_${area.id}')" /></td>
+							<td style="width: 20%" align="center">开始超重数(kg)</td>
+							<td style="width: 15%" align="center">截至超重数(kg)</td>
+							<td style="width: 15%" align="center">补助金额(元)</td>
+							<td style="width: 25%" align="center">备注</td>
+						</tr>
+							<c:forEach items="${overweightMapZZ[area.id]}" var="weight">
+							
+						<tr>
+						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
+						</tr>
+						</c:forEach>
+					</table> <input type="button" id="overweight_add" value="添加"
+					onclick="addTROfOverAreaEdit('zz','overweight_${area.id}')" /> <input id="overweight_add"
+					onclick="removeTR('zz','overweight_${area.id}')" type="button" value="移除" />
+							<input type="button" value="保存"
+										onclick="subEidt('zz_overweight_${area.id }_table','zz','overweight')" />
+					</td>
+			</tr>
+		</table>
+	</div>
+	</c:forEach>
+										</div>
 									</div>
 								</td>
 							</tr>
@@ -1170,7 +1389,9 @@
 				<tr>
 					<td align="right" style="line-height: 30px">排序：</td>
 					<td><select style="width: 60%;" name="orderby">
-							<option value="name" ${name=='name'?'selected=selected':''}>结算规则名称</option>
+							<option value="name" ${orderby=='name'?'selected=selected':''}>结算规则名称</option>
+							<option value="type" ${orderby=='type'?'selected=selected':''}>规则类型</option>
+							<option value="state" ${orderby=='state'?'selected=selected':''}>状态</option>
 					</select> <select style="width: 38%;" name="orderbyType">
 							<option value="asc" ${orderbytype=='asc'?'selected=selected':'' }>升序</option>
 							<option value="desc" ${orderbytype=='desc'?'selected=selected':'' }>降序</option>
@@ -1195,7 +1416,7 @@
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
 				<td align="left"><span><input type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
 			</tr>
-			<tr>
+			<tr id="overbigflagtrno">
 				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="overbig_table">
@@ -1210,7 +1431,10 @@
 					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverArea('ps','overbig')" />
 					<input id="overbig_remove" onclick="removeTR('ps','overbig')" type="button" value="移除" /></td>
 			</tr>
-			<tr>
+			<tr id="overbigflagtr">
+				<td align="left" valign="bottom"><input type="checkbox"  id="overbigflag"/>超大补助</td>
+			</tr>
+			<tr >
 				<td align="left"><input type="checkbox" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="overweight_table">
@@ -1231,6 +1455,7 @@
 	<form action="1" id="edit_form">
 		<input type="hidden" id="edit_ruleid" name="edit_ruleid" />
 	</form>
+		<input type="hidden" id="edit_ruletype" name="edit_ruletype" value="${rule.type }" />
 </body>
 </html>
 

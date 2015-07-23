@@ -7715,4 +7715,9 @@ CREATE TABLE `cs_complaint_accept` (
   		ADD COLUMN `whetherGeneratePeiFuBill` INT(4) DEFAULT 0  NULL  COMMENT '是否已生成赔付账单' AFTER `state`;
 		</sql>
 	</changeSet>
+    <changeSet id="wangyonghe-2015-07-23-01" author="wangyonghe">
+		<sql>
+		INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('808030', '2', '派费结算规则', '808030', 'paifeirule/list/1?', '8080');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
