@@ -326,6 +326,75 @@ public class PunishinsideBillDAO {
 
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());
 	}
+	
+	public int queryPunishinsideBillCount(
+			ExpressOpsPunishinsideBillVO punishinsideBillVO) {
+		
+		String sql = "select count(1) from express_ops_punishinside_bill pb "
+				+ " left join express_set_branch b on pb.dutybranchid = b.branchid "
+				+ " left join express_set_user u on pb.dutypersonid = u.userid "
+				+ " where 1=1 ";
+		
+		if (punishinsideBillVO != null) {
+			if (StringUtils.isNotBlank(punishinsideBillVO.getBillBatch())) {
+				sql += " and pb.billBatch like '%"
+						+ punishinsideBillVO.getBillBatch() + "%' ";
+			}
+			if (punishinsideBillVO.getBillState() != 0) {
+				sql += " and pb.billState= '"
+						+ punishinsideBillVO.getBillState() + "' ";
+			}
+			
+			if (StringUtils.isNotBlank(punishinsideBillVO.getDutybranchname())) {
+				sql += " and b.branchname like '%"
+						+ punishinsideBillVO.getDutybranchname() + "%' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getDutypersonname())) {
+				sql += " and u.realname like '%"
+						+ punishinsideBillVO.getDutypersonname() + "%' ";
+			}
+			
+			if (punishinsideBillVO.getPunishbigsort() != 0) {
+				sql += " and pb.punishbigsort= '"
+						+ punishinsideBillVO.getPunishbigsort() + "' ";
+			}
+			if (punishinsideBillVO.getPunishsmallsort() != 0) {
+				sql += " and pb.punishsmallsort= '"
+						+ punishinsideBillVO.getPunishsmallsort() + "' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateFrom())) {
+				sql += " and pb.createDate>= '"
+						+ punishinsideBillVO.getCreateDateFrom() + "' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateTo())) {
+				sql += " and pb.createDate<= '"
+						+ punishinsideBillVO.getCreateDateTo() + "' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateFrom())) {
+				sql += " and pb.heXiaoDate>= '"
+						+ punishinsideBillVO.getHeXiaoDateFrom() + "' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateTo())) {
+				sql += " and pb.heXiaoDate<= '"
+						+ punishinsideBillVO.getHeXiaoDateTo() + "' ";
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
+				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
+					sql += " order by b.branchname";
+				} else if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutypersonname")){
+					sql += " order by u.realname";
+				} else {
+					sql += " order by pb." + punishinsideBillVO.getContractColumn();
+				}
+			}
+			if (StringUtils.isNotBlank(punishinsideBillVO
+					.getContractColumnOrder())) {
+				sql += " " + punishinsideBillVO.getContractColumnOrder();
+			}
+		}
+		
+		return jdbcTemplate.queryForInt(sql);
+	}
 
 	// 根据查询条件查询对内扣罚的扣罚单
 	public List<PenalizeInside> findByCondition(long punishbigsort,
@@ -367,6 +436,77 @@ public class PunishinsideBillDAO {
 
 	}
 
+	//根据查询条件查询对内扣罚的扣罚单
+	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+		String sql="select * from express_ops_punishInside_detail where 1=1";
+		if (cwb.length()>0) {
+			sql+=" And cwb IN("+cwb+")";
+		}
+		if (cwbpunishtype>0) {
+			sql+="  And punishcwbstate="+cwbpunishtype;
+		}
+		if (dutybranchid>0) {
+			sql+=" And dutybranchid="+dutybranchid;
+		}
+		if (dutynameid>0) {
+			sql+=" And dutypersonid="+dutynameid;
+		}
+		if (cwbstate>0) {
+			sql+=" And cwbstate="+cwbstate;
+		}
+		if (punishbigsort>0) {
+			sql+=" And punishbigsort="+punishbigsort;
+		}
+		if (punishsmallsort>0) {
+			sql+=" And punishsmallsort="+punishsmallsort;
+		}
+		if (!begindate.equals("")) {
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
+		}
+		if (!enddate.equals("")) {
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
+		}
+		if (page!=-9) {
+			sql += " ORDER BY creDate DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		}
+		return this.jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
+
+	}
+	
+	//根据查询条件查询对内扣罚的扣罚单总单数
+	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+		String sql="select count(1) from express_ops_punishInside_detail where 1=1";
+		if (cwb.length()>0) {
+			sql+=" And cwb IN("+cwb+")";
+		}
+		if (cwbpunishtype>0) {
+			sql+="  And punishcwbstate="+cwbpunishtype;
+		}
+		if (dutybranchid>0) {
+			sql+=" And dutybranchid="+dutybranchid;
+		}
+		if (dutynameid>0) {
+			sql+=" And dutypersonid="+dutynameid;
+		}
+		if (cwbstate>0) {
+			sql+=" And cwbstate="+cwbstate;
+		}
+		if (punishbigsort>0) {
+			sql+=" And punishbigsort="+punishbigsort;
+		}
+		if (punishsmallsort>0) {
+			sql+=" And punishsmallsort="+punishsmallsort;
+		}
+		if (!begindate.equals("")) {
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
+		}
+		if (!enddate.equals("")) {
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
+		}
+		return this.jdbcTemplate.queryForInt(sql);
+		
+	}
+		
 	public List<ExpressOpsPunishinsideBill> getMaxBillBatch() {
 		String sql = "select * from express_ops_punishinside_bill order by billBatch desc";
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());

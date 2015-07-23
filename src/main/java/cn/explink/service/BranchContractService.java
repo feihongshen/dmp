@@ -413,12 +413,12 @@ public class BranchContractService {
 			if ((file != null) && !file.isEmpty()) {
 				String filePath = ResourceBundleUtil.FILEPATH;
 				name = file.getOriginalFilename();
-				if (name.indexOf(".") != -1) {
+				/*if (name.indexOf(".") != -1) {
 					String suffix = name.substring(name.lastIndexOf("."));
 					name =System.currentTimeMillis() + suffix;
 				} else {
 					name = System.currentTimeMillis() + "";
-				}
+				}*/
 				ServiceUtil.uploadWavFile(file, filePath, name);
 			}
 		} catch (Exception e) {

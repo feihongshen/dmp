@@ -1,10 +1,11 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.ExpressSetBranchContract"%>
 <%@page import="cn.explink.domain.VO.ExpressSetBranchContractVO"%>
 <%@page import="cn.explink.util.DateTimeUtil"%>
 <%@page import="cn.explink.enumutil.YesOrNoStateEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.ContractStateEnum"%>
 <%@page import="cn.explink.util.Page"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%-- <%
 		List<ExpressSetBranchContract> branchContractList=request.getAttribute("branchContractList")==null?null:(List<ExpressSetBranchContract>)request.getAttribute("branchContractList");
 		Page page_obj =request.getAttribute("page_obj")==null?null:(Page)request.getAttribute("page_obj");
@@ -41,7 +42,10 @@ $(function(){
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 	$('#delete_button').click(function(){
-		
+		if(!$("#branchId").val()){
+			alert("请选择一条记录!");
+			return false;
+		}
 		var state = $("#branchContractState").val();
 		var xinjian = "<%=ContractStateEnum.XinJian.getValue()%>";
 		if(state != xinjian){
@@ -60,7 +64,7 @@ $(function(){
 					success:function(data){
 						if(data && data.errorCode==0){
 							alert(data.error);
-							window.location.href='<%=request.getContextPath()%>/branchContract/branchContractList';
+							window.location.href='<%=request.getContextPath()%>/branchContract/branchContractList/1';
 						}
 					}
 				});
@@ -125,11 +129,18 @@ function addContract() {
 			'			<form method="post" onSubmit="addContractForm(this);return false;" action="<%=request.getContextPath()%>/branchContract/addBranchContractfile;jsessionid=<%=session.getId()%>" id="addcallerForm" enctype="multipart/form-data">'+
 			'		 	<table>'+
 			'					<tr>'+
+			'						<td colspan="2" align="left">'+
+			'							<input type="submit" value="提交" class="input_button2">'+
+			'							<input type="button" value="取消" class="input_button2" align="center" onclick="closeBox()"/>'+
+			'						</td>'+
+			'						<td colspan="4"></td>'+
+			'					</tr>'+
+			'					<tr>'+
 			'						<th align="left"><font color="red">*</font>编号</th>'+
 			'						<td><input type="text" name="contractNo" value="[自动生成]" id="contractNo" maxlength="20"/></td>'+
 			'						<th align="left"><font color="red">*</font>合同状态</th>'+
 			'						<td>'+
-			'							<select id="contractState" name="contractState">'+
+			'							<select id="contractState" name="contractState" disabled="disabled">'+
 			'				         	</select>'+
 			'		           		</td>'+
 			'						<th align="left">合同日期范围</th>'+
@@ -196,10 +207,6 @@ function addContract() {
 			'						<td></td>'+
 			'					</tr>'+
 			'			</table>'+
-			'			<div align="center">'+
-			'				<input type="submit" value="提交" class="button">'+
-			'				<input type="button" value="取消" class="button" align="center" onclick="closeBox()"/>'+
-			'			</div>'+
 			'		</form>	'+
 			'		</div>'+
 			'		</div>');
@@ -224,18 +231,29 @@ function addContract() {
 }
 
 function updateContract(){
+	if(!$("#branchId").val()){
+		alert("请选择一条记录!");
+		return false;
+	}
 	$("#box_contant").html('');
 	$("#box_contant").html('<div id="box_top_bg"></div>'+
 			'	<div id="box_in_bg">'+
 			'		<h1><div id="close_box" onclick="closeBox()"></div>修改加盟商合同</h1>'+
 			'		<div id="box_form">'+
 			'			<form action="<%=request.getContextPath()%>/branchContract/updateBranchContract" id="editcallerForm">'+
-			'			<div align="center">'+
-			'				<input type="button" value="中止" id="breakOffContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.HeTongZhongZhi.getValue()%>'+')"/>'+
-			'				<input type="button" value="结束" id="finishContract" style="display:none;" class="input_button2" align="center" onclick="changeContractState('+'<%=ContractStateEnum.HeTongJieShu.getValue()%>'+')"/>'+
-			'				<input type="button" value="开始执行" id="startContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.ZhiXingZhong.getValue()%>'+')"/>'+
-			'			</div>'+
 			'				<table>'+
+			'					<tr>'+
+			'						<td colspan="2" align="left">'+
+			'							<input type="button" value="返回" class="input_button2" onclick="closeBox()"/>'+
+			'							<input type="button" value="保存" class="input_button2" align="center" onclick="updateContractData()"/>'+
+			'						</td>'+
+			'						<td colspan="2" align="center">'+
+			'							<input type="button" value="中止" id="breakOffContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.HeTongZhongZhi.getValue()%>'+')"/>'+
+			'							<input type="button" value="结束" id="finishContract" style="display:none;" class="input_button2" align="center" onclick="changeContractState('+'<%=ContractStateEnum.HeTongJieShu.getValue()%>'+')"/>'+
+			'							<input type="button" value="开始执行" id="startContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.ZhiXingZhong.getValue()%>'+')"/>'+
+			'						</td>'+
+			'						<td colspan="2"></td>'+
+			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">编号</th>'+
 			'						<td><input type="text" name="contractNo" value="" id="contractNo" maxlength="20" readonly="true" style="background-color:#DCDCDC"/></td>'+
@@ -329,10 +347,6 @@ function updateContract(){
 			'					</table>'+
 			'					<input type="hidden" id="id" name="id" value="">'+
 			'					<input type="hidden" id="branchContractDetailVOStr" name="branchContractDetailVOStr" value="">'+
-			'			<div align="center">'+			
-			'				<input type="button" value="返回" class="input_button2" onclick="closeBox()"/>'+
-			'				<input type="button" value="保存" class="input_button2" align="center" onclick="updateContractData()"/>'+
-			'			</div>'+			
 			'			</form>	'+
 			'		</div>'+
 			'		</div>');
@@ -350,7 +364,7 @@ function queryContract(){
 			'	<div id="box_in_bg">'+
 			'		<h1><div id="close_box" onclick="closeBox()"></div>查询加盟商合同</h1>'+
 			'		<div id="box_form">'+
-			'			<form action="'+getPath()+'/branchContract/branchContractList" id="querycallerForm">'+
+			'			<form action="'+getPath()+'/branchContract/branchContractList/1" id="querycallerForm">'+
 			'		 	<table>'+
 			'					<tr>'+
 			'						<th align="left">编号</th>'+
@@ -422,8 +436,8 @@ function queryContract(){
 			'					</tr>'+
 			'			</table>'+
 			'			<div align="center">'+
-			'				<input type="button" value="查询" class="button" align="center" onclick="querycaller()">'+
-			'				<input type="button" value="关闭" class="button" align="center" onclick="closeBox()"/>'+
+			'				<input type="button" value="查询" class="input_button2" align="center" onclick="querycaller()">'+
+			'				<input type="button" value="关闭" class="input_button2" align="center" onclick="closeBox()"/>'+
 			'			</div>'+
 			'		</form>	'+
 			'		</div>'+
@@ -519,7 +533,6 @@ function addContractForm(form){
 		alert("是否有押金为必填项!");
 		return false;
 	}
-	
 	if($('#isDeposit option:selected').text()=="是"){  
 		if(!$("#depositCollectDate").val()){
 			alert("押金收取日期为必填项!");
@@ -538,30 +551,45 @@ function addContractForm(form){
 			return false;
 		}
 	}
-	
-	if ($("#txtFileName").val()=="") {
-		$(form).attr("enctype", "");
-		$(form).attr("action", getPath()+"/branchContract/addBranchContract");
-		submitCreateForm(form);
-		return;
+	$("#contractState").attr("disabled",false);
+	if($("#contractNo").val() != "[自动生成]"){
+		$.ajax({
+			type : "POST",
+			url : "<%=request.getContextPath()%>/branchContract/validateContractNo",
+			data : {"contractNo":$("#contractNo").val()},
+			dataType : "json",
+			success : function(data) {
+				if (data.errorCode == 1) {
+					alert(data.error);
+					return;
+				} else {
+					if ($("#txtFileName").val()=="") {
+						$(form).attr("enctype", "");
+						$(form).attr("action", getPath()+"/branchContract/addBranchContract");
+						submitCreateForm(form);
+						return;
+					}
+					
+					$('#swfupload-control').swfupload('addPostParam', 'contractNo', $("#contractNo").val());
+					$('#swfupload-control').swfupload('addPostParam', 'contractState', $("#contractState").val());
+					$('#swfupload-control').swfupload('addPostParam', 'contractBeginDate', $("#contractBeginDate").val());
+					$('#swfupload-control').swfupload('addPostParam', 'contractEndDate', $("#contractEndDate").val());
+					$('#swfupload-control').swfupload('addPostParam', 'branchName', $("#branchName").val());
+					$('#swfupload-control').swfupload('addPostParam', 'siteChief', $("#siteChief").val());
+					$('#swfupload-control').swfupload('addPostParam', 'chiefIdentity', $("#chiefIdentity").val());
+					$('#swfupload-control').swfupload('addPostParam', 'areaManager', $("#areaManager").val());
+					$('#swfupload-control').swfupload('addPostParam', 'isDeposit', $("#isDeposit").val());
+					$('#swfupload-control').swfupload('addPostParam', 'contractDescription', $("#contractDescription").val());
+					$('#swfupload-control').swfupload('addPostParam', 'qualityControlClause', $("#qualityControlClause").val());
+					$('#swfupload-control').swfupload('addPostParam', 'depositCollectDate', $("#depositCollectDate").val());
+					$('#swfupload-control').swfupload('addPostParam', 'depositCollectAmount', $("#depositCollectAmount").val());
+					$('#swfupload-control').swfupload('addPostParam', 'depositCollector', $("#depositCollector").val());
+					$('#swfupload-control').swfupload('addPostParam', 'depositPayor', $("#depositPayor").val());
+					$('#swfupload-control').swfupload('startUpload');
+				}
+			}
+		});
 	}
-	
-	$('#swfupload-control').swfupload('addPostParam', 'contractNo', $("#contractNo").val());
-	$('#swfupload-control').swfupload('addPostParam', 'contractState', $("#contractState").val());
-	$('#swfupload-control').swfupload('addPostParam', 'contractBeginDate', $("#contractBeginDate").val());
-	$('#swfupload-control').swfupload('addPostParam', 'contractEndDate', $("#contractEndDate").val());
-	$('#swfupload-control').swfupload('addPostParam', 'branchName', $("#branchName").val());
-	$('#swfupload-control').swfupload('addPostParam', 'siteChief', $("#siteChief").val());
-	$('#swfupload-control').swfupload('addPostParam', 'chiefIdentity', $("#chiefIdentity").val());
-	$('#swfupload-control').swfupload('addPostParam', 'areaManager', $("#areaManager").val());
-	$('#swfupload-control').swfupload('addPostParam', 'isDeposit', $("#isDeposit").val());
-	$('#swfupload-control').swfupload('addPostParam', 'contractDescription', $("#contractDescription").val());
-	$('#swfupload-control').swfupload('addPostParam', 'qualityControlClause', $("#qualityControlClause").val());
-	$('#swfupload-control').swfupload('addPostParam', 'depositCollectDate', $("#depositCollectDate").val());
-	$('#swfupload-control').swfupload('addPostParam', 'depositCollectAmount', $("#depositCollectAmount").val());
-	$('#swfupload-control').swfupload('addPostParam', 'depositCollector', $("#depositCollector").val());
-	$('#swfupload-control').swfupload('addPostParam', 'depositPayor', $("#depositPayor").val());
-	$('#swfupload-control').swfupload('startUpload');
 }
 
 function submitCreateForm(form) {
@@ -1042,29 +1070,27 @@ function trim(str) {
 	</div>
 	<div class="jg_10"></div>
 	<div class="jg_10"></div>
-	<%-- <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="pageid">
-		<tr>
-			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-				<a href="javascript:$('#PageFromW').attr('action','1');$('#PageFromW').submit();" >第一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#PageFromW').submit();">上一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#PageFromW').submit();" >下一页</a>　
-				<a href="javascript:$('#PageFromW').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#PageFromW').submit();" >最后一页</a>
-				　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第
-					<select
-						id="selectPg"
-						onchange="$('#PageFromW').attr('action',$(this).val());$('#PageFromW').submit()">
-						<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
-						<option value="<%=i %>"><%=i %></option>
-						<% } %>
-					</select>页
-			</td>
-		</tr>
-	</table>
-	
-	<script type="text/javascript">
-		$("#selectPg").val(<%=request.getAttribute("page") %>);
-	</script> --%>
-	
-	
+	<div class="iframe_bottom"> 
+		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+						<tr>
+							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+							<a href="javascript:$('#branchContractListForm').attr('action','1');$('#branchContractListForm').submit();" >第一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#branchContractListForm').submit();">上一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#branchContractListForm').submit();" >下一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchContractListForm').submit();" >最后一页</a>
+							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
+							<select id="selectPg" onchange="$('#branchContractListForm').attr('action',$(this).val());$('#branchContractListForm').submit()">
+								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
+									<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+								</c:forEach>
+							</select>页
+							</td>
+						</tr>
+		</table>
+	</div>
+	<div>
+		<form action="<%=request.getContextPath()%>/branchContract/branchContractList/1" method="post" id="branchContractListForm">
+		</form>
+	</div>
 </body>
 </html>

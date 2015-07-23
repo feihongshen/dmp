@@ -134,6 +134,11 @@ public class BranchContractDAO {
 		return this.jdbcTemplate.update(sql);
 	}
 	
+	public int validateContractNo(String contractNo) {
+		String sql = "select count(1) from express_set_branch_contract where contractNo='" + contractNo + "'";
+		return this.jdbcTemplate.queryForInt(sql);
+	}
+	
 	public List<ExpressSetBranchContract> getBranchContractList() {
 		String sql = "select * from express_set_branch_contract";
 		return jdbcTemplate.query(sql, new BranchContractMapper());
@@ -193,6 +198,57 @@ public class BranchContractDAO {
 		}
 		
 		return jdbcTemplate.query(sql, new BranchContractMapper());
+	}
+	
+	public int queryBranchContractCount(ExpressSetBranchContractVO branchContractVO) {
+		
+		String sql = "select count(1) from express_set_branch_contract where 1=1 ";
+		if(branchContractVO != null){
+			if(StringUtils.isNotBlank(branchContractVO.getContractNo())){
+				sql += " and contractNo like '%" + branchContractVO.getContractNo() + "%' ";
+			}
+			if(branchContractVO.getContractState() != 0){
+				sql += " and contractState= '" + branchContractVO.getContractState() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getBranchName())){
+				sql += " and branchName like '%" + branchContractVO.getBranchName() + "%' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getAreaManager())){
+				sql += " and areaManager like '%" + branchContractVO.getAreaManager() + "%' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getSiteChief())){
+				sql += " and siteChief like '%" + branchContractVO.getSiteChief() + "%' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getChiefIdentity())){
+				sql += " and chiefIdentity like '%" + branchContractVO.getChiefIdentity() + "%' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractDescription())){
+				sql += " and contractDescription like '%" + branchContractVO.getContractDescription() + "%' ";
+			}
+			if(branchContractVO.getIsDeposit() != null && branchContractVO.getIsDeposit().intValue() != 2){
+				sql += " and isDeposit= '" + branchContractVO.getIsDeposit().intValue() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractBeginDateFrom())){
+				sql += " and contractBeginDate>= '" + branchContractVO.getContractBeginDateFrom() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractBeginDateTo())){
+				sql += " and contractBeginDate<= '" + branchContractVO.getContractBeginDateTo() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateFrom())){
+				sql += " and contractEndDate>= '" + branchContractVO.getContractEndDateFrom() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateTo())){
+				sql += " and contractEndDate<= '" + branchContractVO.getContractEndDateTo() + "' ";
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractColumn())){
+				sql += " order by " + branchContractVO.getContractColumn();
+			}
+			if(StringUtils.isNotBlank(branchContractVO.getContractColumnOrder())){
+				sql += " " + branchContractVO.getContractColumnOrder();
+			}
+		}
+		
+		return jdbcTemplate.queryForInt(sql);
 	}
 	
 	public List<ExpressSetBranchContract> getMaxContractNo(){

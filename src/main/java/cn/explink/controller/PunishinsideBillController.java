@@ -83,8 +83,8 @@ public class PunishinsideBillController {
 	// return "workorder/CallerArchivalRepository";
 	// }
 
-	@RequestMapping("/punishinsideBillList")
-	public String punishinsideBillList(Model model,
+	@RequestMapping("/punishinsideBillList/{page}")
+	public String punishinsideBillList(@PathVariable("page") long page, Model model,
 			ExpressOpsPunishinsideBillVO queryConditionVO) {
 		// public String punishinsideBillList(Model
 		// model,ExpressOpsPunishinsideBill
@@ -101,11 +101,16 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(queryConditionVO);
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(queryConditionVO);
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("userList", userList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("dutyPersonList", dutyPersonList);
@@ -291,16 +296,16 @@ public class PunishinsideBillController {
 			List<String> cwbList = Arrays.asList(billVO.getCwbs().split(","));
 			cwbs = StringUtil.getStringsByStringList(cwbList);
 		}
-		List<PenalizeInside> penalizeInsideList = this.punishInsideDao
+		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
 				.findByCondition(page, cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
-		int count = this.punishInsideDao
+						billVO.getPunishNoCreateEndDate());
+		int count = this.punishinsideBillDAO
 				.findByConditionSum(cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+						billVO.getPunishNoCreateEndDate());
 
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);

@@ -383,6 +383,50 @@ public class ExceedSubsidyApplyDAO {
 		return jdbcTemplate.query(sql, new ExceedSubsidyApplyMapper());
 	}
 	
+	public int queryExceedSubsidyApplyCount(
+			ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO) {
+		
+		String sql = "select count(1) from express_set_exceed_subsidy_apply a "
+				+ " left join express_set_user u on a.deliveryPerson = u.userid "
+				+ "where 1=1 ";
+		
+		if (exceedSubsidyApplyVO != null) {
+			if (StringUtils.isNotBlank(exceedSubsidyApplyVO.getCwbOrder())) {
+				sql += " and a.cwbOrder like '%"
+						+ exceedSubsidyApplyVO.getCwbOrder() + "%' ";
+			}
+			if (exceedSubsidyApplyVO.getApplyState() != 0) {
+				sql += " and a.applyState= '"
+						+ exceedSubsidyApplyVO.getApplyState() + "' ";
+			} else if(exceedSubsidyApplyVO.getIsAdvanceAuthority() == 1){
+				sql += " and a.applyState!= '"
+						+ ExceedSubsidyApplyStateEnum.XinJian.getValue() + "' ";
+			}
+			if (exceedSubsidyApplyVO.getDeliveryPerson() != 0) {
+				sql += " and a.deliveryPerson= '"
+						+ exceedSubsidyApplyVO.getDeliveryPerson() + "' ";
+			}
+			if (StringUtils.isNotBlank(exceedSubsidyApplyVO.getDeliveryPersonName())) {
+				sql += " and u.realname like '%"
+						+ exceedSubsidyApplyVO.getDeliveryPersonName() + "%' ";
+			}
+			if (StringUtils
+					.isNotBlank(exceedSubsidyApplyVO.getColumn())) {
+				if(exceedSubsidyApplyVO.getColumn().equalsIgnoreCase("deliveryPersonName")){
+					sql += " order by u.realname";
+				} else {
+					sql += " order by a."
+							+ exceedSubsidyApplyVO.getColumn();
+				}
+			}
+			if (StringUtils.isNotBlank(exceedSubsidyApplyVO.getColumnOrder())) {
+				sql += " " + exceedSubsidyApplyVO.getColumnOrder();
+			}
+		}
+		
+		return jdbcTemplate.queryForInt(sql);
+	}
+	
 	public ExpressSetExceedSubsidyApply getMaxApplyNo(String applyNo) {
 		String sql = "select * from express_set_exceed_subsidy_apply where applyNo like '%" + applyNo + "%' order by applyNo desc limit 0,1";
 		try{

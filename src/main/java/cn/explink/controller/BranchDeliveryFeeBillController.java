@@ -96,8 +96,8 @@ public class BranchDeliveryFeeBillController {
 	// return "workorder/CallerArchivalRepository";
 	// }
 
-	@RequestMapping("/branchDeliveryFeeBillList")
-	public String branchDeliveryFeeBillList(Model model,
+	@RequestMapping("/branchDeliveryFeeBillList/{page}")
+	public String branchDeliveryFeeBillList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchDeliveryFeeBillVO queryConditionVO) {
 		
 		List<Branch> branchList = this.branchDAO.getAllBranches();
@@ -109,7 +109,12 @@ public class BranchDeliveryFeeBillController {
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(queryConditionVO);
-
+		int count = this.branchDeliveryFeeBillDAO
+				.queryBranchDeliveryFeeBillCount(queryConditionVO);
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("branchDeliveryFeeBillList", list);
 		model.addAttribute("queryConditionVO", queryConditionVO);
 		model.addAttribute("branchList", branchList);

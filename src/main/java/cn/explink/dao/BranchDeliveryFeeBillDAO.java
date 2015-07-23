@@ -353,6 +353,65 @@ public class BranchDeliveryFeeBillDAO {
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillMapper());
 	}
 	
+	public int queryBranchDeliveryFeeBillCount(
+			ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO) {
+		
+		String sql = "select count(1) from express_set_branch_delivery_fee_bill pb "
+				+ " left join express_set_branch b on pb.branchId = b.branchid "
+				+ "where 1=1 ";
+		
+		if (branchDeliveryFeeBillVO != null) {
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBillBatch())) {
+				sql += " and pb.billBatch like '%"
+						+ branchDeliveryFeeBillVO.getBillBatch() + "%' ";
+			}
+			if (branchDeliveryFeeBillVO.getBillState() != 0) {
+				sql += " and pb.billState= '"
+						+ branchDeliveryFeeBillVO.getBillState() + "' ";
+			}
+			
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getCreateDateFrom())) {
+				sql += " and pb.createDate>= '"
+						+ branchDeliveryFeeBillVO.getCreateDateFrom() + "' ";
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getCreateDateTo())) {
+				sql += " and pb.createDate<= '"
+						+ branchDeliveryFeeBillVO.getCreateDateTo() + "' ";
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getHeXiaoDateFrom())) {
+				sql += " and pb.heXiaoDate>= '"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateFrom() + "' ";
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getHeXiaoDateTo())) {
+				sql += " and pb.heXiaoDate<= '"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "' ";
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBranchName())) {
+				sql += " and b.branchname like '%"
+						+ branchDeliveryFeeBillVO.getBranchName() + "%' ";
+			}
+			if (branchDeliveryFeeBillVO.getCwbType() != 0) {
+				sql += " and pb.cwbType = "
+						+ branchDeliveryFeeBillVO.getCwbType();
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getContractColumn())) {
+				sql += " order by pb."
+						+ branchDeliveryFeeBillVO.getContractColumn();
+			}
+			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
+					.getContractColumnOrder())) {
+				sql += " " + branchDeliveryFeeBillVO.getContractColumnOrder();
+			}
+		}
+		
+		return jdbcTemplate.queryForInt(sql);
+	}
+	
 	
 	public List<CwbOrder> queryBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill, String leftJoinSql,

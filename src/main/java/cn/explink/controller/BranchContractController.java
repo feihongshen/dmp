@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import cn.explink.b2c.dpfoss.JsonUtil;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchContractDAO;
@@ -104,18 +104,16 @@ public class BranchContractController {
 	// return "workorder/CallerArchivalRepository";
 	// }
 
-	@RequestMapping("/branchContractList")
-	public String branchContractList(Model model,
+	@RequestMapping("/branchContractList/{page}")
+	public String branchContractList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchContractVO branchContractVO) {
-		// public String branchContractList(Model model,ExpressSetBranchContract
-		// branchContract,@PathVariable(value="page") long page){
-		// model.addAttribute("page", page);
-		// model.addAttribute("page_obj", new
-		// Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()),
-		// page, Page.ONE_PAGE_NUMBER));
-		// model.addAttribute("ccilist",
-		// workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
+		
 		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(branchContractVO);
+		int count = this.branchContractDAO.queryBranchContractCount(branchContractVO);
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("branchContractList",list);
 		model.addAttribute("branchContractVO",branchContractVO);
 		return "branchContract/branchContractList";
@@ -194,6 +192,17 @@ public class BranchContractController {
 	public String deleteBranchContract(@RequestParam(value="id",defaultValue="",required=true) int id){
 		this.branchContractService.deleteBranchContract(id);
 		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+	}
+	
+	@RequestMapping("/validateContractNo")
+	@ResponseBody
+	public String validateContractNo(@RequestParam(value="contractNo",defaultValue="",required=true) String contractNo){
+		String rtnStr = "{\"errorCode\":0}";
+		int count = this.branchContractDAO.validateContractNo(contractNo);
+		if(count > 0){
+			rtnStr = "{\"errorCode\":1,\"error\":\"合同编号已存在\"}";
+		}
+		return rtnStr;
 	}
 	
 	@RequestMapping("/toNextStopPage")
@@ -648,6 +657,33 @@ public class BranchContractController {
 				File file = new File(filePathaddress);
 				// 取得文件名。
 				String filename = file.getName();
+				
+				/*String userAgent = request.getHeader("User-Agent");
+				if (userAgent != null){  
+				     userAgent = userAgent.toLowerCase();  
+					if (userAgent.indexOf("msie") != -1) {
+						// IE浏览器，只能采用URLEncoder编码
+						rtn = "filename=\"" + filename + "\"";
+					} else if (userAgent.indexOf("opera") != -1) {
+						// Opera浏览器只能采用filename*
+						rtn = "filename*=UTF-8''" + filename;
+					} else if (userAgent.indexOf("safari") != -1) {
+						// Safari浏览器，只能采用ISO编码的中文输出
+						rtn = "filename=\""
+								+ new String(filename.getBytes("UTF-8"),
+										"ISO8859-1") + "\"";
+					} else if (userAgent.indexOf("applewebkit") != -1) {
+						// Chrome浏览器，只能采用MimeUtility编码或ISO编码的中文输出
+						filename = MimeUtility
+								.encodeText(filename, "UTF8", "B");
+						rtn = "filename=\"" + filename + "\"";
+					} else if (userAgent.indexOf("mozilla") != -1) {
+						// FireFox浏览器，可以使用MimeUtility或filename*或ISO编码的中文输出
+						rtn = "filename*=UTF-8''" + filename;
+					}
+				}  */
+				
+				
 				// 以流的形式下载文件。
 				InputStream fis;
 				fis = new BufferedInputStream(new FileInputStream(filePathaddress));
@@ -658,7 +694,8 @@ public class BranchContractController {
 				response.reset();
 				// 设置response的Header
 				response.setContentType("application/ms-excel");
-				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+//				response.addHeader("Content-Disposition", "attachment;" + new String(filename.getBytes(), "iso8859-1"));
+				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(), "iso8859-1"));
 				response.addHeader("Content-Length", "" + file.length());
 				OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
 				toClient.write(buffer);

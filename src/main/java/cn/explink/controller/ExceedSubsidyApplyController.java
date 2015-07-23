@@ -34,6 +34,7 @@ import cn.explink.service.ExceedSubsidyApplyService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.Page;
 
 @Controller
 @RequestMapping("/exceedSubsidyApply")
@@ -68,8 +69,8 @@ public class ExceedSubsidyApplyController {
 		return userDetail.getUser();
 	}
 
-	@RequestMapping("/exceedSubsidyApplyList")
-	public String exceedSubsidyApplyList(Model model,
+	@RequestMapping("/exceedSubsidyApplyList/{page}")
+	public String exceedSubsidyApplyList(@PathVariable("page") long page, Model model,
 			ExpressSetExceedSubsidyApplyVO queryConditionVO) {
 		
 		User user = getSessionUser();
@@ -90,11 +91,16 @@ public class ExceedSubsidyApplyController {
 		}
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApply(queryConditionVO);
+		int count = this.exceedSubsidyApplyDAO
+				.queryExceedSubsidyApplyCount(queryConditionVO);
 		List<User> userList = this.userDAO.getAllUser();
 		Map<Integer, String> applyStateMap = ExceedSubsidyApplyStateEnum.getMap();
 		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		
+		model.addAttribute("page", page);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("deliveryAuthority", deliveryAuthority);
 		model.addAttribute("advanceAuthority", advanceAuthority);
 		model.addAttribute("xinJianState", ExceedSubsidyApplyStateEnum.XinJian.getValue());

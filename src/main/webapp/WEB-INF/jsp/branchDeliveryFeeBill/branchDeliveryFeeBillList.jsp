@@ -162,7 +162,7 @@ function updateBranchDeliveryFeeBill(){
 					if(data.errorCode==0){
 						alert(data.error);
 					  	$('#updatePage').dialog('close');
-			   			window.location.href='<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList';
+			   			window.location.href='<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1';
 					}
 				}
 			});
@@ -187,7 +187,7 @@ function deleteBranchDeliveryFeeBill(){
 			success:function(data){
 					if(data && data.errorCode==0){
 						alert(data.error);
-						window.location.href='<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList';
+						window.location.href='<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1';
 							}
 						}
 					});
@@ -695,7 +695,7 @@ function deleteBranchDeliveryFeeBill(){
 		data-options="iconCls:'icon-save'"
 		style="width: 700px; height: 220px;">
 		<form
-			action="<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList"
+			action="<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1"
 			method="post" id="queryForm">
 			<table width="100%" border="0" cellspacing="1" cellpadding="0"
 				style="margin-top: 10px; font-size: 10px;">
@@ -2604,6 +2604,31 @@ function deleteBranchDeliveryFeeBill(){
 			action="<%=request.getContextPath()%>/branchDeliveryFeeBill/exportByDetail"
 			method="post" id="exportByDetailForm">
 			<input type="hidden" name="cwbs" value="">
+		</form>
+	</div>
+	
+	<div class="jg_10"></div>
+	<div class="jg_10"></div>
+	<div class="iframe_bottom"> 
+		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+						<tr>
+							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','1');$('#branchDeliveryFeeBillListForm').submit();" >第一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#branchDeliveryFeeBillListForm').submit();">上一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#branchDeliveryFeeBillListForm').submit();" >下一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchDeliveryFeeBillListForm').submit();" >最后一页</a>
+							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
+							<select id="selectPg" onchange="$('#branchDeliveryFeeBillListForm').attr('action',$(this).val());$('#branchDeliveryFeeBillListForm').submit()">
+								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
+									<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+								</c:forEach>
+							</select>页
+							</td>
+						</tr>
+		</table>
+	</div>
+	<div>
+		<form action="<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1" method="post" id="branchDeliveryFeeBillListForm">
 		</form>
 	</div>
 </body>
