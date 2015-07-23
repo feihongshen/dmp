@@ -7733,4 +7733,34 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=INNODB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 		</sql>
 	</changeSet>
+	<changeSet id="lichongchong-2015-07-23-1" author="lichongchong">
+    	<sql>
+    		CREATE TABLE `express_set_exceed_subsidy_apply` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+			  `applyNo` varchar(255) DEFAULT '' COMMENT '申请编号',
+			  `applyState` int(4) DEFAULT '0' COMMENT '申请状态',
+			  `deliveryPerson` int(11) DEFAULT '0' COMMENT '配送员id',
+			  `cwbOrder` varchar(255) DEFAULT '' COMMENT '订单号',
+			  `cwbOrderState` int(4) DEFAULT '0' COMMENT '订单状态',
+			  `receiveAddress` varchar(1000) DEFAULT '' COMMENT '收货地址',
+			  `isExceedAreaSubsidy` int(4) DEFAULT '0' COMMENT '是否超区补助',
+			  `exceedAreaSubsidyRemark` varchar(255) DEFAULT '' COMMENT '超区补助说明',
+			  `exceedAreaSubsidyAmount` decimal(19,2) DEFAULT '0.00' COMMENT '超区补助金额',
+			  `isBigGoodsSubsidy` int(4) DEFAULT '0' COMMENT '是否大件补助',
+			  `bigGoodsSubsidyRemark` varchar(255) DEFAULT '' COMMENT '大件补助说明',
+			  `bigGoodsSubsidyAmount` decimal(19,2) DEFAULT '0.00' COMMENT '大件补助金额',
+			  `remark` varchar(255) DEFAULT '' COMMENT '备注',
+			  `shenHePerson` int(11) DEFAULT '0' COMMENT '审核人id',
+			  `shenHeTime` varchar(20) DEFAULT '' COMMENT '审核时间',
+			  `shenHeIdea` varchar(255) DEFAULT '' COMMENT '审核意见',
+			  `createTime` varchar(20) DEFAULT '' COMMENT '创建时间',
+			  `updateTime` varchar(20) DEFAULT '' COMMENT '修改时间',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 COMMENT='超围/大件补助申请表';
+			
+			UPDATE dmp40_function SET functionurl = 'branchContract/branchContractList/1?' WHERE functionname LIKE '%加盟商合同管理%';
+			UPDATE dmp40_function SET functionurl = 'punishinsideBill/punishinsideBillList/1?' WHERE functionname LIKE '%对内扣罚账单%';
+			INSERT INTO dmp40_function VALUES('808070', '2', '超围/大件补助申请', '808070', 'exceedSubsidyApply/exceedSubsidyApplyList/1?', '8080' );
+    	</sql>
+    </changeSet>
 </databaseChangeLog>
