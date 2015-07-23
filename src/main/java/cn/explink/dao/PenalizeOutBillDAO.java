@@ -86,6 +86,8 @@ public class PenalizeOutBillDAO {
 			if ((sort != null) && (sort != "") && (method != null) && (method != "")) {
 
 				querySql.append(" order by " + sort + "  " + method);
+			}else{
+				querySql.append(" order by billstate desc");
 			}
 			querySql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		}
