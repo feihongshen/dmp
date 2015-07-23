@@ -674,6 +674,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 					$('#systemDateMoney').html(data.systemDateMoney);
 					$('#importDateMoney').html(data.importDateMoney);
 					$('#chaYiMoney').html(data.chaYiMoney);
+					$('#chaYiCwbsMoney').html(data.duibiCwbMoneyChaYi);
 					$('#hv2').val(data.chaYiCount);
 				}
 			});
@@ -783,7 +784,34 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				});
 			}
 		}
-			
+	function MoneyChaYi(){
+		$('#MoneyChaYi').dialog('open').dialog('setTitle','金额差异 ');
+		dgMoneyChaYi=$('#dgMoneyChaYi').datagrid({    
+				method: "POST",
+			    url:'${pageContext.request.contextPath}/CustomerBillContract/totalMoneyDuiBi?billBatches='+$('#hv').val(), 
+			    fit : true,
+				fitColumns : true,
+				border : true,
+				striped:true,
+				idField : 'id',
+				rownumbers:true,
+				singleSelect:true,
+				columns:[[         
+					        {field:'ck',checkbox:"true"},
+					        {field:'id',title:'id',hidden:true},  
+							{field:'cwb',title:'订单号',sortable:true,width:100,align:'center'},	
+							{field:'cwbstate',title:'订单状态',sortable:true,width:80,align:'center'},
+					        {field:'cwbOrderType',title:'订单类型',sortable:true,width:75,align:'center'},    
+					        {field:'paywayid',title:'支付方式',sortable:true,align:'center',width:75},				    
+					        {field:'deliveryMoney',title:'提货费(系统)',sortable:true,width:100,align:'center'},
+					        {field:'distributionMoney',title:'配送费(系统)',sortable:true,width:100,align:'center'},
+					        {field:'transferMoney',title:'中转费(系统)',sortable:true,width:100,align:'center'},
+					        {field:'refuseMoney',title:'拒收派费(系统)',sortable:true,width:100,align:'center'},
+					        {field:'totalCharge',title:'派费合计(系统)',sortable:true,width:100,align:'center'},	
+					        {field:'importtotalCharge',title:'派费合计(导入)',sortable:true,width:100,align:'center'}
+					    ]],
+			});		
+	}		
 		
 	</script>
 </head>
@@ -1065,9 +1093,9 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 					</tr>
  					<tr>
 						<td>派费金额不一致记录</td>
-						<td><label id="systemDateCount"></label></td>
-						<td><label id="importDateCount"></label></td>
-						<td><label id="chaYiCount"></label></td>
+						<td></td>
+						<td></td>
+						<td><a href="#" onclick="javascript:MoneyChaYi()" id="acc"><label id="chaYiCwbsMoney"></label></a></td>
 					</tr>
 		</table>
 	</div>
@@ -1079,6 +1107,15 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		<div id="dlgAddChaYi-buttons">
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">加入当前账单</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeofEditInChaYi()">从当前账单移除</a>
+		</div>
+		
+		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px"
+			closed="true" buttons="#dlgAddMoneyChaYi-buttons">
+		<table id="dgMoneyChaYi" class="fitem" border="1"></table>
+		</div>
+		<div id="dlgAddMoneyChaYi-buttons">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">基于导入更新全部订单配费</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
 		</div>
 	
 <input type="hidden" id="hv"/> <!--批次  -->

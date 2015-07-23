@@ -10,6 +10,13 @@ public class BillMoneyDuiBiChaYiVO {
 		private BigDecimal systemDateMoney;
 		private BigDecimal importDateMoney;
 		private BigDecimal chaYiMoney;
+		private long duibiCwbMoneyChaYi;
+		public long getDuibiCwbMoneyChaYi() {
+			return duibiCwbMoneyChaYi;
+		}
+		public void setDuibiCwbMoneyChaYi(long duibiCwbMoneyChaYi) {
+			this.duibiCwbMoneyChaYi = duibiCwbMoneyChaYi;
+		}
 		public long getSystemDateCount() {
 			return systemDateCount;
 		}

@@ -15,7 +15,13 @@ public class SerachCustomerBillContractVO {
 	private BigDecimal totalCharge; //派费合计
 	private String billBatches;
 	private String zhongLei;
-	
+	private BigDecimal importtotalCharge;
+	public BigDecimal getImporttotalCharge() {
+		return importtotalCharge;
+	}
+	public void setImporttotalCharge(BigDecimal importtotalCharge) {
+		this.importtotalCharge = importtotalCharge;
+	}
 	public String getZhongLei() {
 		return zhongLei;
 	}

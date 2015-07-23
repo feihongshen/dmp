@@ -249,6 +249,21 @@ public class CustomerBillContractDao {
 					return null;
 				}
 			}
+			
+			public CustomerBillContract findAllbillBatcheByCwb(String cwbs) {	
+				String sql="select * from customerbillcontract where cwb='"+cwbs+"'";
+				CustomerBillContract cbc=null;
+				try {
+					
+					cbc=jdbcTemplate.queryForObject(sql,new CustomerBillContractmapper());
+
+					return cbc;
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					return null;
+				}
+			}
+
 
 			public CustomerBillContract findCustomerBillContractById(long id) {
 				String sql="select * from customerbillcontract where id=?";
@@ -311,9 +326,18 @@ public class CustomerBillContractDao {
 					return this.jdbcTemplate.query(sql,new CustomerBillContractVOmapper(),BillBatches);
 			}
 			
-			public SerachCustomerBillContractVO findSerachCustomerBillContractVOByBillBatches(String cwb){
+			public SerachCustomerBillContractVO findSerachCustomerBillContractVOByBillBatches(String cwb){			
 				String sql="select * from customerbillcontractvo where cwb='"+cwb+"'";
-				return this.jdbcTemplate.queryForObject(sql,new CustomerBillContractVOmapper());
+				SerachCustomerBillContractVO cbc=null;
+				try {
+					
+					cbc=jdbcTemplate.queryForObject(sql,new CustomerBillContractVOmapper());
+
+					return cbc;
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					return null;
+				}
 		}
 			public long findSerachCustomerBillContractVOByBillBatchesCount(String BillBatches){
 				String sql="select count(1) from customerbillcontractvo where bill_batches=?";
@@ -367,5 +391,12 @@ public class CustomerBillContractDao {
 				
 			return this.jdbcTemplate.query(sql, new BillloadExcelmapper());		
 		}
+		
+		public ImportBillExcel findImportBillExcelBycwb(String cwb){
+			String sql="select * from importbillexcel where cwb='"+cwb+"'";
+			
+		return this.jdbcTemplate.queryForObject(sql, new BillloadExcelmapper());		
+	}
+
 
 }
