@@ -807,8 +807,8 @@ function verify(){
 			    		<option value="ordersum">对应订单数</option>
 			    	</select>
 			    	<select style="width:30%;" name="orderingMethod">
-			    		<option  value="asc">升序</option>
 			    		<option  value="desc">降序</option>
+			    		<option  value="asc">升序</option>
 			    	</select>
 		        </td>
          	</tr>
