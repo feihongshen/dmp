@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeInsideShenhe;
-import cn.explink.domain.PenalizeOut;
+import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 
@@ -24,6 +26,7 @@ public class PunishInsideDao {
 	
 	@Autowired
 	PunishInsideService punishInsideService;
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final class  Cwbrowmapper implements RowMapper<String>{
 
 		@Override
@@ -110,6 +113,14 @@ public class PunishInsideDao {
 
 			}
 		});
+	}
+	private final class SumPriceROwMapper implements RowMapper<BigDecimal>{
+
+		@Override
+		public BigDecimal mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getBigDecimal(1);
+		}
+		
 	}
 	
 	//查询所有的对内扣罚单
@@ -334,4 +345,37 @@ public class PunishInsideDao {
 		String sql="update express_ops_punishInside_detail set isfine=? where cwb=?";
 		this.jdbcTemplate.update(sql, isfine,cwbstr);
 	}
+	/**
+	 * 扣款撤销,在对内扣罚申诉后重判为不成立（扣罚撤销状态）的总金额
+	 * 货损赔偿 查询成立状态且货损赔偿扣罚类别的单据数据，将扣罚金额汇总即可
+	 * 违纪违规扣罚 只查询成立状态且违纪违规扣罚类别的单据数据，将扣罚金额汇总即可
+	 * @param cwbs
+	 * @param userid
+	 */
+	public BigDecimal getKouFaPrice(String cwbs,long userid,long flag){
+		BigDecimal sumprice = null;
+		try {
+		StringBuffer buffer=new StringBuffer();
+		if (flag==1) {//扣款撤销
+			buffer.append("select SUM(shenhepunishprice)");
+		}else if (flag==2) {//货损赔偿
+			buffer.append("select SUM(lastgoodpunishprice)");
+		}else if (flag==3) {//违纪违规扣罚
+			buffer.append("select SUM(lastqitapunishprice)");
+		}
+		buffer.append("from express_ops_punishInside_detail where cwb IN(?) and dutypersonid=?");
+		if (flag==1) {
+			buffer.append(" and punishcwbstate="+PunishInsideStateEnum.koufachexiao.getValue());
+		}else {
+			buffer.append(" and punishcwbstate="+PunishInsideStateEnum.koufachengli.getValue());
+		}
+		
+			sumprice=this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(), cwbs,userid,PunishInsideStateEnum.koufachexiao.getValue());
+		} catch (DataAccessException e) {
+			this.logger.error("在对内扣罚表中查询扣款撤销或货损赔偿或违纪违规扣罚时出现异常",e);
+		}
+		return sumprice==null?new BigDecimal("0.00"):sumprice;
+
+	}
+	
 }
