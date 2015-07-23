@@ -416,7 +416,7 @@ public class PunishinsideBillDAO {
 			sql += " And dutybranchid=" + dutybranchid;
 		}
 		if (dutypersonid > 0) {
-			sql += " And dutypersonid=" + dutybranchid;
+			sql += " And dutypersonid=" + dutypersonid;
 		}
 		if (StringUtils.isNotBlank(punishNoCreateBeginDate)) {
 			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+punishNoCreateBeginDate+"','%Y-%m-%d %H:%i:%s')";

@@ -477,7 +477,7 @@ function changeBillState(state){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}">
-<div  id="updatePage" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save'" style="width:800px;height:500px;">
+<div  id="updatePage" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save'" style="width:800px;height:600px;">
 	<form action="<%=request.getContextPath()%>/punishinsideBill/updatePunishinsideBill" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
         	<tr>
@@ -614,7 +614,7 @@ function changeBillState(state){
          	<tr>
          		<td  align="left">扣罚说明</td>
          		<td  colspan="7" >
-			   	 <textarea rows="3"  name="punishInsideRemark" style="width: 100%;resize: none;">${punishinsideBillVO.punishInsideRemark}</textarea>
+			   	 <textarea rows="3"  name="punishInsideRemark" <c:if test='${weiShenHeState!=punishinsideBillVO.billState}'>readonly="readonly" style="width: 100%;resize: none;background-color:#DCDCDC"</c:if><c:if test='${weiShenHeState==punishinsideBillVO.billState}'>style="width: 100%;resize: none;"</c:if>>${punishinsideBillVO.punishInsideRemark}</textarea>
 		        </td>
          	</tr>
          	<tr>
@@ -643,7 +643,7 @@ function changeBillState(state){
 						</tr>
 						<c:forEach var="pIn" items="${punishinsideBillVO.penalizeInsideList}">
 							<tr>
-								<td height="30px"  valign="middle"><input type="checkbox" name="checkBox" value="${pIn.punishNo}"/> </td>
+								<td height="30px"  valign="middle"><input type="checkbox" <c:if test='${weiShenHeState!=punishinsideBillVO.billState}'>disabled="disabled"</c:if> name="checkBox" value="${pIn.punishNo}"/> </td>
 								<td align="center" valign="middle">${pIn.punishNo}</td>
 								<td align="center" valign="middle">${pIn.cwb}</td>
 								<td align="center" valign="middle">
@@ -663,8 +663,10 @@ function changeBillState(state){
 							</tr>
          				</c:forEach>
 					</table>
-					<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
-	         		<input type="button" class="input_button2"  onclick="deletePenalizeInside()" value="移除"/>
+					<c:if test='${weiShenHeState==punishinsideBillVO.billState}'>
+						<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
+		         		<input type="button" class="input_button2"  onclick="deletePenalizeInside()" value="移除"/>
+	         		</c:if>
 				</td>
 			</tr>
          </table>
@@ -783,7 +785,7 @@ function changeBillState(state){
 	
 <!-- 扣罚单finder层显示 -->
 <c:if test="${penalizeInsidePage==1}">
-<div  id="penalizeInsidePage" class="easyui-dialog" title="扣罚单" data-options="iconCls:'icon-save'" style="width:800px;height:500px;">
+<div  id="penalizeInsidePage" class="easyui-dialog" title="扣罚单" data-options="iconCls:'icon-save'" style="width:800px;height:600px;">
 	<div style="width:100%;">
 		<form action="<%=request.getContextPath()%>/punishinsideBill/penalizeInsideList/1" method="post" id="queryPenalizeInsideListForm">
 			<table width="80%" style="margin-top: 10px;font-size: 10px;">
@@ -842,7 +844,7 @@ function changeBillState(state){
 	<!-- <div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div> -->
 	<div style="width:100%;">
-		<div style="overflow: auto;">
+		<!-- <div style="overflow: auto;"> -->
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideListTable">
 				<tr>
 					<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideListTable')"/> </td>
@@ -870,12 +872,13 @@ function changeBillState(state){
 					<td>
 						<c:forEach items="${punishsmallsortList}" var="smallsort">
 						<c:if test="${list.punishsmallsort==smallsort.id}">${smallsort.text}</c:if>
+						<%-- <c:if test="${list.punishsmallsort!=smallsort.id}">${list.punishsmallsort}</c:if> --%>
 						</c:forEach>
 					</td>
 				</tr>
 				</c:forEach>
 			</table>
-		</div>
+		<!-- </div> -->
 		<div>
 			<input class="input_button2" type="button" onclick="addPenalizeInsideList()" value="确认"/>
 			<input class="input_button2" type="button" onclick="$('#penalizeInsidePage').dialog('close')" value="取消"/>

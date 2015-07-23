@@ -324,6 +324,9 @@ public class PunishinsideBillController {
 		model.addAttribute("penalizeInsidePage", 1);
 		model.addAttribute("penalizeInsideList", penalizeInsideList);
 		model.addAttribute("penalizeInsideQueryConditionVO", billVO);
+		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
+		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
+		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
 		return "punishinsideBill/punishinsideBillList";
 	}
 	
