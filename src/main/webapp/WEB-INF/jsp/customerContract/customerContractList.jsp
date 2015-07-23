@@ -523,10 +523,18 @@ function showBox(data){
 	if(data == "add"){
 		var str = '<div id="box_top_bg"></div>'+
 		'	<div id="box_in_bg">'+
-		'	<div id="box_form">'+
 		'		<h1><div id="close_box" onclick="closeBox()"></div>创建合同</h1>'+
+		'	<div id="box_form">'+
+		'			<div align="center">'+
+		'			</div>'+
 		'			<form method="post" onSubmit="addContract(this);return false;" action="<%=request.getContextPath()%>/customerContract/addCustomerContractfile;jsessionid=<%=session.getId()%>" id="addcallerForm" enctype="multipart/form-data">'+
 		'		 	<table>'+
+		'					<tr>'+
+		'						<td >'+
+		'							<input type="button" value="返回"  align="center" class="input_button2" onclick="closeBox()"/>'+
+		'	 						<input type="submit" value="保存" align="center" class="input_button2">'+
+		'						</td>'+
+		'					</tr>'+
 		'					<tr>'+
 		'						<td align="left" style="font-size:13px">编号:</td>'+
 		'						<td><input type="text" id="number" name="number" maxlength="20" value="[自动生成]" style="width:150px"></input></td>'+
@@ -672,7 +680,7 @@ function showBox(data){
 		'						<th></th>'+
 		'						<td></td>'+
 		'					</tr>					'+
-		'					<tr id="secondDepositTr">'+
+		'					<tr id="secondDepositTr" >'+
 		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金支付人:</th>'+
 		'						<td><input type="text" name="depositpaymentperson" value="" id="depositpaymentperson" maxlength="20" style="width:150px"/></td>'+
 		'						<th align="left" style="font-size:13px"><font color="red">*</font>押金收取人:</th>'+
@@ -681,11 +689,9 @@ function showBox(data){
 		'						<td></td>'+
 		'					</tr>'+
 		'			</table>'+
-		'			<div align="center">'+
-		'	 			<input type="submit" value="保存" align="center" class="input_button2">'+
-		'				<input type="button" value="返回"  align="center" class="input_button2" onclick="closeBox()"/>'+
-		'			</div>'+
 		'		</form>	'+
+		'	</div>'+
+		'	<div >'+
 		'	</div>'+
 		'	</div>';
 		$("#box_contant").append(str);
@@ -710,16 +716,22 @@ function showBox(data){
 		} 
 		var str='<div id="box_top_bg"></div>'+
 		'	<div id="box_in_bg">'+
-		'	<div id="box_form">'+
 		'		<h1><div id="close_box" onclick="closeBox()"></div>查看/修改合同</h1>'+
+		'		<div id="box_form">'+
 		'			<form action="<%=request.getContextPath()%>/customerContract/update" id="updateContract">'+
 		'			<input type="hidden" name="depositInformationStr" id="depositInformationStr"/>'+
-	  	'		<table>'+
-		'				<input type="button" value="中止" id="breakOffContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.HeTongZhongZhi.getValue()%>'+')"/>'+
-		'				<input type="button" value="结束" id="finishContract" style="display:none;" class="input_button2" align="center" onclick="changeContractState('+'<%=ContractStateEnum.HeTongJieShu.getValue()%>'+')"/>'+
-		'				<input type="button" value="开始执行" id="startContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.ZhiXingZhong.getValue()%>'+')"/>'+
-		'		</table>'+  
 		'		 	<table>'+
+		'            		<tr align="left">'+
+		'   					<td colspan="2">'+
+		'							<input type="button" value="返回" class="input_button2" align="center" onclick="closeBox()"/>'+
+		'							<input type="button" value="保存" class="input_button2" align="center" onclick="update()">'+
+		'  						</td>'+
+		'   					<td colspan="3">'+
+		'							<input type="button" value="中止" id="breakOffContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.HeTongZhongZhi.getValue()%>'+')"/>'+
+		'							<input type="button" value="结束" id="finishContract" style="display:none;" class="input_button2" align="center" onclick="changeContractState('+'<%=ContractStateEnum.HeTongJieShu.getValue()%>'+')"/>'+
+		'							<input type="button" value="开始执行" id="startContract" style="display:none;" class="input_button2" onclick="changeContractState('+'<%=ContractStateEnum.ZhiXingZhong.getValue()%>'+')"/>'+
+		'  						</td>'+
+		' 					</tr>'+	
 		'					<tr>'+
 		'						<input type="hidden" name="id" id="id" >'+
 		'						<th align="left" style="font-size:13px">编号:</th>'+
@@ -900,8 +912,8 @@ function showBox(data){
 		'		</form>	'+
 		'		</div>'+
 		'		<div align="center">'+
-		'			<input type="button" value="保存" class="input_button2" align="center" onclick="update()">'+
-		'			<input type="button" value="返回" class="input_button2" align="center" onclick="closeBox()"/>'+
+	/* 	'			<input type="button" value="保存" class="input_button2" align="center" onclick="update()">'+
+		'			<input type="button" value="返回" class="input_button2" align="center" onclick="closeBox()"/>'+ */
 		'		</div>'+
 		'		</div>';
 			
@@ -914,8 +926,8 @@ function showBox(data){
 	}else if(data == "query"){
 		var str = '<div id="box_top_bg"></div>'+
 		'	<div id="box_in_bg">'+
-		'	<div id="box_form">'+
 		'		<h1><div id="close_box" onclick="closeBox()"></div>查询</h1>'+
+		'	<div id="box_form">'+
 		'			<form action="<%=request.getContextPath()%>/customerContract/customerContractList/1" id="queryContract">'+
 		'		 	<table>'+
 		'					<tr>'+
@@ -1012,7 +1024,7 @@ function showBox(data){
 		'		</div>'+
 		'		<div align="center">'+
 		'			<input type="button" value="查询" class="input_button2" align="center" onclick="query()">'+
-		'			<input type="button" value="关闭" class="input_button2" align="center" onclick="closeBox()"/>'+
+		'			<input type="button" value="关闭" class="input_button2" align="center" onclick="closeBox()"/>'+ 
 		'		</div>'+
 		'		</div>';
 		$("#box_contant").append(str);

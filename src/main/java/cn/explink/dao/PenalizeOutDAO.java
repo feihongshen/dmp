@@ -237,7 +237,7 @@ public class PenalizeOutDAO {
 	 * 通过条件查询指定对外赔付订单
 	 *
 	 */
-	public List<PenalizeOut> queryByOdd(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate) {
+	public List<PenalizeOut> queryByOdd(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate,String customerid) {
 		StringBuffer sql = new StringBuffer("select * from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
 		if (compensatebig != null) {
 			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
@@ -249,15 +249,26 @@ public class PenalizeOutDAO {
 			sql.append(" and cwb in (" + str + ")");
 		}
 		if ((CreationStartDate != null) && (CreationStartDate != "")) {
-			sql.append(" and '" + CreationStartDate + "'< createrdate");
+			sql.append(" and '" + CreationStartDate + "'<= createrdate");
 		}
 		if ((CreationEndDate != null) && (CreationEndDate != "")) {
-			sql.append(" and createrdate < '" + CreationEndDate + "'");
+			sql.append(" and createrdate <= '" + CreationEndDate + "'");
 		}
+		if(customerid!=null && customerid !="" ){
+			sql.append(" and customerid = '"+customerid+"'");
+		}
+		sql.append(" and whetherGeneratePeiFuBill = 0 ");
 		return this.jdbcTemplate.query(sql.toString(), new PenalizeOutRowMapper());
 	}
+	/**
+	 * 将已生成过的赔付单的标识字段改为1
+	 */
+	public void setWhetherGeneratePeiFuBill(String order){
+		String sql = "update express_ops_penalizeOut_detail set whetherGeneratePeiFuBill=1 where cwb in("+order+")";
+		this.jdbcTemplate.update(sql);
+	}
 
-	public List<PenalizeOut> queryByOddDetail(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr, long page) {
+	public List<PenalizeOut> queryByOddDetail(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr, long page,Integer customerid) {
 		StringBuffer sql = new StringBuffer("select * from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
 		if ((compensatebig != null) && (compensatebig != 0)) {
 			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
@@ -269,19 +280,23 @@ public class PenalizeOutDAO {
 			sql.append(" and cwb in (" + str + ")");
 		}
 		if ((CreationStartDate != null) && (CreationStartDate != "")) {
-			sql.append(" and '" + CreationStartDate + "'< createrdate");
+			sql.append(" and '" + CreationStartDate + "'<= createrdate");
+		}
+		if(customerid != null){
+			sql.append(" and customerid = '"+customerid+"'");
 		}
 		if ((CreationEndDate != null) && (CreationEndDate != "")) {
-			sql.append(" and createrdate < '" + CreationEndDate + "'");
+			sql.append(" and createrdate <= '" + CreationEndDate + "'");
 		}
 		if ((oddstr != null) && (oddstr != "")) {
 			sql.append(" and cwb not in (" + oddstr + ")");
 		}
+		sql.append(" and whetherGeneratePeiFuBill = 0 ");
 		sql.append(" ORDER BY cwb DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		return this.jdbcTemplate.query(sql.toString(), new PenalizeOutRowMapper());
 	}
 
-	public int queryByOddDetailsum(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr) {
+	public int queryByOddDetailsum(Integer compensatebig, Integer compensatesmall, String str, String CreationStartDate, String CreationEndDate, String oddstr,Integer customerid) {
 		StringBuffer sql = new StringBuffer("select count(1) from express_ops_penalizeOut_detail where penalizeOutstate = '" + PenalizeSateEnum.Successful.getValue() + "'");
 		if ((compensatebig != null) && (compensatebig != 0)) {
 			sql.append(" and penalizeOutbig = '" + compensatebig + "'");
@@ -293,14 +308,18 @@ public class PenalizeOutDAO {
 			sql.append(" and cwb in (" + str + ")");
 		}
 		if ((CreationStartDate != null) && (CreationStartDate != "")) {
-			sql.append(" and '" + CreationStartDate + "'< createrdate");
+			sql.append(" and '" + CreationStartDate + "'<= createrdate");
 		}
 		if ((CreationEndDate != null) && (CreationEndDate != "")) {
-			sql.append(" and createrdate < '" + CreationEndDate + "'");
+			sql.append(" and createrdate <= '" + CreationEndDate + "'");
+		}
+		if(customerid != null ){
+			sql.append(" and customerid = '"+customerid+"'");
 		}
 		if ((oddstr != null) && (oddstr != "")) {
 			sql.append(" and cwb not in (" + oddstr + ")");
 		}
+		sql.append(" and whetherGeneratePeiFuBill = 0 ");
 		return this.jdbcTemplate.queryForInt(sql.toString());
 	}
 }

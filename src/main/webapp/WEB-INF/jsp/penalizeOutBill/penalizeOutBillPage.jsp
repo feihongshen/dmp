@@ -398,7 +398,7 @@ function verify(){
 </head>
 
 <body style="background:#eef9ff">
-	<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
+<input type="hidden" id="dmpurl" value="${pageContext.request.contextPath}" />
 <div class="right_box">
 	<div class="inputselect_box">
 		<table style="width: 60%">
@@ -414,12 +414,15 @@ function verify(){
 	</div>
 
 
-	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-	<div class="jg_10"></div><div class="jg_10"></div>
 	<div class="right_title">
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div style="overflow: auto;">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
-		<!-- <td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall('')"/> </td> -->
+		<!-- <td align="center" valign="middle"style="font-weight: bold;"><input type="checkbox" name="checkAll" onclick="checkAll('gd_table')"/></td> -->
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单批次</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单状态</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 客户名称</td>
@@ -433,7 +436,7 @@ function verify(){
 	</tr>
 	<c:forEach items="${billList}" var="bill">
 	<tr onclick="setId(${bill.id},${bill.billstate})">
-		<%-- <td height="30px" align="center"  valign="middle"><input type="checkbox" id="id" value="${bill.id}" /> </td> --%>
+		<%-- <td align="center" valign="middle" ><input type="checkbox" name="checkBox" value="${bill.id}" /></td> --%>
 		<td align="center" valign="middle" >${bill.billbatches}</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${PunishBillStateEnum}" var="state">
@@ -479,6 +482,7 @@ function verify(){
 	</tr>
 	</c:forEach>
 	</table>
+	</div>
 		<div class="jg_10"></div>
 		<div class="jg_10"></div>
 	</div>
@@ -813,6 +817,7 @@ function verify(){
 		<form action="<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillList/1" method="post" id="queryPenalizeInsideListForm">
 			<table width="60%" style="margin-top: 10px;font-size: 10px;">
 				  <tr>
+				  	<input type="hidden" name="customerid" value="${bill.customerid}"></input>
 						<td nowrap="nowrap" align="left">赔付大类</td>
 		         		<td>
 			         		<select name="compensatebig" >

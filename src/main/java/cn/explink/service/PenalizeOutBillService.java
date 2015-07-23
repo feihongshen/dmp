@@ -20,6 +20,7 @@ import cn.explink.domain.ExpressOpsPunishinsideBill;
 import cn.explink.domain.PenalizeOut;
 import cn.explink.domain.User;
 import cn.explink.domain.penalizeOutBill;
+import cn.explink.domain.customerCoutract.CustomerContractManagement;
 import cn.explink.enumutil.PunishBillStateEnum;
 import cn.explink.util.DateTimeUtil;
 
@@ -53,29 +54,35 @@ public class PenalizeOutBillService {
 			String customerName = customer.getCustomername();
 			bill.setCustomername(customerName);
 		}
+		String odd = "";
+		String order= "";
 		String date = DateTimeUtil.getNowTime();
 		if (StringUtils.isNotBlank(compensateodd)) {
 
 			String str = PenalizeOutBillService.spilt(compensateodd);
 			BigDecimal sum = new BigDecimal(0);
-			List<PenalizeOut> list = this.penalizeOutDAO.queryByOdd(compensatebig, compensatesmall, str, CreationStartDate, CreationEndDate);
+			List<PenalizeOut> list = this.penalizeOutDAO.queryByOdd(compensatebig, compensatesmall, str, CreationStartDate, CreationEndDate,customerid);
 			for (int i = 0; i < list.size(); i++) {
 				PenalizeOut out = list.get(i);
 				if (out.getPenalizeOutfee() != null) {
 					BigDecimal fee = out.getPenalizeOutfee();
 					sum = sum.add(fee);
+					odd += out.getCwb()+",";
 				}
 			}
+			if(StringUtils.isNotBlank(odd)){
+				odd = odd.substring(0, odd.length()-1);
+				order = spiltString(odd);
+			}
 			bill.setCompensatefee(sum);
+			bill.setCompensateodd(odd);
+			 //将已生成过的赔付单的标识字段改为1
+			 this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order);
 		}
 
-		String number = this.generateBillBatch();
-		String odd = compensateodd.replace("\r\n", ",");
 		bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 		bill.setFounder(this.getSessionUser().getUserid());
-		bill.setBillbatches(number);
-		bill.setCompensateodd(odd);
-
+		bill.setBillbatches(this.getNumber());
 		bill.setCompensateexplain(compensateexplain);
 		bill.setCompensatebig(compensatebig);
 		bill.setCompensatesmall(compensatesmall);
@@ -104,36 +111,46 @@ public class PenalizeOutBillService {
 	}
 
 	// 自动生成编号
-	public String getNumber() {
-		String number = "";
-		List<penalizeOutBill> penalizeOutBill = this.PenalizeOutBilldao.getMaxNumber();
-		if ((penalizeOutBill != null) && !penalizeOutBill.isEmpty()) {
-			for (int i = 0; i < penalizeOutBill.size(); i++) {
-				penalizeOutBill bill = penalizeOutBill.get(i);
-				String maxNumber = bill.getBillbatches();
-				if ((maxNumber.length() == 15) && "P".equals(maxNumber.substring(0, 3))) {
-					String partContractNo = maxNumber.substring(0, 11);
-					String maxOrderStr = maxNumber.substring(11);
-					int maxOrderInt = Integer.valueOf(maxOrderStr);
-					maxOrderInt++;
-					String orderStr = String.valueOf(maxOrderInt);
-					while (orderStr.length() != 4) {
-						orderStr = "0" + orderStr;
+		public String getNumber() {
+			String number = "";
+			List<penalizeOutBill> contractList = this.PenalizeOutBilldao.getMaxNumber();
+			String maxNumber = "";
+			String partContractNo = "";
+			String orderStr = "001";
+			if ((contractList != null) && !contractList.isEmpty()) {
+				for (int i = 0; i < contractList.size(); i++) {
+					penalizeOutBill contract = contractList.get(i);
+					 maxNumber = contract.getBillbatches();
+					if ((maxNumber.length() == 12) && "P".equals(maxNumber.substring(0, 1))) {
+						 partContractNo = maxNumber.substring(0, 11);
+						String str = partContractNo.substring(3);
+						if(!str.equals( DateTimeUtil.getCurrentDate())){
+							String rule = "P";
+							String date = DateTimeUtil.getCurrentDate();
+							
+							number = rule + date + orderStr;
+						}else{
+							String maxOrderStr = maxNumber.substring(11);
+							int maxOrderInt = Integer.valueOf(maxOrderStr);
+							maxOrderInt++;
+							 orderStr = String.valueOf(maxOrderInt);
+							while (orderStr.length() != 3) {
+								orderStr = "0" + orderStr;
+							}
+							number = partContractNo + orderStr;
+						}
+						break;
 					}
-					number = partContractNo + orderStr;
-					break;
 				}
 			}
+			if (StringUtils.isBlank(number)) {
+				String rule = "P";
+				String date = DateTimeUtil.getCurrentDate();
+				 orderStr = "001";
+				number = rule + date + orderStr;
+				}
+			return number;
 		}
-		if (StringUtils.isBlank(number)) {
-			String rule = "P_F";
-			String date = DateTimeUtil.getCurrentDate();
-			String orderStr = "0001";
-			number = rule + date + orderStr;
-		}
-		return number;
-	}
-
 	public String generateBillBatch() {
 		String rule = "P";
 		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
@@ -180,7 +197,7 @@ public class PenalizeOutBillService {
 		if (StringUtils.isNotBlank(outBill.getCompensateodd())) {
 			oddstr = PenalizeOutBillService.spiltString(outBill.getCompensateodd());
 		}
-		out = this.penalizeOutDAO.queryByOddDetail(compensatebig, compensatesmall, str, creationStartDate, creationEndDate, oddstr, page);
+		out = this.penalizeOutDAO.queryByOddDetail(compensatebig, compensatesmall, str, creationStartDate, creationEndDate, oddstr, page,customerid);
 		return out;
 
 	}
@@ -195,7 +212,7 @@ public class PenalizeOutBillService {
 		if (StringUtils.isNotBlank(outBill.getCompensateodd())) {
 			oddstr = PenalizeOutBillService.spiltString(outBill.getCompensateodd());
 		}
-		int out = this.penalizeOutDAO.queryByOddDetailsum(compensatebig, compensatesmall, str, creationStartDate, creationEndDate, oddstr);
+		int out = this.penalizeOutDAO.queryByOddDetailsum(compensatebig, compensatesmall, str, creationStartDate, creationEndDate, oddstr,customerid);
 		return out;
 
 	}
