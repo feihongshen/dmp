@@ -908,7 +908,16 @@ public class UserDAO {
 	}
 
 	public User getbranchidbyuserid(long userid) {
-		String sql = "select * from express_set_user where userid=?";
+		String sql = "select * from express_set_user where userid=? ";
 		return this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), userid);
+	}
+
+	/**
+	 * @param pfruleid
+	 * @return
+	 */
+	public List<User> getUserByPFruleId(long pfruleid) {
+		String sql = "select * from express_set_user where pfruleid=?  and userDeleteFlag=1";
+		return this.jdbcTemplate.query(sql, new UserRowMapper(), pfruleid);
 	}
 }

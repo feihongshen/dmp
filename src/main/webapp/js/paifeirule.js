@@ -305,7 +305,7 @@ function addArea(tab, areaname, areaid) {
 		$area_table.find("#overweight_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overweight + '")');
 		$area_table.find("#overbig_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overbig + '")');
 		$("#" + tab + "_area_div").append($area_table);
-	} else if ($("tr [id=" + tab + "_" + areaid + "]")[0].style.background == 'yellow') {
+	} else if ($("tr [id=" + tab + "_" + areaid + "]")[0].style.background .toLowerCase() .indexOf('yellow')>=0) {
 		$("tr [id=" + tab + "_" + areaid + "]")[0].style.background = '';
 		$("#" + tab + "_area_div table[id=" + tab + "_area_table_" + areaid + "]").remove();
 	}
@@ -329,8 +329,10 @@ function editRule(ruleid) {
 }
 function joineditRule()
 { $("#rule_table tr").each(function(){
-	if($(this)[0].style.background == 'yellow')
-	{$("#edit_form").submit();}
+	if($(this)[0].style.background.toLowerCase() .indexOf('yellow')>=0)
+	{
+		$("#edit_form").submit();
+		}
 	});
 }
 	
@@ -385,7 +387,7 @@ function showArea(tr, id, areaname) {
 	 */
 	{
 		$("div[id^=edit_area_ps").hide();
-		if ($(tr)[0].style.background == 'yellow') {
+		if ($(tr)[0].style.background.toLowerCase() .indexOf('yellow')>=0) {
 			$(tr).parent().find("tr").each(function() {
 				$(this)[0].style.background = '';
 			});

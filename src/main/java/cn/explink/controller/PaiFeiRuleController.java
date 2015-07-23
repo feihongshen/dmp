@@ -31,6 +31,7 @@ import cn.explink.dao.PFoverareaDAO;
 import cn.explink.dao.PFoverbigDAO;
 import cn.explink.dao.PFoverweightDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.PaiFeiRule;
@@ -51,6 +52,8 @@ import cn.explink.util.Page;
 public class PaiFeiRuleController {
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	UserDAO userDAO;
 	@Autowired
 	CustomerDAO customerDAO;
 	@Autowired
@@ -158,10 +161,12 @@ public class PaiFeiRuleController {
 		String[] pfnos = ids.split(",");
 		long counts = 0;
 		for (String no : pfnos) {
-			List<Customer> customer = null;
-			List<User> user = null;
-			if ((customer == null) && (user == null)) {
-				int i = this.paiFeiRuleDAO.deletePaiFeiRuleByPfRuleNO(no);
+			long pfruleid=Long.parseLong(no);
+			List<Customer> customers = this.customerDAO.getCustomerByPFruleId(pfruleid);
+			List<User> users = this.userDAO.getUserByPFruleId(pfruleid);
+			List<Branch> branchs=this.branchDAO.getBanchByPFruleId(pfruleid);
+			if (((customers == null) && (users == null)&&(branchs==null))||((customers.size()==0) && (users.size()==0)&&(branchs.size()==0))) {
+				int i = this.paiFeiRuleDAO.deletePaiFeiRuleByPfruleid(pfruleid);
 				counts += i;
 			}
 		}

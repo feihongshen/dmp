@@ -331,4 +331,14 @@ public class CustomerDAO {
 		List<Customer> customerList = this.jdbcTemplate.query(sql, new CustomerRowMapper());
 		return customerList;
 	}
+
+	/**
+	 * @param pfruleid
+	 * @return
+	 */
+	public List<Customer> getCustomerByPFruleId(long pfruleid) {
+		String sql="select * from express_set_customer_info where ifeffectflag=1 and pfruleid=?";
+		return this.jdbcTemplate.query(sql, new CustomerRowMapper(),pfruleid);
+
+	}
 }

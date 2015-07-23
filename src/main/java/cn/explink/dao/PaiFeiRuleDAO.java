@@ -162,6 +162,14 @@ public class PaiFeiRuleDAO {
 		String sql="delete from express_ops_paifeirule where  pfruleNO='"+pfruleNO+"'";
 		return this.jdbcTemplate.update(sql);
 	}
+	/**
+	 * @param no
+	 * @return
+	 */
+	public int deletePaiFeiRuleByPfruleid(long pfruleid) {
+		String sql="delete from express_ops_paifeirule where  id="+pfruleid+"";
+		return this.jdbcTemplate.update(sql);
+	}
 
 	/**
 	 * @return

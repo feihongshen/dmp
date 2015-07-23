@@ -970,4 +970,13 @@ public class BranchDAO {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=?  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag,sitetype);
 	}
+
+	/**
+	 * @param pfruleid
+	 * @return
+	 */
+	public List<Branch> getBanchByPFruleId(long pfruleid) {
+		String sql = "SELECT * from express_set_branch  WHERE pfruleid=? and brancheffectflag='1' ";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),pfruleid);
+	}
 }

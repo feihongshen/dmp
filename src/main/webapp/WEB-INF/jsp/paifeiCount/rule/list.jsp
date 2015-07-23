@@ -54,7 +54,7 @@
 					</tr>
 					<c:forEach items="${paiFeiRules}" var="pf">
 						<tr id="${pf.id }" onclick="editRule('${pf.id }')">
-							<td align="center" valign="middle"><input type="checkbox" id="id" value="${pf.pfruleNO}" /></td>
+							<td align="center" valign="middle"><input type="checkbox" id="id" value="${pf.id}" /></td>
 							<td align="center" valign="middle">${pf.name}</td>
 							<c:forEach items="${PaiFeiRuleTypeEnum}" var="t">
 								<c:if test="${t.value==pf.type }">
@@ -1452,7 +1452,7 @@
 			</tr>
 		</table>
 	</div>
-	<form action="1" id="edit_form">
+	<form action="${pageContext.request.contextPath}/paifeirule/list/1" id="edit_form" method="post">
 		<input type="hidden" id="edit_ruleid" name="edit_ruleid" />
 	</form>
 		<input type="hidden" id="edit_ruletype" name="edit_ruletype" value="${rule.type }" />
