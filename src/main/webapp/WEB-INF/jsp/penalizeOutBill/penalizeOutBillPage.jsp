@@ -65,7 +65,7 @@ function queryPenalizeOutBill(){
 	$('#find').dialog('open')
 }
 
-//扣罚大类与扣罚小类联动
+//赔付大类与赔付小类联动
 function findbig()
 { var parent=$("#penalizesmall").find("option:selected").attr("id");
 	$("#penalizebig option[value='"+parent+"']").attr("selected","selected");
@@ -424,6 +424,10 @@ function changeBillState(state){
 }
 function verify(){
 	var flag = true;
+	if($("#penalizebig").val() == ""){
+		alert("赔付大类为必选项！");
+		return false;
+	}
 	var pattern = new RegExp("[`'~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&mdash;|{}【】‘；：”“'。，、？\"]");
 	var compensateodd = $("#compensateodd").val();
 	if(pattern.test(compensateodd)){
@@ -571,7 +575,7 @@ function verify(){
 	         		<td align="right" nowrap="nowrap" style="width: 10%;">赔付大类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
 	         			<select style="width: 100%" id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
-							<option value ="0">请选择</option>
+							<option value ="">请选择</option>
 							<c:forEach items="${penalizebigList}" var="big" >
 								<option value="${big.id}">${big.text}</option>
 							</c:forEach>

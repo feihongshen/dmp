@@ -122,15 +122,15 @@ public class PenalizeOutBillService {
 					penalizeOutBill contract = contractList.get(i);
 					 maxNumber = contract.getBillbatches();
 					if ((maxNumber.length() == 13) && "P".equals(maxNumber.substring(0, 1))) {
-						 partContractNo = maxNumber.substring(0, 11);
-						String str = partContractNo.substring(3);
+						 partContractNo = maxNumber.substring(0, 9);
+						String str = partContractNo.substring(1);
 						if(!str.equals( DateTimeUtil.getCurrentDate())){
 							String rule = "P";
 							String date = DateTimeUtil.getCurrentDate();
 							
 							number = rule + date + orderStr;
 						}else{
-							String maxOrderStr = maxNumber.substring(11);
+							String maxOrderStr = maxNumber.substring(9);
 							int maxOrderInt = Integer.valueOf(maxOrderStr);
 							maxOrderInt++;
 							 orderStr = String.valueOf(maxOrderInt);
@@ -252,6 +252,9 @@ public class PenalizeOutBillService {
 			}else if(bill.getBillstate() == PunishBillStateEnum.YiHeXiao.getValue()){
 				bill.setVerificationperson((int)this.getSessionUser().getUserid());
 			}
+		}else{
+			bill.setVerifier(-1);
+			bill.setVerificationperson(-1);
 		}
 		
 		this.PenalizeOutBilldao.penalizeOutBillUpdate(bill);
