@@ -34,10 +34,10 @@ function addInit(){
 	//无处理
 }
 //扣罚大类触发扣罚小类
-function findsmallSort(self,chufaobject)
+function findsmallSort(self,form)
 {
 var url = "<%=request.getContextPath()%>/penalizeType/findsmall";
-$("#addForm select[name='punishsmallsort']").empty();
+$("#"+form+" select[name='punishsmallsort']").empty();
 $.ajax({
 	type:"post",
 	url:url,
@@ -46,19 +46,19 @@ $.ajax({
 	success:function(data){
 		if(data.length>0){
 			var optstr="<option value='0'>全部</option>";
-			$("#addForm select[name='punishsmallsort']").append(optstr);
+			$("#"+form+" select[name='punishsmallsort']").append(optstr);
 			for(var i=0;i<data.length;i++)
 			{
 				optstr = "<option value='"+data[i].id+"' title='"+data[i].parent+"'>"+data[i].text+"</option>";
-				$("#addForm select[name='punishsmallsort']").append(optstr);
+				$("#"+form+" select[name='punishsmallsort']").append(optstr);
 			}
 		}
 	}});
 }
 //小类触发大类
-function findbigSort(self,chufaobject)
+function findbigSort(self,form)
 { var parent=$(self).find("option:selected").attr("title");
-	$("#addForm select[name='punishbigsort'] option[value='"+parent+"']").attr("selected","selected");
+	$("#"+form+" select[name='punishbigsort'] option[value='"+parent+"']").attr("selected","selected");
 }
 
 function selectbranchUsers(){
@@ -96,10 +96,12 @@ function queryBillList(){
 
 function updatePage(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
 		{
-			getEditData($(this).val());
+			strs = $(this).val().split(",");
+			getEditData(strs[0]);
 			return false;
 		}
 	}); 
@@ -135,6 +137,10 @@ function deletePenalizeInside(){
 }
 
 function queryPenalizeInsideList(){
+	var cwbs = $("#queryPenalizeInsideListForm textarea[name='cwbs']").val();
+	if(cwbs){
+		$("#queryPenalizeInsideListForm textarea[name='cwbs']").val(cwbs.replace(/\n/g,","));
+	}
 	$("#queryPenalizeInsideListForm").submit();
 }
 
@@ -163,7 +169,14 @@ function addPenalizeInsideList(){
 	$("#penalizeInsideListForm").submit();
 }
 
-function updatePunishinsideBill(){
+function updatePunishinsideBill(state){
+	if(state){
+		changeBillState(state);
+	}
+	updatePunishinsideBillFun();
+}
+
+function updatePunishinsideBillFun(){
 	var chkBoxes = $("#penalizeInsideTable input[type='checkbox'][name='checkBox']");
 	var punishNos = "";
 	$(chkBoxes).each(function() {
@@ -195,13 +208,26 @@ function updatePunishinsideBill(){
 
 function deletePunishinsideBill(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
 	var billIds = "";
+	var sign = 0;
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true)
 		{
-			billIds = billIds + $(this).val() + ",";
+			strs = $(this).val().split(",");
+			if(strs[1] == '${weiShenHeState}'){
+				billIds = billIds + strs[0] + ",";
+			} else {
+				sign = 1;
+			}
 		}
 	}); 
+	if(sign == 1){
+		alert("只有未审核状态才能进行删除!");
+	}
+	if(!billIds){
+		return;
+	}
 	billIds = billIds.substring(0,billIds.length-1);
 	if(window.confirm("是否确定删除?")){
 		$.ajax({
@@ -243,7 +269,7 @@ function addPunishBillPage(){
 	});
 }
 function addPunishinsideBill(){
-	if(!$("#addForm select[name='punishbigsort']").val()){
+	if($("#addForm select[name='punishbigsort']").val() == 0){
 		alert("扣罚大类为必填项!");
 		return false;
 	}
@@ -281,7 +307,7 @@ function changeBillState(state){
 			if(confirm("是否确认取消审核?")){
 				$("#updateForm select[name='billState']").val('${weiShenHeState}');
 				$("#updateForm input[name='shenHeDate']").val('');
-				$("#updateForm input[name='shenHePerson']").val('');
+				$("#updateForm input[name='shenHePerson']").val('0');
 				$("#updateForm input[name='shenHePersonName']").val('');
 			}
 		} else if(state == 'HeXiaoWanCheng'){
@@ -295,7 +321,7 @@ function changeBillState(state){
 			if(confirm("是否确认取消核销?")){
 				$("#updateForm select[name='billState']").val('${yiShenHeState}');
 				$("#updateForm input[name='heXiaoDate']").val('');
-				$("#updateForm input[name='heXiaoPerson']").val('');
+				$("#updateForm input[name='heXiaoPerson']").val('0');
 				$("#updateForm input[name='heXiaoPersonName']").val('');
 			}
 		}
@@ -343,7 +369,7 @@ function changePage(obj){
 					</tr>
 					<c:forEach items="${punishinsideBillList}" var="bill">
 					<tr>
-						<td height="30px" align="center"  valign="middle"><input type="checkbox" name="checkBox" value="${bill.id}" /> </td>
+						<td height="30px" align="center"  valign="middle"><input type="checkbox" name="checkBox" value="${bill.id}${','}${bill.billState}" /> </td>
 						<td align="center" valign="middle" >${bill.billBatch}</td>
 						<td align="center" valign="middle" >
 							<c:forEach var="item" items="${billStateMap}">
@@ -397,7 +423,7 @@ function changePage(obj){
 	         	<tr>
 	         		<td align="left"><font color="red">*</font>扣罚大类</td>
 	         		<td>
-		         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'punishsmallsort');">
+		         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'addForm');">
 		         			<option value="0"></option>
 		         			<c:forEach items="${punishbigsortList}" var="bigsort">
 		         				<option value="${bigsort.id}">${bigsort.text}</option>
@@ -406,7 +432,7 @@ function changePage(obj){
 		         	</td>
 	         		<td align="left">扣罚小类</td>
 	         		<td>
-		         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'punishbigsort');">
+		         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'addForm');">
 		         			<option value="0">全部</option>
 		         			<c:forEach items="${punishsmallsortList}" var="smallsort">
 		         				<option value="${smallsort.id}" title="${smallsort.parent}">${smallsort.text}</option>
@@ -463,7 +489,7 @@ function changePage(obj){
 	         	<td colspan="3"  align="left">
 		         	<input type="button" class="input_button2" value="返回" onclick="$('#updatePage').dialog('close');"/>
 		         	<c:if test="${weiShenHeState==punishinsideBillVO.billState}">
-		         		<input type="button" class="input_button2" value="保存" onclick="updatePunishinsideBill()"/>
+		         		<input type="button" class="input_button2" value="保存" onclick="updatePunishinsideBill('')"/>
 		         	</c:if>
 	         	</td>
 	         	<c:choose>
@@ -471,23 +497,21 @@ function changePage(obj){
 	         		<c:choose>
 			         	<c:when test="${weiShenHeState==punishinsideBillVO.billState}">
 			         		<td align="right" colspan="3"> 
-			         			<input type="button" class="input_button2" onclick="changeBillState('ShenHe')" value="审核"/>
+			         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('ShenHe')" value="审核"/>
 			         		</td>
 			         	</c:when>
 			         	<c:when test="${yiShenHeState==punishinsideBillVO.billState}">
 			         		<td align="right" colspan="3">
-			         			<input type="button" class="input_button2" onclick="changeBillState('QuXiaoShenHe')" value="取消审核"/>
-			         			<input type="button" class="input_button2" onclick="changeBillState('HeXiaoWanCheng')" value="核销完成"/>
+			         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('QuXiaoShenHe')" value="取消审核"/>
+			         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('HeXiaoWanCheng')" value="核销完成"/>
 			         		</td>
 			         	</c:when>
 		         	</c:choose>
 	         	</c:when>
-	         	<c:when test="${jiesuanAdvanceAuthority==1}">
-	         		<c:if test="${yiHeXiaoState==punishinsideBillVO.billState}">
-			         	<td align="right" colspan="3"> 
-			         		<input type="button" class="input_button2" onclick="changeBillState('QuXiaoHeXiao')" value="取消核销"/>
-			         	</td>
-		         	</c:if>
+	         	<c:when test="${jiesuanAdvanceAuthority==1 && yiHeXiaoState==punishinsideBillVO.billState}">
+		         	<td align="right" colspan="3"> 
+		         		<input type="button" class="input_button2" onclick="updatePunishinsideBill('QuXiaoHeXiao')" value="取消核销"/>
+		         	</td>
 	         	</c:when>
 	         	<c:otherwise>
 					<td colspan="3">
@@ -669,6 +693,9 @@ function changePage(obj){
 							<c:if test="${queryConditionVO.billState==item.key}">
 								<option value="${item.key}" selected="selected">${item.value}</option>
 							</c:if>
+							<c:if test="${queryConditionVO.billState!=item.key}">
+								<option value="${item.key}">${item.value}</option>
+							</c:if>
 						</c:forEach> 
 	         		</select>
          		</td>
@@ -692,11 +719,14 @@ function changePage(obj){
          		</td>
          		<td  align="left" >扣罚大类</td>
          		<td >
-         			<select name="punishbigsort">
+         			<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'queryForm');">
 	         			<option value="0">---全部---</option>
 	         			<c:forEach items="${punishbigsortList}" var="bigsort">
 	         				<c:if test="${queryConditionVO.punishbigsort==bigsort.id}">
 		         				<option value="${bigsort.id}" selected="selected">${bigsort.text}</option>
+		         			</c:if>
+	         				<c:if test="${queryConditionVO.punishbigsort!=bigsort.id}">
+		         				<option value="${bigsort.id}">${bigsort.text}</option>
 		         			</c:if>
 						</c:forEach>
 	         		</select>
@@ -709,11 +739,14 @@ function changePage(obj){
          		</td>
          		<td  align="left" >扣罚小类</td>
          		<td >
-         			<select name="punishsmallsort">
+         			<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'queryForm');">
 	         			<option value="0">---全部---</option>
 	         			<c:forEach items="${punishsmallsortList}" var="smallsort">
 	         				<c:if test="${queryConditionVO.punishsmallsort==smallsort.id}">
-		         				<option value="${smallsort.id}" selected="selected">${smallsort.text}</option>
+		         				<option value="${smallsort.id}" title="${smallsort.parent}" selected="selected">${smallsort.text}</option>
+		         			</c:if>
+	         				<c:if test="${queryConditionVO.punishsmallsort!=smallsort.id}">
+		         				<option value="${smallsort.id}" title="${smallsort.parent}">${smallsort.text}</option>
 		         			</c:if>
 						</c:forEach>
 	         		</select>
@@ -762,7 +795,7 @@ function changePage(obj){
 				  <tr>
 						<td align="left">扣罚大类</td>
 		         		<td>
-			         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'punishsmallsort');">
+			         		<select name="punishbigsort" class="select1" onchange="findsmallSort(this,'queryPenalizeInsideListForm');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishbigsortList}" var="bigsort">
 			         				<option value="${bigsort.id}">${bigsort.text}</option>
@@ -779,7 +812,7 @@ function changePage(obj){
 		         	<tr>
 		         		<td align="left">扣罚小类</td>
 		         		<td>
-			         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'punishbigsort');">
+			         		<select name="punishsmallsort" class="select1" onchange="findbigSort(this,'queryPenalizeInsideListForm');">
 			         			<option value="0">全部</option>
 			         			<c:forEach items="${punishsmallsortList}" var="smallsort">
 			         				<option value="${smallsort.id}">${smallsort.text}</option>

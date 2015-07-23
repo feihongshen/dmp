@@ -48,12 +48,9 @@ public class PunishinsideBillService {
 			if (StringUtils.isNotBlank(punishinsideBill.getPunishNos())) {
 				List<String> punishNoList = Arrays.asList(punishinsideBill
 						.getPunishNos().split(","));
-				PenalizeInside penalizeInside = null;
-				for (int i = 0; i < punishNoList.size(); i++) {
-					penalizeInside = this.punishInsideDao
-							.getInsideByPunishNo(punishNoList.get(i));
-					penalizeInsideList.add(penalizeInside);
-				}
+				String punishNos = StringUtil.getStringsByStringList(punishNoList);
+				penalizeInsideList = this.punishinsideBillDAO.findByCondition(0,
+						0, punishNos, 0, 0, "", "", -1, -9);
 			}
 		}
 		rtnVO.setPenalizeInsideList(penalizeInsideList);

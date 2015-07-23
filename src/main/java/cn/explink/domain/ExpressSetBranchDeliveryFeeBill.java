@@ -1,0 +1,174 @@
+package cn.explink.domain;
+
+import java.math.*;
+
+/**
+ * express_set_branch_delivery_fee_bill 实体类 Fri Jul 03 14:38:55 CST 2015
+ * LiChongChong
+ */
+
+public class ExpressSetBranchDeliveryFeeBill {
+	private int id;
+	private String billBatch;
+	private int billState;
+	private int branchId;
+	private String createDate;
+	private String heXiaoDate;
+	private int dateType;
+	private String beginDate;
+	private String endDate;
+	private String cwbs;
+	private int cwbType;
+	private int cwbCount;
+	private BigDecimal deliveryFee;
+	private String remark;
+	private int creator;
+	private int heXiaoPerson;
+	private int shenHePerson;
+	private String shenHeDate;
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setBillBatch(String billBatch) {
+		this.billBatch = billBatch;
+	}
+
+	public String getBillBatch() {
+		return billBatch;
+	}
+
+	public void setBillState(int billState) {
+		this.billState = billState;
+	}
+
+	public int getBillState() {
+		return billState;
+	}
+
+	public int getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setHeXiaoDate(String heXiaoDate) {
+		this.heXiaoDate = heXiaoDate;
+	}
+
+	public String getHeXiaoDate() {
+		return heXiaoDate;
+	}
+
+	public void setDateType(int dateType) {
+		this.dateType = dateType;
+	}
+
+	public int getDateType() {
+		return dateType;
+	}
+
+	public void setBeginDate(String beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	public String getBeginDate() {
+		return beginDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setCwbs(String cwbs) {
+		this.cwbs = cwbs;
+	}
+
+	public String getCwbs() {
+		return cwbs;
+	}
+
+	public void setCwbType(int cwbType) {
+		this.cwbType = cwbType;
+	}
+
+	public int getCwbType() {
+		return cwbType;
+	}
+
+	public void setCwbCount(int cwbCount) {
+		this.cwbCount = cwbCount;
+	}
+
+	public int getCwbCount() {
+		return cwbCount;
+	}
+
+	public void setDeliveryFee(BigDecimal deliveryFee) {
+		this.deliveryFee = deliveryFee;
+	}
+
+	public BigDecimal getDeliveryFee() {
+		return deliveryFee;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public int getCreator() {
+		return creator;
+	}
+
+	public void setCreator(int creator) {
+		this.creator = creator;
+	}
+
+	public int getHeXiaoPerson() {
+		return heXiaoPerson;
+	}
+
+	public void setHeXiaoPerson(int heXiaoPerson) {
+		this.heXiaoPerson = heXiaoPerson;
+	}
+
+	public int getShenHePerson() {
+		return shenHePerson;
+	}
+
+	public void setShenHePerson(int shenHePerson) {
+		this.shenHePerson = shenHePerson;
+	}
+
+	public String getShenHeDate() {
+		return shenHeDate;
+	}
+
+	public void setShenHeDate(String shenHeDate) {
+		this.shenHeDate = shenHeDate;
+	}
+
+}

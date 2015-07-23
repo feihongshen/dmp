@@ -1,21 +1,14 @@
-/**
- *
- */
 package cn.explink.enumutil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 对内扣罚对外赔付账单状态
- *
- */
-public enum PunishBillStateEnum {
-	WeiShenHe(1, "未审核"), YiShenHe(2, "已审核"), YiHeXiao(3, "已核销");
+public enum ExceedSubsidyApplyStateEnum {
+	XinJian(1, "新建"), WeiShenHe(2, "未审核"), YiShenHe(3, "已审核"), YiJuJue(4, "已拒绝");
 	private int value;
 	private String text;
 
-	private PunishBillStateEnum(int value, String text) {
+	private ExceedSubsidyApplyStateEnum(int value, String text) {
 		this.value = value;
 		this.text = text;
 	}
@@ -29,7 +22,7 @@ public enum PunishBillStateEnum {
 	}
 
 	public static String getByValue(long value) {
-		for (PunishBillStateEnum typeEnum : PunishBillStateEnum.values()) {
+		for (ExceedSubsidyApplyStateEnum typeEnum : ExceedSubsidyApplyStateEnum.values()) {
 			if (typeEnum.getValue() == value) {
 				return typeEnum.getText();
 			}
@@ -39,7 +32,7 @@ public enum PunishBillStateEnum {
 	
 	public static Map<Integer, String> getMap() {
 		Map<Integer, String> map = new HashMap<Integer, String>();
-		for (PunishBillStateEnum e : PunishBillStateEnum.values()) {
+		for (ExceedSubsidyApplyStateEnum e : ExceedSubsidyApplyStateEnum.values()) {
 			map.put(e.value, e.text);
 		}
 		return map;

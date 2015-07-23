@@ -110,31 +110,17 @@ public class BranchContractDAO {
 
 		this.jdbcTemplate
 				.update("update express_set_branch_contract set "
-						+ "contractNo=?,contractState=?,contractBeginDate=?,"
-						+ "contractEndDate=?,branchName=?,siteChief=?,chiefIdentity=?,"
-						+ "areaManager=?,isDeposit=?,depositCollectDate=?,depositCollectAmount=?,"
-						+ "depositCollector=?,depositPayor=?,contractDescription=?,contractAttachment=?,"
+						+ "contractState=?,areaManager=?,depositPayor=?,contractDescription=?,"
 						+ "qualityControlClause=?,modifyPerson=?,modifyTime=? where id=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						// TODO Auto-generated method stub
 						int i = 1;
 
-						ps.setString(i++, branchContract.getContractNo());
 						ps.setInt(i++, branchContract.getContractState());
-						ps.setString(i++, branchContract.getContractBeginDate());
-						ps.setString(i++, branchContract.getContractEndDate());
-						ps.setString(i++, branchContract.getBranchName());
-						ps.setString(i++, branchContract.getSiteChief());
-						ps.setString(i++, branchContract.getChiefIdentity());
 						ps.setString(i++, branchContract.getAreaManager());
-						ps.setInt(i++, branchContract.getIsDeposit());
-						ps.setString(i++, branchContract.getDepositCollectDate());
-						ps.setBigDecimal(i++, branchContract.getDepositCollectAmount());
-						ps.setString(i++, branchContract.getDepositCollector());
 						ps.setString(i++, branchContract.getDepositPayor());
 						ps.setString(i++, branchContract.getContractDescription());
-						ps.setString(i++, branchContract.getContractAttachment());
 						ps.setString(i++, branchContract.getQualityControlClause());
 						ps.setInt(i++, branchContract.getModifyPerson());
 						ps.setString(i++, branchContract.getModifyTime());

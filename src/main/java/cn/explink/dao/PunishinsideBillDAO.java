@@ -184,30 +184,18 @@ public class PunishinsideBillDAO {
 
 		this.jdbcTemplate
 				.update("update express_ops_punishinside_bill set "
-						+ "billBatch=?,billState=?,dutybranchid=?,dutypersonid=?,sumPrice=?,"
-						+ "creator=?,createDate=?,shenHePerson=?,shenHeDate=?,cheXiaoPerson=?,"
+						+ "billState=?,sumPrice=?,shenHePerson=?,shenHeDate=?,cheXiaoPerson=?,"
 						+ "cheXiaoDate=?,heXiaoPerson=?,heXiaoDate=?,quXiaoHeXiaoPerson=?,quXiaoHeXiaoDate=?,"
-						+ "punishbigsort=?,punishsmallsort=?,punishInsideRemark=?,punishInsideIds=?,punishNos=?,"
-						+ "punishNoCreateBeginDate=?,punishNoCreateEndDate=? where id=?",
+						+ "punishInsideRemark=?,punishInsideIds=?,punishNos=? where id=?",
 						new PreparedStatementSetter() {
 							@Override
 							public void setValues(PreparedStatement ps)
 									throws SQLException {
-								// TODO Auto-generated method stub
 								int i = 1;
 
-								ps.setString(i++,
-										punishinsideBill.getBillBatch());
 								ps.setInt(i++, punishinsideBill.getBillState());
-								ps.setInt(i++,
-										punishinsideBill.getDutybranchid());
-								ps.setInt(i++,
-										punishinsideBill.getDutypersonid());
 								ps.setBigDecimal(i++,
 										punishinsideBill.getSumPrice());
-								ps.setInt(i++, punishinsideBill.getCreator());
-								ps.setString(i++,
-										punishinsideBill.getCreateDate());
 								ps.setInt(i++,
 										punishinsideBill.getShenHePerson());
 								ps.setString(i++,
@@ -224,20 +212,12 @@ public class PunishinsideBillDAO {
 										.getQuXiaoHeXiaoPerson());
 								ps.setString(i++,
 										punishinsideBill.getQuXiaoHeXiaoDate());
-								ps.setInt(i++,
-										punishinsideBill.getPunishbigsort());
-								ps.setInt(i++,
-										punishinsideBill.getPunishsmallsort());
 								ps.setString(i++, punishinsideBill
 										.getPunishInsideRemark());
 								ps.setString(i++,
 										punishinsideBill.getPunishInsideIds());
 								ps.setString(i++,
 										punishinsideBill.getPunishNos());
-								ps.setString(i++, punishinsideBill
-										.getPunishNoCreateBeginDate());
-								ps.setString(i++, punishinsideBill
-										.getPunishNoCreateEndDate());
 								ps.setInt(i++, punishinsideBill.getId());
 							}
 						});
@@ -301,7 +281,7 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getDutybranchname() + "%' ";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getDutypersonname())) {
-				sql += " and u.username like '%"
+				sql += " and u.realname like '%"
 						+ punishinsideBillVO.getDutypersonname() + "%' ";
 			}
 
@@ -330,7 +310,13 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getHeXiaoDateTo() + "' ";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
-				sql += " order by pb." + punishinsideBillVO.getContractColumn();
+				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
+					sql += " order by b.branchname";
+				} else if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutypersonname")){
+					sql += " order by u.realname";
+				} else {
+					sql += " order by pb." + punishinsideBillVO.getContractColumn();
+				}
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO
 					.getContractColumnOrder())) {

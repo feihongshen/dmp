@@ -1,8 +1,10 @@
 package cn.explink.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PunishinsideBillService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 @Controller
 @RequestMapping("/punishinsideBill")
@@ -102,7 +105,7 @@ public class PunishinsideBillController {
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
-
+		
 		model.addAttribute("userList", userList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("dutyPersonList", dutyPersonList);
@@ -111,6 +114,7 @@ public class PunishinsideBillController {
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("punishbigsortList", punishbigsortList);
 		model.addAttribute("punishsmallsortList", punishsmallsortList);
+		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
 
 		return "punishinsideBill/punishinsideBillList";
 	}
@@ -156,7 +160,7 @@ public class PunishinsideBillController {
 			realname = user.getRealname();
 		}
 		String nowDate = DateTimeUtil.getNowDate();
-
+		
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -282,13 +286,18 @@ public class PunishinsideBillController {
 				.getPenalizeTypeByType(2);
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(billVO.getId());
+		String cwbs = "";
+		if(StringUtils.isNotBlank(billVO.getCwbs())){
+			List<String> cwbList = Arrays.asList(billVO.getCwbs().split(","));
+			cwbs = StringUtil.getStringsByStringList(cwbList);
+		}
 		List<PenalizeInside> penalizeInsideList = this.punishInsideDao
-				.findByCondition(page, billVO.getCwbs(), 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
+				.findByCondition(page, cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
 						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
 		int count = this.punishInsideDao
-				.findByConditionSum(billVO.getCwbs(), 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
+				.findByConditionSum(cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
 						billVO.getPunishNoCreateEndDate(),this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());

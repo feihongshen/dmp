@@ -1,5 +1,8 @@
 package cn.explink.enumutil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum CwbOrderTypeIdEnum {
 	Weiqueding(-1, "未确定"), Peisong(1, "配送"), Shangmentui(2, "上门退"), Shangmenhuan(3, "上门换");
 
@@ -33,6 +36,14 @@ public enum CwbOrderTypeIdEnum {
 			}	
 		}
 		return "";
+	}
+	
+	public static Map<Integer, String> getMap() {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		for (CwbOrderTypeIdEnum e : CwbOrderTypeIdEnum.values()) {
+			map.put(e.value, e.text);
+		}
+		return map;
 	}
 	
 }

@@ -144,8 +144,8 @@ function addContract() {
 			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"/></td>'+
 			'						<th align="left"><font color="red">*</font>站点负责人</th>'+
 			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"/></td>'+
-			'						<th align="left">负责人身份证</th>'+
-			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20" onblur="IdCardValidate(this.value)"/></td>'+
+			'						<th align="left"><font color="red">*</font>负责人身份证</th>'+
+			'						<td><input type="text" name="chiefIdentity" value="" id="chiefIdentity" maxlength="20" onblur="if(this.value) {IdCardValidate(this.value)}"/></td>'+
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left">区域经理</th>'+
@@ -511,6 +511,10 @@ function addContractForm(form){
 		alert("站点负责人为必填项!");
 		return false;
 	}
+	if(!$("#chiefIdentity").val()){
+		alert("负责人身份证为必填项!");
+		return false;
+	}
 	if(!$("#isDeposit").val()){
 		alert("是否有押金为必填项!");
 		return false;
@@ -538,8 +542,7 @@ function addContractForm(form){
 	if ($("#txtFileName").val()=="") {
 		$(form).attr("enctype", "");
 		$(form).attr("action", getPath()+"/branchContract/addBranchContract");
-		submitCreateFormAdd(form);
-		document.location.reload(true);
+		submitCreateForm(form);
 		return;
 	}
 	
@@ -559,6 +562,22 @@ function addContractForm(form){
 	$('#swfupload-control').swfupload('addPostParam', 'depositCollector', $("#depositCollector").val());
 	$('#swfupload-control').swfupload('addPostParam', 'depositPayor', $("#depositPayor").val());
 	$('#swfupload-control').swfupload('startUpload');
+}
+
+function submitCreateForm(form) {
+	$.ajax({
+		type : "POST",
+		url : $(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "json",
+		success : function(data) {
+			if (data.errorCode == 0) {
+				alert(data.error)
+				document.location.reload(true);
+				closeBox();
+			}
+		}
+	});
 }
 
 function changeDeposit(){

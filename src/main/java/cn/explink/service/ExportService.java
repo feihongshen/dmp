@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import scala.collection.mutable.StringBuilder;
 import cn.explink.controller.AbnormalView;
+import cn.explink.controller.BranchDeliveryFeeBillController;
 import cn.explink.controller.ComplaintView;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.DeliveryStateView;
@@ -2883,7 +2884,46 @@ public class ExportService {
 		return a;
 
 	}
-
+	
+	public void SetBranchDeliveryFeeBillFields(String[] cloumnName1, String[] cloumnName2) {
+		int i = 0;
+		int j = 0;
+		cloumnName1[i++] = "订单号";
+		cloumnName2[j++] = "Cwb";
+		cloumnName1[i++] = "订单状态";
+		cloumnName2[j++] = "Flowordertype";
+		cloumnName1[i++] = "订单类型";
+		cloumnName2[j++] = "Cwbordertypeid";
+		cloumnName1[i++] = "客户";
+		cloumnName2[j++] = "Customerid";
+		cloumnName1[i++] = "派费金额合计";
+		cloumnName2[j++] = "Deliverybranchid";
+		cloumnName1[i++] = "配送费合计";
+		cloumnName2[j++] = "Audittime";
+		cloumnName1[i++] = "基本派费";
+		cloumnName2[j++] = "Deliverystate";
+		cloumnName1[i++] = "代收补助费";
+		cloumnName2[j++] = "Shouldfare";
+		cloumnName1[i++] = "区域属性补助费";
+		cloumnName2[j++] = "Infactfare";
+		cloumnName1[i++] = "超区补助";
+		cloumnName2[j++] = "Fareid";
+		cloumnName1[i++] = "业务补助";
+		cloumnName2[j++] = "Payuptime";
+		cloumnName1[i++] = "拖单补助";
+		cloumnName2[j++] = "Verifytime";
+		cloumnName1[i++] = "提货费合计";
+		cloumnName2[j++] = "Verifytime";
+		cloumnName1[i++] = "代收补助费";
+		cloumnName2[j++] = "Verifytime";
+		cloumnName1[i++] = "区域属性补助费";
+		cloumnName2[j++] = "Verifytime";
+		cloumnName1[i++] = "超区补助";
+		cloumnName2[j++] = "Verifytime";
+		cloumnName1[i++] = "拖单补助";
+		cloumnName2[j++] = "Verifytime";
+	}
+	
 	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
