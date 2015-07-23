@@ -70,6 +70,32 @@ function findbig()
 { var parent=$("#penalizesmall").find("option:selected").attr("id");
 	$("#penalizebig option[value='"+parent+"']").attr("selected","selected");
 } 
+function find()
+{ var parent=$("#small").find("option:selected").attr("id");
+	$("#big option[value='"+parent+"']").attr("selected","selected");
+} 
+function findsma(id)
+{
+	var dmpurl=$("#dmpurl").val();
+$("#small").empty();
+$.ajax({
+	type:"post",
+	url:dmpurl+"/penalizeType/findsmall",
+	data:{"id":id},
+	dataType:"json",
+	success:function(data){
+		if(data.length>0){
+			var optstr="<option value='0'>请选择</option>";
+
+			for(var i=0;i<data.length;i++)
+			{
+				optstr+="<option value='"+data[i].id+"' id='"+data[i].parent+"'>"+data[i].text+"</option>";
+			}
+			
+			$("#small").append(optstr);
+		}
+	}});
+}
 function findsmall(id)
 {
 	var dmpurl=$("#dmpurl").val();
@@ -844,7 +870,7 @@ function verify(){
 				  
 						<td nowrap="nowrap" align="left">赔付大类</td>
 		         		<td>
-		         			<select  id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
+		         			<select  id="big" name="compensatebig" onchange="findsma($(this).val())">
 								<option value ="0">请选择</option>
 								<c:forEach items="${penalizebigList}" var="big" >
 									<option value="${big.id}">${big.text}</option>
@@ -861,7 +887,7 @@ function verify(){
 		         	<tr>
 		         		<td nowrap="nowrap" align="left">赔付小类</td>
 		         		<td>
-		         			<select style="width: 100%" id="penalizesmall" name="compensatesmall" onchange="findbig()">
+		         			<select style="width: 100%" id="small" name="compensatesmall" onchange="find()">
 								<option value ="0">请选择</option>
 								<c:forEach items="${penalizesmallList}" var="small">
 									<option value="${small.id}"  id="${small.parent }">${small.text}</option>
