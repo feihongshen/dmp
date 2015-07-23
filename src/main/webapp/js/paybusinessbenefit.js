@@ -48,15 +48,25 @@ $(function (){
           $.messager.alert("提示", "请选择要删除的行", "error");
       }
   }
-  /*初始化dialog中的table  */
-  var datagrid; //定义全局变量datagrid
-  function createpaybusinessbenefits(){
-	initDialog();
-	$("#dlg").dialog('open');
-	datagrid=$('#create').datagrid({
+  var eachData;
+  /*初始化dialog中的table(新建与修改)  */
+  function createpaybusinessbenefits(obj,id,customerid,othersubsidies){
+	  initDialog(obj);
+	  var urlString;
+	  initCustomers(obj);
+	  if(obj=='create'){
+		  urlString="";
+	  }else{
+		  $("#customeridedit").combobox('setValue',customerid);
+		  $("#createotherbenefitsedit").val(othersubsidies);
+		  urlString=App.ctx+"/paybusinessbenefits/findeditinstall/"+id;
+	  }
+	$("#dlg"+obj).dialog('open');
+	$('#'+obj).datagrid({
 		autoEditing:true,
 		singleEditing:true,
 		collapsible:true,//是否可折叠的  
+		url:urlString,
 		columns:[[
           {field:'checkboxdata',title:'', width:100, align:'right', checkbox:'true'},
           {field:'tuotoudownrate',title:'妥投率下限', width:100, align:'right', editor: { type: 'numberbox',options: { required: true } }},
@@ -65,17 +75,17 @@ $(function (){
     	]],
     	onAfterEdit:function(rowIndex, rowData, changes){
     		 if(rowData.kpimoney<0){
-                  $('#create').datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
+                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
     	          $.messager.alert("提示", "KPI奖励金额不能为负数！！请重新输入！！", "error");
 				
  		}
     		 if(rowData.tuotoudownrate<0){
-                  $('#create').datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
+                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
     	          $.messager.alert("提示", "妥投率下限不能为负数！！请重新输入！！", "error");
 				
  		}
     		 if(rowData.tuotouprate<0){
-                  $('#create').datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
+                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
     	          $.messager.alert("提示", "妥投率上限不能为负数！！请重新输入！！", "error");
 				
  		}
@@ -91,9 +101,9 @@ $(function (){
 	});
   }
   /*插入新的行  */
-  function insertNew(){
-	  var $rows=$('#create').datagrid('getRows');
-	  $('#create').datagrid('insertRow',{
+  function insertNew(obj){
+	  var $rows=$('#'+obj).datagrid('getRows');
+	  $('#'+obj).datagrid('insertRow',{
 		  index:$rows.length,
 		  row:{
 			  checkboxdata:"",
@@ -104,14 +114,14 @@ $(function (){
 	  });
   }
   /*删除选择的行  */
-  function deleteRow(){
-      var rows = datagrid.datagrid("getSelections");
+  function deleteRow(obj){
+      var rows = $("#"+obj).datagrid("getSelections");
       if (rows.length > 0) {
           $.messager.confirm("提示", "你确定要移除吗?", function (r) {
               if (r) {
                   for (var i = 0; i < rows.length; i++) {
-                      var rowIndex = $('#create').datagrid('getRowIndex', rows[i]);
-                      $('#create').datagrid('deleteRow', rowIndex);
+                      var rowIndex = $('#'+obj).datagrid('getRowIndex', rows[i]);
+                      $('#'+obj).datagrid('deleteRow', rowIndex);
                   }
               }
           });
@@ -121,13 +131,20 @@ $(function (){
       }
   }
   /*保存客户设置  */
-  function saveData(){
-	  if($("#customerid").combobox('getValue')==0){
+  function saveData(obj){
+	  var initflag;
+	  if(obj=='create'){
+		  initflag=0;
+	  }else{
+		  initflag=1;
+	  }
+		  
+	  if($("#customerid"+obj).combobox('getValue')==""){
           $.messager.alert("提示", "请选择客户！！", "error");
           return;
 	  }
 	  var savedata="";
-	  var rows = $("#create").datagrid("getRows"); 
+	  var rows = $("#"+obj).datagrid("getRows"); 
 	  for(var i=0;i<rows.length;i++)
 	  {
 		  savedata+=rows[i].tuotoudownrate+"~"+rows[i].tuotouprate+"="+rows[i].kpimoney+"|";
@@ -138,19 +155,23 @@ $(function (){
 			  data:
 			  {
 				  paybusinessbenefits:savedata.substring(0, savedata.length-1),
-				  customerid:$("#customerid").combobox('getValue'),
-				  othersubsidies:$("#createotherbenefits").val()
+				  customerid:$("#customerid"+obj).combobox('getValue'),
+				  othersubsidies:$("#createotherbenefits"+obj).val(),
+				  remark:initflag
 			  },
 			  url: App.ctx +"/paybusinessbenefits/savedata",
 			  dataType:'json',
 			  success:function (data){
 				  if(data.errorCode==0){
-			          initDialog();
+			          initDialog(obj);
 			          submitform();
 				  }else if(data.errorCode==2){
-					  initDialogCustomer();
+					  initDialogCustomer(obj);
 				  }
 		          $.messager.alert("提示", data.error, "error");
+		          if(obj=="edit"){
+		        	  $("#dlg"+obj).dialog('close');
+		          }
 			  }
 		  });
 	  }else{
@@ -169,14 +190,54 @@ $(function (){
 	  }
   }
   /*初始化dialog  */
-  function initDialog(){
-	  $("#customerid").combobox('setValue','0');
-      $("#createotherbenefits").val('0');
-      $("#create").datagrid('loadData', { total: 0, rows: [] });
+  function initDialog(obj){
+	  $("#customerid"+obj).combobox('setValue','');
+      $("#createotherbenefits"+obj).val('0');
+      $("#"+obj).datagrid('loadData', { total: 0, rows: [] });
   }
-  function initDialogCustomer(){
-	  $("#customerid").combobox('setValue','0');
+  function initDialogCustomer(obj){
+	  $("#customerid"+obj).combobox('setValue','');
   }
-  function closeDialog(){
-	  $("#dlg").dialog('close');
+  function closeDialog(obj){
+	  $("#"+obj).dialog('close');
+  }
+  function go(val,row){
+	  return '<a href="#" onclick="constructionManager(\'' + row.id+ '\',\'' + row.customerid+ '\',\'' + row.othersubsidies+ '\')">'+val+'</a> ';
+  }
+  function constructionManager(id,customerid,othersubsidies){
+	  createpaybusinessbenefits('edit',id,customerid,othersubsidies);
+  }
+  /*初始化customer*/
+  function initCustomers(obj){
+	  if(isNull(eachData)){
+		  setTimeout(getCustomerDatas(),1000);
+	  }
+	  $('#customerid'+obj).combobox({
+		  data:eachData,
+		  valueField:'customerid',
+		  textField:'customername'
+		  });
+  }
+  function getCustomerDatas(){
+	  $.ajax({
+		  type:'post',
+		  url:App.ctx+"/paybusinessbenefits/getCustomers",
+		  async : false,
+		  dataType:'json',
+		  success:function (data){
+			  eachData=data;
+		  }
+	  });
+  }
+  /**
+   * 对象判空
+   * @param obj
+   * @returns {Boolean}
+   */
+  function isNull(obj){
+  	if(typeof(obj) == "undefined" || "" == obj || "undefined" == obj){
+  		return true;
+  	}else{
+  		return false;
+  	}
   }

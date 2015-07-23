@@ -1201,6 +1201,7 @@ src/main/java/cn/explink/domain/PairList.java -text
 src/main/java/cn/explink/domain/ParameterDetail.java -text
 src/main/java/cn/explink/domain/PayUp.java -text
 src/main/java/cn/explink/domain/PayWay.java -text
+src/main/java/cn/explink/domain/PaybusinessbenefitDetail.java -text
 src/main/java/cn/explink/domain/Paybusinessbenefits.java -text
 src/main/java/cn/explink/domain/PenalizeInside.java -text
 src/main/java/cn/explink/domain/PenalizeInsideShenhe.java -text

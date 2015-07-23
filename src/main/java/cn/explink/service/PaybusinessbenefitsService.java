@@ -1,6 +1,9 @@
 package cn.explink.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.PaybusinessbenefitsDao;
 import cn.explink.domain.Customer;
+import cn.explink.domain.PaybusinessbenefitDetail;
 import cn.explink.domain.Paybusinessbenefits;
 
 @Service
@@ -48,5 +52,23 @@ public class PaybusinessbenefitsService {
 			flag=true;
 		}
 		return flag;
+	}
+	/**
+	 * 将工资业务补助信息详细到具体类中
+	 * @param paybusinessbenefits
+	 * @return
+	 */
+	public Map<String, Object> changeDataDetail(Paybusinessbenefits paybusinessbenefits){
+		Map<String, Object> jsonMap=new  HashMap<String, Object>();
+		List<PaybusinessbenefitDetail> paybusinessbenefitDetails=new ArrayList<PaybusinessbenefitDetail>();
+		for (String paString:paybusinessbenefits.getPaybusinessbenefits().split("\\|")) {
+			PaybusinessbenefitDetail paybusinessbenefitDetail=new PaybusinessbenefitDetail();
+			paybusinessbenefitDetail.setTuotoudownrate(paString.split("~")[0]);
+			paybusinessbenefitDetail.setTuotouprate(paString.split("~")[1].split("=")[0]);
+			paybusinessbenefitDetail.setKpimoney(paString.split("=")[1]);
+			paybusinessbenefitDetails.add(paybusinessbenefitDetail);
+		}
+		jsonMap.put("rows",paybusinessbenefitDetails);
+		return jsonMap;
 	}
 }

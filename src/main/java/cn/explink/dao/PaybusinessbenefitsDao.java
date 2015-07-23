@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Paybusinessbenefits;
-import cn.explink.util.Page;
 
 @Component
 public class PaybusinessbenefitsDao {
@@ -91,5 +90,26 @@ public class PaybusinessbenefitsDao {
 		String sql="select count(1) from express_ops_paybusiness_benefits where customerid=?";
 		return this.jdbcTemplate.queryForInt(sql, customerid);
 		
+	}
+	/**
+	 * 通过主键id查询
+	 * @param id
+	 * @return
+	 */
+	public Paybusinessbenefits getPaybusinessbenefitsByid(long id){
+		String sql="select * from express_ops_paybusiness_benefits where id=?";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PaybusinessbenefitsRowMapper(),id);
+		} catch (DataAccessException e) {
+			return new Paybusinessbenefits();
+		}
+	}
+	public int updatePaybusinessbenfits(Paybusinessbenefits paybusinessbenefits){
+		String sql="update express_ops_paybusiness_benefits set paybusinessbenefits=?,othersubsidies=? where customerid=?";
+		try {
+			return this.jdbcTemplate.update(sql, paybusinessbenefits.getPaybusinessbenefits(),paybusinessbenefits.getOthersubsidies(),paybusinessbenefits.getCustomerid());
+		} catch (DataAccessException e) {
+			return 0;
+		}
 	}
 }

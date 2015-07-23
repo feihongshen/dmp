@@ -38,9 +38,7 @@ public class PaybusinessbenefitsController {
 	 */
 	@RequestMapping("/list/{page}")
 	public ModelAndView queryList(@PathVariable("page")long page,@RequestParam(defaultValue="",required=false,value="customername")String customername){
-		List<Customer> customersList=customerDAO.getAllCustomers();
 		ModelAndView modelAndView=new ModelAndView();
-		modelAndView.addObject("customersList", customersList);
 		modelAndView.setViewName("salary/paybusinessbenefits/list");
 		return modelAndView;
 	}
@@ -56,15 +54,25 @@ public class PaybusinessbenefitsController {
 	@ResponseBody
 	public String saveData(Paybusinessbenefits paybusinessbenefits
 			){
-			try {
-				if (paybusinessbenefitsService.checkIsCreateByCustomerid(paybusinessbenefits.getCustomerid())) {
-					return "{\"errorCode\":2,\"error\":\"该供货商已经创建过工资业务补助设置，不能重复创建\"}";
+			if (paybusinessbenefits.getRemark().equals("1")) {
+				int count=paybusinessbenefitsDao.updatePaybusinessbenfits(paybusinessbenefits);
+				if (count>0) {
+					return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+				}else {
+					return "{\"errorCode\":1,\"error\":\"修改出现异常\"}";
 				}
-				paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits);
-				return "{\"errorCode\":0,\"error\":\"成功保存\"}";
-			} catch (Exception e) {
-				return "{\"errorCode\":1,\"error\":\"保存失败,失败原因为"+e+"\"}";
+			}else {
+				try {
+					if (paybusinessbenefitsService.checkIsCreateByCustomerid(paybusinessbenefits.getCustomerid())) {
+						return "{\"errorCode\":2,\"error\":\"该供货商已经创建过工资业务补助设置，不能重复创建\"}";
+					}
+					paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits);
+					return "{\"errorCode\":0,\"error\":\"成功保存\"}";
+				} catch (Exception e) {
+					return "{\"errorCode\":1,\"error\":\"保存失败,失败原因为"+e+"\"}";
+				}
 			}
+		
 	}
 	/**
 	 * easyui数据查询
@@ -95,5 +103,19 @@ public class PaybusinessbenefitsController {
 		model.addAttribute("jsonObject", jsonObject);
 		return jsonMap;
 	}
-	
+	/**
+	 * 编辑设置需要的数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/findeditinstall/{id}")
+	public @ResponseBody Map<String, Object> editinstall(@PathVariable("id")long id){
+		Paybusinessbenefits paybusinessbenefits=paybusinessbenefitsDao.getPaybusinessbenefitsByid(id);
+		return paybusinessbenefitsService.changeDataDetail(paybusinessbenefits);
+	}
+	@RequestMapping("/getCustomers")
+	public @ResponseBody List<Customer> getCustomers(){
+		List<Customer> customersList=customerDAO.getAllCustomers();
+		return customersList;
+	}
 }
