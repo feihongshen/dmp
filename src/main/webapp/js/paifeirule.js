@@ -317,7 +317,7 @@ function editRule(ruleid) {
 	if ($("#" + ruleid)[0].style.background == undefined || $("#" + ruleid)[0].style.background == '') {
 		$("#" + ruleid)[0].style.background = 'yellow';
 		$("#edit_ruleid").val(ruleid);
-		$("#edit_form").submit();
+	// $("#edit_form").submit();
 	}
 
 	/*
@@ -327,6 +327,14 @@ function editRule(ruleid) {
 	 * });
 	 */
 }
+function joineditRule()
+{ $("#rule_table tr").each(function(){
+	if($(this)[0].style.background == 'yellow')
+	{$("#edit_form").submit();}
+	});
+}
+	
+
 function subEidt(formId, tab, edittype) {
 	var dmpurl = $("#dmpurl").val();
 	var json = {};
