@@ -20,7 +20,7 @@ public class ImportBillExcel {
 	private BigDecimal baojiaMoney;
 	private BigDecimal baozhuangMoney;
 	private BigDecimal ganxianbutieMoney;
-	private BigDecimal allMoney;
+
 	
 	public String getBillBatches() {
 		return billBatches;
@@ -28,12 +28,7 @@ public class ImportBillExcel {
 	public void setBillBatches(String billBatches) {
 		this.billBatches = billBatches;
 	}
-	public BigDecimal getAllMoney() {
-		return allMoney;
-	}
-	public void setAllMoney(BigDecimal allMoney) {
-		this.allMoney = allMoney;
-	}
+
 	public long getId() {
 		return id;
 	}

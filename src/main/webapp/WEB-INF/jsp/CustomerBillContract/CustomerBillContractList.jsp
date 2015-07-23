@@ -8,9 +8,244 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title></title>
+<style type="text/css">
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+table.gridtable th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+table.gridtable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+
+.uploader{
+position:relative;
+display:inline-block;
+overflow:hidden;
+cursor:default;
+padding:0;
+margin:10px 0px;
+-moz-box-shadow:0px 0px 5px #ddd;
+-webkit-box-shadow:0px 0px 5px #ddd;
+box-shadow:0px 0px 5px #ddd;
+
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+border-radius:5px;
+}
+
+.filename{
+float:left;
+display:inline-block;
+outline:0 none;
+height:32px;
+width:180px;
+margin:0;
+padding:8px 10px;
+overflow:hidden;
+cursor:default;
+border:1px solid;
+border-right:0;
+font:9pt/100% Arial, Helvetica, sans-serif; color:#777;
+text-shadow:1px 1px 0px #fff;
+text-overflow:ellipsis;
+white-space:nowrap;
+
+-moz-border-radius:5px 0px 0px 5px;
+-webkit-border-radius:5px 0px 0px 5px;
+border-radius:5px 0px 0px 5px;
+
+background:#f5f5f5;
+background:-moz-linear-gradient(top, #fafafa 0%, #eee 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#f5f5f5));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#f5f5f5',GradientType=0);
+border-color:#ccc;
+
+-moz-box-shadow:0px 0px 1px #fff inset;
+-webkit-box-shadow:0px 0px 1px #fff inset;
+box-shadow:0px 0px 1px #fff inset;
+
+-moz-box-sizing:border-box;
+-webkit-box-sizing:border-box;
+box-sizing:border-box;
+}
+
+.button{
+float:left;
+height:32px;
+display:inline-block;
+outline:0 none;
+padding:8px 12px;
+margin:0;
+cursor:pointer;
+border:1px solid;
+font:bold 9pt/100% Arial, Helvetica, sans-serif;
+
+-moz-border-radius:0px 5px 5px 0px;
+-webkit-border-radius:0px 5px 5px 0px;
+border-radius:0px 5px 5px 0px;
+
+-moz-box-shadow:0px 0px 1px #fff inset;
+-webkit-box-shadow:0px 0px 1px #fff inset;
+box-shadow:0px 0px 1px #fff inset;
+}
+
+.uploader input[type=file]{
+position:absolute;
+top:0; right:0; bottom:0;
+border:0;
+padding:0; margin:0;
+height:30px;
+cursor:pointer;
+filter:alpha(opacity=0);
+-moz-opacity:0;
+-khtml-opacity: 0;
+opacity:0;
+}
+
+input[type=button]::-moz-focus-inner{padding:0; border:0 none; -moz-box-sizing:content-box;}
+input[type=button]::-webkit-focus-inner{padding:0; border:0 none; -webkit-box-sizing:content-box;}
+input[type=text]::-moz-focus-inner{padding:0; border:0 none; -moz-box-sizing:content-box;}
+input[type=text]::-webkit-focus-inner{padding:0; border:0 none; -webkit-box-sizing:content-box;}
+
+/* White Color Scheme ------------------------ */
+
+.white .button{
+color:#555;
+text-shadow:1px 1px 0px #fff;
+background:#ddd;
+background:-moz-linear-gradient(top, #eeeeee 0%, #dddddd 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#dddddd));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#dddddd',GradientType=0);
+border-color:#ccc;
+}
+
+.white:hover .button{
+background:#eee;
+background:-moz-linear-gradient(top, #dddddd 0%, #eeeeee 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#dddddd), color-stop(100%,#eeeeee));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dddddd', endColorstr='#eeeeee',GradientType=0);
+}
+
+/* Blue Color Scheme ------------------------ */
+
+.blue .button{
+color:#fff;
+text-shadow:1px 1px 0px #09365f;
+background:#064884;
+background:-moz-linear-gradient(top, #3b75b4 0%, #064884 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#3b75b4), color-stop(100%,#064884));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3b75b4', endColorstr='#064884',GradientType=0);
+border-color:#09365f;
+}
+
+.blue:hover .button{
+background:#3b75b4;
+background:-moz-linear-gradient(top, #064884 0%, #3b75b4 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#064884), color-stop(100%,#3b75b4));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#064884', endColorstr='#3b75b4',GradientType=0);
+}
+
+/* Green Color Scheme ------------------------ */
+
+.green .button{
+color:#fff;
+text-shadow:1px 1px 0px #6b7735;
+background:#7d8f33;
+background:-moz-linear-gradient(top, #93aa4c 0%, #7d8f33 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#93aa4c), color-stop(100%,#7d8f33));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#93aa4c', endColorstr='#7d8f33',GradientType=0);
+border-color:#6b7735;
+}
+
+.green:hover .button{
+background:#93aa4c;
+background:-moz-linear-gradient(top, #7d8f33 0%, #93aa4c 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#7d8f33), color-stop(100%,#93aa4c));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#7d8f33', endColorstr='#93aa4c',GradientType=0);
+}
+
+/* Red Color Scheme ------------------------ */
+
+.red .button{
+color:#fff;
+text-shadow:1px 1px 0px #7e0238;
+background:#90013f;
+background:-moz-linear-gradient(top, #b42364 0%, #90013f 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#b42364), color-stop(100%,#90013f));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b42364', endColorstr='#90013f',GradientType=0);
+border-color:#7e0238;
+}
+
+.red:hover .button{
+background:#b42364;
+background:-moz-linear-gradient(top, #90013f 0%, #b42364 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#90013f), color-stop(100%,#b42364));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#90013f', endColorstr='#b42364',GradientType=0);
+}
+
+/* Orange Color Scheme ------------------------ */
+
+.orange .button{
+color:#fff;
+text-shadow:1px 1px 0px #c04501;
+background:#d54d01;
+background:-moz-linear-gradient(top, #f86c1f 0%, #d54d01 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#f86c1f), color-stop(100%,#d54d01));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f86c1f', endColorstr='#d54d01',GradientType=0);
+border-color:#c04501;
+}
+
+.orange:hover .button{
+background:#f86c1f;
+background:-moz-linear-gradient(top, #d54d01 0%, #f86c1f 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#d54d01), color-stop(100%,#f86c1f));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#d54d01', endColorstr='#f86c1f',GradientType=0);
+}
+
+/* Black Color Scheme ------------------------ */
+
+.black .button{
+color:#fff;
+text-shadow:1px 1px 0px #111111;
+background:#222222;
+background:-moz-linear-gradient(top, #444444 0%, #222222 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#444444), color-stop(100%,#222222));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#444444', endColorstr='#222222',GradientType=0);
+border-color:#111111;
+}
+
+.black:hover .button{
+background:#444444;
+background:-moz-linear-gradient(top, #222222 0%, #444444 100%);
+background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#222222), color-stop(100%,#444444));
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#444444',GradientType=0);
+}
+</style>
+
 <script type="text/javascript">
-	
+		
+		
 	  $(function(){ 
+		  $("input[type=file]").change(function(){$(this).parents(".uploader").find(".filename").val($(this).val());});
+			$("input[type=file]").each(function(){
+			if($(this).val()==""){
+				$(this).parents(".uploader").find(".filename").val("请选择要上传的文件！");}
+			});
 		
 		/* $('#test').bind('click',form1Method); */
 		
@@ -114,7 +349,7 @@
 				$('#dga').datagrid({    
 					method: "POST",
 				    url:'${pageContext.request.contextPath}/CustomerBillContract/editAboutContent?billBatches='+row.billBatches, 
-				    fit : true,
+				  /*   fit : true, */
 					fitColumns : true,
 					border : true,
 					striped:true,
@@ -340,9 +575,9 @@
 							} 
 							findCustomerBillContractByBatches();
 							$('#dga').datagrid('reload');		
-							$('#dg').datagrid('reload')
+							$('#dg').datagrid('reload'); 
 							$('#fm2').form('reload');
-							
+							ChaYidl();
 						},'json');
 					}
 				});
@@ -389,10 +624,12 @@
             	  $('#questionTypesManage').form('submit',{
       	  			url:'${pageContext.request.contextPath}/CustomerBillContract/getupdateExcel',
       	  			onSubmit: function(){
-      	  			if(d1==".xls"||d1==".xlsx"){
-      	  			 
+      	  			if(d1==".xls"||d1==".xlsx"){      	  			 
       	  				return true;
       	  			}else{
+      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
+      	  			$('#uploadExcel').val(''); 
+      	  			$('#dga').datagrid('reload');
       	  				return false;
       	  				}
       	  			},
@@ -421,6 +658,133 @@
               }    
          
 	 }
+	
+	 function duiBiBillMoneyChaYi(){
+		 $('#billMoneyDuiBi').dialog('open').dialog('setTitle','对比');
+		 
+		 $.ajax({    
+				type: "POST",
+				data:{'billBatches':$('#hv').val()},
+			    url:'${pageContext.request.contextPath}/CustomerBillContract/billMoneyWithImportExcelChaYiDuiBi', 			   
+				dataType:'json',
+				success:function(data){
+					$('#systemDateCount').html(data.systemDateCount);
+					$('#importDateCount').html(data.importDateCount);
+					$('#chaYiCount').html(data.chaYiCount);
+					$('#systemDateMoney').html(data.systemDateMoney);
+					$('#importDateMoney').html(data.importDateMoney);
+					$('#chaYiMoney').html(data.chaYiMoney);
+					$('#hv2').val(data.chaYiCount);
+				}
+			});
+		 
+	 }
+	 
+	 function ChaYidl(){
+		 dgCountChaYi=$('#dgCountChaYi').datagrid({    
+				method: "POST",
+			    url:'${pageContext.request.contextPath}/CustomerBillContract/CountChaYi?billBatches='+$('#hv').val(), 
+			    fit : true,
+				fitColumns : true,
+				border : true,
+				striped:true,
+				idField : 'id',
+				rownumbers:true,
+				singleSelect:true,
+				columns:[[         
+					        {field:'ck',checkbox:"true"},
+					        {field:'id',title:'id',hidden:true},  
+					        {field:'zhongLei',title:'种类',sortable:true,width:108,align:'center'},
+							{field:'cwb',title:'订单号',sortable:true,width:100,align:'center'},	
+							{field:'cwbstate',title:'订单状态',sortable:true,width:80,align:'center'},
+					        {field:'cwbOrderType',title:'订单类型',sortable:true,width:75,align:'center'},    
+					        {field:'paywayid',title:'支付方式',sortable:true,align:'center',width:75},				    
+					        {field:'deliveryMoney',title:'提货费',sortable:true,width:75,align:'center'},
+					        {field:'distributionMoney',title:'配送费',sortable:true,width:75,align:'center'},
+					        {field:'transferMoney',title:'中转费',sortable:true,width:75,align:'center'},
+					        {field:'refuseMoney',title:'拒收派费',sortable:true,width:75,align:'center'},
+					        {field:'totalCharge',title:'派费合计',sortable:true,width:75,align:'center'},				        
+					    ]],
+			});		
+	 }
+	 
+	 function CountChaYi(){ /*readonly="readonly" style="color: #C0C0C0"  */		 
+		 if($('#hv2').val()!=0){
+			$('#CountChaYi').dialog('open').dialog('setTitle','金额差异 ');
+			ChaYidl();
+		 }		
+	 }
+	 
+	 function addBillCwbNumInChaYi(){
+		 var row = $('#dgCountChaYi').datagrid('getSelected');
+			
+			if (row){
+				$.messager.confirm('提示','你确定要添加订单吗?',function(r){
+					if (r){
+						$.post('${pageContext.request.contextPath}/CustomerBillContract/addCwbInEdit',{billBatches:$('#hv').val(),cwb:row.cwb},function(result){
+							if (result.success==0){
+	
+								$.messager.show({	// show success message
+									title: '添加 ',
+									msg: result.successdata
+								});// reload the data
+							
+					
+							} else if(result.success==1){
+								$.messager.show({	// show success message
+									title: '添加Error ',
+									msg: result.successdata
+								});// reload the data
+						}							
+							findCustomerBillContractByBatches();
+							$('#dg').datagrid('reload');	
+							$('#dga').datagrid('reload');						
+							$('#fm2').form('reload');
+							$('#hv').val('');
+							$('#hv1').val('');
+							ChaYidl();
+							
+							
+							},'json');
+						}
+				});
+			
+			}
+			
+			$('#dlgAddofEdit').dialog('close');
+		}
+		
+	 
+	 function removeofEditInChaYi(){
+			var row = $('#dgCountChaYi').datagrid('getSelected');
+			
+			if (row){
+				
+				$.messager.confirm('提示','你确定要删除这条记录吗?',function(r){
+					if (r){
+						$.post('${pageContext.request.contextPath}/CustomerBillContract/removeBillInfoofEdit',{cwb:row.cwb,billBatches:$('#hv').val()},function(result){
+							if (result.success==0){
+	
+								$.messager.show({	// show success message
+									title: '删除成功',
+									msg: result.successdata
+								});// reload the data
+							
+					
+							} 
+							findCustomerBillContractByBatches();
+							$('#dga').datagrid('reload');		
+							$('#dg').datagrid('reload'); 
+							$('#dgCountChaYi').datagrid('reload');
+							$('#fm2').form('reload');
+							ChaYidl();
+						},'json');
+					}
+				});
+			}
+		}
+			
+		
 	</script>
 </head>
 <body>
@@ -579,13 +943,17 @@
 	<!-- 新增、编辑界面 -->
 	<div id="dlgedit" class="easyui-dialog" style="width:900px;height:600px;padding:10px 20px" closed="true">
 		<!-- 操作按钮区域 -->
+			
 				<form id="questionTypesManage" method="post" enctype="multipart/form-data">  
-  					 选择文件：<input type="file" id="uploadExcel" name="uploadExcel" class="easyui-filebox" style="2cm" data-options="prompt:'请选择文件...'">       
-       　			　		 <input name="billBatches" id="uploadbillBatches" type="hidden"  > 
-       				<a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="uploadExcel()" >客户订单导入</a>　　　　　        
-					
+						<input name="billBatches" id="uploadbillBatches" type="hidden"  > 
+					<div class="uploader white">
+							<input type="text" class="filename" readonly="readonly"/>
+							<input type="button" name="file" class="button" value="浏 览"/>
+							<input type="file" size="30" id="uploadExcel" name="uploadExcel" />&nbsp;&nbsp;&nbsp;
+							<!-- <a href="#"  class="easyui-linkbutton" onclick="uploadExcel()" >客户订单导入</a> -->
+					</div>
 				</form>	
-		
+			
 		<table>
 			<tr>
 				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()" id="fanhui">返回</a></td>
@@ -594,17 +962,17 @@
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaoshenhe" onclick="javascript:changeBillState('<%=BillStateEnum.WeiShenHe.getValue()%>')">取消审核</a></td>
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="hexiaowancheng" onclick="javascript:changeBillState('<%=BillStateEnum.YiHeXiao.getValue()%>')">核销完成</a></td>
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaohexiao" onclick="javascript:changeBillState('<%=BillStateEnum.WeiHeXiao.getValue()%>')">取消核销</a></td>				
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="xianshichayibaogao">显示差异报告</a></td>
-<!-- 				<td><a href="#" class="easyui-linkbutton" style="width:122px" onclick="uploadExcel()" >客户订单导入</a></td> -->
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="xianshichayibaogao" onclick="duiBiBillMoneyChaYi()">显示差异报告</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="uploadExcel()" >客户订单导入</a></td>
 			</tr>
 		</table>
 		<!-- 新增一级弹窗查询数据回显（根据查询结果动态拼接） -->
 		<form id="fm2" method="post">
 				<table class="fitem">
 						<tr>
-							<td align="right" style="width:90px;">账单批次</td><td style="width:30px;" ><input name="billBatches" id="billBatchess" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">账单批次</td><td style="width:30px;" ><input name="billBatches" id="billBatchess" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 							<td align="right" style="width:90px;">账单状态</td><td style="width:30px;">
-							<input name="billState" id="billState" class="easyui-validatebox" disabled="disabled">
+							<input name="billState" id="billState" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0">
 							<!-- <input type="text" name="billState" id="billState1" class="easyui-validatebox" 
 									 	data-options="width:150,prompt: '账单状态'"
 									 	initDataType="ENUM" 
@@ -615,13 +983,13 @@
 									 	
 								/> -->
 							</td>
-							<td align="right" style="width:90px;">日期范围</td><td style="width:30px;"><input name="dateRange" id="dateRange" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">日期范围</td><td style="width:30px;"><input name="dateRange" id="dateRange" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 						</tr>
 						<tr>
-							<td align="right" style="width:90px;">派费合计(元)</td><td style="width:30px;"><input name="totalCharge" id="totalCharge" class="easyui-validatebox" readonly="readonly"></td>
-							<td align="right" style="width:90px;">对应订单数</td><td style="width:30px;"><input name="correspondingCwbNum" id="correspondingCwbNum" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">派费合计(元)</td><td style="width:30px;"><input name="totalCharge" id="totalCharge" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
+							<td align="right" style="width:90px;">对应订单数</td><td style="width:30px;"><input name="correspondingCwbNum" id="correspondingCwbNum" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 							<td align="right" style="width:90px;">客户名称</td><td style="width:30px;">
-							<input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly">
+							<input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0">
 							<!-- <input type="text" name="customerId" class="easyui-validatebox"						
 									id="customernames"
 								 	data-options="width:150"
@@ -635,9 +1003,9 @@
 							</td>
 						</tr>
 						<tr>
-							<td align="right" style="width:90px;">提货费(元)</td><td style="width:30px;"><input name="deliveryMoney" id="deliveryMoney" class="easyui-validatebox" readonly="readonly"></td>
-							<td align="right" style="width:90px;">配送费(元)</td><td style="width:30px;"><input name="distributionMoney" id="distributionMoney" class="easyui-validatebox" readonly="readonly"></td>
-							<td align="right" style="width:90px;">中转费(元)</td><td style="width:30px;"><input name="transferMoney" id="transferMoney" class="easyui-validatebox" readonly="readonly"></td>
+							<td align="right" style="width:90px;">提货费(元)</td><td style="width:30px;"><input name="deliveryMoney" id="deliveryMoney" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
+							<td align="right" style="width:90px;">配送费(元)</td><td style="width:30px;"><input name="distributionMoney" id="distributionMoney" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
+							<td align="right" style="width:90px;">中转费(元)</td><td style="width:30px;"><input name="transferMoney" id="transferMoney" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 						</tr>
 						<tr>
 							<td align="right" style="width:90px;"><label>备注:</label></td>
@@ -645,7 +1013,7 @@
 						</tr>
 				</table>
 		</form>
-		<table id="dga" style="width:800px;height:118px"></table>
+		<table id="dga"></table>
 		<div id="tbNewAddofEdit">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="dlgNewAddofEdit()">添加</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeofEdit()">移除</a>	
@@ -673,6 +1041,46 @@
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNum()">确认</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgAddofEdit').dialog('close')">取消</a>
 	</div>
+	
+	<div id="billMoneyDuiBi" class="easyui-dialog" style="width:380px;height:218px;padding:10px 20px"
+			closed="true">
+		<table id="dgbillMoneyDuiBi" class="gridtable">
+					<tr>
+						<th></th>
+						<th>系统数据</th>
+						<th>导入数据</th>
+						<th>差异</th>
+					</tr>
+					<tr>
+						<td>记录总数</td>
+						<td><label id="systemDateCount"></label></td>
+						<td><label id="importDateCount"></label></td>
+						<td><a href="#" onclick="javascript:CountChaYi()" id="acc"><label id="chaYiCount"></label></a></td>
+					</tr>
+					<tr>
+						<td>金额</td>
+						<td><label id="systemDateMoney"></label></td>
+						<td><label id="importDateMoney"></label></td>
+						<td><label id="chaYiMoney"></label></td>
+					</tr>
+ 					<tr>
+						<td>派费金额不一致记录</td>
+						<td><label id="systemDateCount"></label></td>
+						<td><label id="importDateCount"></label></td>
+						<td><label id="chaYiCount"></label></td>
+					</tr>
+		</table>
+	</div>
+	
+		<div id="CountChaYi" class="easyui-dialog" style="width:800px;height:500px;padding:10px 20px"
+			closed="true" buttons="#dlgAddChaYi-buttons">
+		<table id="dgCountChaYi" class="fitem" border="1"></table>
+		</div>
+		<div id="dlgAddChaYi-buttons">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">加入当前账单</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeofEditInChaYi()">从当前账单移除</a>
+		</div>
+	
 <input type="hidden" id="hv"/> <!--批次  -->
 <input type="hidden" id="hv1"/>
 <input type="hidden" id="hv2"/>

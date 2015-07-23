@@ -57,6 +57,18 @@ public class CustomerBillContractService {
 		return cwbs;	
 	}
 	
+	public String listImportBillExcelToString(List<ImportBillExcel> cwborderlist){
+		StringBuilder sb = new StringBuilder();
+		String cwbs="";	
+		if(cwborderlist.size()>0){
+			for(ImportBillExcel str:cwborderlist){
+				sb=sb.append(str.getCwb()+",");
+			}
+		}
+			cwbs=sb.substring(0, sb.length()-1);	
+		return cwbs;	
+	}
+	
 	public String DeliveryStatelistToString(List<DeliveryState> cwborderlist){
 		StringBuilder sb = new StringBuilder();
 		String cwbs="";	

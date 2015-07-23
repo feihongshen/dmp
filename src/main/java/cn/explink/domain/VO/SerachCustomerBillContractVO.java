@@ -14,6 +14,14 @@ public class SerachCustomerBillContractVO {
 	private BigDecimal refuseMoney; //拒收派费
 	private BigDecimal totalCharge; //派费合计
 	private String billBatches;
+	private String zhongLei;
+	
+	public String getZhongLei() {
+		return zhongLei;
+	}
+	public void setZhongLei(String zhongLei) {
+		this.zhongLei = zhongLei;
+	}
 	public String getBillBatches() {
 		return billBatches;
 	}

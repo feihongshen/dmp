@@ -43,7 +43,7 @@ public class CustomerBillContractDao {
 			c.setDateVerificationBill(rs.getString("date_verification_bill"));
 			c.setCwbOrderType(rs.getLong("cwb_order_type"));
 			c.setDateState(rs.getLong("date_state"));
-			c.setCwbs("cwbs");
+			c.setCwbs(rs.getString("cwbs"));
 		
 			
 			return c;
