@@ -173,11 +173,15 @@ public class CustomerContractController {
 	@RequestMapping("/download")
 	public void downloadContract(HttpServletRequest request, HttpServletResponse response) {
 		try {
+			String name = request.getParameter("name");
 			String filePath = request.getParameter("filepathurl");
 			String filePathaddress = ResourceBundleUtil.FILEPATH + filePath;
 			File file = new File(filePathaddress);
 			// 取得文件名。
 			String filename = file.getName();
+			String fileName = filename.substring(filename.lastIndexOf("."));
+			name= name + fileName;
+			/*name*/
 			// 以流的形式下载文件。
 			InputStream fis;
 			fis = new BufferedInputStream(new FileInputStream(filePathaddress));
@@ -188,7 +192,7 @@ public class CustomerContractController {
 			response.reset();
 			// 设置response的Header
 			response.setContentType("application/ms-excel");
-			response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+			response.addHeader("Content-Disposition", "attachment;filename=" + new String(name.getBytes(), "iso8859-1"));
 			response.addHeader("Content-Length", "" + file.length());
 			OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
 			toClient.write(buffer);
