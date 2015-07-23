@@ -7709,4 +7709,10 @@ CREATE TABLE `cs_complaint_accept` (
   		ADD COLUMN `whethergeneratedeliverymanbill` INT(4) DEFAULT 0  NULL  COMMENT '是否已生成配送员派费账单' AFTER `firstlevelid`;
 		</sql>
 		</changeSet>
+    <changeSet id="wangqiang-2015-07-23-01" author="wangqiang">
+		<sql>
+		ALTER TABLE `express_ops_penalizeout_detail`   
+  		ADD COLUMN `whetherGeneratePeiFuBill` INT(4) DEFAULT 0  NULL  COMMENT '是否已生成赔付账单' AFTER `state`;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
