@@ -135,6 +135,8 @@ public class DiliverymanPaifeiBillDAO {
 		}
 		if (StringUtils.isNotBlank(bill.getOrderingMethod())) {
 			querySql.append(" " + bill.getOrderingMethod() + "");
+		}else{
+			querySql.append(" ORDER BY billstate desc");
 		}
 		return querySql.toString();
 	}
