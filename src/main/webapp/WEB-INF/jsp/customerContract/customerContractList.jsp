@@ -44,7 +44,10 @@ $(function(){
 	});
 })
 function changeContractState(state){
+	if(confirm("确定要改变账单状态吗？")){
+		
 	 $("#contractstatus").val(state);
+	}
 } 
 function setId(id,state){
 	$("#contractid").val(id);
@@ -170,11 +173,12 @@ function submitCreateForm(form) {
 
 //******************************************************************
 function update(){
-	$("#contractstatus").removeAttr("disabled");
+	
 	
 	if(!verify()){
 		return false;
 	}
+	$("#contractstatus").removeAttr("disabled");
 		if(getBranchContractDetailVOList()){
 			var depositInformationStr = JSON.stringify(getBranchContractDetailVOList());
 			$('#depositInformationStr').val(depositInformationStr);
@@ -217,7 +221,14 @@ function getBranchContractDetailVOList(){
 	return list;
 }
 
-
+function isFloatVal(tdInput){
+	var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
+    var isMoneyFormatRight = reg.test(tdInput.value);
+    if(!isMoneyFormatRight){
+  	  alert("押金退还金额只能为数字，并不能为负数，允许保留两位小数！");
+  	  return false;
+    }
+}
 //添加行
  function addTr(){
 	var table = $('#depositTable'); 
@@ -367,6 +378,7 @@ function  demandContract(){
 			$("#depositgatherperson").val(data.depositgatherperson);
 			$("#gatherperson").val(data.depositgatherperson);
 			$("#othercontractors").val(data.othercontractors);
+			$("#contractname").val(data.contractname);
 			if(data.contractaccessory != ""&&data.contractaccessory !=null){
 				$("#contractFile").css('display' ,'');  
 				$("#file").attr("href","<%=request.getContextPath()%>/customerContract/download?filepathurl=" +data.contractaccessory);
@@ -870,9 +882,12 @@ function showBox(data){
 		'						</td>'+
 		'					</tr>'+
 		'					 <tr id="contractFile" style="display: none">'+
-		'						<th align="left" style="font-size:13px">合同附件:</th>'+
-		'						<td colspan="5">'+
-		'							<span style="font-size:13px"><a href="" id="file" >附件下载</a></span>'+
+		'						<th align="left" style="font-size:13px" >合同附件:</th>'+
+		'						<td  align="left">'+
+		'							<input id="contractname" value=""style="background-color:#DCDCDC;width:150px" readonly="readonly"/>'+
+		'						</td>'+
+		'						<td  align="left" style="font-size:13px">'+
+		'							<a href="" id="file" >附件下载</a>'+
 		'						</td>'+
 		'					</tr>'+
 		'					<tr id="firstDepositTr" style="display: none">'+
