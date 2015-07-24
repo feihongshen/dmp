@@ -79,10 +79,12 @@ function queryBillList(){
 
 function updatePage(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
 		{
-			getEditData($(this).val());
+			strs = $(this).val().split(",");
+			getEditData(strs[0]);
 			return false;
 		}
 	}); 
@@ -170,13 +172,26 @@ function updateBranchDeliveryFeeBill(){
 
 function deleteBranchDeliveryFeeBill(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
 	var billIds = "";
+	var sign = 0;
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true)
 		{
-			billIds = billIds + $(this).val() + ",";
+			strs = $(this).val().split(",");
+			if(strs[1] == '${weiShenHeState}'){
+				billIds = billIds + strs[0] + ",";
+			} else {
+				sign = 1;
+			}
 		}
-	}); 
+	});
+	if(sign == 1){
+		alert("只有未审核状态才能进行删除!");
+	}
+	if(!billIds){
+		return;
+	}
 	billIds = billIds.substring(0,billIds.length-1);
 	if(window.confirm("是否确定删除?")){
 		$.ajax({
@@ -212,10 +227,10 @@ function deleteBranchDeliveryFeeBill(){
 				});
 	}
 	function addBranchDeliveryFeeBill() {
-		/* if(!$("#addForm select[name='branchName']").val()){
+		if(!$("#addForm select[name='branchName']").val()){
 			alert("加盟商站点为必填项!");
 			return false;
-		} */
+		}
 		var beginDate = $("#addForm input[name='beginDate']").val();
 		var endDate = $("#addForm input[name='endDate']").val();
 		if (beginDate && endDate) {
@@ -353,6 +368,7 @@ function deleteBranchDeliveryFeeBill(){
 	}
 
 	function exportByCustomerPage() {
+		initExportBillForm();
 		$('#exportByCustomerPage').dialog('open');
 	}
 	function exportByCustomer() {
@@ -370,6 +386,60 @@ function deleteBranchDeliveryFeeBill(){
 			}
 		});
 	}
+	
+	function initExportBillForm() {
+		//使td节点具有click点击能力
+		var tdNods = $(".MsoTableGrid td[class='editTd']");
+		tdNods.click(tdClick);
+	}
+	//td的点击事件
+	function tdClick() {
+		// 将td的文本内容保存
+		var td = $(this);
+		var tdText = td.text();
+		// 将td的内容清空
+		td.empty();
+		// 新建一个输入框
+		var input = $("<input>");
+		// 将保存的文本内容赋值给输入框
+		input.attr("value", tdText);
+		/* input.attr("class", "tdInputClass"); */
+		/* input.attr("width", "100%"); */
+		input.attr("style", "border:0;outline:none;width:100%");
+		/* input.attr("style", "outline:none;width:100%;height:100%;"); */
+		// 将输入框添加到td中
+		td.append(input);
+		// 给输入框注册事件，当失去焦点时就可以将文本保存起来
+		input.blur(function() {
+			// 将输入框的文本保存
+			var input = $(this);
+			var inputText = input.val();
+			// 将td的内容，即输入框去掉,然后给td赋值
+			var td = input.parent("td");
+			
+			//td.empty();
+			input.remove();
+			var oEle = $("<o:p>&nbsp;</o:p>");
+			var spanEle = $("<span lang=EN-US style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'></span>");
+			var pEle = $("<p class=MsoNormal align=center style='text-align: center'></p>"); 
+			spanEle.append(oEle); 
+			pEle.append(spanEle);
+			td.append(pEle);
+			oEle.html(inputText);
+			
+			/* td.html(inputText); */
+			// 让td重新拥有点击事件
+			td.click(tdClick);
+		});
+		// 将输入框中的文本高亮选中
+		// 将jquery对象转化为DOM对象
+		/* var inputDom = input.get(0);
+		inputDom.select(); */
+		// 将td的点击事件移除
+		td.unbind("click");
+		/* $(".tdInputClass").css("width","120px"); */
+	}
+
 </script>
 </head>
 
@@ -379,13 +449,12 @@ function deleteBranchDeliveryFeeBill(){
 		<div class="inputselect_box">
 			<table style="width: 60%">
 				<tr>
-					<td><input class="input_button2" type="button"
-						onclick="addDeliveryFeeBillPage()" value="新增" /> <input
-						class="input_button2" type="button" onclick="updatePage()"
-						value="查看/修改" /> <input class="input_button2" type="button"
-						onclick="deleteBranchDeliveryFeeBill()" value="删除" /> <input
-						class="input_button2" type="button" onclick="queryPage()"
-						value="查询" /></td>
+					<td>
+						<input class="input_button2" type="button" onclick="addDeliveryFeeBillPage()" value="新增" />
+						<input class="input_button2" type="button" onclick="updatePage()" value="查看/修改" />
+						<input class="input_button2" type="button" onclick="deleteBranchDeliveryFeeBill()" value="删除" />
+						<input class="input_button2" type="button" onclick="queryPage()" value="查询" />
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -399,38 +468,34 @@ function deleteBranchDeliveryFeeBill(){
 				<table width="100%" border="0" cellspacing="1" cellpadding="0"
 					class="table_2" id="listTable">
 					<tr>
-						<td height="30px" valign="middle"><input type="checkbox"
-							name="checkAll" onclick="checkAll('listTable')" /></td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							账单批次</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							账单状态</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							加盟商名称</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							日期范围</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							对应订单数</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							派费金额</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							创建日期</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							核销日期</td>
+						<td height="30px" valign="middle">
+							<input type="checkbox" name="checkAll" onclick="checkAll('listTable')" />
+						</td>
+						<td align="center" valign="middle" style="font-weight: bold;">账单批次</td>
+						<td align="center" valign="middle" style="font-weight: bold;">账单状态</td>
+						<td align="center" valign="middle" style="font-weight: bold;">加盟商名称</td>
+						<td align="center" valign="middle" style="font-weight: bold;">日期范围</td>
+						<td align="center" valign="middle" style="font-weight: bold;">对应订单数</td>
+						<td align="center" valign="middle" style="font-weight: bold;">派费金额</td>
+						<td align="center" valign="middle" style="font-weight: bold;">创建日期</td>
+						<td align="center" valign="middle" style="font-weight: bold;">核销日期</td>
 					</tr>
 					<c:forEach items="${branchDeliveryFeeBillList}" var="bill">
 						<tr>
-							<td height="30px" align="center" valign="middle"><input
-								type="checkbox" name="checkBox" value="${bill.id}" /></td>
+							<td height="30px" align="center" valign="middle">
+								<input type="checkbox" name="checkBox" value="${bill.id}${','}${bill.billState}" />
+							</td>
 							<td align="center" valign="middle">${bill.billBatch}</td>
-							<td align="center" valign="middle"><c:forEach var="item"
-									items="${billStateMap}">
+							<td align="center" valign="middle">
+								<c:forEach var="item" items="${billStateMap}">
 									<c:if test="${bill.billState==item.key}">${item.value}</c:if>
-								</c:forEach></td>
-							<td align="center" valign="middle"><c:forEach
-									items="${branchList}" var="branch">
+								</c:forEach>
+							</td>
+							<td align="center" valign="middle">
+								<c:forEach items="${branchList}" var="branch">
 									<c:if test="${bill.branchId==branch.branchid}">${branch.branchname}</c:if>
-								</c:forEach></td>
+								</c:forEach>
+							</td>
 							<td align="center" valign="middle">${bill.beginDate}至${bill.endDate}</td>
 							<td align="center" valign="middle">${bill.cwbCount}</td>
 							<td align="center" valign="middle">${bill.deliveryFee}</td>
@@ -446,68 +511,54 @@ function deleteBranchDeliveryFeeBill(){
 	<!-- 新增层显示 -->
 	<div id="addPage" class="easyui-dialog" title="新增"
 		data-options="iconCls:'icon-save'"
-		style="width: 780px; height: 250px;">
+		style="width: 700px; height: 250px;">
 		<form
 			action="<%=request.getContextPath()%>/branchDeliveryFeeBill/addBranchDeliveryFeeBill"
 			method="post" id="addForm">
 			<table width="100%" border="0" cellspacing="5" cellpadding="0"
 				style="margin-top: 10px; font-size: 10px; border-collapse: separate">
 				<tr>
-					<td colspan="4" align="left"><input type="button"
-						class="input_button2" value="返回"
-						onclick="$('#addPage').dialog('close');" /> <input type="button"
-						class="input_button2" value="创建"
-						onclick="addBranchDeliveryFeeBill()" /></td>
+					<td colspan="4" align="left">
+						<input type="button" class="input_button2" value="返回" onclick="$('#addPage').dialog('close');" />
+						<input type="button" class="input_button2" value="创建" onclick="addBranchDeliveryFeeBill()" />
+					</td>
 				</tr>
 				<tr>
-					<td align="left"><font color="red">*</font>加盟商站点</td>
-					<td><input type="text" name="branchName" readonly="readonly"
-						value="${insertBillVO.branchName}"> <input type="hidden"
-						name="branchId" value="${insertBillVO.branchId}"></td>
-					<td align="left"><font color="red">*</font>订单类型</td>
-					<td><select name="cwbType" class="select1">
+					<td align="left" width="15%"><font color="red">*</font>加盟商站点</td>
+					<td align="left" width="35%">
+						<input type="text" name="branchName" readonly="readonly">
+						<input type="hidden" name="branchId">
+					</td>
+					<td align="left" width="10%"><font color="red">*</font>订单类型</td>
+					<td align="left" width="40%">
+						<select name="cwbType">
 							<c:forEach items="${cwbTypeMap}" var="item">
-								<c:if test="${insertBillVO.cwbType==item.key}">
-									<option value="${item.key}" selected="selected">${item.value}</option>
-								</c:if>
-								<c:if test="${insertBillVO.cwbType!=item.key}">
-									<option value="${item.key}">${item.value}</option>
-								</c:if>
+								<option value="${item.key}">${item.value}</option>
 							</c:forEach>
-					</select></td>
+						</select>
+					</td>
 				</tr>
 				<tr>
-					<td align="left"><font color="red">*</font> <select
-						name="dateType" class="select1">
+					<td align="left"><font color="red">*</font>
+						<select name="dateType">
 							<c:forEach items="${dateTypeMap}" var="item">
-								<c:if test="${insertBillVO.dateType==item.key}">
-									<option value="${item.key}" selected="selected">${item.value}</option>
-								</c:if>
-								<c:if test="${insertBillVO.dateType!=item.key}">
-									<option value="${item.key}">${item.value}</option>
-								</c:if>
+								<option value="${item.key}">${item.value}</option>
 							</c:forEach>
-					</select></td>
-					<td><input type="text" name="beginDate" class="easyui-my97"
-						datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''"
-						value="${insertBillVO.beginDate}" /> 至 <input type="text"
-						name="endDate" class="easyui-my97" datefmt="yyyy/MM/dd"
-						data-options="width:95,prompt: ''" value="${insertBillVO.endDate}" />
+						</select>
+					</td>
+					<td>
+						<input type="text" name="beginDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''" />
+						至
+						<input type="text" name="endDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: ''" />
 					</td>
 					<td></td>
 					<td></td>
 				</tr>
 				<tr>
 					<td align="left">备注</td>
-					<td colspan="3"><textarea name="remark"
-							style="width: 100%; height: 60px; resize: none;">
-		         			<c:if test="${empty insertBillVO.remark}"> 
-							     	不超过100字
-							</c:if> 
-							<c:if test="${not empty insertBillVO.remark}"> 
-							     ${insertBillVO.remark}
-							</c:if> 
-	         			</textarea></td>
+					<td colspan="3" >
+						<textarea name="remark" style="width: 100%; height: 60px; resize: none;" onfocus="if(this.value=='不超过100字') {this.value='';}" onblur="if(this.value=='') {this.value='不超过100字';}">不超过100字</textarea>
+					</td>
 				</tr>
 			</table>
 		</form>
@@ -1995,14 +2046,14 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 valign=top class="editTd"
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54
+				<td width=54 class="editTd"
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2227,14 +2278,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 valign=top class="editTd"
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54
+				<td width=54 class="editTd"
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2445,7 +2496,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; color: black'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=113
+				<td width=113 class="editTd"
 					style='width: 3.0cm; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 20.6pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
