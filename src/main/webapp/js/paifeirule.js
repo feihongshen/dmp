@@ -16,12 +16,11 @@ $(function() {
 			window.location = dmpurl + "/paifeirule/list/1";
 		}
 	});
-	var ruletype=$("#edit_ruletype").val();
-	if(ruletype==2){
+	var ruletype = $("#edit_ruletype").val();
+	if (ruletype == 2) {
 		$("#overbigflagtr").remove();
-		
-	}
-	else {
+
+	} else {
 		$("#overbigflagtrno").remove();
 	}
 	showflag('ps_basic', $("#ps_showflag_basic").val());
@@ -91,34 +90,86 @@ function addTR(pf, type) {
 	i++;
 	var customerid = "customerid" + i;
 	// var customername="customername";
-	var customer = "<input type='text' id='" + customerid + "' name='customerid' class='easyui-validatebox' style='width: 100%;'"
+	var customer = "<input type='text'  id='" + customerid + "' name='customerid' class='easyui-validatebox' style='width: 100%;'"
 			+ "initDataType='TABLE'" + "initDataKey='Customer' " + "viewField='customername'" + "saveField='customerid'" + "/>";
 	var PFfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='" + type + "PFfee' name='" + type + "PFfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr><input type='hidden' name='showflag' value='1'/>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>"
 			+ customer + "</td>" + "<td  align='center'>" + PFfee + "</td>" + "<td  align='center'>" + remark + "</td>" + "</tr>";
-	$("#" + pf + "_" + type + "_table").append(tr);
-	// tr.appendTo(basictr);
-	initDynamicSelect(customerid, 'TABLE');
+	var flag = true;
+	$("#" + pf + "_" + type + "_table tr[id!=thead]").each(function() {
+		var customerVal = $(this).find("input[name^=customerid]").val();
+		var PFfeeVal = $(this).find("input[id*=PFfee]").val();
+		if (customerVal == '' || PFfeeVal == '') {
+			flag = false;
+		}
+	});
+	if (flag) {
+		$("#" + pf + "_" + type + "_table").append(tr);
+		initDynamicSelect(customerid, 'TABLE');
+	}
 }
 function addTROfinsertion(pf, type) {
-	var mincount = "<input style='width: 100%;' type='text'  id='mincount' name='mincount'/>";
-	var maxcount = "<input style='width: 100%;' type='text'  id='maxcount' name='maxcount'/>";
+	var mincount = "<input style='width: 100%;' type='text' onblur='comparaTo($(this),\"min\")'  id='mincount' name='mincount'/>";
+	var maxcount = "<input style='width: 100%;' type='text' onblur='comparaTo($(this),\"max\")'  id='maxcount' name='maxcount'/>";
 	var insertionfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='insertionfee' name='insertionfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>" + mincount + "</td>" + "<td  align='center'>"
 			+ maxcount + "</td>" + "<td  align='center'>" + insertionfee + "</td>" + "<td  align='center'>" + remark + "</td>" + "</tr>";
-	$("#" + pf + "_" + type + "_table").append(tr);
+	var flag = true;
+	var max = -1;
+	$("#" + pf + "_" + type + "_table tr[id!=thead]").each(function() {
+		if ($(this).find("[id=mincount]").val() != '' && parseInt($(this).find("[id=mincount]").val()) > parseInt(max)) {
+
+			var mincountVal = $(this).find("[id=mincount]").val();
+			var maxcountVal = $(this).find("[id=maxcount]").val();
+			var fee = $(this).find("[id=insertionfee]").val();
+			if (fee == '' || mincountVal == '' || maxcountVal == '') {
+				flag = false;
+			} else {
+				max = maxcountVal;
+			}
+		}else {
+			alert("输入有误！");
+			$(this).find("[id=mincount]").focus();
+			flag = false;
+		}
+	});
+	if (flag) {
+		$("#" + pf + "_" + type + "_table").append(tr);
+	}
+
 }
 function addTROfOverArea(pf, type) {
 
-	var mincount = "<input style='width: 100%;' type='text'  id='mincount' name='mincount'/>";
-	var maxcount = "<input style='width: 100%;' type='text'  id='maxcount' name='maxcount'/>";
+	var mincount = "<input style='width: 100%;' type='text'  id='mincount' onblur='comparaTo($(this),\"min\")' name='mincount'/>";
+	var maxcount = "<input style='width: 100%;' type='text'  id='maxcount' onblur='comparaTo($(this),\"max\")' name='maxcount'/>";
 	var subsidyfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='subsidyfee' name='subsidyfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>" + mincount + "</td>" + "<td  align='center'>"
 			+ maxcount + "</td>" + "<td  align='center'>" + subsidyfee + "</td>" + "<td  align='center'>" + remark + "</td>" + "</tr>";
-	$("#" + pf + "_" + type + "_table").append(tr);
+	var flag = true;
+	var max = -1;
+	$("#" + pf + "_" + type + "_table tr[id!=thead]").each(function() {
+		if ($(this).find("[id=mincount]").val() != '' && parseInt($(this).find("[id=mincount]").val()) > parseInt(max)) {
+
+			var mincountVal = $(this).find("[id=mincount]").val();
+			var maxcountVal = $(this).find("[id=maxcount]").val();
+			var fee = $(this).find("[id=insertionfee]").val();
+			if (fee == '' || mincountVal == '' || maxcountVal == '') {
+				flag = false;
+			} else {
+				max = maxcountVal;
+			}
+		}else {
+			alert("输入有误！");
+			$(this).find("[id=mincount]").focus();
+			flag = false;
+		}
+	});
+	if (flag) {
+		$("#" + pf + "_" + type + "_table").append(tr);
+	}
 }
 function addTROfOverAreaEdit(pf, type) {
 
@@ -149,7 +200,7 @@ function sub(ruletype) {
 		var collection = getJson(tabs[i], 'collection');
 		var insertion = getArrayinsertion(tabs[i], 'insertion');
 		var subsidyfee = getJsonOfsubsidyfee(tabs[i], 'business');
-		var area = getJsonOfArea(tabs[i],ruletype);
+		var area = getJsonOfArea(tabs[i], ruletype);
 		var overarea = getOverarea(tabs[i], 'overarea');
 		var json = {};
 		if (!jQuery.isEmptyObject(collection)) {
@@ -249,17 +300,15 @@ function getJsonOfArea(tab, ruleType) {
 				$(this).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
 					overbig.push($(this).serializeObject());
 				});
-				if(overbig.length>0){
-				json.overbig = overbig;
+				if (overbig.length > 0) {
+					json.overbig = overbig;
 				}
-			}
-			else {
-				var flag=$(this).find("#overbigflag")[0].checked;
-				if(flag){
-				json.overbigflag=1;
-				}
-				else {
-					json.overbigflag=0;
+			} else {
+				var flag = $(this).find("#overbigflag")[0].checked;
+				if (flag) {
+					json.overbigflag = 1;
+				} else {
+					json.overbigflag = 0;
 				}
 			}
 			var overweight = new Array();
@@ -267,8 +316,8 @@ function getJsonOfArea(tab, ruleType) {
 				overweight.push($(this).serializeObject());
 			});
 			json.areafee = areafee;
-			if(overweight.length>0){
-			json.overweight = overweight;
+			if (overweight.length > 0) {
+				json.overweight = overweight;
 			}
 
 			areas.push(json);
@@ -280,6 +329,9 @@ function getJsonOfArea(tab, ruleType) {
 function showflag(flag, val) {
 	$("#" + flag + "_yes").attr('style', 'display:none');
 	$("#" + flag + "_no").attr('style', 'display:none');
+	if (val == undefined) {
+		val = 'yes';
+	}
 	$("#" + flag + "_" + val).removeAttr('style');
 }
 function addArea(tab, areaname, areaid) {
@@ -291,8 +343,8 @@ function addArea(tab, areaname, areaid) {
 		$area_table.find("#areaname").text(areaname);
 		var overbig = "overbig" + areaid;
 		var overweight = "overweight" + areaid;
-		if($("#edit_ruletype").val()==2){
-		$area_table.find("#overbig_table")[0].id = tab + "_" + overbig + "_table";
+		if ($("#edit_ruletype").val() == 2) {
+			$area_table.find("#overbig_table")[0].id = tab + "_" + overbig + "_table";
 		}
 		$area_table.find("#overweight_table")[0].id = tab + "_" + overweight + "_table";
 
@@ -305,7 +357,7 @@ function addArea(tab, areaname, areaid) {
 		$area_table.find("#overweight_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overweight + '")');
 		$area_table.find("#overbig_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overbig + '")');
 		$("#" + tab + "_area_div").append($area_table);
-	} else if ($("tr [id=" + tab + "_" + areaid + "]")[0].style.background .toLowerCase() .indexOf('yellow')>=0) {
+	} else if ($("tr [id=" + tab + "_" + areaid + "]")[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
 		$("tr [id=" + tab + "_" + areaid + "]")[0].style.background = '';
 		$("#" + tab + "_area_div table[id=" + tab + "_area_table_" + areaid + "]").remove();
 	}
@@ -317,7 +369,7 @@ function editRule(ruleid) {
 	if ($("#" + ruleid)[0].style.background == undefined || $("#" + ruleid)[0].style.background == '') {
 		$("#" + ruleid)[0].style.background = 'yellow';
 		$("#edit_ruleid").val(ruleid);
-	// $("#edit_form").submit();
+		// $("#edit_form").submit();
 	}
 
 	/*
@@ -327,15 +379,13 @@ function editRule(ruleid) {
 	 * });
 	 */
 }
-function joineditRule()
-{ $("#rule_table tr").each(function(){
-	if($(this)[0].style.background.toLowerCase() .indexOf('yellow')>=0)
-	{
-		$("#edit_form").submit();
+function joineditRule() {
+	$("#rule_table tr").each(function() {
+		if ($(this)[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
+			$("#edit_form").submit();
 		}
 	});
 }
-	
 
 function subEidt(formId, tab, edittype) {
 	var dmpurl = $("#dmpurl").val();
@@ -387,7 +437,7 @@ function showArea(tr, id, areaname) {
 	 */
 	{
 		$("div[id^=edit_area_ps").hide();
-		if ($(tr)[0].style.background.toLowerCase() .indexOf('yellow')>=0) {
+		if ($(tr)[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
 			$(tr).parent().find("tr").each(function() {
 				$(this)[0].style.background = '';
 			});
@@ -416,7 +466,7 @@ function comparaTo(e, type) {
 	validate(e);
 	var min = parseInt($(e).parent().parent().find("#mincount").val());
 	var max = parseInt($(e).parent().parent().find("#maxcount").val());
-	if (min != '' && max != '') {
+	if (min != 0 && max != 0) {
 		if (type == 'max') {
 			if (min > max) {
 				alert("输入有误！");
@@ -430,5 +480,11 @@ function comparaTo(e, type) {
 				// $(e).focus();
 			}
 		}
+	}
+}
+function customer(e) {
+	var id = $(e).find("input[name^=customerid]").val();
+	if ($(e).parent().parent().find("input[name^=customerid][value=" + id + "]").length > 1) {
+		initDynamicSelect($(e).find("input[id^=customerid]")[0].id, 'TABLE');
 	}
 }
