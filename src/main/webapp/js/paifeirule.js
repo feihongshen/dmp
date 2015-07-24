@@ -256,7 +256,10 @@ function getJson(tab, type) {
 		if ($("#" + tab + "_" + type + "_tr select").val() == 'yes') {
 			var customers = new Array();
 			$("#" + tab + "_" + type + "_table tr[id!=thead]").each(function() {
-				customers.push($(this).serializeObject());
+				var customerid = $(this).find("[name=customerid]").val();
+				if (customerid != ''&&customerid!=0&&customerid!=undefined) {
+					customers.push($(this).serializeObject());
+				}
 			});
 			json.PFfees = customers;
 			json.showflag = 'yes';
@@ -273,7 +276,11 @@ function getArrayinsertion(tab, type) {
 	if ($("#" + tab + "_" + type + "_flag")[0].checked) {
 
 		$("#" + tab + "_" + type + "_table tr[id!=thead]").each(function() {
-			insertion.push($(this).serializeObject());
+			var mincountVal = $(this).find("[name=mincount]").val();
+			var maxcountVal = $(this).find("[name=maxcount]").val();
+			if ( mincountVal != '' && maxcountVal != '') {
+				insertion.push($(this).serializeObject());
+			}
 		});
 		json.insertion = insertion;
 
@@ -298,7 +305,11 @@ function getJsonOfArea(tab, ruleType) {
 			if (ruleType == 2) {
 				var overbig = new Array();
 				$(this).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
-					overbig.push($(this).serializeObject());
+					var mincountVal = $(this).find("[name=mincount]").val();
+					var maxcountVal = $(this).find("[name=maxcount]").val();
+					if (mincountVal != '' && maxcountVal != '') {
+						overbig.push($(this).serializeObject());
+					}
 				});
 				if (overbig.length > 0) {
 					json.overbig = overbig;
@@ -313,7 +324,11 @@ function getJsonOfArea(tab, ruleType) {
 			}
 			var overweight = new Array();
 			$(this).find("[id*=" + tab + "_overweight] tr[id!=thead]").each(function() {
-				overweight.push($(this).serializeObject());
+				var mincountVal = $(this).find("[name=mincount]").val();
+				var maxcountVal = $(this).find("[name=maxcount]").val();
+				if (mincountVal != '' && maxcountVal != '') {
+					overweight.push($(this).serializeObject());
+				}
 			});
 			json.areafee = areafee;
 			if (overweight.length > 0) {
@@ -399,7 +414,20 @@ function subEidt(formId, tab, edittype) {
 			areaid = formId.split("_")[2];
 		}
 		$("#" + formId + " tr[id!=thead]").each(function() {
-			objs.push($(this).serializeObject());
+			if(edittype == "insertion" || edittype == "overbig" || edittype == "overweight"){
+				var mincountVal = $(this).find("[name=mincount]").val();
+				var maxcountVal = $(this).find("[name=maxcount]").val();
+				if (mincountVal != '' && maxcountVal != '') {
+					objs.push($(this).serializeObject());
+				}
+			}
+			else if(edittype == "basic" || edittype == "collection"){
+				var customerid = $(this).find("[name=customerid]").val();
+				if (customerid != ''&&customerid!=0&&customerid!=undefined) {
+					objs.push($(this).serializeObject());
+				}
+			}
+		
 			// objs.
 		});
 		json = objs;
