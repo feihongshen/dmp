@@ -251,6 +251,7 @@ public class PenalizeOutBillService {
 		if(bill.getBillstate() != PunishBillStateEnum.WeiShenHe.getValue()){
 			if(bill.getBillstate() == PunishBillStateEnum.YiShenHe.getValue()){
 				bill.setVerifier((int) this.getSessionUser().getUserid());
+				bill.setVerificationperson(-1);
 			}else if(bill.getBillstate() == PunishBillStateEnum.YiHeXiao.getValue()){
 				bill.setVerificationperson((int)this.getSessionUser().getUserid());
 			}

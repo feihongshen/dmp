@@ -663,7 +663,7 @@ function verify(){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}">
-<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px;height:500px;">
+<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px;height:600px;">
 	<form action="${ctx}/penalizeOutBill/penalizeOutBillUpdate" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
         		<tr>
