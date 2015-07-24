@@ -663,7 +663,7 @@ function verify(){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}">
-<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px;height:600px;">
+<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px; height:620px;overflow:auto;">
 	<form action="${ctx}/penalizeOutBill/penalizeOutBillUpdate" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
         		<tr>
@@ -814,7 +814,7 @@ function verify(){
 		         	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideTable" >
 						<tr>
 							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideTable')"/> </td>
-							<td align="center" valign="middle" style="font-weight: bold;"> 订单编号</td>
+							<td align="center" valign="middle" style="font-weight: bold;"> 订单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 赔付单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单状态</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单金额 </td>
