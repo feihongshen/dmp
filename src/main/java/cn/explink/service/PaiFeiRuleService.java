@@ -536,6 +536,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("basicPS", basicListPS.get(0));
 			}
 		}
+		this.IsClearList(basicListPS, ps_showflag_basic);
 		model.addAttribute("ps_showflag_basic", ps_showflag_basic);
 		model.addAttribute("basicListPS", basicListPS);
 
@@ -547,6 +548,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("basicTH", basicListTH.get(0));
 			}
 		}
+		this.IsClearList(basicListTH, th_showflag_basic);
 		model.addAttribute("th_showflag_basic", th_showflag_basic);
 		model.addAttribute("basicListTH", basicListTH);
 
@@ -558,6 +560,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("basicZZ", basicListZZ.get(0));
 			}
 		}
+		this.IsClearList(basicListZZ, zz_showflag_basic);
 		model.addAttribute("zz_showflag_basic", zz_showflag_basic);
 		model.addAttribute("basicListZZ", basicListZZ);
 
@@ -570,6 +573,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("collectionPS", collectionListPS.get(0));
 			}
 		}
+		this.IsClearList(collectionListPS, ps_showflag_collection);
 		model.addAttribute("ps_showflag_collection", ps_showflag_collection);
 		model.addAttribute("collectionListPS", collectionListPS);
 
@@ -581,6 +585,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("collectionTH", collectionListTH.get(0));
 			}
 		}
+		this.IsClearList(collectionListTH, th_showflag_collection);
 		model.addAttribute("th_showflag_collection", th_showflag_collection);
 		model.addAttribute("collectionListTH", collectionListTH);
 
@@ -592,6 +597,7 @@ public class PaiFeiRuleService {
 				model.addAttribute("collectionZZ", collectionListZZ.get(0));
 			}
 		}
+		this.IsClearList(collectionListZZ, zz_showflag_collection);
 		model.addAttribute("zz_showflag_collection", zz_showflag_collection);
 		model.addAttribute("collectionListZZ", collectionListZZ);
 
@@ -661,6 +667,16 @@ public class PaiFeiRuleService {
 
 		model.addAttribute("rule", rule);
 		model.addAttribute("edit", 1);
+	}
+
+	/**
+	 * @param collectionListPS
+	 * @param ps_showflag_collection
+	 */
+	private void IsClearList(List<?> list, String flag) {
+		if(flag.equals("no")){
+			list.clear();
+		}
 	}
 
 	/**
