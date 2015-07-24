@@ -105,7 +105,7 @@
 				<tr>
 					<td style="line-height: 30px" colspan="2" align="center" valign="bottom"><input
 						type="button" class="input_button2" value="返回" onclick="$('#add').dialog('close');" /> <input
-						type="submit" class="input_button2" value="保存" /></td>
+						type="button" onclick="credatafrom()" class="input_button2" value="保存" /></td>
 				</tr>
 				<tr>
 					<td style="line-height: 30px" align="right">规则类型：</td>
