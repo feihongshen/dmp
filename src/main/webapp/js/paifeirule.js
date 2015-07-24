@@ -526,8 +526,8 @@ function customer(e) {
 }
 function credatafrom()
 {
- var name=$("#credatafrom [name=name]")[0].val();
- var jushouPFfee=$("#credatafrom [name=jushouPFfee]")[0].val();
+ var name=$("#credatafrom [name=name]").val();
+ var jushouPFfee=$("#credatafrom [name=jushouPFfee]").val();
  if(name==''){
 	 alert("请输入规则名称！");
 	 $("#credatafrom [name=name]")[0].focus();
