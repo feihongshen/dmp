@@ -33,6 +33,14 @@ $(function() {
 				});
 
 	});
+	$(":checkbox").each(function(){
+		var flag=$(this)[0].checked;
+		$(this).parent().parent().find(":button").each(
+				function(){
+					$(this)[0].disabled=!flag;
+				});
+		
+	});
 });
 function addInit() {
 	// �޴���
