@@ -76,6 +76,7 @@ public class PenalizeOutBillController {
 	 * @param method
 	 * @return
 	 */
+	
 	@RequestMapping("/penalizeOutBillPage/{page}")
 	public String queryAllBenalizeOutBill(Model model, penalizeOutBill bill, @PathVariable("page") long page,
 			@RequestParam(value = "billCreationStartDate", required = false) String billCreationStartDate, @RequestParam(value = "billCreationEndDate", required = false) String billCreationEndDate,
@@ -172,6 +173,8 @@ public class PenalizeOutBillController {
 
 		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		model.addAttribute("page", page);
 		model.addAttribute("page_o", page_o);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
@@ -227,7 +230,8 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
-
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -290,6 +294,8 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		// 账单中的订单明细分页
 		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
@@ -372,7 +378,8 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
-
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		// 主页面的分页
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
@@ -442,7 +449,8 @@ public class PenalizeOutBillController {
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
 		model.addAttribute("page_ob", page_ob);
-
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		// 账单中的订单明细分页
 		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);

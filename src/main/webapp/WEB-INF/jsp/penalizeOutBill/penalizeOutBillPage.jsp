@@ -388,7 +388,9 @@ function addPunishBillPage(){
 	$('#sumPrice').focus(function(){
 		$('#sumPrice').val('');
 	}).blur(function(){
-		$('#sumPrice').val('默认为赔付金额,可修改');
+		if($('#sumPrice').val()!=""){
+			$('#sumPrice').val('默认为赔付金额,可修改');
+		}
 	});
 }
 function changeBillState(state){

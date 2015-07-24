@@ -381,7 +381,7 @@ function  demandContract(){
 			$("#contractname").val(data.contractname);
 			if(data.contractaccessory != ""&&data.contractaccessory !=null){
 				$("#contractFile").css('display' ,'');  
-				$("#file").attr("href","<%=request.getContextPath()%>/customerContract/download?filepathurl=" +data.contractaccessory);
+				$("#file").attr("href","<%=request.getContextPath()%>/customerContract/download?filepathurl=" +data.contractaccessory+"&name="+data.contractname);
 			}
 			if(data.whetherhavedeposit == 1){
 				$("#firstDepositTr").css('display' ,'');
@@ -884,7 +884,7 @@ function showBox(data){
 		'					 <tr id="contractFile" style="display: none">'+
 		'						<th align="left" style="font-size:13px" >合同附件:</th>'+
 		'						<td  align="left">'+
-		'							<input id="contractname" value=""style="background-color:#DCDCDC;width:150px" readonly="readonly"/>'+
+		'							<input id="contractname" value=""style="background-color:#DCDCDC;width:250px" readonly="readonly"/>'+
 		'						</td>'+
 		'						<td  align="left" style="font-size:13px">'+
 		'							<a href="" id="file" >附件下载</a>'+
