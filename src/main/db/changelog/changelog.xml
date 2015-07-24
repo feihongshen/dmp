@@ -7763,4 +7763,9 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO dmp40_function VALUES('808070', '2', '超围/大件补助申请', '808070', 'exceedSubsidyApply/exceedSubsidyApplyList/1?', '8080' );
     	</sql>
     </changeSet>
+    <changeSet id="wangqiang-2015-07-24-01" author="wangqiang">
+		<sql>
+		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&','8030');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
