@@ -7768,4 +7768,25 @@ CREATE TABLE `cs_complaint_accept` (
 		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&','8030');
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-07-24-01" author="wangzhiyong">
+		<sql>
+			DROP TABLE IF EXISTS `importbillexcel`;
+				CREATE TABLE `importbillexcel` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `cwb` varchar(30) DEFAULT NULL,
+					  `jijia_money` decimal(60,0) DEFAULT NULL,
+					  `xuzhong_money` decimal(60,0) DEFAULT NULL,
+					  `fandan_money` decimal(60,0) DEFAULT NULL,
+					  `fancheng_money` decimal(60,0) DEFAULT NULL,
+					  `daishoukuanshouxu_money` decimal(60,0) DEFAULT NULL,
+					  `pos_shouxu_money` decimal(60,0) DEFAULT NULL,
+					  `baojia_money` decimal(60,0) DEFAULT NULL,
+					  `baozhuang_money` decimal(60,0) DEFAULT NULL,
+					  `ganxianbutie_money` decimal(60,0) DEFAULT NULL,
+					  `bill_batches` varchar(30) DEFAULT NULL,
+					  PRIMARY KEY (`id`),
+					  KEY `cwb_index` (`cwb`)
+				) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
 </databaseChangeLog>

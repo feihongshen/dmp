@@ -533,7 +533,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
   					$('#deliveryMoney').val(data.deliveryMoney);
   					$('#distributionMoney').val(data.distributionMoney);
   					$('#transferMoney').val(data.transferMoney);
-  					$('#remark').val(data.remark);	
+  					$('#remarkEdit').val(data.remark);	
 				}
 			});
 	 	}
@@ -626,7 +626,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 							if (result.success==0){
 	
 								$.messager.show({	// show success message
-									title: '添加 ',
+									title: '添加 Success',
 									msg: result.successdata
 								});// reload the data
 							
@@ -1147,7 +1147,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 						</tr>
 						<tr>
 							<td align="right" style="width:90px;"><label>备注:</label></td>
-							<td colspan="6" rowspan="5"><input class="easyui-textbox" data-options="multiline:true" id="remark" style="width:540px;height:100px"></td>	<!-- 	 style="width:600px;height:100px" -->				
+							<td colspan="6" rowspan="5"><textarea id="remarkEdit" rows=3 class="textarea easyui-validatebox" style="width:600px;height:70px;color: #C0C0C0" name="remark" maxlength="200" readonly="readonly"></textarea></td>	<!-- 	 style="width:600px;height:100px" -->				
 						</tr>
 				</table>
 		</form>
@@ -1225,7 +1225,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		</div>
 		<div id="dlgAddMoneyChaYi-buttons">
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">基于导入更新全部订单配费</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
 		</div>
 	
 <input type="hidden" id="hv"/> <!--批次  -->

@@ -549,25 +549,25 @@ public class CustomerBillContractController {
 					);
 			sv.setBillBatches(billBatchs);
 			String cwbs=c.getCwbs();
-			String cwbss[]=cwbs.split(",");
 			String newcwb=null;
-			for(String cc:cwbss){
-				if(cc.equals(cwb)){
-					return "{\"success\":1,\"successdata\":\"该订单已存在\"}";
-					
-				}else{
+			Boolean bl=false;
+				if(!cwbs.contains(cwb)){					
 					newcwb=cwbs+","+cwb;
-				}  				
+					bl=true;
+				} 				
+			
+			if(bl==true){
+				long newcorrespondingCwbNum=c.getCorrespondingCwbNum()+1;		
+				BigDecimal newDeliveryMoney=c.getDeliveryMoney().add(sv.getDeliveryMoney());
+				BigDecimal newdistributionMoney=c.getDistributionMoney().add(sv.getDistributionMoney());
+				BigDecimal newrefuseMoney=c.getRefuseMoney().add(sv.getRefuseMoney());
+				BigDecimal newtransferMoney=c.getTransferMoney().add(sv.getTransferMoney());
+				BigDecimal newtotalCharge=c.getTotalCharge().add(sv.getDeliveryMoney().add(sv.getDistributionMoney()).add(sv.getRefuseMoney()).add(sv.getTransferMoney()));
+				customerbillcontractdao.updateCustomerBillContract(newcwb,billBatchs, newcorrespondingCwbNum, newDeliveryMoney, newdistributionMoney, newrefuseMoney, newtransferMoney, newtotalCharge);
+				customerbillcontractdao.addBillVo(sv);
+			}else{
+				return "{\"success\":1,\"successdata\":\"该订单已存在\"}";
 			}
-
-			long newcorrespondingCwbNum=c.getCorrespondingCwbNum()+1;		
-			BigDecimal newDeliveryMoney=c.getDeliveryMoney().add(sv.getDeliveryMoney());
-			BigDecimal newdistributionMoney=c.getDistributionMoney().add(sv.getDistributionMoney());
-			BigDecimal newrefuseMoney=c.getRefuseMoney().add(sv.getRefuseMoney());
-			BigDecimal newtransferMoney=c.getTransferMoney().add(sv.getTransferMoney());
-			BigDecimal newtotalCharge=c.getTotalCharge().add(sv.getDeliveryMoney().add(sv.getDistributionMoney()).add(sv.getRefuseMoney()).add(sv.getTransferMoney()));
-			customerbillcontractdao.updateCustomerBillContract(newcwb,billBatchs, newcorrespondingCwbNum, newDeliveryMoney, newdistributionMoney, newrefuseMoney, newtransferMoney, newtotalCharge);
-			customerbillcontractdao.addBillVo(sv);
 		return "{\"success\":0,\"successdata\":\"添加成功\"}";		
 		}
 		
