@@ -135,6 +135,53 @@
 			</table>
 		</form>
 	</div>
+	<!-- 查询层显示 -->
+	<div id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save',modal:true"
+		style="width: 700px; height: 220px;">
+		<form action="${ctx}/paifeirule/list/1" method="post" id="searchForm">
+			<table width="85%" border="0" cellspacing="1" cellpadding="0"
+				style="margin-top: 20px; margin-right: 200px; font-size: 10px;">
+				<tr>
+					<td align="right" style="line-height: 30px">结算规则名称：</td>
+					<td><input type="text" style="width: 100%;" name="name" value="${name}" /></td>
+					<td align="right">状态：</td>
+					<td><select style="width: 100%;" name="type">
+							<option value="0">-全部-</option>
+							<c:forEach items="${PaiFeiRuleTypeEnum}" var="t">
+								<option value="${t.value }" ${t.value==type?'selected=selected':''}>${t.text }</option>
+							</c:forEach>
+					</select></td>
+				</tr>
+				<tr>
+					<td align="right" style="line-height: 30px">规则类型：</td>
+					<td><select style="width: 100%;" name="state">
+							<option value="0">-全部-</option>
+							<c:forEach items="${PaiFeiRuleStateEnum}" var="s">
+								<option value="${s.value }" ${s.value==state?'selected=selected':''}>${s.text }</option>
+							</c:forEach>
+					</select></td>
+					<td align="right">备注：</td>
+					<td><input type="text" style="width: 100%;" name="remark" value="${remark }" /></td>
+				</tr>
+				<tr>
+					<td align="right" style="line-height: 30px">排序：</td>
+					<td><select style="width: 60%;" name="orderby">
+							<option value="name" ${orderby=='name'?'selected=selected':''}>结算规则名称</option>
+							<option value="type" ${orderby=='type'?'selected=selected':''}>规则类型</option>
+							<option value="state" ${orderby=='state'?'selected=selected':''}>状态</option>
+					</select> <select style="width: 38%;" name="orderbyType">
+							<option value="asc" ${orderbytype=='asc'?'selected=selected':'' }>升序</option>
+							<option value="desc" ${orderbytype=='desc'?'selected=selected':'' }>降序</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td style="line-height: 30px" colspan="4" align="center"><input class="input_button2"
+						type="submit" value="查询" /> <input class="input_button2" type="button" value="关闭"
+						onclick="$('#find').dialog('close');" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
 	<!-- 查看/修改层显示 -->
 	<c:if test="${save==1 }">
 		<div id="save" class="easyui-dialog" title="保存" data-options="iconCls:'icon-save',modal:true"
@@ -1357,55 +1404,6 @@
 
 	</c:if>
 
-
-
-	<!-- 查询层显示 -->
-	<div id="find" class="easyui-dialog" title="查寻条件" data-options="iconCls:'icon-save',modal:true"
-		style="width: 700px; height: 220px;">
-		<form action="${ctx}/paifeirule/list/1" method="post" id="searchForm">
-			<table width="85%" border="0" cellspacing="1" cellpadding="0"
-				style="margin-top: 20px; margin-right: 200px; font-size: 10px;">
-				<tr>
-					<td align="right" style="line-height: 30px">结算规则名称：</td>
-					<td><input type="text" style="width: 100%;" name="name" value="${name}" /></td>
-					<td align="right">状态：</td>
-					<td><select style="width: 100%;" name="type">
-							<option value="0">-全部-</option>
-							<c:forEach items="${PaiFeiRuleTypeEnum}" var="t">
-								<option value="${t.value }" ${t.value==type?'selected=selected':''}>${t.text }</option>
-							</c:forEach>
-					</select></td>
-				</tr>
-				<tr>
-					<td align="right" style="line-height: 30px">规则类型：</td>
-					<td><select style="width: 100%;" name="state">
-							<option value="0">-全部-</option>
-							<c:forEach items="${PaiFeiRuleStateEnum}" var="s">
-								<option value="${s.value }" ${s.value==state?'selected=selected':''}>${s.text }</option>
-							</c:forEach>
-					</select></td>
-					<td align="right">备注：</td>
-					<td><input type="text" style="width: 100%;" name="remark" value="${remark }" /></td>
-				</tr>
-				<tr>
-					<td align="right" style="line-height: 30px">排序：</td>
-					<td><select style="width: 60%;" name="orderby">
-							<option value="name" ${orderby=='name'?'selected=selected':''}>结算规则名称</option>
-							<option value="type" ${orderby=='type'?'selected=selected':''}>规则类型</option>
-							<option value="state" ${orderby=='state'?'selected=selected':''}>状态</option>
-					</select> <select style="width: 38%;" name="orderbyType">
-							<option value="asc" ${orderbytype=='asc'?'selected=selected':'' }>升序</option>
-							<option value="desc" ${orderbytype=='desc'?'selected=selected':'' }>降序</option>
-					</select></td>
-				</tr>
-				<tr>
-					<td style="line-height: 30px" colspan="4" align="center"><input class="input_button2"
-						type="submit" value="查询" /> <input class="input_button2" type="button" value="关闭"
-						onclick="$('#find').dialog('close');" /></td>
-				</tr>
-			</table>
-		</form>
-	</div>
 	<div style="display: none;">
 		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
 			class="table_2" id="area_table">
