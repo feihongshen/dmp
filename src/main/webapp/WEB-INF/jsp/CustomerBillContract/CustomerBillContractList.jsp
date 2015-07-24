@@ -294,26 +294,86 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			$('#fm').form('clear');
 		}
 	  
-	  	function saveBill(){
+	  	
+	  	 function  DateDiff(sDate1,  sDate2){    //sDate1和sDate2是2006-12-18格式  
+	         var  aDate,  oDate1,  oDate2,  iDays  
+	         aDate  =  sDate1.split("-")  
+	         oDate1  =  new  Date(aDate[1]  +  '-'  +  aDate[2]  +  '-'  +  aDate[0])    //转换为12-18-2006格式  
+	         aDate  =  sDate2.split("-")  
+	         oDate2  =  new  Date(aDate[1]  +  '-'  +  aDate[2]  +  '-'  +  aDate[0])  
+	         iDays  =  parseInt(Math.abs(oDate1  -  oDate2)  /  1000  /  60  /  60  /24)    //把相差的毫秒数转换为天数  
+	         return  iDays  
+	     }    
+	  	 
+	  	 
+	  	/*  function datChongFuYanZheng(){
+	  		 $.ajax({
+	  			 	type:'POST',
+	  			 	data:{'crestart':$('#dstart').datebox("getValue"),
+	  			 		  'creend':$('#dend').datebox("getValue"),
+	  			 		  'customerid':$('#crecustomerId').val()
+	  			 		},
+	  			 	url:'${pageContext.request.contextPath}/CustomerBillContract/panDuanDateShiFouChongDie',
+	  			 	dataType:'json',
+	  			 	success:function(data){
+	  			 		if(data.success==0){
+	  			 		$.messager.confirm("操作提示", "该客户已经存在反馈日期为"+data.successdata+"的派费账单“账单号”，是否继续创建批次？", function (data) { 
+	  			            if (data) { 
+	  			            	saveBill();  			            	
+	  			            } 
+	  			        }); 
+
+	  			 		}else if(data.success==1){
+	  			 			saveBill();  		
+	  			 		}
+	  			 	}  			 
+	  		 });
+	  	 } 
+	  		  */
+/* 	  		 
+	  		$.messager.confirm('提示','你确定要删除这个帐单吗?',function(r){
+				if (r){
+					$.post('${pageContext.request.contextPath}/CustomerBillContract/panDuanDateShiFouChongDie',{crestart:$('#dstart').datebox("getValue"),creend:$('#dend').datebox("getValue"),customerid:$('#crecustomerId').val()},function(result){
+						if (result.success==0){
+							$.messager.show({	// show success message
+								title: '删除成功',
+								msg: result.successdata
+							});// reload the data
+						} 
+					},'json');
+				}
+			});
+	  	 }
+	  	 */
+	  	function saveBill(){	  		
+	  		$.messager.progress();
 	  		$('#fm').form('submit',{
 	  			url:'${pageContext.request.contextPath}/CustomerBillContract/addBill',
 	  			onSubmit: function(){
-	  				if($('#remark').val()==''){
+	  				var a=$('#dstart').datebox("getValue");
+	  				var b=$('#dend').datebox("getValue");
+	  				var d=DateDiff(a,b);	  				
+	  				if(d>60){
+	  					 $.messager.alert('提示','时间跨度不能大于60天！','info');   
+	  					$.messager.progress('close');
 	  					return false;
 	  				}
 	  				return true;
 	  			},
 	  			success: function(data){
-	  				var data = eval('('+data+')');
-	  				if (data.success==0){
-	  					$.messager.show({
+	  				var data = eval('('+data+')');	  				
+	  					/* $.messager.show({
 	  		 			title: '成功',
 	  						msg: data.successdata
-	  					}); 
+	  					});  */
 	  					$('#dlg').dialog('close');
 	  					$('#dg').datagrid('reload');
+	  					$.messager.progress('close');	// 如果提交成功则隐藏进度条
+	  					var billBatches=data.billBatches;
+	  					var state=data.billState;
+	  					neweditbill1(billBatches,state);
 	  				
-	  				} 
+	  				
 	  			}
 	  		});
 	  	}
@@ -384,6 +444,52 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 
 
 		}
+	  	
+	  	
+	  	function neweditbill1(batches,billstate){		
+				$('#dlgedit').dialog('open').dialog('setTitle','查看修改表单');
+				$('#fm2').form('load', {billBatches:batches});					
+				$('#hv').val(batches);
+				
+				checkState(billstate);
+			
+				findCustomerBillContractByBatches();
+				
+				$('#dg').datagrid('reload');
+				$('#dga').datagrid({    
+					method: "POST",
+				    url:'${pageContext.request.contextPath}/CustomerBillContract/editAboutContent?billBatches='+batches, 
+				  /*   fit : true, */
+					fitColumns : true,
+					border : true,
+					striped:true,
+					idField : 'id',
+					pagination:true,
+					rownumbers:true,
+					pageNumber:1,
+					pageSize : 10,
+					pageList : [ 10, 20, 30, 40, 50 ],
+					singleSelect:true,
+				    columns:[[         
+				        {field:'ck',checkbox:"true"},
+				        {field:'id',title:'id',hidden:true},  
+						{field:'cwb',title:'订单号',sortable:true,width:75,align:'center'},
+						{field:'cwbstate',title:'订单状态',sortable:true,width:75,align:'center'},
+				        {field:'cwbOrderType',title:'订单类型',sortable:true,width:75,align:'center'},    
+				        {field:'paywayid',title:'支付方式',sortable:true,align:'center',width:75},				    
+				        {field:'deliveryMoney',title:'提货费',sortable:true,width:75,align:'center'},
+				        {field:'distributionMoney',title:'配送费',sortable:true,width:75,align:'center'},
+				        {field:'transferMoney',title:'中转费',sortable:true,width:75,align:'center'},
+				        {field:'refuseMoney',title:'拒收派费',sortable:true,width:75,align:'center'},
+				        {field:'totalCharge',title:'派费合计',sortable:true,width:75,align:'center'},		
+				        {field:'billBatches',title:'billBatches',hidden:true}
+				    ]],
+				    
+				    toolbar:'#tbNewAddofEdit'
+				});
+				
+				} 
+
 	 	
 	 	 function checkState(){
 				if($('#hv1').val()==1){
@@ -829,14 +935,15 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	<table id="dg"></table>	
 	
 	<!-- 新增一级 弹窗 -->
+<div style="margin-top: 3cm;margin-left: 3cm">	
 	<div id="dlg" class="easyui-dialog" style="width:730px;height:300px;padding:10px 20px"
-			closed="true" buttons="#dlg-buttons">
+			closed="true" buttons="#dlg-buttons" >
 		<form id="fm" method="post">	
 				<ul>
 					<li>
 						<div class="fitem">
 							<label>客户名称:</label>
-								<input type="text" name="customerId" class="easyui-validatebox" 
+								<input type="text" name="customerId" id="crecustomerId" 
 								 	data-options="width:150,prompt: '客户名称'"
 								 	initDataType="TABLE" 
 								 	initDataKey="Customer"
@@ -852,8 +959,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 									 	saveField="value"
 									 	value="1"
 								/>
-							<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;" name="startdate">
-							至<input id="dd" type="text" class="easyui-datebox" required="required" style="width:100px;" name="enddate">
+							<input id="dstart" type="text" class="easyui-datebox" required="required" style="width:100px;" name="startdate">
+							至<input id="dend" type="text" class="easyui-datebox" required="required" style="width:100px;" name="enddate">
 						</div>	
 					</li>				
 					<li style="padding-top: 0.5cm">
@@ -872,12 +979,14 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 					<li style="padding-top: 0.5cm">
 						<div class="fitem">
 							<label>备注:</label>	
-							<input class="easyui-textbox" data-options="multiline:true" id="remark" style="width:600px;height:100px" name="remark"/>
+							<!-- <input class="easyui-textbox" data-options="multiline:true" id="remark" style="width:600px;height:100px" name="remark"/> -->
+							<textarea id="remark" rows=3 class="textarea easyui-validatebox" style="width:600px;height:70px" name="remark" maxlength="200"></textarea>
 						</div>
 					</li>
 				</ul>		
 		</form>
 	</div>
+</div>	
 	<!-- 新增一级弹窗  操作区域 -->
 	<div id="dlg-buttons">
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:saveBill()">创建</a>

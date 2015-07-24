@@ -182,6 +182,18 @@ public class CustomerBillContractDao {
 				String sql="select * from customerbillcontract where id="+id;
 				return this.jdbcTemplate.queryForObject(sql,new CustomerBillContractmapper());
 			}
+
+			public List<CustomerBillContract> findbillByCustomerid(long customerid) {
+				String sql="select * from customerbillcontract where customer_id="+customerid;
+				List<CustomerBillContract> l=null;
+			try{	
+				l=this.jdbcTemplate.query(sql,new CustomerBillContractmapper());
+				return l;
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
+		}
 			
 			/**
 			 * 
@@ -236,8 +248,8 @@ public class CustomerBillContractDao {
 			}
 			
 			//查出所有账单
-			public List<CustomerBillContract> dateAllbillBatche() {	
-				String sql="select * from customerbillcontract";
+			public List<CustomerBillContract> dateAllbillBatche(int start,int pageSize) {	
+				String sql="select * from customerbillcontract limit "+start+","+pageSize;
 				List<CustomerBillContract> cbc=null;
 				try {
 					
@@ -248,6 +260,12 @@ public class CustomerBillContractDao {
 					// TODO Auto-generated catch block
 					return null;
 				}
+			}
+			
+			//查出所有账单的数量
+			public long dateAllbillCount(){
+				String sql="select count(1) from customerbillcontract";
+				return this.jdbcTemplate.queryForLong(sql);
 			}
 			
 			public CustomerBillContract findAllbillBatcheByCwb(String cwbs) {	

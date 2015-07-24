@@ -3,7 +3,11 @@ package cn.explink.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.stringtemplate.v4.compiler.STParser.list_return;
 
 import cn.explink.dao.CustomerBillContractDao;
 import cn.explink.dao.CustomerDAO;
@@ -45,6 +48,7 @@ import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CustomerBillContractService;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.PaiFeiRuleService;
+import cn.explink.util.DateTimeUtil;
 
 @Controller
 @RequestMapping("/CustomerBillContract")
@@ -89,6 +93,11 @@ public class CustomerBillContractController {
 			@RequestParam(value="rows",defaultValue="0",required=true) String rows,
 			HttpServletRequest req
 			) throws Exception{	
+				int intPage = Integer.parseInt((page == null || page == "0") ? "1":page);   
+		        //每页显示条数   
+		        int number = Integer.parseInt((rows == null || rows == "0") ? "10":rows);   
+		        //每页的开始记录  第一页为1  第二页为number +1    
+		        int start = (intPage-1)*number; 
 				//接受从前台接受的json对象
 				String jsonStr=req.getParameter("jsoninfo");
 				List<CustomerBillContract> cbclist=null;
@@ -98,13 +107,23 @@ public class CustomerBillContractController {
 				  CustomerBillContractFindConditionVO cccv=(CustomerBillContractFindConditionVO) JSONObject.toBean(jsonStu, CustomerBillContractFindConditionVO.class);
 				  //根据传过来的查询条件查找符合条件的数据
 				  Map<String,Long> cbcomap=customerbillcontractservice.getCustomerBillContractCountObject(jsonStr);  
-					int intPage = Integer.parseInt((page == null || page == "0") ? "1":page);   
-			        //每页显示条数   
-			        int number = Integer.parseInt((rows == null || rows == "0") ? "10":rows);   
-			        //每页的开始记录  第一页为1  第二页为number +1    
-			        int start = (intPage-1)*number; 
-					cbclist=customerbillcontractservice.getCustomerBillContractBySelect(cccv.getBillBatches(),cbcomap.get("billState"),cccv.getCrestartdate(),cccv.getCreenddate(),cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"),cccv.getCondition(),cccv.getSequence(),start,number);
-					dataCount=customerbillcontractservice.findCustomerBillContractCount(cccv.getBillBatches(),cbcomap.get("billState"),cccv.getCrestartdate(),cccv.getCreenddate(),cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"));				
+					String crestartdate=null;
+					String creenddate=null;
+					if(cccv.getCrestartdate().equals("")){
+						crestartdate=customerbillcontractservice.getMonthFirstDay(); //如果查询创建时间日期条件为空，默认为当月第一天
+					}else{
+						crestartdate=cccv.getCrestartdate();
+					}
+					if(cccv.getCreenddate().equals("")){
+						creenddate=DateTimeUtil.getNowDate(); //如果查询创建时间日期条件为空，默认当前系统时间
+					}else{
+						creenddate=cccv.getCreenddate();
+					}
+					cbclist=customerbillcontractservice.getCustomerBillContractBySelect(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"),cccv.getCondition(),cccv.getSequence(),start,number);
+					dataCount=customerbillcontractservice.findCustomerBillContractCount(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"));				
+				}else{
+					cbclist=customerbillcontractdao.dateAllbillBatche(start,number);
+					dataCount=customerbillcontractdao.dateAllbillCount();
 				}
 					
 			Map<String,Object> map = new HashMap<String, Object>();
@@ -115,7 +134,7 @@ public class CustomerBillContractController {
 	
 	@RequestMapping("/addBill")
 	@ResponseBody
-	public String add(
+	public CustomerBillContract add(
 					@RequestParam(value="customerId") long customerid,
 					@RequestParam(value="dateState") long dateState,
 					@RequestParam(value="startdate") String startdate,
@@ -216,23 +235,13 @@ public class CustomerBillContractController {
 				
 				
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
-				/*CustomerBillContract customerBillContract= customerbillcontractdao.datebillBatche(BillBatches);
-				CustomerBillContractVO cbcv = new CustomerBillContractVO();
-				cbcv.setBillBatches(customerBillContract.getBillBatches());
-				cbcv.setBillState(BillStateEnum.getTextByValue(customerBillContract.getBillState()));
-				cbcv.setDateRange(customerBillContract.getDateRange());
-				cbcv.setTotalCharge(customerBillContract.getTotalCharge());
-				cbcv.setCorrespondingCwbNum(customerBillContract.getCorrespondingCwbNum());
-				cbcv.setCustomername(customerdao.getCustomerName(customerBillContract.getCustomerId()));
-				cbcv.setDeliveryMoney(customerBillContract.getDeliveryMoney());
-				cbcv.setDistributionMoney(customerBillContract.getDistributionMoney());
-				cbcv.setTransferMoney(customerBillContract.getTransferMoney());
-				cbcv.setRemark(customerBillContract.getRemark());*/
-
-					//使用VO累接受所查出的参数以json传到前台
-
+			
 				
-		return "{\"success\":0,\"successdata\":\"添加成功\"}";  
+				CustomerBillContract c=customerbillcontractdao.datebillBatche(BillBatches);
+				
+				
+				
+		return c;  
 		
 	}
 	
@@ -776,6 +785,54 @@ public class CustomerBillContractController {
 		}
 		
 		return ls;
+	}
+	
+	@RequestMapping("/panDuanDateShiFouChongDie")
+	@ResponseBody
+	public String panDuanDateShiFouChongDie(HttpServletRequest req){
+		String crestart=req.getParameter("dstart");
+		String creend=req.getParameter("dend");
+		String customerid=req.getParameter("customerId");		
+		List<CustomerBillContract> l=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid));
+		
+		/*String startdate=rangeDate.substring(0,10).trim();
+    	String enddate=rangeDate.substring(11,21).trim();*/
+		String dateChongFu="";
+		StringBuffer sb = new StringBuffer(); 
+		for(CustomerBillContract c:l){
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			String startdate=c.getDateRange().substring(0,10).trim();
+	    	String enddate=c.getDateRange().substring(11,21).trim();
+			try {
+				Date d = df.parse(startdate);
+				
+				Date d1 = df.parse(enddate);
+				
+				Date d2 = df.parse(crestart);
+				
+				Date d3 = df.parse(creend);
+				
+				
+				if((d2.getTime()>d.getTime()&&d2.getTime()<d1.getTime())||(d3.getTime()>d.getTime()&&d3.getTime()<d1.getTime())){
+					sb.append(c.getDateRange()+",");
+				}
+				
+			} catch (ParseException e) {   
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
+		int a=0;
+		if(sb.length()>0){
+		dateChongFu=sb.substring(0,sb.length()-1).toString();
+		}
+		if(dateChongFu.equals("")){
+			a=1;
+		}
+		return "{\"success\":"+a+",\"successdata\":"+dateChongFu+"}";
+		
 	}
 
 }

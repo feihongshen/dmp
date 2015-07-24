@@ -11,8 +11,8 @@ public class CustomerBillContract {
 		private String dateRange;//日期范围
 		private long correspondingCwbNum;//对应订单数
 		private BigDecimal deliveryMoney; //提货费
-		private BigDecimal distributionMoney; //配送费
 		private BigDecimal transferMoney; //中转费
+		private BigDecimal distributionMoney; //配送费
 		private BigDecimal refuseMoney; //拒收派费
 		private BigDecimal totalCharge; //派费合计
 		private String remark; //备注

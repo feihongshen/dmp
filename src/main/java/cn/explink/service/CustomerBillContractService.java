@@ -2,7 +2,9 @@ package cn.explink.service;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +78,8 @@ public class CustomerBillContractService {
 			for(DeliveryState str:cwborderlist){
 				sb=sb.append("'"+str.getCwb()+"',");
 			}
-		}
 			cwbs=sb.substring(0, sb.length()-1);	
+		}
 		return cwbs;	
 	}
 
@@ -200,10 +202,10 @@ public class CustomerBillContractService {
 		customerbillCcontractdao.EditBill(cbv);
 	}
 
-	public List<CustomerBillContract> getAllcustomerbillcontract() {
+	/*public List<CustomerBillContract> getAllcustomerbillcontract() {
 		List<CustomerBillContract> cbclist=customerbillCcontractdao.dateAllbillBatche();
 		return cbclist;
-	}
+	}*/
 
 	public CustomerBillContract findCustomerBillContractById(long id) {
 		// TODO Auto-generated method stub
@@ -400,5 +402,23 @@ public class CustomerBillContractService {
 		}
 	
 	}
+	
+	
+	public String getMonthFirstDay(){
+		  SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");         
+		   Calendar c = Calendar.getInstance();    
+		        c.add(Calendar.MONTH, 0);
+		        c.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天 
+		        String first = format.format(c.getTime());
+		      return first;
+	}
+	public String getMonthLastDay(){
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
+		 Calendar ca = Calendar.getInstance();    
+	        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));  
+	        String last = format.format(ca.getTime());
+	        return last;
+	}
+	
 }
 
