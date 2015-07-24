@@ -27,7 +27,7 @@
                 <th field="customername" width="200"  formatter="go">客户名称</th>  
                 <th field="paybusinessbenefits" width="500" >业务KPI补助</th>  
                 <th field="othersubsidies" width="200" >其他补助</th>  
-                <th field="customerid" width="200" hidden="true">其他补助</th>  
+                <th field="customerid" width="200" hidden="true"  >客户名称id</th>  
             </tr>
             </thead>
         
@@ -35,7 +35,7 @@
            <!--数据表格结束 --> 
 	 <!--查询页面div查询条件与操作  -->
 	 <div id="tb" style="padding:5px;height:auto">  
-	 	<label>客户名称:</label><input  class="easyui-textbox" name="customername" id="customername" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitform();}'/>
+	 	<label>客户名称:</label><input  class="easyui-textbox" name="customernamedata" id="customernamedata" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitform();}'/>
 	 	 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="createpaybusinessbenefits('create','','','');">新建</a>  
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cut" onclick="deleteData();">删除</a>  
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="submitform();">查询</a>  
@@ -54,7 +54,7 @@
     		 iconCls="icon-save"  
     		 rownumbers="true" > 
           </table>
-          <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="insertNew('create');">插入</a>  
+          <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="insertNew('create');">添加</a>  
           <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRow('create');">移除</a>  
 	<!--dialog查询条件与操作  -->
 	 	<div id="createToolbar" style="padding:5px;height:auto">  
@@ -83,7 +83,7 @@
     		iconCls="icon-save"  
     		rownumbers="true" > 
           </table>
-          <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="insertNew('edit');">插入</a>  
+          <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="insertNew('edit');">添加</a>  
           <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRow('edit');">移除</a>  
 	 <!--dialog修改  -->
 	 <div id="editToolbar" style="padding:5px;height:auto">  

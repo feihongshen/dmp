@@ -13,7 +13,7 @@ $(function (){
 /*根据客户名称查询信息 */
   function submitform(){
 	  $('#tt').datagrid('load', {    
-		  customername:$("#customername").val()
+		  customername:$("#customernamedata").val()
 		});
   }
   /*删除操作  */
@@ -45,7 +45,7 @@ $(function (){
           });
       }
       else {
-          $.messager.alert("提示", "请选择要删除的行", "error");
+          $.messager.alert("提示", "请选择要删除的行", "warning");
       }
   }
   var eachData;
@@ -76,17 +76,17 @@ $(function (){
     	onAfterEdit:function(rowIndex, rowData, changes){
     		 if(rowData.kpimoney<0){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
-    	          $.messager.alert("提示", "KPI奖励金额不能为负数！！请重新输入！！", "error");
+    	          $.messager.alert("提示", "KPI奖励金额不能为负数！！请重新输入！！", "warning");
 				
  		}
     		 if(rowData.tuotoudownrate<0){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
-    	          $.messager.alert("提示", "妥投率下限不能为负数！！请重新输入！！", "error");
+    	          $.messager.alert("提示", "妥投率下限不能为负数！！请重新输入！！", "warning");
 				
  		}
     		 if(rowData.tuotouprate<0){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
-    	          $.messager.alert("提示", "妥投率上限不能为负数！！请重新输入！！", "error");
+    	          $.messager.alert("提示", "妥投率上限不能为负数！！请重新输入！！", "warning");
 				
  		}
     	}
@@ -127,7 +127,7 @@ $(function (){
           });
       }
       else {
-          $.messager.alert("提示", "请选择要移除的行", "error");
+          $.messager.alert("提示", "请选择要移除的行", "warning");
       }
   }
   /*保存客户设置  */
@@ -140,7 +140,7 @@ $(function (){
 	  }
 		  
 	  if($("#customerid"+obj).combobox('getValue')==""){
-          $.messager.alert("提示", "请选择客户！！", "error");
+          $.messager.alert("提示", "请选择客户！！", "warning");
           return;
 	  }
 	  var savedata="";
@@ -165,28 +165,31 @@ $(function (){
 				  if(data.errorCode==0){
 			          initDialog(obj);
 			          submitform();
+			          $.messager.alert("提示", data.error,"info");
 				  }else if(data.errorCode==2){
 					  initDialogCustomer(obj);
+			          $.messager.alert("提示", data.error,"error");
+				  }else{
+			          $.messager.alert("提示", data.error,"error");
 				  }
-		          $.messager.alert("提示", data.error, "error");
 		          if(obj=="edit"){
 		        	  $("#dlg"+obj).dialog('close');
 		          }
 			  }
 		  });
 	  }else{
-          $.messager.alert("提示", "没有需要保存的数据！！", "error");
+          $.messager.alert("提示", "没有需要保存的数据！！", "warning");
 	  }
   }
   function checkCreateotherbenefits(obj){
 	  if(isNaN($(obj).val())){
-          $.messager.alert("提示", "其它补助只能为数字类型！！", "error");
+          $.messager.alert("提示", "其它补助只能为数字类型！！", "warning");
           $(obj).val("0");
           return;
 	  }
 	  if($(obj).val()<0){
 		  $(obj).val('0');
-          $.messager.alert("提示", "其它补助不能为负数！！", "error");
+          $.messager.alert("提示", "其它补助不能为负数！！", "warning");
 	  }
   }
   /*初始化dialog  */
@@ -241,3 +244,4 @@ $(function (){
   		return false;
   	}
   }
+ 
