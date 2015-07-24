@@ -582,7 +582,7 @@
 						cellpadding="0">
 						<tr id="ps_basic_tr">
 							<td style="width: 14%;"><input type="checkbox" id="ps_basic_flag"
-								${basicPS!=null||basicListPS!=null?'checked=checked':'' } />基本派费</td>
+								${basicPS!=null||fn:length(basicListPS)>0?'checked=checked':'' } />基本派费</td>
 							<td><span id="edit_ps_basicno_from"> <input type='hidden' name='showflag'
 									value='0' /> <select onchange="showflag('ps_basic',$(this).val())" id="ps_showflag_basic">
 										<option ${ps_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
@@ -591,6 +591,7 @@
 										id="ps_basicPFfee" value="${basicPS.basicPFfee }" />元 <input type="button" value="保存"
 										onclick="subEidt('edit_ps_basicno_from','ps','basicno')" />
 								</span>
+								
 							</span>
 								<div id="ps_basic_yes">
 									<form action="" id="edit_ps_basic_from">
@@ -627,7 +628,7 @@
 						</tr>
 						<tr id="ps_collection_tr">
 							<td><input type="checkbox" id="ps_collection_flag"
-								${collectionPS!=null||collectionListPS!=null?'checked=checked':'' } />代收补助费</td>
+								${collectionPS!=null||fn:length(collectionPS)>0?'checked=checked':'' } />代收补助费</td>
 							<td><span id="edit_ps_collectionno_from"> <input type='hidden' name='showflag'
 									value='0' /> <select onchange="showflag('ps_collection',$(this).val())"
 									id="ps_showflag_collection">
@@ -732,8 +733,8 @@
 						
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}" onblur="comparaTo($(this),'min')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}" onblur="comparaTo($(this),'max')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
 						</tr>
@@ -760,8 +761,8 @@
 							
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}" onblur="comparaTo($(this),'min')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}" onblur="comparaTo($(this),'max')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
 						</tr>
@@ -799,7 +800,7 @@
 						</tr>
 						<tr id="ps_insertion_tr">
 							<td><input type="checkbox" id="ps_insertion_flag"
-								${insertionListPS!=null?'checked=checked':''  } />托单补助</td>
+								${fn:length(insertionListPS)>0&&(insertionListPS!=null)?'checked=checked':''  } />托单补助</td>
 							<td>
 								<div>
 									<form id="edit_ps_insertion_from">
@@ -816,9 +817,9 @@
 											<c:forEach items="${insertionListPS}" var="insertion">
 												<tr>
 													<td align='center'><input type='checkbox' /></td>
-													<td><input style='width: 100%;' type='text' value="${insertion.mincount}"
+													<td><input style='width: 100%;' type='text' value="${insertion.mincount}" onblur="comparaTo($(this),'min')"
 														id='mincount' name='mincount' /></td>
-													<td><input style='width: 100%;' type='text' value="${insertion.maxcount}"
+													<td><input style='width: 100%;' type='text' value="${insertion.maxcount}" onblur="comparaTo($(this),'max')"
 														id='maxcount' name='maxcount' /></td>
 													<td><input style='width: 100%;' type='text' value="${insertion.insertionfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 														id='insertionfee' name='insertionfee' /></td>
@@ -841,7 +842,7 @@
 							cellpadding="0">
 							<tr id="th_basic_tr">
 								<td style="width: 14%;"><input type="checkbox" id="th_basic_flag"
-									${basicTH!=null||basicListTH!=null?'checked=checked':'' } />基本派费</td>
+									${basicTH!=null||fn:length(basicListTH)>0?'checked=checked':'' } />基本派费</td>
 								<td><span id="edit_th_basicno_from"> <input type='hidden' name='showflag'
 										value='0' /> <select onchange="showflag('th_basic',$(this).val())" id="th_showflag_basic"> 
 											<option ${th_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
@@ -886,14 +887,14 @@
 							</tr>
 							<tr id="th_collection_tr">
 								<td style="width: 14%;"><input type="checkbox" id="th_basic_flag"
-									${basicTH!=null||basicListTH!=null?'checked=checked':'' } />代收补助费</td>
-								<td><span id="edit_th_basicno_from"> <input type='hidden' name='showflag'
-										value='0' /> <select onchange="showflag('th_basic',$(this).val())" id="th_showflag_basic">
-											<option ${th_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
-											<option ${th_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
-									</select><span id="th_basic_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
-											name="basicPFfee" id="th_basicPFfee" value="${basicTH.basicPFfee }" />元 <input
-											type="button" value="保存" onclick="subEidt('edit_th_basicno_from','th','basicno')" />
+									${collectionTH!=null||fn:length(collectionListTH)>0?'checked=checked':'' } />代收补助费</td>
+								<td><span id="edit_th_collectionno_from"> <input type='hidden' name='showflag'
+										value='0' /> <select onchange="showflag('th_collection',$(this).val())" id="th_showflag_collection">
+											<option ${th_showflag_collection=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
+											<option ${th_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
+									</select><span id="th_collectionno_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
+											name="collectionnoPFfee" id="th_collectionnoPFfee" value="${collectionTH.collectionPFfee }" />元 <input
+											type="button" value="保存" onclick="subEidt('edit_th_collectionno_from','th','collectionno')" />
 									</span>
 								</span>
 									<div id="th_collection_yes">
@@ -988,8 +989,8 @@
 						
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}" onblur="comparaTo($(this),'max')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}" onblur="comparaTo($(this),'min')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
 						</tr>
@@ -1016,8 +1017,8 @@
 							
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}" onblur="comparaTo($(this),'min')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}" onblur="comparaTo($(this),'max')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
 						</tr>
@@ -1055,7 +1056,7 @@
 							</tr>
 							<tr id="th_insertion_tr">
 								<td><input type="checkbox" id="ps_insertion_flag"
-									${insertionListTH!=null?'checked=checked':''  } />托单补助</td>
+									${fn:length(insertionListTH)>0&&(insertionListTH!=null)?'checked=checked':''  } />托单补助</td>
 								<td>
 									<div>
 										<form id="edit_th_insertion_from">
@@ -1098,7 +1099,7 @@
 							cellpadding="0">
 							<tr id="zz_basic_tr">
 								<td style="width: 14%;"><input type="checkbox" id="zz_basic_flag"
-									${basicZZ!=null||basicListZZ!=null?'checked=checked':'' } />基本派费</td>
+									${basicZZ!=null||fn:length(basicListZZ)>0?'checked=checked':'' } />基本派费</td>
 								<td><span id="edit_zz_basicno_from"> <input type='hidden' name='showflag'
 										value='0' /> <select onchange="showflag('zz_basic',$(this).val())" id="zz_showflag_basic">
 											<option ${zz_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
@@ -1143,14 +1144,14 @@
 							</tr>
 							<tr id="zz_collection_tr">
 								<td style="width: 14%;"><input type="checkbox" id="zz_basic_flag"
-									${basicZZ!=null||basicListZZ!=null?'checked=checked':'' } />代收补助费</td>
-								<td><span id="edit_zz_basicno_from"> <input type='hidden' name='showflag'
-										value='0' /> <select onchange="showflag('zz_basic',$(this).val())" id="zz_showflag_basic">
-											<option ${zz_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
-											<option ${zz_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
-									</select><span id="zz_basic_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
-											name="basicPFfee" id="zz_basicPFfee" value="${basicZZ.basicPFfee }" />元 <input
-											type="button" value="保存" onclick="subEidt('edit_zz_basicno_from','zz','basicno')" />
+									${collectionZZ!=null||fn:length(collectionListZZ)>0?'checked=checked':'' } />代收补助费</td>
+								<td><span id="edit_zz_collectionno_from"> <input type='hidden' name='showflag'
+										value='0' /> <select onchange="showflag('zz_collection',$(this).val())" id="zz_showflag_collection">
+											<option ${zz_showflag_collection=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
+											<option ${zz_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
+									</select><span id="zz_collection_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
+											name="collectionPFfee" id="zz_collectionPFfee" value="${collectionZZ.collectionPFfee }" />元 <input
+											type="button" value="保存" onclick="subEidt('edit_zz_collectionno_from','zz','collectionno')" />
 									</span>
 								</span>
 									<div id="zz_collection_yes">
@@ -1246,8 +1247,8 @@
 						
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${big.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${big.mincount}" onblur="comparaTo($(this),'min')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${big.maxcount}" onblur="comparaTo($(this),'max')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${big.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${big.remark}"/></td>
 						</tr>
@@ -1274,8 +1275,8 @@
 							
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
-						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}"/></td>
-						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}"/></td>
+						<td><input style="width: 100%;" type="text"  id="mincount" name="mincount" value="${weight.mincount}" onblur="comparaTo($(this),'min')"/></td>
+						<td><input style="width: 100%;" type="text"  id="maxcount" name="maxcount" value="${weight.maxcount}" onblur="comparaTo($(this),'max')"/></td>
 						<td><input style="width: 100%;" type="text"  id="subsidyfee" name="subsidyfee" value="${weight.subsidyfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 						<td><input style="width: 100%;" type="text"  id="remark" name="remark"  value="${weight.remark}"/></td>
 						</tr>
@@ -1284,7 +1285,7 @@
 					onclick="addTROfOverAreaEdit('zz','overweight_${area.id}')" /> <input id="overweight_add"
 					onclick="removeTR('zz','overweight_${area.id}')" type="button" value="移除" />
 							<input type="button" value="保存"
-										onclick="subEidt('zz_overweight_${area.id }_table','zz','overweight')" />
+									onclick="subEidt('zz_overweight_${area.id }_table','zz','overweight')" />
 					</td>
 			</tr>
 		</table>
@@ -1313,7 +1314,7 @@
 							</tr>
 							<tr id="zz_insertion_tr">
 								<td><input type="checkbox" id="zz_insertion_flag"
-									${insertionListTH!=null?'checked=checked':''  } />托单补助</td>
+									${fn:length(insertionListTH)>0&&(insertionListTH!=null)?'checked=checked':''  } />托单补助</td>
 								<td>
 									<div>
 										<form id="edit_zz_insertion_from">
@@ -1330,9 +1331,9 @@
 												<c:forEach items="${insertionListZZ}" var="insertion">
 													<tr>
 														<td align='center'><input type='checkbox' /></td>
-														<td><input style='width: 100%;' type='text' value="${insertion.mincount}"
+														<td><input style='width: 100%;' type='text' value="${insertion.mincount}" onblur="comparaTo($(this),'min')"
 															id='mincount' name='mincount' /></td>
-														<td><input style='width: 100%;' type='text' value="${insertion.maxcount}"
+														<td><input style='width: 100%;' type='text' value="${insertion.maxcount}" onblur="comparaTo($(this),'max')"
 															id='maxcount' name='maxcount' /></td>
 														<td><input style='width: 100%;' type='text' value="${insertion.insertionfee}" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															id='insertionfee' name='insertionfee' /></td>
