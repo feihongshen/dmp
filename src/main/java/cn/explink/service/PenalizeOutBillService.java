@@ -77,7 +77,9 @@ public class PenalizeOutBillService {
 			bill.setCompensatefee(sum);
 			bill.setCompensateodd(odd);
 			 //将已生成过的赔付单的标识字段改为1
+			if(StringUtils.isNotBlank(order)){
 			 this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order);
+			}
 		}
 
 		bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
