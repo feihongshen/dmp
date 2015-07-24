@@ -560,7 +560,7 @@ function verify(){
 		</div>
 	
 <!-- 新增层显示 -->
-<div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:350px;">
+<div  id="add" class="easyui-dialog" data-options="modal:true"  title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:350px;">
 	<form action="${ctx}/penalizeOutBill/addPenalizeOutBill" method="post" id="creationfrom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr >
@@ -663,8 +663,8 @@ function verify(){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}">
-<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px; height:620px;overflow:auto;">
-	<form action="${ctx}/penalizeOutBill/penalizeOutBillUpdate" method="post" id="updateForm">
+<div  id="update" class="easyui-dialog" data-options="modal:true" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:900px; height:620px;overflow:auto;">
+	<form action="${ctx}/penalizeOutBill/penalizeOutBillUpdate" method="post" id="updateForm" >
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
         		<tr>
 	         	<td colspan="4"  align="left" valign="bottom" nowrap="nowrap">
@@ -823,12 +823,12 @@ function verify(){
 						</tr>
 						<c:forEach var="pol" items="${bill.penalizeOutList}">
 						<tr>
-							<td height="30px"  valign="middle" align="center"><input type="checkbox" name="checkBox" value="${pol.cwb}"/> </td>
+							<td height="30px"  valign="middle" align="center"><input type="checkbox" name="checkBox" value="${pol.penalizeOutNO}"/> </td>
 							<td align="center" valign="middle">${pol.cwb}</td>
 							<td align="center" valign="middle">${pol.penalizeOutNO}</td>
 							<td align="center" valign="middle">
-								<c:forEach var="item" items="${cwbStateMap}">
-									<c:if test="${pol.flowordertype==item.key}">${item.value}</c:if>
+								<c:forEach var="item" items="${flowordertypes}">
+									<c:if test="${pol.flowordertype==item.value}">${item.text}</c:if>
 								</c:forEach> 
 							</td>
 							<td align="center" valign="middle">${pol.caramount}</td>
@@ -868,7 +868,7 @@ function verify(){
 </c:if>
 <!-- 赔付单 -->
 <c:if test="${updateDedailPage==1}">
-<div  id="penalizeInsidePage" class="easyui-dialog" title="赔付单" data-options="iconCls:'icon-save'" style="width:700px;height:600px;">
+<div  id="penalizeInsidePage" class="easyui-dialog"  data-options="modal:true" title="赔付单" data-options="iconCls:'icon-save'" style="width:700px;height:600px;">
 	<div style="width:100%;">
 		<form action="<%=request.getContextPath()%>/penalizeOutBill/penalizeOutBillList/1" method="post" id="queryPenalizeInsideListForm">
 			<table width="60%" style="margin-top: 10px;font-size: 10px;">
@@ -931,7 +931,7 @@ function verify(){
 				</tr>
 				 <c:forEach items="${penalizeOut}" var="list"> 
 				<tr>
-					<td height="30px" align="center"  valign="middle"><input type="checkbox" name="checkBox" value="${list.cwb}" /> </td>
+					<td height="30px" align="center"  valign="middle"><input type="checkbox" name="checkBox" value="${list.penalizeOutNO}" /> </td>
 					<td align="center" valign="middle" >${list.cwb}</td>
 					<td align="center" valign="middle" >
 						<c:forEach items="${customerList}" var="cus">
@@ -984,7 +984,7 @@ function verify(){
 
 
 <!-- 查询层显示 -->
-	<div  id="find" class="easyui-dialog" title="查询条件" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:220px;">
+	<div  id="find" class="easyui-dialog" data-options="modal:true" title="查询条件"  style="width:700px;height:220px;">
 	<form action="${ctx}/penalizeOutBill/penalizeOutBillPage/1" method="post" id="searchForm">
          	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>

@@ -217,18 +217,21 @@ public class PenalizeOutBillService {
 	public void addpenalizeOutBillList(Integer id, String compensateodd) {
 		penalizeOutBill outBill = this.PenalizeOutBilldao.queryById(id);
 		String oddstr = outBill.getCompensateodd();
+		String order ="";
 		BigDecimal sumBigDecimal = new BigDecimal(0);
 		if (StringUtils.isNotBlank(compensateodd)) {
-			if (StringUtils.isNotBlank(oddstr)) {
-				compensateodd = oddstr + "," + compensateodd;
+			String ord = PenalizeOutBillService.spiltString(compensateodd);
+			if (StringUtils.isNotBlank(compensateodd)) {
+				compensateodd =compensateodd + "," +  oddstr ;
+				 order = PenalizeOutBillService.spiltString(compensateodd);
 			}
-			String order = PenalizeOutBillService.spiltString(compensateodd);
 			List<PenalizeOut> penalizeList = this.penalizeOutDAO.getPenalizeOutByid(order);
 			for (int i = 0; i < penalizeList.size(); i++) {
 				PenalizeOut out = penalizeList.get(i);
 				BigDecimal fee = out.getPenalizeOutfee();
 				sumBigDecimal = sumBigDecimal.add(fee);
 			}
+			this.penalizeOutDAO.setWhetherGeneratePeiFuBill(ord);
 		}
 		this.PenalizeOutBilldao.addpenalizeOutDetail(id, compensateodd, sumBigDecimal);
 	}
@@ -247,6 +250,7 @@ public class PenalizeOutBillService {
 			bill.setCompensatefee(sumBigDecimal);
 		} else {
 			bill.setCompensatefee(sumBigDecimal);
+			bill.setCompensateodd("");
 		}
 		if(bill.getBillstate() != PunishBillStateEnum.WeiShenHe.getValue()){
 			if(bill.getBillstate() == PunishBillStateEnum.YiShenHe.getValue()){

@@ -30,6 +30,7 @@ import cn.explink.domain.Role;
 import cn.explink.domain.User;
 import cn.explink.domain.penalizeOutBill;
 import cn.explink.enumutil.CwbStateEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PunishBillStateEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PenalizeOutBillService;
@@ -171,7 +172,6 @@ public class PenalizeOutBillController {
 			userid = user.getUserid();
 		}
 
-		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 		Page page_o = new Page(sum, page, Page.ONE_PAGE_NUMBER);
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
 		model.addAttribute("branchList", branchList);
@@ -183,7 +183,7 @@ public class PenalizeOutBillController {
 		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
 		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
 		model.addAttribute("userid", userid);
-		model.addAttribute("cwbStateMap", cwbStateMap);
+		model.addAttribute("flowordertypes", FlowOrderTypeEnum.values());
 		model.addAttribute("bill", bill);
 		model.addAttribute("userList", userList);
 		model.addAttribute("penalizebigList", penalizebigList);
@@ -213,7 +213,6 @@ public class PenalizeOutBillController {
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
 		List<User> userList = this.userDAO.getAllUser();
-		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 
 		int jiesuanAuthority = 0;
 		int jiesuanAdvanceAuthority = 0;
@@ -238,7 +237,7 @@ public class PenalizeOutBillController {
 		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
 		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
 		model.addAttribute("userid", userid);
-		model.addAttribute("cwbStateMap", cwbStateMap);
+		model.addAttribute("flowordertypes", FlowOrderTypeEnum.values());
 		model.addAttribute("bill", bill);
 		model.addAttribute("userList", userList);
 		model.addAttribute("penalizebigList", penalizebigList);
@@ -276,7 +275,6 @@ public class PenalizeOutBillController {
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
 		List<User> userList = this.userDAO.getAllUser();
-		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 		List<PenalizeOut> penalizeOut = this.penalizeOutBillService.penalizeOutBillList(id, compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, page);
 		int count = this.penalizeOutBillService.queryByOddDetailsum(id, compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, page);
 		int jiesuanAuthority = 0;
@@ -312,7 +310,7 @@ public class PenalizeOutBillController {
 		model.addAttribute("userid", userid);
 
 		model.addAttribute("penalizeOut", penalizeOut);
-		model.addAttribute("cwbStateMap", cwbStateMap);
+		model.addAttribute("flowordertypes", FlowOrderTypeEnum.values());
 		model.addAttribute("bill", bill);
 		model.addAttribute("userList", userList);
 		model.addAttribute("penalizebigList", penalizebigList);

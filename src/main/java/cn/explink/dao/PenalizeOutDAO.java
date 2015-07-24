@@ -83,7 +83,7 @@ public class PenalizeOutDAO {
 
 	public List<PenalizeOut> getPenalizeOutByid(String cwbs) {
 		try {
-			String sql = "select * from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+			String sql = "select * from express_ops_penalizeOut_detail where penalizeOutNO in (" + cwbs + ")";
 			return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper());
 		} catch (Exception e) {
 			return null;
@@ -92,7 +92,7 @@ public class PenalizeOutDAO {
 
 	public List<PenalizeOut> getPenalizeOutByCwbs(String cwbs, long page) {
 		try {
-			String sql = "select * from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+			String sql = "select * from express_ops_penalizeOut_detail where penalizeOutNO in (" + cwbs + ")";
 			sql += " order by cwb desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 			return this.jdbcTemplate.query(sql, new PenalizeOutRowMapper());
 		} catch (Exception e) {
@@ -101,7 +101,7 @@ public class PenalizeOutDAO {
 	}
 
 	public int getPenalizeOutByCwbscount(String cwbs) {
-		String sql = "select count(1) from express_ops_penalizeOut_detail where cwb in (" + cwbs + ")";
+		String sql = "select count(1) from express_ops_penalizeOut_detail where penalizeOutNO in (" + cwbs + ")";
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
@@ -246,7 +246,7 @@ public class PenalizeOutDAO {
 			sql.append(" and penalizeOutsmall = '" + compensatesmall + "'");
 		}
 		if ((str != null) && (str != "")) {
-			sql.append(" and cwb in (" + str + ")");
+			sql.append(" and penalizeOutNO in (" + str + ")");
 		}
 		if ((CreationStartDate != null) && (CreationStartDate != "")) {
 			sql.append(" and '" + CreationStartDate + "'<= createrdate");
@@ -264,7 +264,8 @@ public class PenalizeOutDAO {
 	 * 将已生成过的赔付单的标识字段改为1
 	 */
 	public void setWhetherGeneratePeiFuBill(String order){
-		String sql = "update express_ops_penalizeOut_detail set whetherGeneratePeiFuBill=1 where cwb in("+order+")";
+		
+		String sql = "update express_ops_penalizeOut_detail set whetherGeneratePeiFuBill=1 where penalizeOutNO in("+order+")";
 		this.jdbcTemplate.update(sql);
 	}
 

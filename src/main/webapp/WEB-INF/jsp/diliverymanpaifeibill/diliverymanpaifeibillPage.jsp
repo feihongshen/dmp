@@ -466,7 +466,7 @@ function verify(){
 			</table>
 		</div>
 <!-- 新增层显示 -->
-<div  id="add" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:220px;">
+<div  id="add" class="easyui-dialog" data-options="modal:true" title="新增"  style="width:700px;height:220px;">
 	<form action="${ctx}/diliverymanpaifeibill/addDilivermanBill" method="post" id="creationfrom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr >
@@ -541,7 +541,7 @@ function verify(){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}"> 
-<div  id="update" class="easyui-dialog" title="查看/修改" data-options="iconCls:'icon-save,modal:true'" style="width:1200px;height:600px;">
+<div  id="update" class="easyui-dialog" data-options="modal:true" title="查看/修改"  style="width:1200px;height:600px;">
 	<form action="${ctx}/diliverymanpaifeibill/updateDilivermanBill" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
       		<tr>
@@ -721,7 +721,7 @@ function verify(){
 </div>
 </c:if>
 <!-- 查询层显示 -->
-	<div  id="find" class="easyui-dialog" title="查询条件" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:280px;">
+	<div  id="find" class="easyui-dialog" data-options="modal:true" title="查询条件"  style="width:700px;height:280px;">
 	<form action="${ctx}/diliverymanpaifeibill/diliverymanpaifeibillPage/1" method="post" id="searchForm">
          	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          	<tr>

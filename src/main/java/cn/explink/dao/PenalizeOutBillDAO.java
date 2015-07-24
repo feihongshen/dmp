@@ -184,7 +184,7 @@ public class PenalizeOutBillDAO {
 			updatesql.append(", compensateexplain = ?");
 			param.add(bill.getCompensateexplain());
 		}
-		if (bill.getCompensateodd() != null&& bill.getCompensateodd()!="") {
+		if (bill.getCompensateodd() != null) {
 			updatesql.append(", compensateodd = ?");
 			param.add(bill.getCompensateodd());
 		}
