@@ -370,8 +370,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  					$('#dg').datagrid('reload');
 	  					$.messager.progress('close');	// 如果提交成功则隐藏进度条
 	  					var billBatches=data.billBatches;
-	  					var state=data.billState;
-	  					neweditbill1(billBatches,state);
+	  					neweditbill1(billBatches);
 	  				
 	  				
 	  			}
@@ -401,7 +400,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				$('#fm2').form('load', {billBatches:row.billBatches});					
 				$('#hv').val(row.billBatches);
 				
-				checkState(row.billState);
+		/* 		checkState(row.billState); */
 			
 				findCustomerBillContractByBatches();
 				
@@ -437,8 +436,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				    
 				    toolbar:'#tbNewAddofEdit'
 				});
-				 $('#fm2').form('onLoadSuccess',initMethod());
-				url = '${pageContext.request.contextPath}/CustomerBillContract/editBill?id='+row.id; 
+				/*  $('#fm2').form('onLoadSuccess',initMethod());
+				url = '${pageContext.request.contextPath}/CustomerBillContract/editBill?id='+row.id;  */
 				} 
 			
 
@@ -446,12 +445,12 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		}
 	  	
 	  	
-	  	function neweditbill1(batches,billstate){		
+	  	function neweditbill1(batches){		
 				$('#dlgedit').dialog('open').dialog('setTitle','查看修改表单');
 				$('#fm2').form('load', {billBatches:batches});					
 				$('#hv').val(batches);
 				
-				checkState(billstate);
+				/* checkState(billstate); */
 			
 				findCustomerBillContractByBatches();
 				
@@ -490,7 +489,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				
 				} 
 
-	 	
+/* 	 	
 	 	 function checkState(){
 				if($('#hv1').val()==1){
 					
@@ -514,7 +513,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 					 $("#shenhe").hide();
 
 				}
-		  }	
+		  }	  */
 	
 	 	function findCustomerBillContractByBatches(){
 	 		$('#fm2').form('submit', {
@@ -534,6 +533,44 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
   					$('#distributionMoney').val(data.distributionMoney);
   					$('#transferMoney').val(data.transferMoney);
   					$('#remarkEdit').val(data.remark);	
+  					
+				
+  					if(data.billState=="未审核"){ 						
+ 						$("#baocun").show();
+ 						 $("#shenhe").show();
+ 						 $("#fanhui").show();
+ 						$('#xscybg').show();
+  						$('#khdddr').show();
+  						$("#quxiaoshenhe").hide();
+ 						 $("#hexiaowancheng").hide();
+ 						$("#quxiaohexiao").hide();
+  					}else if(data.billState=="已审核"){
+  						 $("#hexiaowancheng").show();
+ 						 $("#quxiaoshenhe").show();
+ 						 $("#fanhui").show();		
+ 						$("#baocun").hide();
+						 $("#shenhe").hide();
+						$('#xscybg').hide();
+ 						$('#khdddr').hide();
+ 						$("#quxiaohexiao").hide();
+  					} else if(data.billState=="已核销"){
+  						 $("#quxiaohexiao").show();  
+ 						$("#quxiaoshenhe").hide();
+  						 $("#hexiaowancheng").hide();
+ 						 $("#fanhui").hide();		
+ 						$("#baocun").hide();
+						 $("#shenhe").hide();
+						$('#xscybg').hide();
+ 						$('#khdddr').hide();
+  					} 
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
 				}
 			});
 	 	}
@@ -692,8 +729,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			
 		
 	 
-	 function changeBillState(v){
-		 var statevalue=v;
+	 function changeBillState(stateValue){
+		 var statevalue=stateValue;
 				$.messager.confirm('提示','你确定要改变账单状态吗?',function(r){
 						$.post('${pageContext.request.contextPath}/CustomerBillContract/changeBillState',{billState:statevalue,billBatches:$('#hv').val()},function(result){
 							if (result.success==0){
@@ -1094,14 +1131,14 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			
 		<table>
 			<tr>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()" id="fanhui">返回</a></td>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:editbill()" id="baocun">保存</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="shenhe" onclick="javascript:changeBillState('<%=BillStateEnum.YiShenHe.getValue()%>')">审核</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaoshenhe" onclick="javascript:changeBillState('<%=BillStateEnum.WeiShenHe.getValue()%>')">取消审核</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="hexiaowancheng" onclick="javascript:changeBillState('<%=BillStateEnum.YiHeXiao.getValue()%>')">核销完成</a></td>
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaohexiao" onclick="javascript:changeBillState('<%=BillStateEnum.WeiHeXiao.getValue()%>')">取消核销</a></td>				
-				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="xianshichayibaogao" onclick="duiBiBillMoneyChaYi()">显示差异报告</a></td>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-save" onclick="uploadExcel()" >客户订单导入</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()" id="fanhui" style="display: none">返回</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:editbill()" id="baocun" style="display: none">保存</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="shenhe" onclick="javascript:changeBillState('<%=BillStateEnum.YiShenHe.getValue()%>')" style="display: none">审核</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaoshenhe" onclick="javascript:changeBillState('<%=BillStateEnum.WeiShenHe.getValue()%>')" style="display: none">取消审核</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="hexiaowancheng" onclick="javascript:changeBillState('<%=BillStateEnum.YiHeXiao.getValue()%>')" style="display: none">核销完成</a></td>
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaohexiao" onclick="javascript:changeBillState('<%=BillStateEnum.YiShenHe.getValue()%>')" style="display: none">取消核销</a></td>				
+				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="xscybg" onclick="duiBiBillMoneyChaYi()" style="display: none">显示差异报告</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-save" id="khdddr" onclick="uploadExcel()" style="display: none">客户订单导入</a></td>
 			</tr>
 		</table>
 		<!-- 新增一级弹窗查询数据回显（根据查询结果动态拼接） -->
@@ -1215,18 +1252,18 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		<table id="dgCountChaYi" class="fitem" border="1"></table>
 		</div>
 		<div id="dlgAddChaYi-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">加入当前账单</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="removeofEditInChaYi()">从当前账单移除</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addBillCwbNumInChaYi()">加入当前账单</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()">从当前账单移除</a>
 		</div>
 		
-		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px"
-			closed="true" buttons="#dlgAddMoneyChaYi-buttons">
+		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;he  ight:500px;padding:10px 20px"
+			closed="true"> <!-- buttons="#dlgAddMoneyChaYi-buttons" -->
 		<table id="dgMoneyChaYi" class="fitem" border="1"></table>
 		</div>
-		<div id="dlgAddMoneyChaYi-buttons">
+		<!-- <div id="dlgAddMoneyChaYi-buttons">
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">基于导入更新全部订单配费</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
-		</div>
+		</div> -->
 	
 <input type="hidden" id="hv"/> <!--批次  -->
 <input type="hidden" id="hv1"/>

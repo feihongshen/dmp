@@ -2,7 +2,7 @@ package cn.explink.enumutil;
 
 public enum BillStateEnum {
 	
-	WeiShenHe(1,"未审核"),YiShenHe(2,"已审核"),YiHeXiao(3,"已核销"),WeiHeXiao(4,"未核销");
+	WeiShenHe(1,"未审核"),YiShenHe(2,"已审核"),YiHeXiao(3,"已核销");
 	
 	private long value;
 	private String text;
