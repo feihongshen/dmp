@@ -774,14 +774,15 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			    url:'${pageContext.request.contextPath}/CustomerBillContract/billMoneyWithImportExcelChaYiDuiBi', 			   
 				dataType:'json',
 				success:function(data){
-					$('#systemDateCount').html(data.systemDateCount);
-					$('#importDateCount').html(data.importDateCount);
-					$('#chaYiCount').html(data.chaYiCount);
-					$('#systemDateMoney').html(data.systemDateMoney);
-					$('#importDateMoney').html(data.importDateMoney);
-					$('#chaYiMoney').html(data.chaYiMoney);
-					$('#chaYiCwbsMoney').html(data.duibiCwbMoneyChaYi);
-					$('#hv2').val(data.chaYiCount);
+							$('#systemDateCount').html(data.systemDateCount);
+							$('#importDateCount').html(data.importDateCount);
+							$('#chaYiCount').html(data.chaYiCount);
+							$('#systemDateMoney').html(data.systemDateMoney);
+							$('#importDateMoney').html(data.importDateMoney);
+							$('#chaYiMoney').html(data.chaYiMoney);
+							$('#chaYiCwbsMoney').html(data.duibiCwbMoneyChaYi);
+							$('#hv2').val(data.chaYiCount);
+						
 				}
 			});
 		 

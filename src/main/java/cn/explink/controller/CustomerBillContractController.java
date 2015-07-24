@@ -578,46 +578,49 @@ public class CustomerBillContractController {
 		String batches=req.getParameter("billBatches");
 		CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
 		List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);
-		long systemDateCount=cc.getCorrespondingCwbNum();
-		long importDateCount=lbe.size();
-		long chaYi=systemDateCount-importDateCount;
-		BigDecimal systemAllMoney=cc.getTotalCharge();
-		BigDecimal importAllMoney = new BigDecimal("0");
-		
-		for(ImportBillExcel l:lbe){
-			importAllMoney=importAllMoney.add(l.getJijiaMoney()).add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney());
-		}
 		BillMoneyDuiBiChaYiVO b = new BillMoneyDuiBiChaYiVO();
-		b.setImportDateCount(importDateCount);
-		b.setSystemDateCount(systemDateCount);
-		b.setChaYiCount(chaYi);
-		b.setSystemDateMoney(systemAllMoney);
-		b.setImportDateMoney(importAllMoney);
-		b.setChaYiMoney(systemAllMoney.subtract(importAllMoney));
-		
-		String cwbs[]=cc.getCwbs().toString().split(",");
-		StringBuilder sb = new StringBuilder();
-		String cwbss="";
-		for(String s:cwbs){
-			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(s);
-
-			for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
-					if(s.equals(l.getCwb())){
-						    if(!c.getTotalCharge().setScale(2,BigDecimal.ROUND_HALF_DOWN).equals(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()).setScale(2,BigDecimal.ROUND_HALF_DOWN))){
-						    	sb.append(l.getCwb()+",");
-						    }
-					}
+		if(lbe.size()>0){
+			
+			long systemDateCount=cc.getCorrespondingCwbNum();
+			long importDateCount=lbe.size();
+			long chaYi=systemDateCount-importDateCount;
+			BigDecimal systemAllMoney=cc.getTotalCharge();
+			BigDecimal importAllMoney = new BigDecimal("0");
+			
+			for(ImportBillExcel l:lbe){
+				importAllMoney=importAllMoney.add(l.getJijiaMoney()).add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney());
 			}
+			b.setImportDateCount(importDateCount);
+			b.setSystemDateCount(systemDateCount);
+			b.setChaYiCount(chaYi);
+			b.setSystemDateMoney(systemAllMoney);
+			b.setImportDateMoney(importAllMoney);
+			b.setChaYiMoney(systemAllMoney.subtract(importAllMoney));
+			
+			String cwbs[]=cc.getCwbs().toString().split(",");
+			StringBuilder sb = new StringBuilder();
+			String cwbss="";
+			for(String s:cwbs){
+				SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(s);
+				
+				for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
+					if(s.equals(l.getCwb())){
+						if(!c.getTotalCharge().setScale(2,BigDecimal.ROUND_HALF_DOWN).equals(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()).setScale(2,BigDecimal.ROUND_HALF_DOWN))){
+							sb.append(l.getCwb()+",");
+						}
+					}
+				}
+			}
+			
+			cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
+			
+			String cwbsss[]=cwbss.split(",");
+			long count=0;
+			for(String str:cwbsss){
+				count++;
+			}
+			b.setDuibiCwbMoneyChaYi(count);
 		}
-		
-		cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
-		
-		String cwbsss[]=cwbss.split(",");
-		long count=0;
-		for(String str:cwbsss){
-			count++;
-		}
-		b.setDuibiCwbMoneyChaYi(count);
 		return b;
 	}	
 		
