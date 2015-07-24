@@ -25,6 +25,14 @@ $(function() {
 	}
 	showflag('ps_basic', $("#ps_showflag_basic").val());
 	showflag('ps_collection', $("#ps_showflag_collection").val());
+	$(":checkbox").click(function(){
+		var flag=$(this)[0].checked;
+		$(this).parent().parent().find(":button").each(
+				function(){
+					$(this)[0].disabled=!flag;
+				});
+
+	});
 });
 function addInit() {
 	// �޴���
@@ -515,4 +523,20 @@ function customer(e) {
 	if ($(e).parent().parent().find("input[name^=customerid][value=" + id + "]").length > 1) {
 		initDynamicSelect($(e).find("input[id^=customerid]")[0].id, 'TABLE');
 	}
+}
+function credatafrom()
+{
+ var name=$("#credatafrom [name=name]")[0].val();
+ var jushouPFfee=$("#credatafrom [name=jushouPFfee]")[0].val();
+ if(name==''){
+	 alert("请输入规则名称！");
+	 $("#credatafrom [name=name]")[0].focus();
+	 return false;
+ }
+ if(jushouPFfee==''){
+	 alert("请输入拒收派费！");
+	 $("#credatafrom [name=jushouPFfee]")[0].focus();
+	 return false;
+ }
+ $("#credatafrom").submit();
 }
