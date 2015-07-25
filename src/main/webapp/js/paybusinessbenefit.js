@@ -69,24 +69,24 @@ $(function (){
 		url:urlString,
 		columns:[[
           {field:'checkboxdata',title:'', width:100, align:'right', checkbox:'true'},
-          {field:'tuotoudownrate',title:'妥投率下限', width:100, align:'right', editor: { type: 'numberbox',options: { required: true } }},
-          {field:'tuotouprate',title:'妥投率上限', width:100, align:'right', editor: { type: 'numberbox',options: { required: true } }},
-          {field:'kpimoney',title:'KPI奖励金额', width:100, align:'right', editor: { type: 'numberbox', options: { required: true } }}
+          {field:'tuotoudownrate',title:'妥投率下限', width:100, align:'right', editor: { type: 'validatebox',options: { required: true } }},
+          {field:'tuotouprate',title:'妥投率上限', width:100, align:'right', editor: { type: 'validatebox',options: { required: true } }},
+          {field:'kpimoney',title:'KPI奖励金额', width:100, align:'right', editor: { type: 'validatebox', options: { required: true } }}
     	]],
     	onAfterEdit:function(rowIndex, rowData, changes){
-    		 if(rowData.kpimoney<0){
+    		 if(rowData.kpimoney<0||isNaN(rowData.kpimoney)){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
-    	          $.messager.alert("提示", "KPI奖励金额不能为负数！！请重新输入！！", "warning");
+    	          $.messager.alert("提示", "KPI奖励金额不能为负数或其它非数值类型的值！！请重新输入！！", "warning");
 				
  		}
-    		 if(rowData.tuotoudownrate<0){
+    		 if(rowData.tuotoudownrate<0||isNaN(rowData.tuotoudownrate)||rowData.tuotoudownrate>100){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
-    	          $.messager.alert("提示", "妥投率下限不能为负数！！请重新输入！！", "warning");
+    	          $.messager.alert("提示", "妥投率下限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
 				
  		}
-    		 if(rowData.tuotouprate<0){
+    		 if(rowData.tuotouprate<0||isNaN(rowData.tuotouprate)||rowData.tuotouprate>100){
                   $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
-    	          $.messager.alert("提示", "妥投率上限不能为负数！！请重新输入！！", "warning");
+    	          $.messager.alert("提示", "妥投率上限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
 				
  		}
     	}
