@@ -7765,7 +7765,7 @@ CREATE TABLE `cs_complaint_accept` (
     </changeSet>
     <changeSet id="wangqiang-2015-07-24-01" author="wangqiang">
 		<sql>
-		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&','8030');
+		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&amp;','8030');
 		</sql>
 	</changeSet>
 	<changeSet id="wangzhiyong-2015-07-24-01" author="wangzhiyong">
