@@ -383,6 +383,7 @@ public class CustomerBillContractDao {
 			public ImportBillExcel mapRow(ResultSet rs, int rowNum)
 					throws SQLException {
 				ImportBillExcel i = new ImportBillExcel();
+					i.setId(rs.getLong("id"));
 					i.setCwb(rs.getString("cwb"));
 					i.setJijiaMoney(rs.getBigDecimal("jijia_money"));
 					i.setXuzhongMoney(rs.getBigDecimal("xuzhong_money"));

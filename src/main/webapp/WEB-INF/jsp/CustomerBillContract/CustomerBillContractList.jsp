@@ -931,13 +931,13 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	function MoneyChaYi(){
 		$('#MoneyChaYi').dialog('open').dialog('setTitle','金额差异 ');
 		dgMoneyChaYi=$('#dgMoneyChaYi').datagrid({    
-				method: "POST",
+				method:"POST",
 			    url:'${pageContext.request.contextPath}/CustomerBillContract/totalMoneyDuiBi?billBatches='+$('#hv').val(), 
 			    fit : true,
 				fitColumns : true,
 				border : true,
 				striped:true,
-				idField : 'id',
+				idField :'id',
 				rownumbers:true,
 				singleSelect:true,
 				columns:[[         
@@ -952,10 +952,69 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 					        {field:'transferMoney',title:'中转费(系统)',sortable:true,width:100,align:'center'},
 					        {field:'refuseMoney',title:'拒收派费(系统)',sortable:true,width:100,align:'center'},
 					        {field:'totalCharge',title:'派费合计(系统)',sortable:true,width:100,align:'center'},	
-					        {field:'importtotalCharge',title:'派费合计(导入)',sortable:true,width:100,align:'center'}
+					        {field:'importtotalCharge',title:'派费合计(导入)',sortable:true,width:100,align:'center',formatter:clickimportAllMoney}
 					    ]],
 			});		
 	}		
+	
+function clickimportAllMoney(value, row, index){
+		return "<a href='javascript:;' onclick='importAllMoney(\""+row.cwb+"\")'>"+value+"</a>";
+}
+
+
+function importAllMoney(a){
+
+			
+		$('#importAllMoneydiv').dialog('open').dialog('setTitle','导入详情 ');
+/* 
+		 $('#dgimportAllMoney').datagrid({    
+			method: "POST",
+		    url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+a, 
+		  	fit:true, 
+			fitColumns:true,
+			border:true,
+			striped:true,
+			idField:'id',
+					
+			columns:[[         
+				        {field:'id',title:'id',hidden:true},  
+						{field:'cwb',title:'订单号',sortable:true,width:100,align:'center'},						 
+				        {field:'jijiaMoney',title:'基价',sortable:true,width:75,align:'center'},    
+				        {field:'xuzhongMoney',title:'续重',sortable:true,align:'center',width:75},				    
+				        {field:'fandanMoney',title:'返单费',sortable:true,width:100,align:'center'},
+				        {field:'fanchengMoney',title:'返程费',sortable:true,width:100,align:'center'},
+				        {field:'daishoukuanshouxuMoney',title:'代收款手续费',sortable:true,width:100,align:'center'},
+				        {field:'posShouxuMoney',title:'POS手续费',sortable:true,width:100,align:'center'},
+				        {field:'baojiaMoney',title:'保价费',sortable:true,width:100,align:'center'},	
+				        {field:'baozhuangMoney',title:'包装费',sortable:true,width:100,align:'center'},
+				        {field:'ganxianbutieMoney',title:'干线补贴',sortable:true,width:100,align:'center'}
+				    ]]
+			});				
+	 var row = $('#dgMoneyChaYi').datagrid('getSelected');
+			if(row){  */ 
+				
+		$.ajax({
+			type:'POST',			
+			url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+a,
+			dataType:'json',
+			async:false,
+			success:function(data){
+				$('#ddh').html(data.cwb);
+				$('#jj').html(data.jijiaMoney);
+				$('#xz').html(data.xuzhongMoney);
+				$('#fdf').html(data.fandanMoney);
+				$('#fcf').html(data.fanchengMoney);
+				$('#dsk').html(data.daishoukuanshouxuMoney);
+				$('#pos').html(data.posShouxuMoney);
+				$('#bjf').html(data.baojiaMoney);
+				$('#bzf').html(data.baozhuangMoney);
+				$('#gxbt').html(data.ganxianbutieMoney);
+			
+				
+			}
+		}); 
+	} 
+/* } */	
 		
 	</script>
 </head>
@@ -1230,7 +1289,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 						<td>记录总数</td>
 						<td><label id="systemDateCount"></label></td>
 						<td><label id="importDateCount"></label></td>
-						<td><a href="#" onclick="javascript:CountChaYi()" id="acc"><label id="chaYiCount"></label></a></td>
+						<td><a href="#" onclick="javascript:CountChaYi()"><label id="chaYiCount"></label></a></td>
 					</tr>
 					<tr>
 						<td>金额</td>
@@ -1242,7 +1301,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 						<td>派费金额不一致记录</td>
 						<td></td>
 						<td></td>
-						<td><a href="#" onclick="javascript:MoneyChaYi()" id="acc"><label id="chaYiCwbsMoney"></label></a></td>
+						<td><a href="#" onclick="javascript:MoneyChaYi()"><label id="chaYiCwbsMoney"></label></a></td>
 					</tr>
 		</table>
 	</div>
@@ -1256,18 +1315,50 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()">从当前账单移除</a>
 		</div>
 		
-		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;he  ight:500px;padding:10px 20px"
-			closed="true"> <!-- buttons="#dlgAddMoneyChaYi-buttons" -->
-		<table id="dgMoneyChaYi" class="fitem" border="1"></table>
+		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px" closed="true"> <!-- buttons="#dlgAddMoneyChaYi-buttons" -->
+			<table id="dgMoneyChaYi" class="fitem" border="1"></table>
 		</div>
 		<!-- <div id="dlgAddMoneyChaYi-buttons">
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">基于导入更新全部订单配费</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
 		</div> -->
-	
+		<div id="importAllMoneydiv" class="easyui-dialog" style="width:668px;height:135px;padding:10px 20px" closed="true">
+			<!--  	 <table id="dgimportAllMoney" border="1"></table>  -->
+		
+			<table class="gridtable">
+					<tr>
+						<th>订单号</th>
+						<th>基价</th>
+						<th>续重</th>
+						<th>返单费</th>
+						<th>返程费</th>
+						<th>代收款手续费</th>
+						<th>POS手续费</th>
+						<th>保价费</th>
+						<th>包装费</th>
+						<th>干线补贴</th>
+					</tr>
+					<tr>
+						<td><label id="ddh"></label></td>
+						<td><label id="jj"></label></td>
+						<td><label id="xz"></label></td>
+						<td><label id="fdf"></label></td>
+						<td><label id="fcf"></label></td>
+						<td><label id="dsk"></label></td>
+						<td><label id="pos"></label></td>
+						<td><label id="bjf"></label></td>
+						<td><label id="bzf"></label></td>
+						<td><label id="gxbt"></label></td>
+					</tr>
+					
+		</table>
+		</div>
+		
+		
 <input type="hidden" id="hv"/> <!--批次  -->
 <input type="hidden" id="hv1"/>
 <input type="hidden" id="hv2"/>
+<input type="hidden" id="hv3"/>
 
 </body>
 </html>

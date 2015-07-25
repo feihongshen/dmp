@@ -751,11 +751,11 @@ public class CustomerBillContractController {
 	@ResponseBody
 	public List<SerachCustomerBillContractVO> totalMoneyDuiBi(HttpServletRequest req){
 		String batches=req.getParameter("billBatches");
-		CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
-		List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);	
-		String cwbs[]=cc.getCwbs().toString().split(",");
-		StringBuilder sb = new StringBuilder();
-		String cwbss="";
+			CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
+				List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);	
+					String cwbs[]=cc.getCwbs().toString().split(",");
+						StringBuilder sb = new StringBuilder();
+							String cwbss="";
 		/*BigDecimal allmoney=new BigDecimal("0");*/
 		for(String s:cwbs){
 			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(s);
@@ -770,20 +770,20 @@ public class CustomerBillContractController {
 			}
 		}
 		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
-		if(sb.length()>0){
-		cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
+			if(sb.length()>0){
+					cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
+					
+						String cwbsss[]=cwbss.split(",");
 		
-		String cwbsss[]=cwbss.split(",");
 		
-		
-		for(String str:cwbsss){
+						for(String str:cwbsss){
 			
-			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(str);
-			ImportBillExcel l=customerbillcontractdao.findImportBillExcelBycwb(str);
-			c.setImporttotalCharge(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
-			ls.add(c);
+							SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(str);
+							ImportBillExcel l=customerbillcontractdao.findImportBillExcelBycwb(str);
+							c.setImporttotalCharge(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
+							ls.add(c);
 			
-		}
+						}
 		
 		}
 		
@@ -829,13 +829,30 @@ public class CustomerBillContractController {
 		}
 		int a=0;
 		if(sb.length()>0){
-		dateChongFu=sb.substring(0,sb.length()-1).toString();
-		}
+				dateChongFu=sb.substring(0,sb.length()-1).toString();
+			}
 		if(dateChongFu.equals("")){
+			
 			a=1;
 		}
+		
 		return "{\"success\":"+a+",\"successdata\":"+dateChongFu+"}";
 		
+	}
+	 
+	
+	
+	
+
+
+	@RequestMapping("/findImportBillExcelByCwb")
+	@ResponseBody
+	public ImportBillExcel findImportBillExcelByCwb(HttpServletRequest req){
+		String cwb = req.getParameter("cwb");		
+		ImportBillExcel ibelist=customerbillcontractdao.findImportBillExcelBycwb(cwb);	
+	/*	Map<String, Object> jsonMap=new HashMap<String, Object>();
+		jsonMap.put("rows", ibelist);*/
+		return ibelist;	
 	}
 
 }
