@@ -1394,19 +1394,47 @@ public class CwbOrderService {
 		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
+	
+	/**
+	 * 判断，订单类型是否为‘上门退’，且FlowOrderTypeEnum为"分站到货扫描"或"到错货"
+	 * 
+	 * @author jinghui.pan@pjbest.com
+	 */
+	private boolean isShangMenTuiType(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum){
+		int cwbOrderTypeId = co.getCwbordertypeid();
+		return (cwbOrderTypeId == CwbOrderTypeIdEnum.Shangmentui.getValue()  
+				&&	(flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao || flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao));
+	}
 
+	/**
+	 * 判断，订单类型是否为‘OXO’ 或 'OXO_JIT'，且FlowOrderTypeEnum为"分站到货扫描"或"到错货"
+	 * 
+	 * @author jinghui.pan@pjbest.com
+	 */
+	private boolean isOXOType(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum){
+		int cwbOrderTypeId = co.getCwbordertypeid();
+		return ((CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId || CwbOrderTypeIdEnum.OXO_JIT.getValue() == cwbOrderTypeId) 
+				&&	(flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao || flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao));
+	}
+	
 	private void handleSubstationGoods(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
 			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
-
-		if (!isauto
+		
+		// dmp_v4.2 OXO项目:comment by jinghui.pan@pjbest.com on 20150725
+/*		if (!isauto
 				&& !(((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao)) || ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui
 						.getValue()) && (flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao)))) {
 			co = this.cwbAutoHandleService.autoSupplyLink(user, flowOrderTypeEnum.getValue(), co, requestbatchno, scancwb, false);
+		}*/
+		if (!isauto
+				&& !((isShangMenTuiType(co,flowOrderTypeEnum)) || isOXOType(co,flowOrderTypeEnum) )) {
+			co = this.cwbAutoHandleService.autoSupplyLink(user, flowOrderTypeEnum.getValue(), co, requestbatchno, scancwb, false);
 		}
-
+		//end
+		
 		// 自动补充完环节后重新定位当前操作
 
 		if (requestbatchno > 0) {
