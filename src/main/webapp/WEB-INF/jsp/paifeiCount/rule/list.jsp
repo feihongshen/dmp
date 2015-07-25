@@ -939,8 +939,8 @@
 										value='0' /> <select onchange="showflag('th_collection',$(this).val())" id="th_showflag_collection">
 											<option ${th_showflag_collection=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
 											<option ${th_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
-									</select><span id="th_collectionno_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
-											name="collectionnoPFfee" id="th_collectionnoPFfee" value="${collectionTH.collectionPFfee }" />元 <input
+									</select><span id="th_collection_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
+											name="collectionPFfee" id="th_collectionPFfee" value="${collectionTH.collectionPFfee }" />元 <input
 											type="button" value="保存" onclick="subEidt('edit_th_collectionno_from','th','collectionno')" />
 									</span>
 								</span>
