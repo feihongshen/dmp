@@ -1800,7 +1800,6 @@ src/main/java/cn/explink/util/SqlBuilder.java -text
 src/main/java/cn/explink/util/StreamingStatementCreator.java -text
 src/main/java/cn/explink/util/StringUtil.java -text
 src/main/java/cn/explink/util/WebServiceHandler.java -text
-src/main/java/cn/explink/util/WordUtils.java -text
 src/main/java/cn/explink/util/pos/10411004511030390.pfx -text
 src/main/java/cn/explink/util/pos/10411004511091690.pfx -text
 src/main/java/cn/explink/util/pos/10411004511112290.pfx -text
