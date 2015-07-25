@@ -51,6 +51,7 @@ $(function (){
   var eachData;
   /*初始化dialog中的table(新建与修改)  */
   function createpaybusinessbenefits(obj,id,customerid,othersubsidies){
+	  var tuotoudownratetemp="";
 	  initDialog(obj);
 	  var urlString;
 	  initCustomers(obj);
@@ -69,7 +70,7 @@ $(function (){
 		url:urlString,
 		columns:[[
           {field:'checkboxdata',title:'', width:100, align:'right', checkbox:'true'},
-          {field:'tuotoudownrate',title:'妥投率下限', width:100, align:'right', editor: { type: 'validatebox',options: { required: true } }},
+          {field:'tuotoudownrate',title:'妥投率下限', width:100, align:'right'},
           {field:'tuotouprate',title:'妥投率上限', width:100, align:'right', editor: { type: 'validatebox',options: { required: true } }},
           {field:'kpimoney',title:'KPI奖励金额', width:100, align:'right', editor: { type: 'validatebox', options: { required: true } }}
     	]],
@@ -89,6 +90,10 @@ $(function (){
     	          $.messager.alert("提示", "妥投率上限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
 				
  		}
+    		 if(rowData.tuotoudownrate>rowData.tuotouprate){
+                 $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
+      	          $.messager.alert("提示", "妥投率下限不能大于妥投率上限的值，请重新输入妥投率上限！！", "warning");
+       		 }
     	}
 		,
 		onDblClickCell: function(index,field,value){
@@ -102,16 +107,44 @@ $(function (){
   }
   /*插入新的行  */
   function insertNew(obj){
+	/*  //取消所有行的编辑状态
+	  var rows = $('#'+obj).datagrid('getRows');
+	  for(var i=0;i<rows.length;i++)
+	  {
+	      $('#'+obj).datagrid('endEdit',i);//当前行编辑事件取消
+	  }
+	  alert(rows);*/
+	  
 	  var $rows=$('#'+obj).datagrid('getRows');
-	  $('#'+obj).datagrid('insertRow',{
-		  index:$rows.length,
-		  row:{
-			  checkboxdata:"",
-			  tuotoudownrate:"0",
-			  tuotouprate:"0",
-			  kpimoney:"0"
-		  }
-	  });
+	  if(!isNull($rows)){
+		  if($rows[$rows.length-1].tuotouprate==0){
+	          $.messager.alert("提示", "前一条记录的妥投率上限不能为0！！", "warning");
+	          return;
+	  } 
+	  }
+
+	  if($rows.length==0){
+		  $('#'+obj).datagrid('insertRow',{
+			  index:$rows.length,
+			  row:{
+				  checkboxdata:"",
+				  tuotoudownrate:"0",
+				  tuotouprate:"0",
+				  kpimoney:"0"
+			  }
+		  });
+	  }else{
+		  $('#'+obj).datagrid('insertRow',{
+			  index:$rows.length,
+			  row:{
+				  checkboxdata:"",
+				  tuotoudownrate:$rows[$rows.length-1].tuotouprate,
+				  tuotouprate:"0",
+				  kpimoney:"0"
+			  }
+		  });
+	  }
+	 
   }
   /*删除选择的行  */
   function deleteRow(obj){
@@ -145,6 +178,10 @@ $(function (){
 	  }
 	  var savedata="";
 	  var rows = $("#"+obj).datagrid("getRows"); 
+	  if(rows.length>0&&rows[rows.length-1].tuotouprate==0){
+          $.messager.alert("提示", "下面妥投率上限不能为0！！", "warning");
+          return;
+	  }
 	  for(var i=0;i<rows.length;i++)
 	  {
 		  savedata+=rows[i].tuotoudownrate+"~"+rows[i].tuotouprate+"="+rows[i].kpimoney+"|";
