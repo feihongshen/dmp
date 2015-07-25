@@ -29,21 +29,19 @@ $(function() {
 	showflag('zz_collection', $("#zz_showflag_collection").val());
 	showflag('th_basic', $("#th_showflag_basic").val());
 	showflag('th_collection', $("#th_showflag_collection").val());
-	$(":checkbox").click(function(){
-		var flag=$(this)[0].checked;
-		$(this).parent().parent().find(":button").each(
-				function(){
-					$(this)[0].disabled=!flag;
-				});
+	$(":checkbox").click(function() {
+		var flag = $(this)[0].checked;
+		$(this).parent().parent().find(":button").each(function() {
+			$(this)[0].disabled = !flag;
+		});
 
 	});
-	$(":checkbox").each(function(){
-		var flag=$(this)[0].checked;
-		$(this).parent().parent().find(":button").each(
-				function(){
-					$(this)[0].disabled=!flag;
-				});
-		
+	$(":checkbox").each(function() {
+		var flag = $(this)[0].checked;
+		$(this).parent().parent().find(":button").each(function() {
+			$(this)[0].disabled = !flag;
+		});
+
 	});
 });
 function addInit() {
@@ -149,7 +147,7 @@ function addTROfinsertion(pf, type) {
 			} else {
 				max = maxcountVal;
 			}
-		}else {
+		} else {
 			alert("输入有误！");
 			$(this).find("[id=mincount]").focus();
 			flag = false;
@@ -181,7 +179,7 @@ function addTROfOverArea(pf, type) {
 			} else {
 				max = maxcountVal;
 			}
-		}else {
+		} else {
 			alert("输入有误！");
 			$(this).find("[id=mincount]").focus();
 			flag = false;
@@ -277,7 +275,7 @@ function getJson(tab, type) {
 			var customers = new Array();
 			$("#" + tab + "_" + type + "_table tr[id!=thead]").each(function() {
 				var customerid = $(this).find("[name=customerid]").val();
-				if (customerid != ''&&customerid!=0&&customerid!=undefined) {
+				if (customerid != '' && customerid != 0 && customerid != undefined) {
 					customers.push($(this).serializeObject());
 				}
 			});
@@ -298,7 +296,7 @@ function getArrayinsertion(tab, type) {
 		$("#" + tab + "_" + type + "_table tr[id!=thead]").each(function() {
 			var mincountVal = $(this).find("[name=mincount]").val();
 			var maxcountVal = $(this).find("[name=maxcount]").val();
-			if ( mincountVal != '' && maxcountVal != '') {
+			if (mincountVal != '' && maxcountVal != '') {
 				insertion.push($(this).serializeObject());
 			}
 		});
@@ -434,20 +432,19 @@ function subEidt(formId, tab, edittype) {
 			areaid = formId.split("_")[2];
 		}
 		$("#" + formId + " tr[id!=thead]").each(function() {
-			if(edittype == "insertion" || edittype == "overbig" || edittype == "overweight"){
+			if (edittype == "insertion" || edittype == "overbig" || edittype == "overweight") {
 				var mincountVal = $(this).find("[name=mincount]").val();
 				var maxcountVal = $(this).find("[name=maxcount]").val();
 				if (mincountVal != '' && maxcountVal != '') {
 					objs.push($(this).serializeObject());
 				}
-			}
-			else if(edittype == "basic" || edittype == "collection"){
+			} else if (edittype == "basic" || edittype == "collection") {
 				var customerid = $(this).find("[name=customerid]").val();
-				if (customerid != ''&&customerid!=0&&customerid!=undefined) {
+				if (customerid != '' && customerid != 0 && customerid != undefined) {
 					objs.push($(this).serializeObject());
 				}
 			}
-		
+
 			// objs.
 		});
 		json = objs;
@@ -536,24 +533,40 @@ function customer(e) {
 		initDynamicSelect($(e).find("input[id^=customerid]")[0].id, 'TABLE');
 	}
 }
-function credatafrom()
-{
- var name=$("#credatafrom [name=name]").val();
- var jushouPFfee=$("#credatafrom [name=jushouPFfee]").val();
- if(name==''){
-	 alert("请输入规则名称！");
-	 $("#credatafrom [name=name]")[0].focus();
-	 return false;
- }
- if(name.length>100){
-	 alert("规则名称必须小于100字！");
-	 $("#credatafrom [name=name]")[0].focus();
-	 return false;
- }
- if(jushouPFfee==''){
-	 alert("请输入拒收派费！");
-	 $("#credatafrom [name=jushouPFfee]")[0].focus();
-	 return false;
- }
- $("#credatafrom").submit();
+function credatafrom() {
+	var dmpurl = $("#dmpurl").val();
+	var name = $("#credatafrom [name=name]").val();
+	var jushouPFfee = $("#credatafrom [name=jushouPFfee]").val();
+	$.ajax({
+		type : "post",
+		url : dmpurl + "/paifeirule/check",
+		data : {
+			"name" : name,
+		},
+		dataType : "json",
+		success : function(obj) {
+			if (obj.errorcode == 1) {
+				alert(obj.error);
+			} else {
+				if (name == '') {
+					alert("请输入规则名称！");
+					$("#credatafrom [name=name]")[0].focus();
+					return false;
+				}
+				if (name.length > 100) {
+					alert("规则名称必须小于100字！");
+					$("#credatafrom [name=name]")[0].focus();
+					return false;
+				}
+				if (jushouPFfee == '') {
+					alert("请输入拒收派费！");
+					$("#credatafrom [name=jushouPFfee]")[0].focus();
+					return false;
+				} else {
+					$("#credatafrom").submit();
+				}
+			}
+		}
+	});
+
 }
