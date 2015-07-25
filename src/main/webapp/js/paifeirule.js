@@ -25,6 +25,10 @@ $(function() {
 	}
 	showflag('ps_basic', $("#ps_showflag_basic").val());
 	showflag('ps_collection', $("#ps_showflag_collection").val());
+	showflag('zz_basic', $("#zz_showflag_basic").val());
+	showflag('zz_collection', $("#zz_showflag_collection").val());
+	showflag('th_basic', $("#th_showflag_basic").val());
+	showflag('th_collection', $("#th_showflag_collection").val());
 	$(":checkbox").click(function(){
 		var flag=$(this)[0].checked;
 		$(this).parent().parent().find(":button").each(
@@ -538,6 +542,11 @@ function credatafrom()
  var jushouPFfee=$("#credatafrom [name=jushouPFfee]").val();
  if(name==''){
 	 alert("请输入规则名称！");
+	 $("#credatafrom [name=name]")[0].focus();
+	 return false;
+ }
+ if(name.length>100){
+	 alert("规则名称必须小于100字！");
 	 $("#credatafrom [name=name]")[0].focus();
 	 return false;
  }
