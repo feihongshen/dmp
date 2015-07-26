@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import cn.explink.dao.AreaDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PFAreaDAO;
@@ -28,6 +29,7 @@ import cn.explink.dao.PFoverareaDAO;
 import cn.explink.dao.PFoverbigDAO;
 import cn.explink.dao.PFoverweightDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
+import cn.explink.domain.Area;
 import cn.explink.domain.Basicjson;
 import cn.explink.domain.Collectionjson;
 import cn.explink.domain.Customer;
@@ -81,6 +83,8 @@ public class PaiFeiRuleService {
 	CwbDAO cwbDAO;
 	@Autowired
 	PaiFeiRuleDAO paiFeiRuleDAO;
+	@Autowired
+	AreaDAO areaDAO;
 
 	/**
 	 * @param object
@@ -436,7 +440,20 @@ public class PaiFeiRuleService {
 			// 获取区域补助
 			// 需要获取订单中的区域
 			if (type == PaiFeiBuZhuTypeEnum.Area) {
+				Area area = null;
+				String cwbcity = co.getCity();
+				String cwbarea = co.getArea();
+				if (!cwbarea.equals("") && !cwbcity.equals("")) {
+
+					area = this.areaDAO.getAreaByCityAndArea(cwbcity, cwbarea);
+				} else if (cwbarea.equals("") && !cwbcity.equals("")) {
+
+					area = this.areaDAO.getAreaByCity(cwbcity);
+				}
 				long areaid = 0;
+				if (area != null) {
+					areaid = area.getId();
+				}
 				BigDecimal areafee = new BigDecimal("0");
 				PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 				if (pFarea != null) {
@@ -450,6 +467,7 @@ public class PaiFeiRuleService {
 							areafee.add(pFoverbig.getSubsidyfee());
 						}
 					}
+					// 货物重量
 					PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, 0);
 					if (pFoverweight != null) {
 						areafee.add(pFoverweight.getSubsidyfee());
@@ -674,7 +692,7 @@ public class PaiFeiRuleService {
 	 * @param ps_showflag_collection
 	 */
 	private void IsClearList(List<?> list, String flag) {
-		if(flag.equals("no")){
+		if (flag.equals("no")) {
 			list.clear();
 		}
 	}
@@ -754,10 +772,9 @@ public class PaiFeiRuleService {
 					List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(JSONArray.fromObject(json), PFbasic.class);
 					if (pfbasicList != null) {
 
-						int i=this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
-						if((i>0)&&(pfbasicList.size()==0))
-						{
-							count=i;
+						int i = this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(rule.getId(), tabid);
+						if ((i > 0) && (pfbasicList.size() == 0)) {
+							count = i;
 						}
 						for (PFbasic pf : pfbasicList) {
 							pf.setPfruleid(rule.getId());
@@ -790,10 +807,9 @@ public class PaiFeiRuleService {
 					List<PFcollection> pfcollectionList = (List<PFcollection>) JSONArray.toCollection(JSONArray.fromObject(json), PFcollection.class);
 					if (pfcollectionList != null) {
 
-						int i=this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(rule.getId(), tabid);
-						if((i>0)&&(pfcollectionList.size()==0))
-						{
-							count=i;
+						int i = this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(rule.getId(), tabid);
+						if ((i > 0) && (pfcollectionList.size() == 0)) {
+							count = i;
 						}
 						for (PFcollection pf : pfcollectionList) {
 							pf.setPfruleid(rule.getId());
@@ -832,10 +848,9 @@ public class PaiFeiRuleService {
 				List<PFinsertion> pfinsertionList = (List<PFinsertion>) JSONArray.toCollection(JSONArray.fromObject(json), PFinsertion.class);
 				if (pfinsertionList != null) {
 
-					int i=this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(rule.getId(), tabid);
-					if((i>0)&&(pfinsertionList.size()==0))
-					{
-						count=i;
+					int i = this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(rule.getId(), tabid);
+					if ((i > 0) && (pfinsertionList.size() == 0)) {
+						count = i;
 					}
 					for (PFinsertion pf : pfinsertionList) {
 						pf.setPfruleid(rule.getId());
@@ -850,9 +865,8 @@ public class PaiFeiRuleService {
 				}
 			} else if (bztype.equals("overbig")) {
 				List<PFoverbig> pfoverbigList = (List<PFoverbig>) JSONArray.toCollection(JSONArray.fromObject(json), PFoverbig.class);
-				if(pfoverbigList.size()==0)
-				{
-					count=this.pFoverbigDAO.deletePFoverbigByAreaid(areaid);
+				if (pfoverbigList.size() == 0) {
+					count = this.pFoverbigDAO.deletePFoverbigByAreaid(areaid);
 				}
 				if ((pfoverbigList != null) && (pfoverbigList.size() > 0)) {
 					this.pFoverbigDAO.deletePFoverbigByAreaid(pfoverbigList.get(0).getAreaid());
@@ -866,9 +880,8 @@ public class PaiFeiRuleService {
 				return count;
 			} else if (bztype.equals("overweight")) {
 				List<PFoverweight> pfoverweightList = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(json), PFoverweight.class);
-				if(pfoverweightList.size()==0)
-				{
-					count=this.pFoverweightDAO.deletePFoverweightByAreaid(areaid);
+				if (pfoverweightList.size() == 0) {
+					count = this.pFoverweightDAO.deletePFoverweightByAreaid(areaid);
 				}
 				if ((pfoverweightList != null) && (pfoverweightList.size() > 0)) {
 					this.pFoverweightDAO.deletePFoverweightByAreaid(pfoverweightList.get(0).getAreaid());
@@ -886,6 +899,29 @@ public class PaiFeiRuleService {
 		return count;
 	}
 
+	@Transactional
+	public int deletePaifeiRule(long pfruleid) {
+		int i = 0;
+		i = this.paiFeiRuleDAO.deletePaiFeiRuleByPfruleid(pfruleid);
+		if (i > 0) {
+			this.pFbasicDAO.deletePFbasicByPfruleid(pfruleid);
+			this.pFcollectionDAO.deletePFbasicByPfruleid(pfruleid);
+			this.pFbusinessDAO.deleteBusinessByPfruleid(pfruleid);
+			List<PFarea> pFareas=this.pFareaDAO.getPFareaByPfruleid(pfruleid);
+			if(pFareas!=null)
+			{for(PFarea pf:pFareas)
+				{
+					this.pFoverbigDAO.deletePFoverbigByAreaid(pf.getId());
+					this.pFoverweightDAO.deletePFoverweightByAreaid(pf.getId());
+				}
+			}
+			this.pFareaDAO.deleteAreaByPfruleid(pfruleid);
+			this.pFoverareaDAO.deletePFoverareaByPfruleid(pfruleid);
+			this.pFinsertionDAO.deletePFinsertionByPfruleid(pfruleid);
+		}
+		return i;
+	}
+
 	@Test
 	public void test() {
 		JSONArray jsonStrs = new JSONArray();
@@ -896,5 +932,34 @@ public class PaiFeiRuleService {
 		JSONArray array = JSONArray.fromObject(json);
 		List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(array, PFbasic.class);
 		System.out.println(pfbasicList);
+	}
+
+	/**
+	 * @param areaid
+	 * @param areaname
+	 * @param tab
+	 * @param rulejson
+	 * @param model
+	 * @return
+	 */
+	public int saveArea(long areaid, String areaname, String tabs, String rulejson, Model model) {
+		JSONObject object = JSONObject.fromObject(rulejson);
+		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(object, PaiFeiRule.class);
+		PFarea area=new PFarea();
+		area.setAreaid(areaid);
+		area.setAreaname(areaname);
+		int tabid=0;
+		if (tabs.equals("ps")) {
+			tabid = PaiFeiRuleTabEnum.Paisong.getValue();
+		} else if (tabs.equals("th")) {
+			tabid = PaiFeiRuleTabEnum.Tihuo.getValue();
+		} else if (tabs.equals("zz")) {
+			tabid = PaiFeiRuleTabEnum.Zhongzhuan.getValue();
+		}
+		area.setTabid(tabid);
+		area.setPfruleid(rule.getId());
+		area.setTypeid(rule.getType());
+		this.savedata(area);
+		return 0;
 	}
 }

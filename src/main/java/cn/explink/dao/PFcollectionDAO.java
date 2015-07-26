@@ -132,6 +132,13 @@ public class PFcollectionDAO {
 		String sql = "delete from paifeirule_collection where id=? ";
 		this.jdbcTemplate.update(sql, id);
 	}
+	/**
+	 * @param id
+	 */
+	public void deletePFbasicByPfruleid(long pfruleid) {
+		String sql = "delete from paifeirule_collection where pfruleid=? ";
+		this.jdbcTemplate.update(sql, pfruleid);
+	}
 
 	/**
 	 * @param pfruleid

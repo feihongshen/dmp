@@ -202,4 +202,17 @@ public class PaiFeiRuleDAO {
 			}
 		});
 	}
+
+	/**
+	 * @param name
+	 */
+	public PaiFeiRule getPaiFeiRuleByName(String name) {
+		String sql = "select * from express_ops_paifeirule where  name=? limit 1";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper(), name);
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
 }

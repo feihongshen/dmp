@@ -286,22 +286,16 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="ps_111" onclick="addArea('ps','广东','111')">
-												<td>广东</td>
-												<td>广州</td>
-												<td>是</td>
-												<td>是</td>
-												<td>否</td>
-												<td>广东省是个好地方</td>
+											<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="ps_${cwbarea.id }" onclick="addArea('ps','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
 											</tr>
-											<tr id="ps_222" onclick="addArea('ps','北京','222')">
-												<td>朝阳</td>
-												<td>北京</td>
-												<td>否</td>
-												<td>是</td>
-												<td>否</td>
-												<td>我爱北京天安门</td>
-											</tr>
+											</c:forEach>
 										</table>
 										<div id="ps_area_div"></div>
 									</div>
@@ -397,22 +391,16 @@
 													<td style="width: 15%" align="center">启用超重补助</td>
 													<td style="width: 25%" align="center">备注</td>
 												</tr>
-												<tr id="th_111" onclick="addArea('th','广东','111')">
-													<td>广东</td>
-													<td>广州</td>
-													<td>是</td>
-													<td>是</td>
-													<td>否</td>
-													<td>广东省是个好地方</td>
-												</tr>
-												<tr id="th_222" onclick="addArea('th','北京','222')">
-													<td>朝阳</td>
-													<td>北京</td>
-													<td>否</td>
-													<td>是</td>
-													<td>否</td>
-													<td>我爱北京天安门</td>
-												</tr>
+											<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="th_${cwbarea.id }" onclick="addArea('th','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
+											</tr>
+											</c:forEach>
 											</table>
 											<div id="th_area_div"></div>
 										</div>
@@ -509,22 +497,16 @@
 													<td style="width: 15%" align="center">启用超重补助</td>
 													<td style="width: 25%" align="center">备注</td>
 												</tr>
-												<tr id="zz_111" onclick="addArea('zz','广东','111')">
-													<td>广东</td>
-													<td>广州</td>
-													<td>是</td>
-													<td>是</td>
-													<td>否</td>
-													<td>广东省是个好地方</td>
-												</tr>
-												<tr id="zz_222" onclick="addArea('zz','北京','222')">
-													<td>朝阳</td>
-													<td>北京</td>
-													<td>否</td>
-													<td>是</td>
-													<td>否</td>
-													<td>我爱北京天安门</td>
-												</tr>
+											<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="zz_${cwbarea.id }" onclick="addArea('zz','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
+											</tr>
+											</c:forEach>
 											</table>
 											<div id="zz_area_div"></div>
 										</div>
@@ -734,26 +716,20 @@
 											<td style="width: 15%" align="center">启用超重补助</td>
 											<td style="width: 25%" align="center">备注</td>
 										</tr>
-										<tr id="ps_111" onclick="showArea($(this),'edit_area_ps_1','广东')">
-											<td>广东</td>
-											<td>广州</td>
-											<td>是</td>
-											<td>是</td>
-											<td>否</td>
-											<td>广东省是个好地方</td>
-										</tr>
-										<tr id="ps_222" onclick="showArea($(this),'edit_area_ps_2','北京')">
-											<td>北京</td>
-											<td>朝阳</td>
-											<td>否</td>
-											<td>是</td>
-											<td>否</td>
-											<td>我爱北京天安门</td>
-										</tr>
+										<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="ps_${cwbarea.id }" onclick="showArea($(this),'edit_area_ps_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
+											</tr>
+											</c:forEach>
 									</table>
 									<div id="ps_area_div">
 		<c:forEach items="${pfareaListPS}" var="area">
-		<div id="edit_area_ps_${area.id}">
+		<div id="edit_area_ps_${area.areaid}">
 		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
 			class="table_2" id="area_table">
 			<tr>
@@ -990,26 +966,20 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="th_111" onclick="showArea($(this),'edit_area_th_1','广东')">
-												<td>广东</td>
-												<td>广州</td>
-												<td>是</td>
-												<td>是</td>
-												<td>否</td>
-												<td>广东省是个好地方</td>
+												<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="th_${cwbarea.id }" onclick="showArea($(this),'edit_area_th_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
 											</tr>
-											<tr id="th_222" onclick="showArea($(this),'edit_area_th_2','北京')">
-												<td>朝阳</td>
-												<td>北京</td>
-												<td>否</td>
-												<td>是</td>
-												<td>否</td>
-												<td>我爱北京天安门</td>
-											</tr>
+											</c:forEach>
 										</table>
 										<div id="th_area_div">
 										<c:forEach items="${pfareaListTH}" var="area">
-		<div id="edit_area_th_${area.id}">
+		<div id="edit_area_th_${area.areaid}">
 		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
 			class="table_2" id="area_table">
 			<tr>
@@ -1060,7 +1030,7 @@
 							<td style="width: 15%" align="center">补助金额(元)</td>
 							<td style="width: 25%" align="center">备注</td>
 						</tr>
-							<c:forEach items="${overweightMapPS[area.id]}" var="weight">
+							<c:forEach items="${overweightMapTH[area.id]}" var="weight">
 							
 						<tr>
 						<td><input type="checkbox"/><input type="hidden" name="areaid" value="${area.id }" /><input type="hidden" name="id" value="${weight.id }" /></td>
@@ -1248,26 +1218,20 @@
 												<td style="width: 15%" align="center">启用超重补助</td>
 												<td style="width: 25%" align="center">备注</td>
 											</tr>
-											<tr id="zz_111" onclick="showArea($(this),'edit_area_zz_1','广东')">
-												<td>广东</td>
-												<td>广州</td>
-												<td>是</td>
-												<td>是</td>
-												<td>否</td>
-												<td>广东省是个好地方</td>
+												<c:forEach items="${AreaList}" var="cwbarea">
+											<tr id="zz_${cwbarea.id }" onclick="showArea($(this),'edit_area_zz_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+												<td>${cwbarea.city}</td>
+												<td>${cwbarea.area}</td>
+												<td>${cwbarea.isareafee==1?'是':'否'}</td>
+												<td>${cwbarea.isoverbig==1?'是':'否'}</td>
+												<td>${cwbarea.isoverweight==1?'是':'否'}</td>
+												<td>${cwbarea.remark}</td>
 											</tr>
-											<tr id="zz_222" onclick="showArea($(this),'edit_area_zz_1','北京')">
-												<td>朝阳</td>
-												<td>北京</td>
-												<td>否</td>
-												<td>是</td>
-												<td>否</td>
-												<td>我爱北京天安门</td>
-											</tr>
+											</c:forEach>
 										</table>
 										<div id="zz_area_div">
 										<c:forEach items="${pfareaListZZ}" var="area">
-		<div id="edit_area_zz_${area.id}">
+		<div id="edit_area_zz_${area.areaid}">
 		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
 			class="table_2" id="area_table">
 			<tr>
@@ -1409,7 +1373,8 @@
 			class="table_2" id="area_table">
 			<tr>
 				<td align="center">区域名称：</td>
-				<td align="left"><span id="areaname"></span><input type="hidden" id="areaid" value="1" /></td>
+				<td align="left"><span id="areaname" name="areaname"></span>
+				<input type="hidden" id="areaid" name="areaid" /></td>
 			</tr>
 			<tr>
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
@@ -1446,7 +1411,7 @@
 							<td style="width: 25%" align="center">备注</td>
 						</tr>
 					</table> <input type="button" id="overweight_add" value="添加"
-					onclick="addTROfOverArea('ps','overweight')" /> <input id="overweight_add"
+					onclick="addTROfOverArea('ps','overweight')" /> <input id="overweight_remove"
 					onclick="removeTR('ps','overweight')" type="button" value="移除" /></td>
 			</tr>
 		</table>

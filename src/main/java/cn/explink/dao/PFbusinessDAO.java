@@ -103,6 +103,7 @@ public class PFbusinessDAO {
 			}
 		});
 	}
+
 	/**
 	 * @param pf
 	 */
@@ -113,7 +114,7 @@ public class PFbusinessDAO {
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				ps.setBigDecimal(1, pf.getSubsidyfee());
 				ps.setInt(2, pf.getTypeid());
 				ps.setLong(3, pf.getPfruleid());
@@ -149,6 +150,18 @@ public class PFbusinessDAO {
 			return this.jdbcTemplate.queryForObject(sql, new PFbusinessRowMapper(), pfruleid, tabid);
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	/**
+	 * @param pfruleid
+	 */
+	public void deleteBusinessByPfruleid(long pfruleid) {
+		String sql = "delete from paifeirule_business where  pfruleid=?  ";
+		try {
+			this.jdbcTemplate.update(sql,  pfruleid);
+		} catch (Exception e) {
+
 		}
 	}
 

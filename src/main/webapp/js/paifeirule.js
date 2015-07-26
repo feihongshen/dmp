@@ -8,7 +8,7 @@ $(function() {
 	$('#find').dialog('close');
 	$('#add').dialog('close');
 	$('#edit').dialog('close');
-	$("div[id^=edit_area_ps").hide();
+	$("div[id^=edit_area_").hide();
 	// $("[id*=_yes]").attr('style','display:none');
 	$("[id*=_no]").attr('style', 'display:none');
 	$('#edit_rule').panel({
@@ -195,8 +195,8 @@ function addTROfOverAreaEdit(pf, type) {
 	var maxcount = "<input style='width: 100%;' type='text'  id='maxcount' name='maxcount'/>";
 	var subsidyfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='subsidyfee' name='subsidyfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
-	var tr = "<tr>" + "<td  align='center'><input type='checkbox'/><input style='width: 100%;' type='hidden'  id='areaid' name='areaid' value="
-			+ type.split('_')[1] + "/></td>" + "<td  align='center'>" + mincount + "</td>" + "<td  align='center'>" + maxcount + "</td>"
+	var tr = "<tr>" + "<td  align='center'><input type='checkbox'/><input style='width: 100%;' type='hidden'  id='areaid' name='areaid' value='"
+			+ type.split('_')[1] + "'/></td>" + "<td  align='center'>" + mincount + "</td>" + "<td  align='center'>" + maxcount + "</td>"
 			+ "<td  align='center'>" + subsidyfee + "</td>" + "<td  align='center'>" + remark + "</td>" + "</tr>";
 	$("#" + pf + "_" + type + "_table").append(tr);
 }
@@ -320,6 +320,8 @@ function getJsonOfArea(tab, ruleType) {
 		$("#" + tab + "_area_div>table").each(function() {
 			var json = {};
 			var areafee = $(this).find("#areafee").val();
+			var areaid = $(this).find("#areaid").val();
+			var areaname = $(this).find("#areaname").text();
 			if (ruleType == 2) {
 				var overbig = new Array();
 				$(this).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
@@ -333,11 +335,15 @@ function getJsonOfArea(tab, ruleType) {
 					json.overbig = overbig;
 				}
 			} else {
-				var flag = $(this).find("#overbigflag")[0].checked;
-				if (flag) {
-					json.overbigflag = 1;
-				} else {
+				if ($(this).find("#overbigflag")[0]==undefined) {
 					json.overbigflag = 0;
+				} else {
+					var flag = $(this).find("#overbigflag")[0].checked;
+					if (flag) {
+						json.overbigflag = 1;
+					} else {
+						json.overbigflag = 0;
+					}
 				}
 			}
 			var overweight = new Array();
@@ -349,6 +355,8 @@ function getJsonOfArea(tab, ruleType) {
 				}
 			});
 			json.areafee = areafee;
+			json.areaid = areaid;
+			json.areaname = areaname;
 			if (overweight.length > 0) {
 				json.overweight = overweight;
 			}
@@ -435,6 +443,11 @@ function subEidt(formId, tab, edittype) {
 			if (edittype == "insertion" || edittype == "overbig" || edittype == "overweight") {
 				var mincountVal = $(this).find("[name=mincount]").val();
 				var maxcountVal = $(this).find("[name=maxcount]").val();
+				if (edittype == "overbig" || edittype == "overweight") {
+					var areaid = formId.split("_")[1].substr(formId.split("_")[1].indexOf() + edittype.length + 1);
+					$(this).append("<input type='hidden' name='areaid' value=" + areaid + " />");
+				}
+
 				if (mincountVal != '' && maxcountVal != '') {
 					objs.push($(this).serializeObject());
 				}
@@ -475,13 +488,42 @@ function subEidt(formId, tab, edittype) {
 	});
 }
 function showArea(tr, id, areaname) {
-	/*
-	 * var tab=$(tr)[0].id.split("_")[0]; var areaid=$(tr)[0].id.split("_")[1];
-	 * if ($(tr).parent().find("tr").length == 0) { addArea(tab, areaname,
-	 * areaid); } else
-	 */
-	{
-		$("div[id^=edit_area_ps").hide();
+
+	var disabled = "disabled='true'";
+	var tab = id.split("_")[2];
+	var flag = $("#" + tab + "_area_flag")[0].checked;
+
+	var areaid = id.split("_")[3];
+
+	$("#" + tab + "_area_div table").hide();
+	$(tr).parent().find("tr").each(function() {
+		$(this)[0].style.background = '';
+	});
+	if ($("#" + id).length == 0) {
+		$("#" + tab + "_area_table_" + areaid).remove();
+		addArea(tab, areaname, areaid);
+		var tabname = tab + "_area_table_" + areaid;
+		var sub = "<input type='button' value='保存' " + disabled + " onclick='subArea(\"" + tabname + "\",\"" + tab + "\")'/>";
+		$("#" + tab + "_area_table_" + areaid).find("#areaid").parent().append(sub);
+
+		if (flag) {
+			disabled = "";
+			$("#" + tab + "_area_table_" + areaid).find("#overbig_add").removeAttr('disabled');
+			$("#" + tab + "_area_table_" + areaid).find("#overbig_remove").removeAttr('disabled');
+			$("#" + tab + "_area_table_" + areaid).find("#overweight_add").removeAttr('disabled');
+			$("#" + tab + "_area_table_" + areaid).find("#overweight_remove").removeAttr('disabled');
+		}
+
+		/*
+		 * var subbig= "<input type='button' value='保存' "+disabled+"
+		 * onclick='subEidt(\""+tab+"_overbig"+areaid+"_table\",\""+tab+"\",\"overbig\")'/>";
+		 * var subweight= "<input type='button' value='保存' "+disabled+"
+		 * onclick='subEidt(\""+tab+"_overweight"+areaid+"_table\",\""+tab+"\",\"overweight\")'/>";
+		 * 
+		 * $("#"+tab+"_area_table_"+areaid).find("#overbig_remove").parent().append(subbig);
+		 * $("#"+tab+"_area_table_"+areaid).find("#overweight_remove").parent().append(subweight);
+		 */
+	} else {
 		if ($(tr)[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
 			$(tr).parent().find("tr").each(function() {
 				$(this)[0].style.background = '';
@@ -495,6 +537,7 @@ function showArea(tr, id, areaname) {
 			$(tr)[0].style.background = 'yellow';
 
 			$("#" + id).show();
+			$("#" + id + " *").show();
 		}
 	}
 }
@@ -568,5 +611,27 @@ function credatafrom() {
 			}
 		}
 	});
+}
+function subArea(tablename, tab) {
+	var areajson=getJsonOfArea(tab, $("#edit_rule_from [name=type]").val());
+	var dmpurl = $("#dmpurl").val();
+	/*	var areaid = $("#" + tablename + " #areaid").val();
+	var areaname = $("#" + tablename + " #areaname").text();
+	var areafee = $("#" + tablename + " #areafee").val();
+	var overbigflag = false;
+	if ($("#" + tablename + " #overbigflag").length > 0) {
+		overbigflag = $("#" + tablename + " #overbigflag").checked;
+	}*/
+	$.ajax({
+		type : "post",
+		url : dmpurl + "/paifeirule/saveArea",
+		data : {
+			"areajson" : JSON.stringify(areajson),
+			"rulejson" : JSON.stringify($("#edit_rule_from").serializeObject())
+		},
+		dataType : "json",
+		success : function(obj) {
 
+		}
+	});
 }

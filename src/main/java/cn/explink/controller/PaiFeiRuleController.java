@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.AreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.PFAreaDAO;
@@ -32,6 +33,7 @@ import cn.explink.dao.PFoverbigDAO;
 import cn.explink.dao.PFoverweightDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Area;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.PaiFeiRule;
@@ -78,6 +80,8 @@ public class PaiFeiRuleController {
 	PFoverbigDAO pFoverbigDAO;
 	@Autowired
 	PFoverweightDAO pFoverweightDAO;
+	@Autowired
+	AreaDAO areaDAO;
 
 	// private Logger logger = LoggerFactory.getLogger(this.getClass());
 	User getSessionUser() {
@@ -108,12 +112,14 @@ public class PaiFeiRuleController {
 		if (pfruleid > 0) {
 			this.paiFeiRuleService.getEditData(model, pfruleid);
 		}
+		List<Area> AreaList=this.areaDAO.getAllArea();
 		List<PaiFeiRule> paiFeiRules = this.paiFeiRuleDAO.getPaiFeiRules(page, name, state, type, remark, orderby, orderbyType);
 		int count = this.paiFeiRuleDAO.getPaiFeiRulesCounts(name, state, type, remark, orderby, orderbyType);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("paiFeiRules", paiFeiRules);
+		model.addAttribute("AreaList", AreaList);
 
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchs_Franchisee", branchs_Franchisee);
@@ -166,7 +172,7 @@ public class PaiFeiRuleController {
 			List<User> users = this.userDAO.getUserByPFruleId(pfruleid);
 			List<Branch> branchs=this.branchDAO.getBanchByPFruleId(pfruleid);
 			if (((customers == null) && (users == null)&&(branchs==null))||((customers.size()==0) && (users.size()==0)&&(branchs.size()==0))) {
-				int i = this.paiFeiRuleDAO.deletePaiFeiRuleByPfruleid(pfruleid);
+				int i = this.paiFeiRuleService.deletePaifeiRule(pfruleid);
 				counts += i;
 			}
 		}
@@ -189,5 +195,35 @@ public class PaiFeiRuleController {
 			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
 		}
 	}
+	@RequestMapping("/saveArea")
+	public @ResponseBody
+	String saveArea(
+			@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
+			@RequestParam(value = "areajson", required = false, defaultValue = "{}") String areajson,
+			Model model, HttpServletRequest request) {
 
+		int count = 0;//this.paiFeiRuleService.saveArea(areaid, areaname, 1,rulejson, model);
+		if (count > 0) {
+			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
+		} else {
+			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
+		}
+	}
+	@RequestMapping("/check")
+	public @ResponseBody Map<String,Object> check(@RequestParam(value = "name", required = false, defaultValue = "") String name
+			, Model model) {
+		Map<String,Object> map=new HashMap<String, Object>();
+
+		PaiFeiRule rule=this.paiFeiRuleDAO.getPaiFeiRuleByName(name);
+		String error="";
+		int errorcode=0;
+		if(rule!=null)
+		{
+			error="派费规则名称已存在！";
+			errorcode=1;
+		}
+		map.put("error", error);
+		map.put("errorcode", errorcode);
+		return  map;
+	}
 }

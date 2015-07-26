@@ -28,6 +28,7 @@ import cn.explink.domain.PFoverarea;
 public class PFoverareaDAO {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+
 	final class PFoverareaRowMapper implements RowMapper<PFoverarea> {
 
 		@Override
@@ -41,6 +42,7 @@ public class PFoverareaDAO {
 			return pf;
 		}
 	}
+
 	/**
 	 * @param pfruleid
 	 * @param typeid
@@ -49,10 +51,10 @@ public class PFoverareaDAO {
 	 * @param maxcount
 	 * @return
 	 */
-	public PFoverarea getPFoverareaByRTC(long pfruleid, int typeid, int tabid,int state) {
+	public PFoverarea getPFoverareaByRTC(long pfruleid, int typeid, int tabid, int state) {
 		String sql = "select * from paifeirule_overarea where pfruleid=? and typeid=? and tabid=? and state=? limit 1";
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFoverareaRowMapper(), pfruleid, typeid, tabid,state);
+			return this.jdbcTemplate.queryForObject(sql, new PFoverareaRowMapper(), pfruleid, typeid, tabid, state);
 		} catch (Exception e) {
 			return null;
 		}
@@ -78,6 +80,7 @@ public class PFoverareaDAO {
 		});
 
 	}
+
 	/**
 	 * @param pf
 	 */
@@ -125,7 +128,7 @@ public class PFoverareaDAO {
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, pf.getTypeid());
 				ps.setLong(2, pf.getPfruleid());
 				ps.setLong(3, pf.getTabid());
@@ -144,7 +147,7 @@ public class PFoverareaDAO {
 	public PFoverarea getPFoverareaByPaifeiruleAndtabid(long pfruleid, int tabid) {
 		String sql = "select * from paifeirule_overarea where pfruleid=? and tabid=?  ";
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PFoverareaRowMapper(), pfruleid,  tabid);
+			return this.jdbcTemplate.queryForObject(sql, new PFoverareaRowMapper(), pfruleid, tabid);
 		} catch (Exception e) {
 			return null;
 		}
@@ -155,8 +158,16 @@ public class PFoverareaDAO {
 	 * @param tabid
 	 */
 	public int deletePFoverareaByPfRuleidAndTabid(long pfruleid, int tabid) {
-		String sql="delete from paifeirule_overarea where pfruleid=? and tabid=?  ";
-		return this.jdbcTemplate.update(sql,pfruleid,tabid);
+		String sql = "delete from paifeirule_overarea where pfruleid=? and tabid=?  ";
+		return this.jdbcTemplate.update(sql, pfruleid, tabid);
 
+	}
+
+	/**
+	 * @param pfruleid
+	 */
+	public void deletePFoverareaByPfruleid(long pfruleid) {
+		String sql = "delete from paifeirule_overarea where pfruleid=?   ";
+		this.jdbcTemplate.update(sql, pfruleid);
 	}
 }

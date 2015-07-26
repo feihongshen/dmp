@@ -141,6 +141,10 @@ public class PFbasicDAO {
 		String sql = "delete from paifeirule_basic where id=? ";
 		this.jdbcTemplate.update(sql, id);
 	}
+	public void deletePFbasicByPfruleid(long pfruleid) {
+		String sql = "delete from paifeirule_basic where pfruleid=? ";
+		this.jdbcTemplate.update(sql, pfruleid);
+	}
 
 	public int deletePFbasicByPfRuleidAndTabid(long pfruleid, int tabid) {
 		String sql = "delete from paifeirule_basic where pfruleid=? and tabid=? ";

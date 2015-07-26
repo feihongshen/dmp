@@ -130,11 +130,64 @@ public class CwbOrder {
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
 	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
 	private int firstlevelid; //一级滞留原因id
+	private String city;//通过百度API匹配的城市
+	private String area;//通过百度API匹配的城区区域
+
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return this.city;
+	}
+
+	/**
+	 * @param city the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the area
+	 */
+	public String getArea() {
+		return this.area;
+	}
+
+	/**
+	 * @param area the area to set
+	 */
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	/**
+	 * @param podfeetoheadtime the podfeetoheadtime to set
+	 */
+	public void setPodfeetoheadtime(String podfeetoheadtime) {
+		this.podfeetoheadtime = podfeetoheadtime;
+	}
+
+	/**
+	 * @param podfeetoheadchecktime the podfeetoheadchecktime to set
+	 */
+	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
+		this.podfeetoheadchecktime = podfeetoheadchecktime;
+	}
+
+	/**
+	 * @param deliversubscribeday the deliversubscribeday to set
+	 */
+	public void setDeliversubscribeday(String deliversubscribeday) {
+		this.deliversubscribeday = deliversubscribeday;
+	}
+
 
 	private String changereason; //中转原因
 	private long firstchangereasonid; //一级中转原因
 	public long getFirstchangereasonid() {
-		return firstchangereasonid;
+		return this.firstchangereasonid;
 	}
 
 	public void setFirstchangereasonid(long firstchangereasonid) {
@@ -143,20 +196,20 @@ public class CwbOrder {
 
 
 	private long changereasonid;
-	
+
 
 	public String getChangereason() {
-		return changereason;
+		return this.changereason;
 	}
 
 	public void setChangereason(String changereason) {
 		this.changereason = changereason;
 	}
 
-	
+
 
 	public long getChangereasonid() {
-		return changereasonid;
+		return this.changereasonid;
 	}
 
 	public void setChangereasonid(long changereasonid) {
@@ -164,7 +217,7 @@ public class CwbOrder {
 	}
 
 	public int getFirstlevelid() {
-		return firstlevelid;
+		return this.firstlevelid;
 	}
 
 
@@ -174,7 +227,7 @@ public class CwbOrder {
 
 
 	public int getFnorgoffsetflag() {
-		return fnorgoffsetflag;
+		return this.fnorgoffsetflag;
 	}
 
 
@@ -184,7 +237,7 @@ public class CwbOrder {
 
 
 	public BigDecimal getFnorgoffset() {
-		return fnorgoffset;
+		return this.fnorgoffset;
 	}
 
 
@@ -193,7 +246,7 @@ public class CwbOrder {
 	}
 
 	public long getZhongzhuanreasonid() {
-		return zhongzhuanreasonid;
+		return this.zhongzhuanreasonid;
 	}
 
 	public void setZhongzhuanreasonid(long zhongzhuanreasonid) {
@@ -201,7 +254,7 @@ public class CwbOrder {
 	}
 
 	public String getZhongzhuanreason() {
-		return zhongzhuanreason;
+		return this.zhongzhuanreason;
 	}
 
 	public void setZhongzhuanreason(String zhongzhuanreason) {
@@ -409,7 +462,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
-		
+
 		return this.consigneemobile;
 	}
 
@@ -1074,7 +1127,7 @@ public class CwbOrder {
 	public void setOutareaflag(int outareaflag) {
 		this.outareaflag = outareaflag;
 	}
-	
+
 
 	public String getConsigneenameOfkf() {
 		return this.consigneenameOfkf;

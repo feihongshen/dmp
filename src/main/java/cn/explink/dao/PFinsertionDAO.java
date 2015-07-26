@@ -169,4 +169,13 @@ public class PFinsertionDAO {
 		return this.jdbcTemplate.update(sql,pfruleid,tabid);
 
 	}
+
+	/**
+	 * @param pfruleid
+	 */
+	public void deletePFinsertionByPfruleid(long pfruleid) {
+		String sql="delete from paifeirule_insertion where pfruleid=? ";
+		this.jdbcTemplate.update(sql,pfruleid);
+
+	}
 }

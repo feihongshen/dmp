@@ -886,6 +886,7 @@ src/main/java/cn/explink/dao/AddressStartDAO.java -text
 src/main/java/cn/explink/dao/AdjustmentRecordDAO.java -text
 src/main/java/cn/explink/dao/AppearWindowDao.java -text
 src/main/java/cn/explink/dao/ApplyEditDeliverystateDAO.java -text
+src/main/java/cn/explink/dao/AreaDAO.java -text
 src/main/java/cn/explink/dao/AutomaticSetDAO.java -text
 src/main/java/cn/explink/dao/BackDetailDAO.java -text
 src/main/java/cn/explink/dao/BackIntoprintDAO.java -text
@@ -1070,6 +1071,7 @@ src/main/java/cn/explink/domain/AccountFeeType.java -text
 src/main/java/cn/explink/domain/AdjustmentRecord.java -text
 src/main/java/cn/explink/domain/AorderFlowView.java -text
 src/main/java/cn/explink/domain/ApplyEditDeliverystate.java -text
+src/main/java/cn/explink/domain/Area.java -text
 src/main/java/cn/explink/domain/AutomaticSet.java -text
 src/main/java/cn/explink/domain/BackDetail.java -text
 src/main/java/cn/explink/domain/BackMiddle.java -text
