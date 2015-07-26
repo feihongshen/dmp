@@ -218,8 +218,11 @@ public class BranchDeliveryFeeBillController {
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
+		int count = this.branchDeliveryFeeBillDAO
+				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
 		List<Branch> branches= this.branchDAO.getBranchByPage(page, billVO.getBranchname(), billVO.getBranchaddress());
-		int count = new Long(this.branchDAO.getBranchCount(billVO.getBranchname(), billVO.getBranchaddress())).intValue();
+//		int count = new Long(this.branchDAO.getBranchCount(billVO.getBranchname(), billVO.getBranchaddress())).intValue();
+		
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		User user = getSessionUser();
 		int jiesuanAuthority = 0;
@@ -244,13 +247,12 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("branchDeliveryFeeBillList", list);
 		model.addAttribute("branchDeliveryFeeBillVO", billVO);
-		model.addAttribute("branchList", branchList);
+		model.addAttribute("branchList", branches);
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("cwbTypeMap", cwbTypeMap);
 		model.addAttribute("dateTypeMap", dateTypeMap);
 		model.addAttribute("addPage", 1);
 		model.addAttribute("branchListPage", 1);
-		model.addAttribute("branches", branches);
 		return "branchDeliveryFeeBill/branchDeliveryFeeBillList";
 	}
 

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -658,31 +659,41 @@ public class BranchContractController {
 				// 取得文件名。
 				String filename = file.getName();
 				
-				/*String userAgent = request.getHeader("User-Agent");
-				if (userAgent != null){  
-				     userAgent = userAgent.toLowerCase();  
+				String userAgent = request.getHeader("User-Agent");
+				String newFileName = URLEncoder.encode(filename, "UTF8");  
+				// 如果没有UA，则默认使用IE的方式进行编码，因为毕竟IE还是占多数的  
+				String rtnStr = "filename=\"" + newFileName + "\"";  
+				if (userAgent != null) {
+					userAgent = userAgent.toLowerCase();
+					// IE浏览器，只能采用URLEncoder编码
 					if (userAgent.indexOf("msie") != -1) {
-						// IE浏览器，只能采用URLEncoder编码
-						rtn = "filename=\"" + filename + "\"";
-					} else if (userAgent.indexOf("opera") != -1) {
-						// Opera浏览器只能采用filename*
-						rtn = "filename*=UTF-8''" + filename;
-					} else if (userAgent.indexOf("safari") != -1) {
-						// Safari浏览器，只能采用ISO编码的中文输出
-						rtn = "filename=\""
+						rtnStr = "filename=\"" + newFileName + "\"";
+					}
+					// Opera浏览器只能采用filename*
+					else if (userAgent.indexOf("opera") != -1) {
+						rtnStr = "filename*=UTF-8''" + newFileName;
+					}
+					// Safari浏览器，只能采用ISO编码的中文输出
+					else if (userAgent.indexOf("safari") != -1) {
+						rtnStr = "filename=\""
 								+ new String(filename.getBytes("UTF-8"),
 										"ISO8859-1") + "\"";
-					} else if (userAgent.indexOf("applewebkit") != -1) {
-						// Chrome浏览器，只能采用MimeUtility编码或ISO编码的中文输出
-						filename = MimeUtility
-								.encodeText(filename, "UTF8", "B");
-						rtn = "filename=\"" + filename + "\"";
-					} else if (userAgent.indexOf("mozilla") != -1) {
-						// FireFox浏览器，可以使用MimeUtility或filename*或ISO编码的中文输出
-						rtn = "filename*=UTF-8''" + filename;
 					}
-				}  */
-				
+					// Chrome浏览器，只能采用MimeUtility编码或ISO编码的中文输出
+					else if (userAgent.indexOf("applewebkit") != -1) {
+						newFileName = MimeUtility.encodeText(filename, "UTF8",
+								"B");
+						rtnStr = "filename=\"" + newFileName + "\"";
+					}
+					// FireFox浏览器，可以使用MimeUtility或filename*或ISO编码的中文输出
+					else if (userAgent.indexOf("mozilla") != -1) {
+//						rtnStr = "filename*=UTF-8''" + newFileName;
+						
+						newFileName = MimeUtility.encodeText(filename, "UTF8",
+								"B");
+						rtnStr = "filename=\"" + newFileName + "\"";
+					}
+				}
 				
 				// 以流的形式下载文件。
 				InputStream fis;
@@ -694,8 +705,9 @@ public class BranchContractController {
 				response.reset();
 				// 设置response的Header
 				response.setContentType("application/ms-excel");
+				response.addHeader("Content-Disposition", "attachment;" + rtnStr);
 //				response.addHeader("Content-Disposition", "attachment;" + new String(filename.getBytes(), "iso8859-1"));
-				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(), "iso8859-1"));
+//				response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes(), "iso8859-1"));
 				response.addHeader("Content-Length", "" + file.length());
 				OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
 				toClient.write(buffer);
