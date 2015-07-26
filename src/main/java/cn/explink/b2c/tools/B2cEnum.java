@@ -76,12 +76,15 @@ public enum B2cEnum {
 			"文轩网", "wenxuan", 0), 
 			lefengwang(20093, "乐蜂网_对接", "lefengwang_statereturn", 0), Guangzhoutonglu(20095, "广州通路_对接", "guangzhoutonglu", 0), GuangzhoutongluWaifadan(20096, "广州通路对接_外发单",
 			"guangzhoutongluwaifadanduijie", 0),
-			JiuYe(20089, "九曳", "jiuye", 0);
+			JiuYe(20089, "九曳", "jiuye", 0),
+	VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0); // 唯品会OXO vipshop_oxo
 
 	private int key;
 	private String text;
 	private String method;
 	private int api_type; // 接口类型
+	
+
 
 	public int getApi_type() {
 		return this.api_type;
