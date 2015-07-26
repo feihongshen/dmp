@@ -10,6 +10,7 @@
 	initDataKey="CommonUsage" 
 	viewField="reasonId,reasonContent" 
 	filterField="reasonType" 
+	afterSelect="function1"
 	filterVal="2"  
 	data-options="width:150,prompt: '对接用户常用语'"
 />
@@ -20,6 +21,12 @@
  	viewField="text" 
  	saveField="value"
 />
+
+
+function function1(obj){
+	alert(obj);
+}
+
  */
 
 
@@ -64,11 +71,12 @@ function initEnumSelect(data){
 	var viewField = s.attr("viewField");
 	var saveField = s.attr("saveField");
 	var readonly = s.attr("readonly");
+	var afterSelect = s.attr("afterSelect");
 	var enumData = initEnumData(enumName,viewField,saveField);
 	s.combobox({
 	    valueField:saveField,
 	    textField:viewField,
-	    data:enumData
+	    data:enumData,
 	});  
 	s.combobox({
 		filter: function(q, row){
@@ -76,6 +84,13 @@ function initEnumSelect(data){
 			return row[opts.textField].indexOf(q) >= 0;
 		}
 	});
+	if(!isNull(afterSelect)){
+		s.combobox({
+			onSelect:function(obj1){
+	    		callFunByName(afterSelect,obj1)
+			}
+		})
+	}
 	if(!isNull(readonly)){
 		s.combobox({
 			disabled:true
@@ -104,6 +119,7 @@ function initTABLESelect(data){
 	var filterVal = s.attr("filterVal");
 	var linkageEleId = s.attr("linkageEleId");
 	var linkageField = s.attr("linkageField");
+	var afterSelect = s.attr("afterSelect");
 	var readonly = s.attr("readonly");
 	var entityData = initEntityData(entityName);
 	var viewData = [];
@@ -145,6 +161,13 @@ function initTABLESelect(data){
 					return row[opts.textField].indexOf(q) >= 0;
 				}
 			});
+			if(!isNull(afterSelect)){
+				s.combobox({
+					onSelect:function(obj1){
+			    		callFunByName(afterSelect,obj1)
+					}
+				})
+			}
 			if(!isNull(readonly)){
 				s.combobox({
 					disabled:true
@@ -173,6 +196,13 @@ function initTABLESelect(data){
 				return row[opts.textField].indexOf(q) >= 0;
 			}
 		});
+		if(!isNull(afterSelect)){
+			s.combobox({
+				onSelect:function(obj1){
+		    		callFunByName(afterSelect,obj1)
+				}
+			})
+		}
 		if(!isNull(readonly)){
 			s.combobox({
 				disabled:true
@@ -283,4 +313,20 @@ function isNull(obj){
 	}else{
 		return false;
 	}
+}
+
+/**
+ * 根据方法名判断并且调用方法
+ * @param fn
+ * @param args
+ */
+function callFunByName(fnName,args){ 
+    try {
+    	fnName = eval(fnName);
+    } catch(e) {
+        console.log(e);
+    }
+    if (typeof fnName === 'function'){
+    	fnName.call(this,args); 
+    }    
 }
