@@ -563,33 +563,39 @@ function addContractForm(form){
 					alert(data.error);
 					return;
 				} else {
-					if ($("#txtFileName").val()=="") {
-						$(form).attr("enctype", "");
-						$(form).attr("action", getPath()+"/branchContract/addBranchContract");
-						submitCreateForm(form);
-						return;
-					}
-					
-					$('#swfupload-control').swfupload('addPostParam', 'contractNo', $("#contractNo").val());
-					$('#swfupload-control').swfupload('addPostParam', 'contractState', $("#contractState").val());
-					$('#swfupload-control').swfupload('addPostParam', 'contractBeginDate', $("#contractBeginDate").val());
-					$('#swfupload-control').swfupload('addPostParam', 'contractEndDate', $("#contractEndDate").val());
-					$('#swfupload-control').swfupload('addPostParam', 'branchName', $("#branchName").val());
-					$('#swfupload-control').swfupload('addPostParam', 'siteChief', $("#siteChief").val());
-					$('#swfupload-control').swfupload('addPostParam', 'chiefIdentity', $("#chiefIdentity").val());
-					$('#swfupload-control').swfupload('addPostParam', 'areaManager', $("#areaManager").val());
-					$('#swfupload-control').swfupload('addPostParam', 'isDeposit', $("#isDeposit").val());
-					$('#swfupload-control').swfupload('addPostParam', 'contractDescription', $("#contractDescription").val());
-					$('#swfupload-control').swfupload('addPostParam', 'qualityControlClause', $("#qualityControlClause").val());
-					$('#swfupload-control').swfupload('addPostParam', 'depositCollectDate', $("#depositCollectDate").val());
-					$('#swfupload-control').swfupload('addPostParam', 'depositCollectAmount', $("#depositCollectAmount").val());
-					$('#swfupload-control').swfupload('addPostParam', 'depositCollector', $("#depositCollector").val());
-					$('#swfupload-control').swfupload('addPostParam', 'depositPayor', $("#depositPayor").val());
-					$('#swfupload-control').swfupload('startUpload');
+					addContractFormFun(form);
 				}
 			}
 		});
+	} else {
+		addContractFormFun(form);
 	}
+}
+
+function addContractFormFun(form){
+	if ($("#txtFileName").val()=="") {
+		$(form).attr("enctype", "");
+		$(form).attr("action", getPath()+"/branchContract/addBranchContract");
+		submitCreateForm(form);
+		return;
+	}
+	
+	$('#swfupload-control').swfupload('addPostParam', 'contractNo', $("#contractNo").val());
+	$('#swfupload-control').swfupload('addPostParam', 'contractState', $("#contractState").val());
+	$('#swfupload-control').swfupload('addPostParam', 'contractBeginDate', $("#contractBeginDate").val());
+	$('#swfupload-control').swfupload('addPostParam', 'contractEndDate', $("#contractEndDate").val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchName', $("#branchName").val());
+	$('#swfupload-control').swfupload('addPostParam', 'siteChief', $("#siteChief").val());
+	$('#swfupload-control').swfupload('addPostParam', 'chiefIdentity', $("#chiefIdentity").val());
+	$('#swfupload-control').swfupload('addPostParam', 'areaManager', $("#areaManager").val());
+	$('#swfupload-control').swfupload('addPostParam', 'isDeposit', $("#isDeposit").val());
+	$('#swfupload-control').swfupload('addPostParam', 'contractDescription', $("#contractDescription").val());
+	$('#swfupload-control').swfupload('addPostParam', 'qualityControlClause', $("#qualityControlClause").val());
+	$('#swfupload-control').swfupload('addPostParam', 'depositCollectDate', $("#depositCollectDate").val());
+	$('#swfupload-control').swfupload('addPostParam', 'depositCollectAmount', $("#depositCollectAmount").val());
+	$('#swfupload-control').swfupload('addPostParam', 'depositCollector', $("#depositCollector").val());
+	$('#swfupload-control').swfupload('addPostParam', 'depositPayor', $("#depositPayor").val());
+	$('#swfupload-control').swfupload('startUpload');
 }
 
 function submitCreateForm(form) {
