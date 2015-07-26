@@ -501,6 +501,7 @@ src/main/java/cn/explink/b2c/vipshop/VipShopExceptionHandler.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopFlowEnum.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopGetCwbDataService.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopMD5Util.java -text
+src/main/java/cn/explink/b2c/vipshop/VipShopOXOController.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopService.java -text
 src/main/java/cn/explink/b2c/vipshop/VipshopInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/vipshop/address/AddressInterfaceController.java -text
@@ -522,6 +523,8 @@ src/main/java/cn/explink/b2c/vipshop/addresspre/request/RequestItems.java -text
 src/main/java/cn/explink/b2c/vipshop/addresspre/request/RequestXML.java -text
 src/main/java/cn/explink/b2c/vipshop/addresspre/response/Response.java -text
 src/main/java/cn/explink/b2c/vipshop/addresspre/response/ResponseItem.java -text
+src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOConfig.java -text
+src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOGetCwbDataService.java -text
 src/main/java/cn/explink/b2c/wangjiu/CwbColumnSetWangjiu.java -text
 src/main/java/cn/explink/b2c/wangjiu/Wangjiu.java -text
 src/main/java/cn/explink/b2c/wangjiu/WangjiuConfig.java -text
@@ -1985,6 +1988,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/tmall.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshop.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshop/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshopAddress.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/vipshopOXO.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/wangjiu.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/wanxiang.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/wenxuan/OrderDownWx.jsp -text

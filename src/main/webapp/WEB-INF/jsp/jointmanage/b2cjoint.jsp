@@ -427,6 +427,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/lefengdms/show/');
 			$("#del").val('<%=request.getContextPath()%>/lefengdms/del/');
 		}
+		else if(obj=='20090'){
+			$("#edit").val('<%=request.getContextPath()%>/vipshopOXO/show/');
+			$("#del").val('<%=request.getContextPath()%>/vipshopOXO/del/');
+		}
 
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
