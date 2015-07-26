@@ -6169,42 +6169,42 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> findCwbByCustomerid(long customerid){
-		String sql="select * from express_ops_cwb_detail where customerid="+customerid;
+		String sql="select * from express_ops_cwb_detail where state=1 and customerid="+customerid;
 
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
 	public List<CwbOrder> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public long findcwbByCwbsAndDateAndtypeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
+		String sql="select count(1) from express_ops_cwb_detail  where cwb in("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 	public long findcwbByCwbsAndDateAndtypeEditCount(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select count(1) from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
+		String sql="select count(1) from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbtypeid+"'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 	public List<CwbOrder> findcwbByCwbsAndDate(String cwbs,String startdate,String enddate){
-		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public List<CwbOrder> findcwbByCwbsAndDatePage(String cwbs,String startdate,String enddate,int start,int pageSize){
-		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' limit "+start+","+pageSize;
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' limit "+start+","+pageSize;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
 	public List<CwbOrder> findcwbByCwbsAndDatePageLike(String cwbs,String startdate,String enddate,int start,int pageSize){
-		String sql="select * from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' limit "+start+","+pageSize;
+		String sql="select * from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' limit "+start+","+pageSize;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public long findcwbByCwbsAndDateCount(String cwbs,String startdate,String enddate){
-		String sql="select count(1) from express_ops_cwb_detail  where cwb in ("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
+		String sql="select count(1) from express_ops_cwb_detail  where cwb in ("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 	public long findcwbByCwbsAndDateEditCount(String cwbs,String startdate,String enddate){
-		String sql="select count(1) from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
+		String sql="select count(1) from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
@@ -6236,13 +6236,13 @@ public class CwbDAO {
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePage(String cwbs,
 			String startdate, String enddate, String cwbOrderType, int start,
 			int number) {
-		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbOrderType+"' limit "+start+","+number;
+		String sql="select * from express_ops_cwb_detail  where cwb in("+cwbs+") and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbOrderType+"' limit "+start+","+number;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePageLike(String cwbs,
 			String startdate, String enddate, String cwbOrderType, int start,
 			int number) {
-		String sql="select * from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbOrderType+"' limit "+start+","+number;
+		String sql="select * from express_ops_cwb_detail  where cwb like '%"+cwbs+"%' and state=1 and emaildate>'"+startdate+"' and emaildate<'"+enddate+"' and cwbordertypeid='"+cwbOrderType+"' limit "+start+","+number;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
