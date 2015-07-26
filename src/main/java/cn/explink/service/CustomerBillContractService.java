@@ -66,8 +66,9 @@ public class CustomerBillContractService {
 			for(ImportBillExcel str:cwborderlist){
 				sb=sb.append(str.getCwb()+",");
 			}
-		}
+		
 			cwbs=sb.substring(0, sb.length()-1);	
+		}
 		return cwbs;	
 	}
 	
@@ -77,6 +78,7 @@ public class CustomerBillContractService {
 		if(cwborderlist.size()>0){
 			for(DeliveryState str:cwborderlist){
 				sb=sb.append("'"+str.getCwb()+"',");
+			
 			}
 			cwbs=sb.substring(0, sb.length()-1);	
 		}

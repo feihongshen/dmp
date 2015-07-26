@@ -344,7 +344,7 @@ public class CustomerBillContractDao {
 					return this.jdbcTemplate.query(sql,new CustomerBillContractVOmapper(),BillBatches);
 			}
 			
-			public SerachCustomerBillContractVO findSerachCustomerBillContractVOByBillBatches(String cwb){			
+			public SerachCustomerBillContractVO findSerachCustomerBillContractVOBycwb(String cwb){			
 				String sql="select * from customerbillcontractvo where cwb='"+cwb+"'";
 				SerachCustomerBillContractVO cbc=null;
 				try {
@@ -356,7 +356,23 @@ public class CustomerBillContractDao {
 					// TODO Auto-generated catch block
 					return null;
 				}
-		}
+			}
+			
+			
+			public List<SerachCustomerBillContractVO> findSerachCustomerBillContractVOByBatches(String batches){			
+				String sql="select * from customerbillcontractvo where bill_batches='"+batches+"'";
+				List<SerachCustomerBillContractVO> cbc=null;
+				try {
+					
+					cbc=jdbcTemplate.query(sql,new CustomerBillContractVOmapper());
+
+					return cbc;
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					return null;
+				}
+			}
+			
 			public long findSerachCustomerBillContractVOByBillBatchesCount(String BillBatches){
 				String sql="select count(1) from customerbillcontractvo where bill_batches=?";
 				return this.jdbcTemplate.queryForLong(sql,BillBatches);
@@ -371,6 +387,15 @@ public class CustomerBillContractDao {
 				 String sql="delete from customerbillcontractvo where bill_batches='"+billbatches+"'";
 				 this.jdbcTemplate.update(sql);
 			}
+			
+			
+			public void changeImportToDmpMoney(String cwb,String billBatches,BigDecimal importMoney){
+				 String sql="update customerbillcontractvo set total_charge="+importMoney+" where cwb='"+cwb+"' and bill_batches='"+billBatches+"'";
+				 this.jdbcTemplate.update(sql);
+			}
+			
+			
+			
 			
 			public void changeBillState(long state,String batches){
 				String sql="update customerbillcontract set bill_state="+state+" where bill_batches='"+batches+"'";
@@ -416,6 +441,11 @@ public class CustomerBillContractDao {
 			
 		return this.jdbcTemplate.queryForObject(sql, new BillloadExcelmapper());		
 	}
+		
+		public void removeImportExcelByBatches(String batches){
+			String sql="delete from importbillexcel where bill_batches='"+batches+"'";
+			this.jdbcTemplate.update(sql);
+		}
 
 
 }

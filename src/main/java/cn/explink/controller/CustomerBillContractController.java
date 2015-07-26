@@ -260,7 +260,7 @@ public class CustomerBillContractController {
 		String cwb=req.getParameter("cwb");	
 		String billBatchs=req.getParameter("billBatches");
 		CustomerBillContract c=customerbillcontractdao.datebillBatche(billBatchs); 
-		SerachCustomerBillContractVO c1=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(cwb);
+		SerachCustomerBillContractVO c1=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(cwb);
 		String cwbs=c.getCwbs();
 		String cwbss[]=cwbs.split(",");
 		StringBuilder sb = new StringBuilder();
@@ -492,6 +492,9 @@ public class CustomerBillContractController {
 			String billBatchs=req.getParameter("billBatches");
 			
 			customerbillcontractdao.changeBillState(Integer.valueOf(billState),billBatchs);
+			if(Integer.valueOf(billState)==BillStateEnum.YiHeXiao.getValue()){
+				customerbillcontractdao.removeImportExcelByBatches(billBatchs);	
+			}
 			
 			return "{\"success\":0,\"successdata\":\"修改成功\"}";		
 		}
@@ -601,7 +604,7 @@ public class CustomerBillContractController {
 			StringBuilder sb = new StringBuilder();
 			String cwbss="";
 			for(String s:cwbs){
-				SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(s);
+				SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(s);
 				
 				for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
 					if(s.equals(l.getCwb())){
@@ -758,7 +761,7 @@ public class CustomerBillContractController {
 							String cwbss="";
 		/*BigDecimal allmoney=new BigDecimal("0");*/
 		for(String s:cwbs){
-			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(s);
+			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(s);
 			
 			for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
 					if(s.equals(l.getCwb())){
@@ -778,7 +781,7 @@ public class CustomerBillContractController {
 		
 						for(String str:cwbsss){
 			
-							SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOByBillBatches(str);
+							SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(str);
 							ImportBillExcel l=customerbillcontractdao.findImportBillExcelBycwb(str);
 							c.setImporttotalCharge(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
 							ls.add(c);
@@ -853,6 +856,37 @@ public class CustomerBillContractController {
 	/*	Map<String, Object> jsonMap=new HashMap<String, Object>();
 		jsonMap.put("rows", ibelist);*/
 		return ibelist;	
+	}
+	  
+	
+	
+	@RequestMapping("/changeImportToSystemMoney")
+	@ResponseBody
+	public String changeImportToSystemMoney(HttpServletRequest req){
+		String cwb = req.getParameter("cwb");
+		String billBatches = req.getParameter("billBatches");
+		String importtotalCharge = req.getParameter("importtotalCharge");
+		BigDecimal bd = new BigDecimal(importtotalCharge);
+		customerbillcontractdao.changeImportToDmpMoney(cwb, billBatches, bd);
+		
+		return "{\"success\":0,\"successdata\":\"修改成功\"}";
+	}
+	
+
+	@RequestMapping("/changeImportToSystemAllMoney")
+	@ResponseBody
+	public String changeImportToSystemAllMoney(HttpServletRequest req){
+		String billBatches = req.getParameter("billBatches");
+		List<ImportBillExcel> lm=customerbillcontractdao.findImportBillExcelByBatches(billBatches);
+		List<SerachCustomerBillContractVO> ls=customerbillcontractdao.findSerachCustomerBillContractVOByBatches(billBatches);
+		for(ImportBillExcel l:lm){
+			for(SerachCustomerBillContractVO s:ls){
+				if(l.getCwb().equals(s.getCwb())){
+					customerbillcontractdao.changeImportToDmpMoney(l.getCwb(),billBatches, l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
+				}
+			}
+		}
+		return "{\"success\":0,\"successdata\":\"修改成功\"}";
 	}
 
 }

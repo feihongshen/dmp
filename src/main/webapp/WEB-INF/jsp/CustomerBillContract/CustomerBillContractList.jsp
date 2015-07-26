@@ -961,6 +961,51 @@ function clickimportAllMoney(value, row, index){
 		return "<a href='javascript:;' onclick='importAllMoney(\""+row.cwb+"\")'>"+value+"</a>";
 }
 
+function changeImportToDmpMoney(){
+	 var row = $('#dgMoneyChaYi').datagrid('getSelected');
+		if(row){ 
+
+			$.messager.confirm('提示','你确定要改变这条记录吗?',function(r){
+				if (r){
+					$.post('${pageContext.request.contextPath}/CustomerBillContract/changeImportToSystemMoney',{cwb:row.cwb,billBatches:$('#hv').val(),importtotalCharge:row.importtotalCharge},function(result){
+						if (result.success==0){
+
+							$.messager.show({	// show success message
+								title: '更改成功',
+								msg: result.successdata
+							});// reload the data
+						
+							$('#dgMoneyChaYi').datagrid("reload");
+						} 
+						
+					},'json');
+				}
+			});	
+		}
+}
+
+function changeImportToDmpAllMoney(){
+	
+
+			$.messager.confirm('提示','你确定要改变这条记录吗?',function(r){
+				if (r){
+					$.post('${pageContext.request.contextPath}/CustomerBillContract/changeImportToSystemAllMoney',{billBatches:$('#hv').val()},function(result){
+						if (result.success==0){
+
+							$.messager.show({	// show success message
+								title: '更改成功',
+								msg: result.successdata
+							});// reload the data
+						
+							$('#dgMoneyChaYi').datagrid("reload");
+						} 
+						
+					},'json');
+				}
+			});	
+		
+}
+
 
 function importAllMoney(a){
 
@@ -1315,13 +1360,13 @@ function importAllMoney(a){
 		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()">从当前账单移除</a>
 		</div>
 		
-		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px" closed="true"> <!-- buttons="#dlgAddMoneyChaYi-buttons" -->
+		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px" closed="true" buttons="#dlgAddMoneyChaYi-buttons">
 			<table id="dgMoneyChaYi" class="fitem" border="1"></table>
 		</div>
-		<!-- <div id="dlgAddMoneyChaYi-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBillCwbNumInChaYi()">基于导入更新全部订单配费</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="removeofEditInChaYi()">基于导入更新订单配费</a>
-		</div> -->
+		<div id="dlgAddMoneyChaYi-buttons">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpAllMoney()">基于导入更新全部订单配费</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpMoney()">基于导入更新订单配费</a>
+		</div>
 		<div id="importAllMoneydiv" class="easyui-dialog" style="width:668px;height:135px;padding:10px 20px" closed="true">
 			<!--  	 <table id="dgimportAllMoney" border="1"></table>  -->
 		
