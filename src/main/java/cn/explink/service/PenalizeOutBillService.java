@@ -67,7 +67,7 @@ public class PenalizeOutBillService {
 				if (out.getPenalizeOutfee() != null) {
 					BigDecimal fee = out.getPenalizeOutfee();
 					sum = sum.add(fee);
-					odd += out.getCwb()+",";
+					odd += out.getPenalizeOutNO()+",";
 				}
 			}
 			if(StringUtils.isNotBlank(odd)){
