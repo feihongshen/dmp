@@ -135,7 +135,7 @@ public class CustomerBillContractController {
 	@RequestMapping("/addBill")
 	@ResponseBody
 	public CustomerBillContract add(
-					@RequestParam(value="customerId") long customerid,
+					@RequestParam(value="crecustomerId") long customerid,
 					@RequestParam(value="dateState") long dateState,
 					@RequestParam(value="startdate") String startdate,
 					@RequestParam(value="enddate") String enddate,
@@ -150,18 +150,22 @@ public class CustomerBillContractController {
 				String cwbs=customerbillcontractservice.listToString(cwborderlist);			
 				List<CwbOrder> col=null;
 				long correspondingCwbNum=0;
+		
 			if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){
 				
 				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-				
-				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-					col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
-					correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-				}else{
-					col=cwbdao.getCwbByCwbs(dcwbs);
-					correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-				}	
+				if(dcwbs.length()>0){
+						if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
+							col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
+							correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+						}else{
+							col=cwbdao.getCwbByCwbs(dcwbs);
+							correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
+						}	
+					}else{
+						col=null;
+					}
 			
 				}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){
 					if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
@@ -177,16 +181,19 @@ public class CustomerBillContractController {
 				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 					List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 					String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-				
-					if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-						col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
-						correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+					if(dcwbs.length()>0){
+							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
+								col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
+								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+							}else{
+								col=cwbdao.getCwbByCwbs(dcwbs);
+								correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
+							}	
 					}else{
-						col=cwbdao.getCwbByCwbs(dcwbs);
-						correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-					}				
+						col=null;
+					}	
 			}	
-			
+		
 				String dateRange=startdate+"至"+enddate;   //日期范围
 				String BillBatches=customerbillcontractservice.getBillBatches(); //自动生成批次号
 				long initbillState= BillStateEnum.WeiShenHe.getValue();  //默认未审核
@@ -194,7 +201,7 @@ public class CustomerBillContractController {
 				BigDecimal distributionMoney=new BigDecimal("0"); //配送费
 				BigDecimal transferMoney=new BigDecimal("0");	//中转费
 				BigDecimal refuseMoney=new BigDecimal("0");  //拒收派费
-			
+			if(col!=null){
 				StringBuilder sb = new StringBuilder();
 				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
 				long a=0;
@@ -228,21 +235,22 @@ public class CustomerBillContractController {
 				
 					customerbillcontractdao.addBillVo(sv);
 				}
-				System.out.println(a);
 				String cwbsOfOneBill=sb.substring(0,sb.length()-1);
 				BigDecimal totalCharge=new BigDecimal("0"); //派费总计	
 				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
 				
 				
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
-			
+
 				
 				CustomerBillContract c=customerbillcontractdao.datebillBatche(BillBatches);
 				
-				
-				
-		return c;  
-		
+				if(col!=null&&correspondingCwbNum!=0){
+					return c;  
+				}
+			}
+				return null;
+	
 	}
 	
 		@RequestMapping("/removeBill")
@@ -259,6 +267,8 @@ public class CustomerBillContractController {
 		public String removeBill(HttpServletRequest req){
 		String cwb=req.getParameter("cwb");	
 		String billBatchs=req.getParameter("billBatches");
+		SerachCustomerBillContractVO cs=customerbillcontractdao.queryCustomerbillcontractvo(cwb,billBatchs);
+		if(cs!=null){
 		CustomerBillContract c=customerbillcontractdao.datebillBatche(billBatchs); 
 		SerachCustomerBillContractVO c1=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(cwb);
 		String cwbs=c.getCwbs();
@@ -272,15 +282,17 @@ public class CustomerBillContractController {
 		}
 		String newcwb=sb.substring(0,sb.length()-1);
 		
-		long newcorrespondingCwbNum=c.getCorrespondingCwbNum()-1;		
-		BigDecimal newDeliveryMoney=c.getDeliveryMoney().subtract(c1.getDeliveryMoney());
-		BigDecimal newdistributionMoney=c.getDistributionMoney().subtract(c1.getDistributionMoney());
-		BigDecimal newrefuseMoney=c.getRefuseMoney().subtract(c1.getRefuseMoney());
-		BigDecimal newtransferMoney=c.getTransferMoney().subtract(c1.getTransferMoney());
-		BigDecimal newtotalCharge=c.getTotalCharge().subtract(c1.getDeliveryMoney().subtract(c1.getDistributionMoney()).subtract(c1.getRefuseMoney()).subtract(c1.getTransferMoney()));
-		customerbillcontractdao.updateCustomerBillContract(newcwb,billBatchs, newcorrespondingCwbNum, newDeliveryMoney, newdistributionMoney, newrefuseMoney, newtransferMoney, newtotalCharge);
-		customerbillcontractdao.removeSerachCustomerBillContractVOByCwb(cwb);
-		return "{\"success\":0,\"successdata\":\"删除成功\"}";
+			long newcorrespondingCwbNum=c.getCorrespondingCwbNum()-1;		
+			BigDecimal newDeliveryMoney=c.getDeliveryMoney().subtract(c1.getDeliveryMoney());
+			BigDecimal newdistributionMoney=c.getDistributionMoney().subtract(c1.getDistributionMoney());
+			BigDecimal newrefuseMoney=c.getRefuseMoney().subtract(c1.getRefuseMoney());
+			BigDecimal newtransferMoney=c.getTransferMoney().subtract(c1.getTransferMoney());
+			BigDecimal newtotalCharge=c.getTotalCharge().subtract(c1.getDeliveryMoney().subtract(c1.getDistributionMoney()).subtract(c1.getRefuseMoney()).subtract(c1.getTransferMoney()));
+			customerbillcontractdao.updateCustomerBillContract(newcwb,billBatchs, newcorrespondingCwbNum, newDeliveryMoney, newdistributionMoney, newrefuseMoney, newtransferMoney, newtotalCharge);
+			customerbillcontractdao.removeSerachCustomerBillContractVOByCwb(cwb);
+			return "{\"success\":0,\"successdata\":\"删除成功\"}";
+		}
+		return "{\"success\":1,\"successdata\":\"该订单不存在\"}";
 		}
 		
 		
@@ -340,13 +352,14 @@ public class CustomerBillContractController {
 	        int start = (intPage-1)*number; 
 	      
 	        String billBatches=req.getParameter("billBatches");
+	        //根据账单批次查找账单
 	    	CustomerBillContract c=customerbillcontractdao.datebillBatche(billBatches);
-	    	long customerid=c.getCustomerId();
-	    	String rangeDate=c.getDateRange().trim();
+	    	long customerid=c.getCustomerId();  //过去账单所属客户
+	    	String rangeDate=c.getDateRange().trim(); //查找该账单所属的订单的日期范围
 	    	long dateState=c.getDateState();//"2015-03-18至2015-07-13"
 	    	String startdate=rangeDate.substring(0,10).trim();
 	    	String enddate=rangeDate.substring(11,21).trim();
-	    	String cwbOrderType=String.valueOf(c.getCwbOrderType());
+	    	String cwbOrderType=String.valueOf(c.getCwbOrderType()); //该账单所属的订单类型
 	    	//查找所有该客户下的订单信息
 			List<CwbOrder> cwborderlist=cwbdao.findCwbByCustomerid(customerid);
 			List<CwbOrder> col=null;
@@ -502,31 +515,33 @@ public class CustomerBillContractController {
 		@RequestMapping("/getupdateExcel")
 		@ResponseBody
 		public String getupdateExcel(@RequestParam("uploadExcel") CommonsMultipartFile uploadExcel,  
-	            HttpServletRequest request, HttpServletResponse response){
+	            HttpServletRequest request, HttpServletResponse response)throws Exception{
 					String billBatches=request.getParameter("billBatches");
 			InputStream in = null;
-			try {
+			
 				in = uploadExcel.getInputStream();
 				/*POIFSFileSystem pfs = new POIFSFileSystem(in);*/
 				List<ImportBillExcel> objlist=customerbillcontractservice.getUploadExcel(in);
 /*				BigDecimal b = new BigDecimal("0");*/
+		
+					StringBuilder sb = new StringBuilder();
+					String cwbs="";	
+					if(objlist.size()>0){
+						for(ImportBillExcel str:objlist){
+							sb=sb.append("'"+str.getCwb()+"',");
+						}
+						cwbs=sb.substring(0, sb.length()-1);	
+					}
+					List<ImportBillExcel> lc=customerbillcontractdao.queryImportBillExcel(cwbs,billBatches);
+					if(lc!=null&&lc.size()>0){						
+						return "{\"success\":1,\"successdata\":\"已存在相关上传文件\"}";
+					}
+				
 				for(ImportBillExcel o:objlist){
 					customerbillcontractdao.addBillloadExcel(o, billBatches);
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally{
-				try {
-					in.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			
-			return "{\"success\":0,\"successdata\":\"上传成功\"}";		
+				return "{\"success\":0,\"successdata\":\"上传成功\"}";		
+					
 		}
 		
 		@RequestMapping("/addCwbInEdit")
@@ -783,7 +798,9 @@ public class CustomerBillContractController {
 						for(String str:cwbsss){
 			
 							SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(str);
-							ImportBillExcel l=customerbillcontractdao.findImportBillExcelBycwb(str);
+							
+							ImportBillExcel l=customerbillcontractdao.findImportBillExcelBycwbAndBatches(str,batches);
+							
 							c.setImporttotalCharge(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
 							ls.add(c);
 			
@@ -797,7 +814,7 @@ public class CustomerBillContractController {
 	@RequestMapping("/panDuanDateShiFouChongDie")
 	@ResponseBody
 	public String panDuanDateShiFouChongDie(HttpServletRequest req){
-		String customerid=req.getParameter("customerId");		
+		String customerid=req.getParameter("crecustomerId");		
 		String creend=req.getParameter("enddate");
 		String crestart=req.getParameter("startdate");
 		String dateState=req.getParameter("dateState");
@@ -806,9 +823,8 @@ public class CustomerBillContractController {
 		List<CustomerBillContract> l=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
 		String dateType=CwbDateEnum.getTextByValue(Integer.valueOf(dateState)).toString();
 		String dateChongFu="";
-		StringBuffer sb = new StringBuffer(); 
+		StringBuffer sb = new StringBuffer();
 		if(l.size()>0){
-		
 		for(CustomerBillContract c:l){
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  	
 			String startdate=c.getDateRange().substring(0,10).trim(); //分别从账单中提取日期范围

@@ -307,6 +307,30 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  	 
 	  	 
 	  	 function datChongFuYanZheng(){
+	  		var a=$('#dstart').datebox("getValue");
+				var b=$('#dend').datebox("getValue");
+				var d=DateDiff(a,b);	  				
+				if(d>60){
+					 $.messager.alert('提示','时间跨度不能大于60天！','info');   
+					$.messager.progress('close');
+					return false;
+				}
+				if(a==""||b==""){
+					 $.messager.alert('提示','时间不能为空！','info');   
+  					$.messager.progress('close');
+  					return false;
+				}
+
+  				if($("input[name='crecustomerId']").val()==""){
+  					 $.messager.alert('提示','客户名称不能为空！','info');   
+	  					$.messager.progress('close');
+	  					return false;
+  				}
+  				if($("input[name='dateState']").val()==""){
+  					 $.messager.alert('提示','时间类型不能为空！','info');   
+	  					$.messager.progress('close');
+	  					return false;
+  				}
 	  		 $.ajax({
 	  			 	type:'POST',
 	  			 	data:$('#fm').serialize(),
@@ -349,29 +373,21 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  		$('#fm').form('submit',{
 	  			url:'${pageContext.request.contextPath}/CustomerBillContract/addBill',
 	  			onSubmit: function(){
-	  				var a=$('#dstart').datebox("getValue");
-	  				var b=$('#dend').datebox("getValue");
-	  				var d=DateDiff(a,b);	  				
-	  				if(d>60){
-	  					 $.messager.alert('提示','时间跨度不能大于60天！','info');   
-	  					$.messager.progress('close');
-	  					return false;
-	  				}
+	  				
 	  				return true;
 	  			},
 	  			success: function(data){
-	  				var data = eval('('+data+')');	  				
-	  					/* $.messager.show({
-	  		 			title: '成功',
-	  						msg: data.successdata
-	  					});  */
+	  				if(data!=""){
+	  					var data = eval('('+data+')');	  				
 	  					$('#dlg').dialog('close');
 	  					$('#dg').datagrid('reload');
 	  					$.messager.progress('close');	// 如果提交成功则隐藏进度条
 	  					var billBatches=data.billBatches;
-	  					neweditbill1(billBatches);
-	  				
-	  				
+	  					neweditbill1(billBatches);	 
+					}else{
+							$.messager.progress('close');
+						  $.messager.alert('提示','没有查询到相关订单，不能创建账单！','info');  
+					}
 	  			}
 	  		});
 	  	}
@@ -785,6 +801,13 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
       	  					
       	  					$('#dga').datagrid('reload');
       	  				
+      	  				}else{
+      	  				$.messager.show({
+      	  		 			title: '上传失败',
+      	  						msg: data.successdata
+      	  					}); 
+      	  					
+      	  					$('#dga').datagrid('reload');
       	  				} 
       	  			}
       	  		});
@@ -912,16 +935,21 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 								$.messager.show({	// show success message
 									title: '删除成功',
 									msg: result.successdata
-								});// reload the data
-							
-					
-							} 
+								});// reload the data					
 							findCustomerBillContractByBatches();
 							$('#dga').datagrid('reload');		
 							$('#dg').datagrid('reload'); 
 							$('#dgCountChaYi').datagrid('reload');
 							$('#fm2').form('reload');
 							ChaYidl();
+							}else{
+								$.messager.show({	// show success message
+									title: '删除失败',
+									msg: result.successdata
+								});// reload the data
+								$('#dga').datagrid('reload');		
+								$('#dg').datagrid('reload'); 
+							} 
 						},'json');
 					}
 				});
@@ -1084,7 +1112,7 @@ function importAllMoney(a){
 					<li>
 						<div class="fitem">
 							<label>客户名称:</label>
-								<input type="text" name="customerId" id="crecustomerId" 
+								<input type="text" name="crecustomerId" id="crecustomerId" 
 								 	data-options="width:150,prompt: '客户名称'"
 								 	initDataType="TABLE" 
 								 	initDataKey="Customer"
@@ -1355,8 +1383,8 @@ function importAllMoney(a){
 		<table id="dgCountChaYi" class="fitem" border="1"></table>
 		</div>
 		<div id="dlgAddChaYi-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addBillCwbNumInChaYi()">加入当前账单</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()">从当前账单移除</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addBillCwbNumInChaYi()" id="addCurrentBill">加入当前账单</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()" id="removeCurrentBill">从当前账单移除</a>
 		</div>
 		
 		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px" closed="true" buttons="#dlgAddMoneyChaYi-buttons">

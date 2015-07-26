@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -507,17 +508,30 @@ public class ExportwarhousesummaryDAO {
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
-		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
+		List<CwbOrder> cwblist;
+		try {
+			cwblist = jdbcTemplate.query(sql, new Cwbs());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			cwblist=null;
+		}
 		List<CwbOrder> cwborderlist=null;
 		if(!cwbtypeid.equals("")&&Integer.valueOf(cwbtypeid)>0){
 			StringBuilder sb = new StringBuilder();
 			String listcwbs="";	
+			if(cwblist!=null){
 				for(CwbOrder str:cwblist){
 					sb=sb.append("'"+str.getCwb()+"',");
 				}
 				listcwbs=sb.substring(0, sb.length()-1);
+			}
 			String sql1="select * from express_ops_cwb_detail where cwb in("+listcwbs+") and state=1  and cwbordertypeid='"+cwbtypeid+"'";
-			cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			try {
+				cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				cwborderlist=null;
+			}
 		}else{  
 			cwborderlist=cwblist;
 		}
@@ -526,7 +540,13 @@ public class ExportwarhousesummaryDAO {
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePage(String cwbs,String startdate,String enddate,String cwbtypeid,int start,int pageSize){
 		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"' limit "+start+","+pageSize;
-		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
+		List<CwbOrder> cwblist;
+		try {
+			cwblist = jdbcTemplate.query(sql, new Cwbs());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			cwblist=null;
+		}
 		List<CwbOrder> cwborderlist=null;
 		if(!cwbtypeid.equals("")&&Integer.valueOf(cwbtypeid)>0){
 			StringBuilder sb = new StringBuilder();
@@ -536,7 +556,12 @@ public class ExportwarhousesummaryDAO {
 				}
 				listcwbs=sb.substring(0, sb.length()-1);
 			String sql1="select * from express_ops_cwb_detail where cwb in("+listcwbs+") and state=1  and cwbordertypeid='"+cwbtypeid+"'";
-			cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			try {
+				cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
 		}else{  
 			cwborderlist=cwblist;
 		}
@@ -545,7 +570,13 @@ public class ExportwarhousesummaryDAO {
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePageLike(String cwbs,String startdate,String enddate,String cwbtypeid,int start,int pageSize){
 		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1 and credate>'"+startdate+"' and credate<'"+enddate+"' limit "+start+","+pageSize;
-		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
+		List<CwbOrder> cwblist;
+		try {
+			cwblist = jdbcTemplate.query(sql, new Cwbs());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			cwblist=null;
+		}
 		List<CwbOrder> cwborderlist=null;
 		if(!cwbtypeid.equals("")&&Integer.valueOf(cwbtypeid)>0){
 			StringBuilder sb = new StringBuilder();
@@ -555,7 +586,12 @@ public class ExportwarhousesummaryDAO {
 				}
 				listcwbs=sb.substring(0, sb.length()-1);
 			String sql1="select * from express_ops_cwb_detail where cwb in("+listcwbs+") and state=1  and cwbordertypeid='"+cwbtypeid+"'";
-			cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			try {
+				cwborderlist=jdbcTemplate.query(sql1,new CwbMapper());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
 		}else{  
 			cwborderlist=cwblist;
 		}

@@ -86,50 +86,81 @@ public class CustomerBillContractService {
 	}
 
 	public List<CwbOrder> findAllByCwbDate(String cwbs,String startdate,String enddate) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDate(cwbs,startdate,enddate);
 		return col;
+		}
+		return null;
 	}
 	
 	public List<CwbOrder> findAllByCwbDate(String cwbs,String startdate,String enddate,int start,int number) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDatePage(cwbs,startdate,enddate,start,number);
 		return col;
+		}
+		return null;
 	}
 	public List<CwbOrder> findAllByCwbDatelike(String cwbs,String startdate,String enddate,int start,int number) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDatePageLike(cwbs,startdate,enddate,start,number);
 		return col;
+		}
+		return null;
 	}
 
 	public List<CwbOrder> findAllByCwbDateType(String cwbs, String startdate,
 			String enddate, String cwbOrderType,int start,int pagesize) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDateAndtypePage(cwbs,startdate,enddate,cwbOrderType,start,pagesize);
 		return col;
+		}
+		return null;
 	}
 	public List<CwbOrder> findAllByCwbDateTypeLike(String cwbs, String startdate,
 			String enddate, String cwbOrderType,int start,int pagesize) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDateAndtypePageLike(cwbs,startdate,enddate,cwbOrderType,start,pagesize);
 		return col;
+		}
+		return null;
+		
 	}
 	
 	public List<CwbOrder> findAllByCwbDateType(String cwbs, String startdate,
 			String enddate, String cwbOrderType) {
-		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDateAndtype(cwbs,startdate,enddate,cwbOrderType);
+		List<CwbOrder> col;
+		try {
+			col = cwbdao.findcwbByCwbsAndDateAndtype(cwbs,startdate,enddate,cwbOrderType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
 		return col;
 	}
 
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypeedao(String cwbs,
-			String string, String string2, String cwbOrderType) {		
+			String string, String string2, String cwbOrderType) {	
+		if(cwbs!=null&&!cwbs.equals("")){
 		return edao.findcwbByCwbsAndDateAndtype(cwbs, string, string2, cwbOrderType);
+		}
+		return null;
 	}
 	
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypeedao(String cwbs,
 			String string, String string2, String cwbOrderType,int start,int pageSize) {		
-		return edao.findcwbByCwbsAndDateAndtypePage(cwbs, string, string2, cwbOrderType,start,pageSize);
+		if(cwbs!=null&&!cwbs.equals("")){
+			return edao.findcwbByCwbsAndDateAndtypePage(cwbs, string, string2, cwbOrderType,start,pageSize);
+		}
+		return null;
 	}
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypeedaolike(String cwbs,
 			String string, String string2, String cwbOrderType,int start,int pageSize) {		
+		if(cwbs!=null&&!cwbs.equals("")){
 		return edao.findcwbByCwbsAndDateAndtypePageLike(cwbs, string, string2, cwbOrderType,start,pageSize);
+		}
+		return null;
 	}
 	
 	/**
@@ -232,8 +263,11 @@ public class CustomerBillContractService {
 
 	public List<CwbOrder> findAllByCwbDateTypePage(String cwbs, String startdate,
 			String enddate, String cwbOrderType, int start, int number) {
+		if(cwbs!=null&&!cwbs.equals("")){
 		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDateAndtypePage(cwbs,startdate,enddate,cwbOrderType,start,number);
 		return col;
+	}
+	return null;
 		
 	}
 	

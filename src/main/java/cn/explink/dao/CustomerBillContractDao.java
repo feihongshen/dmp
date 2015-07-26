@@ -394,7 +394,18 @@ public class CustomerBillContractDao {
 				 this.jdbcTemplate.update(sql);
 			}
 			
-			
+			public SerachCustomerBillContractVO queryCustomerbillcontractvo(String cwb,String batches){
+				String sql="select * from customerbillcontractvo where cwb='"+cwb+"' and bill_batches='"+batches+"'";
+				SerachCustomerBillContractVO l;
+				try {
+					l = this.jdbcTemplate.queryForObject(sql, new CustomerBillContractVOmapper());
+				} catch (DataAccessException e) {
+					// TODO Auto-generated catch block
+					return null;
+				}	
+				System.out.println(sql+"111");
+				return l;
+			}
 			
 			
 			public void changeBillState(long state,String batches){
@@ -440,11 +451,25 @@ public class CustomerBillContractDao {
 			String sql="select * from importbillexcel where cwb='"+cwb+"'";
 			
 		return this.jdbcTemplate.queryForObject(sql, new BillloadExcelmapper());		
-	}
+		}
+		
+		public ImportBillExcel findImportBillExcelBycwbAndBatches(String cwb,String batches){
+			String sql="select * from importbillexcel where cwb='"+cwb+"' and bill_batches='"+batches+"'";
+			
+		return this.jdbcTemplate.queryForObject(sql, new BillloadExcelmapper());		
+		}
 		
 		public void removeImportExcelByBatches(String batches){
 			String sql="delete from importbillexcel where bill_batches='"+batches+"'";
 			this.jdbcTemplate.update(sql);
+		}
+		
+		public List<ImportBillExcel> queryImportBillExcel(String cwbs,String batches){
+			String sql="select * from importbillexcel where cwb in("+cwbs+") and bill_batches='"+batches+"'";
+			
+			List<ImportBillExcel> l = this.jdbcTemplate.query(sql, new BillloadExcelmapper());
+			
+			return l;
 		}
 
 
