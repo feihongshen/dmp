@@ -7765,7 +7765,7 @@ CREATE TABLE `cs_complaint_accept` (
     </changeSet>
     <changeSet id="wangqiang-2015-07-24-01" author="wangqiang">
 		<sql>
-		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&','8030');
+		INSERT INTO dmp40_function VALUES('803050','2','签收单个站点余额报表','803050','${eapUrl}reportForm.do?sigleStations&amp;','8030');
 		</sql>
 	</changeSet>
 	<changeSet id="wangzhiyong-2015-07-24-01" author="wangzhiyong">
@@ -7789,6 +7789,76 @@ CREATE TABLE `cs_complaint_accept` (
 				) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8;
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-07-26-01" author="wangzhiyong">
+		<sql>
+			INSERT INTO dmp40_function VALUES ('808060', '2', '客户派费账单', '808060', 'CustomerBillContract/CustomerBillContractList?', '8080' );
+			
+		</sql>
+	</changeSet>
+	<changeSet id="lichongchong-2015-07-26-1" author="lichongchong">
+    	<sql>
+    		CREATE TABLE `express_set_branch_delivery_fee_bill` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+			  `billBatch` varchar(100) DEFAULT '' COMMENT '账单批次',
+			  `billState` int(4) DEFAULT '0' COMMENT '账单状态',
+			  `branchId` int(11) DEFAULT '0' COMMENT '加盟商id',
+			  `createDate` varchar(20) DEFAULT '' COMMENT '创建日期',
+			  `heXiaoDate` varchar(20) DEFAULT '' COMMENT '核销日期',
+			  `dateType` int(4) DEFAULT '0' COMMENT '日期类型',
+			  `beginDate` varchar(20) DEFAULT '' COMMENT '开始日期',
+			  `endDate` varchar(20) DEFAULT '' COMMENT '结束日期',
+			  `cwbs` text COMMENT '订单ids',
+			  `cwbType` int(4) DEFAULT '0' COMMENT '订单类型',
+			  `cwbCount` int(20) DEFAULT '0' COMMENT '对应订单数',
+			  `deliveryFee` decimal(19,2) DEFAULT '0.00' COMMENT '派费合计',
+			  `remark` varchar(255) DEFAULT '' COMMENT '备注',
+			  `creator` int(11) DEFAULT '0' COMMENT '创建人',
+			  `heXiaoPerson` int(11) DEFAULT '0' COMMENT '核销人',
+			  `shenHePerson` int(11) DEFAULT '0' COMMENT '审核人',
+			  `shenHeDate` varchar(20) DEFAULT '' COMMENT '审核日期',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='加盟商派费账单';
+			
+			CREATE TABLE `express_set_branch_delivery_fee_bill_detail` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+			  `billId` int(11) DEFAULT NULL COMMENT '加盟商派费账单id',
+			  `cwb` varchar(100) DEFAULT NULL COMMENT '订单号',
+			  `flowordertype` int(10) DEFAULT NULL COMMENT '订单状态',
+			  `cwbordertypeid` varchar(11) DEFAULT '-1' COMMENT '订单类型',
+			  `customerid` int(11) DEFAULT '0' COMMENT '客户',
+			  `isReceived` int(10) DEFAULT '0' COMMENT '是否代收',
+			  `receivablefee` decimal(19,2) DEFAULT '0.00' COMMENT '代收货款应收金额',
+			  `emaildate` varchar(50) DEFAULT '' COMMENT '发货时间',
+			  `newpaywayid` varchar(10) DEFAULT '' COMMENT '付款方式',
+			  `podtime` varchar(50) DEFAULT '' COMMENT '签收日期',
+			  `sumFee` decimal(19,2) DEFAULT '0.00' COMMENT '派费金额合计',
+			  `basicFee` decimal(19,2) DEFAULT '0.00' COMMENT '基本派费',
+			  `collectionSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '代收补助费',
+			  `areaSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '区域属性补助费',
+			  `exceedSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '超区补助',
+			  `businessSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '业务补助',
+			  `attachSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '拖单补助',
+			  `deliverySumFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费合计',
+			  `deliveryBasicFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费基本派费',
+			  `deliveryCollectionSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费代收补助费',
+			  `deliveryAreaSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费区域属性补助费',
+			  `deliveryExceedSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费超区补助',
+			  `deliveryBusinessSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费业务补助',
+			  `deliveryAttachSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '配送费拖单补助',
+			  `pickupSumFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费合计',
+			  `pickupCollectionSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费代收补助费',
+			  `pickupAreaSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费区域属性补助费',
+			  `pickupExceedSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费超区补助',
+			  `pickupAttachSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费拖单补助',
+			  `pickupBasicFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费基本派费',
+			  `pickupBusinessSubsidyFee` decimal(19,2) DEFAULT '0.00' COMMENT '提货费业务补助',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='加盟商派费账单明细表';
+			
+			INSERT INTO dmp40_function VALUES('808080', '2', '加盟商派费账单', '808080', 'branchDeliveryFeeBill/branchDeliveryFeeBillList/1?', '8080' );
+			ALTER TABLE express_ops_cwb_detail ADD COLUMN branchfeebillexportflag INT(4) DEFAULT 0 COMMENT '加盟商派费账单导出标志' ;
+		</sql>
+    </changeSet>
 	<changeSet id="wangyonghe-2015-07-26-01" author="wangyonghe">
 		<sql>
 			ALTER TABLE `express_set_user`
