@@ -1,10 +1,11 @@
 package cn.explink.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,20 +37,24 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
+import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.Role;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryFeeBillCwbTypeEnum;
 import cn.explink.enumutil.DeliveryFeeBillDateTypeEnum;
 import cn.explink.enumutil.DeliveryFeeBillStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.BranchDeliveryFeeBillService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 @Controller
 @RequestMapping("/branchDeliveryFeeBill")
@@ -84,18 +89,6 @@ public class BranchDeliveryFeeBillController {
 		return userDetail.getUser();
 	}
 
-	// @RequestMapping("/CallerArchivalRepository/{page}")
-	// public String CallerArchivalRepository(Model model,CsConsigneeInfo
-	// cci,@PathVariable(value="page") long page){
-	// model.addAttribute("page", page);
-	// model.addAttribute("page_obj", new
-	// Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()),
-	// page, Page.ONE_PAGE_NUMBER));
-	// model.addAttribute("ccilist",
-	// workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
-	// return "workorder/CallerArchivalRepository";
-	// }
-
 	@RequestMapping("/branchDeliveryFeeBillList/{page}")
 	public String branchDeliveryFeeBillList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchDeliveryFeeBillVO queryConditionVO) {
@@ -121,6 +114,7 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("cwbTypeMap", cwbTypeMap);
 		model.addAttribute("dateTypeMap", dateTypeMap);
+		model.addAttribute("weiShenHeState", DeliveryFeeBillStateEnum.WeiShenHe.getValue());
 		return "branchDeliveryFeeBill/branchDeliveryFeeBillList";
 	}
 
@@ -178,6 +172,8 @@ public class BranchDeliveryFeeBillController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
@@ -205,6 +201,8 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("branchDeliveryFeeBillList", list);
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
+		model.addAttribute("cwbOrderTypeMap", cwbOrderTypeMap);
+		model.addAttribute("payTypeMap", payTypeMap);
 		model.addAttribute("updatePage", 1);
 		model.addAttribute("branchDeliveryFeeBillVO", branchDeliveryFeeBillVO);
 		return "branchDeliveryFeeBill/branchDeliveryFeeBillList";
@@ -222,12 +220,30 @@ public class BranchDeliveryFeeBillController {
 				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
 		List<Branch> branches= this.branchDAO.getBranchByPage(page, billVO.getBranchname(), billVO.getBranchaddress());
 		int count = new Long(this.branchDAO.getBranchCount(billVO.getBranchname(), billVO.getBranchaddress())).intValue();
-
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		User user = getSessionUser();
+		int jiesuanAuthority = 0;
+		int jiesuanAdvanceAuthority = 0;
+		if(user != null){
+			long roleid = user.getRoleid();
+			Role role = this.roleDAO.getRolesByRoleid(roleid);
+			if(role != null){
+				if("结算".equals(role.getRolename())){
+					jiesuanAuthority = 1;
+					jiesuanAdvanceAuthority = 1;
+				}
+			}
+		}
+
+		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
+		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
+		model.addAttribute("weiShenHeState", DeliveryFeeBillStateEnum.WeiShenHe.getValue());
+		model.addAttribute("yiShenHeState", DeliveryFeeBillStateEnum.YiShenHe.getValue());
+		model.addAttribute("yiHeXiaoState", DeliveryFeeBillStateEnum.YiHeXiao.getValue());
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("branchDeliveryFeeBillList", list);
-		model.addAttribute("insertBillVO", billVO);
+		model.addAttribute("branchDeliveryFeeBillVO", billVO);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("cwbTypeMap", cwbTypeMap);
@@ -278,15 +294,13 @@ public class BranchDeliveryFeeBillController {
 		this.exportService.SetBranchDeliveryFeeBillFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
-		final HttpServletRequest request1 = request;
 		String sheetName = "加盟商派费"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "BranchDeliveryFeeBill_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
-			final List<Branch> bList = this.branchDAO.getAllBranches();
-			final List<User> userList = this.userDAO.getAllUserbybranchid(this.getSessionUser().getBranchid());
-			final List<ExpressSetBranchDeliveryFeeBillVO> list = new ArrayList<ExpressSetBranchDeliveryFeeBillVO>();
+			cwbs = StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(",")));
+			final List<ExpressSetBranchDeliveryFeeBillDetail> list = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList(cwbs);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
@@ -299,7 +313,7 @@ public class BranchDeliveryFeeBillController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-//							a = BranchDeliveryFeeBillController.this.exportService.setAccountCwbFareDetailObject(cloumnName3, list, request1, a, i, k, bList, cMap, userList);
+							a = BranchDeliveryFeeBillController.this.exportService.setBranchDeliveryFeeBillDetailObject(cloumnName3, list, a, i, k, cMap);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -315,11 +329,47 @@ public class BranchDeliveryFeeBillController {
 	@ResponseBody
 	public String exportByCustomer(
 			@RequestParam(value = "content", defaultValue = "", required = true) String content, HttpServletRequest request) throws IOException {
-		File directory = new File("");// 参数为空
-        String courseFile = directory.getCanonicalPath();
+//		File directory = new File("");// 参数为空
+        String contextPath = request.getContextPath();
 		
 		String rootPath  = request.getSession().getServletContext().getRealPath("/");
-		this.branchDeliveryFeeBillService.exportByCustomer(content, rootPath);
+		this.branchDeliveryFeeBillService.exportByCustomer(content, contextPath, rootPath);
 		return "{\"errorCode\":0,\"error\":\"导出成功\"}";
+	}
+	
+	@RequestMapping("/getExportData")
+	public ExpressSetBranchDeliveryFeeBillVO getExportData(
+			@RequestParam(value = "cwbs", defaultValue = "", required = true) String cwbs, HttpServletRequest request) throws IOException {
+		ExpressSetBranchDeliveryFeeBillVO rtnVO = new ExpressSetBranchDeliveryFeeBillVO();
+		Map<String, Object> rtnMap = new HashMap<String, Object>();
+		List<ExpressSetBranchDeliveryFeeBillDetailVO> rtnList = null;
+		cwbs = StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(",")));
+		
+		final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
+		List<ExpressSetBranchDeliveryFeeBillDetailVO> billDetailVOList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailVOList(cwbs);
+		ExpressSetBranchDeliveryFeeBillDetailVO billDetailVO = null;
+		if(billDetailVOList != null && !billDetailVOList.isEmpty()){
+			for(int i = 0; i < billDetailVOList.size(); i++){
+				billDetailVO = billDetailVOList.get(i);
+				if(billDetailVO != null){
+					if(billDetailVO.getCustomerid() != 0){
+						if(rtnMap.get(cMap.get(billDetailVO.getCustomerid()).getCustomername()) == null){
+							rtnList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetailVO>();
+							rtnList.add(billDetailVO);
+							rtnMap.put(cMap.get(billDetailVO.getCustomerid()).getCustomername(),rtnList);
+						} else {
+							rtnList = (List<ExpressSetBranchDeliveryFeeBillDetailVO>)rtnMap.get(cMap.get(billDetailVO.getCustomerid()).getCustomername());
+							rtnList.add(billDetailVO);
+						}
+					}
+				}
+			}
+		}
+		rtnVO.setCustomerDeliveryFee(rtnMap);
+		ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj = this.branchDeliveryFeeBillDAO.getDeliveryFee(cwbs);
+		rtnVO.setDeliveryFeeObj(deliveryFeeObj);
+		ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj = this.branchDeliveryFeeBillDAO.getPickupFee(cwbs);
+		rtnVO.setPickupFeeObj(pickupFeeObj);
+		return rtnVO;
 	}
 }

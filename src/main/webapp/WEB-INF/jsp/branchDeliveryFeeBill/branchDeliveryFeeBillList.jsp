@@ -96,21 +96,24 @@ function getEditData(val){
 }
 
 function deleteCwbOrder(){
-	var sumPrice = $("#updateForm input[name='sumPrice']").val();
+	var deliveryFee = $("#updateForm input[name='deliveryFee']").val();
+	var cwbCount = $("#updateForm input[name='cwbCount']").val();
 	var chkBoxes = $("#cwbOrderTable input[type='checkbox'][name='checkBox']");
 	$(chkBoxes).each(function() {
 		if ($(this)[0].checked == true){
-			penalizeInsideTds = $(this).parent().parent().children();
-			$(penalizeInsideTds).each(function(){
-				if($(this)[0].attributes[1].value == 'punishInsideprice'){
-					cwbPriceVal = $(this)[0].textContent;
-					sumPrice = (parseFloat(sumPrice)-parseFloat(cwbPriceVal)).toFixed(2);
+			tds = $(this).parent().parent().children();
+			$(tds).each(function(){
+				if($(this)[0].attributes[1].value == 'sumFee'){
+					sumFee = $(this)[0].textContent;
+					deliveryFee = (parseFloat(deliveryFee)-parseFloat(sumFee)).toFixed(2);
 				}
 			});
+			cwbCount = parseInt(cwbCount)-1;
 			$(this).parent().parent().remove();
 		}
 	}); 
-	$("#updateForm input[name='sumPrice']").val(sumPrice);
+	$("#updateForm input[name='deliveryFee']").val(deliveryFee);
+	$("#updateForm input[name='cwbCount']").val(cwbCount);
 }
 
 function queryBranchList(){
@@ -142,17 +145,13 @@ function selectBranch(){
 
 function updateBranchDeliveryFeeBill(){
 	var chkBoxes = $("#cwbOrderTable input[type='checkbox'][name='checkBox']");
-	var punishNos = "";
+	var cwbs = "";
 	$(chkBoxes).each(function() {
-		punishNos = $(this).val()+","+punishNos;
+		cwbs = $(this).val()+","+cwbs;
 	}); 
-	punishNos = punishNos.substring(0,punishNos.length-1);
-	$("#updateForm input[type='hidden'][name='punishNos']").val(punishNos);
-	
+	cwbs = cwbs.substring(0,cwbs.length-1);
+	$("#updateForm input[type='hidden'][name='cwbs']").val(cwbs);
 	$("#updateForm select[name='billState']").attr("disabled",false); 
-	$("#updateForm select[name='punishbigsort']").attr("disabled",false); 
-	$("#updateForm select[name='punishsmallsort']").attr("disabled",false); 
-	$("#updateForm select[name='dutybranchid']").attr("disabled",false); 
 	
 	//$("#updateForm").submit();
 	 $.ajax({
@@ -227,7 +226,7 @@ function deleteBranchDeliveryFeeBill(){
 				});
 	}
 	function addBranchDeliveryFeeBill() {
-		if(!$("#addForm select[name='branchName']").val()){
+		if(!$("#addForm input[name='branchName']").val()){
 			alert("加盟商站点为必填项!");
 			return false;
 		}
@@ -278,18 +277,23 @@ function deleteBranchDeliveryFeeBill(){
 	}
 
 	function compareDate(a, b) {
-		/* var aArr = a.split("-");
+		var aArr = a.split("-");
+		if(aArr.length == 1){
+			aArr = a.split("/");
+		}
 		var aDate = new Date(aArr[0], aArr[1], aArr[2]);
 		var aTimes = aDate.getTime();
 		var bArr = b.split("-");
+		if(bArr.length == 1){
+			bArr = b.split("/");
+		}
 		var bDate = new Date(bArr[0], bArr[1], bArr[2]);
 		var bTimes = bDate.getTime();
 		if (aTimes <= bTimes) {
 		    return true;
 		} else{
 		    return false;
-		} */
-		return true;
+		}
 	}
 	function queryPage() {
 		$("#queryForm input[type='createDateFrom']").val(getFirstDate());
@@ -318,37 +322,37 @@ function deleteBranchDeliveryFeeBill(){
 				if (confirm("是否确认审核?")) {
 					$("#updateForm select[name='billState']").val(
 							'${yiShenHeState}');
-					$("#updateForm input[name='shenHeDate']").val('${nowDate}');
+					/* $("#updateForm input[name='shenHeDate']").val('${nowDate}');
 					$("#updateForm input[name='shenHePerson']")
 							.val('${userid}');
 					$("#updateForm input[name='shenHePersonName']").val(
-							'${realname}');
+							'${realname}'); */
 				}
 			} else if (state == 'QuXiaoShenHe') {
 				if (confirm("是否确认取消审核?")) {
 					$("#updateForm select[name='billState']").val(
 							'${weiShenHeState}');
-					$("#updateForm input[name='shenHeDate']").val('');
+					/* $("#updateForm input[name='shenHeDate']").val('');
 					$("#updateForm input[name='shenHePerson']").val('');
-					$("#updateForm input[name='shenHePersonName']").val('');
+					$("#updateForm input[name='shenHePersonName']").val(''); */
 				}
 			} else if (state == 'HeXiaoWanCheng') {
 				if (confirm("是否确认核销完成?")) {
 					$("#updateForm select[name='billState']").val(
 							'${yiHeXiaoState}');
-					$("#updateForm input[name='heXiaoDate']").val('${nowDate}');
+					/* $("#updateForm input[name='heXiaoDate']").val('${nowDate}');
 					$("#updateForm input[name='heXiaoPerson']")
 							.val('${userid}');
 					$("#updateForm input[name='heXiaoPersonName']").val(
-							'${realname}');
+							'${realname}'); */
 				}
 			} else if (state == 'QuXiaoHeXiao') {
 				if (confirm("是否确认取消核销?")) {
 					$("#updateForm select[name='billState']").val(
 							'${yiShenHeState}');
-					$("#updateForm input[name='heXiaoDate']").val('');
+					/* $("#updateForm input[name='heXiaoDate']").val('');
 					$("#updateForm input[name='heXiaoPerson']").val('');
-					$("#updateForm input[name='heXiaoPersonName']").val('');
+					$("#updateForm input[name='heXiaoPersonName']").val(''); */
 				}
 			}
 		}
@@ -356,11 +360,21 @@ function deleteBranchDeliveryFeeBill(){
 
 	function exportByDetail() {
 		var chkBoxes = $("#cwbOrderTable input[type='checkbox'][name='checkBox']");
-		if (chkBoxes.length > 0) {
-			$("#exportByDetailForm").submit();
-		} else {
-			alert("没有数据无法导出！");
+		var cwbs = "";
+		var sign = 1;
+		$(chkBoxes).each(function() {
+			if ($(this)[0].checked == true){
+				cwbs = $(this).val() + "," + cwbs;
+				sign = 0;
+			}
+		}); 
+		if(sign == 1){
+			alert("没有数据无法导出!");
+			return;
 		}
+		cwbs = cwbs.substring(0,cwbs.length-1);
+		$("#exportByDetailForm input[name='cwbs']").val(cwbs);
+		$("#exportByDetailForm").submit();
 	}
 	function setBranchId(id, name) {
 		$("#branchListPage input[type='hidden'][name='branchid']").val(id);
@@ -368,6 +382,114 @@ function deleteBranchDeliveryFeeBill(){
 	}
 
 	function exportByCustomerPage() {
+		var chkBoxes = $("#cwbOrderTable input[type='checkbox'][name='checkBox']");
+		var cwbs = "";
+		var sign = 1;
+		$(chkBoxes).each(function() {
+			if ($(this)[0].checked == true){
+				cwbs = $(this).val() + "," + cwbs;
+				sign = 0;
+			}
+		}); 
+		if(sign == 1){
+			alert("没有数据无法导出!");
+			return;
+		}
+		cwbs = cwbs.substring(0,cwbs.length-1);
+		$.ajax({
+			type:'POST',
+			data:{"cwbs":cwbs},
+			url:'<%=request.getContextPath()%>/branchDeliveryFeeBill/getExportData',
+			dataType:'json',
+			success:function(data){
+				if(data){
+					//${"#branchFeeTable"}
+					if(data.customerDeliveryFee){
+						var customerDeliveryFeeObj = data.customerDeliveryFee;
+						var count = 0;
+						var tdCount = 0;
+						rowSpanSize = parseInt(customerDeliveryFeeObj.length)*3+1;
+						for(var i in customerDeliveryFeeObj){
+								++count;
+								customerName = i;
+								
+								trObj = "<tr style='mso-yfti-irow: 1; height: 19.95pt'></tr>";
+								if(count == 1){
+									receiveTdObj = "<td width=23 rowspan='"+rowSpanSize+"' "+
+									"					style=\'width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal align=center style=\'text-align: center\'>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>1<o:p></o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=50 rowspan='"+rowSpanSize+"' "+
+									"					style=\'width: 37.85pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>派送费<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=34 rowspan=3 "+
+									"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>"+customerName+"<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=60"+
+									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>";
+								} else {
+									receiveTdObj = "<td width=34 rowspan=3 "+
+									"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>"+customerName+"<span"+
+									"							lang=EN-US>B<o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=60"+
+									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>";
+								}
+							   feeObj = customerDeliveryFeeObj[i];
+							   for(var j in feeObj){
+								   ++tdCount;
+								   if(tdCount == 1){
+									   
+								   } else if(tdCount == 2){
+									   
+								   } else if(tdCount == 3){
+									   
+								   }
+								   feeObj[j].cwbOrderCount;
+								   feeObj[j].deliveryBasicFee;
+								   feeObj[j].deliveryCollectionSubsidyFee;
+								   feeObj[j].deliveryAreaSubsidyFee;
+								   feeObj[j].deliveryExceedSubsidyFee;
+								   feeObj[j].deliveryBusinessSubsidyFee;
+								   feeObj[j].deliveryAttachSubsidyFee;
+								   
+							   }
+						}
+						
+						
+					}
+				}
+			}
+		});
 		initExportBillForm();
 		$('#exportByCustomerPage').dialog('open');
 	}
@@ -574,46 +696,42 @@ function deleteBranchDeliveryFeeBill(){
 				<table width="100%" border="0" cellspacing="1" cellpadding="0"
 					style="margin-top: 10px; font-size: 10px;">
 					<tr>
-						<td colspan="3" align="left"><input type="button"
-							class="input_button2" value="返回"
-							onclick="$('#updatePage').dialog('close');" /> <c:if
-								test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
-								<input type="button" class="input_button2" value="保存"
-									onclick="updateBranchDeliveryFeeBill()" />
-							</c:if></td>
+						<td colspan="2" align="left">
+							<input type="button" class="input_button2" value="返回" onclick="$('#updatePage').dialog('close');" />
+							<c:if test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
+								<input type="button" class="input_button2" value="保存" onclick="updateBranchDeliveryFeeBill()" />
+							</c:if>
+						</td>
 						<c:choose>
 							<c:when test="${jiesuanAuthority==1}">
 								<c:choose>
-									<c:when
-										test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
-										<td align="right" colspan="3"><input type="button"
-											class="input_button2" onclick="changeBillState('ShenHe')"
-											value="审核" /></td>
+									<c:when test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
+										<td align="right" colspan="2">
+											<input type="button" class="input_button2" onclick="changeBillState('ShenHe')" value="审核" />
+										</td>
 									</c:when>
-									<c:when
-										test="${yiShenHeState==branchDeliveryFeeBillVO.billState}">
-										<td align="right" colspan="3"><input type="button"
-											class="input_button2"
-											onclick="changeBillState('QuXiaoShenHe')" value="取消审核" /> <input
-											type="button" class="input_button2"
-											onclick="changeBillState('HeXiaoWanCheng')" value="核销完成" /></td>
+									<c:when test="${yiShenHeState==branchDeliveryFeeBillVO.billState}">
+										<td align="right" colspan="2">
+											<input type="button" class="input_button2" onclick="changeBillState('QuXiaoShenHe')" value="取消审核" />
+											<input type="button" class="input_button2" onclick="changeBillState('HeXiaoWanCheng')" value="核销完成" />
+										</td>
 									</c:when>
 								</c:choose>
 							</c:when>
 							<c:when test="${jiesuanAdvanceAuthority==1}">
 								<c:if test="${yiHeXiaoState==branchDeliveryFeeBillVO.billState}">
-									<td align="right" colspan="3"><input type="button"
-										class="input_button2"
-										onclick="changeBillState('QuXiaoHeXiao')" value="取消核销" /></td>
+									<td align="right" colspan="2">
+										<input type="button" class="input_button2" onclick="changeBillState('QuXiaoHeXiao')" value="取消核销" />
+									</td>
 								</c:if>
 							</c:when>
 							<c:otherwise>
-								<td colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;</td>
 							</c:otherwise>
 						</c:choose>
-						<td colspan="2"><input type="button" class="input_button2"
-							value="按明细导出" onclick="exportByDetail();" /> <input type="button"
-							class="input_button2" value="按客户导出" onclick="exportByCustomerPage();" />
+						<td colspan="2" align="right">
+							<input type="button" class="input_button2" value="按明细导出" onclick="exportByDetail();" />
+							<input type="button" class="input_button2" value="按客户导出" onclick="exportByCustomerPage();" />
 						</td>
 					</tr>
 					<tr>
@@ -623,7 +741,7 @@ function deleteBranchDeliveryFeeBill(){
 							style="background-color: #DCDCDC" /></td>
 						<td align="left">账单状态</td>
 						<td><select name="billState"
-							style="background-color: #DCDCDC">
+							style="background-color: #DCDCDC" disabled="disabled">
 								<c:forEach var="item" items="${billStateMap}">
 									<c:if test="${branchDeliveryFeeBillVO.billState==item.key}">
 										<option value="${item.key}" selected="selected">${item.value}</option>
@@ -683,8 +801,8 @@ function deleteBranchDeliveryFeeBill(){
 										订单状态</td>
 									<td align="center" valign="middle" style="font-weight: bold;">
 										订单类型</td>
-									<td align="center" valign="middle" style="font-weight: bold;">
-										到货时间</td>
+									<!-- <td align="center" valign="middle" style="font-weight: bold;">
+										到货时间</td> -->
 									<td align="center" valign="middle" style="font-weight: bold;">
 										发货时间</td>
 									<td align="center" valign="middle" style="font-weight: bold;">
@@ -706,31 +824,37 @@ function deleteBranchDeliveryFeeBill(){
 									<td align="center" valign="middle" style="font-weight: bold;">
 										拖单补助</td>
 								</tr>
-								<c:forEach var="pIn"
-									items="${branchDeliveryFeeBillVO.penalizeInsideList}">
+								<c:forEach var="detail"
+									items="${branchDeliveryFeeBillVO.billDetailList}">
 									<tr>
-										<td height="30px" valign="middle"><input type="checkbox"
-											name="checkBox" value="${pIn.punishNo}" /></td>
-										<td align="center" valign="middle">${pIn.punishNo}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle"><c:forEach var="item"
-												items="${cwbStateMap}">
-												<c:if test="${pIn.cwbstate==item.key}">${item.value}</c:if>
-											</c:forEach></td>
-										<td align="center" valign="middle">${pIn.dutypersonname}</td>
-										<td align="center" valign="middle"></td>
-										<td align="center" name="cwbPrice" valign="middle">${pIn.cwbPrice}</td>
-										<td align="center" name="punishInsideprice" valign="middle">${pIn.punishInsideprice}</td>
-										<td align="center" valign="middle"><c:forEach
-												items="${punishsmallsortList}" var="smallsort">
-												<c:if test="${pIn.punishsmallsort==smallsort.id}">${smallsort.text}</c:if>
-											</c:forEach></td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
-										<td align="center" valign="middle">${pIn.cwb}</td>
+										<td height="30px" valign="middle">
+											<input type="checkbox" name="checkBox" value="${detail.cwb}" />
+										</td>
+										<td align="center" valign="middle">${detail.cwb}</td>
+										<td align="center" valign="middle">
+											<c:forEach var="item" items="${cwbStateMap}">
+												<c:if test="${detail.flowordertype==item.key}">${item.value}</c:if>
+											</c:forEach>
+										</td>
+										<td align="center" valign="middle">
+											<c:forEach var="item" items="${cwbOrderTypeMap}">
+												<c:if test="${detail.cwbordertypeid==item.key}">${item.value}</c:if>
+											</c:forEach>
+										</td>
+										<td align="center" valign="middle">${detail.emaildate}</td>
+										<td align="center" valign="middle">
+											<c:forEach var="item" items="${payTypeMap}">
+												<c:if test="${detail.newpaywayid==item.key}">${item.value}</c:if>
+											</c:forEach>
+										</td>
+										<td align="center" valign="middle">${detail.podtime}</td>
+										<td align="center" name="sumFee" valign="middle">${detail.sumFee}</td>
+										<td align="center" valign="middle">${detail.basicFee}</td>
+										<td align="center" valign="middle">${detail.collectionSubsidyFee}</td>
+										<td align="center" valign="middle">${detail.areaSubsidyFee}</td>
+										<td align="center" valign="middle">${detail.exceedSubsidyFee}</td>
+										<td align="center" valign="middle">${detail.businessSubsidyFee}</td>
+										<td align="center" valign="middle">${detail.attachSubsidyFee}</td>
 									</tr>
 								</c:forEach>
 							</table> <input type="button" class="input_button2"
@@ -954,7 +1078,7 @@ function deleteBranchDeliveryFeeBill(){
 					<td colspan="4" align="left"><input type="button"
 						class="input_button2" value="返回"
 						onclick="$('#exportByCustomerPage').dialog('close');" /> <input type="button"
-						class="input_button2" value="创建"
+						class="input_button2" value="导出"
 						onclick="exportByCustomer()" /></td>
 				</tr>
 			</table>
@@ -1019,11 +1143,11 @@ function deleteBranchDeliveryFeeBill(){
 			</b>
 		</p>
 
-		<p class=MsoNormal align=left style='text-align: left'>
+		<!-- <p class=MsoNormal align=left style='text-align: left'>
 			<span
 				style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'>&nbsp;&nbsp;<span
 				lang=EN-US><o:p></o:p></span></span>
-		</p>
+		</p> -->
 
 		<p class=MsoNormal align=left style='text-align: left'>
 			<span
@@ -1044,7 +1168,7 @@ function deleteBranchDeliveryFeeBill(){
 		</p>
 
 		<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
-			width=660
+			width=660 id="branchFeeTable"
 			style='width: 494.8pt; border-collapse: collapse; border: none; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-yfti-tbllook: 1184; mso-padding-alt: 0cm 1.4pt 0cm 1.4pt'>
 			<tr style='mso-yfti-irow: 0; mso-yfti-firstrow: yes; height: 19.95pt'>
 				<td width=23
@@ -1193,329 +1317,7 @@ function deleteBranchDeliveryFeeBill(){
 					</p>
 				</td>
 			</tr>
-			<tr style='mso-yfti-irow: 1; height: 19.95pt'>
-				<td width=23 rowspan=7 valign=top
-					style='width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal align=center style='text-align: center'>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>1<o:p></o:p></span>
-					</p>
-				</td>
-				<td width=50 rowspan=7 valign=top
-					style='width: 37.85pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>派送费<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=34 rowspan=3 valign=top
-					style='width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>唯品会<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=60
-					style='width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>代收订单<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=28
-					style='width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=75
-					style='width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=81 valign=top
-					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=54
-					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-			</tr>
-			<tr style='mso-yfti-irow: 2; height: 19.95pt'>
-				<td width=60
-					style='width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>非代收订单<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=28
-					style='width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=75
-					style='width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=81 valign=top
-					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=54
-					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-			</tr>
-			<tr style='mso-yfti-irow: 3; height: 19.95pt'>
-				<td width=60
-					style='width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black .5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>计<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=28
-					style='width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=75
-					style='width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=81 valign=top
-					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=54
-					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-			</tr>
-			<tr style='mso-yfti-irow: 4; height: 19.95pt'>
-				<td width=34 rowspan=3 valign=top
-					style='width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>客户<span
-							lang=EN-US>B<o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=60
-					style='width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>代收订单<span
-							lang=EN-US><o:p></o:p></span></span>
-					</p>
-				</td>
-				<td width=28
-					style='width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=75
-					style='width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=56
-					style='width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=47
-					style='width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=81 valign=top
-					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-				<td width=54
-					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
-					<p class=MsoNormal>
-						<span lang=EN-US
-							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
-					</p>
-				</td>
-			</tr>
+			
 			<tr style='mso-yfti-irow: 5; height: 19.95pt'>
 				<td width=60
 					style='width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
@@ -1575,7 +1377,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1649,7 +1451,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1722,7 +1524,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1803,7 +1605,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1884,7 +1686,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1965,7 +1767,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -1996,7 +1798,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US>KPI</span>得分：<span lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2021,7 +1823,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2046,7 +1848,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=81 valign=top class="editTd"
+				<td width=81  class="editTd"
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2062,14 +1864,14 @@ function deleteBranchDeliveryFeeBill(){
 				</td>
 			</tr>
 			<tr style='mso-yfti-irow: 14; height: 19.95pt'>
-				<td width=23 rowspan=6 valign=top
+				<td width=23 rowspan=6 
 					style='width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal align=center style='text-align: center'>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt'>6<o:p></o:p></span>
 					</p>
 				</td>
-				<td width=50 rowspan=6 valign=top
+				<td width=50 rowspan=6 
 					style='width: 37.85pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span
@@ -2087,14 +1889,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2112,14 +1914,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2137,14 +1939,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2162,14 +1964,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2188,14 +1990,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2213,14 +2015,14 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p>&nbsp;</o:p></span>
 					</p>
 				</td>
-				<td width=54 valign=top
+				<td width=54 
 					style='width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2246,7 +2048,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: double windowtext 1.5pt; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-bottom-alt: double windowtext 1.5pt; background: #EAF1DD; mso-background-themecolor: accent3; mso-background-themetint: 51; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2278,7 +2080,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top class="editTd"
+				<td width=81  class="editTd"
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-top-alt: double windowtext 1.5pt; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2311,7 +2113,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2344,7 +2146,7 @@ function deleteBranchDeliveryFeeBill(){
 							style='font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast'><o:p></o:p></span>
 					</p>
 				</td>
-				<td width=81 valign=top
+				<td width=81 
 					style='width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.5pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-bottom-alt: solid black 1.5pt; mso-border-bottom-themecolor: text1; background: #EAF1DD; mso-background-themecolor: accent3; mso-background-themetint: 51; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt'>
 					<p class=MsoNormal>
 						<span lang=EN-US
@@ -2567,7 +2369,7 @@ function deleteBranchDeliveryFeeBill(){
 		<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
 			style='border-collapse: collapse; border: none; mso-yfti-tbllook: 1184; mso-padding-alt: 0cm 5.4pt 0cm 5.4pt; mso-border-insideh: none; mso-border-insidev: none'>
 			<tr style='mso-yfti-irow: 0; mso-yfti-firstrow: yes'>
-				<td width=187 valign=top
+				<td width=187 
 					style='width: 140.1pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal>
 						<span
@@ -2575,7 +2377,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=132 valign=top
+				<td width=132 
 					style='width: 99.2pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal align=left style='text-align: left'>
 						<span
@@ -2583,7 +2385,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=161 valign=top
+				<td width=161 
 					style='width: 120.5pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal align=left style='text-align: left'>
 						<span
@@ -2591,7 +2393,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=192 valign=top
+				<td width=192 
 					style='width: 144.2pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal align=left style='text-align: left'>
 						<span
@@ -2601,7 +2403,7 @@ function deleteBranchDeliveryFeeBill(){
 				</td>
 			</tr>
 			<tr style='mso-yfti-irow: 1; mso-yfti-lastrow: yes'>
-				<td width=187 valign=top
+				<td width=187 
 					style='width: 140.1pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal>
 						<span
@@ -2610,7 +2412,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=132 valign=top
+				<td width=132 
 					style='width: 99.2pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal>
 						<span
@@ -2619,7 +2421,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=161 valign=top
+				<td width=161 
 					style='width: 120.5pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal>
 						<span
@@ -2628,7 +2430,7 @@ function deleteBranchDeliveryFeeBill(){
 							lang=EN-US><o:p></o:p></span></span>
 					</p>
 				</td>
-				<td width=192 valign=top
+				<td width=192 
 					style='width: 144.2pt; padding: 0cm 5.4pt 0cm 5.4pt'>
 					<p class=MsoNormal>
 						<span

@@ -10,17 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchDeliveryFeeBillDAO;
-import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
-import cn.explink.domain.ExpressOpsPunishinsideBill;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
-import cn.explink.domain.PenalizeInside;
-import cn.explink.domain.User;
+import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
 import cn.explink.enumutil.DeliveryFeeBillDateTypeEnum;
 import cn.explink.enumutil.DeliveryFeeBillStateEnum;
+import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
+import cn.explink.enumutil.PaiFeiRuleTabEnum;
+import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.util.BeanUtilsSelfDef;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.HtmlToWord;
@@ -32,33 +34,28 @@ public class BranchDeliveryFeeBillService {
 	@Autowired
 	BranchDeliveryFeeBillDAO branchDeliveryFeeBillDAO;
 	@Autowired
-	PunishInsideDao punishInsideDao;
+	PaiFeiRuleService paiFeiRuleService;
 	@Autowired
 	UserDAO userDAO;
+	@Autowired
+	BranchDAO branchDAO;
 
 	public ExpressSetBranchDeliveryFeeBillVO getBranchDeliveryFeeBillVO(int id) {
 		// 返回值
 		ExpressSetBranchDeliveryFeeBillVO rtnVO = null;
-		List<PenalizeInside> penalizeInsideList = new ArrayList<PenalizeInside>();
-
+		List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetail>();
 		ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill = this.branchDeliveryFeeBillDAO
 				.getBranchDeliveryFeeBillListById(id);
-		/*if (branchDeliveryFeeBill != null) {
+		if (branchDeliveryFeeBill != null) {
 			rtnVO = new ExpressSetBranchDeliveryFeeBillVO();
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(rtnVO,
 					branchDeliveryFeeBill);
-			if (StringUtils.isNotBlank(branchDeliveryFeeBill.getPunishNos())) {
-				List<String> punishNoList = Arrays.asList(branchDeliveryFeeBill
-						.getPunishNos().split(","));
-				PenalizeInside penalizeInside = null;
-				for (int i = 0; i < punishNoList.size(); i++) {
-					penalizeInside = this.punishInsideDao
-							.getInsideByPunishNo(punishNoList.get(i));
-					penalizeInsideList.add(penalizeInside);
-				}
-			}
-		}*/
-		//rtnVO.setPenalizeInsideList(penalizeInsideList);
+		}
+		Branch branch = this.branchDAO
+				.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
+		rtnVO.setBranchName(branch.getBranchname());
+		billDetailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList(id);
+		rtnVO.setBillDetailList(billDetailList);
 		return rtnVO;
 	}
 
@@ -67,9 +64,10 @@ public class BranchDeliveryFeeBillService {
 			ExpressSetBranchDeliveryFeeBillVO billVO) {
 		ExpressSetBranchDeliveryFeeBill bill = new ExpressSetBranchDeliveryFeeBill();
 		if (billVO != null) {
-			BeanUtilsSelfDef.copyPropertiesIgnoreException(bill,
-					billVO);
+			BeanUtilsSelfDef.copyPropertiesIgnoreException(bill, billVO);
 			this.branchDeliveryFeeBillDAO.updateBranchDeliveryFeeBill(bill);
+			String cwbs = StringUtil.getStringsByStringList(Arrays.asList(billVO.getCwbs().split(",")));
+			this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(bill.getId(), cwbs);
 		}
 	}
 
@@ -88,86 +86,187 @@ public class BranchDeliveryFeeBillService {
 		String onSql = "";
 		String dateColumn = "";
 		int dateType = branchDeliveryFeeBill.getDateType();
-		if(dateType == DeliveryFeeBillDateTypeEnum.ShenHeDate.getValue()){
+		if (dateType == DeliveryFeeBillDateTypeEnum.ShenHeDate.getValue()) {
 			dateColumn = "d.auditingtime";
-		} else if(dateType == DeliveryFeeBillDateTypeEnum.FanKuiDate.getValue()){
+		} else if (dateType == DeliveryFeeBillDateTypeEnum.FanKuiDate
+				.getValue()) {
 			dateColumn = "d.deliverytime";
-		} else if(dateType == DeliveryFeeBillDateTypeEnum.FaHuoDate.getValue()){
+		} else if (dateType == DeliveryFeeBillDateTypeEnum.FaHuoDate.getValue()) {
 			dateColumn = "cwb.emaildate";
-		} else if(dateType == DeliveryFeeBillDateTypeEnum.RuKuDate.getValue()){
+		} else if (dateType == DeliveryFeeBillDateTypeEnum.RuKuDate.getValue()) {
 			leftJoinSql = " left join express_ops_order_intowarhouse i ";
 			onSql = " on cwb.cwb = i.cwb ";
 			dateColumn = "i.credate";
 		}
-		
+
 		List<CwbOrder> orderList = this.branchDeliveryFeeBillDAO
-				.queryBranchDeliveryFeeBill(branchDeliveryFeeBill, leftJoinSql, onSql, dateColumn);
+				.queryBranchDeliveryFeeBill(branchDeliveryFeeBill, leftJoinSql,
+						onSql, dateColumn);
 		CwbOrder order = null;
 		String cwbs = "";
 		int cwbCount = 0;
+		Branch branch = this.branchDAO
+				.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
+		BigDecimal deliverySumFee = new BigDecimal(0.0);
+		BigDecimal deliveryBasicFee = new BigDecimal(0.0);
+		BigDecimal deliveryCollectionSubsidyFee = new BigDecimal(0.0);
+		BigDecimal deliveryAreaSubsidyFee = new BigDecimal(0.0);
+		BigDecimal deliveryExceedSubsidyFee = new BigDecimal(0.0);
+		BigDecimal deliveryBusinessSubsidyFee = new BigDecimal(0.0);
+		BigDecimal deliveryAttachSubsidyFee = new BigDecimal(0.0);
+		BigDecimal pickupSumFee = new BigDecimal(0.0);
+		BigDecimal pickupCollectionSubsidyFee = new BigDecimal(0.0);
+		BigDecimal pickupAreaSubsidyFee = new BigDecimal(0.0);
+		BigDecimal pickupExceedSubsidyFee = new BigDecimal(0.0);
+		BigDecimal pickupAttachSubsidyFee = new BigDecimal(0.0);
+		BigDecimal pickupBasicFee = new BigDecimal(0.0);
+		BigDecimal pickupBusinessSubsidyFee = new BigDecimal(0.0);
+		List<ExpressSetBranchDeliveryFeeBillDetail> detaiList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetail>();
+		ExpressSetBranchDeliveryFeeBillDetail billDetail = null;
+
 		BigDecimal deliveryFee = new BigDecimal(0.0);
 		if (orderList != null && orderList.size() > 0) {
 			for (int i = 0; i < orderList.size(); i++) {
 				order = orderList.get(i);
 				if (StringUtils.isNotBlank(order.getCwb())) {
+					billDetail = new ExpressSetBranchDeliveryFeeBillDetail();
+					
+					deliveryBasicFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, order.getCwb());
+					billDetail.setDeliveryBasicFee(deliveryBasicFee);
+					deliveryCollectionSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, order.getCwb());
+					billDetail.setDeliveryCollectionSubsidyFee(deliveryCollectionSubsidyFee);
+					deliveryAreaSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, order.getCwb());
+					billDetail.setDeliveryAreaSubsidyFee(deliveryAreaSubsidyFee);
+					deliveryExceedSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, order.getCwb());
+					billDetail.setDeliveryExceedSubsidyFee(deliveryExceedSubsidyFee);
+					deliveryBusinessSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, order.getCwb());
+					billDetail.setDeliveryBusinessSubsidyFee(deliveryBusinessSubsidyFee);
+					deliveryAttachSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, order.getCwb());
+					billDetail.setDeliveryAttachSubsidyFee(deliveryAttachSubsidyFee);
+					deliverySumFee = deliveryBasicFee.add(deliveryCollectionSubsidyFee).add(deliveryAreaSubsidyFee)
+							.add(deliveryExceedSubsidyFee).add(deliveryBusinessSubsidyFee).add(deliveryAttachSubsidyFee);
+					billDetail.setDeliverySumFee(deliverySumFee);
+
+					pickupCollectionSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Collection, order.getCwb());
+					billDetail.setPickupCollectionSubsidyFee(pickupCollectionSubsidyFee);
+					pickupAreaSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Area, order.getCwb());
+					billDetail.setPickupAreaSubsidyFee(pickupAreaSubsidyFee);
+					pickupExceedSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Overarea, order.getCwb());
+					billDetail.setPickupExceedSubsidyFee(pickupExceedSubsidyFee);
+					pickupAttachSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Insertion, order.getCwb());
+					billDetail.setPickupAttachSubsidyFee(pickupAttachSubsidyFee);
+					pickupBasicFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Basic, order.getCwb());
+					billDetail.setPickupBasicFee(pickupBasicFee);
+					pickupBusinessSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Business, order.getCwb());
+					billDetail.setPickupBusinessSubsidyFee(pickupBusinessSubsidyFee);
+					pickupSumFee = pickupCollectionSubsidyFee.add(pickupAreaSubsidyFee).add(pickupExceedSubsidyFee)
+							.add(pickupAttachSubsidyFee).add(pickupBasicFee).add(pickupBusinessSubsidyFee);
+					billDetail.setPickupSumFee(pickupSumFee);
+					
+					billDetail.setCwb(order.getCwb());
+					billDetail.setFlowordertype(new Long(order.getFlowordertype()).intValue());
+					billDetail.setCwbordertypeid(String.valueOf(order.getCwbordertypeid()));
+					billDetail.setCustomerid(new Long(order.getCustomerid()).intValue());
+					billDetail.setReceivablefee(order.getReceivablefee());
+					if(order.getReceivablefee().equals(BigDecimal.ZERO)){
+						billDetail.setIsReceived(YesOrNoStateEnum.No.getValue());
+					} else {
+						billDetail.setIsReceived(YesOrNoStateEnum.Yes.getValue());
+					}
+					billDetail.setEmaildate(order.getEmaildate());
+					billDetail.setNewpaywayid(order.getNewpaywayid());
+					billDetail.setPodtime(order.getPodtime());
+					billDetail.setSumFee(deliverySumFee.add(pickupSumFee));
+					billDetail.setBasicFee(deliveryBasicFee.add(pickupBasicFee));
+					billDetail.setCollectionSubsidyFee(deliveryCollectionSubsidyFee.add(pickupCollectionSubsidyFee));
+					billDetail.setAreaSubsidyFee(deliveryAreaSubsidyFee.add(pickupAreaSubsidyFee));
+					billDetail.setExceedSubsidyFee(deliveryExceedSubsidyFee.add(pickupExceedSubsidyFee));
+					billDetail.setBusinessSubsidyFee(deliveryBusinessSubsidyFee.add(pickupBusinessSubsidyFee));
+					billDetail.setAttachSubsidyFee(deliveryAttachSubsidyFee.add(pickupAttachSubsidyFee));
+					detaiList.add(billDetail);
+					
 					cwbs += order.getCwb() + ",";
+					cwbCount++;
+					deliveryFee = deliveryFee.add(deliverySumFee).add(pickupSumFee);
 				}
-				/*if (order.getPunishInsideprice() != null) {
-					sumPrice = sumPrice.add(penalizeInside
-							.getPunishInsideprice());
-				}*/
 			}
 		}
 		if (StringUtils.isNotBlank(cwbs)) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
-			cwbs = StringUtil.removalDuplicateString(cwbs);
-			cwbCount = cwbs.split(",").length;
+//			cwbs = StringUtil.removalDuplicateString(cwbs);
 		}
 		branchDeliveryFeeBill.setCwbs(cwbs);
 		branchDeliveryFeeBill.setCwbCount(cwbCount);
 		branchDeliveryFeeBill.setDeliveryFee(deliveryFee);
 		branchDeliveryFeeBill.setCreateDate(DateTimeUtil.getNowDate());
 		branchDeliveryFeeBill.setBillBatch(this.generateBillBatch());
-		branchDeliveryFeeBill.setBillState(DeliveryFeeBillStateEnum.WeiShenHe.getValue());
-		branchDeliveryFeeBill.setShenHeDate(StringUtil
-				.nullConvertToEmptyString(branchDeliveryFeeBill.getShenHeDate()));
-		branchDeliveryFeeBill.setHeXiaoDate(StringUtil
-				.nullConvertToEmptyString(branchDeliveryFeeBill.getHeXiaoDate()));
-		
+		branchDeliveryFeeBill.setBillState(DeliveryFeeBillStateEnum.WeiShenHe
+				.getValue());
+		branchDeliveryFeeBill
+				.setShenHeDate(StringUtil
+						.nullConvertToEmptyString(branchDeliveryFeeBill
+								.getShenHeDate()));
+		branchDeliveryFeeBill
+				.setHeXiaoDate(StringUtil
+						.nullConvertToEmptyString(branchDeliveryFeeBill
+								.getHeXiaoDate()));
+
 		long id = this.branchDeliveryFeeBillDAO
 				.createBranchDeliveryFeeBill(branchDeliveryFeeBill);
+
+		if(detaiList != null){
+			for(int i = 0; i < detaiList.size(); i++){
+				billDetail = detaiList.get(i);
+				if(billDetail != null){
+					billDetail.setBillId(new Long(id).intValue());
+					this.branchDeliveryFeeBillDAO.createBranchDeliveryFeeBillDetail(billDetail);
+				}
+			}
+		}
 		return new Long(id).intValue();
 	}
-	
+
 	public String generateBillBatch() {
 		String rule = "B";
 		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
 		String billBatch = rule + nowTime;
 		return billBatch;
 	}
-	
-	public void exportByCustomer(String content, String rootPath){
-		content = joinHtml(content, rootPath);
+
+	public void exportByCustomer(String content, String contextPath, String rootPath) {
+		content = joinHtml(content, contextPath, rootPath);
 		String fileName = "派费汇总表" + DateTimeUtil.getNowTimeNo() + ".doc";
 		HtmlToWord.writeWordFile(content, fileName);
 	}
-	
-	public String joinHtml(String content, String rootPath){
+
+	public String joinHtml(String content, String contextPath, String rootPath) {
 		rootPath = rootPath.replaceAll("\\\\", "/");
 		String path = rootPath + "/exportBranchDeliveryFeeBillList";
-		content = content.replaceAll("/exportBranchDeliveryFeeBillList/image002.jpg", path+"/image001.png");
+		content = content.replaceAll(contextPath + "/exportBranchDeliveryFeeBillList/image002.jpg", path + "/image001.png");
 		content = "<html>"
 				+ "<head>"
 				+ "<meta http-equiv=Content-Type content=\'text/html; charset=gb2312\'>"
 				+ "<meta name=ProgId content=Word.Document>"
 				+ "<meta name=Generator content=\'Microsoft Word 12\'>"
 				+ "<meta name=Originator content=\'Microsoft Word 12\'>"
-				+ "<link rel=File-List href=\'" + path + "/filelist.xml\'>"
-				+ "<link rel=Edit-Time-Data href=\'" + path + "/editdata.mso\'>"
-				+ "<link rel=dataStoreItem href=\'" + path + "/item0001.xml\'"
-				+ "target=\'" + path + "/props0002.xml\'>"
-				+ "<link rel=themeData href=\'" + path + "/themedata.thmx\'>"
-				+ "<link rel=colorSchemeMapping href=\'" + path + "/colorschememapping.xml\'>"
+				+ "<link rel=File-List href=\'"
+				+ path
+				+ "/filelist.xml\'>"
+				+ "<link rel=Edit-Time-Data href=\'"
+				+ path
+				+ "/editdata.mso\'>"
+				+ "<link rel=dataStoreItem href=\'"
+				+ path
+				+ "/item0001.xml\'"
+				+ "target=\'"
+				+ path
+				+ "/props0002.xml\'>"
+				+ "<link rel=themeData href=\'"
+				+ path
+				+ "/themedata.thmx\'>"
+				+ "<link rel=colorSchemeMapping href=\'"
+				+ path
+				+ "/colorschememapping.xml\'>"
 				+ "<!--[if gte mso 9]><xml>"
 				+ " <w:WordDocument>"
 				+ "  <w:TrackMoves>false</w:TrackMoves>"
@@ -666,10 +765,18 @@ public class BranchDeliveryFeeBillService {
 				+ " @page"
 				+ "	{mso-page-border-surround-header:no;"
 				+ "	mso-page-border-surround-footer:no;"
-				+ "	mso-footnote-separator:url(\'" + path + "/header.htm\') fs;"
-				+ "	mso-footnote-continuation-separator:url(\'" + path + "/header.htm\') fcs;"
-				+ "	mso-endnote-separator:url(\'" + path + "/header.htm\') es;"
-				+ "	mso-endnote-continuation-separator:url(\'" + path + "/header.htm\') ecs;}"
+				+ "	mso-footnote-separator:url(\'"
+				+ path
+				+ "/header.htm\') fs;"
+				+ "	mso-footnote-continuation-separator:url(\'"
+				+ path
+				+ "/header.htm\') fcs;"
+				+ "	mso-endnote-separator:url(\'"
+				+ path
+				+ "/header.htm\') es;"
+				+ "	mso-endnote-continuation-separator:url(\'"
+				+ path
+				+ "/header.htm\') ecs;}"
 				+ "@page Section1"
 				+ "	{size:595.3pt 841.9pt;"
 				+ "	margin:53.85pt 51.05pt 53.85pt 51.05pt;"
@@ -742,7 +849,8 @@ public class BranchDeliveryFeeBillService {
 				+ "  <o:idmap v:ext=\'edit\' data=\'2\'/>"
 				+ " </o:shapelayout></xml><![endif]-->"
 				+ "</head>"
-				+ "<body lang=ZH-CN style=\'tab-interval:21.0pt;text-justify-trim:punctuation\'>" + content + "</body>" + "</html>";
+				+ "<body lang=ZH-CN style=\'tab-interval:21.0pt;text-justify-trim:punctuation\'>"
+				+ content + "</body>" + "</html>";
 		return content;
 	}
 }

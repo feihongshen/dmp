@@ -19,15 +19,14 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
+import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
+import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
-import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class BranchDeliveryFeeBillDAO {
-	@Autowired
-	PunishInsideService punishInsideService;
 
 	private final class BranchDeliveryFeeBillMapper implements
 			RowMapper<ExpressSetBranchDeliveryFeeBill> {
@@ -56,6 +55,93 @@ public class BranchDeliveryFeeBillDAO {
 			branchDeliveryFeeBill.setShenHeDate(rs.getString("shenHeDate"));
 
 			return branchDeliveryFeeBill;
+		}
+	}
+	
+	private final class BranchDeliveryFeeBillDetailMapper implements
+	RowMapper<ExpressSetBranchDeliveryFeeBillDetail> {
+		@Override
+		public ExpressSetBranchDeliveryFeeBillDetail mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			ExpressSetBranchDeliveryFeeBillDetail branchDeliveryFeeBillDetail = new ExpressSetBranchDeliveryFeeBillDetail();
+			branchDeliveryFeeBillDetail.setId(rs.getInt("id"));
+			branchDeliveryFeeBillDetail.setBillId(rs.getInt("billId"));
+			branchDeliveryFeeBillDetail.setCwb(rs.getString("cwb"));
+			branchDeliveryFeeBillDetail.setFlowordertype(rs.getInt("flowordertype"));
+			branchDeliveryFeeBillDetail.setCwbordertypeid(rs.getString("cwbordertypeid"));
+			branchDeliveryFeeBillDetail.setCustomerid(rs.getInt("customerid"));
+			branchDeliveryFeeBillDetail.setIsReceived(rs.getInt("isReceived"));
+			branchDeliveryFeeBillDetail.setReceivablefee(rs.getBigDecimal("receivablefee"));
+			branchDeliveryFeeBillDetail.setEmaildate(rs.getString("emaildate"));
+			branchDeliveryFeeBillDetail.setNewpaywayid(rs.getString("newpaywayid"));
+			branchDeliveryFeeBillDetail.setPodtime(rs.getString("podtime"));
+			branchDeliveryFeeBillDetail.setSumFee(rs.getBigDecimal("sumFee"));
+			branchDeliveryFeeBillDetail.setBasicFee(rs.getBigDecimal("basicFee"));
+			branchDeliveryFeeBillDetail.setCollectionSubsidyFee(rs.getBigDecimal("collectionSubsidyFee"));
+			branchDeliveryFeeBillDetail.setAreaSubsidyFee(rs.getBigDecimal("areaSubsidyFee"));
+			branchDeliveryFeeBillDetail.setExceedSubsidyFee(rs.getBigDecimal("exceedSubsidyFee"));
+			branchDeliveryFeeBillDetail.setBusinessSubsidyFee(rs.getBigDecimal("businessSubsidyFee"));
+			branchDeliveryFeeBillDetail.setAttachSubsidyFee(rs.getBigDecimal("attachSubsidyFee"));
+			branchDeliveryFeeBillDetail.setDeliverySumFee(rs.getBigDecimal("deliverySumFee"));
+			branchDeliveryFeeBillDetail.setDeliveryBasicFee(rs.getBigDecimal("deliveryBasicFee"));
+			branchDeliveryFeeBillDetail.setDeliveryCollectionSubsidyFee(rs.getBigDecimal("deliveryCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetail.setDeliveryAreaSubsidyFee(rs.getBigDecimal("deliveryAreaSubsidyFee"));
+			branchDeliveryFeeBillDetail.setDeliveryExceedSubsidyFee(rs.getBigDecimal("deliveryExceedSubsidyFee"));
+			branchDeliveryFeeBillDetail.setDeliveryBusinessSubsidyFee(rs.getBigDecimal("deliveryBusinessSubsidyFee"));
+			branchDeliveryFeeBillDetail.setDeliveryAttachSubsidyFee(rs.getBigDecimal("deliveryAttachSubsidyFee"));
+			branchDeliveryFeeBillDetail.setPickupSumFee(rs.getBigDecimal("pickupSumFee"));
+			branchDeliveryFeeBillDetail.setPickupCollectionSubsidyFee(rs.getBigDecimal("pickupCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetail.setPickupAreaSubsidyFee(rs.getBigDecimal("pickupAreaSubsidyFee"));
+			branchDeliveryFeeBillDetail.setPickupExceedSubsidyFee(rs.getBigDecimal("pickupExceedSubsidyFee"));
+			branchDeliveryFeeBillDetail.setPickupAttachSubsidyFee(rs.getBigDecimal("pickupAttachSubsidyFee"));
+			branchDeliveryFeeBillDetail.setPickupBasicFee(rs.getBigDecimal("pickupBasicFee"));
+			branchDeliveryFeeBillDetail.setPickupBusinessSubsidyFee(rs.getBigDecimal("pickupBusinessSubsidyFee"));
+			
+			return branchDeliveryFeeBillDetail;
+		}
+	}
+	
+	private final class BranchDeliveryFeeBillDetailVOMapper implements
+	RowMapper<ExpressSetBranchDeliveryFeeBillDetailVO> {
+		@Override
+		public ExpressSetBranchDeliveryFeeBillDetailVO mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			ExpressSetBranchDeliveryFeeBillDetailVO branchDeliveryFeeBillDetailVO = new ExpressSetBranchDeliveryFeeBillDetailVO();
+			branchDeliveryFeeBillDetailVO.setId(rs.getInt("id"));
+			branchDeliveryFeeBillDetailVO.setBillId(rs.getInt("billId"));
+			branchDeliveryFeeBillDetailVO.setCwb(rs.getString("cwb"));
+			branchDeliveryFeeBillDetailVO.setFlowordertype(rs.getInt("flowordertype"));
+			branchDeliveryFeeBillDetailVO.setCwbordertypeid(rs.getString("cwbordertypeid"));
+			branchDeliveryFeeBillDetailVO.setCustomerid(rs.getInt("customerid"));
+			branchDeliveryFeeBillDetailVO.setIsReceived(rs.getInt("isReceived"));
+			branchDeliveryFeeBillDetailVO.setReceivablefee(rs.getBigDecimal("receivablefee"));
+			branchDeliveryFeeBillDetailVO.setEmaildate(rs.getString("emaildate"));
+			branchDeliveryFeeBillDetailVO.setNewpaywayid(rs.getString("newpaywayid"));
+			branchDeliveryFeeBillDetailVO.setPodtime(rs.getString("podtime"));
+			branchDeliveryFeeBillDetailVO.setSumFee(rs.getBigDecimal("sumFee"));
+			branchDeliveryFeeBillDetailVO.setBasicFee(rs.getBigDecimal("basicFee"));
+			branchDeliveryFeeBillDetailVO.setCollectionSubsidyFee(rs.getBigDecimal("collectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setAreaSubsidyFee(rs.getBigDecimal("areaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setExceedSubsidyFee(rs.getBigDecimal("exceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setBusinessSubsidyFee(rs.getBigDecimal("businessSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setAttachSubsidyFee(rs.getBigDecimal("attachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliverySumFee(rs.getBigDecimal("deliverySumFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBasicFee(rs.getBigDecimal("deliveryBasicFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryCollectionSubsidyFee(rs.getBigDecimal("deliveryCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAreaSubsidyFee(rs.getBigDecimal("deliveryAreaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryExceedSubsidyFee(rs.getBigDecimal("deliveryExceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBusinessSubsidyFee(rs.getBigDecimal("deliveryBusinessSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAttachSubsidyFee(rs.getBigDecimal("deliveryAttachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupSumFee(rs.getBigDecimal("pickupSumFee"));
+			branchDeliveryFeeBillDetailVO.setPickupCollectionSubsidyFee(rs.getBigDecimal("pickupCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupAreaSubsidyFee(rs.getBigDecimal("pickupAreaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupExceedSubsidyFee(rs.getBigDecimal("pickupExceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupAttachSubsidyFee(rs.getBigDecimal("pickupAttachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupBasicFee(rs.getBigDecimal("pickupBasicFee"));
+			branchDeliveryFeeBillDetailVO.setPickupBusinessSubsidyFee(rs.getBigDecimal("pickupBusinessSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setCwbOrderCount(rs.getInt("cwbOrderCount"));
+			
+			return branchDeliveryFeeBillDetailVO;
 		}
 	}
 	
@@ -217,6 +303,62 @@ public class BranchDeliveryFeeBillDAO {
 		}, key);
 		return key.getKey().longValue();
 	}
+	
+	public long createBranchDeliveryFeeBillDetail(
+			final ExpressSetBranchDeliveryFeeBillDetail branchDeliveryFeeBillDetail) {
+		KeyHolder key = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(
+					java.sql.Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement(
+						"insert into express_set_branch_delivery_fee_bill_detail("
+								+ "billId,cwb,flowordertype,cwbordertypeid,customerid,isReceived,receivablefee,emaildate,"
+								+ "newpaywayid,podtime,sumFee,basicFee,collectionSubsidyFee,areaSubsidyFee,"
+								+ "exceedSubsidyFee,businessSubsidyFee,attachSubsidyFee,deliverySumFee,"
+								+ "deliveryBasicFee,deliveryCollectionSubsidyFee,deliveryAreaSubsidyFee,"
+								+ "deliveryExceedSubsidyFee,deliveryBusinessSubsidyFee,deliveryAttachSubsidyFee,"
+								+ "pickupSumFee,pickupCollectionSubsidyFee,pickupAreaSubsidyFee,pickupExceedSubsidyFee,"
+								+ "pickupAttachSubsidyFee,pickupBasicFee,pickupBusinessSubsidyFee"
+								+ ") values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								new String[] { "id" });
+				int i = 1;
+				
+				ps.setInt(i++, branchDeliveryFeeBillDetail.getBillId());
+				ps.setString(i++, branchDeliveryFeeBillDetail.getCwb());
+				ps.setInt(i++, branchDeliveryFeeBillDetail.getFlowordertype());
+				ps.setString(i++, branchDeliveryFeeBillDetail.getCwbordertypeid());
+				ps.setInt(i++, branchDeliveryFeeBillDetail.getCustomerid());
+				ps.setInt(i++, branchDeliveryFeeBillDetail.getIsReceived());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getReceivablefee());
+				ps.setString(i++, branchDeliveryFeeBillDetail.getEmaildate());
+				ps.setString(i++, branchDeliveryFeeBillDetail.getNewpaywayid());
+				ps.setString(i++, branchDeliveryFeeBillDetail.getPodtime());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getSumFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getBasicFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getCollectionSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getAreaSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getExceedSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getBusinessSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getAttachSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliverySumFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryBasicFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryCollectionSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryAreaSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryExceedSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryBusinessSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getDeliveryAttachSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupSumFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupCollectionSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupAreaSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupExceedSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupAttachSubsidyFee());
+				
+				return ps;
+			}
+		}, key);
+		return key.getKey().longValue();
+	}
 
 	public void updateBranchDeliveryFeeBill(
 			final ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill) {
@@ -255,32 +397,58 @@ public class BranchDeliveryFeeBillDAO {
 						});
 	}
 
-	public void updateBranchDeliveryFeeBill(final String cwbs,
-			final BigDecimal deliveryFee, final int cwbCount, final int id) {
-		this.jdbcTemplate.update(
-				"update express_set_branch_delivery_fee_bill set "
-						+ "cwbs=?,deliveryFee=?,cwbCount=? where id=?",
-				new PreparedStatementSetter() {
-					@Override
-					public void setValues(PreparedStatement ps)
-							throws SQLException {
-						ps.setString(1, cwbs);
-						ps.setBigDecimal(2, deliveryFee);
-						ps.setInt(3, cwbCount);
-						ps.setInt(4, id);
-					}
-				});
-	}
-
 	public int deleteBranchDeliveryFeeBill(String ids) {
 		String sql = "delete from express_set_branch_delivery_fee_bill where id in ("
 				+ ids + ")";
+		return this.jdbcTemplate.update(sql);
+	}
+	
+	public int deleteBranchDeliveryFeeBillDetail(int billId, String cwbs) {
+		String sql = "delete from express_set_branch_delivery_fee_bill_detail where billId= " + billId + " and cwb not in ("
+				+ cwbs + ")";
 		return this.jdbcTemplate.update(sql);
 	}
 
 	public List<ExpressSetBranchDeliveryFeeBill> getBranchDeliveryFeeBillList() {
 		String sql = "select * from express_set_branch_delivery_fee_bill";
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillMapper());
+	}
+	
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList(int billId) {
+		String sql = "select * from express_set_branch_delivery_fee_bill_detail where billId=?";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper(), billId);
+	}
+	
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList(String cwbs) {
+		String sql = "select * from express_set_branch_delivery_fee_bill_detail where cwb in (" + cwbs + ")";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper());
+	}
+	
+	public List<ExpressSetBranchDeliveryFeeBillDetailVO> getBranchDeliveryFeeBillDetailVOList(String cwbs) {
+		String sql = "select customerid,isReceived,count(*) as cwbOrderCount,sum(deliveryBasicFee) as deliveryBasicFee,"
+				+ "sum(deliveryCollectionSubsidyFee) as deliveryCollectionSubsidyFee,sum(deliveryAreaSubsidyFee) as deliveryAreaSubsidyFee,"
+				+ "sum(deliveryExceedSubsidyFee) as deliveryExceedSubsidyFee,sum(deliveryBusinessSubsidyFee) as deliveryBusinessSubsidyFee,"
+				+ "sum(deliveryAttachSubsidyFee) as deliveryAttachSubsidyFee,sum(deliverySumFee) as deliverySumFee "
+				+ " from express_set_branch_delivery_fee_bill_detail group by customerid,isReceived where deliverySumFee != 0.00 and cwb in (" + cwbs + ")";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailVOMapper());
+	}
+	
+	public ExpressSetBranchDeliveryFeeBillDetailVO getDeliveryFee(String cwbs) {
+		String sql = "select count(*) as cwbOrderCount,sum(deliveryBasicFee) as deliveryBasicFee,sum(deliveryCollectionSubsidyFee) as deliveryCollectionSubsidyFee,"
+				+ "sum(deliveryAreaSubsidyFee) as deliveryAreaSubsidyFee,sum(deliveryExceedSubsidyFee) as deliveryExceedSubsidyFee,"
+				+ "sum(deliveryBusinessSubsidyFee) as deliveryBusinessSubsidyFee,sum(deliveryAttachSubsidyFee) as deliveryAttachSubsidyFee,"
+				+ "sum(deliverySumFee) as deliverySumFee "
+				+ " from express_set_branch_delivery_fee_bill_detail group by billId where deliverySumFee != 0.00 and cwb in (" + cwbs + ")";
+		return jdbcTemplate.queryForObject(sql, new BranchDeliveryFeeBillDetailVOMapper());
+	}
+	
+	public ExpressSetBranchDeliveryFeeBillDetailVO getPickupFee(String cwbs) {
+		String sql = "select count(*) as cwbOrderCount,sum(pickupBasicFee) as pickupBasicFee,sum(pickupCollectionSubsidyFee) as pickupCollectionSubsidyFee,"
+				+ "sum(pickupAreaSubsidyFee) as pickupAreaSubsidyFee,sum(pickupExceedSubsidyFee) as pickupExceedSubsidyFee,"
+				+ "sum(pickupBusinessSubsidyFee) as pickupBusinessSubsidyFee,sum(pickupAttachSubsidyFee) as pickupAttachSubsidyFee,"
+				+ "sum(pickupSumFee) as pickupSumFee "
+				+ " from express_set_branch_delivery_fee_bill_detail group by billId where pickupSumFee != 0.00 and cwb in (" + cwbs + ")";
+		return jdbcTemplate.queryForObject(sql, new BranchDeliveryFeeBillDetailVOMapper());
 	}
 
 	public ExpressSetBranchDeliveryFeeBill getBranchDeliveryFeeBillListById(
@@ -313,23 +481,23 @@ public class BranchDeliveryFeeBillDAO {
 
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateFrom())) {
-				sql += " and pb.createDate>= '"
-						+ branchDeliveryFeeBillVO.getCreateDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateTo())) {
-				sql += " and pb.createDate<= '"
-						+ branchDeliveryFeeBillVO.getCreateDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateFrom())) {
-				sql += " and pb.heXiaoDate>= '"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateTo())) {
-				sql += " and pb.heXiaoDate<= '"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBranchName())) {
 				sql += " and b.branchname like '%"
@@ -341,8 +509,12 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getContractColumn())) {
-				sql += " order by pb."
-						+ branchDeliveryFeeBillVO.getContractColumn();
+				if("branchName".equalsIgnoreCase(branchDeliveryFeeBillVO.getContractColumn())){
+					sql += " order by b.branchname";
+				} else {
+					sql += " order by pb."
+							+ branchDeliveryFeeBillVO.getContractColumn();
+				}
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getContractColumnOrder())) {
@@ -372,23 +544,23 @@ public class BranchDeliveryFeeBillDAO {
 			
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateFrom())) {
-				sql += " and pb.createDate>= '"
-						+ branchDeliveryFeeBillVO.getCreateDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateTo())) {
-				sql += " and pb.createDate<= '"
-						+ branchDeliveryFeeBillVO.getCreateDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateFrom())) {
-				sql += " and pb.heXiaoDate>= '"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateFrom() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateTo())) {
-				sql += " and pb.heXiaoDate<= '"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "' ";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBranchName())) {
 				sql += " and b.branchname like '%"
@@ -400,8 +572,12 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getContractColumn())) {
-				sql += " order by pb."
-						+ branchDeliveryFeeBillVO.getContractColumn();
+				if("branchName".equalsIgnoreCase(branchDeliveryFeeBillVO.getContractColumn())){
+					sql += " order by b.branchname";
+				} else {
+					sql += " order by pb."
+							+ branchDeliveryFeeBillVO.getContractColumn();
+				}
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getContractColumnOrder())) {
@@ -427,13 +603,13 @@ public class BranchDeliveryFeeBillDAO {
 		if (branchDeliveryFeeBill != null) {
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
 					.getBeginDate())) {
-				sql += " and " + dateColumn + " >= '"
-						+ branchDeliveryFeeBill.getBeginDate() + "' ";
+				sql += " and DATE_FORMAT('" + dateColumn + "','%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+						+ branchDeliveryFeeBill.getBeginDate() + "','%Y-%m-%d %H:%i:%s') ";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
 					.getEndDate())) {
-				sql += " and " + dateColumn + " <= '"
-						+ branchDeliveryFeeBill.getEndDate() + "' ";
+				sql += " and DATE_FORMAT('" + dateColumn + "','%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+						+ branchDeliveryFeeBill.getEndDate() + "','%Y-%m-%d %H:%i:%s') ";
 			}
 			if (branchDeliveryFeeBill.getBranchId() != 0) {
 				sql += " and d.deliverybranchid = "

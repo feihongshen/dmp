@@ -1132,6 +1132,7 @@ src/main/java/cn/explink/domain/ExpressOpsPunishinsideBill.java -text
 src/main/java/cn/explink/domain/ExpressSetBranchContract.java -text
 src/main/java/cn/explink/domain/ExpressSetBranchContractDetail.java -text
 src/main/java/cn/explink/domain/ExpressSetBranchDeliveryFeeBill.java -text
+src/main/java/cn/explink/domain/ExpressSetBranchDeliveryFeeBillDetail.java -text
 src/main/java/cn/explink/domain/ExpressSetExceedSubsidyApply.java -text
 src/main/java/cn/explink/domain/ExpressSysMonitor.java -text
 src/main/java/cn/explink/domain/FeeWayTypeRemark.java -text
@@ -1268,6 +1269,7 @@ src/main/java/cn/explink/domain/VO/CustomerBillContractVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressOpsPunishinsideBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
+src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetExceedSubsidyApplyVO.java -text
 src/main/java/cn/explink/domain/VO/SerachCustomerBillContractVO.java -text
@@ -5211,14 +5213,6 @@ src/main/webapp/dmp40/plug-in/webOffice/main.js -text
 src/main/webapp/dmp40/plug-in/webOffice/style.css -text
 src/main/webapp/dmp40/plug-in/webOffice/webOffice-sample.html -text
 src/main/webapp/dmp40/plug-in/webOffice/weboffice_v6.0.5.0.cab -text
-src/main/webapp/exportBranchDeliveryFeeBillList/colorschememapping.xml -text
-src/main/webapp/exportBranchDeliveryFeeBillList/filelist.xml -text
-src/main/webapp/exportBranchDeliveryFeeBillList/header.htm -text
-src/main/webapp/exportBranchDeliveryFeeBillList/image001.png -text
-src/main/webapp/exportBranchDeliveryFeeBillList/image002.jpg -text
-src/main/webapp/exportBranchDeliveryFeeBillList/item0001.xml -text
-src/main/webapp/exportBranchDeliveryFeeBillList/props0002.xml -text
-src/main/webapp/exportBranchDeliveryFeeBillList/themedata.thmx -text
 src/main/webapp/images/400dianhua.jpg -text
 src/main/webapp/images/400dianhua2.jpg -text
 src/main/webapp/images/DD_LOGO.jpg -text

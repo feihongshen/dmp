@@ -1,6 +1,10 @@
 package cn.explink.domain.VO;
 
-import java.math.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 
 public class ExpressSetBranchDeliveryFeeBillVO {
 	private int id;
@@ -28,12 +32,11 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 	private String shenHeDate;
 	private String contractColumn;
 	private String contractColumnOrder;
-	private String cwb;// 订单号
-	private int cwbordertypeid;// 订单类型（1配送 2上门退 3上门换）
-	private String emaildate;// 发货时间
-	private long paywayid;// 支付方式
-	private String branchname;
-	private String branchaddress;
+	private List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList;
+	private Map<String, Object> customerDeliveryFee;
+	private ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj;
+	private ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj;
+	private String qualityControlClause;
 
 	public void setId(int id) {
 		this.id = id;
@@ -227,38 +230,6 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 		this.shenHeDate = shenHeDate;
 	}
 
-	public String getCwb() {
-		return cwb;
-	}
-
-	public void setCwb(String cwb) {
-		this.cwb = cwb;
-	}
-
-	public int getCwbordertypeid() {
-		return cwbordertypeid;
-	}
-
-	public void setCwbordertypeid(int cwbordertypeid) {
-		this.cwbordertypeid = cwbordertypeid;
-	}
-
-	public String getEmaildate() {
-		return emaildate;
-	}
-
-	public void setEmaildate(String emaildate) {
-		this.emaildate = emaildate;
-	}
-
-	public long getPaywayid() {
-		return paywayid;
-	}
-
-	public void setPaywayid(long paywayid) {
-		this.paywayid = paywayid;
-	}
-
 	public String getBranchName() {
 		return branchName;
 	}
@@ -267,20 +238,47 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 		this.branchName = branchName;
 	}
 
-	public String getBranchname() {
-		return branchname;
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBillDetailList() {
+		return billDetailList;
 	}
 
-	public void setBranchname(String branchname) {
-		this.branchname = branchname;
+	public void setBillDetailList(
+			List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList) {
+		this.billDetailList = billDetailList;
 	}
 
-	public String getBranchaddress() {
-		return branchaddress;
+	public Map<String, Object> getCustomerDeliveryFee() {
+		return customerDeliveryFee;
 	}
 
-	public void setBranchaddress(String branchaddress) {
-		this.branchaddress = branchaddress;
+	public void setCustomerDeliveryFee(Map<String, Object> customerDeliveryFee) {
+		this.customerDeliveryFee = customerDeliveryFee;
+	}
+
+	public ExpressSetBranchDeliveryFeeBillDetailVO getDeliveryFeeObj() {
+		return deliveryFeeObj;
+	}
+
+	public void setDeliveryFeeObj(
+			ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj) {
+		this.deliveryFeeObj = deliveryFeeObj;
+	}
+
+	public ExpressSetBranchDeliveryFeeBillDetailVO getPickupFeeObj() {
+		return pickupFeeObj;
+	}
+
+	public void setPickupFeeObj(
+			ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj) {
+		this.pickupFeeObj = pickupFeeObj;
+	}
+
+	public String getQualityControlClause() {
+		return qualityControlClause;
+	}
+
+	public void setQualityControlClause(String qualityControlClause) {
+		this.qualityControlClause = qualityControlClause;
 	}
 
 }

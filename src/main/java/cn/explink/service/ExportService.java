@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import scala.collection.mutable.StringBuilder;
 import cn.explink.controller.AbnormalView;
-import cn.explink.controller.BranchDeliveryFeeBillController;
 import cn.explink.controller.ComplaintView;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.DeliveryStateView;
@@ -48,6 +47,7 @@ import cn.explink.domain.CwbDiuShiView;
 import cn.explink.domain.CwbKuaiDiView;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.MissPieceView;
 import cn.explink.domain.NewForExportJson;
@@ -56,11 +56,11 @@ import cn.explink.domain.PayUp;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.Role;
-import cn.explink.domain.SalaryGather;
 import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.ComplaintAuditTypeEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
@@ -2885,6 +2885,48 @@ public class ExportService {
 
 	}
 	
+	public Object setBranchDeliveryFeeBillDetailObject(String[] cloumnName3, List<ExpressSetBranchDeliveryFeeBillDetail> detailList, Object a, int i, int k, Map<Long, Customer> cMap) {
+		try {
+			if (cloumnName3[i].equals("Customerid")) {
+				long customerid = Long.parseLong(detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k)).toString());
+				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();
+			}  else if (cloumnName3[i].equals("Flowordertype")) {
+				for (FlowOrderTypeEnum ds : FlowOrderTypeEnum.values()) {
+					if (Long.parseLong(detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k)).toString()) == ds.getValue()) {
+						a = ds.getText();
+						break;
+					}
+				}
+			} else if (cloumnName3[i].equals("Cwbordertypeid")) {
+				for (CwbOrderTypeIdEnum ct : CwbOrderTypeIdEnum.values()) {
+					if (Long.parseLong(detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k)).toString()) == ct.getValue()) {
+						a = ct.getText();
+						break;
+					}
+				}
+			} else {
+				a = detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k));
+			}
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return a;
+		
+	}
+	
 	public void SetBranchDeliveryFeeBillFields(String[] cloumnName1, String[] cloumnName2) {
 		int i = 0;
 		int j = 0;
@@ -2897,31 +2939,31 @@ public class ExportService {
 		cloumnName1[i++] = "客户";
 		cloumnName2[j++] = "Customerid";
 		cloumnName1[i++] = "派费金额合计";
-		cloumnName2[j++] = "Deliverybranchid";
+		cloumnName2[j++] = "SumFee";
 		cloumnName1[i++] = "配送费合计";
-		cloumnName2[j++] = "Audittime";
+		cloumnName2[j++] = "DeliverySumFee";
 		cloumnName1[i++] = "基本派费";
-		cloumnName2[j++] = "Deliverystate";
+		cloumnName2[j++] = "DeliveryBasicFee";
 		cloumnName1[i++] = "代收补助费";
-		cloumnName2[j++] = "Shouldfare";
+		cloumnName2[j++] = "DeliveryCollectionSubsidyFee";
 		cloumnName1[i++] = "区域属性补助费";
-		cloumnName2[j++] = "Infactfare";
+		cloumnName2[j++] = "DeliveryAreaSubsidyFee";
 		cloumnName1[i++] = "超区补助";
-		cloumnName2[j++] = "Fareid";
+		cloumnName2[j++] = "DeliveryExceedSubsidyFee";
 		cloumnName1[i++] = "业务补助";
-		cloumnName2[j++] = "Payuptime";
+		cloumnName2[j++] = "DeliveryBusinessSubsidyFee";
 		cloumnName1[i++] = "拖单补助";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "DeliveryAttachSubsidyFee";
 		cloumnName1[i++] = "提货费合计";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "PickupSumFee";
 		cloumnName1[i++] = "代收补助费";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "PickupCollectionSubsidyFee";
 		cloumnName1[i++] = "区域属性补助费";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "PickupAreaSubsidyFee";
 		cloumnName1[i++] = "超区补助";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "PickupExceedSubsidyFee";
 		cloumnName1[i++] = "拖单补助";
-		cloumnName2[j++] = "Verifytime";
+		cloumnName2[j++] = "PickupAttachSubsidyFee";
 	}
 	
 	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
