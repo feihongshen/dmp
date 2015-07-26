@@ -7817,4 +7817,18 @@ CREATE TABLE `cs_complaint_accept` (
 			);
 		</sql>
 		</changeSet>
+		
+	<changeSet id="liuxiao-2015-07-26-01" author="liuxiao">
+		<sql>
+			ALTER TABLE `express_set_user` ADD COLUMN `sex` int(4) DEFAULT NULL AFTER `realname`;
+			ALTER TABLE `express_set_user` ADD COLUMN `startworkdate` varchar(200) DEFAULT  NULL; 
+			ALTER TABLE `express_set_user` ADD COLUMN `jobnum` varchar(200) DEFAULT  NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `jiesuanstate` INT(4) DEFAULT NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `maxcutpayment` decimal(19,2) DEFAULT NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `fixedadvance` decimal(19,2) DEFAULT NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `basicadvance` decimal(19,2) DEFAULT NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `fallbacknum` INT(11) DEFAULT NULL;
+			ALTER TABLE `express_set_user` ADD COLUMN `lateradvance` decimal(19,2) DEFAULT NULL;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
