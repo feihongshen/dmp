@@ -306,30 +306,29 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	     }    
 	  	 
 	  	 
-	  	/*  function datChongFuYanZheng(){
+	  	 function datChongFuYanZheng(){
 	  		 $.ajax({
 	  			 	type:'POST',
-	  			 	data:{'crestart':$('#dstart').datebox("getValue"),
-	  			 		  'creend':$('#dend').datebox("getValue"),
-	  			 		  'customerid':$('#crecustomerId').val()
-	  			 		},
+	  			 	data:$('#fm').serialize(),
 	  			 	url:'${pageContext.request.contextPath}/CustomerBillContract/panDuanDateShiFouChongDie',
 	  			 	dataType:'json',
 	  			 	success:function(data){
 	  			 		if(data.success==0){
-	  			 		$.messager.confirm("操作提示", "该客户已经存在反馈日期为"+data.successdata+"的派费账单“账单号”，是否继续创建批次？", function (data) { 
-	  			            if (data) { 
-	  			            	saveBill();  			            	
+	  			 		$.messager.confirm("操作提示", "该客户已经存在"+data.successdateType+"为"+data.successdata+"的派费账单,是否继续创建批次？", function (r) { 
+	  			            if (r) { 
+	  			            	$('#dlg').dialog('close');
+	  			            	saveBill();  	
 	  			            } 
 	  			        }); 
-
-	  			 		}else if(data.success==1){
+     
+	  			 		}else{
+	  			 			$('#dlg').dialog('close');
 	  			 			saveBill();  		
 	  			 		}
 	  			 	}  			 
 	  		 });
 	  	 } 
-	  		  */
+	  		
 /* 	  		 
 	  		$.messager.confirm('提示','你确定要删除这个帐单吗?',function(r){
 				if (r){
@@ -1131,7 +1130,7 @@ function importAllMoney(a){
 </div>	
 	<!-- 新增一级弹窗  操作区域 -->
 	<div id="dlg-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:saveBill()">创建</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:datChongFuYanZheng()">创建</a>
 		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">返回</a>
 	</div>
 	

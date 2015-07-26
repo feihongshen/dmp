@@ -7789,4 +7789,10 @@ CREATE TABLE `cs_complaint_accept` (
 				) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8;
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-07-26-01" author="wangzhiyong">
+		<sql>
+			INSERT INTO `dmp40_function` VALUES ('808060', '2', '客户派费账单', '808060, 'CustomerBillContract/CustomerBillContractList?', '8080');
+			
+		</sql>
+	</changeSet>
 </databaseChangeLog>

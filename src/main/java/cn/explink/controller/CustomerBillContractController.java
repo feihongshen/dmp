@@ -796,15 +796,17 @@ public class CustomerBillContractController {
 	@RequestMapping("/panDuanDateShiFouChongDie")
 	@ResponseBody
 	public String panDuanDateShiFouChongDie(HttpServletRequest req){
-		String crestart=req.getParameter("dstart");
-		String creend=req.getParameter("dend");
 		String customerid=req.getParameter("customerId");		
-		List<CustomerBillContract> l=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid));
+		String creend=req.getParameter("enddate");
+		String crestart=req.getParameter("startdate");
+		String dateState=req.getParameter("dateState");
+
 		
-		/*String startdate=rangeDate.substring(0,10).trim();
-    	String enddate=rangeDate.substring(11,21).trim();*/
+		List<CustomerBillContract> l=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
+		String dateType=CwbDateEnum.getTextByValue(Integer.valueOf(dateState)).toString();
 		String dateChongFu="";
 		StringBuffer sb = new StringBuffer(); 
+		if(l.size()>0){
 		for(CustomerBillContract c:l){
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			String startdate=c.getDateRange().substring(0,10).trim();
@@ -830,17 +832,18 @@ public class CustomerBillContractController {
 			
 			
 		}
-		int a=0;
+	}	
 		if(sb.length()>0){
 				dateChongFu=sb.substring(0,sb.length()-1).toString();
-			}
-		if(dateChongFu.equals("")){
-			
-			a=1;
 		}
 		
-		return "{\"success\":"+a+",\"successdata\":"+dateChongFu+"}";
+		if(dateChongFu==null||dateChongFu.equals("")){
+			
+			return "{\"success\":1}";
+		}
 		
+			return "{\"success\":0,\"successdata\":\""+dateChongFu+"\",\"successdateType\":\""+dateType+"\"}";
+
 	}
 	 
 	

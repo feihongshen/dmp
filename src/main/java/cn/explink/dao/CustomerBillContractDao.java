@@ -183,8 +183,8 @@ public class CustomerBillContractDao {
 				return this.jdbcTemplate.queryForObject(sql,new CustomerBillContractmapper());
 			}
 
-			public List<CustomerBillContract> findbillByCustomerid(long customerid) {
-				String sql="select * from customerbillcontract where customer_id="+customerid;
+			public List<CustomerBillContract> findbillByCustomerid(long customerid,long dateState) {
+				String sql="select * from customerbillcontract where customer_id="+customerid+" and date_state="+dateState;
 				List<CustomerBillContract> l=null;
 			try{	
 				l=this.jdbcTemplate.query(sql,new CustomerBillContractmapper());
