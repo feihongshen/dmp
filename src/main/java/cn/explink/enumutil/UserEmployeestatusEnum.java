@@ -7,7 +7,7 @@ package cn.explink.enumutil;
  *
  */
 public enum UserEmployeestatusEnum {
-	GongZuo(1, "工作"), XiuJia(2, "休假"), LiZhi(3, "离职");
+	GongZuo(1, "工作"), XiuJia(2, "休假"), LiZhi(3, "离职"),DaiLiZhi(4,"待离职");
 	private int value;
 	private String text;
 

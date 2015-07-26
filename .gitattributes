@@ -1373,6 +1373,7 @@ src/main/java/cn/explink/enumutil/FrameEnumExcp.java -text
 src/main/java/cn/explink/enumutil/FundsEnum.java -text
 src/main/java/cn/explink/enumutil/GoodsBacktypeEnum.java -text
 src/main/java/cn/explink/enumutil/HandleResultEnum.java -text
+src/main/java/cn/explink/enumutil/JiesuanstateEnum.java -text
 src/main/java/cn/explink/enumutil/JobCodeEnum.java -text
 src/main/java/cn/explink/enumutil/KuaiDiPayEnum.java -text
 src/main/java/cn/explink/enumutil/OperationTimeEnum.java -text
@@ -1399,6 +1400,7 @@ src/main/java/cn/explink/enumutil/ReasonTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/ReturnCwbsTypeEnum.java -text
 src/main/java/cn/explink/enumutil/SequenceEnum.java -text
+src/main/java/cn/explink/enumutil/Sexenum.java -text
 src/main/java/cn/explink/enumutil/ShenHeResultEnum.java -text
 src/main/java/cn/explink/enumutil/ShenHeStateEnum.java -text
 src/main/java/cn/explink/enumutil/SignStateEnmu.java -text
@@ -1713,6 +1715,7 @@ src/main/java/cn/explink/service/PunishinsideBillService.java -text
 src/main/java/cn/explink/service/ResultCollector.java -text
 src/main/java/cn/explink/service/ResultCollectorManager.java -text
 src/main/java/cn/explink/service/RoleService.java -text
+src/main/java/cn/explink/service/SalaryGatherService.java -text
 src/main/java/cn/explink/service/SalaryQueryService.java -text
 src/main/java/cn/explink/service/ScheduledTaskService.java -text
 src/main/java/cn/explink/service/SmsConfigModelService.java -text

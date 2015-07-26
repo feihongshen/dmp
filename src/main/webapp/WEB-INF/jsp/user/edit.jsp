@@ -1,3 +1,5 @@
+<%@page import="cn.explink.enumutil.JiesuanstateEnum"%>
+<%@page import="cn.explink.enumutil.Sexenum"%>
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.util.ResourceBundleUtil"%>
 <%@page import="cn.explink.domain.PaiFeiRule"%>
@@ -35,13 +37,22 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 		<div id="box_form">
 			<ul>
 					<li><span>姓名：</span>
-					<input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>*</li>
+						<input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>*
+					</li>
+					<li><span>性别：</span>
+						<select id="sex" name="sex">
+							<option value="-1" selected>----请选择----</option>
+							<option value="<%=Sexenum.Man.getValue() %>" <%if(Sexenum.Man.getValue()==u.getSex()){ %>selected = "selected" <%}%>><%=Sexenum.Man.getText() %></option>
+							<option value="<%=Sexenum.Woman.getValue() %>" <%if(Sexenum.Woman.getValue()==u.getSex()){ %>selected = "selected" <%}%> ><%=Sexenum.Woman.getText() %></option>
+						</select>*
+					</li>
 	           		<li><span>所属机构：</span>
 	           		<select id="branchid" name="branchid">
 						<option value="-1" selected>----请选择----</option>
 						<%for(Branch b : branchList){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
-						<%} %></select>*
+						<%} %>
+					</select>*
 					</li>
 	           		<li><span>用户角色：</span>
 						<select id="roleid" name="roleid" onchange="roleChange()">
@@ -61,9 +72,10 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					<li><span>派费规则：</span>
 					<select id ="pfruleid" name ="pfruleid" >
 					<option value="0">请选择</option>
-					<%for(PaiFeiRule pf:pfrulelist){ %>
-					<option value="<%=pf.getId()%>" <%if(u.getPfruleid()==pf.getId()){%>selected="selected"<%} %>><%=pf.getName() %></option>
-						<%} %>
+					<%if(pfrulelist!=null&&!pfrulelist.isEmpty()){
+						for(PaiFeiRule pf:pfrulelist){ %>
+						<option value="<%=pf.getId()%>" <%if(u.getPfruleid()==pf.getId()){%>selected="selected"<%} %>><%=pf.getName() %></option>
+						<%} }%>
 			           </select>
 			        </li>
 					<li id="pda_title" ><span>用户对货物操作权限</span>（PDA）：(机构的“组织的货物操作权限”与角色的“货物操作权限”的交集)</li>
@@ -96,12 +108,18 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					</li>
 					 <li><span>　</span>不勾选 ，则订单的收件人/电话/手机在页面显示/导出Excel时全部隐藏</li>
 			        <li><span>工作状态：</span>
-						<select id="employeestatus" name="employeestatus">
+						<select id="employeestatus" name="employeestatus" onchange="changeJSstate('<%=request.getContextPath()%>/user/getjiesuanstate');">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>
 							<option value="<%=UserEmployeestatusEnum.XiuJia.getValue() %>" ><%=UserEmployeestatusEnum.XiuJia.getText() %></option>
 							<option value="<%=UserEmployeestatusEnum.LiZhi.getValue() %>" ><%=UserEmployeestatusEnum.LiZhi.getText() %></option>
+							<option value="<%=UserEmployeestatusEnum.DaiLiZhi.getValue() %>" ><%=UserEmployeestatusEnum.DaiLiZhi.getText() %></option>
 				        </select>*
 					</li>
+	             	<li><span>结算状态：</span>
+	             		<select id="jiesuanstate" name="jiesuanstate">
+	             			<option value="<%=JiesuanstateEnum.ZhengchangJiesuan.getValue()%>"><%=JiesuanstateEnum.ZhengchangJiesuan.getText() %></option>
+				        </select>*
+	             	</li>
 				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="<%=u.getIdcardno() %>" maxlength="50"/></li>
 				    <%-- <li><span>基本工资：</span><input type="text"  id="usersalary" name="usersalary" value="<%=u.getUsersalary() %>" /></li>
 					
@@ -110,6 +128,14 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					 <li><span>Email/QQ/MSN：</span><input type="text"  id="useremail" name="useremail" value="<%=u.getUseremail() %>" maxlength="50"/></li>
 			         <%-- <li><span>联系地址：</span><input type="text" id="useraddress" name="useraddress" value="<%=u.getUseraddress() %>" /></li>
 			         <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="<%=u.getUserremark() %>" /></li> --%>
+			         
+			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="<%=u.getStartworkdate()==null?"":u.getStartworkdate() %>" maxlength="50"/></li>
+			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/></li>
+	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="<%=u.getMaxcutpayment()==null?"":u.getMaxcutpayment() %>" maxlength="50"/></li>
+	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="<%=u.getFixedadvance()==null?"":u.getFixedadvance() %>" maxlength="50"/></li>
+	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>
+	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="<%=u.getBasicadvance()==null?"":u.getBasicadvance() %>" maxlength="50"/></li>
+	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="<%=u.getFallbacknum() %>" maxlength="50"/></li>
 	         </ul>
 		</div>
 		<div align="center">

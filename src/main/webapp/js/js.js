@@ -6874,4 +6874,25 @@ function BuprintTag(scpath){
 	}		*/
 }
 
+function changeJSstate(contextPath){
+	$("#jiesuanstate").empty();
+	var employeestatus = $("#employeestatus").val();
+	$.ajax({
+		type:"POST",
+		url:contextPath,
+		data:{employeestatus:employeestatus},
+		dataType:"json",
+		success:function(data){
+			var optionStr = "";
+			if(data.errorCode==1){
+				optionStr = "<option value='1'>正常结算</option>";				
+			}else if(data.errorCode==2){
+				optionStr = "<option value='2'>暂停结算</option>";
+			}else{
+				optionStr = "<option value='3'>停止结算</option>";
+			}
+				$("#jiesuanstate").append(optionStr);
+		}
+	});
+}
 

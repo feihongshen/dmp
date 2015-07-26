@@ -24,7 +24,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.domain.Customer;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.service.CwbOrderService;
@@ -94,6 +96,17 @@ public class DeliveryStateDAO {
 		@Override
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
 			String obj = rs.getString("cwb");
+			return obj;
+		}
+	}
+	
+	
+	private final class OrderCwbByCustomerIdMapper implements RowMapper<Smtcount> {
+		@Override
+		public Smtcount mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Smtcount obj = new Smtcount();
+			obj.setCount(rs.getLong("count"));
+			obj.setPscount(rs.getLong("pscount"));
 			return obj;
 		}
 	}
@@ -1478,17 +1491,17 @@ public class DeliveryStateDAO {
 	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypelike(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
-	
+
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeByPage(String cwbs, String startdate, String enddate,int start,int number) {
 		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "' limit "+start+","+number;
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
@@ -1500,9 +1513,9 @@ public class DeliveryStateDAO {
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
-	
+
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
@@ -1589,6 +1602,7 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set whethergeneratedeliverymanbill = 1 where cwb in (" + cwbs + ")";
 		this.jdbcTemplate.update(sql);
 	}
+	
 	/**
 	 * 将生成过配送员账单的订单移除以后更改标识字段改为0
 	 */
@@ -1596,11 +1610,43 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set whethergeneratedeliverymanbill = 0 where cwb in (" + cwbs + ")";
 		this.jdbcTemplate.update(sql);
 	}
-
+	
+	//配送成功，上门退成功，上门换成功总量（某个小件员某个时间段内）
+	public long getDeliverysCountBytime(String starttime,String endtime,long userid){
+		String sql = "select count(1) from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and  state=1";
+		return this.jdbcTemplate.queryForLong(sql,userid);
+	}
+	//配送成功，上门退成功，上门换成功总量（某个小件员某个时间段内）
+	public List<DeliveryState> getDeliverysBytime(String starttime,String endtime,long userid){
+		String sql = "select * from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1";
+		return this.jdbcTemplate.query(sql,new DeliveryStateRowMapper(),userid);
+	}
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHelike(
 			String cwbs, String startdate, String enddate) {
 		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
+
+	public List<Smtcount> getLinghuoCount(long customerid, long userid, String starttime,
+			String endtime) {
+		try{
+			String sql = "select customerid,count(1) from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1  group by customerid ";
+			return this.jdbcTemplate.query(sql,new OrderCwbByCustomerIdMapper(),userid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public long getLinghuocwbs(long customerid, long userid, String starttime,
+			String endtime) {
+		try{
+			String sql = "select count(1) from express_ops_delivery_state where customerid=? and deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1";
+			return this.jdbcTemplate.queryForLong(sql,customerid,userid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 }

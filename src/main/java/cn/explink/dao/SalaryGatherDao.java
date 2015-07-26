@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
 import cn.explink.util.Page;
@@ -76,7 +77,7 @@ public class SalaryGatherDao {
 			salary.setCarfuel(rs.getBigDecimal("carfuel"));
 			salary.setPenalizecancel_import(rs.getBigDecimal("penalizecancel_import"));
 			salary.setFoul_import(rs.getBigDecimal("foul_import"));
-			salary.setSalarypush(rs.getBigDecimal("salarpush"));//提成
+			salary.setSalarypush(rs.getBigDecimal("salarypush"));//提成
 			salary.setBranchid(rs.getLong("branchid"));
 			salary.setBranchname(branchDAO.getbranchname(rs.getLong("branchid"))==null?"":branchDAO.getbranchname(rs.getLong("branchid")).getBranchname());
 			return salary;
@@ -190,5 +191,10 @@ public class SalaryGatherDao {
 		}
 		return salaryGathers;
 		
+	}
+
+	public List<SalaryGather> getSalaryGathers(String batchid) {
+		String sql = "select * from express_ops_salarygather_detail where batchid=?";
+		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
 	}
 }

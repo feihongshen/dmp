@@ -4,12 +4,17 @@
 package cn.explink.controller;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -28,9 +33,12 @@ import cn.explink.dao.SalaryGatherDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SalaryCount;
+import cn.explink.domain.SalaryFixed;
+import cn.explink.domain.SalaryGather;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BatchSateEnum;
 import cn.explink.enumutil.BranchTypeEnum;
+import cn.explink.service.DataStatisticsService;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.ExcelExtractor;
@@ -61,12 +69,20 @@ public class SalaryCountController {
 	SalaryGatherDao salaryGatherDao;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	DataStatisticsService dataStatisticsService;
+	
+	/**
+	 * 控制查询条件时使用(线程变量)
+	 */
+	public static final ThreadLocal<Map<List<SalaryGather>, Map<Integer, SalaryCount>>> QUERY_CONDITION = new ThreadLocal<Map<List<SalaryGather>, Map<Integer, SalaryCount>>>();
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page,
 			@RequestParam(value = "batchid", required = false, defaultValue = "") String batchid,
@@ -78,6 +94,8 @@ public class SalaryCountController {
 			@RequestParam(value = "operationTime",required = false,defaultValue = "") String operationTime,
 			@RequestParam(value = "orderbyname",required = false,defaultValue = "") String orderbyname,
 			@RequestParam(value = "orderbyway",required = false,defaultValue = "") String orderbyway,
+			/*@RequestParam(value = "sgList",required = false,defaultValue = "") List<SalaryGather> sgList,
+			@RequestParam(value = "edit",required = false,defaultValue = "0") int edit,*/
 			Model model) {
 		
 		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
@@ -116,6 +134,31 @@ public class SalaryCountController {
 		int count=this.salaryCountDAO.getSalaryCountByCount(batchid, batchstate, branchids, starttime, endtime, userids, operationTime, orderbyname, orderbyway);
 
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		
+		List<SalaryGather> sgList = null;
+		Map<Integer, SalaryCount> isMap = null;
+		Integer itg = 0;
+		SalaryCount sc = null;
+		Map<List<SalaryGather>, Map<Integer, SalaryCount>> sgMap = QUERY_CONDITION.get();
+		QUERY_CONDITION.set(null);
+		if(sgMap!=null){
+			Set<List<SalaryGather>> keyset = sgMap.keySet();
+			Iterator<List<SalaryGather>> it = keyset.iterator();
+			while(it.hasNext()){
+				sgList = (List<SalaryGather>)it.next();
+				isMap = sgMap.get(sgList);
+				Set<Integer> ite = isMap.keySet();
+				Iterator<Integer> iterator = ite.iterator();
+				while(iterator.hasNext()){
+					itg = iterator.next();
+					sc = isMap.get(itg);
+				}
+			}
+		}
+		
+		SalaryCount salary = new SalaryCount();
+		salary.setIsnow(-1);
+		model.addAttribute("salary",salary);
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("userList", userList);
@@ -132,7 +175,11 @@ public class SalaryCountController {
 		model.addAttribute("operationTime", operationTime);
 		model.addAttribute("orderbyname", orderbyname);
 		model.addAttribute("orderbyway", orderbyway);
-
+		
+		model.addAttribute("sgList",sgList);//
+		model.addAttribute("edit",itg);//标识
+		model.addAttribute("salarycount",sc);//批次信息
+		
 		return "salary/salaryCount/list";
 	}
 	@RequestMapping("/credata")
@@ -155,8 +202,6 @@ public class SalaryCountController {
 		return "salary/salaryCount/list";
 	}
 	
-	
-	
 	@RequestMapping("/seeOralter")
 	@ResponseBody
 	public String seeOralter(Model model,HttpServletRequest request){
@@ -171,7 +216,7 @@ public class SalaryCountController {
 		try {
 			return JsonUtil.translateToJson(salary);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();	
 			return null;
 		} 
 	}
@@ -197,22 +242,57 @@ public class SalaryCountController {
 	
 	@RequestMapping("/importData")
 	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file,
-			 @RequestParam(value = "hiddenbatchid", required = false,defaultValue="") String batchid,
-			 @RequestParam(value = "branchid", required = false,defaultValue="0") long branchid
+			 @RequestParam(value = "salarydata", required = false,defaultValue="") String data
+			/* @RequestParam(value = "batchid", required = false,defaultValue="") String batchid,
+			 @RequestParam(value = "batchstate", required = false,defaultValue="") int batchstate,
+			 @RequestParam(value = "branchid", required = false,defaultValue="") long branchid,
+			 @RequestParam(value = "starttime", required = false,defaultValue="") String starttime,
+			 @RequestParam(value = "endtime", required = false,defaultValue="") String endtime,
+			 @RequestParam(value = "remark", required = false,defaultValue="") String remark*/
 			) throws Exception {
+		SalaryCount sc = new SalaryCount();
+		String[] strArray = data.split(","); 
+		if(!"".equals(data)&&strArray.length>0){
+			sc.setBatchid(strArray[0]);
+			sc.setBatchstate(Integer.parseInt(strArray[1]));
+			sc.setBranchid(Long.parseLong(strArray[2]));
+			sc.setStarttime(strArray[3]);
+			sc.setEndtime(strArray[4]);
+			sc.setRemark(strArray[5]);
+			sc.setBranchname(strArray[6]);
+		}/*else{
+			sc.setBatchid(batchid);
+			sc.setBatchstate(batchstate);
+			sc.setBranchid(branchid);
+			sc.setStarttime(starttime);
+			sc.setEndtime(endtime);
+			sc.setRemark(remark);
+		}*/
+		
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);
 		final InputStream inputStream = file.getInputStream();
 		final User user=this.getSessionUser();
 		final long importflag=System.currentTimeMillis();
+		List<SalaryGather> sgList = new ArrayList<SalaryGather>();
+		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
 		if (excelExtractor != null) {
-
-			this.processFile(excelExtractor, inputStream,importflag,user,batchid,branchid);
-
-		} else {
-			return "redirect:list/1";
+			
+			//数据导入并计算工资
+			this.processFile(excelExtractor, inputStream,importflag,user,sc);
+			//导入之后进行查询
+			sgList = this.salaryGatherDao.getSalaryGathers(sc.getBatchid());
+			for(SalaryGather sg : sgList){
+				sg.setBranchname(this.dataStatisticsService.getQueryBranchName(branchList, sg.getBranchid()));
+			}
+			
 		}
+		Map<List<SalaryGather>, Map<Integer, SalaryCount>> sgscinteList = new HashMap<List<SalaryGather>, Map<Integer,SalaryCount>>();
+		Map<Integer,SalaryCount> scMap = new HashMap<Integer, SalaryCount>();
+		scMap.put(new Integer(1),sc);
+		sgscinteList.put(sgList, scMap);
+		QUERY_CONDITION.set(sgscinteList);
 
-		return "redirect:list/1?importflag=" + importflag;
+		return "redirect:list/1";
 	}
 	private ExcelExtractor getExcelExtractor(MultipartFile file) {
 		String originalFilename = file.getOriginalFilename();
@@ -225,8 +305,8 @@ public class SalaryCountController {
 	}
 	
 	//人事数据导入
-	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user,String batchid,long branchid) {
-		excelExtractor.extractSalaryGather(inputStream,importflag,user,batchid,branchid);
+	protected void processFile(ExcelExtractor excelExtractor, InputStream inputStream, long importflag,User user,SalaryCount sc ) {
+		excelExtractor.extractSalaryGather(inputStream,importflag,user,sc);
 
 	}
 	

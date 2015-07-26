@@ -27,6 +27,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.User;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
+import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ScheduledTaskService;
@@ -440,5 +441,20 @@ public class UserController {
 		model.addAttribute("page", page);
 		return "user/listbranch";
 	}
-
+	
+	//根据工作状态动态获取结算状态
+	@RequestMapping("/getjiesuanstate")
+	@ResponseBody
+	public String getjiesuansate(
+	@RequestParam(value = "employeestatus", required = false, defaultValue = "") String employeestatus){
+		int employestate = Integer.parseInt(employeestatus);
+		if(employestate == UserEmployeestatusEnum.GongZuo.getValue()||employestate == UserEmployeestatusEnum.XiuJia.getValue()){
+			return "{\"errorCode\":1,\"error\":\"工作或休假\"}";
+		}else if(employestate ==UserEmployeestatusEnum.DaiLiZhi.getValue()){
+			return "{\"errorCode\":2,\"error\":\"待离职\"}";
+		}else{
+			return "{\"errorCode\":3,\"error\":\"离职\"}";
+		}
+	}
+	
 }

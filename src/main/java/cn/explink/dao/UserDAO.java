@@ -68,6 +68,15 @@ public class UserDAO {
 			user.setLastLoginIp(rs.getString("lastip"));
 			user.setLastLoginTime(rs.getString("lasttime"));
 			user.setPfruleid(rs.getLong("pfruleid"));
+			user.setSex(rs.getInt("sex"));//性别
+			user.setStartworkdate(rs.getString("startworkdate"));//入职时间
+			user.setJobnum(StringUtil.nullConvertToEmptyString(rs.getString("jobnum")));//工号
+			user.setJiesuanstate(rs.getInt("jiesuanstate"));//结算状态
+			user.setMaxcutpayment(rs.getBigDecimal("maxcutpayment"));//最高扣款额度
+			user.setFixedadvance(rs.getBigDecimal("fixedadvance"));//固定预付款
+			user.setBasicadvance(rs.getBigDecimal("basicadvance"));//基础预付款
+			user.setFallbacknum(rs.getLong("fallbacknum"));//保底单量
+			user.setLateradvance(rs.getBigDecimal("lateradvance"));
 			return user;
 		}
 
@@ -222,7 +231,7 @@ public class UserDAO {
 
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
-				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?)",
+				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -246,7 +255,15 @@ public class UserDAO {
 						ps.setLong(18, user.getShownameflag());
 						ps.setLong(19, user.getShowmobileflag());
 						ps.setLong(20, user.getPfruleid());
-
+						ps.setInt(21, user.getSex());
+						ps.setString(22, user.getStartworkdate());
+						ps.setString(23, user.getJobnum());
+						ps.setInt(24, user.getJiesuanstate());
+						ps.setBigDecimal(25, user.getMaxcutpayment());
+						ps.setBigDecimal(26, user.getFixedadvance());
+						ps.setBigDecimal(27, user.getBasicadvance());
+						ps.setLong(28, user.getFallbacknum());
+						ps.setBigDecimal(29, user.getLateradvance());
 					}
 
 				});
@@ -256,7 +273,8 @@ public class UserDAO {
 	public void saveUser(final User user) {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
 				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
-				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,showmobileflag=?,pfruleid=?" + " where userid=? and userDeleteFlag=1 ",
+				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,"
+				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?,basicadvance=?,fallbacknum=?,lateradvance=?" + " where userid=? and userDeleteFlag=1 ",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -280,7 +298,16 @@ public class UserDAO {
 						ps.setLong(18, user.getShownameflag());
 						ps.setLong(19, user.getShowmobileflag());
 						ps.setLong(20, user.getPfruleid());
-						ps.setLong(21, user.getUserid());
+						ps.setInt(21, user.getSex());
+						ps.setString(22, user.getStartworkdate());
+						ps.setString(23, user.getJobnum());
+						ps.setInt(24, user.getJiesuanstate());
+						ps.setBigDecimal(25, user.getMaxcutpayment());
+						ps.setBigDecimal(26, user.getFixedadvance());
+						ps.setBigDecimal(27, user.getBasicadvance());
+						ps.setLong(28, user.getFallbacknum());
+						ps.setBigDecimal(29, user.getLateradvance());
+						ps.setLong(30, user.getUserid());
 					}
 
 				});

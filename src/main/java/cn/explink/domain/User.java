@@ -42,7 +42,90 @@ public class User implements Serializable {
 	private String lastLoginIp;
 	private String lastLoginTime;
 	private long pfruleid;// 派费规则id
+	
+	//工资计算维护字段(LX)
+	private int sex;//性别(1 男 2 女)
+	private String startworkdate;//入职日期
+	private String jobnum;//工号
+	private int jiesuanstate;//结算状态
+	private BigDecimal maxcutpayment;//最高扣款额度
+	private BigDecimal fixedadvance;//固定预付款
+	private BigDecimal basicadvance;//基础预付款
+	private long fallbacknum;//保底单量
+	private BigDecimal lateradvance;//后期预付款
 
+	public BigDecimal getLateradvance() {
+		return lateradvance;
+	}
+
+	public void setLateradvance(BigDecimal lateradvance) {
+		this.lateradvance = lateradvance;
+	}
+
+	public int getSex() {
+		return sex;
+	}
+
+	public void setSex(int sex) {
+		this.sex = sex;
+	}
+
+	public String getStartworkdate() {
+		return startworkdate;
+	}
+
+	public void setStartworkdate(String startworkdate) {
+		this.startworkdate = startworkdate;
+	}
+
+	public String getJobnum() {
+		return jobnum;
+	}
+
+	public void setJobnum(String jobnum) {
+		this.jobnum = jobnum;
+	}
+
+	public int getJiesuanstate() {
+		return jiesuanstate;
+	}
+
+	public void setJiesuanstate(int jiesuanstate) {
+		this.jiesuanstate = jiesuanstate;
+	}
+
+	public BigDecimal getMaxcutpayment() {
+		return maxcutpayment;
+	}
+
+	public void setMaxcutpayment(BigDecimal maxcutpayment) {
+		this.maxcutpayment = maxcutpayment;
+	}
+
+	public BigDecimal getBasicadvance() {
+		return basicadvance;
+	}
+
+	public void setBasicadvance(BigDecimal basicadvance) {
+		this.basicadvance = basicadvance;
+	}
+
+	public BigDecimal getFixedadvance() {
+		return fixedadvance;
+	}
+
+	public void setFixedadvance(BigDecimal fixedadvance) {
+		this.fixedadvance = fixedadvance;
+	}
+
+
+	public long getFallbacknum() {
+		return fallbacknum;
+	}
+
+	public void setFallbacknum(long fallbacknum) {
+		this.fallbacknum = fallbacknum;
+	}
 
 	/**
 	 * @return the pfruleid

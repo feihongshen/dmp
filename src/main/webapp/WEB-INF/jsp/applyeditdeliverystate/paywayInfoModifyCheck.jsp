@@ -345,7 +345,7 @@ function reserData(){
 	$("#applypeople").val(<%=request.getParameter("applypeople")==null?0:Long.parseLong(request.getParameter("applypeople"))%>);
 	$("#applytype").val(<%=request.getParameter("applytype")==null?0:Long.parseLong(request.getParameter("applytype"))%>);
 	$("#applystate").val(<%=request.getParameter("applystate")==null?0:Long.parseLong(request.getParameter("applystate"))%>);
-	 $("#applyresult").val(<%=request.getParameter("applyresult")==null?0:Long.parseLong(request.getParameter("applyresult"))%>);
+	$("#applyresult").val(<%=request.getParameter("applyresult")==null?0:Long.parseLong(request.getParameter("applyresult"))%>);
 </script>
 </BODY>
 </HTML>

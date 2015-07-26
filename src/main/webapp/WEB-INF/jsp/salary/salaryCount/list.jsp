@@ -128,6 +128,7 @@ $(function(){
 });
 
 function seeoralter(){
+	$("#sg").attr("hidden","hidden");
 	var indexVar = -1;
 	var batchVar = '';
 	$('input[name="isselect"]:checked').each(function(index){
@@ -149,9 +150,14 @@ function seeoralter(){
 		dataType:"json",
 		success : function(data) {
 			if(data!=null){
+				//var datajson = '{batchid:'+data.batchid+'batchstate:'+data.batchstate+'branchid:'+data.branchid+'starttime:'+data.starttime+'endtime:'+data.endtime+'usercount:'+data.usercount+'userid:'+data.userid+'operationTime:'+data.operationTime+'remark:'+data.remark+'branchname:'+data.branchname}';
+				var salaryStr = ''+data.batchid+','+data.batchstate+','+data.branchid+','+data.starttime+','+data.endtime+','+data.remark+','+data.branchname;
 				$("#batchid").val(data.batchid);//批次编号
+				//$("#hiddenbatchid").val(data.batchid);//(隐藏批次编号，核销时使用)
 				$("#batchstate").val(data.batchstate);//核销状态
-				$("#branchname").val(data.branchname);//站点	
+				$("#branchname").val(data.branchname);//站点
+				//$("#hiddenbranchid").val(data.branchid);//(隐藏站点，核销时使用)
+				$("#salarydata").val(salaryStr);
 				$("#starttime").val(data.starttime);//开始时间
 				$("#endtime").val(data.endtime);//结束时间
 				$("#remark").val(data.remark);//备注
@@ -351,7 +357,7 @@ function submitform(){
 	         	<td colspan="5"  align="left" valign="bottom">
 		         	<input type="button" class="input_button2" value="返回" onclick="$('#save').dialog('close');"/>
 		         	<input type="button" class="input_button2" value="保存" onclick="saveform();"/>
-		         	<input type="hidden" name="isnow" value="1" />
+		         	<!-- <input type="hidden" name="isnow" value="1" /> -->
 		         	<input type="submit" class="input_button2" value="核销完成"/>
 	         	</td>
 	         	<td>
@@ -367,8 +373,15 @@ function submitform(){
 							<tr>
 								<td>
 									<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
-									<input type="hidden" name="hiddenbatchid" value="${salary.batchid}" />
-									<input type="hidden" name="hiddenbranchid" value="${salary.branchid}"/>
+									<!-- <input type="hidden" id="hiddenbatchid" name="hiddenbatchid" value="" />
+									<input type="hidden" id="hiddenbranchid" name="hiddenbranchid" value=""/> -->
+									<input type="hidden" id="salarydata" name="salarydata" />
+									<%-- <input type="hidden" name="batchid" value="${salary.isnow!=-1?salary.batchid:salarycount.batchid}"></input>
+									<input type="hidden" name="batchstate" value="${salary.batchstate}"></input>
+									<input type="hidden" name="branchid" value="${salary.branchid"></input>
+									<input type="hidden" name="starttime" value="${salary.isnow!=-1?(salary.starttime):(salarycount.starttime)}"></input>
+									<input type="hidden" name="endtime" value="${salary.isnow!=-1?(salary.endtime):(salarycount.endtime)}"></input>
+									<input type="hidden" name="remark" value="${salary.isnow!=-1?(salary.remark):(salarycount.remark)}"></input> --%>
 								</td>
 								<td>
 									<input type="button" class="input_button2" value="确认" disabled="disabled" id="subfile" onclick="submitform();"/>
@@ -393,13 +406,14 @@ function submitform(){
 					</div>
 				</td>					
 			</tr>
+			
 		</form>
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 10%;">
          			批次编号：
          		</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         			<input id="batchid" name="batchid" type="text" style="width: 100%;"  value="${salary.batchid}"/> <!-- readonly="readonly" --> <!-- disabled="disabled" -->
+         			<input id="batchid" name="batchid" type="text" style="width: 100%;" disabled="disabled" value="${salary.isnow!=-1?salary.batchid:salarycount.batchid}"/> <!-- readonly="readonly" --> <!-- disabled="disabled" -->
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;">
          			批次状态：
@@ -408,7 +422,7 @@ function submitform(){
 		         	<select id="batchstate" name="batchstate" style="width: 100%" disabled="disabled">
 	         		 <option value="-1"></option>
 		         		 <c:forEach items="${batchStateEnum}" var="batch" >
-		         		 	<option value="${batch.value}"${salary.batchstate==batch.value?'selected=selected':'' } >${batch.text }</option>
+		         		 	<option value="${batch.value}"${salary.isnow!=-1?(salary.batchstate==batch.value?'selected=selected':''):(salarycount.batchstate==batch.value?'selected=selected':'') } >${batch.text }</option>
 		         		 </c:forEach>
 	         		</select>
          		</td>
@@ -417,7 +431,7 @@ function submitform(){
          	 	<select id="branchname" name="branchid" style="width: 100%" <!-- disabled="disabled" -->>
 	         		 <option value="-1"></option>
 	         		 <c:forEach items="${branchList}" var="branch">
-	         		 	<option value="${branch.branchid}" ${salary.branchid==branch.branchid?'selected=selected':'' }>${branch.branchname }</option>
+	         		 	<option value="${branch.branchid}" ${salary.isnow!=-1?(salary.branchid==branch.branchid?'selected=selected':''):(salarycount.branchid==branch.branchid?'selected=selected':'') }>${branch.branchname }</option>
 	         		 </c:forEach>
          		</select>
          		<%-- <input type="text" id="branchname" name="branchid" class="easyui-validatebox" 
@@ -435,14 +449,14 @@ function submitform(){
          	<tr>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">
-		         	<input type="text" id="starttime" name="starttime"  value="${salary.starttime}"/> 到 
-		   	       	<input type="text" id="endtime" name="endtime" value="${salary.endtime}"/>
+		         	<input type="text" id="starttime" name="starttime"  value="${salary.isnow!=-1?(salary.starttime):(salarycount.starttime)}"/> 到 
+		   	       	<input type="text" id="endtime" name="endtime" value="${salary.isnow!=-1?(salary.endtime):(salarycount.endtime)}"/>
          		</td>
          	</tr>
          	<tr>
          		<td nowrap="nowrap" align="right" rowspan="2">备注：</td>
          		<td nowrap="nowrap" colspan="6" rowspan="3">
-			    	<textarea rows="3"  id="remark" name="remark" style="width: 100%;resize: none;">${salary.remark}</textarea>
+			    	<textarea rows="3"  id="remark" name="remark" style="width: 100%;resize: none;">${salary.isnow!=-1?(salary.remark):(salarycount.remark)}</textarea>
 		        </td>
          	</tr>
          	<tr>
@@ -451,6 +465,7 @@ function submitform(){
 			<table width="700%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				<tr>
 					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="all" onclick="checkit()"/> </td>
+					<td align="center" valign="middle"style="font-weight: lighter;width: 100px;"> 站点</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 50px;"> 姓名</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 120px;"> 身份证号</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 结算单量</td>
@@ -502,9 +517,11 @@ function submitform(){
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 个税</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 实发工资</td>
 				</tr>
-				<%-- <c:forEach items="${salaryList}" var="salary">
-					<tr> 
+				
+				<c:forEach items="${sgList}" var="salary">
+					<tr id="sg" > 
 						<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
+						<td align="center" valign="middle">${salary.branchname}</td>
 						<td align="center" valign="middle">${salary.realname}</td>
 						<td align="center" valign="middle">${salary.idcard}</td>
 						<td align="center" valign="middle">${salary.accountSingle}</td>
@@ -512,6 +529,7 @@ function submitform(){
 						<td align="center" valign="middle">${salary.salaryjob}</td>
 						<td align="center" valign="middle">${salary.pushcash}</td>
 						<td align="center" valign="middle">${salary.jobpush}</td>
+						<td align="center" valign="middle">${salary.salarypush}</td><!-- 提成 -->
 						<td align="center" valign="middle">${salary.agejob}</td>
 						<td align="center" valign="middle">${salary.bonusroom}</td>
 						<td align="center" valign="middle">${salary.bonusallday}</td>
@@ -519,6 +537,7 @@ function submitform(){
 						<td align="center" valign="middle">${salary.bonustraffic}</td>
 						<td align="center" valign="middle">${salary.bonusphone}</td>
 						<td align="center" valign="middle">${salary.bonusweather}</td>
+						<td align="center" valign="middle">${salary.penalizecancel}</td><!-- 扣款撤销 -->
 						<td align="center" valign="middle">${salary.penalizecancel_import}</td>
 						<td align="center" valign="middle">${salary.bonusother1}</td>
 						<td align="center" valign="middle">${salary.bonusother2}</td>
@@ -530,6 +549,7 @@ function submitform(){
 						<td align="center" valign="middle">${salary.attendance}</td>
 						<td align="center" valign="middle">${salary.security}</td>
 						<td align="center" valign="middle">${salary.gongjijin}</td>
+						<td align="center" valign="middle">${salary.foul}</td><!-- 违纪违规扣罚 -->
 						<td align="center" valign="middle">${salary.foul_import}</td>
 						<td align="center" valign="middle">${salary.goods}</td>
 						<td align="center" valign="middle">${salary.dorm}</td>
@@ -539,6 +559,7 @@ function submitform(){
 						<td align="center" valign="middle">${salary.penalizeother4}</td>
 						<td align="center" valign="middle">${salary.penalizeother5}</td>
 						<td align="center" valign="middle">${salary.penalizeother6}</td>
+						<td align="center" valign="middle">${salary.imprestgoods}</td><!-- 货物预付款 -->
 						<td align="center" valign="middle">${salary.imprestother1}</td>
 						<td align="center" valign="middle">${salary.imprestother2}</td>
 						<td align="center" valign="middle">${salary.imprestother3}</td>
@@ -548,8 +569,11 @@ function submitform(){
 						<td align="center" valign="middle">${salary.carrent}</td>
 						<td align="center" valign="middle">${salary.carmaintain}</td>
 						<td align="center" valign="middle">${salary.carfuel}</td>
+						<td align="center" valign="middle">${salary.salaryaccrual}</td><!-- 应该工资 -->
+						<td align="center" valign="middle">${salary.tax}</td><!-- 个税 -->
+						<td align="center" valign="middle">${salary.salary}</td><!-- 实发工资 -->
 					</tr>
-				</c:forEach> --%>
+				</c:forEach>
 				</table>
 					<input type="button" onclick="" value="移除"/>
 				</div>

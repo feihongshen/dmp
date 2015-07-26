@@ -112,4 +112,13 @@ public class PaybusinessbenefitsDao {
 			return 0;
 		}
 	}
+	public Paybusinessbenefits getpbbfBycustomerid(long customerid) {
+		String sql = "select * from express_ops_paybusiness_benefits where customerid=?";
+		try{
+			return this.jdbcTemplate.queryForObject(sql,new PaybusinessbenefitsRowMapper(),customerid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
