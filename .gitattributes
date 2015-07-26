@@ -1206,6 +1206,7 @@ src/main/java/cn/explink/domain/Paybusinessbenefits.java -text
 src/main/java/cn/explink/domain/PenalizeInside.java -text
 src/main/java/cn/explink/domain/PenalizeInsideShenhe.java -text
 src/main/java/cn/explink/domain/PenalizeOut.java -text
+src/main/java/cn/explink/domain/PenalizeOutBill.java -text
 src/main/java/cn/explink/domain/PenalizeOutImportErrorRecord.java -text
 src/main/java/cn/explink/domain/PenalizeOutImportRecord.java -text
 src/main/java/cn/explink/domain/PenalizeType.java -text
@@ -1304,7 +1305,6 @@ src/main/java/cn/explink/domain/logdto/TodayStockDTO.java -text
 src/main/java/cn/explink/domain/orderflow/OrderFlow.java -text
 src/main/java/cn/explink/domain/orderflow/OrderFlowLog.java -text
 src/main/java/cn/explink/domain/orderflow/TranscwbOrderFlow.java -text
-src/main/java/cn/explink/domain/penalizeOutBill.java -text
 src/main/java/cn/explink/domain/weixin/DeliverystasticsDto.java -text
 src/main/java/cn/explink/entity/CsPushSms.java -text
 src/main/java/cn/explink/enumutil/AbnormalOrderHandleEnum.java -text

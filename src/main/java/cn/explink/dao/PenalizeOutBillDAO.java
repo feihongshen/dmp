@@ -19,7 +19,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.penalizeOutBill;
+import cn.explink.domain.PenalizeOutBill;
 import cn.explink.util.Page;
 
 /**
@@ -30,10 +30,10 @@ public class PenalizeOutBillDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	private final class PenalizeOutBillRowMapper implements RowMapper<penalizeOutBill> {
+	private final class PenalizeOutBillRowMapper implements RowMapper<PenalizeOutBill> {
 		@Override
-		public penalizeOutBill mapRow(ResultSet rs, int rowNum) throws SQLException {
-			penalizeOutBill bill = new penalizeOutBill();
+		public PenalizeOutBill mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PenalizeOutBill bill = new PenalizeOutBill();
 			bill.setId(rs.getInt("id"));
 			bill.setBillbatches(rs.getString("billbatches"));
 			bill.setBillstate(rs.getInt("billstate"));
@@ -58,7 +58,7 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 查询所有账单
 	 */
-	public List<penalizeOutBill> queryAll(penalizeOutBill bill, String billCreationStartDate, String billCreationEndDate, String billVerificationStrartDate, String billVerificationEndDate,
+	public List<PenalizeOutBill> queryAll(PenalizeOutBill bill, String billCreationStartDate, String billCreationEndDate, String billVerificationStrartDate, String billVerificationEndDate,
 			String sort, String method, long page) {
 		StringBuffer querySql = new StringBuffer();
 		querySql.append("select * from express_ops_penalize_out_bill where 1=1");
@@ -94,7 +94,7 @@ public class PenalizeOutBillDAO {
 		return this.jdbcTemplate.query(querySql.toString(), new PenalizeOutBillRowMapper());
 	}
 
-	public int queryAllCount(penalizeOutBill bill, String billCreationStartDate, String billCreationEndDate, String billVerificationStrartDate, String billVerificationEndDate, String sort,
+	public int queryAllCount(PenalizeOutBill bill, String billCreationStartDate, String billCreationEndDate, String billVerificationStrartDate, String billVerificationEndDate, String sort,
 			String method, long page) {
 		StringBuffer querySql = new StringBuffer();
 		querySql.append("select count(id) from express_ops_penalize_out_bill where 1=1");
@@ -131,7 +131,7 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 新增账单信息
 	 */
-	public long addPenalizeOutBill(final penalizeOutBill bill) {
+	public long addPenalizeOutBill(final PenalizeOutBill bill) {
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -159,13 +159,13 @@ public class PenalizeOutBillDAO {
 	}
 
 	// 获取最大编号
-	public List<penalizeOutBill> getMaxNumber() {
+	public List<PenalizeOutBill> getMaxNumber() {
 		String sql = "select * from express_ops_penalize_out_bill order by billbatches desc ";
 		return this.jdbcTemplate.query(sql, new PenalizeOutBillRowMapper());
 	}
 
 	// 通过id查询指定赔付账单明细
-	public penalizeOutBill queryById(Integer id) {
+	public PenalizeOutBill queryById(Integer id) {
 		String sql = "select * from express_ops_penalize_out_bill where id = '" + id + "'";
 		return this.jdbcTemplate.queryForObject(sql, new PenalizeOutBillRowMapper());
 	}
@@ -173,7 +173,7 @@ public class PenalizeOutBillDAO {
 	/**
 	 * 修改指定账单信息
 	 */
-	public void penalizeOutBillUpdate(penalizeOutBill bill) {
+	public void penalizeOutBillUpdate(PenalizeOutBill bill) {
 		StringBuffer updatesql = new StringBuffer("update express_ops_penalize_out_bill set");
 		final List<Object> param = new ArrayList<Object>();
 		if (bill.getBillstate() != null) {

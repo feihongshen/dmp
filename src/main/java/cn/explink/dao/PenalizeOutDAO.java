@@ -263,9 +263,17 @@ public class PenalizeOutDAO {
 	/**
 	 * 将已生成过的赔付单的标识字段改为1
 	 */
-	public void setWhetherGeneratePeiFuBill(String order){
+	public void setGeneratePeiFuBill(String order){
 		
 		String sql = "update express_ops_penalizeOut_detail set whetherGeneratePeiFuBill=1 where penalizeOutNO in("+order+")";
+		this.jdbcTemplate.update(sql);
+	}
+	/**
+	 * 将移除的赔付单的标识字段改为0
+	 */
+	public void setWhetherGeneratePeiFuBill(String order){
+		
+		String sql = "update express_ops_penalizeOut_detail set whetherGeneratePeiFuBill=0 where penalizeOutNO in("+order+")";
 		this.jdbcTemplate.update(sql);
 	}
 

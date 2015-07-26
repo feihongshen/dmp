@@ -28,7 +28,7 @@ import cn.explink.domain.PenalizeOut;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.Role;
 import cn.explink.domain.User;
-import cn.explink.domain.penalizeOutBill;
+import cn.explink.domain.PenalizeOutBill;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PunishBillStateEnum;
@@ -79,12 +79,12 @@ public class PenalizeOutBillController {
 	 */
 	
 	@RequestMapping("/penalizeOutBillPage/{page}")
-	public String queryAllBenalizeOutBill(Model model, penalizeOutBill bill, @PathVariable("page") long page,
+	public String queryAllBenalizeOutBill(Model model, PenalizeOutBill bill, @PathVariable("page") long page,
 			@RequestParam(value = "billCreationStartDate", required = false) String billCreationStartDate, @RequestParam(value = "billCreationEndDate", required = false) String billCreationEndDate,
 			@RequestParam(value = "billVerificationStrartDate", required = false) String billVerificationStrartDate,
 			@RequestParam(value = "billVerificationEndDate", required = false) String billVerificationEndDate, @RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "method", required = false) String method, @RequestParam(value = "query", required = false) Integer query) {
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(bill, billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(bill, billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		model.addAttribute("billList", list);
 		int count = this.PenalizeOutBilldao.queryAllCount(bill, billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		Page page_ob = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -143,14 +143,14 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "billVerificationStrartDate", required = false) String billVerificationStrartDate,
 			@RequestParam(value = "billVerificationEndDate", required = false) String billVerificationEndDate, @RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "method", required = false) String method) {
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
-		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
 		model.addAttribute("page_ob", page_ob);
-		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -204,10 +204,10 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "billVerificationEndDate", required = false) String billVerificationEndDate, @RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "method", required = false) String method) {
 		long page = 1;
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
-		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -261,15 +261,15 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "compensatesmall", required = false) Integer compensatesmall, @RequestParam(value = "compensateodd", required = false) String compensateodd,
 			@RequestParam(value = "customerid", required = false) Integer customerid, @RequestParam(value = "creationStartDate", required = false) String creationStartDate,
 			@RequestParam(value = "creationEndDate", required = false) String creationEndDate) {
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
-		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		// 主页面的分页
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
 		model.addAttribute("page_ob", page_ob);
-		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -351,10 +351,10 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "method", required = false) String method) {
 		this.penalizeOutBillService.addpenalizeOutBillList(id, compensateodd);
 		long page = 1;
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
-		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -378,7 +378,7 @@ public class PenalizeOutBillController {
 		}
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
 		model.addAttribute("branchList", branchList);
-		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		// 主页面的分页
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);
@@ -410,17 +410,17 @@ public class PenalizeOutBillController {
 	 * 修改指定账单信息
 	 */
 	@RequestMapping("/penalizeOutBillUpdate")
-	public String penalizeOutBillUpdate(Model model, penalizeOutBill bill1, @RequestParam(value = "id", required = false) Integer id,
+	public String penalizeOutBillUpdate(Model model, PenalizeOutBill bill1, @RequestParam(value = "id", required = false) Integer id,
 			@RequestParam(value = "billCreationStartDate", required = false) String billCreationStartDate, @RequestParam(value = "billCreationEndDate", required = false) String billCreationEndDate,
 			@RequestParam(value = "billVerificationStrartDate", required = false) String billVerificationStrartDate,
 			@RequestParam(value = "billVerificationEndDate", required = false) String billVerificationEndDate, @RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "method", required = false) String method) {
 		this.penalizeOutBillService.penalizeOutBillUpdate(bill1);
 		long page = 1;
-		List<penalizeOutBill> list = this.penalizeOutBillService.queryAll(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
+		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
 				method, page);
 		model.addAttribute("billList", list);
-		penalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 		int sum = this.penalizeOutBillService.queryByIdcount(id);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
@@ -442,7 +442,7 @@ public class PenalizeOutBillController {
 			}
 			userid = user.getUserid();
 		}
-		int coun = this.PenalizeOutBilldao.queryAllCount(new penalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
+		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		// 主页面的分页
 		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
 		model.addAttribute("page", page);

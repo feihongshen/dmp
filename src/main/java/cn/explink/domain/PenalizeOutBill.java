@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author wangqiang
  */
-public class penalizeOutBill {
+public class PenalizeOutBill {
 	private Integer id;
 	// 账单批次
 	private String billbatches;
