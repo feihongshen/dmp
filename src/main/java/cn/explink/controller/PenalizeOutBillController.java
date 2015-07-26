@@ -124,8 +124,8 @@ public class PenalizeOutBillController {
 	public Long addPenalizeOutBill(@RequestParam(value = "compensatebig", required = false) Integer compensatebig, @RequestParam(value = "compensatesmall", required = false) Integer compensatesmall,
 			@RequestParam(value = "compensateodd", required = false) String compensateodd, @RequestParam(value = "customerid", required = false) String customerid,
 			@RequestParam(value = "creationStartDate", required = false) String creationStartDate, @RequestParam(value = "creationEndDate", required = false) String creationEndDate,
-			@RequestParam(value = "compensateexplain", required = false) String compensateexplain, @RequestParam(value = "batchstate", required = false) String batchstate,
-			@RequestParam(value = "dutypersonid", required = false) String dutypersonid, @RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice,
+			@RequestParam(value = "compensateexplain", required = false) String compensateexplain, @RequestParam(value = "batchstate", required = false) Integer batchstate,
+			@RequestParam(value = "dutypersonid", required = false) Integer dutypersonid, @RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice,
 			@RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark, @RequestParam(value = "checkbox1", required = false) String checkbox1) {
 		Long id = this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
 		if ((checkbox1 != "") && (checkbox1 != null)) {
@@ -261,16 +261,18 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "compensatesmall", required = false) Integer compensatesmall, @RequestParam(value = "compensateodd", required = false) String compensateodd,
 			@RequestParam(value = "customerid", required = false) Integer customerid, @RequestParam(value = "creationStartDate", required = false) String creationStartDate,
 			@RequestParam(value = "creationEndDate", required = false) String creationEndDate) {
+		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
+		int sum = this.penalizeOutBillService.queryByIdcount(id);
+		long pag = 1;
 		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
-				method, page);
+				method, pag);
 		model.addAttribute("billList", list);
 		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
 		// 主页面的分页
-		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
-		model.addAttribute("page", page);
+		Page page_ob = new Page(coun, pag, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", pag);
 		model.addAttribute("page_ob", page_ob);
-		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
-		int sum = this.penalizeOutBillService.queryByIdcount(id);
+		
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
 		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
@@ -405,7 +407,16 @@ public class PenalizeOutBillController {
 		model.addAttribute("msg", "添加成功");
 		return "penalizeOutBill/penalizeOutBillPage";
 	}
-
+	
+	/**
+	 * 移除指定赔付订单
+	 */
+	@RequestMapping("/deleteorder")
+	@ResponseBody
+	public String deleteorder(@RequestParam(value = "ordernumber", required = false) String ordernumber, @RequestParam(value = "id", required = false) Integer id) {
+		this.penalizeOutBillService.deleteorder(ordernumber, id);
+		return "{\"errorCode\":0,\"error\":\"移除成功\"}";
+	}
 	/**
 	 * 修改指定账单信息
 	 */

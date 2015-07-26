@@ -64,6 +64,41 @@ $(function(){
 function queryPenalizeOutBill(){
 	$('#find').dialog('open')
 }
+//移除订单 
+function deleteorder(){
+	var id = $("#updateForm input[type='hidden'][name='id']").val();
+	var chkBoxes = $("#penalizeInsideTable input[type='checkbox'][name='checkBox']");
+	var ordernumber = "";
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true)
+		{
+			ordernumber = $(this).val()+","+ordernumber;
+		}
+	}); 
+	ordernumber = ordernumber.substring(0,ordernumber.length-1);
+	if(ordernumber == ""){
+		alert("请选择要移除的订单！");
+		return false;
+	}
+	if(confirm("确定要移除吗？")){
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			url : "${ctx}/penalizeOutBill/deleteorder",
+			data : {
+				ordernumber : ordernumber,
+				id : id
+			},
+			success : function(data) {
+				if(data.errorCode == 0){
+					$("#updatePageForm").submit();
+				}
+			}
+		});
+	}
+}
+
+
 
 //赔付大类与赔付小类联动
 function findbig()
@@ -119,7 +154,7 @@ $.ajax({
 	}});
 }
 function checkgeneration(){
-	$("#generationloses").checked
+	$("#generationloses").checked;
 	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
 	if(chkBoxes[0].checked == true){
 		$("#add input[name='checkbox1']").val("1");
@@ -284,13 +319,6 @@ function updatePunishinsideBill(){
 		alert("赔付说明不允许超过100位字符！")
 		return false;
 	}
-	var chkBoxes = $("#penalizeInsideTable input[type='checkbox'][name='checkBox']");
-	var compensateodd = "";
-	$(chkBoxes).each(function() {
-		compensateodd = $(this).val()+","+compensateodd;
-	}); 
-	compensateodd = compensateodd.substring(0,compensateodd.length-1);
-	$("#updateForm input[type='hidden'][name='compensateodd']").val(compensateodd);
 	$("#updateForm select[name='billstate']").attr("disabled",false);
 	$("#updateForm select[name='verifier']").attr("disabled",false);
 	$("#updateForm select[name='verificationperson']").attr("disabled",false);
@@ -388,7 +416,7 @@ function addPunishBillPage(){
 	$('#sumPrice').focus(function(){
 		$('#sumPrice').val('');
 	}).blur(function(){
-		if($('#sumPrice').val()!=""){
+		if(!$('#sumPrice').val()){
 			$('#sumPrice').val('默认为赔付金额,可修改');
 		}
 	});
@@ -435,6 +463,15 @@ function verify(){
 	if(pattern.test(compensateodd)){
 		alert("单号中不允许含有特殊字符，多个单号请以回车分隔！")
 		return false;
+	}
+	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
+	if(chkBoxes[0].checked == true){
+		var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
+	    var isMoneyFormatRight = reg.test($("#sumPrice").val());
+	    if(!isMoneyFormatRight){
+	  	  alert("扣罚金额只能为数字，并不能为负数，允许保留两位小数！");
+	  	  return false;
+	    }
 	}
 	if($("#compensateexplain").val().length >100){
 		alert("赔付说明长度不允许超过100位字符！");
@@ -574,7 +611,7 @@ function verify(){
          		 	</td>
 	         	</tr>
          		<tr >
-	         		<td align="right" nowrap="nowrap" style="width: 10%;">赔付大类：</td>
+	         		<td align="right" nowrap="nowrap" style="width: 10%;"><font color="red">*</font>赔付大类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
 	         			<select style="width: 100%" id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
 							<option value ="">请选择</option>
@@ -848,7 +885,7 @@ function verify(){
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
 					<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
-	         		<input type="button" class="input_button2"  onclick="deletePenalizeInside()" value="移除"/>
+	         		<input type="button" class="input_button2"  onclick="deleteorder()" value="移除"/>
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/1');$('#updatePageForm').submit();" >第一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.previous<1?1:page_o.previous}');$('#updatePageForm').submit();">上一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.next<1?1:page_o.next }');$('#updatePageForm').submit();" >下一页</a>　

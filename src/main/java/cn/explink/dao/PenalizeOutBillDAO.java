@@ -184,14 +184,7 @@ public class PenalizeOutBillDAO {
 			updatesql.append(", compensateexplain = ?");
 			param.add(bill.getCompensateexplain());
 		}
-		if (bill.getCompensateodd() != null) {
-			updatesql.append(", compensateodd = ?");
-			param.add(bill.getCompensateodd());
-		}
-		if (bill.getCompensatefee() != null) {
-			updatesql.append(", compensatefee = ?");
-			param.add(bill.getCompensatefee());
-		}
+		
 		if ((bill.getChecktime() != null) && (bill.getChecktime() != "")) {
 			updatesql.append(", checktime = ?");
 			param.add(bill.getChecktime());
@@ -223,7 +216,17 @@ public class PenalizeOutBillDAO {
 			}
 		});
 	}
-
+	public void updateBill(PenalizeOutBill bill) {
+		StringBuffer updatesql = new StringBuffer("update express_ops_penalize_out_bill set");
+		if (bill.getCompensateodd() != null) {
+			updatesql.append(" compensateodd = '"+bill.getCompensateodd()+"'");
+		}
+		if (bill.getCompensatefee() != null) {
+			updatesql.append(", compensatefee = '"+bill.getCompensatefee()+"'");
+		}
+		updatesql.append(" where id=" + bill.getId());
+		this.jdbcTemplate.update(updatesql.toString());
+	}
 	/**
 	 * 添加指定账单的单号
 	 */

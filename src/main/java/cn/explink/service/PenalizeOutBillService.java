@@ -11,11 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.PenalizeOutBillDAO;
 import cn.explink.dao.PenalizeOutDAO;
 import cn.explink.dao.PunishinsideBillDAO;
 import cn.explink.domain.Customer;
+import cn.explink.domain.DiliverymanPaifeiBill;
+import cn.explink.domain.DiliverymanPaifeiOrder;
 import cn.explink.domain.ExpressOpsPunishinsideBill;
 import cn.explink.domain.PenalizeOut;
 import cn.explink.domain.User;
@@ -238,11 +241,11 @@ public class PenalizeOutBillService {
 
 	// 修改指定账单信息
 	public void penalizeOutBillUpdate(PenalizeOutBill bill) {
-		BigDecimal sumBigDecimal = new BigDecimal(0);
+		/*BigDecimal sumBigDecimal = new BigDecimal(0);
 		if (StringUtils.isNotBlank(bill.getCompensateodd())) {
 			PenalizeOutBill  bill2 = this.PenalizeOutBilldao.queryById(bill.getId());
 			
-			/* 获取移除的赔付单号，并将其状态置为0*/
+			 获取移除的赔付单号，并将其状态置为0
 			String[] arr1 = bill.getCompensateodd().split(",");
 			String[] arr2 =	bill2.getCompensateodd().split(",");
 			for (int i = 0; i < arr1.length; i++) {
@@ -263,7 +266,7 @@ public class PenalizeOutBillService {
 			if(StringUtils.isNotBlank(sBuffer)){
 				
 				String order1 = sBuffer.toString();
-				order1 = this.spiltString(order1);/*order1.substring(0, order1.length() - 1);*/
+				order1 = this.spiltString(order1);order1.substring(0, order1.length() - 1);
 				this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order1);
 			}
 			
@@ -279,7 +282,7 @@ public class PenalizeOutBillService {
 		} else {
 			bill.setCompensatefee(sumBigDecimal);
 			bill.setCompensateodd("");
-		}
+		}*/
 		if(bill.getBillstate() != PunishBillStateEnum.WeiShenHe.getValue()){
 			if(bill.getBillstate() == PunishBillStateEnum.YiShenHe.getValue()){
 				bill.setVerifier((int) this.getSessionUser().getUserid());
@@ -301,20 +304,22 @@ public class PenalizeOutBillService {
 	 * @param str
 	 * @return
 	 */
-	public void addpunishinsideBill(String batchstate, String dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd) {
+	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd) {
 		ExpressOpsPunishinsideBill punishinsideBill = new ExpressOpsPunishinsideBill();
+		
 		String odd = "";
 		BigDecimal sum = new BigDecimal(0);
 		if (StringUtils.isNotBlank(compensateodd)) {
 			odd = compensateodd.replace("\r\n", ",");
 			String str = PenalizeOutBillService.spilt(compensateodd);
-
-			List<PenalizeOut> list = this.penalizeOutDAO.getPenalizeOutByid(str);
-			for (int i = 0; i < list.size(); i++) {
-				PenalizeOut out = list.get(i);
-				if (out.getPenalizeOutfee() != null) {
-					BigDecimal fee = out.getPenalizeOutfee();
-					sum = sum.add(fee);
+			if(sumPrice == sum){
+				List<PenalizeOut> list = this.penalizeOutDAO.getPenalizeOutByid(str);
+				for (int i = 0; i < list.size(); i++) {
+					PenalizeOut out = list.get(i);
+					if (out.getPenalizeOutfee() != null) {
+						BigDecimal fee = out.getPenalizeOutfee();
+						sum = sum.add(fee);
+					}
 				}
 			}
 
@@ -322,6 +327,11 @@ public class PenalizeOutBillService {
 		punishinsideBill.setSumPrice(sum);
 		punishinsideBill.setBillBatch(this.BillBatch());
 		punishinsideBill.setPunishNos(odd);
+		punishinsideBill.setDutypersonid(dutypersonid);
+		punishinsideBill.setDutybranchid(batchstate);
+		punishinsideBill.setPunishInsideRemark(punishInsideRemark);
+		punishinsideBill.setBillState(PunishBillStateEnum.WeiShenHe.getValue());
+		//punishinsideBill.setDutybranchid(dutybranchid);
 		this.punishinsideBillDAO.createPunishinsideBill(punishinsideBill);
 	}
 
@@ -359,5 +369,49 @@ public class PenalizeOutBillService {
 		}
 		
 		this.PenalizeOutBilldao.deletePenalizeOutBill(id);
+	}
+	
+	//移除赔付单
+	public void deleteorder(String ordernumber,Integer id){
+		String orderString = "";
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
+			String cwb = this.spiltString(ordernumber);
+			List<PenalizeOut> orderlist= this.penalizeOutDAO.getPenalizeOutByid(cwb);
+			
+			BigDecimal fee = new BigDecimal(0);
+			BigDecimal sum = new BigDecimal(0);
+			for(int k=0;k<orderlist.size();k++){
+				PenalizeOut order = orderlist.get(k);
+				fee = fee.add(order.getPenalizeOutfee());
+			}
+			PenalizeOutBill bill = this.PenalizeOutBilldao.queryById(id);
+			sum = bill.getCompensatefee().subtract(fee);
+			/* 将选中的订单号与账单表中的订单号做对比，去掉选中的订单号 */
+			String[] arr1 = ordernumber.split(",");
+			String[] arr2 = bill.getCompensateodd().split(",");
+			for (int i = 0; i < arr1.length; i++) {
+				for (int j = 0; j < arr2.length; j++) {
+					if (arr2[j].equals(arr1[i])) {
+						arr2[j] = "";
+					}
+				}
+			}
+			StringBuffer sBuffer = new StringBuffer();
+			for (int j = 0; j < arr2.length; j++) {
+				if (!"".equals(arr2[j])) {
+					sBuffer.append(arr2[j] + ",");
+				}
+			}
+			String order = sBuffer.toString();
+			order = order.substring(0, order.length() - 1);
+			PenalizeOutBill bill2 = new PenalizeOutBill();
+			bill2.setId(id);
+			bill2.setCompensateodd(order);
+			bill2.setCompensatefee(sum);
+			this.PenalizeOutBilldao.updateBill(bill2);
+			this.penalizeOutDAO.setWhetherGeneratePeiFuBill(cwb);
+			orderString = DiliverymanPaifeiBillService.spiltString(ordernumber);
+		
+		}
 	}
 }
