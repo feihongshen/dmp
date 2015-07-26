@@ -32,6 +32,8 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 	private String shenHeDate;
 	private String contractColumn;
 	private String contractColumnOrder;
+	private String branchname;
+	private String branchaddress;
 	private List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList;
 	private Map<String, Object> customerDeliveryFee;
 	private ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj;
@@ -279,6 +281,22 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 
 	public void setQualityControlClause(String qualityControlClause) {
 		this.qualityControlClause = qualityControlClause;
+	}
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
+
+	public String getBranchaddress() {
+		return branchaddress;
+	}
+
+	public void setBranchaddress(String branchaddress) {
+		this.branchaddress = branchaddress;
 	}
 
 }
