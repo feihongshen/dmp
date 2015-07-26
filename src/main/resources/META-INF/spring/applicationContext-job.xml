@@ -84,7 +84,7 @@
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
 							 <ref bean="doTime_deleteFlow" />
-							 
+							 <ref bean="doTime_vipshopOXO" />
 			           </list>                 
 	               </property>         
 	               <property name="dataSource" ref="dataSource"></property>
@@ -791,6 +791,26 @@
              <value>deleteflowlog_Task</value>
          </property>
      </bean>
+     
+     <!-- 唯品会OXO模式销售订单抓取定时器 开始 -->
+     <bean id="doTime_vipshopOXO" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getVipShopOXOTask" />
+           </property>
+             <property name="cronExpression">
+               <value>0 0/1 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="getVipShopOXOTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getVipShopOXOTask</value>
+         </property>
+     </bean>
+     <!-- 唯品会OXO模式销售订单抓取定时器  结束-->
      
 <!-- ===================================自动生成HTML定时器 结束========================================== -->
 </beans>
