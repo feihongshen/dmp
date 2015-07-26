@@ -591,6 +591,7 @@ public class CustomerBillContractController {
 			BigDecimal importAllMoney = new BigDecimal("0");
 			
 			for(ImportBillExcel l:lbe){
+				//求出导入的数据总和
 				importAllMoney=importAllMoney.add(l.getJijiaMoney()).add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney());
 			}
 			b.setImportDateCount(importDateCount);
@@ -697,7 +698,7 @@ public class CustomerBillContractController {
 		}
 		String cwbs1=customerbillcontractservice.listImportBillExcelToString(lbe);
 		if(cwbs!=null&&!cwbs.equals("")){
-			if(cc.getCorrespondingCwbNum()<lbe.size()){
+			if(cc.getCorrespondingCwbNum()<lbe.size()){  
 				for(ImportBillExcel i:lbe){
 						if(!cc.getCwbs().contains(i.getCwb())){
 							sb.append(i.getCwb()+",");
@@ -801,15 +802,16 @@ public class CustomerBillContractController {
 		String crestart=req.getParameter("startdate");
 		String dateState=req.getParameter("dateState");
 
-		
+		//根据客户id和账单状态找出符合条件的账单
 		List<CustomerBillContract> l=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
 		String dateType=CwbDateEnum.getTextByValue(Integer.valueOf(dateState)).toString();
 		String dateChongFu="";
 		StringBuffer sb = new StringBuffer(); 
 		if(l.size()>0){
+		
 		for(CustomerBillContract c:l){
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			String startdate=c.getDateRange().substring(0,10).trim();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  	
+			String startdate=c.getDateRange().substring(0,10).trim(); //分别从账单中提取日期范围
 	    	String enddate=c.getDateRange().substring(11,21).trim();
 			try {
 				Date d = df.parse(startdate);
@@ -822,7 +824,7 @@ public class CustomerBillContractController {
 				
 				
 				if((d2.getTime()>d.getTime()&&d2.getTime()<d1.getTime())||(d3.getTime()>d.getTime()&&d3.getTime()<d1.getTime())){
-					sb.append(c.getDateRange()+",");
+					sb.append(c.getDateRange()+",");   //通过比较是否在账单范围内判断账单创建是否重复
 				}
 				
 			} catch (ParseException e) {   
@@ -837,7 +839,7 @@ public class CustomerBillContractController {
 				dateChongFu=sb.substring(0,sb.length()-1).toString();
 		}
 		
-		if(dateChongFu==null||dateChongFu.equals("")){
+		if(dateChongFu==null||dateChongFu.equals("")){  //如果不重复返回1直接创建
 			
 			return "{\"success\":1}";
 		}
@@ -854,18 +856,20 @@ public class CustomerBillContractController {
 	@RequestMapping("/findImportBillExcelByCwb")
 	@ResponseBody
 	public ImportBillExcel findImportBillExcelByCwb(HttpServletRequest req){
-		String cwb = req.getParameter("cwb");		
+		String cwb = req.getParameter("cwb");	
+		//根据订单号查出相对应的导入数据并且返回
 		ImportBillExcel ibelist=customerbillcontractdao.findImportBillExcelBycwb(cwb);	
-	/*	Map<String, Object> jsonMap=new HashMap<String, Object>();
-		jsonMap.put("rows", ibelist);*/
 		return ibelist;	
 	}
 	  
 	
-	
+	/*
+	 * 根据前台传过来的订单和批次，找出相对应的账单，并将导入的总和赋值给派费合计
+	 */
 	@RequestMapping("/changeImportToSystemMoney")
 	@ResponseBody
 	public String changeImportToSystemMoney(HttpServletRequest req){
+		
 		String cwb = req.getParameter("cwb");
 		String billBatches = req.getParameter("billBatches");
 		String importtotalCharge = req.getParameter("importtotalCharge");
@@ -880,11 +884,13 @@ public class CustomerBillContractController {
 	@ResponseBody
 	public String changeImportToSystemAllMoney(HttpServletRequest req){
 		String billBatches = req.getParameter("billBatches");
+		//根据批次号查出批次为当前批次的导入数据
 		List<ImportBillExcel> lm=customerbillcontractdao.findImportBillExcelByBatches(billBatches);
+		//根据批次号查出批次为当前批次的订单
 		List<SerachCustomerBillContractVO> ls=customerbillcontractdao.findSerachCustomerBillContractVOByBatches(billBatches);
 		for(ImportBillExcel l:lm){
 			for(SerachCustomerBillContractVO s:ls){
-				if(l.getCwb().equals(s.getCwb())){
+				if(l.getCwb().equals(s.getCwb())){    //如果订单号相同，将订单号相同的导入的派费合计赋值给相对应订单好的订单中的派费合计
 					customerbillcontractdao.changeImportToDmpMoney(l.getCwb(),billBatches, l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
 				}
 			}

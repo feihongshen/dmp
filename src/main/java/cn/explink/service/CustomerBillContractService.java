@@ -54,8 +54,8 @@ public class CustomerBillContractService {
 			for(CwbOrder str:cwborderlist){
 				sb=sb.append("'"+str.getCwb()+"',");
 			}
-		}
 			cwbs=sb.substring(0, sb.length()-1);	
+		}
 		return cwbs;	
 	}
 	
@@ -142,27 +142,6 @@ public class CustomerBillContractService {
 		 Random random = new Random();  		  
 	     int rannum = (int) (random.nextDouble() * (99999 - 10000 + 1)) + 10000;
 		String initbillBatches="B"+DateTimeUtil.getCurrentDate()+rannum;	
-/*		String initBillBatches=initbillBatches+initNum;	//B2015070200001
-		List<CustomerBillContract> list=customerbillCcontractdao.datebillBatche();//取出当前从数据库中查到的最大流水号
-		String NowLiuShuiNum="B"+DateTimeUtil.getCurrentDate()+initNum;
-		String BillBatche=null;
-		if(list.size()>0){
-			BillBatche=list.get(0).getBillBatches();
-		}
-		String BillBatche=list.get(0).getBillBatches();
-		String dateinitBillBatches=initBillBatches.substring(1, 8);  //默认初始化的流水号
-		String datebillBatche=BillBatche.substring(1,8); //从数据库去除的流水号数字日期
-		if(BillBatche!=null){
-		if(Integer.valueOf(datebillBatche)<Integer.valueOf(dateinitBillBatches)){
-			NowLiuShuiNum="B"+DateTimeUtil.getCurrentDate()+initNum; //新的一天的流水号
-		}else if(Integer.valueOf(datebillBatche)==Integer.valueOf(dateinitBillBatches)){
-			NowLiuShuiNum=BillBatche;  //原有的流水号
-			}
-		} 
-	
-		long billbatche=Integer.valueOf(NowLiuShuiNum.substring(9,13))+1;
-		String billOneDaoEight=NowLiuShuiNum.substring(0,8);
-		String BillBatches=billOneDaoEight+billbatche;*/
 		return initbillBatches;
 	}
 
@@ -258,100 +237,7 @@ public class CustomerBillContractService {
 		
 	}
 	
-/*	public List<CustomerBillContract> getUpdateExcel(InputStream fis){
-		POIFSFileSystem pfs;
-		List<CustomerBillContract> lc =null;
-		try {
-			pfs = new POIFSFileSystem(fis);
-			HSSFWorkbook wb = new HSSFWorkbook(pfs);//创建工作簿
-			HSSFSheet sheet = wb.getSheetAt(0);//获取第一页
-			HSSFRow row = null;
-			 lc = new ArrayList<CustomerBillContract>();
-			for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){//循环所有行
-				row=sheet.getRow(rowNum);
-				HSSFCell billBatches=row.getCell(1);
-				HSSFCell billState=row.getCell(2);
-				HSSFCell customerId=row.getCell(3);
-				HSSFCell dateRange=row.getCell(4);
-				HSSFCell correspondingCwbNum=row.getCell(5);
-				HSSFCell deliveryMoney=row.getCell(6);
-				HSSFCell distributionMoney=row.getCell(7);
-				HSSFCell transferMoney=row.getCell(8);
-				HSSFCell refuseMoney=row.getCell(9);
-				HSSFCell totalCharge=row.getCell(10);
-				CustomerBillContract c = new CustomerBillContract();
-				c.setBillBatches(formatCell(billBatches));
-				c.setBillState(Long.valueOf(formatCell(billState)));
-				c.setCorrespondingCwbNum(Long.valueOf(formatCell(correspondingCwbNum)));
-				c.setDateRange(formatCell(dateRange));
-				c.setCustomerId(Long.valueOf(formatCell(customerId)));
-				c.setDeliveryMoney(new BigDecimal(formatCell(deliveryMoney)));
-				c.setDistributionMoney(new BigDecimal(formatCell(distributionMoney)));
-				c.setTransferMoney(new BigDecimal(formatCell(transferMoney)));
-				c.setRefuseMoney(new BigDecimal(formatCell(refuseMoney)));
-				c.setTotalCharge(new BigDecimal(formatCell(totalCharge)));
-				lc.add(c);
-				
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		return lc;
-	}
-	
-	public static String formatCell(HSSFCell cell){//判断cell类型
-		if(cell==null){
-			return "";
-		}else{
-			if(cell.getCellType()==HSSFCell.CELL_TYPE_BOOLEAN){
-				return String.valueOf(cell.getBooleanCellValue());
-			}else if(cell.getCellType()==HSSFCell.CELL_TYPE_NUMERIC){
-				return String.valueOf(cell.getNumericCellValue());
-			}else{
-				return String.valueOf(cell.getStringCellValue());
-			}
-			
-		}
-	
-	}ImportBillExcel*/
-		
-	/*public List<Object> getUploadExcel(InputStream fis) {
-		List<Object> rows = new ArrayList<Object>();
-		try {
-			HSSFWorkbook xwb = null;
-			try {
-				xwb = new HSSFWorkbook(fis);
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-				throw new BadExcelException();
-			}
-			
-			HSSFSheet sheet = xwb.getSheetAt(0);
 
-			for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){
-				HSSFRow row = sheet.getRow(rowNum); // 从第二行开始，取出每一行
-				for(int i=0;i<=row.getLastCellNum()-1;i++){
-					
-					
-					rows.add(formatCell(row.getCell(i)));
-					}
-				
-			
-				
-				
-
-			}
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-		return rows;
-	}*/
-	
 	public List<ImportBillExcel> getUploadExcel(InputStream fis) {
 		List<ImportBillExcel> rows = new ArrayList<ImportBillExcel>();
 		try {
