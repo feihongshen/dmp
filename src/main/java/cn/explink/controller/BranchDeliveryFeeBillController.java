@@ -101,7 +101,7 @@ public class BranchDeliveryFeeBillController {
 		// 日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
-				.queryBranchDeliveryFeeBill(queryConditionVO);
+				.queryBranchDeliveryFeeBill(page, queryConditionVO);
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(queryConditionVO);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -135,7 +135,7 @@ public class BranchDeliveryFeeBillController {
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
 		//支付方式
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
-				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
+				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
 		int jiesuanAuthority = 0;
@@ -175,7 +175,7 @@ public class BranchDeliveryFeeBillController {
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
-				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
+				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
 		User user = getSessionUser();
@@ -212,12 +212,11 @@ public class BranchDeliveryFeeBillController {
 	public String branchList(@PathVariable("page") long page, ExpressSetBranchDeliveryFeeBillVO billVO,
 			Model model) {
 
-		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
-				.queryBranchDeliveryFeeBill(new ExpressSetBranchDeliveryFeeBillVO());
+				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
 		List<Branch> branches= this.branchDAO.getBranchByPage(page, billVO.getBranchname(), billVO.getBranchaddress());

@@ -149,7 +149,7 @@ public class BranchContractDAO {
 		return jdbcTemplate.query(sql, new BranchContractMapper(), id);
 	}
 	
-	public List<ExpressSetBranchContract> queryBranchContract(ExpressSetBranchContractVO branchContractVO) {
+	public List<ExpressSetBranchContract> queryBranchContract(long page, ExpressSetBranchContractVO branchContractVO) {
 		
 		String sql = "select * from express_set_branch_contract where 1=1 ";
 		if(branchContractVO != null){
@@ -199,6 +199,11 @@ public class BranchContractDAO {
 			if(StringUtils.isNotBlank(branchContractVO.getContractColumnOrder())){
 				sql += " " + branchContractVO.getContractColumnOrder();
 			}
+		}
+		if(sql.indexOf("order by") > -1) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		} else {
+			sql += " order by id desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
 		
 		return jdbcTemplate.query(sql, new BranchContractMapper());

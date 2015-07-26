@@ -109,7 +109,7 @@ public class BranchContractController {
 	public String branchContractList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchContractVO branchContractVO) {
 		
-		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(branchContractVO);
+		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(page, branchContractVO);
 		int count = this.branchContractDAO.queryBranchContractCount(branchContractVO);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
 		

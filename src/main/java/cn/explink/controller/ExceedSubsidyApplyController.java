@@ -90,7 +90,7 @@ public class ExceedSubsidyApplyController {
 			}
 		}
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
-				.queryExceedSubsidyApply(queryConditionVO);
+				.queryExceedSubsidyApply(page, queryConditionVO);
 		int count = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApplyCount(queryConditionVO);
 		List<User> userList = this.userDAO.getAllUser();
@@ -141,7 +141,7 @@ public class ExceedSubsidyApplyController {
 		Map<Integer, String> applyStateMap = ExceedSubsidyApplyStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
-				.queryExceedSubsidyApply(applyVO);
+				.queryExceedSubsidyApply(1, applyVO);
 		List<User> userList = this.userDAO.getAllUser();
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
@@ -187,7 +187,7 @@ public class ExceedSubsidyApplyController {
 		Map<Integer, String> applyStateMap = ExceedSubsidyApplyStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
-				.queryExceedSubsidyApply(applyVO);
+				.queryExceedSubsidyApply(1, applyVO);
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
 		List<User> userList = this.userDAO.getAllUser();

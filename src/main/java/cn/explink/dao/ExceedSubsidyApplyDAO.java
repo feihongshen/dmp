@@ -340,7 +340,7 @@ public class ExceedSubsidyApplyDAO {
 	}
 
 	public List<ExpressSetExceedSubsidyApply> queryExceedSubsidyApply(
-			ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO) {
+			long page, ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO) {
 
 		String sql = "select * from express_set_exceed_subsidy_apply a "
 				+ " left join express_set_user u on a.deliveryPerson = u.userid "
@@ -380,6 +380,11 @@ public class ExceedSubsidyApplyDAO {
 			}
 		}
 
+		if(sql.indexOf("order by") > -1) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		} else {
+			sql += " order by id desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		}
 		return jdbcTemplate.query(sql, new ExceedSubsidyApplyMapper());
 	}
 	

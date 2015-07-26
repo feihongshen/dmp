@@ -100,7 +100,7 @@ public class PunishinsideBillController {
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(queryConditionVO);
+				.queryPunishinsideBill(page, queryConditionVO);
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(queryConditionVO);
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
@@ -141,7 +141,9 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
@@ -165,7 +167,10 @@ public class PunishinsideBillController {
 			realname = user.getRealname();
 		}
 		String nowDate = DateTimeUtil.getNowDate();
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -196,7 +201,9 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
@@ -221,7 +228,10 @@ public class PunishinsideBillController {
 			realname = user.getRealname();
 		}
 		String nowDate = DateTimeUtil.getNowDate();
-
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
@@ -252,14 +262,19 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(id);
-
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("userList", userList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("dutyPersonList", dutyPersonList);
@@ -285,7 +300,7 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(page, new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
@@ -342,7 +357,7 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO

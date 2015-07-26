@@ -259,7 +259,7 @@ public class PunishinsideBillDAO {
 	}
 
 	public List<ExpressOpsPunishinsideBill> queryPunishinsideBill(
-			ExpressOpsPunishinsideBillVO punishinsideBillVO) {
+			long page, ExpressOpsPunishinsideBillVO punishinsideBillVO) {
 
 		String sql = "select * from express_ops_punishinside_bill pb "
 				+ " left join express_set_branch b on pb.dutybranchid = b.branchid "
@@ -322,6 +322,12 @@ public class PunishinsideBillDAO {
 					.getContractColumnOrder())) {
 				sql += " " + punishinsideBillVO.getContractColumnOrder();
 			}
+		}
+		
+		if(sql.indexOf("order by") > -1) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		} else {
+			sql += " order by id desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
 
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());

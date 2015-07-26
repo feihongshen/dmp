@@ -463,7 +463,7 @@ public class BranchDeliveryFeeBillDAO {
 	}
 
 	public List<ExpressSetBranchDeliveryFeeBill> queryBranchDeliveryFeeBill(
-			ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO) {
+			long page, ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO) {
 
 		String sql = "select * from express_set_branch_delivery_fee_bill pb "
 				+ " left join express_set_branch b on pb.branchId = b.branchid "
@@ -522,6 +522,11 @@ public class BranchDeliveryFeeBillDAO {
 			}
 		}
 
+		if(sql.indexOf("order by") > -1) {
+			sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		} else {
+			sql += " order by id desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		}
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillMapper());
 	}
 	
