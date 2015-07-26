@@ -1478,31 +1478,31 @@ public class DeliveryStateDAO {
 	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypelike(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeByPage(String cwbs, String startdate, String enddate,int start,int number) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "' limit "+start+","+number;
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "' limit "+start+","+number;
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHeByPage(String cwbs, String startdate, String enddate,int start,int number) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "' limit "+start+","+number;
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ")and state=1 and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "' limit "+start+","+number;
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
 		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
