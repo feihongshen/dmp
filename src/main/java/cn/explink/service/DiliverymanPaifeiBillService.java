@@ -198,6 +198,7 @@ public class DiliverymanPaifeiBillService {
 		if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
 			ordernumber = DiliverymanPaifeiBillService.spiltString(ordernumber);
 			this.diliverymanPaifeiBillDAO.deleteorder(ordernumber);
+			this.deliveryStateDao.setWhetherGenerateDeliveryBill(ordernumber);
 		}
 		this.diliverymanPaifeiBillDAO.deleteBill(id);
 	}
@@ -238,7 +239,7 @@ public class DiliverymanPaifeiBillService {
 				order.setPaymentmode(Integer.parseInt(cwbOrder.getNewpaywayid()));
 				order.setTimeofdelivery(orderFlow.getCredate().toString());
 				/* 根据 订单号，配送员调用规则生成配送费用 */
-				Long pfruleid = this.user.getPfruleid();
+				Long pfruleid = this.userDAO.getbranchidbyuserid(cwbOrder.getDeliverid()).getPfruleid();
 				BigDecimal basic = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwbOrder.getCwb());
 				BigDecimal collection = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, cwbOrder.getCwb());
 				BigDecimal area = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwbOrder.getCwb());
@@ -275,6 +276,7 @@ public class DiliverymanPaifeiBillService {
 		if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
 			String cwb = this.spiltString(ordernumber);
 			List<DiliverymanPaifeiOrder> orderlist = this.diliverymanPaifeiBillDAO.queryByOrderList(cwb);
+			this.deliveryStateDao.setWhetherGenerateDeliveryBill(cwb);
 			BigDecimal fee = new BigDecimal(0);
 			BigDecimal sum = new BigDecimal(0);
 			for(int k=0;k<orderlist.size();k++){

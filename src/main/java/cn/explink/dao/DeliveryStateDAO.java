@@ -1589,6 +1589,13 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set whethergeneratedeliverymanbill = 1 where cwb in (" + cwbs + ")";
 		this.jdbcTemplate.update(sql);
 	}
+	/**
+	 * 将生成过配送员账单的订单移除以后更改标识字段改为0
+	 */
+	public void setWhetherGenerateDeliveryBill(String cwbs) {
+		String sql = "update express_ops_delivery_state set whethergeneratedeliverymanbill = 0 where cwb in (" + cwbs + ")";
+		this.jdbcTemplate.update(sql);
+	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHelike(
 			String cwbs, String startdate, String enddate) {
