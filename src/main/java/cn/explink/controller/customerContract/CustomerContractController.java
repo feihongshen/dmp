@@ -79,10 +79,10 @@ public class CustomerContractController {
 		model.addAttribute("number", contractManagement.getNumber());
 		model.addAttribute("contractstatus", contractManagement.getContractstatus());
 		model.addAttribute("customerid", contractManagement.getCustomerid());
-		model.addAttribute("partyaname", encodeStr(contractManagement.getPartyaname()));
-		model.addAttribute("marketingprincipal", encodeStr(contractManagement.getMarketingprincipal()));
-		model.addAttribute("othercontractors", encodeStr(contractManagement.getOthercontractors()));
-		model.addAttribute("contractdescription", encodeStr(contractManagement.getContractdescription()));
+		model.addAttribute("partyaname", contractManagement.getPartyaname());
+		model.addAttribute("marketingprincipal", contractManagement.getMarketingprincipal());
+		model.addAttribute("othercontractors", contractManagement.getOthercontractors());
+		model.addAttribute("contractdescription", contractManagement.getContractdescription());
 		model.addAttribute("loansandsettlementway", contractManagement.getLoansandsettlementway());
 		model.addAttribute("createStatrtTime", createStatrtTime);
 		model.addAttribute("createEndTime", createEndTime);
@@ -93,15 +93,6 @@ public class CustomerContractController {
 		model.addAttribute("method", method);
 		return "customerContract/customerContractList";
 	}
-	 public static String encodeStr(String str) {  
-	        try {  
-	            return new String(str.getBytes("ISO-8859-1"), "UTF-8");  
-	        } catch (UnsupportedEncodingException e) {  
-	            e.printStackTrace();  
-	            return null;  
-	        }  
-	    }  
-
 	/**
 	 * 创建合同(没有附件)
 	 *
