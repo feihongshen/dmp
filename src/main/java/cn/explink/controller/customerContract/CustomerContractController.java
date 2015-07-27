@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,27 +76,31 @@ public class CustomerContractController {
 		model.addAttribute("page_obj", page_obj);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		model.addAttribute("contractList", customerList);
-		//条件回显
-		CustomerContractManagement customer = new CustomerContractManagement();
-		customer.setNumber(contractManagement.getNumber());
-		customer.setContractstatus(contractManagement.getContractstatus());
-		customer.setCustomerid(contractManagement.getCustomerid());
-		customer.setPartyaname(contractManagement.getPartyaname());
-		customer.setMarketingprincipal(contractManagement.getMarketingprincipal());
-		customer.setOthercontractors(contractManagement.getOthercontractors());
-		customer.setContractdescription(contractManagement.getContractdescription());
-		customer.setLoansandsettlementway(contractManagement.getLoansandsettlementway());
-		customer.setWhetherhavedeposit(contractManagement.getWhetherhavedeposit());
-		
-		model.addAttribute("customer", customer);
+		model.addAttribute("number", contractManagement.getNumber());
+		model.addAttribute("contractstatus", contractManagement.getContractstatus());
+		model.addAttribute("customerid", contractManagement.getCustomerid());
+		model.addAttribute("partyaname", encodeStr(contractManagement.getPartyaname()));
+		model.addAttribute("marketingprincipal", encodeStr(contractManagement.getMarketingprincipal()));
+		model.addAttribute("othercontractors", encodeStr(contractManagement.getOthercontractors()));
+		model.addAttribute("contractdescription", encodeStr(contractManagement.getContractdescription()));
+		model.addAttribute("loansandsettlementway", contractManagement.getLoansandsettlementway());
 		model.addAttribute("createStatrtTime", createStatrtTime);
 		model.addAttribute("createEndTime", createEndTime);
 		model.addAttribute("overStartTime", overStartTime);
 		model.addAttribute("overEndTime", overEndTime);
+		model.addAttribute("whetherhavedeposit", contractManagement.getWhetherhavedeposit());
 		model.addAttribute("sort", sort);
 		model.addAttribute("method", method);
 		return "customerContract/customerContractList";
 	}
+	 public static String encodeStr(String str) {  
+	        try {  
+	            return new String(str.getBytes("ISO-8859-1"), "UTF-8");  
+	        } catch (UnsupportedEncodingException e) {  
+	            e.printStackTrace();  
+	            return null;  
+	        }  
+	    }  
 
 	/**
 	 * 创建合同(没有附件)
