@@ -257,6 +257,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			border : true,
 			striped:true,
 			idField : 'id',
+			loadMsg : '正在加载，请稍后！',
 			pagination:true,
 			rownumbers:true,
 			pageNumber:1,
@@ -392,7 +393,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  		$.messager.show({
 	  			title:'温馨提示',
 	  			msg:'正在为您创建账单,请耐心等候！',
-	  			timeout:3000,
+	  			timeout:2000,
 	  			showType:'slide'
 	  		});
 	  		$.messager.progress();
@@ -707,23 +708,25 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 									title: '添加 Success',
 									msg: result.successdata
 								});// reload the data
-							
+								$('#dg').datagrid('reload');	
+								$('#dga').datagrid('reload');	
+								$('#dlgAddofEditCwb').val("");
+								$('#dgofEdit').datagrid('reload');
+								findCustomerBillContractByBatches();
 					
 							} else if(result.success==1){
 								$.messager.show({	// show success message
 									title: '添加Error ',
 									msg: result.successdata
 								});// reload the data
-						}							
-							findCustomerBillContractByBatches();
-							$('#dg').datagrid('reload');	
-							$('#dga').datagrid('reload');						
-							$('#fm2').form('reload');
-							$('#hv').val('');
-							$('#hv1').val('');
-						
-							
-							
+								$('#dg').datagrid('reload');	
+								$('#dga').datagrid('reload');	
+								$('#dlgAddofEditCwb').val("");
+								$('#dgofEdit').datagrid('reload');
+								findCustomerBillContractByBatches();
+						}			
+							$('#dlgAddofEditCwb').val("");
+							$('#dgofEdit').datagrid('reload');
 							},'json');
 						}
 				});
@@ -737,7 +740,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		
 		 $('#dgofEdit').datagrid('load',{'cwb':$('#dlgAddofEditCwb').val()}); 
 		 $('#dgofEdit').datagrid('reload'); 
-		
+		 $('#dlgAddofEditCwb').val("");
 	}
 	
 	 function removeofEdit(){

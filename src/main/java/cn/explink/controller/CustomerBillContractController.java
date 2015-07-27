@@ -377,15 +377,15 @@ public class CustomerBillContractController {
 						
 						List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHelike(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 						String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						
-						if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-							col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
-							correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-						}else{
-							col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
-							correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-						}	
-					
+						if(dcwbs.length()>0){
+							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
+								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
+								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+							}else{
+								col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
+								correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
+							}	
+						}
 						}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=customerbillcontractservice.findAllByCwbDateTypeLike(cwbs,startdate+" 00:00:00",enddate+" 00:00:00",cwbOrderType,start,number);
@@ -400,14 +400,15 @@ public class CustomerBillContractController {
 						}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 							List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypelike(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 							String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						
+						if(dcwbs.length()>0){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
 							}else{
 								col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-							}				
+							}		
+						}	
 					}	
 					
 		        }else{
@@ -417,15 +418,15 @@ public class CustomerBillContractController {
 		    			
 		    			List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 		    			String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    			
-		    			if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-		    				col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
-		    				correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-		    			}else{
-		    				col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
-		    				correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-		    			}	
-		    		
+		    			if(dcwbs.length()>0){
+			    			if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
+			    				col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
+			    				correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+			    			}else{
+			    				col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
+			    				correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
+			    			}	
+		    			}
 		    			}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){
 		    				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 		    					col=customerbillcontractservice.findAllByCwbDateType(cwbs,startdate+" 00:00:00",enddate+" 00:00:00",cwbOrderType,start,number);
@@ -440,14 +441,15 @@ public class CustomerBillContractController {
 		    			}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 		    				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 00:00:00");
 		    				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    			
-		    				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-		    					col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
-		    					correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-		    				}else{
-		    					col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
-		    					correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-		    				}				
+		    				if(dcwbs.length()>0){
+			    				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
+			    					col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
+			    					correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
+			    				}else{
+			    					col=cwbdao.getCwbByCwbsByPage(dcwbs,start,number);
+			    					correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
+			    				}	
+		    				}	
 		    		}	
 		    		
 		        }
@@ -482,8 +484,7 @@ public class CustomerBillContractController {
 		@RequestMapping("/findCustomerBillContractVOByBillBatches")
 		@ResponseBody
 		public CustomerBillContractVO findCustomerBillContractVOByBillBatches(
-				@RequestParam
-				(value="billBatches",defaultValue="",required=true) String billBatches){
+				@RequestParam(value="billBatches",defaultValue="",required=true) String billBatches){
 
 			CustomerBillContract customerBillContract= customerbillcontractdao.datebillBatche(billBatches);
 			CustomerBillContractVO cbcv = new CustomerBillContractVO();
@@ -888,7 +889,7 @@ public class CustomerBillContractController {
 	
 	/*
 	 * 根据前台传过来的订单和批次，找出相对应的账单，并将导入的总和赋值给派费合计
-	 */
+	 */   
 	@RequestMapping("/changeImportToSystemMoney")
 	@ResponseBody
 	public String changeImportToSystemMoney(HttpServletRequest req){
