@@ -72,6 +72,7 @@ import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.JiesuanstateEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -1474,6 +1475,9 @@ public abstract class ExcelExtractor {
 			if(!idcard.equals(user.getIdcardno())){
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码:"+user.getIdcardno()+"有误！", importflag);
 				return null;
+			}
+			if(user.getJiesuanstate() == JiesuanstateEnum.TingzhiJiesuan.getValue()){
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"为离职状态,停止结算！", importflag);
 			}
 		}
 		salary.setBatchid(sc.getBatchid());//批次编号
