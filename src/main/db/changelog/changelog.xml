@@ -7901,4 +7901,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_set_user` ADD COLUMN `lateradvance` decimal(19,2) DEFAULT NULL;
 		</sql>
 	</changeSet>
+		<changeSet id="wangyonghe-2015-07-27-01" author="wangyonghe">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail`
+			ADD COLUMN `city`  varchar(50) NULL DEFAULT '' COMMENT '百度api匹配的城市' AFTER `customerbillimportflag`,
+			ADD COLUMN `area`  varchar(50) NULL DEFAULT '' COMMENT '百度api匹配的城市区域' AFTER `city`;
+		</sql>
+		</changeSet>
 </databaseChangeLog>
