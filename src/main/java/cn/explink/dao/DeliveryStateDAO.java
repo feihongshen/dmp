@@ -105,8 +105,8 @@ public class DeliveryStateDAO {
 		@Override
 		public Smtcount mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Smtcount obj = new Smtcount();
-			obj.setCount(rs.getLong("count"));
-			obj.setPscount(rs.getLong("pscount"));
+			obj.setCount(rs.getLong("customerid"));
+			obj.setPscount(rs.getInt("pscount"));
 			return obj;
 		}
 	}
@@ -1491,62 +1491,32 @@ public class DeliveryStateDAO {
 	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypelike(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and deliverytime>='" + startdate + "' and deliverytime<='" + enddate + "'";
-		List<DeliveryState> cwblist;
-		try {
-			cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+		String sql = "select * from express_ops_delivery_state where cwb like '%"+cwbs+"%' and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtype(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>='" + startdate + "' and deliverytime<='" + enddate + "'";
-		List<DeliveryState> cwblist;
-		try {
-			cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "'";
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeByPage(String cwbs, String startdate, String enddate,int start,int number) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>='" + startdate + "' and deliverytime<='" + enddate + "' limit "+start+","+number;
-		List<DeliveryState> cwblist;
-		try {
-			cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and state=1 and deliverytime>'" + startdate + "' and deliverytime<'" + enddate + "' limit "+start+","+number;
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 	
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHeByPage(String cwbs, String startdate, String enddate,int start,int number) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ")and state=1 and auditingtime>='" + startdate + "' and auditingtime<='" + enddate + "' limit "+start+","+number;
-		List<DeliveryState> cwblist;
-		try {
-			cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ")and state=1 and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "' limit "+start+","+number;
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 
 	public List<DeliveryState> findcwbByCwbsAndDateAndtypeShenHe(String cwbs, String startdate, String enddate) {
-		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>='" + startdate + "' and auditingtime<='" + enddate + "'";
-		List<DeliveryState> cwblist=null;
-		try {
-			cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
-		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
+		String sql = "select * from express_ops_delivery_state where cwb in(" + cwbs + ") and auditingtime>'" + startdate + "' and auditingtime<'" + enddate + "'";
+		List<DeliveryState> cwblist = this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 		return cwblist;
 	}
 
@@ -1658,25 +1628,31 @@ public class DeliveryStateDAO {
 		return cwblist;
 	}
 
-	public List<Smtcount> getLinghuoCount(long customerid, long userid, String starttime,
+	public List<Smtcount> getLinghuoCount(long userid, String starttime,
 			String endtime) {
 		try{
-			String sql = "select customerid,count(1) from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1  group by customerid ";
+			String sql = "select customerid,count(1) as pscount  from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1  group by customerid";
 			return this.jdbcTemplate.query(sql,new OrderCwbByCustomerIdMapper(),userid);
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
-	public long getLinghuocwbs(long customerid, long userid, String starttime,
+	public List<Smtcount> getLinghuocwbs(long userid, String starttime,
 			String endtime) {
 		try{
-			String sql = "select count(1) from express_ops_delivery_state where customerid=? and deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1";
-			return this.jdbcTemplate.queryForLong(sql,customerid,userid);
+			String sql = "select customerid,count(1) as pscount from express_ops_delivery_state where deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1 group by customerid";
+			return this.jdbcTemplate.query(sql,new OrderCwbByCustomerIdMapper(),userid);
 		}catch(Exception e){
 			e.printStackTrace();
-			return 0;
+			return null;
 		}
+	}
+	
+	//配送成功，上门退成功，上门换成功总量（某个小件员某个时间段内）
+	public List<DeliveryState> getDeliveryssBytime(String starttime,String endtime,long userid){
+		String sql = "select * from express_ops_delivery_state where deliveryid=? and auditingtime>= '"+starttime+" 00:00:00' and auditingtime<= '"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1";
+		return this.jdbcTemplate.query(sql,new DeliveryStateRowMapper(),userid);
 	}
 	
 }

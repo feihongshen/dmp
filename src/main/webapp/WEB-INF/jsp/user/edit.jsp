@@ -132,9 +132,9 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="<%=u.getStartworkdate()==null?"":u.getStartworkdate() %>" maxlength="50"/></li>
 			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="<%=u.getMaxcutpayment()==null?"":u.getMaxcutpayment() %>" maxlength="50"/></li>
-	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="<%=u.getFixedadvance()==null?"":u.getFixedadvance() %>" maxlength="50"/></li>
-	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="<%=u.getBasicadvance()==null?"":u.getBasicadvance() %>" maxlength="50"/></li>
+	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>
+	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="<%=u.getFixedadvance()==null?"":u.getFixedadvance() %>" maxlength="50"/></li>
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="<%=u.getFallbacknum() %>" maxlength="50"/></li>
 	         </ul>
 		</div>

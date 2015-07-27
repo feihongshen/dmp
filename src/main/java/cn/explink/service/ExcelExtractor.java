@@ -1537,7 +1537,7 @@ public abstract class ExcelExtractor {
 			}
 			
 			//妥投率
-			List<Map> list = new ArrayList<Map>();
+			/*List<Map> list = new ArrayList<Map>();
 			List<Map> intemapList = this.salaryGatherService.getCount(user.getUserid(), sc.getStarttime(), sc.getEndtime());
 			if(intemapList!=null&&!intemapList.isEmpty()&&dsList!=null&&!dsList.isEmpty()){
 				for(Map lists:intemapList){
@@ -1597,7 +1597,30 @@ public abstract class ExcelExtractor {
 						bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
 					}
 				}
+			}*/
+			
+			
+			List<Map> list = new ArrayList<Map>();
+			List<BigDecimal> bdecList = this.salaryGatherService.getKpiOthers(user.getUserid(), sc.getStarttime(), sc.getEndtime());
+			//kpi业务补助(总和)
+			BigDecimal bd1 = BigDecimal.ZERO;
+			//其他补助(总和)
+			BigDecimal bd2 = BigDecimal.ZERO;
+			if(bdecList!=null&&!bdecList.isEmpty()){
+				bd1 = bdecList.get(0);
+				bd2 = bdecList.get(1);
 			}
+			/*if(list!=null&&!list.isEmpty()){
+				for(Map m : list){
+					if(m.size()>0){
+						int mLong = (Integer)(m.get(1));
+						double mDouble = (Double)(m.get(2));	
+						bd1 = bd1.add(new BigDecimal(mDouble).multiply(new BigDecimal(mLong)));
+						BigDecimal dbbdc =  (BigDecimal)(m.get(3));
+						bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
+					}
+				}
+			}*/
 			
 			
 			//bds寄件配送费(多个单件之和)
@@ -1974,7 +1997,7 @@ public abstract class ExcelExtractor {
 			BigDecimal salaryaccrual = BigDecimal.ZERO;
 			if(bdList!=null&&!bdList.isEmpty()){
 				for(BigDecimal bd : bdList){
-					salaryaccrual.add(bd);
+					salaryaccrual = salaryaccrual.add(bd);
 				}
 			}
 
@@ -1989,13 +2012,15 @@ public abstract class ExcelExtractor {
 				if(dbmb>=fixed){
 					BigDecimal bddown = new BigDecimal(fixed);
 					salary.setImprestgoods(bddown);
-					salary.setSalaryaccrual(salaryaccrual.subtract(bddown));
+					salaryaccrual = salaryaccrual.subtract(bddown);
+					salary.setSalaryaccrual(salaryaccrual);
 				}else if(dbmb<=0){
 					salary.setImprestgoods(imprestgoods);
 					salary.setSalaryaccrual(salaryaccrual);
 				}else{
 					salary.setImprestgoods(bmb);
-					salary.setSalaryaccrual(salaryaccrual.subtract(bmb));
+					salaryaccrual = salaryaccrual.subtract(bmb);
+					salary.setSalaryaccrual(salaryaccrual);
 				}
 			}
 			//当工资金额小于1000时

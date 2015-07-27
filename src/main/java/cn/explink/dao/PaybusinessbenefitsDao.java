@@ -121,4 +121,10 @@ public class PaybusinessbenefitsDao {
 			return null;
 		}
 	}
+	
+	public List<Paybusinessbenefits> getAllpbbf(){
+		String sql = "select * from express_ops_paybusiness_benefits"; 
+		return this.jdbcTemplate.query(sql, new PaybusinessbenefitsRowMapper());
+	}
+	
 }

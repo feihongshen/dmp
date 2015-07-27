@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.PaybusinessbenefitsDao;
 import cn.explink.domain.Customer;
-import cn.explink.domain.DeliveryState;
+import cn.explink.domain.Paybusinessbenefits;
 import cn.explink.domain.Smtcount;
-import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
+import cn.explink.util.StringUtil;
 
 @Service
 public class SalaryGatherService {
@@ -27,6 +28,8 @@ public class SalaryGatherService {
 	DeliveryStateDAO deliveryStateDAO;
 	@Autowired
 	CustomerDAO customerDAO;
+	@Autowired
+	PaybusinessbenefitsDao paybusinessbenefitsDao;
 	
 	//获取基本派费，区域派费，超区补助，脱单补助，业务补助 方法
 	public List<BigDecimal> getSalarypush(long pfruleid, String cwb){
@@ -48,10 +51,6 @@ public class SalaryGatherService {
 		BigDecimal bd6 = BigDecimal.ZERO;
 		//超重补助 
 		BigDecimal bd7 = BigDecimal.ZERO;
-		//业务KPI补助 TODO
-		//BigDecimal bd8 = BigDecimal.ZERO;
-		//其他补助 TODO
-		//BigDecimal bd9 = BigDecimal.ZERO;
 		
 		bd1 = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwb);
 		bd2 = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwb);
@@ -60,7 +59,6 @@ public class SalaryGatherService {
 		bd5 = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, cwb);
 		bd6 = this.paiFeiRuleService.getOverbigFee(pfruleid, PaiFeiRuleTabEnum.Paisong, cwb);
 		bd7 = this.paiFeiRuleService.getOverbigFee(pfruleid, PaiFeiRuleTabEnum.Paisong, cwb);
-		
 		bd = bd1.add(bd2).add(bd3).add(bd4).add(bd5).add(bd6).add(bd7);
 		bdList.add(0, bd);
 		bdbasicarea = bd1.add(bd2);//基本派费+区域派费
@@ -111,7 +109,7 @@ public class SalaryGatherService {
 		return bigdeci;
 	}
 	
-	//(根据供货商)获取小件员的妥投比例
+	/*//(根据供货商)获取小件员的妥投比例
 	public List<Map> getCount(long userid,String starttime,String endtime){
 		List<Map> mapList = new ArrayList<Map>();
 		List<Customer> cusList = this.customerDAO.getAllCustomers();
@@ -120,24 +118,87 @@ public class SalaryGatherService {
 				Map map = new HashMap();
 				//long linghuo = 0;
 				//TODO
-				List<Smtcount> scList = this.deliveryStateDAO.getLinghuoCount(cus.getCustomerid(),userid,starttime,endtime);
-				long linghuos  = this.deliveryStateDAO.getLinghuocwbs(cus.getCustomerid(),userid,starttime,endtime);
-				/*if(dsList!=null&&!dsList.isEmpty()){
+				List<Smtcount> scList = this.deliveryStateDAO.getLinghuoCount(userid,starttime,endtime);
+				List<Smtcount> linghuos  = this.deliveryStateDAO.getLinghuocwbs(userid,starttime,endtime);
+				if(dsList!=null&&!dsList.isEmpty()){
 					for(DeliveryState ds : dsList){
 						if(ds.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()||ds.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()||ds.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){
 							linghuo ++;
 						}
 					}
-				}*/
+				}
 				//TODO 待处理
-				/*if(linghuo>0&&linghuos>0){
+				if(linghuo>0&&linghuos>0){
 					double flo = (double)linghuo/linghuos;
 					map.put(1, cus.getCustomerid());
 					map.put(2, flo);
 					mapList.add(map);
-				}*/
+				}
 			}
 		}
 		return mapList;
+		//List<Smtcount> linghuos  = this.deliveryStateDAO.getLinghuocwbs(userid,starttime,endtime);
+	}*/
+	@SuppressWarnings("unused")
+	public List<BigDecimal> getKpiOthers(long userid,String starttime,String endtime){
+		List<Map> mapLists = new ArrayList<Map>();
+		List<Map> mapList = new ArrayList<Map>();
+		List<Smtcount> scList = this.deliveryStateDAO.getLinghuoCount(userid,starttime,endtime);
+		List<Smtcount> linghuos  = this.deliveryStateDAO.getLinghuocwbs(userid,starttime,endtime);
+		List<Paybusinessbenefits> pbbfList = this.paybusinessbenefitsDao.getAllpbbf();
+		if(scList!=null&&!scList.isEmpty()&&!linghuos.isEmpty()&&linghuos!=null){
+			for(Smtcount sc : scList){
+				for(Smtcount linghuo : linghuos){
+					if(sc.getCount()==linghuo.getCount()){
+						Map map = new HashMap();
+						map.put(1, sc.getCount());//供货商
+						map.put(2, (double)(sc.getPscount())/(linghuo.getPscount()));//妥投率
+						mapList.add(map);
+					}
+				}
+			}
+		}
+		if(mapList!=null&&!mapList.isEmpty()&&pbbfList!=null&&!pbbfList.isEmpty()){
+			for(Map map : mapList){
+				long customerid = (Long)(map.get(1));
+				double tuotoulv = (Double)(map.get(2));
+				for(Paybusinessbenefits pbbf : pbbfList){
+					if(customerid == pbbf.getCustomerid()){
+						double lower = Double.parseDouble(pbbf.getLower()==null?"0":pbbf.getLower());
+						double upper = Double.parseDouble(pbbf.getUpper()==null?"0":pbbf.getUpper());
+						if(tuotoulv>lower&&tuotoulv<=upper){
+							Map maps = new HashMap();
+							maps.put(1, pbbf.getCustomerid());//供货商
+							maps.put(2, pbbf.getKpifee());//kpi业务补助
+							maps.put(3, pbbf.getOthersubsidies());//其他补贴
+							mapLists.add(maps);
+						}
+					}
+				}
+			}
+		}
+		List<BigDecimal> bdecList = new ArrayList<BigDecimal>();
+		//kpi业务补助金额(总共)
+		BigDecimal bdkpi = BigDecimal.ZERO;
+		//其他补助金额(总共)
+		BigDecimal others = BigDecimal.ZERO;
+		if(scList!=null&&!scList.isEmpty()&&mapLists!=null&&!mapLists.isEmpty()){
+			for(Smtcount sc : scList){
+				for(Map mapss : mapLists){
+					long customerid = (Long)(mapss.get(1));//供货商
+					BigDecimal bd1 = (BigDecimal)(mapss.get(2));//kpi补助
+					BigDecimal bd2 = (BigDecimal)(mapss.get(3));//其他补助
+					if(sc.getCount()==customerid){
+						long lcount = (Long)(sc.getPscount());
+						BigDecimal bdcount = BigDecimal.valueOf(lcount);
+						bdkpi = bdkpi.add(bdcount.multiply(bd1));
+						others = others.add(bdcount.multiply(bd2));
+					}
+				}
+			}
+		}
+		bdecList.add(bdkpi);
+		bdecList.add(others);
+		return bdecList;
 	}
 }

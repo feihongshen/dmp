@@ -5,12 +5,34 @@ import java.math.BigDecimal;
 public class Paybusinessbenefits {
 	private long id;
 	private long customerid;
+	private String lower;//下限
+	private String upper;//上限 
+	private BigDecimal kpifee;//业务补助
+ 	public String getLower() {
+		return lower;
+	}
+	public void setLower(String lower) {
+		this.lower = lower;
+	}
+	public String getUpper() {
+		return upper;
+	}
+	public void setUpper(String upper) {
+		this.upper = upper;
+	}
 	private String customername;
 	//业务KPI补助规则各个阶段范围
 	private String paybusinessbenefits;
 	//其他补助
 	private BigDecimal othersubsidies;
 	private String remark;
+	public BigDecimal getKpifee() {
+		return kpifee;
+	}
+	public void setKpifee(BigDecimal kpifee) {
+		this.kpifee = kpifee;
+	}
+	
 	public long getId() {
 		return id;
 	}

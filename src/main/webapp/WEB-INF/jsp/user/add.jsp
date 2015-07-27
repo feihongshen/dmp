@@ -103,9 +103,9 @@
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/></li>
 			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="" maxlength="50"/></li>
-	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="" maxlength="50"/></li>
-	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="" maxlength="50"/></li>
+	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/></li>
+	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="" maxlength="50"/></li>
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="" maxlength="50"/></li>
 	         </ul>
 		</div>
