@@ -329,6 +329,16 @@ public class ExceedSubsidyApplyDAO {
 		return jdbcTemplate.query(sql, new ExceedSubsidyApplyMapper());
 	}
 
+	public ExpressSetExceedSubsidyApply getExceedSubsidyApplyByCwb(String cwb) {
+		try {
+			String sql = "select * from express_set_exceed_subsidy_apply where cwb=?";
+			return jdbcTemplate.queryForObject(sql,
+					new ExceedSubsidyApplyMapper(), cwb);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+	
 	public ExpressSetExceedSubsidyApply getExceedSubsidyApplyListById(int id) {
 		try {
 			String sql = "select * from express_set_exceed_subsidy_apply where id=?";
