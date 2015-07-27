@@ -64,19 +64,19 @@ function query(){
 }
 
 function setCondition(){
-	$("#number").val("${number}");
-	$("#contractstatus").val("${contractstatus}");
-	$("#customerid").val("${customerid}");
-	$("#partyaname").val("${partyaname}");
-	$("#marketingprincipal").val("${marketingprincipal}");
-	$("#othercontractors").val("${othercontractors}");
-	$("#contractdescription").val("${contractdescription}");
-	$("#loansandsettlementway").val("${loansandsettlementway}");
+	$("#number").val("${customer.number}");
+	$("#contractstatus").val("${customer.contractstatus}");
+	$("#customerid").val("${customer.customerid}");
+	$("#partyaname").val("${customer.partyaname}");
+	$("#marketingprincipal").val("${customer.marketingprincipal}");
+	$("#othercontractors").val("${customer.othercontractors}");
+	$("#contractdescription").val("${customer.contractdescription}");
+	$("#loansandsettlementway").val("${customer.loansandsettlementway}");
 	$("#createStatrtTime").val("${createStatrtTime}");
-	$("#createEndTime").val("${createEndTime}");
+	//$("#createEndTime").val("${createEndTime}");
 	$("#overStartTime").val("${overStartTime}");
 	$("#overEndTime").val("${overEndTime}");
-	$("#whetherhavedeposit").val("${whetherhavedeposit}");
+	$("#whetherhavedeposit").val("${customer.whetherhavedeposit}");
 	$("#sort").val("${sort}");
 	$("#method").val("${method}");
 }

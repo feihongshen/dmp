@@ -75,19 +75,23 @@ public class CustomerContractController {
 		model.addAttribute("page_obj", page_obj);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		model.addAttribute("contractList", customerList);
-		model.addAttribute("number", contractManagement.getNumber());
-		model.addAttribute("contractstatus", contractManagement.getContractstatus());
-		model.addAttribute("customerid", contractManagement.getCustomerid());
-		model.addAttribute("partyaname", contractManagement.getPartyaname());
-		model.addAttribute("marketingprincipal", contractManagement.getMarketingprincipal());
-		model.addAttribute("othercontractors", contractManagement.getOthercontractors());
-		model.addAttribute("contractdescription", contractManagement.getContractdescription());
-		model.addAttribute("loansandsettlementway", contractManagement.getLoansandsettlementway());
+		//条件回显
+		CustomerContractManagement customer = new CustomerContractManagement();
+		customer.setNumber(contractManagement.getNumber());
+		customer.setContractstatus(contractManagement.getContractstatus());
+		customer.setCustomerid(contractManagement.getCustomerid());
+		customer.setPartyaname(contractManagement.getPartyaname());
+		customer.setMarketingprincipal(contractManagement.getMarketingprincipal());
+		customer.setOthercontractors(contractManagement.getOthercontractors());
+		customer.setContractdescription(contractManagement.getContractdescription());
+		customer.setLoansandsettlementway(contractManagement.getLoansandsettlementway());
+		customer.setWhetherhavedeposit(contractManagement.getWhetherhavedeposit());
+		
+		model.addAttribute("customer", customer);
 		model.addAttribute("createStatrtTime", createStatrtTime);
 		model.addAttribute("createEndTime", createEndTime);
 		model.addAttribute("overStartTime", overStartTime);
 		model.addAttribute("overEndTime", overEndTime);
-		model.addAttribute("whetherhavedeposit", contractManagement.getWhetherhavedeposit());
 		model.addAttribute("sort", sort);
 		model.addAttribute("method", method);
 		return "customerContract/customerContractList";

@@ -59,12 +59,6 @@ public class DiliverymanPaifeiBillService {
 		return this.diliverymanPaifeiBillDAO.queryDiliverymanPaifeiBillCount(bill);
 	}
 
-	/**
-	 * 查询出指定站点下的小件员
-	 */
-	public List<User> queryByid() {
-		return this.userDAO.getAllUserByBranchid(1);
-	}
 
 	/**
 	 * 查询指定的账单信息
