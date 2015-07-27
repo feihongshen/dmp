@@ -134,9 +134,9 @@ public class PaiFeiRuleDAO {
 	 * @return
 	 */
 	public PaiFeiRule getPaiFeiRuleByNO(String pfruleNO) {
-		String sql = "select * from express_ops_paifeirule where  pfruleNO='"+pfruleNO+"' limit 1;";
+		String sql = "select * from express_ops_paifeirule where  pfruleNO=? limit 1;";
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper());
+			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper(),pfruleNO);
 		} catch (Exception e) {
 			return null;
 		}
@@ -146,9 +146,9 @@ public class PaiFeiRuleDAO {
 	 * @return
 	 */
 	public PaiFeiRule getPaiFeiRuleById(long pfruleid) {
-		String sql = "select * from express_ops_paifeirule where  id='"+pfruleid+"' limit 1;";
+		String sql = "select * from express_ops_paifeirule where  id=? limit 1;";
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper());
+			return this.jdbcTemplate.queryForObject(sql, new PaiFeiRuleRowMapper(),pfruleid);
 		} catch (Exception e) {
 			return null;
 		}
@@ -159,16 +159,16 @@ public class PaiFeiRuleDAO {
 	 * @return
 	 */
 	public int deletePaiFeiRuleByPfRuleNO(String pfruleNO) {
-		String sql="delete from express_ops_paifeirule where  pfruleNO='"+pfruleNO+"'";
-		return this.jdbcTemplate.update(sql);
+		String sql="delete from express_ops_paifeirule where  pfruleNO=?";
+		return this.jdbcTemplate.update(sql,pfruleNO);
 	}
 	/**
 	 * @param no
 	 * @return
 	 */
 	public int deletePaiFeiRuleByPfruleid(long pfruleid) {
-		String sql="delete from express_ops_paifeirule where  id="+pfruleid+"";
-		return this.jdbcTemplate.update(sql);
+		String sql="delete from express_ops_paifeirule where  id=?";
+		return this.jdbcTemplate.update(sql,pfruleid);
 	}
 
 	/**
