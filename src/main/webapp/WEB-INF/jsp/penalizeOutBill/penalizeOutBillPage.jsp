@@ -614,7 +614,6 @@ function verify(){
 	         		<td align="right" nowrap="nowrap" style="width: 10%;"><font color="red">*</font>赔付大类：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
 	         			<select style="width: 100%" id="penalizebig" name="compensatebig" onchange="findsmall($(this).val())">
-							<option value ="">请选择</option>
 							<c:forEach items="${penalizebigList}" var="big" >
 								<option value="${big.id}">${big.text}</option>
 							</c:forEach>
@@ -642,8 +641,8 @@ function verify(){
          		</td>
          		<td nowrap="nowrap" align="right">赔付单创建日期：</td>
          		<td nowrap="nowrap">
-	         	 <input type="text" name="creationStartDate"  class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-   	       		 <input type="text" name="creationEndDate" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+	         	 <input type="text" name="creationStartDate"  class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '起始时间'"/> 到 
+   	       		 <input type="text" name="creationEndDate" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          		<tr><td>&nbsp;</td>
@@ -924,9 +923,9 @@ function verify(){
 			         	</td>
 			         	<td nowrap="nowrap" align="left">创建日期</td>
 	         			<td nowrap="nowrap">
-			         		<input type="text" name="creationStartDate" value="${creationStartDate }" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '开始日期'" value="${creationStartDate}"/>
+			         		<input type="text" name="creationStartDate" value="${creationStartDate }" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '开始日期'" value="${creationStartDate}"/>
 			         		至 
-		   	       		 	<input type="text" name="creationEndDate" value="${creationEndDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '结束日期'" value="${creationEndDate}"/>
+		   	       		 	<input type="text" name="creationEndDate" value="${creationEndDate}" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '结束日期'" value="${creationEndDate}"/>
 		         		</td>
 		         	</tr>
 		         	<tr>
@@ -1044,13 +1043,13 @@ function verify(){
          	<tr>
          		<td nowrap="nowrap" align="right">账单创建日期：</td>
          		<td nowrap="nowrap">
-		         	 <input type="text" name="billCreationStartDate" value="${billCreationStartDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-	   	       		 <input type="text" name="billCreationEndDate"   value="${billCreationEndDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+		         	 <input type="text" name="billCreationStartDate" value="${billCreationStartDate}" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '起始时间'"/> 到 
+	   	       		 <input type="text" name="billCreationEndDate"   value="${billCreationEndDate}" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          		<td nowrap="nowrap" align="right">账单核销日期：</td>
          		<td nowrap="nowrap">
-		         	 <input type="text" name="billVerificationStrartDate" value="${billVerificationStrartDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
-	   	       		 <input type="text" name="billVerificationEndDate"   value="${billVerificationEndDate}" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
+		         	 <input type="text" name="billVerificationStrartDate" value="${billVerificationStrartDate}" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '起始时间'"/> 到 
+	   	       		 <input type="text" name="billVerificationEndDate"   value="${billVerificationEndDate}" class="easyui-my97" datefmt="yyyy-MM-dd" data-options="width:95,prompt: '终止时间'"/>
          		</td>
          	</tr>
          	<tr>

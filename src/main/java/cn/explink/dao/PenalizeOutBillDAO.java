@@ -70,12 +70,12 @@ public class PenalizeOutBillDAO {
 				querySql.append(" and billstate ='" + bill.getBillstate() + "'");
 			}
 			if ((billCreationStartDate != null) && (billCreationStartDate != "") && (billCreationEndDate != null) && (billCreationEndDate != "")) {
-				querySql.append(" and '" + billCreationStartDate + "'< createddate");
-				querySql.append(" and createddate < '" + billCreationEndDate + "'");
+				querySql.append(" and createddate >='" + billCreationStartDate + "'");
+				querySql.append(" and createddate <= '" + billCreationEndDate + "'");
 			}
 			if ((billVerificationStrartDate != null) && (billVerificationStrartDate != "") && (billVerificationEndDate != null) && (billVerificationEndDate != "")) {
-				querySql.append(" and '" + billVerificationStrartDate + "' < verificationdate");
-				querySql.append(" and verificationdate < '" + billVerificationEndDate + "'");
+				querySql.append(" and verificationdate >='" + billVerificationStrartDate + "'");
+				querySql.append(" and verificationdate <= '" + billVerificationEndDate + "'");
 			}
 			if ((bill.getCustomerid() != null) && (bill.getCustomerid() != "")) {
 				querySql.append(" and customerid = '" + bill.getCustomerid() + "'");
@@ -106,11 +106,11 @@ public class PenalizeOutBillDAO {
 				querySql.append(" and billstate ='" + bill.getBillstate() + "'");
 			}
 			if ((billCreationStartDate != null) && (billCreationStartDate != "") && (billCreationEndDate != null) && (billCreationEndDate != "")) {
-				querySql.append(" and '" + billCreationStartDate + "'<= createddate");
+				querySql.append(" and createddate >= '" + billCreationStartDate + "'");
 				querySql.append(" and createddate <= '" + billCreationEndDate + "'");
 			}
 			if ((billVerificationStrartDate != null) && (billVerificationStrartDate != "") && (billVerificationEndDate != null) && (billVerificationEndDate != "")) {
-				querySql.append(" and '" + billVerificationStrartDate + "' <= verificationdate");
+				querySql.append(" and verificationdate >= '" + billVerificationStrartDate + "'");
 				querySql.append(" and verificationdate <= '" + billVerificationEndDate + "'");
 			}
 			if ((bill.getCustomerid() != null) && (bill.getCustomerid() != "")) {
