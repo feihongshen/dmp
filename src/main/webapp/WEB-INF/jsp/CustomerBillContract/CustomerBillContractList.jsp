@@ -283,10 +283,25 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		});		                        		   
 	});
 	  
+	  /*<input id="crestartdatefm1" type="text" class="easyui-datebox" style="width:90px;" name="crestartdate">
+									至<input id="creenddatefm1" name="creenddate" type="text" class="easyui-datebox" style="width:90px;">
+								<label>账单核销日期:</label>
+								<input id="verificationstratdatefm1" name="verificationstratdate" type="text" class="easyui-datebox" style="width:90px;">
+									至<input id="verificationenddatefm1"   */
+	  
  function form1Method(){
+	var crestartdate=$('#crestartdatefm1').datebox("getValue");
+	var creenddate=$('#creenddatefm1').datebox("getValue");
+	var verificationstratdate=$('#verificationstratdatefm1').datebox("getValue");
+	var verificationenddate=$('#verificationenddatefm1').datebox("getValue");
+		if(crestartdate>creenddate||verificationenddate<verificationstratdate){
+			 $.messager.alert('提示','结束时间不能小于开始时间！','info');   
+				$.messager.progress('close');
+				return false;
+		}								
 	 var jsoninfo =  JSON.stringify($('#fm1').serializeObject());
-	 $('#dg').datagrid('load',{"jsoninfo":jsoninfo}); 
-	 $('#dlgserch').dialog('close');
+		 $('#dg').datagrid('load',{"jsoninfo":jsoninfo}); 
+		 $('#dlgserch').dialog('close');
  	}
 	  
 	  	function newBill(){
@@ -307,9 +322,14 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  	 
 	  	 
 	  	 function datChongFuYanZheng(){
-	  		var a=$('#dstart').datebox("getValue");
+	  			var a=$('#dstart').datebox("getValue");
 				var b=$('#dend').datebox("getValue");
-				var d=DateDiff(a,b);	  				
+				var d=DateDiff(a,b);
+				if(b<a){
+					 $.messager.alert('提示','结束时间不能小于开始时间！','info');   
+						$.messager.progress('close');
+						return false;
+				}
 				if(d>60){
 					 $.messager.alert('提示','时间跨度不能大于60天！','info');   
 					$.messager.progress('close');
@@ -368,12 +388,18 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			});
 	  	 }
 	  	 */
-	  	function saveBill(){	  		
+	  	function saveBill(){	  	
+	  		$.messager.show({
+	  			title:'温馨提示',
+	  			msg:'正在为您创建账单,请耐心等候！',
+	  			timeout:3000,
+	  			showType:'slide'
+	  		});
 	  		$.messager.progress();
+	  		
 	  		$('#fm').form('submit',{
 	  			url:'${pageContext.request.contextPath}/CustomerBillContract/addBill',
 	  			onSubmit: function(){
-	  				
 	  				return true;
 	  			},
 	  			success: function(data){

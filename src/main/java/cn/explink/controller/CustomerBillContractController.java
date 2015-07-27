@@ -457,20 +457,20 @@ public class CustomerBillContractController {
 			List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();
 				for(CwbOrder str:col){
 					SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-					sv.setCwb(str.getCwb());
-					sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
-					sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
-					sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
-					sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
-					sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
-					sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
-					sv.setRefuseMoney(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
-					sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb())
-							.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb())
-							.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb())))
-							.add(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
-							);
-					
+						sv.setCwb(str.getCwb());
+						sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
+						sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
+						sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
+						sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
+						sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
+						sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
+						sv.setRefuseMoney(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
+						sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb())
+								.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb())
+								.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb())))
+								.add(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
+								);
+						
 					svlist.add(sv);
 				}
 				Map<String,Object> map = new HashMap<String, Object>();
@@ -487,16 +487,16 @@ public class CustomerBillContractController {
 
 			CustomerBillContract customerBillContract= customerbillcontractdao.datebillBatche(billBatches);
 			CustomerBillContractVO cbcv = new CustomerBillContractVO();
-			cbcv.setBillBatches(customerBillContract.getBillBatches());
-			cbcv.setBillState(BillStateEnum.getTextByValue(customerBillContract.getBillState()));
-			cbcv.setDateRange(customerBillContract.getDateRange());
-			cbcv.setTotalCharge(customerBillContract.getTotalCharge());
-			cbcv.setCorrespondingCwbNum(customerBillContract.getCorrespondingCwbNum());
-			cbcv.setCustomername(customerdao.getCustomerName(customerBillContract.getCustomerId()));
-			cbcv.setDeliveryMoney(customerBillContract.getDeliveryMoney());
-			cbcv.setDistributionMoney(customerBillContract.getDistributionMoney());
-			cbcv.setTransferMoney(customerBillContract.getTransferMoney());
-			cbcv.setRemark(customerBillContract.getRemark());
+				cbcv.setBillBatches(customerBillContract.getBillBatches());
+				cbcv.setBillState(BillStateEnum.getTextByValue(customerBillContract.getBillState()));
+				cbcv.setDateRange(customerBillContract.getDateRange());
+				cbcv.setTotalCharge(customerBillContract.getTotalCharge());
+				cbcv.setCorrespondingCwbNum(customerBillContract.getCorrespondingCwbNum());
+				cbcv.setCustomername(customerdao.getCustomerName(customerBillContract.getCustomerId()));
+				cbcv.setDeliveryMoney(customerBillContract.getDeliveryMoney());
+				cbcv.setDistributionMoney(customerBillContract.getDistributionMoney());
+				cbcv.setTransferMoney(customerBillContract.getTransferMoney());
+				cbcv.setRemark(customerBillContract.getRemark());
 
 			return cbcv;
 		}
@@ -558,20 +558,20 @@ public class CustomerBillContractController {
 			CustomerBillContract c=customerbillcontractdao.datebillBatche(billBatchs); 
 			CwbOrder str=cwbdao.getOneCwbOrderByCwb(cwb);    
 			SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-			sv.setCwb(str.getCwb());
-			sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
-			sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
-			sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
-			sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
-			sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
-			sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
-			sv.setRefuseMoney(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
-			sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb())
-					.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb())
-					.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb())))
-					.add(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
-					);
-			sv.setBillBatches(billBatchs);
+				sv.setCwb(str.getCwb());
+				sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
+				sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
+				sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
+				sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
+				sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
+				sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
+				sv.setRefuseMoney(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
+				sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb())
+						.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb())
+						.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(str.getCustomerid()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb())))
+						.add(pfra.getPaiFeiRuleById(str.getCustomerid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
+						);
+				sv.setBillBatches(billBatchs);
 			String cwbs=c.getCwbs();
 			String newcwb=null;
 			Boolean bl=false;
@@ -599,10 +599,10 @@ public class CustomerBillContractController {
 	@RequestMapping("/billMoneyWithImportExcelChaYiDuiBi")	
 	@ResponseBody
 	public BillMoneyDuiBiChaYiVO billMoneyWithImportExcelChaYiDuiBi(HttpServletRequest req){
-		String batches=req.getParameter("billBatches");
-		CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
-		List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);
-		BillMoneyDuiBiChaYiVO b = new BillMoneyDuiBiChaYiVO();
+			String batches=req.getParameter("billBatches");
+			CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
+			List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);
+			BillMoneyDuiBiChaYiVO b = new BillMoneyDuiBiChaYiVO();
 		if(lbe.size()>0){
 			
 			long systemDateCount=cc.getCorrespondingCwbNum();
@@ -615,12 +615,12 @@ public class CustomerBillContractController {
 				//求出导入的数据总和
 				importAllMoney=importAllMoney.add(l.getJijiaMoney()).add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney());
 			}
-			b.setImportDateCount(importDateCount);
-			b.setSystemDateCount(systemDateCount);
-			b.setChaYiCount(chaYi);
-			b.setSystemDateMoney(systemAllMoney);
-			b.setImportDateMoney(importAllMoney);
-			b.setChaYiMoney(systemAllMoney.subtract(importAllMoney));
+				b.setImportDateCount(importDateCount);
+				b.setSystemDateCount(systemDateCount);
+				b.setChaYiCount(chaYi);
+				b.setSystemDateMoney(systemAllMoney);
+				b.setImportDateMoney(importAllMoney);
+				b.setChaYiMoney(systemAllMoney.subtract(importAllMoney));
 			
 			String cwbs[]=cc.getCwbs().toString().split(",");
 			StringBuilder sb = new StringBuilder();
@@ -715,8 +715,8 @@ public class CustomerBillContractController {
 		List<CwbOrder> c = new ArrayList<CwbOrder>();
 		for(String s:cwbs){
 			CwbOrder cb = new CwbOrder();
-			cb.setCwb(s);
-			c.add(cb);
+				cb.setCwb(s);
+				c.add(cb);
 		}
 		String cwbs1=customerbillcontractservice.listImportBillExcelToString(lbe);
 		if(cwbs!=null&&!cwbs.equals("")){
@@ -752,22 +752,22 @@ public class CustomerBillContractController {
 		String cwbgetChYi[]=ccwbs1[1].trim().split(",");
 		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
 		for(String s:cwbgetChYi){
-		SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-		sv.setZhongLei(zhongLei);
-		sv.setCwb(s);
-		sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbordertypeid()));
-		sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbstate()).getText());
-		sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s));
-		sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s));
-		sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(s).getPaywayid())); //强转支付方式
-		sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s));
-		sv.setRefuseMoney(pfra.getPaiFeiRuleById(cc.getCustomerId())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(cc.getCustomerId()).getJushouPFfee());
-		sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s)
-				.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s)
-				.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s)))
-				.add(pfra.getPaiFeiRuleById(cc.getCustomerId())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(cc.getCustomerId()).getJushouPFfee())
-				);
-		ls.add(sv);
+			SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
+				sv.setZhongLei(zhongLei);
+				sv.setCwb(s);
+				sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbordertypeid()));
+				sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbstate()).getText());
+				sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s));
+				sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s));
+				sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(s).getPaywayid())); //强转支付方式
+				sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s));
+				sv.setRefuseMoney(pfra.getPaiFeiRuleById(cc.getCustomerId())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(cc.getCustomerId()).getJushouPFfee());
+				sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s)
+						.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s)
+						.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s)))
+						.add(pfra.getPaiFeiRuleById(cc.getCustomerId())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(cc.getCustomerId()).getJushouPFfee())
+						);
+				ls.add(sv);
 		
 		}
 		return ls;
