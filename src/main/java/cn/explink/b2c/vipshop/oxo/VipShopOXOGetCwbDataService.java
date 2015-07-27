@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ import cn.explink.b2c.vipshop.ReaderXMLHandler;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.b2c.vipshop.VipShopConfig;
 import cn.explink.b2c.vipshop.VipShopExceptionHandler;
-import cn.explink.b2c.vipshop.VipShopMD5Util;
+import cn.explink.b2c.vipshop.oxo.response.TpsOrderVo;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -41,6 +42,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.XmlUtil;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
@@ -157,21 +159,17 @@ public class VipShopOXOGetCwbDataService {
 			this.logger.info("未开启VipShop_OXO[" + vipshop_key + "]对接！");
 			return -1;
 		}
-//		if (vipshop.getIsopendownload() == 0) {
-//			this.logger.info("未开启VipShop_OXO[" + vipshop_key + "]订单下载接口");
-//			return -1;
-//		}
 
 		// 构建请求，解析返回信息
-		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop);
+		TpsOrderVo responseVo = this.requestHttpAndCallBackAnaly(vipshop);
 
-		if ((parseMap == null) || (parseMap.size() == 0)) {
+		if ((responseVo == null)) {
 			this.logger.error("系统返回xml字符串为空或解析xml失败！");
 			return -1;
 		}
-
-		String sys_response_code = parseMap.get("sys_response_code") != null ? parseMap.get("sys_response_code").toString() : ""; // 返回码
-		String sys_response_msg = parseMap.get("sys_respnose_msg") != null ? parseMap.get("sys_respnose_msg").toString() : ""; // 返回说明
+		
+		String sys_response_code = responseVo.getHead().getSysResponseCode() == null ? ""  : responseVo.getHead().getSysResponseCode(); // 返回码
+		String sys_response_msg = responseVo.getHead().getSysRespnoseMsg() == null ? ""  : responseVo.getHead().getSysRespnoseMsg(); // 返回说明
 		try {
 			VipShopExceptionHandler.respValidateMessage(sys_response_code, sys_response_msg, vipshop);
 		} catch (Exception e) {
@@ -192,20 +190,35 @@ public class VipShopOXOGetCwbDataService {
 			this.logger.error("请求VipShop_OXO订单信息-返回签名验证失败！本地签名：[" + VipShopMD5Util.MD5(parseMD5Str) + "],返回签名：[" + parseMap.get("sign") + "]");
 			return -1;
 		}*/
-
-		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop);
-		if ((orderlist == null) || (orderlist.size() == 0)) {
-			this.updateMaxSEQ(vipshop_key, vipshop);
+//
+//		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop);
+//		if ((orderlist == null) || (orderlist.size() == 0)) {
+//			this.updateMaxSEQ(vipshop_key, vipshop);
+//			this.logger.info("请求VipShop_OXO订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
+//			return -1;
+//		}
+		
+		
+		if(responseVo.getOrders() == null || CollectionUtils.isEmpty(responseVo.getOrders().getOrder())){
 			this.logger.info("请求VipShop_OXO订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
 			return -1;
 		}
-			
-		for (Map<String, String> dataMap : orderlist) {
-			extractedDataImport(vipshop_key, vipshop, orderlist, dataMap);
-		}
-			
+		
+		extractedDataImport(responseVo.getOrders().getOrder(),vipshop);
+
 		return 1;
 
+	}
+	
+	
+	/**
+	 * 插入到临时表
+	 * @param orders
+	 */
+	private void extractedDataImport(List<TpsOrderVo.Orders.Order> orders,VipShop vipshop){
+		for(TpsOrderVo.Orders.Order order : orders){
+			//TODO
+		}
 	}
 	
 	private void extractedDataImport(int vipshop_key, VipShop vipshop,
@@ -232,7 +245,7 @@ public class VipShopOXOGetCwbDataService {
 	 * @param vipshop
 	 * @return
 	 */
-	private Map<String, Object> requestHttpAndCallBackAnaly(VipShop vipshop) {
+	private TpsOrderVo requestHttpAndCallBackAnaly(VipShop vipshop) {
 		String request_time = DateTimeUtil.getNowTime();
 		String requestXML = this.StringXMLRequest(vipshop, request_time);
 		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getVipshop_seq() + vipshop.getGetMaxCount();
@@ -244,36 +257,27 @@ public class VipShopOXOGetCwbDataService {
 
 		try {
 			response_XML = this.HTTPInvokeWs(endpointUrl, VipShopOXOConfig.nameSpace, VipShopOXOConfig.requestMethodName, requestXML, sign);
-			System.out.println(response_XML);
 		} catch (Exception e) {
 			this.logger.error("处理唯品会OXO订单请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
 			return null;
 		}
 
-		String orderXML = this.readXMLHandler.subStringSOAP(ReaderXMLHandler.parseBack(response_XML));
+		String orderXML = this.readXMLHandler.parseOXORspSOAP(ReaderXMLHandler.parseBack(response_XML));
 		this.logger.info("当前下载唯品会XML={}", orderXML);
-
-		Map<String, Object> parseMap = null;
+		TpsOrderVo obj = null;
 		try {
-			parseMap = this.readXMLHandler.parserXmlToJSONObjectByArray(response_XML);
-			// logger.info("解析后的XML-Map："+parseMap);
-		} catch (Exception e) {
-			this.logger.error("解析VipShop_OXO返回订单信息异常!,异常原因：" + e.getMessage(), e);
-			return null;
+			obj = XmlUtil.toObject(TpsOrderVo.class, orderXML);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			this.logger.error("转换唯品会OXO响应报文为TpsOrderVo实体类异常。响应报文内容为："+orderXML ,e1);
+
 		}
-		return parseMap;
+		
+		return obj;
+		
 	}
 
 	private String StringXMLRequest(VipShop vipshop, String request_time) {
-
-//		String business_type = "";
-//		if (vipshop.getIsShangmentuiFlag() == 1) { // 只上门退
-//			business_type = "<business_type>1</business_type>";
-//		}
-//		if (vipshop.getIsShangmentuiFlag() == 2) { // 全部
-//			business_type = "<business_type>0,1</business_type>";
-//		}
-
 		StringBuffer sub = new StringBuffer();
 		sub.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		sub.append("<request>");
@@ -283,7 +287,6 @@ public class VipShopOXOGetCwbDataService {
 		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
 		sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
 		sub.append("<count>" + vipshop.getGetMaxCount() + "</count>");
-	//	sub.append(business_type);
 		sub.append("</head>");
 		sub.append("</request>");
 		return sub.toString();
@@ -602,14 +605,13 @@ public class VipShopOXOGetCwbDataService {
 			String soapActionString = nameSpace + "/" + methodName;
 			StringBuffer paramXml = new StringBuffer();
 			readXML = readXML == null? new ReaderXMLHandler():readXML;
-			paramXml.append("<content>" + readXML.parse(requestXML) + "</content>");
-			paramXml.append("<sign>" + sign.toLowerCase() + "</sign>");
-			paramXml.append("<serviceCode>S201</serviceCode>");
+			paramXml.append("<arg0>" + readXML.parse(requestXML) + "</arg0>");
+			paramXml.append("<arg1>" + sign.toLowerCase() + "</arg1>");
+			paramXml.append("<arg2>S201</arg2>");
 
-			String soap = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><" + methodName + " xmlns=\"" + nameSpace + "\">" + paramXml + "</" + methodName
+			String soap = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><" + methodName + " xmlns:tps=\"" + nameSpace + "\">" + paramXml + "</" + methodName
 					+ "></soapenv:Body></soapenv:Envelope>";
 			logger.info("soap方式请求格式：" + soap);
-
 			URL url = new URL(endpointUrl);
 			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
 			httpConn.setRequestProperty("Content-Length", String.valueOf(soap.getBytes("UTF-8").length));

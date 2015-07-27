@@ -1,7 +1,6 @@
 package cn.explink.b2c.vipshop;
 
 import java.io.ByteArrayInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,13 +11,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPMessage;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.jdom.JDOMException;
 import org.springframework.stereotype.Service;
-
-import com.jcraft.jsch.Logger;
 
 @Service
 public class ReaderXMLHandler {
@@ -30,7 +31,28 @@ public class ReaderXMLHandler {
 		}
 		return subStr;
 	}
+	
+	public String parseOXORspSOAP(String xml){
+		String subStr = null;
+		if (xml != null && !"".equals(xml)) {
+			subStr = xml.substring(xml.indexOf("<return>") + 8, xml.indexOf("</return>"));
+		}
+		return subStr;
+	}
 
+	private static SOAPMessage formatSoapString(String soapString) {
+		MessageFactory msgFactory;
+		try {
+			msgFactory = MessageFactory.newInstance();
+			SOAPMessage reqMsg = msgFactory.createMessage(new MimeHeaders(),
+					new ByteArrayInputStream(soapString.getBytes("UTF-8")));
+			reqMsg.saveChanges();
+			return reqMsg;
+		} catch (Exception e) {
+			return null;
+		}
+    }
+	
 	public static String parse(String xml) {
 		xml = xml.replaceAll("&", "&amp;");
 		xml = xml.replaceAll("<", "&lt;");

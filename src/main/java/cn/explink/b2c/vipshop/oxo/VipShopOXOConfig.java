@@ -17,6 +17,6 @@ public class VipShopOXOConfig {
 	public static String version = "1.0";
 
 	public static String nameSpace = "http://tps.vip.com/";
-	public static String requestMethodName = "carrierService";
+	public static String requestMethodName = "tps:carrierService";
 
 }
