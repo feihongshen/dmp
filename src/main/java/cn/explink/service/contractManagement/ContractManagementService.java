@@ -127,7 +127,10 @@ public class ContractManagementService {
 			}
 		}
 		if (StringUtils.isBlank(number)) {
-			
+			String rule = "C_K";
+			String date = DateTimeUtil.getCurrentDate();
+			String orderStr = "001";
+			number = rule + date + orderStr;
 		}
 		return number;
 	}
