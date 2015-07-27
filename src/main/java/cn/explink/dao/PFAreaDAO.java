@@ -177,4 +177,14 @@ public class PFAreaDAO {
 		this.jdbcTemplate.update(sql, pfruleid);
 
 	}
+
+	public PFarea getPFareaById(long id) {
+
+		String sql = "select * from paifeirule_area where  id=?  ";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFareaRowMapper(), id);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

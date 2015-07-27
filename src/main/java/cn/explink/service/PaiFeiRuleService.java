@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import cn.explink.dao.AreaDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.ExceedSubsidyApplyDAO;
 import cn.explink.dao.PFAreaDAO;
 import cn.explink.dao.PFbasicDAO;
 import cn.explink.dao.PFbusinessDAO;
@@ -34,6 +35,7 @@ import cn.explink.domain.Basicjson;
 import cn.explink.domain.Collectionjson;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.ExpressSetExceedSubsidyApply;
 import cn.explink.domain.PFarea;
 import cn.explink.domain.PFareaJson;
 import cn.explink.domain.PFbasic;
@@ -85,6 +87,8 @@ public class PaiFeiRuleService {
 	PaiFeiRuleDAO paiFeiRuleDAO;
 	@Autowired
 	AreaDAO areaDAO;
+	@Autowired
+	ExceedSubsidyApplyDAO exceedSubsidyApplyDAO;
 
 	/**
 	 * @param object
@@ -221,8 +225,10 @@ public class PaiFeiRuleService {
 						List<PFoverbig> bigs = (List<PFoverbig>) JSONArray.toCollection(JSONArray.fromObject(areajson.getOverbig()), PFoverbig.class);
 						if (bigs != null) {
 							for (PFoverbig big : bigs) {
-								big.setAreaid(id);
-								this.savedata(big);
+								if (big != null) {
+									big.setAreaid(id);
+									this.savedata(big);
+								}
 							}
 						}
 
@@ -373,20 +379,49 @@ public class PaiFeiRuleService {
 			}
 			// 获取区域补助
 			// 需要获取订单中的区域
+			Area area = null;
+			String cwbcity = co.getCity();
+			String cwbarea = co.getArea();
+			if (!cwbarea.equals("") && !cwbcity.equals("")) {
+
+				area = this.areaDAO.getAreaByCityAndArea(cwbcity, cwbarea);
+			} else if (cwbarea.equals("") && !cwbcity.equals("")) {
+
+				area = this.areaDAO.getAreaByCity(cwbcity);
+			}
 			long areaid = 0;
+			if (area != null) {
+				areaid = area.getId();
+			}
 			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 			if (pFarea != null) {
 				fee.add(pFarea.getAreafee());
 				if (pFarea.getOverbigflag() == 1) {
 					// 需要调用申请表
+					ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
+					if (subsidy != null) {
+						BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+						if (overbigfee != null) {
+							fee.add(overbigfee);
+						}
+					}
 				} else {
 					// 货物体积
-					PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, 0);
+					long carsize = 0;
+					try {
+						carsize = Long.parseLong(co.getCarsize());
+					} catch (Exception e) {
+					}
+					PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, carsize);
 					if (pFoverbig != null) {
 						fee.add(pFoverbig.getSubsidyfee());
 					}
 				}
-				PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, 0);
+				BigDecimal carrealweight = co.getCarrealweight();
+				if (carrealweight == null) {
+					carrealweight = new BigDecimal("0");
+				}
+				PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, carrealweight);
 				if (pFoverweight != null) {
 					fee.add(pFoverweight.getSubsidyfee());
 				}
@@ -394,6 +429,13 @@ public class PaiFeiRuleService {
 			PFoverarea pFoverarea = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, tab.getValue());
 			if (pFoverarea != null) {
 				// 需要掉用申请表中的方法
+				ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
+				if (subsidy != null) {
+					BigDecimal overbigfee = subsidy.getExceedAreaSubsidyAmount();
+					if (overbigfee != null) {
+						fee.add(overbigfee);
+					}
+				}
 			}
 			PFbusiness pFbusiness = this.pFbusinessDAO.getPFbusinessByRTC(pfruleid, tab.getValue());
 			if (pFbusiness != null) {
@@ -459,16 +501,32 @@ public class PaiFeiRuleService {
 				if (pFarea != null) {
 					areafee.add(pFarea.getAreafee());
 					if (pFarea.getOverbigflag() == 1) {
-						// 需要调用申请表
+						ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
+						if (subsidy != null) {
+							BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+							if (overbigfee != null) {
+								areafee.add(overbigfee);
+							}
+						}
+
 					} else {
 						// 货物体积
-						PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, 0);
+						long carsize = 0;
+						try {
+							carsize = Long.parseLong(co.getCarsize());
+						} catch (Exception e) {
+						}
+						PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, carsize);
 						if (pFoverbig != null) {
 							areafee.add(pFoverbig.getSubsidyfee());
 						}
 					}
 					// 货物重量
-					PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, 0);
+					BigDecimal carrealweight = co.getCarrealweight();
+					if (carrealweight == null) {
+						carrealweight = new BigDecimal("0");
+					}
+					PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, carrealweight);
 					if (pFoverweight != null) {
 						areafee.add(pFoverweight.getSubsidyfee());
 					}
@@ -479,7 +537,15 @@ public class PaiFeiRuleService {
 				PFoverarea pFoverarea = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, tab.getValue());
 				if (pFoverarea != null) {
 					// 需要掉用申请表中的方法
+					ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
+					if (subsidy != null) {
+						BigDecimal overbigfee = subsidy.getExceedAreaSubsidyAmount();
+						if (overbigfee != null) {
+							return overbigfee;
+						}
+					}
 				}
+				return new BigDecimal("0");
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Business) {
 				PFbusiness pFbusiness = this.pFbusinessDAO.getPFbusinessByRTC(pfruleid, tab.getValue());
@@ -509,9 +575,21 @@ public class PaiFeiRuleService {
 			if (pFarea != null) {
 				if (pFarea.getOverbigflag() == 1) {
 					// 需要调用申请表
+					ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
+					if (subsidy != null) {
+						BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+						if (overbigfee != null) {
+							areafee.add(overbigfee);
+						}
+					}
 				} else {
 					// 货物体积
-					PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, 0);
+					long carsize = 0;
+					try {
+						carsize = Long.parseLong(co.getCarsize());
+					} catch (Exception e) {
+					}
+					PFoverbig pFoverbig = this.pFoverbigDAO.getPFoverbigByAreaidAndCount(areaid, carsize);
 					if (pFoverbig != null) {
 						areafee.add(pFoverbig.getSubsidyfee());
 					}
@@ -529,7 +607,11 @@ public class PaiFeiRuleService {
 		if (co != null) {
 			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 			if (pFarea != null) {
-				PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, 0);
+				BigDecimal carrealweight = co.getCarrealweight();
+				if (carrealweight == null) {
+					carrealweight = new BigDecimal("0");
+				}
+				PFoverweight pFoverweight = this.pFoverweightDAO.getPFoverweightByAreaidAndCount(areaid, carrealweight);
 				if (pFoverweight != null) {
 					areafee.add(pFoverweight.getSubsidyfee());
 				}
@@ -907,10 +989,9 @@ public class PaiFeiRuleService {
 			this.pFbasicDAO.deletePFbasicByPfruleid(pfruleid);
 			this.pFcollectionDAO.deletePFbasicByPfruleid(pfruleid);
 			this.pFbusinessDAO.deleteBusinessByPfruleid(pfruleid);
-			List<PFarea> pFareas=this.pFareaDAO.getPFareaByPfruleid(pfruleid);
-			if(pFareas!=null)
-			{for(PFarea pf:pFareas)
-				{
+			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleid(pfruleid);
+			if (pFareas != null) {
+				for (PFarea pf : pFareas) {
 					this.pFoverbigDAO.deletePFoverbigByAreaid(pf.getId());
 					this.pFoverweightDAO.deletePFoverweightByAreaid(pf.getId());
 				}
@@ -934,32 +1015,62 @@ public class PaiFeiRuleService {
 		System.out.println(pfbasicList);
 	}
 
-	/**
-	 * @param areaid
-	 * @param areaname
-	 * @param tab
-	 * @param rulejson
-	 * @param model
-	 * @return
-	 */
-	public int saveArea(long areaid, String areaname, String tabs, String rulejson, Model model) {
-		JSONObject object = JSONObject.fromObject(rulejson);
-		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(object, PaiFeiRule.class);
-		PFarea area=new PFarea();
-		area.setAreaid(areaid);
-		area.setAreaname(areaname);
-		int tabid=0;
-		if (tabs.equals("ps")) {
+	@Transactional
+	public int saveArea(String areajson, String rulejson, String tab) {
+		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(JSONObject.fromObject(rulejson), PaiFeiRule.class);
+		PFareaJson pFareaJson = (PFareaJson) JSONObject.toBean(JSONObject.fromObject(areajson), PFareaJson.class);
+		int tabid = 0;
+		if (tab.equals("ps")) {
 			tabid = PaiFeiRuleTabEnum.Paisong.getValue();
-		} else if (tabs.equals("th")) {
+		} else if (tab.equals("th")) {
 			tabid = PaiFeiRuleTabEnum.Tihuo.getValue();
-		} else if (tabs.equals("zz")) {
+		} else if (tab.equals("zz")) {
 			tabid = PaiFeiRuleTabEnum.Zhongzhuan.getValue();
 		}
-		area.setTabid(tabid);
-		area.setPfruleid(rule.getId());
-		area.setTypeid(rule.getType());
-		this.savedata(area);
+
+		PFarea pf = new PFarea();
+		pf.setAreafee(pFareaJson.getAreafee());
+		pf.setAreaname(pFareaJson.getAreaname());
+		pf.setAreaid(pFareaJson.getAreaid());
+		pf.setTabid(tabid);
+		pf.setPfruleid(rule.getId());
+		pf.setTypeid(rule.getType());
+		pf.setOverbigflag(pFareaJson.getOverbigflag());
+		long id = this.savedata(pf);
+		if (pf.getOverbigflag() != 1) {
+
+			List<PFoverbig> bigs = (List<PFoverbig>) JSONArray.toCollection(JSONArray.fromObject(pFareaJson.getOverbig()), PFoverbig.class);
+			if (bigs != null) {
+				for (PFoverbig big : bigs) {
+					if (big != null) {
+						big.setAreaid(id);
+						this.savedata(big);
+					}
+				}
+			}
+
+		}
+		List<PFoverweight> weights = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(pFareaJson.getOverweight()), PFoverweight.class);
+		if (weights != null) {
+			for (PFoverweight weight : weights) {
+				if (weight != null) {
+					weight.setAreaid(id);
+					this.savedata(weight);
+				}
+			}
+		}
+
+		// p
+		/*
+		 * PFarea area=new PFarea(); area.setAreaid(areaid);
+		 * area.setAreaname(areaname); int tabid=0; if (tabs.equals("ps")) {
+		 * tabid = PaiFeiRuleTabEnum.Paisong.getValue(); } else if
+		 * (tabs.equals("th")) { tabid = PaiFeiRuleTabEnum.Tihuo.getValue(); }
+		 * else if (tabs.equals("zz")) { tabid =
+		 * PaiFeiRuleTabEnum.Zhongzhuan.getValue(); } area.setTabid(tabid);
+		 * area.setPfruleid(rule.getId()); area.setTypeid(rule.getType());
+		 * this.savedata(area);
+		 */
 		return 0;
 	}
 }

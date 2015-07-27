@@ -3,6 +3,7 @@
  */
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,8 +38,8 @@ public class PFoverweightDAO {
 			PFoverweight pf = new PFoverweight();
 			pf.setId(rs.getLong("id"));
 			pf.setAreaid(rs.getLong("areaid"));
-			pf.setMaxcount(rs.getLong("maxcount"));
-			pf.setMincount(rs.getLong("mincount"));
+			pf.setMaxcount(rs.getBigDecimal("maxcount"));
+			pf.setMincount(rs.getBigDecimal("mincount"));
 			pf.setSubsidyfee(rs.getBigDecimal("subsidyfee"));
 			pf.setRemark(rs.getString("remark"));
 			return pf;
@@ -53,7 +54,7 @@ public class PFoverweightDAO {
 	 * @param maxcount
 	 * @return
 	 */
-	public PFoverweight getPFoverweightByRTC(long areaid, long mincount, long maxcount) {
+	public PFoverweight getPFoverweightByRTC(long areaid, BigDecimal mincount, BigDecimal maxcount) {
 		String sql = "select * from paifeirule_overweight where mincount=? and maxcount=? and areaid=? ";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PFoverweightRowMapper(), mincount, maxcount, areaid);
@@ -72,8 +73,8 @@ public class PFoverweightDAO {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setLong(1, pf.getMincount());
-				ps.setLong(2, pf.getMaxcount());
+				ps.setBigDecimal(1, pf.getMincount());
+				ps.setBigDecimal(2, pf.getMaxcount());
 				ps.setBigDecimal(3, pf.getSubsidyfee());
 				ps.setString(4, pf.getRemark());
 				ps.setLong(5, pf.getAreaid());
@@ -93,8 +94,8 @@ public class PFoverweightDAO {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setLong(1, pf.getMincount());
-				ps.setLong(2, pf.getMaxcount());
+				ps.setBigDecimal(1, pf.getMincount());
+				ps.setBigDecimal(2, pf.getMaxcount());
 				ps.setBigDecimal(3, pf.getSubsidyfee());
 				ps.setString(4, pf.getRemark());
 				ps.setLong(5, pf.getAreaid());
@@ -112,8 +113,8 @@ public class PFoverweightDAO {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps=con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, pf.getMincount());
-				ps.setLong(2, pf.getMaxcount());
+				ps.setBigDecimal(1, pf.getMincount());
+				ps.setBigDecimal(2, pf.getMaxcount());
 				ps.setBigDecimal(3, pf.getSubsidyfee());
 				ps.setString(4, pf.getRemark());
 				ps.setLong(5, pf.getAreaid());
@@ -128,8 +129,8 @@ public class PFoverweightDAO {
 	 * @param i
 	 * @return
 	 */
-	public PFoverweight getPFoverweightByAreaidAndCount(long areaid, int count) {
-		String sql = "select * from paifeirule_overweight where mincount=<? and maxcount>=? and areaid=? limit 1";
+	public PFoverweight getPFoverweightByAreaidAndCount(long areaid, BigDecimal count) {
+		String sql = "select * from paifeirule_overweight where mincount=<? and maxcount>? and areaid=? limit 1";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PFoverweightRowMapper(), count, count, areaid);
 		} catch (Exception e) {

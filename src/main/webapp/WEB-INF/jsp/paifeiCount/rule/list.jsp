@@ -54,6 +54,7 @@
 					</tr>
 					<c:forEach items="${paiFeiRules}" var="pf">
 						<tr id="${pf.id }" onclick="editRule('${pf.id }')">
+							<input type="hidden" value="${pf.type}" id="pfruletype" />
 							<td align="center" valign="middle"><input type="checkbox" id="id" value="${pf.id}" /></td>
 							<td align="center" valign="middle">${pf.name}</td>
 							<c:forEach items="${PaiFeiRuleTypeEnum}" var="t">
@@ -288,6 +289,9 @@
 											</tr>
 											<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="ps_${cwbarea.id }" onclick="addArea('ps','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+													<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -393,6 +397,9 @@
 												</tr>
 											<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="th_${cwbarea.id }" onclick="addArea('th','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+													<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -499,6 +506,9 @@
 												</tr>
 											<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="zz_${cwbarea.id }" onclick="addArea('zz','${cwbarea.city}-${cwbarea.area }','${cwbarea.id }')">
+													<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -703,7 +713,7 @@
 								</form></td>
 						</tr>
 						<tr id="ps_area_tr">
-							<td><input type="checkbox" id="ps_area_flag" />区域属性补助费</td>
+							<td><input type="checkbox" id="ps_area_flag" ${pfareaListPS!=null||fn:length(pfareaListPS)>0?'checked=checked':'' }  />区域属性补助费</td>
 							<td>
 								<div>
 									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -718,6 +728,10 @@
 										</tr>
 										<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="ps_${cwbarea.id }" onclick="showArea($(this),'edit_area_ps_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+												<input type="hidden" value="${rule.type}" id="pftype" />
+												<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -736,11 +750,18 @@
 				<td align="center">区域名称：</td>
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
-			<tr>
+			<tr id="isareafeetr">
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
 			</tr>
-			<tr>
+			<c:if test="${area.typeid!=2 }">
+			<tr id="overbigflagtrno">
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="button" value="保存" onclick="subAreaEidt('${area.id }','overbigflag')" /></td>
+			</tr>
+			</c:if>
+			<c:if test="${area.typeid==2 }">
+			<tr id="overbigflagtr">
 				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="ps_overbig_${area.id }_table">
@@ -768,7 +789,8 @@
 										onclick="subEidt('ps_overbig_${area.id }_table','ps','overbig')" />
 					</td>
 			</tr>
-			<tr>
+			</c:if>
+			<tr id="isoverweighttr">
 				<td align="left"><input type="checkbox" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="ps_overweight_${area.id}_table">
@@ -968,6 +990,10 @@
 											</tr>
 												<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="th_${cwbarea.id }" onclick="showArea($(this),'edit_area_th_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+												<input type="hidden" value="${rule.type}" id="pftype" />
+												<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -986,11 +1012,18 @@
 				<td align="center">区域名称：</td>
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
-			<tr>
+			<tr id="isareafeetr">
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
 			</tr>
-			<tr>
+			<c:if test="${area.typeid!=2 }">
+			<tr id="overbigflagtr">
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="button" value="保存" onclick="subAreaEidt('${area.id }','overbigflag')" /></td>
+			</tr>
+			</c:if>
+			<c:if test="${area.typeid==2 }">
+			<tr id="overbigflagtrno">
 				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="th_overbig_${area.id }_table">
@@ -1018,7 +1051,8 @@
 										onclick="subEidt('th_overbig_${area.id }_table','th','overbig')" />
 					</td>
 			</tr>
-			<tr>
+			</c:if>
+			<tr id="isoverweighttr">
 				<td align="left"><input type="checkbox" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="th_overweight_${area.id}_table">
@@ -1220,6 +1254,10 @@
 											</tr>
 												<c:forEach items="${AreaList}" var="cwbarea">
 											<tr id="zz_${cwbarea.id }" onclick="showArea($(this),'edit_area_zz_${cwbarea.id }','${cwbarea.city}-${cwbarea.area }')">
+											<input type="hidden" value="${rule.type}" id="pftype" />
+												<input type="hidden" value="${cwbarea.isareafee}" id="isareafee" />
+												<input type="hidden" value="${cwbarea.isoverbig}" id="isoverbig" />
+												<input type="hidden" value="${cwbarea.isoverweight}" id="isoverweight" />
 												<td>${cwbarea.city}</td>
 												<td>${cwbarea.area}</td>
 												<td>${cwbarea.isareafee==1?'是':'否'}</td>
@@ -1234,15 +1272,22 @@
 		<div id="edit_area_zz_${area.areaid}">
 		<table width="95%" border="0" style="margin-left: 5%" cellspacing="1" cellpadding="0"
 			class="table_2" id="area_table">
-			<tr>
+			<tr >
 				<td align="center">区域名称：</td>
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
-			<tr>
+			<tr id="isareafeetr">
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
-			</tr>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
+			</tr id="overbigflagtrno">
+			<c:if test="${area.typeid!=2 }">
 			<tr>
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="button" value="保存" onclick="subAreaEidt('${area.id }','overbigflag')" /></td>
+			</tr>
+			</c:if>
+			<c:if test="${area.typeid==2 }">
+			<tr id="overbigflagtr">
 				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="zz_overbig_${area.id }_table">
@@ -1270,7 +1315,8 @@
 										onclick="subEidt('zz_overbig_${area.id }_table','zz','overbig')" />
 					</td>
 			</tr>
-			<tr>
+			</c:if>
+			<tr id="isoverweighttr">
 				<td align="left"><input type="checkbox" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="zz_overweight_${area.id}_table">
@@ -1376,7 +1422,7 @@
 				<td align="left"><span id="areaname" name="areaname"></span>
 				<input type="hidden" id="areaid" name="areaid" /></td>
 			</tr>
-			<tr>
+			<tr id="isareafeetr">
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
 				<td align="left"><span><input type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
 			</tr>
@@ -1398,7 +1444,7 @@
 			<tr id="overbigflagtr">
 				<td align="left" valign="bottom"><input type="checkbox"  id="overbigflag"/>超大补助</td>
 			</tr>
-			<tr >
+			<tr id="isoverweighttr">
 				<td align="left"><input type="checkbox" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="overweight_table">
@@ -1419,7 +1465,7 @@
 	<form action="${pageContext.request.contextPath}/paifeirule/list/1" id="edit_form" method="post">
 		<input type="hidden" id="edit_ruleid" name="edit_ruleid" />
 	</form>
-		<input type="hidden" id="edit_ruletype" name="edit_ruletype" value="${rule.type }" />
+		<input type="hidden" id="edit_ruletype1" name="edit_ruletype1" value="${rule.type }" />
 </body>
 </html>
 

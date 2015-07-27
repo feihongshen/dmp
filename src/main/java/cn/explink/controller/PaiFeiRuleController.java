@@ -3,6 +3,7 @@
  */
 package cn.explink.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Area;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
+import cn.explink.domain.PFarea;
 import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchTypeEnum;
@@ -112,7 +114,7 @@ public class PaiFeiRuleController {
 		if (pfruleid > 0) {
 			this.paiFeiRuleService.getEditData(model, pfruleid);
 		}
-		List<Area> AreaList=this.areaDAO.getAllArea();
+		List<Area> AreaList = this.areaDAO.getAllArea();
 		List<PaiFeiRule> paiFeiRules = this.paiFeiRuleDAO.getPaiFeiRules(page, name, state, type, remark, orderby, orderbyType);
 		int count = this.paiFeiRuleDAO.getPaiFeiRulesCounts(name, state, type, remark, orderby, orderbyType);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -167,11 +169,11 @@ public class PaiFeiRuleController {
 		String[] pfnos = ids.split(",");
 		long counts = 0;
 		for (String no : pfnos) {
-			long pfruleid=Long.parseLong(no);
+			long pfruleid = Long.parseLong(no);
 			List<Customer> customers = this.customerDAO.getCustomerByPFruleId(pfruleid);
 			List<User> users = this.userDAO.getUserByPFruleId(pfruleid);
-			List<Branch> branchs=this.branchDAO.getBanchByPFruleId(pfruleid);
-			if (((customers == null) && (users == null)&&(branchs==null))||((customers.size()==0) && (users.size()==0)&&(branchs.size()==0))) {
+			List<Branch> branchs = this.branchDAO.getBanchByPFruleId(pfruleid);
+			if (((customers == null) && (users == null) && (branchs == null)) || ((customers.size() == 0) && (users.size() == 0) && (branchs.size() == 0))) {
 				int i = this.paiFeiRuleService.deletePaifeiRule(pfruleid);
 				counts += i;
 			}
@@ -183,47 +185,73 @@ public class PaiFeiRuleController {
 
 	@RequestMapping("/edittype")
 	public @ResponseBody
-	String edittype(@RequestParam(value = "json", required = false, defaultValue = "{}") String json,
-			@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
-			@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid,
-			@RequestParam(value = "type", required = false, defaultValue = "") String type, Model model, HttpServletRequest request) {
+	String edittype(@RequestParam(value = "json", required = false, defaultValue = "{}") String json, @RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
+			@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid, @RequestParam(value = "type", required = false, defaultValue = "") String type, Model model,
+			HttpServletRequest request) {
 
-		int count = this.paiFeiRuleService.editType(json, rulejson, type,areaid, model);
+		int count = this.paiFeiRuleService.editType(json, rulejson, type, areaid, model);
 		if (count > 0) {
 			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
 		} else {
 			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
 		}
 	}
+
 	@RequestMapping("/saveArea")
 	public @ResponseBody
-	String saveArea(
-			@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson,
-			@RequestParam(value = "areajson", required = false, defaultValue = "{}") String areajson,
-			Model model, HttpServletRequest request) {
+	String saveArea(@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson, @RequestParam(value = "areajson", required = false, defaultValue = "{}") String areajson,
+			@RequestParam(value = "tab", required = false, defaultValue = "") String tab, Model model, HttpServletRequest request) {
 
-		int count = 0;//this.paiFeiRuleService.saveArea(areaid, areaname, 1,rulejson, model);
+		int count = this.paiFeiRuleService.saveArea(areajson, rulejson, tab);
 		if (count > 0) {
 			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
 		} else {
 			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
 		}
 	}
-	@RequestMapping("/check")
-	public @ResponseBody Map<String,Object> check(@RequestParam(value = "name", required = false, defaultValue = "") String name
-			, Model model) {
-		Map<String,Object> map=new HashMap<String, Object>();
 
-		PaiFeiRule rule=this.paiFeiRuleDAO.getPaiFeiRuleByName(name);
-		String error="";
-		int errorcode=0;
-		if(rule!=null)
-		{
-			error="派费规则名称已存在！";
-			errorcode=1;
+	@RequestMapping("/check")
+	public @ResponseBody
+	Map<String, Object> check(@RequestParam(value = "name", required = false, defaultValue = "") String name, Model model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		PaiFeiRule rule = this.paiFeiRuleDAO.getPaiFeiRuleByName(name);
+		String error = "";
+		int errorcode = 0;
+		if (rule != null) {
+			error = "派费规则名称已存在！";
+			errorcode = 1;
 		}
 		map.put("error", error);
 		map.put("errorcode", errorcode);
-		return  map;
+		return map;
+	}
+
+	@RequestMapping("/updateArea")
+	public @ResponseBody
+	Map<String, Object> updateArea(@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid,
+			@RequestParam(value = "areafee", required = false, defaultValue = "") String areafee, @RequestParam(value = "overbigflag", required = false, defaultValue = "-1") int overbigflag,
+			Model model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		PFarea area = this.pFareaDAO.getPFareaById(areaid);
+		int count = 0;
+		if (area != null) {
+			if ((areafee != null) && (areafee.length() > 0)) {
+				area.setAreafee(new BigDecimal(areafee));
+			}
+			if (overbigflag > -1) {
+				area.setOverbigflag(overbigflag);
+			}
+			count=this.pFareaDAO.updatePFarea(area);
+		}
+		String error = "";
+		int errorcode = 0;
+		if (count >0) {
+			error = "修改成功";
+			errorcode = 1;
+		}
+		map.put("error", error);
+		map.put("errorcode", errorcode);
+		return map;
 	}
 }

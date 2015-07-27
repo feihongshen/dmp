@@ -11,8 +11,8 @@ import java.math.BigDecimal;
  */
 public class PFoverweight {
 	private long id;
-	private long mincount;
-	private long maxcount;
+	private BigDecimal mincount;
+	private BigDecimal maxcount;
 	private BigDecimal subsidyfee;
 	private String remark;
 	private long areaid;
@@ -31,25 +31,25 @@ public class PFoverweight {
 	/**
 	 * @return the mincount
 	 */
-	public long getMincount() {
+	public BigDecimal getMincount() {
 		return this.mincount;
 	}
 	/**
 	 * @param mincount the mincount to set
 	 */
-	public void setMincount(long mincount) {
+	public void setMincount(BigDecimal mincount) {
 		this.mincount = mincount;
 	}
 	/**
 	 * @return the maxcount
 	 */
-	public long getMaxcount() {
+	public BigDecimal getMaxcount() {
 		return this.maxcount;
 	}
 	/**
 	 * @param maxcount the maxcount to set
 	 */
-	public void setMaxcount(long maxcount) {
+	public void setMaxcount(BigDecimal maxcount) {
 		this.maxcount = maxcount;
 	}
 	/**

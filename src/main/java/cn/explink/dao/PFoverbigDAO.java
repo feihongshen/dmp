@@ -126,8 +126,8 @@ public class PFoverbigDAO {
 	 * @param i
 	 * @return
 	 */
-	public PFoverbig getPFoverbigByAreaidAndCount(long areaid, int count) {
-		String sql = "select * from paifeirule_overbig where mincount=<? and maxcount>=? and areaid=? limit 1";
+	public PFoverbig getPFoverbigByAreaidAndCount(long areaid, long count) {
+		String sql = "select * from paifeirule_overbig where mincount=<? and maxcount>? and areaid=? limit 1";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PFoverbigRowMapper(), count, count, areaid);
 		} catch (Exception e) {
