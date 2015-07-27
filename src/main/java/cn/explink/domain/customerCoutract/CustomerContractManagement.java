@@ -31,7 +31,7 @@ public class CustomerContractManagement {
 	// 货款结算周期
 	private Integer loanssettlementcycle;
 	// 货款结算方式
-	private Integer Loansandsettlementway;
+	private Integer loansandsettlementway;
 	// 其他合同商
 	private String othercontractors;
 	// 派费结算周期
@@ -152,11 +152,11 @@ public class CustomerContractManagement {
 	}
 
 	public Integer getLoansandsettlementway() {
-		return this.Loansandsettlementway;
+		return this.loansandsettlementway;
 	}
 
 	public void setLoansandsettlementway(Integer loansandsettlementway) {
-		this.Loansandsettlementway = loansandsettlementway;
+		this.loansandsettlementway = loansandsettlementway;
 	}
 
 	public String getOthercontractors() {
