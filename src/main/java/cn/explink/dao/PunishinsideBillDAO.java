@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -516,6 +517,15 @@ public class PunishinsideBillDAO {
 	public List<ExpressOpsPunishinsideBill> getMaxBillBatch() {
 		String sql = "select * from express_ops_punishinside_bill order by billBatch desc";
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());
+	}
+	
+	public ExpressOpsPunishinsideBill getMaxBillBatch(String billBatch) {
+		String sql = "select * from express_ops_punishinside_bill where billBatch like '%" + billBatch + "%' order by billBatch desc limit 0,1";
+		try{
+			return jdbcTemplate.queryForObject(sql, new PunishinsideBillMapper());
+		}catch (EmptyResultDataAccessException e) {
+            return null;   
+        }
 	}
 
 	public BigDecimal calculateSumPrice(String punishNos){

@@ -47,10 +47,6 @@ $(function(){
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 	
-	$("#addForm input[name='branchName']").focus(function(){
-		$('#branchListPage').dialog('open');
-	});
-	
 	var addPageFlag = '${addPage}';
 	if(addPageFlag){
 		$('#addPage').dialog('open');
@@ -119,7 +115,9 @@ function deleteCwbOrder(){
 function queryBranchList(){
 	$("#queryBranchListForm").submit();
 }
-
+function openBranchListPage(){
+	$('#branchListPage').dialog('open');
+}
 function selectBranch(){
 	var branchname = $("#branchListPage input[type='hidden'][name='branchname']").val();
 	var branchid = $("#branchListPage input[type='hidden'][name='branchid']").val();
@@ -633,7 +631,7 @@ function deleteBranchDeliveryFeeBill(){
 				<tr>
 					<td align="left" width="15%"><font color="red">*</font>加盟商站点</td>
 					<td align="left" width="35%">
-						<input type="text" name="branchName" readonly="readonly">
+						<input type="text" name="branchName" readonly="readonly" onfocus="openBranchListPage();">
 						<input type="hidden" name="branchId">
 					</td>
 					<td align="left" width="10%"><font color="red">*</font>订单类型</td>

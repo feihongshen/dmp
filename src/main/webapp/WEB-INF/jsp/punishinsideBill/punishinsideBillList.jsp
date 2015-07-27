@@ -949,6 +949,18 @@ function changeBillState(state){
 </div>
 <div>
 	<form action="<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList/1" method="post" id="punishinsideBillListForm">
+		<input type="hidden" name="billBatch" value="${queryConditionVO.billBatch}"/> 
+		<input type="hidden" name="billState" value="${queryConditionVO.billState}"/> 
+ 		<input type="hidden" name="createDateFrom" value="${queryConditionVO.createDateFrom}"/>
+  		<input type="hidden" name="createDateTo" value="${queryConditionVO.createDateTo}"/>
+ 		<input type="hidden" name="heXiaoDateFrom" value="${queryConditionVO.heXiaoDateFrom}"/>
+  		<input type="hidden" name="heXiaoDateTo"  value="${queryConditionVO.heXiaoDateTo}"/>
+		<input type="hidden" name="dutybranchname" value="${queryConditionVO.dutybranchname}" /> 
+		<input type="hidden" name="punishbigsort" value="${queryConditionVO.punishbigsort}" /> 
+		<input type="hidden" name="dutypersonname" value="${queryConditionVO.dutypersonname}" /> 
+		<input type="hidden" name="punishsmallsort" value="${queryConditionVO.punishsmallsort}" /> 
+		<input type="hidden" name="contractColumn" value="${queryConditionVO.contractColumn}" /> 
+		<input type="hidden" name="contractColumnOrder" value="${queryConditionVO.contractColumnOrder}" /> 
 	</form>
 </div>
 </body>

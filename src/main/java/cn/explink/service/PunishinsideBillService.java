@@ -77,8 +77,23 @@ public class PunishinsideBillService {
 
 	public String generateBillBatch() {
 		String rule = "K";
-		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
+		String nowTime = DateTimeUtil.getNowTime("yyyyMMdd");
 		String billBatch = rule + nowTime;
+		String orderStr = "0001";
+		ExpressOpsPunishinsideBill bill = this.punishinsideBillDAO.getMaxBillBatch(billBatch);
+		if(bill != null){
+			String maxBillBatch = bill.getBillBatch();
+			if(StringUtils.isNotBlank(maxBillBatch)){
+				String maxOrderStr = maxBillBatch.substring(9);
+				int maxOrderInt = Integer.valueOf(maxOrderStr);
+				maxOrderInt++;
+				orderStr = String.valueOf(maxOrderInt);
+				while(orderStr.length() != 4){
+					orderStr = "0" + orderStr;
+				}
+			}
+		}
+		billBatch = billBatch + orderStr;
 		return billBatch;
 	}
 
@@ -90,6 +105,14 @@ public class PunishinsideBillService {
 		if(StringUtils.isNotBlank(punishNos)){
 			List<String> list = Arrays.asList(punishNos.split(","));
 			punishNos = StringUtil.getStringsByStringList(list);
+		}
+		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
+				.getMaxBillBatch();
+		String punishNosSaved = "";
+		if (billList != null && !billList.isEmpty()) {
+			for (int i = 0; i < billList.size(); i++) {
+				punishNosSaved += billList.get(i).getPunishNos() + ",";
+			}
 		}
 		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
 				.findByCondition(punishinsideBill.getPunishbigsort(),
@@ -107,11 +130,13 @@ public class PunishinsideBillService {
 			for (int i = 0; i < penalizeInsideList.size(); i++) {
 				penalizeInside = penalizeInsideList.get(i);
 				if (StringUtils.isNotBlank(penalizeInside.getPunishNo())) {
-					punishNos += penalizeInside.getPunishNo() + ",";
-				}
-				if (penalizeInside.getPunishInsideprice() != null) {
-					sumPrice = sumPrice.add(penalizeInside
-							.getPunishInsideprice());
+					if(StringUtils.isBlank(punishNosSaved) || punishNosSaved.indexOf(penalizeInside.getPunishNo()) == -1){
+						punishNos += penalizeInside.getPunishNo() + ",";
+						if (penalizeInside.getPunishInsideprice() != null) {
+							sumPrice = sumPrice.add(penalizeInside
+									.getPunishInsideprice());
+						}
+					}
 				}
 			}
 		}
