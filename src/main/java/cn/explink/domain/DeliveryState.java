@@ -33,7 +33,7 @@ public class DeliveryState {
 	private long pos_feedback_flag;
 	private long userid;
 	private long gcaid;
-	private String cwbordertypeid;
+	private int cwbordertypeid;
 	private int sign_typeid; // 是否签收 0未签收，1已签收
 	private String sign_man; // 签收人
 	private String sign_time; // 签收时间
@@ -196,11 +196,13 @@ public class DeliveryState {
 		this.checkremark = checkremark;
 	}
 
-	public String getCwbordertypeid() {
-		return this.cwbordertypeid;
+	
+
+	public int getCwbordertypeid() {
+		return cwbordertypeid;
 	}
 
-	public void setCwbordertypeid(String cwbordertypeid) {
+	public void setCwbordertypeid(int cwbordertypeid) {
 		this.cwbordertypeid = cwbordertypeid;
 	}
 

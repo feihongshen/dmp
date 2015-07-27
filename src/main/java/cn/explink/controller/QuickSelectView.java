@@ -71,6 +71,9 @@ public class QuickSelectView {
 	String consigneenameOfkf;
 	String consigneemobileOfkf;
 	String consigneephoneOfkf;
+	
+	
+	
 
 	public String getTimelimited() {
 		return this.timelimited;
@@ -117,6 +120,15 @@ public class QuickSelectView {
 	private int sign_typeid; // 是否签收 0未签收，1已签收
 	private String sign_man; // 签收人
 	private String sign_time; // 签收时间
+	private String shangmenlanshoutime;// 上门揽收时间
+	
+	public String getShangmenlanshoutime() {
+		return shangmenlanshoutime;
+	}
+
+	public void setShangmenlanshoutime(String shangmenlanshoutime) {
+		this.shangmenlanshoutime = shangmenlanshoutime;
+	}
 
 	List<OrderFlowView> orderFlowList;
 

@@ -80,7 +80,7 @@ public class DeliveryStateDAO {
 			deliveryState.setPushtime(rs.getString("pushtime"));
 			deliveryState.setPushstate(rs.getLong("pushstate"));
 			deliveryState.setPushremarks(rs.getString("pushremarks"));
-			deliveryState.setCwbordertypeid(rs.getString("cwbordertypeid"));
+			deliveryState.setCwbordertypeid(rs.getInt("cwbordertypeid"));
 			deliveryState.setDeliverytime(rs.getString("deliverytime"));
 			deliveryState.setAuditingtime(rs.getString("auditingtime"));
 			deliveryState.setCodpos(rs.getBigDecimal("codpos") == null ? BigDecimal.ZERO : rs.getBigDecimal("codpos"));
