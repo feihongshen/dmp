@@ -801,14 +801,21 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
       	  					
       	  					$('#dga').datagrid('reload');
       	  				
-      	  				}else{
+      	  				}else if(data.success==1){
       	  				$.messager.show({
       	  		 			title: '上传失败',
       	  						msg: data.successdata
       	  					}); 
       	  					
       	  					$('#dga').datagrid('reload');
-      	  				} 
+      	  				}else if(data.success==2){
+          	  				$.messager.show({
+          	  		 			title: '上传失败',
+          	  						msg: data.successdata
+          	  					}); 
+          	  					
+          	  					$('#dga').datagrid('reload');
+          	  				}  
       	  			}
       	  		});
                  /*  //对文件格式进行校验  
@@ -1001,7 +1008,7 @@ function changeImportToDmpMoney(){
 								title: '更改成功',
 								msg: result.successdata
 							});// reload the data
-						
+							duiBiBillMoneyChaYi();
 							$('#dgMoneyChaYi').datagrid("reload");
 						} 
 						
@@ -1023,7 +1030,7 @@ function changeImportToDmpAllMoney(){
 								title: '更改成功',
 								msg: result.successdata
 							});// reload the data
-						
+							duiBiBillMoneyChaYi();
 							$('#dgMoneyChaYi').datagrid("reload");
 						} 
 						
@@ -1263,7 +1270,7 @@ function importAllMoney(a){
 		<table>
 			<tr>
 				<td><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:clearAndCloseEdit()" id="fanhui" style="display: none">返回</a></td>
-				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:editbill()" id="baocun" style="display: none">保存</a></td>
+				<td><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="baocun" style="display: none" onclick="javascript:clearAndCloseEdit()">保存</a></td>
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="shenhe" onclick="javascript:changeBillState('<%=BillStateEnum.YiShenHe.getValue()%>')" style="display: none">审核</a></td>
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="quxiaoshenhe" onclick="javascript:changeBillState('<%=BillStateEnum.WeiShenHe.getValue()%>')" style="display: none">取消审核</a></td>
 				<td style="margin-left: 2cm"><a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="hexiaowancheng" onclick="javascript:changeBillState('<%=BillStateEnum.YiHeXiao.getValue()%>')" style="display: none">核销完成</a></td>

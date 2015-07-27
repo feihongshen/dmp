@@ -147,7 +147,11 @@ public class CustomerBillContractController {
 				List<CwbOrder> cwborderlist=cwbdao.findCwbByCustomerid(customerid);
 				//通过客户id查找该客户对象
 				Customer customer=customerdao.getCustomerById(customerid);
-				String cwbs=customerbillcontractservice.listToString(cwborderlist);			
+				String cwbs=customerbillcontractservice.listToString(cwborderlist);		
+				if(cwbs==null){
+					return null;
+				}
+				
 				List<CwbOrder> col=null;
 				long correspondingCwbNum=0;
 		
@@ -523,7 +527,9 @@ public class CustomerBillContractController {
 				/*POIFSFileSystem pfs = new POIFSFileSystem(in);*/
 				List<ImportBillExcel> objlist=customerbillcontractservice.getUploadExcel(in);
 /*				BigDecimal b = new BigDecimal("0");*/
-		
+				if(objlist==null){
+					return "{\"success\":2,\"successdata\":\"上传文本格式错误\"}";
+				}
 					StringBuilder sb = new StringBuilder();
 					String cwbs="";	
 					if(objlist.size()>0){
@@ -630,16 +636,17 @@ public class CustomerBillContractController {
 					}
 				}
 			}
-			
-			cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
-			
-			String cwbsss[]=cwbss.split(",");
-			long count=0;
-			for(String str:cwbsss){
-				count++;
+			if(sb.length()>0){
+				cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
 			}
-			b.setDuibiCwbMoneyChaYi(count);
-		}
+			if(cwbss.length()>0){
+				String cwbsss[]=cwbss.split(",");
+				b.setDuibiCwbMoneyChaYi(cwbsss.length);
+			}else{
+				b.setDuibiCwbMoneyChaYi(0);
+				}
+			}
+		
 		return b;
 	}	
 		

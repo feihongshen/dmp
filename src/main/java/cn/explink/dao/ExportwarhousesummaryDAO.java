@@ -507,7 +507,7 @@ public class ExportwarhousesummaryDAO {
 	}
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
+		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		List<CwbOrder> cwblist;
 		try {
 			cwblist = jdbcTemplate.query(sql, new Cwbs());
@@ -539,7 +539,7 @@ public class ExportwarhousesummaryDAO {
 	}
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePage(String cwbs,String startdate,String enddate,String cwbtypeid,int start,int pageSize){
-		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"' limit "+start+","+pageSize;
+		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"' limit "+start+","+pageSize;
 		List<CwbOrder> cwblist;
 		try {
 			cwblist = jdbcTemplate.query(sql, new Cwbs());
@@ -569,7 +569,7 @@ public class ExportwarhousesummaryDAO {
 	}
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePageLike(String cwbs,String startdate,String enddate,String cwbtypeid,int start,int pageSize){
-		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1 and credate>'"+startdate+"' and credate<'"+enddate+"' limit "+start+","+pageSize;
+		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1 and credate>='"+startdate+"' and credate<='"+enddate+"' limit "+start+","+pageSize;
 		List<CwbOrder> cwblist;
 		try {
 			cwblist = jdbcTemplate.query(sql, new Cwbs());
@@ -599,9 +599,9 @@ public class ExportwarhousesummaryDAO {
 	}
 	
 	public long findcwbByCwbsAndDateAndtypeLikeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
+		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
-		String sqlcount="select count(1) from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
+		String sqlcount="select count(1) from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		long count=jdbcTemplate.queryForLong(sqlcount);
 		long totalcount=0;
 		if(!cwbtypeid.equals("")&&Integer.valueOf(cwbtypeid)>0){
@@ -619,9 +619,9 @@ public class ExportwarhousesummaryDAO {
 		return totalcount;
 	}
 	public long findcwbByCwbsAndDateAndtypeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
-		String sql="select * from express_ops_order_intowarhouse where cwb in ("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
+		String sql="select * from express_ops_order_intowarhouse where cwb in ("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
-		String sqlcount="select count(1) from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>'"+startdate+"' and credate<'"+enddate+"'";
+		String sqlcount="select count(1) from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		long count=jdbcTemplate.queryForLong(sqlcount);
 		long totalcount=0;
 		if(!cwbtypeid.equals("")&&Integer.valueOf(cwbtypeid)>0){

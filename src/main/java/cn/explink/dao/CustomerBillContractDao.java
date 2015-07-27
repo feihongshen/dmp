@@ -90,10 +90,10 @@ public class CustomerBillContractDao {
 					sb.append(" and bill_state="+billState);
 				}
 				if(!crestartdate.equals("")&&!creenddate.equals("")){
-					sb.append(" and date_create_bill>'"+crestartdate+"' and date_create_bill<'"+creenddate+"'");
+					sb.append(" and date_create_bill>='"+crestartdate+"' and date_create_bill<='"+creenddate+"'");
 				}
 				if(!verificationstratdate.equals("")&&!verificationenddate.equals("")){
-					sb.append(" and date_create_bill>'"+verificationstratdate+"' and date_create_bill<'"+verificationenddate+"'");
+					sb.append(" and date_create_bill>='"+verificationstratdate+"' and date_create_bill<='"+verificationenddate+"'");
 				}
 				if(customerId>0){
 					sb.append(" and customer_id="+customerId);
@@ -151,10 +151,10 @@ public class CustomerBillContractDao {
 					sb.append(" and bill_state="+billState);
 				}
 				if(!crestartdate.equals("")&&!creenddate.equals("")){
-					sb.append(" and date_create_bill>'"+crestartdate+"' and date_create_bill<'"+creenddate+"'");
+					sb.append(" and date_create_bill>='"+crestartdate+"' and date_create_bill<='"+creenddate+"'");
 				}
 				if(!verificationstratdate.equals("")&&!verificationenddate.equals("")){
-					sb.append(" and date_create_bill>'"+verificationstratdate+"' and date_create_bill<'"+verificationenddate+"'");
+					sb.append(" and date_create_bill>='"+verificationstratdate+"' and date_create_bill<='"+verificationenddate+"'");
 				}
 				if(customerId>0){
 					sb.append(" and customer_id="+customerId);

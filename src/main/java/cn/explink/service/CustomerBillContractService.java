@@ -50,39 +50,43 @@ public class CustomerBillContractService {
 	public String listToString(List<CwbOrder> cwborderlist){
 		StringBuilder sb = new StringBuilder();
 		String cwbs="";	
-		if(cwborderlist.size()>0){
+		if(cwborderlist!=null&&cwborderlist.size()>0){
 			for(CwbOrder str:cwborderlist){
 				sb=sb.append("'"+str.getCwb()+"',");
 			}
 			cwbs=sb.substring(0, sb.length()-1);	
+			return cwbs;	
 		}
-		return cwbs;	
+		return null;
 	}
 	
 	public String listImportBillExcelToString(List<ImportBillExcel> cwborderlist){
 		StringBuilder sb = new StringBuilder();
 		String cwbs="";	
-		if(cwborderlist.size()>0){
+		if(cwborderlist!=null&&cwborderlist.size()>0){
 			for(ImportBillExcel str:cwborderlist){
 				sb=sb.append(str.getCwb()+",");
 			}
 		
 			cwbs=sb.substring(0, sb.length()-1);	
+			return cwbs;	
 		}
-		return cwbs;	
+		return null;
 	}
+	
 	
 	public String DeliveryStatelistToString(List<DeliveryState> cwborderlist){
 		StringBuilder sb = new StringBuilder();
 		String cwbs="";	
-		if(cwborderlist.size()>0){
+		if(cwborderlist!=null&&cwborderlist.size()>0){
 			for(DeliveryState str:cwborderlist){
 				sb=sb.append("'"+str.getCwb()+"',");
 			
 			}
 			cwbs=sb.substring(0, sb.length()-1);	
+			return cwbs;	
 		}
-		return cwbs;	
+		return null;
 	}
 
 	public List<CwbOrder> findAllByCwbDate(String cwbs,String startdate,String enddate) {
@@ -95,8 +99,8 @@ public class CustomerBillContractService {
 	
 	public List<CwbOrder> findAllByCwbDate(String cwbs,String startdate,String enddate,int start,int number) {
 		if(cwbs!=null&&!cwbs.equals("")){
-		List<CwbOrder> col=cwbdao.findcwbByCwbsAndDatePage(cwbs,startdate,enddate,start,number);
-		return col;
+			List<CwbOrder> col=cwbdao.findcwbByCwbsAndDatePage(cwbs,startdate,enddate,start,number);
+			return col;
 		}
 		return null;
 	}
@@ -272,40 +276,52 @@ public class CustomerBillContractService {
 	}
 	
 
-	public List<ImportBillExcel> getUploadExcel(InputStream fis) {
-		List<ImportBillExcel> rows = new ArrayList<ImportBillExcel>();
-		try {
+	public List<ImportBillExcel> getUploadExcel(InputStream fis) throws Exception {
+	
 			HSSFWorkbook xwb = null;
-			try {
+			
 				xwb = new HSSFWorkbook(fis);
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-				throw new BadExcelException();
+			
+			boolean a=true;
+			HSSFSheet sheet = xwb.getSheetAt(0);
+			HSSFRow pdrows = sheet.getRow(0);
+			String titles[]={"订单号","基价","续重","返单费","返程费","代收款手续费","POS手续费","保价费","包装费","干线补贴"};
+			if(pdrows.getLastCellNum()==titles.length){
+				for(int i=0;i<=titles.length-1;i++){
+						if(!titles[i].equals(formatCell(pdrows.getCell(i)))){
+							a=false;					
+						}
+				}
+			
+			}else{
+				a=false;
+			}
+			if(a==true){
+			List<ImportBillExcel> rows = new ArrayList<ImportBillExcel>();
+			for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){
+				
+					HSSFRow row = sheet.getRow(rowNum); // 从第二行开始，取出每一行
+					ImportBillExcel ib = new ImportBillExcel();
+					ib.setCwb(formatCell(row.getCell(0)));
+					ib.setJijiaMoney(new BigDecimal(formatCell(row.getCell(1))));
+					ib.setXuzhongMoney(new BigDecimal(formatCell(row.getCell(2))));
+					ib.setFandanMoney(new BigDecimal(formatCell(row.getCell(3))));
+					ib.setFanchengMoney(new BigDecimal(formatCell(row.getCell(4))));
+					ib.setDaishoukuanshouxuMoney(new BigDecimal(formatCell(row.getCell(5))));
+					ib.setPosShouxuMoney(new BigDecimal(formatCell(row.getCell(6))));
+					ib.setBaojiaMoney(new BigDecimal(formatCell(row.getCell(7))));
+					ib.setBaozhuangMoney(new BigDecimal(formatCell(row.getCell(8))));
+					ib.setGanxianbutieMoney(new BigDecimal(formatCell(row.getCell(9))));
+					
+					rows.add(ib);
+			}
+				
+				
+				return rows;
 			}
 			
-			HSSFSheet sheet = xwb.getSheetAt(0);
-			for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){
-				HSSFRow row = sheet.getRow(rowNum); // 从第二行开始，取出每一行
-				ImportBillExcel ib = new ImportBillExcel();
-				ib.setCwb(formatCell(row.getCell(0)));
-				ib.setJijiaMoney(new BigDecimal(formatCell(row.getCell(1))));
-				ib.setXuzhongMoney(new BigDecimal(formatCell(row.getCell(2))));
-				ib.setFandanMoney(new BigDecimal(formatCell(row.getCell(3))));
-				ib.setFanchengMoney(new BigDecimal(formatCell(row.getCell(4))));
-				ib.setDaishoukuanshouxuMoney(new BigDecimal(formatCell(row.getCell(5))));
-				ib.setPosShouxuMoney(new BigDecimal(formatCell(row.getCell(6))));
-				ib.setBaojiaMoney(new BigDecimal(formatCell(row.getCell(7))));
-				ib.setBaozhuangMoney(new BigDecimal(formatCell(row.getCell(8))));
-				ib.setGanxianbutieMoney(new BigDecimal(formatCell(row.getCell(9))));
-				
-				rows.add(ib);
-			}
+			return null;
 		
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-		return rows;
 	}
 	
 	
