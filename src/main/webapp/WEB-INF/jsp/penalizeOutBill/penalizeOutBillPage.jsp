@@ -466,10 +466,10 @@ function verify(){
 	}
 	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
 	if(chkBoxes[0].checked == true){
-		var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
+		var reg = /^[1-9]\d*$/;
 	    var isMoneyFormatRight = reg.test($("#sumPrice").val());
 	    if(!isMoneyFormatRight){
-	  	  alert("扣罚金额只能为数字，并不能为负数，允许保留两位小数！");
+	  	  alert("扣罚金额只能为数字，并不能为负数！");
 	  	  return false;
 	    }
 	}

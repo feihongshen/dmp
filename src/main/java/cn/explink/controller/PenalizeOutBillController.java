@@ -129,7 +129,7 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark, @RequestParam(value = "checkbox1", required = false) String checkbox1) {
 		Long id = this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
 		if ((checkbox1 != "") && (checkbox1 != null)) {
-			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd);
+			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd,compensatebig);
 		}
 		return id;
 	}

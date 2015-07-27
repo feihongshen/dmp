@@ -170,8 +170,8 @@ public class CustomerContractDAO {
 	 * 删除合同
 	 */
 	public void deleteContract(Long id) {
-		String deleteContractSql = "delete from express_set_customer_contract_management where id='" + id + "'";
 		String deleteDepositSql = "delete from express_set_deposit_information where contractid='" + id + "'";
+		String deleteContractSql = "delete from express_set_customer_contract_management where id='" + id + "'";
 		this.jdbcTemplate.update(deleteDepositSql);
 		this.jdbcTemplate.update(deleteContractSql);
 	}

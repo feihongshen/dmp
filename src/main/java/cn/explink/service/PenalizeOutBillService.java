@@ -304,7 +304,7 @@ public class PenalizeOutBillService {
 	 * @param str
 	 * @return
 	 */
-	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd) {
+	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd,Integer compensatebig) {
 		ExpressOpsPunishinsideBill punishinsideBill = new ExpressOpsPunishinsideBill();
 		
 		String odd = "";
@@ -321,9 +321,14 @@ public class PenalizeOutBillService {
 						sum = sum.add(fee);
 					}
 				}
+			}else{
+				sum = sumPrice;
 			}
 
 		}
+		punishinsideBill.setPunishbigsort(compensatebig);
+		punishinsideBill.setCreator((int)this.getSessionUser().getUserid());
+		punishinsideBill.setCreateDate(DateTimeUtil.getNowTime());
 		punishinsideBill.setSumPrice(sum);
 		punishinsideBill.setBillBatch(this.BillBatch());
 		punishinsideBill.setPunishNos(odd);
