@@ -476,7 +476,7 @@ function verify(){
 		         	</td>
 	         	</tr>
          		<tr colspan="4">
-	         		<td align="right" nowrap="nowrap" style="width: 10%;">所属站点：</td>
+	         		<td align="right" nowrap="nowrap" style="width: 10%;"><font color="red">*</font>所属站点：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
 	         			<select id="orgId"
 							name="site" class="select1">
@@ -510,7 +510,7 @@ function verify(){
 					</select>
          		</td>
          		<td nowrap="nowrap"  >
-         			<select  name="dateType" style="width: 100%;"  >
+         			<font color="red">*</font><select  name="dateType" style="width: 100%;"  >
 	         			<c:forEach items="${DateTypeEnum}" var="date">
 							<option value="${date.value}" >${date.text}</option>
 						</c:forEach>
