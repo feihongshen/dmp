@@ -3,14 +3,11 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <jsp:useBean id="now" class="java.util.Date" scope="page" />
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
 <title>超围/大件补助申请</title>
-
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
@@ -21,16 +18,12 @@
 $(function(){
 	$('#addPage').dialog('close');
 	$('#queryPage').dialog('close');
-	
 	$("table#listTable tr").click(function(){
 		$(this).css("backgroundColor","yellow");
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 });
-function addInit(){
-	//无处理
-}
-
+function addInit(){ }
 function checkAll(id){ 
 	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
 	var chkBoxes = $("#"+ id +" input[type='checkbox'][name='checkBox']");
@@ -38,37 +31,29 @@ function checkAll(id){
 		$(this)[0].checked = chkAll;
 	});
 }
-
 function queryApplyList(){
 	$("#queryForm").submit();
 	$('#queryPage').dialog('close');
 }
-
 function updatePage(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
 	var strs= new Array(); //定义一数组 
 	$(chkBoxes).each(function() {
-		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
-		{	
+		if ($(this)[0].checked == true) {	
 			strs = $(this).val().split(",");
 			getEditData(strs[0]);
 			return false;
 		}
 	}); 
 }
-
 function getEditData(val){
 	$("#updatePageForm input[name='id']").val(val);
 	$("#updatePageForm").submit();
 }
-
 function updateExceedSubsidyApply(state,form,type,page){
-	if(state){
-		changeApplyState(state,form);
-	}
+	if(state) changeApplyState(state,form);
 	updateExceedSubsidyApplyFun(form,type,page);
 }
-
 function updateExceedSubsidyApplyFun(form,type,page){
 	var cwbExist = 1;
 	validateCwbOrder(form,cwbExist);
@@ -76,7 +61,6 @@ function updateExceedSubsidyApplyFun(form,type,page){
 		alert("订单号不存在!");
 		return false;
 	}
-	
 	if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
 		$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
 		if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){
@@ -131,7 +115,6 @@ function updateExceedSubsidyApplyFun(form,type,page){
 	$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
 	$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
 	$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("disabled",false);
-
 	//$("#updateForm").submit();
 	$.ajax({
 		type : "POST",
@@ -154,7 +137,6 @@ function updateExceedSubsidyApplyFun(form,type,page){
 			}
 		});
 }
-
 function validateCwbOrder(form,cwbExist){
 	var cwb = $("#"+form+" input[name='cwbOrder']").val();
 	if(!cwb){
@@ -180,29 +162,21 @@ function validateCwbOrder(form,cwbExist){
 		}
 	});
 }
-
 function deleteExceedSubsidyApply(){
 	var chkBoxes = $("#listTable input[type='checkbox'][name='checkBox']");
 	var strs= new Array(); //定义一数组 
 	var ids = "";
 	var sign = 0;
 	$(chkBoxes).each(function() {
-		if ($(this)[0].checked == true)
-		{
+		if ($(this)[0].checked == true){
 			strs = $(this).val().split(",");
 			if(strs[1] == '${xinJianState}'){
 				ids = ids + strs[0] + ",";
-			} else {
-				sign = 1;
-			}
+			} else { sign = 1; }
 		}
 	}); 
-	if(sign == 1){
-		alert("只有新建状态才可删除!");
-	}
-	if(!ids){
-		return;
-	}
+	if(sign == 1)alert("只有新建状态才可删除!");
+	if(!ids)return;
 	ids = ids.substring(0,ids.length-1);
 	if(window.confirm("是否确定删除?")){
 		$.ajax({
@@ -219,10 +193,8 @@ function deleteExceedSubsidyApply(){
 					});
 		}
 	}
-
 	function addexceedSubsidyApplyPage() {
 		$('#addPage').dialog('open');
-
 		$("#addForm textarea[name='remark']")
 				.focus(function() {
 							if ($("#addForm textarea[name='remark']").val()
@@ -252,7 +224,6 @@ function deleteExceedSubsidyApply(){
 					if(data.isExist==1){
 						$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
 						$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
-						
 						if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
 							$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
 							if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){
@@ -289,12 +260,10 @@ function deleteExceedSubsidyApply(){
 			}
 		});
 	}
-	
 	function submitExceedSubsidyApply(state,form){
 		changeApplyState(state,form);
 		addExceedSubsidyApply(form);
 	}
-	
 	function queryPage() {
 		if('${deliveryAuthority}' == 1){
 			$("#queryForm input[name='deliveryPersonName']").val('${currentUser.realname}');
@@ -304,7 +273,6 @@ function deleteExceedSubsidyApply(){
 		}
 		$('#queryPage').dialog('open');
 	}
-
 	function changeApplyState(state,form) {
 		if (state) {
 			if(state == 'WeiShenHe'){
@@ -314,23 +282,15 @@ function deleteExceedSubsidyApply(){
 			} else if (state == 'YiShenHe') {
 				if (confirm("是否确认审核通过?")) {
 					$("#"+form+" select[name='applyState']").val('${yiShenHeState}');
-					/* $("#"+form+" input[name='shenHeTime']").val(getCurrentTime());
-					$("#"+form+" input[name='shenHePerson']").val('${currentUser.userid}');
-					$("#"+form+" input[name='shenHePersonName']").val('${currentUser.realname}'); */
 				}
 			} else if (state == 'YiJuJue') {
 				if (confirm("是否确认拒绝通过?")) {
 					$("#"+form+" select[name='applyState']").val('${yiJuJueState}');
-					/* $("#"+form+" input[name='shenHeTime']").val(getCurrentTime());
-					$("#"+form+" input[name='shenHePerson']").val('${currentUser.userid}');
-					$("#"+form+" input[name='shenHePersonName']").val('${currentUser.realname}'); */
 				}
 			}
 		}
 	}
-	
-	function getCurrentTime()
-    { 
+	function getCurrentTime() { 
         var now = new Date();
         var year = now.getFullYear();       //年
         var month = now.getMonth() + 1;     //月
@@ -338,30 +298,22 @@ function deleteExceedSubsidyApply(){
         var hh = now.getHours();            //时
         var mm = now.getMinutes();          //分
         var ss = now.getSeconds();          //秒
-       
         var clock = year + "-";
-        if(month < 10)
-            clock += "0";
+        if(month < 10) clock += "0";
         clock += month + "-";
-        if(day < 10)
-            clock += "0";
+        if(day < 10) clock += "0";
         clock += day + " ";
-        if(hh < 10)
-            clock += "0";
+        if(hh < 10) clock += "0";
         clock += hh + ":";
-        if (mm < 10) 
-        	clock += '0'; 
+        if (mm < 10) clock += '0'; 
         clock += mm + ":"; 
-        if (ss < 10) 
-        	clock += '0'; 
+        if (ss < 10) clock += '0'; 
         clock += ss; 
         return clock; 
     }
 </script>
 </head>
-
 <body style="background: #eef9ff">
-
 	<div class="right_box">
 		<div class="inputselect_box">
 			<table style="width: 60%">
@@ -379,44 +331,23 @@ function deleteExceedSubsidyApply(){
 				</tr>
 			</table>
 		</div>
-		<div class="jg_10"></div>
-		<div class="jg_10"></div>
-		<div class="jg_10"></div>
-		<div class="jg_10"></div>
-		<div class="jg_10"></div>
 		<div class="right_title">
-			<div style="overflow: auto;">
-				<table width="100%" border="0" cellspacing="1" cellpadding="0"
-					class="table_2" id="listTable">
+				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="listTable">
 					<tr>
-						<td height="30px" valign="middle">
-							<input type="checkbox" name="checkAll" onclick="checkAll('listTable')" />
-						</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							申请编号
-						</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							订单号
-						</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							配送员
-						</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							状态
-						</td>
-						<td align="center" valign="middle" style="font-weight: bold;">
-							备注
-						</td>
+						<td height="30px" valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('listTable')" /></td>
+						<td align="center" valign="middle" style="font-weight: bold;">申请编号</td>
+						<td align="center" valign="middle" style="font-weight: bold;">订单号</td>
+						<td align="center" valign="middle" style="font-weight: bold;">配送员</td>
+						<td align="center" valign="middle" style="font-weight: bold;">状态</td>
+						<td align="center" valign="middle" style="font-weight: bold;">备注</td>
 					</tr>
 					<c:forEach items="${exceedSubsidyApplyList}" var="apply">
 						<tr>
-							<td height="30px" align="center" valign="middle">
-								<input type="checkbox" name="checkBox" value="${apply.id}${','}${apply.applyState}"/>
-							</td>
+							<td height="30px" align="center" valign="middle"><input type="checkbox" name="checkBox" value="${apply.id}${','}${apply.applyState}"/></td>
 							<td align="center" valign="middle">${apply.applyNo}</td>
 							<td align="center" valign="middle">${apply.cwbOrder}</td>
 							<td align="center" valign="middle">
-								<c:forEach items="${userList}" var="user">
+								<c:forEach items="${deliveryUserList}" var="user">
 									<c:if test="${apply.deliveryPerson==user.userid}">${user.realname}</c:if>
 								</c:forEach>
 							</td>
@@ -428,19 +359,12 @@ function deleteExceedSubsidyApply(){
 						</tr>
 					</c:forEach>
 				</table>
-			</div>
 		</div>
 	</div>
-
 	<!-- 新增层显示 -->
-	<div id="addPage" class="easyui-dialog" title="新增"
-		data-options="iconCls:'icon-save'"
-		style="width: 780px; height: 300px;">
-		<form
-			action="<%=request.getContextPath()%>/exceedSubsidyApply/addExceedSubsidyApply"
-			method="post" id="addForm">
-			<table width="100%" border="0" cellspacing="5" cellpadding="0"
-				style="margin-top: 10px; font-size: 10px; border-collapse: separate">
+	<div id="addPage" class="easyui-dialog" title="新增" data-options="iconCls:'icon-save'" style="width: 780px; height: 300px;">
+		<form action="<%=request.getContextPath()%>/exceedSubsidyApply/addExceedSubsidyApply" method="post" id="addForm">
+			<table width="100%" border="0" cellspacing="5" cellpadding="0" style="margin-top: 10px; font-size: 10px; border-collapse: separate">
 				<tr>
 					<td colspan="4" align="left">
 						<input type="button" class="input_button2" value="返回" onclick="$('#addPage').dialog('close');" />
@@ -449,15 +373,9 @@ function deleteExceedSubsidyApply(){
 					</td>
 				</tr>
 				<tr>
-					<td align="left">
-						<font color="red">*</font>申请编号
-					</td>
-					<td>
-						<input type="text" name="applyNo" readonly="readonly" style="background-color: #DCDCDC" value="[自动生成]">
-					</td>
-					<td align="left">
-						<font color="red">*</font>状态
-					</td>
+					<td align="left"><font color="red">*</font>申请编号</td>
+					<td> <input type="text" name="applyNo" readonly="readonly" style="background-color: #DCDCDC" value="[自动生成]"></td>
+					<td align="left"><font color="red">*</font>状态</td>
 					<td>
 						<select name="applyState" disabled="disabled">
 							<c:forEach items="${applyStateMap}" var="item">
@@ -465,12 +383,19 @@ function deleteExceedSubsidyApply(){
 							</c:forEach>
 						</select>
 					</td>
-					<td align="left">
-						<font color="red">*</font>配送员
-					</td>
+					<td align="left"><font color="red">*</font>配送员</td>
 					<td>
-						<input type="text" name="deliveryPersonName" readonly="readonly" style="background-color: #DCDCDC" value="${currentUser.realname}">
-						<input type="hidden" name="deliveryPerson" value="${currentUser.userid}">
+						<select name="deliveryPerson" <c:if test="${masterAuthority!=1}">disabled="disabled"</c:if>>
+							<option value=""></option>
+							<c:forEach items="${deliveryUserList}" var="user">
+								<c:if test="${currentUser.userid==user.userid}">
+									<option value="${user.userid}" selected="selected">${user.realname}</option>
+								</c:if>
+								<c:if test="${currentUser.userid!=user.userid}">
+									<option value="${user.userid}">${user.realname}</option>
+								</c:if>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
@@ -575,8 +500,17 @@ function deleteExceedSubsidyApply(){
 						<font color="red">*</font>配送员
 					</td>
 					<td>
-						<input type="text" name="deliveryPersonName" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.deliveryPersonName}">
-						<input type="hidden" name="deliveryPerson" value="${exceedSubsidyApplyVO.deliveryPerson}">
+						<select name="deliveryPerson" <c:if test="${masterAuthority!=1}">disabled="disabled"</c:if>>
+							<option value=""></option>
+							<c:forEach items="${deliveryUserList}" var="user">
+								<c:if test="${exceedSubsidyApplyVO.deliveryPerson==user.userid}">
+									<option value="${user.userid}" selected="selected">${user.realname}</option>
+								</c:if>
+								<c:if test="${exceedSubsidyApplyVO.deliveryPerson!=user.userid}">
+									<option value="${user.userid}">${user.realname}</option>
+								</c:if>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>

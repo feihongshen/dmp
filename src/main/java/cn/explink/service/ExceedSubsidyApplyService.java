@@ -1,6 +1,5 @@
 package cn.explink.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,16 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.ExceedSubsidyApplyDAO;
 import cn.explink.dao.PunishInsideDao;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
-import cn.explink.domain.CwbOrder;
-import cn.explink.domain.ExpressOpsPunishinsideBill;
-import cn.explink.domain.ExpressSetBranchContract;
 import cn.explink.domain.ExpressSetExceedSubsidyApply;
-import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.Role;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.ExpressSetExceedSubsidyApplyVO;
-import cn.explink.enumutil.DeliveryFeeBillDateTypeEnum;
-import cn.explink.enumutil.DeliveryFeeBillStateEnum;
 import cn.explink.util.BeanUtilsSelfDef;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.HtmlToWord;
@@ -36,6 +31,8 @@ public class ExceedSubsidyApplyService {
 	PunishInsideDao punishInsideDao;
 	@Autowired
 	UserDAO userDAO;
+	@Autowired
+	RoleDAO roleDAO;
 
 	public ExpressSetExceedSubsidyApplyVO getExceedSubsidyApplyVO(int id) {
 		// 返回值
@@ -89,6 +86,14 @@ public class ExceedSubsidyApplyService {
 		return new Long(id).intValue();
 	}
 	
+	public List<User> getDeliveryUserList(){
+		List<User> deliveryUserList = new ArrayList<User>();
+		List<Role> roleList = this.roleDAO.getRolesByRolename("小件员");
+		if(roleList != null && !roleList.isEmpty()){
+			deliveryUserList = this.userDAO.getUserByRole(new Long(roleList.get(0).getRoleid()).intValue());
+		}
+		return deliveryUserList;
+	}
 	public String generateApplyNo() {
 		String rule = "REQ";
 		String nowTime = DateTimeUtil.getNowTime("yyyyMMdd");

@@ -2,7 +2,6 @@ package cn.explink.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,11 @@ public class ExceedSubsidyApplyController {
 			ExpressSetExceedSubsidyApplyVO queryConditionVO) {
 		
 		User user = getSessionUser();
+		// 配送员权限
 		int deliveryAuthority = 0;
+		// 站长权限
+		int masterAuthority = 0;
+		// 结算权限
 		int advanceAuthority = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -86,14 +89,19 @@ public class ExceedSubsidyApplyController {
 				} else if("小件员".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					queryConditionVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
+				} else if("站长".equals(role.getRolename())){
+					deliveryAuthority = 1;
+					masterAuthority = 1;
+//					queryConditionVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
 				}
 			}
 		}
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApply(page, queryConditionVO);
 		int count = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApplyCount(queryConditionVO);
-		List<User> userList = this.userDAO.getAllUser();
+//		List<User> userList = this.userDAO.getAllUser();
 		Map<Integer, String> applyStateMap = ExceedSubsidyApplyStateEnum.getMap();
 		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
@@ -102,12 +110,13 @@ public class ExceedSubsidyApplyController {
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("deliveryAuthority", deliveryAuthority);
+		model.addAttribute("masterAuthority", masterAuthority);
 		model.addAttribute("advanceAuthority", advanceAuthority);
 		model.addAttribute("xinJianState", ExceedSubsidyApplyStateEnum.XinJian.getValue());
 		model.addAttribute("weiShenHeState", ExceedSubsidyApplyStateEnum.WeiShenHe.getValue());
 		model.addAttribute("queryConditionVO", queryConditionVO);
 		model.addAttribute("exceedSubsidyApplyList", list);
-		model.addAttribute("userList", userList);
+		model.addAttribute("deliveryUserList", deliveryUserList);
 		model.addAttribute("applyStateMap", applyStateMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("currentUser", user);
@@ -123,6 +132,7 @@ public class ExceedSubsidyApplyController {
 		ExpressSetExceedSubsidyApplyVO applyVO = new ExpressSetExceedSubsidyApplyVO();
 		User user = getSessionUser();
 		int deliveryAuthority = 0;
+		int masterAuthority = 0;
 		int advanceAuthority = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -131,6 +141,9 @@ public class ExceedSubsidyApplyController {
 				if("小件员".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					applyVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
+				} else if("站长".equals(role.getRolename())){
+					deliveryAuthority = 1;
+					masterAuthority = 1;
 				} else if("结算".equals(role.getRolename())){
 					advanceAuthority = 1;
 					applyVO.setIsAdvanceAuthority(advanceAuthority);
@@ -142,7 +155,8 @@ public class ExceedSubsidyApplyController {
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApply(1, applyVO);
-		List<User> userList = this.userDAO.getAllUser();
+//		List<User> userList = this.userDAO.getAllUser();
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
 		
@@ -154,13 +168,14 @@ public class ExceedSubsidyApplyController {
 			}
 		}
 		model.addAttribute("deliveryAuthority", deliveryAuthority);
+		model.addAttribute("masterAuthority", masterAuthority);
 		model.addAttribute("advanceAuthority", advanceAuthority);
 		model.addAttribute("weiShenHeState", ExceedSubsidyApplyStateEnum.WeiShenHe.getValue());
 		model.addAttribute("exceedSubsidyApplyList", list);
 		model.addAttribute("applyStateMap", applyStateMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("exceedSubsidyApplyVO", exceedSubsidyApplyVO);
-		model.addAttribute("userList", userList);
+		model.addAttribute("deliveryUserList", deliveryUserList);
 		return "exceedSubsidyApply/exceedSubsidyApplyList";
 	}
 
@@ -170,6 +185,7 @@ public class ExceedSubsidyApplyController {
 		ExpressSetExceedSubsidyApplyVO applyVO = new ExpressSetExceedSubsidyApplyVO();
 		User user = getSessionUser();
 		int deliveryAuthority = 0;
+		int masterAuthority = 0;
 		int advanceAuthority = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -178,6 +194,9 @@ public class ExceedSubsidyApplyController {
 				if("小件员".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					applyVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
+				} else if("站长".equals(role.getRolename())){
+					deliveryAuthority = 1;
+					masterAuthority = 1;
 				} else if("结算".equals(role.getRolename())){
 					advanceAuthority = 1;
 					applyVO.setIsAdvanceAuthority(advanceAuthority);
@@ -190,7 +209,8 @@ public class ExceedSubsidyApplyController {
 				.queryExceedSubsidyApply(1, applyVO);
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
-		List<User> userList = this.userDAO.getAllUser();
+//		List<User> userList = this.userDAO.getAllUser();
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
 		
 		if(exceedSubsidyApplyVO != null){
 			if(ExceedSubsidyApplyStateEnum.XinJian.getValue() == exceedSubsidyApplyVO.getApplyState()){
@@ -205,6 +225,7 @@ public class ExceedSubsidyApplyController {
 		}
 		
 		model.addAttribute("deliveryAuthority", deliveryAuthority);
+		model.addAttribute("masterAuthority", masterAuthority);
 		model.addAttribute("advanceAuthority", advanceAuthority);
 		model.addAttribute("weiShenHeState", ExceedSubsidyApplyStateEnum.WeiShenHe.getValue());
 		model.addAttribute("yiShenHeState", ExceedSubsidyApplyStateEnum.YiShenHe.getValue());
@@ -213,7 +234,7 @@ public class ExceedSubsidyApplyController {
 		model.addAttribute("applyStateMap", applyStateMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("exceedSubsidyApplyVO", exceedSubsidyApplyVO);
-		model.addAttribute("userList", userList);
+		model.addAttribute("deliveryUserList", deliveryUserList);
 		model.addAttribute("currentUser", user);
 		model.addAttribute("currentTime", DateTimeUtil.getNowTime());
 		return "exceedSubsidyApply/exceedSubsidyApplyList";
