@@ -7971,7 +7971,7 @@ CREATE TABLE `cs_complaint_accept` (
 	</changeSet>	
 	<changeSet id="wukong-2015-07-27" author="wukong">
 		<sql>
-			INSERT INTO `dmp40_function` VALUES('802050',2,'应付甲方明细报表','802050','${eapUrl}reportForm.do?payableCustomerFormIndexDetail&','8020');
+			INSERT INTO `dmp40_function` VALUES('802050',2,'应付甲方明细报表','802050','${eapUrl}reportForm.do?payableCustomerFormIndexDetail&amp;','8020');
 		</sql>
 	</changeSet>
 </databaseChangeLog>
