@@ -600,20 +600,20 @@ public class BranchDeliveryFeeBillDAO {
 
 		String sql = "select cwb.* from express_ops_cwb_detail cwb "
 				+ " left join express_ops_delivery_state d "
-				+ leftJoinSql
 				+ " on cwb.cwb = d.cwb "	
+				+ leftJoinSql
 				+ onSql
 				+ " where 1=1 ";
 
 		if (branchDeliveryFeeBill != null) {
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
 					.getBeginDate())) {
-				sql += " and DATE_FORMAT('" + dateColumn + "','%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
+				sql += " and DATE_FORMAT(" + dateColumn + ",'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
 						+ branchDeliveryFeeBill.getBeginDate() + "','%Y-%m-%d %H:%i:%s') ";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
 					.getEndDate())) {
-				sql += " and DATE_FORMAT('" + dateColumn + "','%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
+				sql += " and DATE_FORMAT(" + dateColumn + ",'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
 						+ branchDeliveryFeeBill.getEndDate() + "','%Y-%m-%d %H:%i:%s') ";
 			}
 			if (branchDeliveryFeeBill.getBranchId() != 0) {
