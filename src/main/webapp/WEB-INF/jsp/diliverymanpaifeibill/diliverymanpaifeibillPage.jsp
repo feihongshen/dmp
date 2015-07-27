@@ -486,7 +486,7 @@ function verify(){
 							</c:forEach>
 						</select> 
          			</td>
-	         		<td nowrap="nowrap" align="right" style="width: 10%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;订单类型：</td>
+	         		<td nowrap="nowrap" align="right" style="width: 12%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;订单类型：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
 		         		<select  name="orderType" style="width: 100%;"  >
 		         			<option value="0">全部</option>
@@ -510,7 +510,7 @@ function verify(){
 					</select>
          		</td>
          		<td nowrap="nowrap"  >
-         			<font color="red">*</font><select  name="dateType" style="width: 100%;"  >
+         			<font color="red">*</font><select  name="dateType" style="width: 95%;"  >
 	         			<c:forEach items="${DateTypeEnum}" var="date">
 							<option value="${date.value}" >${date.text}</option>
 						</c:forEach>
