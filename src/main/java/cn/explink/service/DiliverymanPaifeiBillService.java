@@ -117,7 +117,6 @@ public class DiliverymanPaifeiBillService {
 				bill.setBillestablishdate(DateTimeUtil.getNowDate());
 				bill.setDaterange(startDate + " 至 " + endDate);
 				bill.setOrdertype(orderType);
-				bill.setPaifeimoney(new BigDecimal(4444));
 				bill.setRemarks(explain);
 				this.diliverymanPaifeiBillDAO.addDiliverymanBill(bill);
 				billcount++;

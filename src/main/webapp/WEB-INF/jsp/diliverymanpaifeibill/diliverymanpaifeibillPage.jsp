@@ -313,7 +313,7 @@ function deleteBill()
 	var weishenhe = "<%=PunishBillStateEnum.WeiShenHe.getValue()%>";
 	if(state != weishenhe)
 	{
-		alert("只有未审核状态的合同才能进行删除!");
+		alert("只有未审核状态的账单才能进行删除!");
 		return false;
 	}
 	if(confirm("确定要删除吗？"))
