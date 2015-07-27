@@ -143,12 +143,13 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "billVerificationStrartDate", required = false) String billVerificationStrartDate,
 			@RequestParam(value = "billVerificationEndDate", required = false) String billVerificationEndDate, @RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "method", required = false) String method) {
+		long pag = 1;
 		List<PenalizeOutBill> list = this.penalizeOutBillService.queryAll(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort,
-				method, page);
+				method, pag);
 		model.addAttribute("billList", list);
 		int coun = this.PenalizeOutBilldao.queryAllCount(new PenalizeOutBill(), billCreationStartDate, billCreationEndDate, billVerificationStrartDate, billVerificationEndDate, sort, method, page);
-		Page page_ob = new Page(coun, page, Page.ONE_PAGE_NUMBER);
-		model.addAttribute("page", page);
+		Page page_ob = new Page(coun, pag, Page.ONE_PAGE_NUMBER);
+		model.addAttribute("page", pag);
 		model.addAttribute("page_ob", page_ob);
 		PenalizeOutBill bill = this.penalizeOutBillService.queryById(id, page);
 		int sum = this.penalizeOutBillService.queryByIdcount(id);
