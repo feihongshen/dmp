@@ -884,8 +884,10 @@ function verify(){
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
-					<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
-	         		<input type="button" class="input_button2"  onclick="deleteorder()" value="移除"/>
+					<c:if test="${weiShenHeState==bill.billstate}">
+						<input type="button" class="input_button2"  onclick="addPenalizeInside()" value="添加"/>
+		         		<input type="button" class="input_button2"  onclick="deleteorder()" value="移除"/>
+	         		</c:if>
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/1');$('#updatePageForm').submit();" >第一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.previous<1?1:page_o.previous}');$('#updatePageForm').submit();">上一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/penalizeOutBill/queryById/${page_o.next<1?1:page_o.next }');$('#updatePageForm').submit();" >下一页</a>　
