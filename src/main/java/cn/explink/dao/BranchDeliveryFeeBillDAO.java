@@ -320,7 +320,7 @@ public class BranchDeliveryFeeBillDAO {
 								+ "deliveryExceedSubsidyFee,deliveryBusinessSubsidyFee,deliveryAttachSubsidyFee,"
 								+ "pickupSumFee,pickupCollectionSubsidyFee,pickupAreaSubsidyFee,pickupExceedSubsidyFee,"
 								+ "pickupAttachSubsidyFee,pickupBasicFee,pickupBusinessSubsidyFee"
-								+ ") values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								+ ") values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 								new String[] { "id" });
 				int i = 1;
 				
@@ -353,6 +353,8 @@ public class BranchDeliveryFeeBillDAO {
 				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupAreaSubsidyFee());
 				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupExceedSubsidyFee());
 				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupAttachSubsidyFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getPickupBasicFee());
+				ps.setBigDecimal(i++, branchDeliveryFeeBillDetail.getBusinessSubsidyFee());
 				
 				return ps;
 			}

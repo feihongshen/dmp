@@ -86,11 +86,17 @@ public class ExceedSubsidyApplyService {
 		return new Long(id).intValue();
 	}
 	
-	public List<User> getDeliveryUserList(){
+	public List<User> getDeliveryUserList(long branchid){
 		List<User> deliveryUserList = new ArrayList<User>();
 		List<Role> roleList = this.roleDAO.getRolesByRolename("小件员");
 		if(roleList != null && !roleList.isEmpty()){
-			deliveryUserList = this.userDAO.getUserByRole(new Long(roleList.get(0).getRoleid()).intValue());
+			if(branchid == 0){
+				deliveryUserList = this.userDAO.getUserByRole(new Long(roleList.get(0).getRoleid()).intValue());
+			} else {
+				String roleid = String.valueOf(roleList.get(0).getRoleid());
+				roleid = "'" + roleid + "'";
+				deliveryUserList = this.userDAO.getUserByRole(roleid, branchid);
+			}
 		}
 		return deliveryUserList;
 	}

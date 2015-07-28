@@ -224,6 +224,10 @@ function deleteExceedSubsidyApply(){
 					if(data.isExist==1){
 						$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
 						$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+						if(!$("#"+form+" select[name='deliveryPerson']").val()){
+							alert("配送员为必填项!");
+							return false;
+						}
 						if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
 							$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
 							if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){

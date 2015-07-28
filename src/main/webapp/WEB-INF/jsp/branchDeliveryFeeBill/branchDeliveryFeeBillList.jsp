@@ -776,8 +776,9 @@ function deleteBranchDeliveryFeeBill(){
 							<table width="100%" border="0" cellspacing="1" cellpadding="0"
 								class="table_2" id="cwbOrderTable">
 								<tr>
-									<td height="30px" valign="middle"><input type="checkbox"
-										name="checkAll" onclick="checkAll('cwbOrderTable')" /></td>
+									<td height="30px" valign="middle">
+										<input type="checkbox" name="checkAll" onclick="javascript:checkAll('cwbOrderTable');" />
+									</td>
 									<td align="center" valign="middle" style="font-weight: bold;">
 										订单号</td>
 									<td align="center" valign="middle" style="font-weight: bold;">

@@ -79,6 +79,7 @@ public class ExceedSubsidyApplyController {
 		int masterAuthority = 0;
 		// 结算权限
 		int advanceAuthority = 0;
+		long branchid = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
@@ -92,11 +93,12 @@ public class ExceedSubsidyApplyController {
 				} else if("站长".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					masterAuthority = 1;
+					branchid = user.getBranchid();
 //					queryConditionVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
 				}
 			}
 		}
-		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList(branchid);
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApply(page, queryConditionVO);
 		int count = this.exceedSubsidyApplyDAO
@@ -134,6 +136,7 @@ public class ExceedSubsidyApplyController {
 		int deliveryAuthority = 0;
 		int masterAuthority = 0;
 		int advanceAuthority = 0;
+		long branchid = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
@@ -144,6 +147,7 @@ public class ExceedSubsidyApplyController {
 				} else if("站长".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					masterAuthority = 1;
+					branchid = user.getBranchid();
 				} else if("结算".equals(role.getRolename())){
 					advanceAuthority = 1;
 					applyVO.setIsAdvanceAuthority(advanceAuthority);
@@ -156,7 +160,7 @@ public class ExceedSubsidyApplyController {
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
 				.queryExceedSubsidyApply(1, applyVO);
 //		List<User> userList = this.userDAO.getAllUser();
-		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList(branchid);
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
 		
@@ -187,6 +191,7 @@ public class ExceedSubsidyApplyController {
 		int deliveryAuthority = 0;
 		int masterAuthority = 0;
 		int advanceAuthority = 0;
+		long branchid = 0;
 		if(user != null){
 			long roleid = user.getRoleid();
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
@@ -197,6 +202,7 @@ public class ExceedSubsidyApplyController {
 				} else if("站长".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					masterAuthority = 1;
+					branchid = user.getBranchid();
 				} else if("结算".equals(role.getRolename())){
 					advanceAuthority = 1;
 					applyVO.setIsAdvanceAuthority(advanceAuthority);
@@ -210,7 +216,7 @@ public class ExceedSubsidyApplyController {
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
 				.getExceedSubsidyApplyVO(id);
 //		List<User> userList = this.userDAO.getAllUser();
-		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList();
+		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList(branchid);
 		
 		if(exceedSubsidyApplyVO != null){
 			if(ExceedSubsidyApplyStateEnum.XinJian.getValue() == exceedSubsidyApplyVO.getApplyState()){
