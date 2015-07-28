@@ -789,6 +789,130 @@ public class PaiFeiRuleService {
 
 	}
 
+	public Map<String, BigDecimal> getPFTypefeeByTypeOfBatch(long pfruleid, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, List<CwbOrder> cwbOrders) {
+		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
+		if ((cwbOrders != null) && (pf != null)) {
+			List<PFbasic> pFbasics = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<PFcollection> pfcollections = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<Area> areas = this.areaDAO.getAllArea();
+			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<ExpressSetExceedSubsidyApply> subsidys = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyList();
+			List<PFoverbig> pFoverbigs = this.pFoverbigDAO.getAllPFoverbig();
+			List<PFoverweight> pFoverweights = this.pFoverweightDAO.getAllPfoverweight();
+			PFoverarea pFoverarea = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, tab.getValue());
+			PFbusiness pFbusiness = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<PFinsertion> pFinsertions = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, tab.getValue());
+			Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
+			if (type == PaiFeiBuZhuTypeEnum.Basic) {
+				for (CwbOrder co : cwbOrders) {
+					PFbasic baFbasic = this.getPFbasicByCustomerid(pFbasics, co.getCustomerid());
+					if (baFbasic != null) {// 获取基本补助
+						feeMap.put(co.getCwb(), baFbasic.getBasicPFfee());
+					}
+				}
+				return feeMap;
+			}
+			if (type == PaiFeiBuZhuTypeEnum.Collection) {
+				for (CwbOrder co : cwbOrders) {
+					PFcollection pFcollection = this.getPFcollectionByCustomerid(pfcollections, co.getCustomerid());
+					if (pFcollection != null) {// 获取代收补助
+						feeMap.put(co.getCwb(), pFcollection.getCollectionPFfee());
+					}
+				}
+				return feeMap;
+			}
+
+			// 获取区域补助
+			// 需要获取订单中的区域
+			if (type == PaiFeiBuZhuTypeEnum.Area) {
+				for (CwbOrder co : cwbOrders) {
+					Area area = null;
+					String cwbcity = co.getCity();
+					String cwbarea = co.getArea();
+
+					area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
+					long areaid = 0;
+					if (area != null) {
+						areaid = area.getId();
+					}
+					BigDecimal areafee = new BigDecimal("0");
+					PFarea pFarea = this.getPFareaByAreaid(pFareas, areaid);
+					if (pFarea != null) {
+						areafee.add(pFarea.getAreafee());
+						if (pFarea.getOverbigflag() == 1) {
+							ExpressSetExceedSubsidyApply subsidy = this.getExceedSubsidyApplyByCwb(subsidys, co.getCwb());
+							if (subsidy != null) {
+								BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+								if (overbigfee != null) {
+									areafee.add(overbigfee);
+								}
+							}
+
+						} else {
+							// 货物体积
+							long carsize = 0;
+							try {
+								carsize = Long.parseLong(co.getCarsize());
+							} catch (Exception e) {
+							}
+							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+							if (pFoverbig != null) {
+								areafee.add(pFoverbig.getSubsidyfee());
+							}
+						}
+						// 货物重量
+						BigDecimal carrealweight = co.getCarrealweight();
+						if (carrealweight == null) {
+							carrealweight = new BigDecimal("0");
+						}
+						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+						if (pFoverweight != null) {
+							areafee.add(pFoverweight.getSubsidyfee());
+						}
+					}
+					feeMap.put(co.getCwb(), areafee);
+				}
+				return feeMap;
+			}
+			if (type == PaiFeiBuZhuTypeEnum.Overarea) {
+				for (CwbOrder co : cwbOrders) {
+					if (pFoverarea != null) {
+						// 需要掉用申请表中的方法
+						ExpressSetExceedSubsidyApply subsidy = this.getExceedSubsidyApplyByCwb(subsidys, co.getCwb());
+						if (subsidy != null) {
+							BigDecimal overbigfee = subsidy.getExceedAreaSubsidyAmount();
+							if (overbigfee != null) {
+								feeMap.put(co.getCwb(), overbigfee);
+							}
+						}
+					}
+				}
+					return feeMap;
+				}
+				if (type == PaiFeiBuZhuTypeEnum.Business) {
+					for (CwbOrder co : cwbOrders) {
+						if (pFbusiness != null) {
+							feeMap.put(co.getCwb(), pFbusiness.getSubsidyfee());
+						}
+					}
+					return feeMap;
+				}
+				if (type == PaiFeiBuZhuTypeEnum.Insertion) {
+					for (CwbOrder co : cwbOrders) {
+						long count = co.getSendcarnum();
+						PFinsertion pFinsertion = this.getPFinsertionByCount(pFinsertions, count);
+						if (pFinsertion != null) {
+							feeMap.put(co.getCwb(), pFinsertion.getInsertionfee());
+						}
+
+					}
+					return feeMap;
+			}
+		}
+		return null;
+
+	}
+
 	// 货物超大补助
 	public BigDecimal getOverbigFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
