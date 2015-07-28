@@ -28,6 +28,9 @@ public class PaybusinessbenefitsDao {
 			paybusinessbenefits.setPaybusinessbenefits(rs.getString("paybusinessbenefits"));
 			paybusinessbenefits.setOthersubsidies(rs.getBigDecimal("othersubsidies"));
 			paybusinessbenefits.setRemark(rs.getString("remark"));
+			paybusinessbenefits.setKpifee(rs.getBigDecimal("kpifee"));
+			paybusinessbenefits.setLower(rs.getString("lower"));
+			paybusinessbenefits.setUpper(rs.getString("upper"));
 			return paybusinessbenefits;
 		}
 	}
@@ -43,6 +46,7 @@ public class PaybusinessbenefitsDao {
 		if (customerids.length()>0) {
 			sql+=" and customerid IN("+customerids+")";
 		}
+		sql+=" GROUP BY customerid";
 		if (page!=-9) {
 			sql+=" limit  "+(page-1)*rows+","+rows;
 		}
@@ -58,18 +62,21 @@ public class PaybusinessbenefitsDao {
 	 * @param paybusinessbenefits
 	 */
 	public void insertIntoPaybusinessbenefits(final Paybusinessbenefits paybusinessbenefits){
-		String sql="insert into express_ops_paybusiness_benefits (`customerid`,`paybusinessbenefits`,`othersubsidies`) values(?,?,?)";
+		String sql="insert into express_ops_paybusiness_benefits (`customerid`,`paybusinessbenefits`,`othersubsidies`,`lower`,`upper`,`kpifee`) values(?,?,?,?,?,?)";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setLong(1, paybusinessbenefits.getCustomerid());
 				ps.setString(2, paybusinessbenefits.getPaybusinessbenefits());
 				ps.setBigDecimal(3, paybusinessbenefits.getOthersubsidies());
+				ps.setString(4, paybusinessbenefits.getLower());
+				ps.setString(5, paybusinessbenefits.getUpper());
+				ps.setBigDecimal(6, paybusinessbenefits.getKpifee());
 			}
 		});
 	}
 	/**
-	 * deletebatch
+	 * deletebatch(id)
 	 * @param ids
 	 * @return
 	 */
@@ -127,4 +134,22 @@ public class PaybusinessbenefitsDao {
 		return this.jdbcTemplate.query(sql, new PaybusinessbenefitsRowMapper());
 	}
 	
+	
+	public int cutDatabyCustomerid(long customerid){
+		String sql="delete from express_ops_paybusiness_benefits where customerid=?";
+		try {
+			return this.jdbcTemplate.update(sql, customerid);
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
+	
+	public int cutDatabyCustomerids(String customerids){
+		String sql="delete from express_ops_paybusiness_benefits where customerid IN("+customerids+")";
+		try {
+			return this.jdbcTemplate.update(sql);
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
 }

@@ -26,7 +26,7 @@ $(function (){
               if (r) {
                   var ids = [];
                   for (var i = 0; i < rows.length; i++) {
-                      ids.push($(rows[i].id)[0]);
+                      ids.push($(rows[i].customerid)[0]);
                   }
                   //将选择到的行存入数组并用,分隔转换成字符串，
                   //本例只是前台操作没有与数据库进行交互所以此处只是弹出要传入后台的id

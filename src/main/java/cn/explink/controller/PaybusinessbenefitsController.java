@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +46,8 @@ public class PaybusinessbenefitsController {
 	
 	@RequestMapping("/cutData/{ids}")
 	@ResponseBody
-	public String cutData(@PathVariable("ids")String ids){
-		int num=paybusinessbenefitsDao.cutData(ids);
+	public String cutData(@PathVariable("ids")String customerids){
+		int num=paybusinessbenefitsDao.cutDatabyCustomerids(customerids);
 		return "{\"errorcode\":0,\"errormsg\":\"成功删除"+num+"单数据\"}";
 	}
 	
@@ -54,23 +55,45 @@ public class PaybusinessbenefitsController {
 	@ResponseBody
 	public String saveData(Paybusinessbenefits paybusinessbenefits
 			){
+			int count=0;
+			String eString="";
+			List<Paybusinessbenefits> paybusinessbenefitsList=paybusinessbenefitsService.updateAndAddPaybusinessbenefitsValue(paybusinessbenefits);
 			if (paybusinessbenefits.getRemark().equals("1")) {
-				int count=paybusinessbenefitsDao.updatePaybusinessbenfits(paybusinessbenefits);
-				if (count>0) {
+				//修改的时候先删除customerid的相关的设置
+				paybusinessbenefitsService.deleteUpdateinstall(paybusinessbenefits.getCustomerid());
+				for (Paybusinessbenefits paybusinessbenefits2 : paybusinessbenefitsList) {
+					try {
+						paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits2);
+						count++;
+					} catch (Exception e) {
+					}
+				}
+/*				int count=paybusinessbenefitsDao.updatePaybusinessbenfits(paybusinessbenefits);
+*/				if (count>0) {
 					return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 				}else {
 					return "{\"errorCode\":1,\"error\":\"修改出现异常\"}";
 				}
 			}else {
-				try {
+				
 					if (paybusinessbenefitsService.checkIsCreateByCustomerid(paybusinessbenefits.getCustomerid())) {
 						return "{\"errorCode\":2,\"error\":\"该供货商已经创建过工资业务补助设置，不能重复创建\"}";
 					}
-					paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits);
-					return "{\"errorCode\":0,\"error\":\"成功保存\"}";
-				} catch (Exception e) {
-					return "{\"errorCode\":1,\"error\":\"保存失败,失败原因为"+e+"\"}";
-				}
+					for (Paybusinessbenefits paybusinessbenefits2 : paybusinessbenefitsList) {
+						try {
+							paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits2);
+							count++;
+						} catch (Exception e) {
+							 eString=e.getMessage();
+						}
+					}
+/*					paybusinessbenefitsDao.insertIntoPaybusinessbenefits(paybusinessbenefits);
+*/					
+					if (count>0) {
+						return "{\"errorCode\":0,\"error\":\"成功保存\"}";
+					}else {
+						return "{\"errorCode\":1,\"error\":\"保存失败,失败原因为"+eString+"\"}";
+					}
 			}
 		
 	}
@@ -118,4 +141,6 @@ public class PaybusinessbenefitsController {
 		List<Customer> customersList=customerDAO.getAllCustomers();
 		return customersList;
 	}
+	
+	
 }
