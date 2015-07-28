@@ -841,8 +841,10 @@ function deleteBranchDeliveryFeeBill(){
 										<td align="center" valign="middle">${detail.attachSubsidyFee}</td>
 									</tr>
 								</c:forEach>
-							</table> <input type="button" class="input_button2"
-							onclick="deleteCwbOrder()" value="移除" />
+							</table>
+							<c:if test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
+								<input type="button" class="input_button2" onclick="deleteCwbOrder()" value="移除" />
+							</c:if>
 						</td>
 					</tr>
 				</table>
@@ -2764,6 +2766,7 @@ function deleteBranchDeliveryFeeBill(){
 	
 	<div class="jg_10"></div>
 	<div class="jg_10"></div>
+	<c:if test='${page_obj.maxpage>1}'>
 	<div class="iframe_bottom"> 
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tr>
@@ -2782,6 +2785,7 @@ function deleteBranchDeliveryFeeBill(){
 						</tr>
 		</table>
 	</div>
+	</c:if>
 	<div>
 		<form action="<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1" method="post" id="branchDeliveryFeeBillListForm">
 		</form>

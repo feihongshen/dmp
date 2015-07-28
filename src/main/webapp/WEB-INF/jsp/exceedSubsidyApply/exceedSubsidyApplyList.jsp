@@ -335,6 +335,11 @@ function deleteExceedSubsidyApply(){
 				</tr>
 			</table>
 		</div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
+		<div class="jg_10"></div>
 		<div class="right_title">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="listTable">
 					<tr>
@@ -1079,6 +1084,7 @@ function deleteExceedSubsidyApply(){
 
 <div class="jg_10"></div>
 <div class="jg_10"></div>
+<c:if test="${page_obj.maxpage>1}">
 <div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
@@ -1097,8 +1103,14 @@ function deleteExceedSubsidyApply(){
 		</tr>
 	</table>
 </div>
+</c:if>
 <div>
 	<form action="<%=request.getContextPath()%>/exceedSubsidyApply/exceedSubsidyApplyList/1" method="post" id="exceedSubsidyApplyListForm">
+		<input type="hidden" name="cwbOrder" value="${queryConditionVO.cwbOrder}" />
+		<input type="hidden" name="applyState" value="${queryConditionVO.applyState}" />
+		<input type="hidden" name="deliveryPersonName" value="${queryConditionVO.deliveryPersonName}" />
+		<input type="hidden" name="column" value="${queryConditionVO.column}" />
+		<input type="hidden" name="column" value="${queryConditionVO.columnOrder}" />
 	</form>
 </div>
 </body>

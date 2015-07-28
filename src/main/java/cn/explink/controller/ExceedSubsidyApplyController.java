@@ -128,10 +128,9 @@ public class ExceedSubsidyApplyController {
 	@RequestMapping("/addExceedSubsidyApply")
 	public String addExceedSubsidyApply(
 			ExpressSetExceedSubsidyApply exceedSubsidyApply, Model model) {
-		
 		int id = this.exceedSubsidyApplyService.createExceedSubsidyApply(exceedSubsidyApply);
 		
-		ExpressSetExceedSubsidyApplyVO applyVO = new ExpressSetExceedSubsidyApplyVO();
+		ExpressSetExceedSubsidyApplyVO queryConditionVO = new ExpressSetExceedSubsidyApplyVO();
 		User user = getSessionUser();
 		int deliveryAuthority = 0;
 		int masterAuthority = 0;
@@ -143,14 +142,14 @@ public class ExceedSubsidyApplyController {
 			if(role != null){
 				if("小件员".equals(role.getRolename())){
 					deliveryAuthority = 1;
-					applyVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
+					queryConditionVO.setDeliveryPerson(new Long(user.getUserid()).intValue());
 				} else if("站长".equals(role.getRolename())){
 					deliveryAuthority = 1;
 					masterAuthority = 1;
 					branchid = user.getBranchid();
 				} else if("结算".equals(role.getRolename())){
 					advanceAuthority = 1;
-					applyVO.setIsAdvanceAuthority(advanceAuthority);
+					queryConditionVO.setIsAdvanceAuthority(advanceAuthority);
 				}
 			}
 		}
@@ -158,7 +157,9 @@ public class ExceedSubsidyApplyController {
 		Map<Integer, String> applyStateMap = ExceedSubsidyApplyStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		List<ExpressSetExceedSubsidyApply> list = this.exceedSubsidyApplyDAO
-				.queryExceedSubsidyApply(1, applyVO);
+				.queryExceedSubsidyApply(1, queryConditionVO);
+		int count = this.exceedSubsidyApplyDAO
+				.queryExceedSubsidyApplyCount(queryConditionVO);
 //		List<User> userList = this.userDAO.getAllUser();
 		List<User> deliveryUserList = this.exceedSubsidyApplyService.getDeliveryUserList(branchid);
 		ExpressSetExceedSubsidyApplyVO exceedSubsidyApplyVO = this.exceedSubsidyApplyService
@@ -171,6 +172,10 @@ public class ExceedSubsidyApplyController {
 				model.addAttribute("weiShenHeStatePage", 1);
 			}
 		}
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("deliveryAuthority", deliveryAuthority);
 		model.addAttribute("masterAuthority", masterAuthority);
 		model.addAttribute("advanceAuthority", advanceAuthority);
