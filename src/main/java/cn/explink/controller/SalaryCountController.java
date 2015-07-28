@@ -226,7 +226,16 @@ public class SalaryCountController {
 	Map<String, Long> delete(@RequestParam(value = "ids",required = false,defaultValue = "") String ids) throws Exception {
 		long counts=0;
 		if((ids!=null)&&(ids.length()>0)){
-			counts=this.salaryCountDAO.deleteSalarCountyByids(ids);
+			String str = "";
+			String[] strArray = ids.split(",");
+			for(String st : strArray){
+				str += "'"+st+"',";
+			}
+			String strs = "";
+			if(str.length()>0){
+				strs = str.substring(0,str.length()-1);
+			}
+			counts=this.salaryCountDAO.deleteSalarCountyByids(strs);
 		}
 		Map<String, Long> map=new HashMap<String, Long>();
 		map.put("counts", counts);
@@ -242,17 +251,19 @@ public class SalaryCountController {
 	
 	@RequestMapping("/importData")
 	public String importData(Model model, final HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "Filedata", required = false) final MultipartFile file,
-			 @RequestParam(value = "salarydata", required = false,defaultValue="") String data
-			/* @RequestParam(value = "batchid", required = false,defaultValue="") String batchid,
-			 @RequestParam(value = "batchstate", required = false,defaultValue="") int batchstate,
-			 @RequestParam(value = "branchid", required = false,defaultValue="") long branchid,
+			 @RequestParam(value = "salarydata", required = false,defaultValue="") String data,
+			//@RequestParam(value = "salarycount", required = false) Object salarycount
+			 @RequestParam(value = "batchid", required = false,defaultValue="") String batchid,
+			 @RequestParam(value = "batchstate", required = false,defaultValue="0") int batchstate,
+			 @RequestParam(value = "branchnam", required = false,defaultValue="0") long branchid,
 			 @RequestParam(value = "starttime", required = false,defaultValue="") String starttime,
 			 @RequestParam(value = "endtime", required = false,defaultValue="") String endtime,
-			 @RequestParam(value = "remark", required = false,defaultValue="") String remark*/
+			 @RequestParam(value = "remark", required = false,defaultValue="") String remark
 			) throws Exception {
 		SalaryCount sc = new SalaryCount();
 		String[] strArray = data.split(","); 
-		if(!"".equals(data)&&strArray.length>0){
+		//if(!"".equals(data)&&strArray.length>0){
+		if(!"".equals(data)){
 			sc.setBatchid(strArray[0]);
 			sc.setBatchstate(Integer.parseInt(strArray[1]));
 			sc.setBranchid(Long.parseLong(strArray[2]));
@@ -260,13 +271,17 @@ public class SalaryCountController {
 			sc.setEndtime(strArray[4]);
 			sc.setRemark(strArray[5]);
 			sc.setBranchname(strArray[6]);
-		}/*else{
+		}else{
 			sc.setBatchid(batchid);
 			sc.setBatchstate(batchstate);
 			sc.setBranchid(branchid);
 			sc.setStarttime(starttime);
 			sc.setEndtime(endtime);
 			sc.setRemark(remark);
+		}
+		/*else{
+			long branchid = Long.parseLong(request.getParameter("branchid"));
+			//sc = (SalaryCount)salarycount;
 		}*/
 		
 		final ExcelExtractor excelExtractor = this.getExcelExtractor(file);

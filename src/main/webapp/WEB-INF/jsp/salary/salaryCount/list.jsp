@@ -188,7 +188,10 @@ function saveform(){
 	$('#save').dialog('close');
 }
 function submitform(){
-	alert("弹出来");
+	$("#batchid").removeAttr("disabled");
+	$("#batchid").attr("readonly","readonly");
+	$("#batchstate").removeAttr("disabled");
+	$("#batchstate").attr("readonly","readonly");
 	$("#importForm").submit();
 }
 </script>
@@ -376,6 +379,7 @@ function submitform(){
 									<!-- <input type="hidden" id="hiddenbatchid" name="hiddenbatchid" value="" />
 									<input type="hidden" id="hiddenbranchid" name="hiddenbranchid" value=""/> -->
 									<input type="hidden" id="salarydata" name="salarydata" />
+									<%-- <input type="hidden" id="salarycount" name="salarycount" value="${salarycount}" /> --%>
 									<%-- <input type="hidden" name="batchid" value="${salary.isnow!=-1?salary.batchid:salarycount.batchid}"></input>
 									<input type="hidden" name="batchstate" value="${salary.batchstate}"></input>
 									<input type="hidden" name="branchid" value="${salary.branchid"></input>
@@ -407,7 +411,7 @@ function submitform(){
 				</td>					
 			</tr>
 			
-		</form>
+		<!-- </form> -->
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 10%;">
          			批次编号：
@@ -428,7 +432,7 @@ function submitform(){
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
          		<td nowrap="nowrap" style="width: 20%;">
-         	 	<select id="branchname" name="branchid" style="width: 100%" <!-- disabled="disabled" -->>
+         	 	<select id="branchname" name="branchnam" style="width: 100%" >
 	         		 <option value="-1"></option>
 	         		 <c:forEach items="${branchList}" var="branch">
 	         		 	<option value="${branch.branchid}" ${salary.isnow!=-1?(salary.branchid==branch.branchid?'selected=selected':''):(salarycount.branchid==branch.branchid?'selected=selected':'') }>${branch.branchname }</option>
@@ -459,6 +463,7 @@ function submitform(){
 			    	<textarea rows="3"  id="remark" name="remark" style="width: 100%;resize: none;">${salary.isnow!=-1?(salary.remark):(salarycount.remark)}</textarea>
 		        </td>
          	</tr>
+         </form>	
          	<tr>
          		<div class="right_title">
 				<div style="overflow: auto;">

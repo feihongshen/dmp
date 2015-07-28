@@ -165,9 +165,13 @@ public class SalaryCountDAO {
 	 * @param ids
 	 * @return
 	 */
-	public long deleteSalarCountyByids(String ids) {
+	/*public long deleteSalarCountyByids(String ids) {
 		String sql="delete from express_ops_salaryCount_detail where batchid in(?) and batchstate=? ";
 		return this.jdbcTemplate.update(sql,ids,BatchSateEnum.Weihexiao.getValue());
+	}*/
+	public long deleteSalarCountyByids(String ids) {
+		String sql="delete from express_ops_salaryCount_detail where batchid in("+ids+") and batchstate=?";
+		return this.jdbcTemplate.update(sql,BatchSateEnum.Weihexiao.getValue());
 	}
 	public void updatesalaryCount(SalaryCount salaryCount) {
 		String sql = "update express_ops_salaryCount_detail set remark=? where batchid=?";
