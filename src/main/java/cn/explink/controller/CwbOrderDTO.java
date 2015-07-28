@@ -167,6 +167,17 @@ public class CwbOrderDTO {
 	public void setCargovolume(BigDecimal cargovolume) {
 		this.cargovolume = cargovolume;
 	}
+	
+	public void setCargovolume(String cargovolume) {
+		try {
+			if ((cargovolume == null) || (cargovolume.length() == 0)) {
+				cargovolume = "0";
+			}
+			this.cargovolume = new BigDecimal(cargovolume);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("真实体积不是有效的數字格式:" + cargovolume);
+		}
+	}
 
 	public String getConsignoraddress() {
 		return this.consignoraddress;
