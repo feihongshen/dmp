@@ -820,13 +820,13 @@ public class ApplyEditDeliverystateController {
 						aeds.setDeliverpodtime(ds.getDeliverytime());//反馈时间
 						applyEditDeliverystateDAO.creApplyEditDeliverystate(aeds);
 					}
-				} else {
+				} /*else {
 					if (deliverystate.getPayupid() > 0) {
 						errorCwbs.append(cwbStr + ":已上交款不能申请修改反馈状态！");
 					} else {
 						errorCwbs.append(cwbStr + ":状态已推送给电商不能申请修改反馈状态！");
 					}
-				}
+				}*/
 			}
 			String cwbs1 = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "'--'";
 			count = cwbDAO.getCwbOrderCwbsCount(cwbs1);
