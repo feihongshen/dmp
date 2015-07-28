@@ -205,14 +205,21 @@ public class CustomerBillContractController {
 				BigDecimal distributionMoney=new BigDecimal("0"); //配送费
 				BigDecimal transferMoney=new BigDecimal("0");	//中转费
 				BigDecimal refuseMoney=new BigDecimal("0");  //拒收派费
+				BigDecimal totalCharge=new BigDecimal("0"); //派费总计	
+				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
+				
+
+			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
+			Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, col);
+			Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, col);
 			if(col!=null){
 				StringBuilder sb = new StringBuilder();
 				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
 				for(CwbOrder str:col){					
-					distributionMoney=distributionMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
-					deliveryMoney=deliveryMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
-					transferMoney=transferMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
-					refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customerid)==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
+					distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
+					deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
+					transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
+					refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customerid)==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
 					sb.append(str.getCwb()+",");
 					
 					//--------------------------
@@ -236,9 +243,9 @@ public class CustomerBillContractController {
 				
 					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单
 				}
+				
+				
 				String cwbsOfOneBill=sb.substring(0,sb.length()-1);
-				BigDecimal totalCharge=new BigDecimal("0"); //派费总计	
-				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
 				
 				
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
