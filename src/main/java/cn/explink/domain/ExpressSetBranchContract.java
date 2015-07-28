@@ -13,6 +13,7 @@ public class ExpressSetBranchContract {
 	private int contractState;
 	private String contractBeginDate;
 	private String contractEndDate;
+	private int branchId;
 	private String branchName;
 	private String siteChief;
 	private String chiefIdentity;
@@ -233,6 +234,14 @@ public class ExpressSetBranchContract {
 
 	public void setQualityControlClause(String qualityControlClause) {
 		this.qualityControlClause = qualityControlClause;
+	}
+
+	public int getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
 	}
 
 }

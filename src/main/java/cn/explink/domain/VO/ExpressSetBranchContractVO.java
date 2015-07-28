@@ -13,6 +13,7 @@ public class ExpressSetBranchContractVO {
 	private String contractEndDate;
 	private String contractEndDateFrom;
 	private String contractEndDateTo;
+	private int branchId;
 	private String branchName;
 	private String siteChief;
 	private String chiefIdentity;
@@ -33,6 +34,8 @@ public class ExpressSetBranchContractVO {
 	private String contractColumn;
 	private String contractColumnOrder;
 	private String qualityControlClause;
+	private String branchname;
+	private String branchaddress;
 
 	public ExpressSetBranchContractVO() {
 
@@ -45,8 +48,8 @@ public class ExpressSetBranchContractVO {
 			String depositCollectDate, BigDecimal depositCollectAmount,
 			String depositCollector, String depositPayor,
 			String contractDescription, String contractAttachment,
-			String qualityControlClause, int creator,
-			String createTime, int modifyPerson, String modifyTime,
+			String qualityControlClause, int creator, String createTime,
+			int modifyPerson, String modifyTime,
 			List<ExpressSetBranchContractDetailVO> branchContractDetailVOList) {
 		super();
 		this.id = id;
@@ -304,6 +307,30 @@ public class ExpressSetBranchContractVO {
 
 	public void setQualityControlClause(String qualityControlClause) {
 		this.qualityControlClause = qualityControlClause;
+	}
+
+	public int getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
+
+	public String getBranchname() {
+		return branchname;
+	}
+
+	public void setBranchname(String branchname) {
+		this.branchname = branchname;
+	}
+
+	public String getBranchaddress() {
+		return branchaddress;
+	}
+
+	public void setBranchaddress(String branchaddress) {
+		this.branchaddress = branchaddress;
 	}
 
 }

@@ -152,7 +152,15 @@ function addContract() {
 			'					</tr>'+
 			'					<tr>'+
 			'						<th align="left"><font color="red">*</font>加盟商名称</th>'+
-			'						<td><input type="text" name="branchName" value="" id="branchName" maxlength="50"/></td>'+
+			'						<td>'+
+			'							<select name="branchId">'+
+			'									<option value=""></option>'+
+			'								<c:forEach var="list" items="${branchList}">'+
+			'									<option value="${list.branchid}">${list.branchname}</option>'+
+			'								</c:forEach>'+
+			'				         	</select>'+
+			'							<input type="hidden" name="branchName" value=""/>'+
+			'		           		</td>'+
 			'						<th align="left"><font color="red">*</font>站点负责人</th>'+
 			'						<td><input type="text" name="siteChief" value="" id="siteChief" maxlength="20"/></td>'+
 			'						<th align="left"><font color="red">*</font>负责人身份证</th>'+
@@ -517,10 +525,11 @@ function addContractForm(form){
 		alert("合同状态为必填项!");
 		return false;
 	}
-	if(!$("#branchName").val()){
+	if(!$("#addcallerForm select[name='branchId']").val()){
 		alert("加盟商名称为必填项!");
 		return false;
 	}
+	$("#addcallerForm input[name='branchName']").val($("#addcallerForm select[name='branchId']").find("option:selected").text());
 	if(!$("#siteChief").val()){
 		alert("站点负责人为必填项!");
 		return false;

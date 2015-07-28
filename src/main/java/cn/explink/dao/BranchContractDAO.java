@@ -35,6 +35,7 @@ public class BranchContractDAO {
 					.getString("contractBeginDate"));
 			branchContract.setContractEndDate(rs
 					.getString("contractEndDate"));
+			branchContract.setBranchId(rs.getInt("branchId"));
 			branchContract.setBranchName(rs.getString("branchName"));
 			branchContract.setSiteChief(rs.getString("siteChief"));
 			branchContract.setChiefIdentity(rs.getString("chiefIdentity"));
@@ -74,10 +75,10 @@ public class BranchContractDAO {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement(
 						"insert into express_set_branch_contract("
-								+ "contractNo,contractState,contractBeginDate,contractEndDate,branchName,"
+								+ "contractNo,contractState,contractBeginDate,contractEndDate,branchId,branchName,"
 								+ "siteChief,chiefIdentity,areaManager,isDeposit,depositCollectDate,"
 								+ "depositCollectAmount,depositCollector,depositPayor,contractDescription,"
-								+ "contractAttachment,qualityControlClause,creator,createTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								+ "contractAttachment,qualityControlClause,creator,createTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 						new String[] { "id" });
 				int i = 1;
 
@@ -85,6 +86,7 @@ public class BranchContractDAO {
 				ps.setInt(i++, branchContract.getContractState());
 				ps.setString(i++, branchContract.getContractBeginDate());
 				ps.setString(i++, branchContract.getContractEndDate());
+				ps.setInt(i++, branchContract.getBranchId());
 				ps.setString(i++, branchContract.getBranchName());
 				ps.setString(i++, branchContract.getSiteChief());
 				ps.setString(i++, branchContract.getChiefIdentity());

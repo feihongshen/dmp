@@ -112,11 +112,13 @@ public class BranchContractController {
 		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(page, branchContractVO);
 		int count = this.branchContractDAO.queryBranchContractCount(branchContractVO);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		List<Branch> branchList = this.branchDAO.getBranchEffectAllzhandian(String.valueOf(BranchEnum.ZhanDian.getValue()));
 		
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("branchContractList",list);
 		model.addAttribute("branchContractVO",branchContractVO);
+		model.addAttribute("branchList",branchList);
 		return "branchContract/branchContractList";
 	}
 
