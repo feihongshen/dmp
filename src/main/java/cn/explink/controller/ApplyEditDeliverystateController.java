@@ -930,16 +930,16 @@ public class ApplyEditDeliverystateController {
 			// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 			ApplyEditDeliverystate applyEditDeliverystate = applyEditDeliverystateDAO.getApplyEditDeliverystateById(id);
 			DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(applyEditDeliverystate.getCwb());
-			if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
+			if (deliverystate != null ) {
 				applyEditDeliverystateDAO.saveApplyEditDeliverystateById(id,editnowdeliverystate,reasonid, editreason);
 				return "{\"errorCode\":0,\"error\":\"提交成功\"}";
 			} else {
-				if (deliverystate == null || deliverystate.getPayupid() > 0) {
+				/*if (deliverystate == null || deliverystate.getPayupid() > 0) {
 					return "{\"errorCode\":1,\"error\":\"提交失败,此单已经上交款，不能再申请修改状态\"}";
 				} else if (deliverystate == null || deliverystate.getIssendcustomer() > 0) {
 					return "{\"errorCode\":1,\"error\":\"提交失败,此单状态已推送给电商，不能再申请修改状态\"}";
-				}
-				return "{\"errorCode\":1,\"error\":\"提交失败\"}";
+				}*/
+				return "{\"errorCode\":1,\"error\":\"提交失败，没有做反馈的订单不能申请修改\"}";
 			}
 		} catch (Exception e) {
 
