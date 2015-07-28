@@ -28,7 +28,6 @@ import cn.explink.domain.DeliveryState;
 import cn.explink.domain.ImportBillExcel;
 import cn.explink.domain.VO.CustomerBillContractFindConditionVO;
 import cn.explink.domain.VO.CustomerBillContractVO;
-import cn.explink.exception.BadExcelException;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -173,7 +172,6 @@ public class CustomerBillContractService {
 	 */
 	
 	public String getBillBatches(){  
-/*		long initNum=00000;*/
 		 Random random = new Random();  		  
 	     int rannum = (int) (random.nextDouble() * (99999 - 10000 + 1)) + 10000;
 		String initbillBatches="B"+DateTimeUtil.getCurrentDate()+rannum;	
@@ -217,11 +215,6 @@ public class CustomerBillContractService {
 		// TODO Auto-generated method stub
 		customerbillCcontractdao.EditBill(cbv);
 	}
-
-	/*public List<CustomerBillContract> getAllcustomerbillcontract() {
-		List<CustomerBillContract> cbclist=customerbillCcontractdao.dateAllbillBatche();
-		return cbclist;
-	}*/
 
 	public CustomerBillContract findCustomerBillContractById(long id) {
 		// TODO Auto-generated method stub
@@ -278,10 +271,7 @@ public class CustomerBillContractService {
 
 	public List<ImportBillExcel> getUploadExcel(InputStream fis) throws Exception {
 	
-			HSSFWorkbook xwb = null;
-			
-				xwb = new HSSFWorkbook(fis);
-			
+			HSSFWorkbook xwb = new HSSFWorkbook(fis);			
 			boolean a=true;
 			HSSFSheet sheet = xwb.getSheetAt(0);
 			HSSFRow pdrows = sheet.getRow(0);
@@ -294,10 +284,14 @@ public class CustomerBillContractService {
 				}
 			
 			}else{
-				a=false;
+				
+					a=false;
+				
 			}
 			if(a==true){
+				
 			List<ImportBillExcel> rows = new ArrayList<ImportBillExcel>();
+			
 			for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){
 				
 					HSSFRow row = sheet.getRow(rowNum); // 从第二行开始，取出每一行

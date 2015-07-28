@@ -373,22 +373,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  			 	}  			 
 	  		 });
 	  	 } 
-	  		
-/* 	  		 
-	  		$.messager.confirm('提示','你确定要删除这个帐单吗?',function(r){
-				if (r){
-					$.post('${pageContext.request.contextPath}/CustomerBillContract/panDuanDateShiFouChongDie',{crestart:$('#dstart').datebox("getValue"),creend:$('#dend').datebox("getValue"),customerid:$('#crecustomerId').val()},function(result){
-						if (result.success==0){
-							$.messager.show({	// show success message
-								title: '删除成功',
-								msg: result.successdata
-							});// reload the data
-						} 
-					},'json');
-				}
-			});
-	  	 }
-	  	 */
+
 	  	function saveBill(){	  	
 	  		$.messager.show({
 	  			title:'温馨提示',
@@ -531,32 +516,6 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				
 				} 
 
-/* 	 	
-	 	 function checkState(){
-				if($('#hv1').val()==1){
-					
-					 $("#quxiaoshenhe").hide();
-					 $("#hexiaowancheng").hide();
-					 $("#quxiaohexiao").hide();
-					 $('#kehudingdandaoru').hide();
-					 $('#xianshichayibaogao').hide();
-
-				}else if($('#hv1').val()==2){
-					
-					 $("#baocun").hide();
-					 $("#shenhe").hide();
-					 $("#quxiaohexiao").hide();
-				}else if($('#hv1').val()==3){
-					 $("#quxiaoshenhe").hide();
-					 $("#hexiaowancheng").hide();
-					 $('#kehudingdandaoru').hide();
-					 $('#xianshichayibaogao').hide();
-					 $("#baocun").hide();
-					 $("#shenhe").hide();
-
-				}
-		  }	  */
-	
 	 	function findCustomerBillContractByBatches(){
 	 		$('#fm2').form('submit', {
 				url:'${pageContext.request.contextPath}/CustomerBillContract/findCustomerBillContractVOByBillBatches',
@@ -824,12 +783,12 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
       	  			 $.messager.alert('提示','您的Excel文件版本过高！','info');   
       	  				return false;    	  				
       	  			}else{
-      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
-   	  				return false;  
-      	  			$('#uploadExcel').val(''); 
-      	  			$('#dga').datagrid('reload');
+	      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
+	   	  				return false;  
+	      	  			$('#uploadExcel').val(''); 
+	      	  			$('#dga').datagrid('reload');
       	  			}
-      	  			},
+      	  	},
       	  			success: function(data){
       	  				var data = eval('('+data+')');
       	  				if (data.success==0){
@@ -857,15 +816,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
           	  				}  
       	  			}
       	  		});
-                 /*  //对文件格式进行校验  
-                  var d1=/\.[^\.]+$/.exec(fileName);   
-                  if(d1==".xls"||d1==".xlsx"){                   
-                       $('#questionTypesManage').submit();     
-                       $.messager.alert('提示','操作成功！','info');          
-                 }else{  
-                     $.messager.alert('提示','请选择xls格式文件！','info');   
-                     $('#uploadExcel').val("");
-                 }  */
+                 
               }    
          
 	 }

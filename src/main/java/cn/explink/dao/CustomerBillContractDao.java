@@ -467,7 +467,13 @@ public class CustomerBillContractDao {
 		public List<ImportBillExcel> queryImportBillExcel(String cwbs,String batches){
 			String sql="select * from importbillexcel where cwb in("+cwbs+") and bill_batches='"+batches+"'";
 			
-			List<ImportBillExcel> l = this.jdbcTemplate.query(sql, new BillloadExcelmapper());
+			List<ImportBillExcel> l;
+			try {
+				l = this.jdbcTemplate.query(sql, new BillloadExcelmapper());
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
 			
 			return l;
 		}

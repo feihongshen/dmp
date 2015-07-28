@@ -1,6 +1,5 @@
 package cn.explink.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -477,7 +476,7 @@ public class CustomerBillContractController {
 					sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
 							.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
 							.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
-							.add(pfra.getPaiFeiRuleById(customerid)==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
+							.add(pfra.getPaiFeiRuleById(customerid)==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee())
 							);
 						
 					svlist.add(sv);
@@ -658,58 +657,7 @@ public class CustomerBillContractController {
 		return b;
 	}	
 		
-/*		
-		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
-		StringBuilder sb = new StringBuilder();   //导入的多
-		StringBuilder sb1 = new StringBuilder();  //系统的多
-		String ccwbs="";
-		String cwbs[]=cc.getCwbs().split(",");
-		List<CwbOrder> c = new ArrayList<CwbOrder>();
-		for(String s:cwbs){
-			CwbOrder cb = new CwbOrder();
-			cb.setCwb(s);
-			c.add(cb);
-		}
-		String cwbs1=customerbillcontractservice.listImportBillExcelToString(lbe);
-		if(cwbs!=null&&!cwbs.equals("")){
-			if(cc.getCorrespondingCwbNum()<lbe.size())
-				for(ImportBillExcel i:lbe){
-						if(!cc.getCwbs().contains(i.getCwb())){
-								sb.append(i.getCwb()+",");
-						}
-				}
-			
-			}else if(cc.getCorrespondingCwbNum()>lbe.size()){
-				for(CwbOrder cwborder:c){
-					if(!cwbs1.contains(cwborder.getCwb())){
-							sb1.append(cwborder.getCwb()+",");
-					}
-				}	
-			}
-		
-		if(sb.toString()==null&&sb.toString().equals("")){
-			ccwbs="导入多余订单"+sb1.toString();
-		}else if(sb1.toString()==null&&sb1.toString().equals("")){
-			ccwbs="DMP多余订单"+sb.toString();
-		}*/
 
-	/*for(String s:cwbs){
-		SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-		sv.setCwb(s);
-		sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbordertypeid()));
-		sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbstate()).getText());
-		sv.setDeliveryMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s));
-		sv.setDistributionMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s));
-		sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(s).getPaywayid())); //强转支付方式
-		sv.setTransferMoney(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s));
-		sv.setRefuseMoney(new BigDecimal("0"));
-		sv.setTotalCharge(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Tihuo, s)
-				.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Paisong, s)
-				.add(paifeiruleservice.getPFRulefee(customerdao.getCustomerById(cc.getCustomerId()).getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, s)))
-				.add(new BigDecimal("0"))
-				);
-		ls.add(sv);
-	}*/
 	@RequestMapping("/CountChaYi")
 	@ResponseBody
 	public List<SerachCustomerBillContractVO> CountChaYi(HttpServletRequest req){
@@ -866,7 +814,7 @@ public class CustomerBillContractController {
 				Date d3 = df.parse(creend);
 				
 				
-				if((d2.getTime()>d.getTime()&&d2.getTime()<d1.getTime())||(d3.getTime()>d.getTime()&&d3.getTime()<d1.getTime())){
+				if((d2.getTime()>=d.getTime()&&d2.getTime()<=d1.getTime())||(d3.getTime()>=d.getTime()&&d3.getTime()<=d1.getTime())){
 					sb.append(c.getDateRange()+",");   //通过比较是否在账单范围内判断账单创建是否重复
 				}
 				
