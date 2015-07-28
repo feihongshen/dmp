@@ -108,6 +108,15 @@ public class PFcollectionDAO {
 			return null;
 		}
 	}
+	public PFcollection getPFcollectionByRTC(long pfruleid,  int tabid, long customerid) {
+		String sql = "select * from paifeirule_collection where pfruleid=?  and tabid=? and customerid=?";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFcollectionRowMapper(), pfruleid,  tabid, customerid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	public int updatePFcollection(final PFcollection pfb) {
 		String sql = "update `paifeirule_collection` set `customerid`=?, `collectionPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? ,`showflag`=? where id=?";
 		return this.jdbcTemplate.update(sql, new PreparedStatementSetter() {

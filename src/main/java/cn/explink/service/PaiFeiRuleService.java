@@ -369,11 +369,11 @@ public class PaiFeiRuleService {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((co != null) && (pf != null)) {
-			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
+			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid,  tab.getValue(), co.getCustomerid());
 			if (baFbasic != null) {// 获取基本补助
 				fee.add(baFbasic.getBasicPFfee());
 			}
-			PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
+			PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, tab.getValue(), co.getCustomerid());
 			if (pFcollection != null) {// 获取代收补助
 				fee.add(pFcollection.getCollectionPFfee());
 			}
@@ -468,13 +468,13 @@ public class PaiFeiRuleService {
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((co != null) && (pf != null)) {
 			if (type == PaiFeiBuZhuTypeEnum.Basic) {
-				PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
+				PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, tab.getValue(), co.getCustomerid());
 				if (baFbasic != null) {// 获取基本补助
 					return baFbasic.getBasicPFfee();
 				}
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Collection) {
-				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, PaiFeiRuleTypeEnum.Customer.getValue(), tab.getValue(), co.getCustomerid());
+				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid,  tab.getValue(), co.getCustomerid());
 				if (pFcollection != null) {// 获取代收补助
 					return pFcollection.getCollectionPFfee();
 				}

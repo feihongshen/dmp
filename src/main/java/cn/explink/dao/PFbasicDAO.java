@@ -115,6 +115,15 @@ public class PFbasicDAO {
 			return null;
 		}
 	}
+	public PFbasic getPFbasicByRTC(long pfruleid,  int tabid, long customerid) {
+		String sql = "select * from paifeirule_basic where pfruleid=?  and tabid=? and customerid=?";
+
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new PFbasicRowMapper(), pfruleid, tabid, customerid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public int updatePFbasic(final PFbasic pfb) {
 		String sql = "update `paifeirule_basic` set `customerid`=?, `basicPFfee`=?, `remark`=?, `typeid`=?, `pfruleid`=?,`tabid`=? ,`showflag`=? where id=?";
