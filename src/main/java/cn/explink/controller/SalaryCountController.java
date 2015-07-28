@@ -4,6 +4,7 @@
 package cn.explink.controller;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import scala.Array;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.SalaryCountDAO;
@@ -107,7 +109,6 @@ public class SalaryCountController {
 				if(b.getBranchname().contains(branchname)){
 					branchids+=b.getBranchid()+",";
 				}
-				
 			}
 		}
 		if(branchids.contains(",")){
@@ -242,11 +243,59 @@ public class SalaryCountController {
 		return map;
 	}
 	
-	@RequestMapping("/save")
+	@RequestMapping("/hexiao")
 	public @ResponseBody
-	String save(@RequestParam(value = "ids",required = false,defaultValue = "") String ids){
-		
-		return "";
+	String heXiao(@RequestParam(value = "ids",required = false,defaultValue = "") String ids){
+		try{
+			long counts = 0;
+			if(!"".equals(ids)){
+				//更改批次为已核销状态(批量)
+				//返回修改成功的单量
+				counts = this.salaryCountDAO.updateSalaryState(ids);
+				//对user表维护字段进行修改（后期预付款字段later...）
+				String userrealnames = "";
+				Map<String, BigDecimal> map = new HashMap<String, BigDecimal>();
+				List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(ids);
+				if(sgList!=null&&!sgList.isEmpty()){
+					for(SalaryGather sg : sgList){
+						userrealnames += "'"+sg.getRealname()+"',";
+						map.put(sg.getRealname(), sg.getImprestgoods());
+					}
+				}
+				List<String> strList = new ArrayList<String>();
+				if(!map.isEmpty()&&map.size()>0){
+					Set<String> ssList =  map.keySet();
+					Iterator oter = ssList.iterator();
+					while(oter.hasNext()){
+						String str = (String)(oter.next());
+						strList.add(str);
+					}
+				}
+				String usernames = "";
+				if(userrealnames.length()>0){
+					usernames = usernames.substring(0,userrealnames.length()-1);
+				}
+				List<User> userList = new ArrayList<User>();
+				if(usernames.length()>0){
+					userList = this.userDAO.getUsersByrealnames(usernames);
+				}
+				if(strList!=null&&!strList.isEmpty()&&userList!=null&&!userList.isEmpty()){
+					for(String str : strList){
+						for(User user : userList){
+							if(str==user.getRealname()  ){
+								BigDecimal bdec = map.get(str);
+								//修改此时配送员的当前(后期预付款)
+								this.userDAO.updatelateradvanceByreamlname(str,user.getLateradvance().add(bdec));
+							}
+						}
+					}
+				}
+			}
+			return "{\"errorCode\":0,\"error\":"+counts+"\"}";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{\"errorCode\":1,\"error\":\"核销系统异常！\"}";
+		}
 	}
 	
 	@RequestMapping("/importData")

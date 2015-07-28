@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import cn.explink.domain.SalaryGather;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -194,5 +195,10 @@ public class SalaryGatherDao {
 	public List<SalaryGather> getSalaryGathers(String batchid) {
 		String sql = "select * from express_ops_salarygather_detail where batchid=? order by id desc limit 1";
 		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
+	}
+
+	public List<SalaryGather> getSalaryGathersByids(String ids) {
+		String sql = "select * from express_ops_salarygather_detail where id in("+ids+")";
+		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper());
 	}
 }

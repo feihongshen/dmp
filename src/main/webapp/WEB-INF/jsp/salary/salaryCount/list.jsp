@@ -183,8 +183,9 @@ function checkit(){
 }
 
 function saveform(){
-	$("#saveform").attr('action','<%=request.getContextPath()%>/salaryCount/credata');
-	$("#saveform").submit();
+	<%-- $("#saveform").attr('action','<%=request.getContextPath()%>/salaryCount/credata');
+	$("#saveform").submit(); --%>
+	alert("保存完成!");
 	$('#save').dialog('close');
 }
 function submitform(){
@@ -194,6 +195,38 @@ function submitform(){
 	$("#batchstate").attr("readonly","readonly");
 	$("#importForm").submit();
 }
+
+function hexiao(){
+	var actionvar = $("#saveform").attr("action");
+	var ids = "";
+	$('input[type="checkbox"][name="checkname"]').each(
+		function(){
+			if($(this).attr("checked")=="checked"){
+				ids += $(this).val(); 	
+			}
+		}		
+	);
+	if(ids.length==0){
+		alert("请选择需要核销的信息!");
+	}else{
+		ids = ids.substring(0,ids.length-1);
+		$.ajax({
+		   type: "POST",
+		   url: actionvar,
+		   data: "ids="+ids,
+		   dataType : "json",
+		   success: function(data){
+		     if(data.errorCode==0){
+		    	 alert(data.error);
+		     }else{
+		    	 alert(data.error);
+		     }
+		   }
+		});
+		window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
+	}
+}
+
 </script>
 </head>
 
@@ -201,14 +234,14 @@ function submitform(){
 <div class="right_box">
 	<div class="inputselect_box">
 		<table style="width: 60%">
-			    <tr>
-				    <td>
-					    <input class="input_button2" type="button" onclick="$('#add').dialog('open');" value="新增"/>
-					    <input class="input_button2" type="button" onclick="seeoralter();" value="查看/修改"/>
-					    <input class="input_button2" type="button" onclick="allchecked()"  value="删除"/>
-					    <input class="input_button2" type="button" onclick="$('#find').dialog('open');" value="查询"/>
-				    </td>
-			    </tr>
+		    <tr>
+			    <td>
+				    <input class="input_button2" type="button" onclick="$('#add').dialog('open');" value="新增"/>
+				    <input class="input_button2" type="button" onclick="seeoralter();" value="查看/修改"/>
+				    <input class="input_button2" type="button" onclick="allchecked()"  value="删除"/>
+				    <input class="input_button2" type="button" onclick="$('#find').dialog('open');" value="查询"/>
+			    </td>
+		    </tr>
 		 </table>
 	</div>
 
@@ -355,13 +388,13 @@ function submitform(){
 <%-- <c:if test="${edit==1 }"> --%>
 	<div  id="save" hidden="hidden" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true" style="width:800px;height:220px;">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
-		<form action="${ctx}/salaryCount/save" method="post" id="saveform">
+		<form action="${ctx}/salaryCount/hexiao" method="post" id="saveform">
         	<tr>
 	         	<td colspan="5"  align="left" valign="bottom">
 		         	<input type="button" class="input_button2" value="返回" onclick="$('#save').dialog('close');"/>
 		         	<input type="button" class="input_button2" value="保存" onclick="saveform();"/>
 		         	<!-- <input type="hidden" name="isnow" value="1" /> -->
-		         	<input type="submit" class="input_button2" value="核销完成"/>
+		         	<input type="button" class="input_button2" value="核销完成" onclick="hexiao();" />
 	         	</td>
 	         	<td>
 	         		<input type="button"  style="width:110px;" class="input_button2" id="imp"  onclick="showUp()" value="人事数据导入"/>
@@ -469,7 +502,7 @@ function submitform(){
 				<div style="overflow: auto;">
 			<table width="700%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				<tr>
-					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="all" onclick="checkit()"/> </td>
+					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="all"  onclick="checkit()"/> </td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 100px;"> 站点</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 50px;"> 姓名</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 120px;"> 身份证号</td>
@@ -525,7 +558,7 @@ function submitform(){
 				
 				<c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
-						<td align="center" valign="middle"><input type="checkbox" id="id" value="${salary.id}"/></td>
+						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.id}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
 						<td align="center" valign="middle">${salary.realname}</td>
 						<td align="center" valign="middle">${salary.idcard}</td>

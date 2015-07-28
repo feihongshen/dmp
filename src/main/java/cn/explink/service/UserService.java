@@ -86,15 +86,15 @@ public class UserService {
 		user.setUserid((request.getParameter("userid") == null) || request.getParameter("userid").equals("") ? 0L : (Long.parseLong(request.getParameter("userid"))));
 		user.setUsername(StringUtil.nullConvertToEmptyString(request.getParameter("username")));
 		user.setRealname(StringUtil.nullConvertToEmptyString(request.getParameter("realname")));
-		user.setSex(Integer.parseInt(request.getParameter("sex")==null?"0":request.getParameter("sex")));//性别
-		user.setStartworkdate(StringUtil.nullConvertToEmptyString(request.getParameter("startworkdate")));//入职时间
-		user.setJobnum(StringUtil.nullConvertToEmptyString(request.getParameter("jobnum")));//工号
-		user.setJiesuanstate(Integer.parseInt(request.getParameter("jiesuanstate")==null?"0":request.getParameter("jiesuanstate")));//结算状态
-		user.setMaxcutpayment(new BigDecimal(request.getParameter("maxcutpayment")==null?"0.00":request.getParameter("maxcutpayment")));//最高扣款额度
-		user.setFixedadvance(new BigDecimal(request.getParameter("fixedadvance")==null?"0.00":request.getParameter("fixedadvance")));//固定预付款
-		user.setBasicadvance(new BigDecimal(request.getParameter("basicadvance")==null?"0.00":request.getParameter("basicadvance")));//基础预付款
-		user.setFallbacknum(Long.parseLong(request.getParameter("fallbacknum")==null?"0":request.getParameter("fallbacknum")));//保底单量
-		user.setLateradvance(new BigDecimal(request.getParameter("lateradvance")==null?"0.00":request.getParameter("lateradvance")));//后期补入预付款（结算中获取）
+		user.setSex(Integer.parseInt((request.getParameter("sex")==null||request.getParameter("lateradvance")=="")?"0":request.getParameter("sex")));//性别
+		user.setStartworkdate(StringUtil.nullConvertToEmptyString(request.getParameter("startworkdate")==""?null:request.getParameter("startworkdate")));//入职时间
+		user.setJobnum(StringUtil.nullConvertToEmptyString(request.getParameter("jobnum")==""?null:request.getParameter("jobnum")));//工号
+		user.setJiesuanstate(Integer.parseInt((request.getParameter("jiesuanstate")==null||request.getParameter("jiesuanstate")=="")?"0":request.getParameter("jiesuanstate")));//结算状态
+		user.setMaxcutpayment(new BigDecimal((request.getParameter("maxcutpayment")==null||request.getParameter("maxcutpayment")=="")?"0.00":request.getParameter("maxcutpayment")));//最高扣款额度
+		user.setFixedadvance(new BigDecimal((request.getParameter("fixedadvance")==null||request.getParameter("fixedadvance")=="")?"0.00":request.getParameter("fixedadvance")));//固定预付款
+		user.setBasicadvance(new BigDecimal((request.getParameter("basicadvance")==null||request.getParameter("basicadvance")=="")?"0.00":request.getParameter("basicadvance")));//基础预付款
+		user.setFallbacknum(Long.parseLong((request.getParameter("fallbacknum")==null||request.getParameter("fallbacknum")=="")?"0":request.getParameter("fallbacknum")));//保底单量
+		user.setLateradvance(new BigDecimal((request.getParameter("lateradvance")==null||request.getParameter("lateradvance")=="")?"0.00":request.getParameter("lateradvance")));//后期补入预付款（结算中获取）
 		user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));
 		user.setBranchid(branchid);
 		user.setUsercustomerid(Long.parseLong(request.getParameter("usercustomerid")));
@@ -114,6 +114,8 @@ public class UserService {
 		return user;
 	}
 
+	
+	
 	/**
 	 * 调账 修改小件员帐户
 	 *
