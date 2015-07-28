@@ -53,7 +53,6 @@ import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
-import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 
 @SuppressWarnings("unchecked")
 /**
@@ -441,7 +440,8 @@ public class PaiFeiRuleService {
 			if (pFbusiness != null) {
 				fee.add(pFbusiness.getSubsidyfee());
 			}
-			PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), 0);
+			long count=co.getSendcarnum();
+			PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), count);
 			if (pFinsertion != null) {
 				fee.add(pFinsertion.getInsertionfee());
 			}
@@ -554,7 +554,8 @@ public class PaiFeiRuleService {
 				}
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Insertion) {
-				PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), 0);
+				long count=co.getSendcarnum();
+				PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), count);
 				if (pFinsertion != null) {
 					return pFinsertion.getInsertionfee();
 				}
