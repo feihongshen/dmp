@@ -586,6 +586,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
   						$("#quxiaoshenhe").hide();
  						 $("#hexiaowancheng").hide();
  						$("#quxiaohexiao").hide();
+ 						$('#removebille').show();
+						$('#addbille').show();
   					}else if(data.billState=="已审核"){
   						 $("#hexiaowancheng").show();
  						 $("#quxiaoshenhe").show();
@@ -595,6 +597,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 						$('#xscybg').hide();
  						$('#khdddr').hide();
  						$("#quxiaohexiao").hide();
+ 						$('#removebille').hide();
+						$('#addbille').hide();
   					} else if(data.billState=="已核销"){
   						 $("#quxiaohexiao").show();  
  						$("#quxiaoshenhe").hide();
@@ -604,6 +608,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 						 $("#shenhe").hide();
 						$('#xscybg').hide();
  						$('#khdddr').hide();
+						$('#removebille').hide();
+						$('#addbille').hide();
   					} 
   					
   					
@@ -776,6 +782,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	 function changeBillState(stateValue){
 		 var statevalue=stateValue;
 				$.messager.confirm('提示','你确定要改变账单状态吗?',function(r){
+					if(r){
 						$.post('${pageContext.request.contextPath}/CustomerBillContract/changeBillState',{billState:statevalue,billBatches:$('#hv').val()},function(result){
 							if (result.success==0){
 	
@@ -791,7 +798,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 							$('#dga').datagrid('reload');						
 							$('#fm2').form('reload');
 						},'json');
-					
+					}
 				});
 			
 			
@@ -811,13 +818,14 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
             	  $('#questionTypesManage').form('submit',{
       	  			url:'${pageContext.request.contextPath}/CustomerBillContract/getupdateExcel',
       	  			onSubmit: function(){
-      	  			if(d1==".xls"||d1==".xlsx"){      	  			 
+      	  			if(d1==".xls"){      	  			 
       	  				return true;
+      	  			}else if(d1==".xlsx"){
+      	  			 $.messager.alert('提示','您的Excel文件版本过高！','info');   
+      	  				return false;    	  				
       	  			}else{
-      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
       	  			$('#uploadExcel').val(''); 
       	  			$('#dga').datagrid('reload');
-      	  				return false;
       	  				}
       	  			},
       	  			success: function(data){
@@ -1357,8 +1365,8 @@ function importAllMoney(a){
 		</form>
 		<table id="dga"></table>
 		<div id="tbNewAddofEdit">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="dlgNewAddofEdit()">添加</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeofEdit()">移除</a>	
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="dlgNewAddofEdit()" id="addbille">添加</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeofEdit()" id="removebille">移除</a>	
 		</div>
 	</div>
 	

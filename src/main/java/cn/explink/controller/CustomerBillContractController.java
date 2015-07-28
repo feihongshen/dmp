@@ -208,9 +208,7 @@ public class CustomerBillContractController {
 			if(col!=null){
 				StringBuilder sb = new StringBuilder();
 				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
-				long a=0;
-				for(CwbOrder str:col){
-					a+=1;					
+				for(CwbOrder str:col){					
 					distributionMoney=distributionMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
 					deliveryMoney=deliveryMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
 					transferMoney=transferMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
