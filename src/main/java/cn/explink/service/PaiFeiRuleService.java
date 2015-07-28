@@ -368,7 +368,7 @@ public class PaiFeiRuleService {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((co != null) && (pf != null)) {
-			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid,  tab.getValue(), co.getCustomerid());
+			PFbasic baFbasic = this.pFbasicDAO.getPFbasicByRTC(pfruleid, tab.getValue(), co.getCustomerid());
 			if (baFbasic != null) {// 获取基本补助
 				fee.add(baFbasic.getBasicPFfee());
 			}
@@ -440,13 +440,236 @@ public class PaiFeiRuleService {
 			if (pFbusiness != null) {
 				fee.add(pFbusiness.getSubsidyfee());
 			}
-			long count=co.getSendcarnum();
+			long count = co.getSendcarnum();
 			PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), count);
 			if (pFinsertion != null) {
 				fee.add(pFinsertion.getInsertionfee());
 			}
 		}
 		return fee;
+	}
+
+	@Transactional
+	public Map<String, BigDecimal> getPFRulefeeOfBatch(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
+
+		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
+		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
+		if ((cwbOrders != null) && (pf != null)) {
+			List<PFbasic> pFbasics = this.pFbasicDAO.getPFbasicByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<PFcollection> pfcollections = this.pFcollectionDAO.getPFcollectionByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<Area> areas = this.areaDAO.getAllArea();
+			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<ExpressSetExceedSubsidyApply> subsidys = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyList();
+			List<PFoverbig> pFoverbigs = this.pFoverbigDAO.getAllPFoverbig();
+			List<PFoverweight> pFoverweights = this.pFoverweightDAO.getAllPfoverweight();
+			PFoverarea pFoverarea = this.pFoverareaDAO.getPFoverareaByPaifeiruleAndtabid(pfruleid, tab.getValue());
+			PFbusiness pFbusiness = this.pFbusinessDAO.getPFbusinessByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<PFinsertion> pFinsertions = this.pFinsertionDAO.getPFinsertionByPfruleidAndTabid(pfruleid, tab.getValue());
+			for (CwbOrder co : cwbOrders) {
+				BigDecimal fee = new BigDecimal("0");
+				PFbasic baFbasic = this.getPFbasicByCustomerid(pFbasics, co.getCustomerid());
+				if (baFbasic != null) {// 获取基本补助
+					fee.add(baFbasic.getBasicPFfee());
+				}
+				PFcollection pFcollection = this.getPFcollectionByCustomerid(pfcollections, co.getCustomerid());
+				if (pFcollection != null) {// 获取代收补助
+					fee.add(pFcollection.getCollectionPFfee());
+				}
+				Area area = null;
+				String cwbcity = co.getCity();
+				String cwbarea = co.getArea();
+				// 获取区域补助
+				// 需要获取订单中的区域
+
+				area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
+				long areaid = 0;
+				if (area != null) {
+					areaid = area.getId();
+				}
+				PFarea pFarea = null;
+				if (areaid > 0) {
+					pFarea = this.getPFareaByAreaid(pFareas, areaid);
+				}
+				if (pFarea != null) {
+					fee.add(pFarea.getAreafee());
+					if (pFarea.getOverbigflag() == 1) {
+						// 需要调用申请表
+						ExpressSetExceedSubsidyApply subsidy = this.getExceedSubsidyApplyByCwb(subsidys, co.getCwb());
+						if (subsidy != null) {
+							BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+							if (overbigfee != null) {
+								fee.add(overbigfee);
+							}
+						}
+					} else {
+						// 货物体积
+						long carsize = 0;
+						try {
+							carsize = Long.parseLong(co.getCarsize());
+						} catch (Exception e) {
+						}
+						PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+						if (pFoverbig != null) {
+							fee.add(pFoverbig.getSubsidyfee());
+						}
+					}
+					BigDecimal carrealweight = co.getCarrealweight();
+					if (carrealweight == null) {
+						carrealweight = new BigDecimal("0");
+					}
+					PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+					if (pFoverweight != null) {
+						fee.add(pFoverweight.getSubsidyfee());
+					}
+				}
+				if (pFoverarea != null) {
+					// 需要掉用申请表中的方法
+					ExpressSetExceedSubsidyApply subsidy = this.getExceedSubsidyApplyByCwb(subsidys, co.getCwb());
+					if (subsidy != null) {
+						BigDecimal overbigfee = subsidy.getExceedAreaSubsidyAmount();
+						if (overbigfee != null) {
+							fee.add(overbigfee);
+						}
+					}
+				}
+				if (pFbusiness != null) {
+					fee.add(pFbusiness.getSubsidyfee());
+				}
+				long count = co.getSendcarnum();
+				PFinsertion pFinsertion = this.getPFinsertionByCount(pFinsertions, count);
+				if (pFinsertion != null) {
+					fee.add(pFinsertion.getInsertionfee());
+				}
+				feeMap.put(co.getCwb(), fee);
+			}
+
+		}
+		return feeMap;
+	}
+
+	/**
+	 * @param pFinsertions
+	 * @param count
+	 * @return
+	 */
+	private PFinsertion getPFinsertionByCount(List<PFinsertion> pFinsertions, long count) {
+		if (pFinsertions != null) {
+			for (PFinsertion pf : pFinsertions) {
+				if ((count >= pf.getMincount()) && (count < pf.getMaxcount())) {
+					return pf;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param pFoverweights
+	 * @param carrealweight
+	 * @return
+	 */
+	private PFoverweight getPFoverweightByCount(List<PFoverweight> pFoverweights, BigDecimal carrealweight) {
+		if (pFoverweights != null) {
+			for (PFoverweight pf : pFoverweights) {
+				if ((carrealweight.compareTo(pf.getMincount()) >= 0) && (carrealweight.compareTo(pf.getMaxcount()) < 0)) {
+					return pf;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param pFoverbigs
+	 * @param carsize
+	 * @return
+	 */
+	private PFoverbig getPFoverbigByCount(List<PFoverbig> pFoverbigs, long carsize) {
+		if (pFoverbigs != null) {
+			for (PFoverbig pf : pFoverbigs) {
+				if ((carsize >= pf.getMincount()) && (carsize < pf.getMaxcount())) {
+					return pf;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param cwb
+	 * @return
+	 */
+	private ExpressSetExceedSubsidyApply getExceedSubsidyApplyByCwb(List<ExpressSetExceedSubsidyApply> subsidyApplys, String cwb) {
+		if (subsidyApplys != null) {
+			for (ExpressSetExceedSubsidyApply subsidyApply : subsidyApplys) {
+				if (cwb.equals(subsidyApply.getCwbOrder())) {
+					return subsidyApply;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param pFareas
+	 * @param areaid
+	 * @return
+	 */
+	private PFarea getPFareaByAreaid(List<PFarea> pFareas, long areaid) {
+		if (pFareas != null) {
+			for (PFarea pf : pFareas) {
+				if (pf.getAreaid() == areaid) {
+					return pf;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param areas
+	 * @param cwbcity
+	 * @param cwbarea
+	 * @return
+	 */
+	private Area getAreaByCityAndArea(List<Area> areas, String cwbcity, String cwbarea) {
+		if (areas != null) {
+			for (Area area : areas) {
+				if (!cwbarea.equals("") && !cwbcity.equals("")) {
+					if (area.getArea().equals(cwbarea) && area.getCity().equals(cwbcity)) {
+						return area;
+					}
+				} else if (cwbarea.equals("") && !cwbcity.equals("")) {
+
+					if (area.getCity().equals(cwbcity)) {
+						return area;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private PFcollection getPFcollectionByCustomerid(List<PFcollection> pfcollections, long customerid) {
+		if (pfcollections != null) {
+			for (PFcollection pf : pfcollections) {
+				if (pf.getCustomerid() == customerid) {
+					return pf;
+				}
+			}
+		}
+		return null;
+	}
+
+	private PFbasic getPFbasicByCustomerid(List<PFbasic> pFbasics, long customerid) {
+		if (pFbasics != null) {
+			for (PFbasic pf : pFbasics) {
+				if (pf.getCustomerid() == customerid) {
+					return pf;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -474,7 +697,7 @@ public class PaiFeiRuleService {
 				}
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Collection) {
-				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid,  tab.getValue(), co.getCustomerid());
+				PFcollection pFcollection = this.pFcollectionDAO.getPFcollectionByRTC(pfruleid, tab.getValue(), co.getCustomerid());
 				if (pFcollection != null) {// 获取代收补助
 					return pFcollection.getCollectionPFfee();
 				}
@@ -554,7 +777,7 @@ public class PaiFeiRuleService {
 				}
 			}
 			if (type == PaiFeiBuZhuTypeEnum.Insertion) {
-				long count=co.getSendcarnum();
+				long count = co.getSendcarnum();
 				PFinsertion pFinsertion = this.pFinsertionDAO.getPFinsertionByPfruleidAndCount(pfruleid, tab.getValue(), count);
 				if (pFinsertion != null) {
 					return pFinsertion.getInsertionfee();
