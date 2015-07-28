@@ -136,6 +136,8 @@ public class BranchDeliveryFeeBillController {
 		//支付方式
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
+		int count = this.branchDeliveryFeeBillDAO
+				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
 		int jiesuanAuthority = 0;
@@ -150,7 +152,10 @@ public class BranchDeliveryFeeBillController {
 				}
 			}
 		}
-
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", DeliveryFeeBillStateEnum.WeiShenHe.getValue());
@@ -176,6 +181,8 @@ public class BranchDeliveryFeeBillController {
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
+		int count = this.branchDeliveryFeeBillDAO
+				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
 		User user = getSessionUser();
@@ -191,7 +198,10 @@ public class BranchDeliveryFeeBillController {
 				}
 			}
 		}
-
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", DeliveryFeeBillStateEnum.WeiShenHe.getValue());
