@@ -187,9 +187,9 @@ public class DiliverymanPaifeiBillController {
 	 */
 	@RequestMapping("/deletePaiFeiBill")
 	@ResponseBody
-	public String deletePaiFeiBill(@RequestParam(value = "id", required = false) Integer id) {
-		this.diliverymanPaifeiBillService.deletePaiFeiBill(id);
-		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+	public int deletePaiFeiBill(@RequestParam(value = "id", required = false) String id) {
+		int count = this.diliverymanPaifeiBillService.deletePaiFeiBill(id);
+		return count;
 	}
 
 	/**
@@ -200,5 +200,12 @@ public class DiliverymanPaifeiBillController {
 	public String deleteorder(@RequestParam(value = "ordernumber", required = false) String ordernumber, @RequestParam(value = "id", required = false) Integer id) {
 		this.diliverymanPaifeiBillService.deleteorder(ordernumber, id);
 		return "{\"errorCode\":0,\"error\":\"移除成功\"}";
+	}
+	//修改账单状态
+	@RequestMapping("/updateBillState")
+	@ResponseBody
+	public String updateBillState(@RequestParam(value = "id", required = false)Integer id,@RequestParam(value = "state", required = false)Integer state){
+		this.diliverymanPaifeiBillDAO.updateBillState(id,state);
+		return "{\"errorCode\":0,\"error\":\"修改状态成功\"}";
 	}
 }

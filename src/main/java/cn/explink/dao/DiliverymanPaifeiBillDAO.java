@@ -264,4 +264,11 @@ public class DiliverymanPaifeiBillDAO {
 		String sql = "update express_ops_diliveryman_paifei_bill set orderids='" + order + "', ordersum = '" + i + "', paifeimoney='" +sum+ "' where id = '" + id + "'";
 		this.jdbcTemplate.update(sql);
 	}
+	/**
+	 * 修改账单状态
+	 */
+	public void updateBillState(Integer id,Integer state) {
+		String sql = "update express_ops_diliveryman_paifei_bill set billstate = '"+state+"' where id = '"+id+"'";
+		this.jdbcTemplate.update(sql);
+	}
 }

@@ -251,8 +251,7 @@ function deleteBill(){
 	}); 
 	if(sign == 1){
 		alert("只有未审核状态才能进行删除!");
-		return false;
-		}
+	}
 	if(!billIds){
 		alert("请选择要删除的账单");
 		return false;

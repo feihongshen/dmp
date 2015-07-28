@@ -490,4 +490,10 @@ public class PenalizeOutBillController {
 		int count = this.penalizeOutBillService.deletePenalizeOutBill(id);
 		return count;
 	}
+	//修改账单状态
+	@RequestMapping("/updateBillState")
+	public void updateBillState(Integer id,Integer state){
+		this.PenalizeOutBilldao.updateBillState(id,state);
+		
+	}
 }

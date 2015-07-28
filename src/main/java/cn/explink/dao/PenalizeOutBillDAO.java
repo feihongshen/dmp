@@ -243,4 +243,11 @@ public class PenalizeOutBillDAO {
 		String sql = "delete from express_ops_penalize_out_bill where id='" + id + "'";
 		this.jdbcTemplate.update(sql);
 	}
+	/**
+	 * 修改账单状态
+	 */
+	public void updateBillState(Integer id,Integer state) {
+		String sql = "update express_ops_penalize_out_bill set billstate = '"+state+"' where id = '"+id+"'";
+		this.jdbcTemplate.update(sql);
+	}
 }

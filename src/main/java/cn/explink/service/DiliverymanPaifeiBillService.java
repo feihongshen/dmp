@@ -156,6 +156,9 @@ public class DiliverymanPaifeiBillService {
 			}
 
 		}
+		if(bill == null){
+			bill = new DiliverymanPaifeiBill();
+		}
 		bill.setBillbatch(this.generateBillBatch());
 		bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 		return billcount;
@@ -183,17 +186,24 @@ public class DiliverymanPaifeiBillService {
 	/**
 	 * 删除账单
 	 */
-	public void deletePaiFeiBill(Integer id) {
-		DiliverymanPaifeiBill bills = this.diliverymanPaifeiBillDAO.queryById(id);
-		String ordernumber = "";
-		ordernumber = bills.getOrderids();
-		// 删除该账单下所有订单
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
-			ordernumber = DiliverymanPaifeiBillService.spiltString(ordernumber);
-			this.diliverymanPaifeiBillDAO.deleteorder(ordernumber);
-			this.deliveryStateDao.setWhetherGenerateDeliveryBill(ordernumber);
+	public int deletePaiFeiBill(String ids) {
+		String[] id1 = ids.split(",");
+		int count = 0;
+		for (int i = 0; i < id1.length; i++) {
+			Integer id = Integer.parseInt(id1[i]);
+			DiliverymanPaifeiBill bills = this.diliverymanPaifeiBillDAO.queryById(id);
+			String ordernumber = "";
+			ordernumber = bills.getOrderids();
+			// 删除该账单下所有订单
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
+				ordernumber = DiliverymanPaifeiBillService.spiltString(ordernumber);
+				this.diliverymanPaifeiBillDAO.deleteorder(ordernumber);
+				this.deliveryStateDao.setWhetherGenerateDeliveryBill(ordernumber);
+			}
+			this.diliverymanPaifeiBillDAO.deleteBill(id);
+			count ++ ;
 		}
-		this.diliverymanPaifeiBillDAO.deleteBill(id);
+		return count;
 	}
 
 	/**
@@ -204,12 +214,14 @@ public class DiliverymanPaifeiBillService {
 		Integer ordersum = 0;
 		BigDecimal orderfee = new BigDecimal(0);
 		DiliverymanPaifeiOrder order = null;
+		
 		// 通过从配送结果表中查询到的订单号去查询主订单表中对应的数据
 		for (int i = 0; i < deliveryStateList.size(); i++) {
 			DeliveryState deliveryState = deliveryStateList.get(i);
 			ordernumber.append(deliveryState.getCwb() + ",");
 			ordersum++;
 		}
+		
 		String orderString = "";
 		if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber.toString())) {
 
@@ -252,6 +264,7 @@ public class DiliverymanPaifeiBillService {
 			}
 			this.deliveryStateDao.setWhetherGenerateDeliveryManBill(ordernumberString);
 		}
+		
 		bill.setPaifeimoney(orderfee);
 		bill.setOrderids(orderString);
 		bill.setOrdersum(ordersum);

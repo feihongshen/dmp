@@ -43,6 +43,7 @@ $(function(){
 	$("#searchForm select[name='billstate'] ").val("${billstate}");
 	$("#searchForm select[name='theirsite'] ").val("${theirsite}");
 	$("#searchForm select[name='sortField'] ").val("${sortField}");
+	$("#searchForm select[name='ordertype'] ").val("${ordertype}");
 	$("#searchForm select[name='orderingMethod'] ").val("${orderingMethod}");
 	$("#updateForm select[name='billstate']").val("${bill.billstate}");
 	
@@ -140,13 +141,26 @@ function openaddbill()
 //打开修改页面
 function openUpdatePage()
 {
-	
-	var id = $("#updatePageForm input[name='id']").val();
-	if(id == "")
-	{
-		alert("请选择需要修改的账单");
+	var chkBoxes = $("#gd_table input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
+	var billIds = "";
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true)
+		{
+			strs = $(this).val().split(",");
+			billIds =billIds + strs[0] + ",";
+		}
+	}); 
+	billIds = billIds.substring(0,billIds.length-1);
+	if(!billIds){
+		alert("请选择需要查看/修改的账单！");
 		return false;
 	}
+	if(billIds.indexOf(",") > 0){
+		alert("请只选择一条需要查看/修改的账单")
+		return false;
+	}
+	$("#updatePageForm input[name='id']").val(billIds);
 	$("#updatePageForm").submit();
 }
 //修改账单信息
@@ -239,11 +253,9 @@ function addbill()
 		data : $("#creationfrom").serialize(),
 		dataType : "json",
 		success : function(data) {
-			if(data){
 				$('#add').dialog('close');
 				alert("成功创建 "+data+" 个配送员派费账单")
 				$("#searchForm").submit();
-			}
 		}
 	});
 }
@@ -303,41 +315,62 @@ function checkAll(id)
 //删除
 function deleteBill()
 {
-	var id = $("#updatePageForm input[name='id']").val();
-	if(id=="")
-	{
-		alert("请选择需要删除的账单！")
+	
+	var chkBoxes = $("#gd_table input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
+	var billIds = "";
+	var sign = 0;
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true)
+		{
+			strs = $(this).val().split(",");
+			if(strs[1] == <%=PunishBillStateEnum.WeiShenHe.getValue()%>){
+				billIds = billIds + strs[0] + ",";
+			} else {
+				sign = 1;
+			}
+		}
+	}); 
+	if(sign == 1){
+		alert("只有未审核状态才能进行删除!");
+	}
+	if(!billIds){
+		alert("请选择要删除的账单");
 		return false;
 	}
-	var state = $("#updatePageForm input[name='billstate']").val();
-	var weishenhe = "<%=PunishBillStateEnum.WeiShenHe.getValue()%>";
-	if(state != weishenhe)
-	{
-		alert("只有未审核状态的账单才能进行删除!");
-		return false;
-	}
+	
+	billIds = billIds.substring(0,billIds.length-1);
 	if(confirm("确定要删除吗？"))
 	{
 		$.ajax
 		({
 			type : "POST",
 			url : '${ctx}/diliverymanpaifeibill/deletePaiFeiBill',
-			data : {id : id},
+			data : {id : billIds},
 			dataType : "json",
 			success : function(data) 
 			{
-				if (data.errorCode == 0) 
-				{
-					alert(data.error);
+					alert("成功删除"+data+"条账单");
 					$("#searchForm").submit();
-				}
 			}
 		});
 	}
 }
-function setId(data,billstate){
-	$("#updatePageForm input[name='id']").val(data);
-	$("#updatePageForm input[name='billstate']").val(billstate);
+//改变账单状态
+function updateBillState(state){
+	var id = $("#updateForm input[name='id']").val();
+	$.ajax({
+		type : "post",
+		url : '${ctx}/diliverymanpaifeibill/updateBillState',
+		data : {id : id,state :state},
+		dataType : "json",
+		success : function(data){
+			if(data.errorCode==0){
+				alert(data.error);
+			}
+			
+		}
+	})
 }
 
 function changeBillState(state){
@@ -345,18 +378,26 @@ function changeBillState(state){
 		if(state == 'ShenHe'){
 			 if(confirm("是否确认审核?")){
 				$("#updateForm select[name='billstate']").val('${yiShenHeState}');
+				updateDiliverymanBill()
+				/* updateBillState('${yiShenHeState}'); */
 			 }
 		} else if(state == 'QuXiaoShenHe'){
 			if(confirm("是否确认取消审核?")){
 				$("#updateForm select[name='billstate']").val('${weiShenHeState}');
+				updateDiliverymanBill()
+				/* updateBillState('${weiShenHeState}'); */
 			}
 		} else if(state == 'HeXiaoWanCheng'){
 			if(confirm("是否确认核销完成?")){
 				$("#updateForm select[name='billstate']").val('${yiHeXiaoState}');
+				/* updateBillState('${yiHeXiaoState}'); */
+				updateDiliverymanBill()
 			}
 		} else if(state == 'QuXiaoHeXiao'){
 			if(confirm("是否确认取消核销?")){
 				$("#updateForm select[name='billstate']").val('${yiShenHeState}');
+				/* updateBillState('${yiShenHeState}'); */
+				updateDiliverymanBill()
 			}
 		}
 	}
@@ -378,7 +419,7 @@ function verify(){
 </head>
 
 <body style="background:#eef9ff">
-
+<div>
 <div class="right_box">
 	<div class="inputselect_box">
 		<table style="width: 60%">
@@ -399,7 +440,7 @@ function verify(){
 	<div class="right_title">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
-		<!-- <td height="30px"  valign="middle"><input type="checkbox" id="all" onclick="checkall('')"/> </td> -->
+		<td align="center" valign="middle"style="font-weight: bold;"><input type="checkbox" name="checkAll" onclick="checkAll('gd_table')"/></td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单批次</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单状态</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 配送员</td>
@@ -407,11 +448,11 @@ function verify(){
 		<td align="center" valign="middle"style="font-weight: bold;"> 日期范围 </td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 对应订单数 </td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 派费金额(元)</td>
-		<td align="center" valign="middle"style="font-weight: bold;"> 备注 </td>
+		<td align="center" valign="middle"style="font-weight: bold;width:300px;"> 备注 </td>
 	</tr>
 	<c:forEach items="${DiliverymanPaifeiBillList}" var="bill">
 	<tr onclick="setId(${bill.id},${bill.billstate})">
-		<%-- <td height="30px" align="center"  valign="middle"><input type="checkbox" id="id" value="${bill.id}" /> </td> --%>
+		<td align="center" valign="middle" ><input type="checkbox" name="checkBox" value="${bill.id},${bill.billstate}" /></td>
 		<td align="center" valign="middle" >${bill.billbatch}</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${PunishBillStateEnum}" var="state">
@@ -437,7 +478,7 @@ function verify(){
 		<td align="center" valign="middle" >
 			${bill.paifeimoney}
 		</td>
-		<td align="center" valign="middle" >
+		<td align="center" valign="middle" style="width:300px;" >
 			${bill.remarks}
 		</td>
 	</tr>
@@ -464,6 +505,7 @@ function verify(){
 					</td>
 				</tr>
 			</table>
+		</div>
 		</div>
 <!-- 新增层显示 -->
 <div  id="add" class="easyui-dialog" data-options="modal:true" title="新增"  style="width:700px;height:220px;">
@@ -702,7 +744,10 @@ function verify(){
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
 					<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
-	         		<input type="button" class="input_button2"  onclick="deleteorder()" value="移除"/>
+					<c:if test="${weiShenHeState==bill.billstate}">
+						<input type="button" class="input_button2"  onclick="deleteorder()" value="移除"/>
+	         		</c:if>
+	         		
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/diliverymanpaifeibill/queryById/1');$('#updatePageForm').submit();" >第一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/diliverymanpaifeibill/queryById/${page_ob.previous<1?1:page_ob.previous}');$('#updatePageForm').submit();">上一页</a>　
 					<a href="javascript:$('#updatePageForm').attr('action','<%=request.getContextPath()%>/diliverymanpaifeibill/queryById/${page_ob.next<1?1:page_ob.next }');$('#updatePageForm').submit();" >下一页</a>　
