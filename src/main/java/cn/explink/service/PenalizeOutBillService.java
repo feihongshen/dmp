@@ -304,7 +304,7 @@ public class PenalizeOutBillService {
 	 * @param str
 	 * @return
 	 */
-	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd,Integer compensatebig) {
+	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd,Integer compensatebig,Integer compensatesmall) {
 		ExpressOpsPunishinsideBill punishinsideBill = new ExpressOpsPunishinsideBill();
 		
 		String odd = "";
@@ -326,6 +326,7 @@ public class PenalizeOutBillService {
 			}
 
 		}
+		punishinsideBill.setPunishsmallsort(compensatesmall);
 		punishinsideBill.setPunishbigsort(compensatebig);
 		punishinsideBill.setCreator((int)this.getSessionUser().getUserid());
 		punishinsideBill.setCreateDate(DateTimeUtil.getNowTime());
@@ -364,16 +365,24 @@ public class PenalizeOutBillService {
 		}
 	}
 
-	public void deletePenalizeOutBill(Integer id) {
-		//删除账单时，将改账单下所有赔付单状态改为0
-		PenalizeOutBill bill = new PenalizeOutBill();
-		bill = this.PenalizeOutBilldao.queryById(id);
-		if(StringUtils.isNotBlank(bill.getCompensateodd())){
-			String order = this.spiltString(bill.getCompensateodd());
-			this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order);
+	public int deletePenalizeOutBill(String id1) {
+		String[] ids = id1.split(",");
+		int count = 0;
+		for (int i = 0; i < ids.length; i++) {
+			Integer id = Integer.parseInt(ids[i]);
+			//删除账单时，将改账单下所有赔付单状态改为0
+			PenalizeOutBill bill = new PenalizeOutBill();
+			bill = this.PenalizeOutBilldao.queryById(id);
+			if(StringUtils.isNotBlank(bill.getCompensateodd())){
+				String order = this.spiltString(bill.getCompensateodd());
+				this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order);
+			}
+			
+			this.PenalizeOutBilldao.deletePenalizeOutBill(id);
+			count++;
 		}
+		return count;
 		
-		this.PenalizeOutBilldao.deletePenalizeOutBill(id);
 	}
 	
 	//移除赔付单

@@ -234,28 +234,39 @@ function selectbranchUsers(){
 }
 //删除
 function deleteBill(){
-	var id = $("#updatePageForm input[name='id']").val();
-	if(id==""){
-		alert("请选择需要删除的记录！")
+	var chkBoxes = $("#gd_table input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
+	var billIds = "";
+	var sign = 0;
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true)
+		{
+			strs = $(this).val().split(",");
+			if(strs[1] == <%=PunishBillStateEnum.WeiShenHe.getValue()%>){
+				billIds = billIds + strs[0] + ",";
+			} else {
+				sign = 1;
+			}
+		}
+	}); 
+	if(sign == 1){
+		alert("只有未审核状态才能进行删除!");
+		return false;
+		}
+	if(!billIds){
+		alert("请选择要删除的账单");
 		return false;
 	}
-	var state = $("#updatePageForm input[name='billstate']").val();
-	var weishenhe = "<%=PunishBillStateEnum.WeiShenHe.getValue()%>";
-	if(state != weishenhe){
-		alert("只有未审核状态的合同才能进行删除!");
-		return false;
-	}
+	billIds = billIds.substring(0,billIds.length-1);
 	if(confirm("确定要删除吗？")){
 		$.ajax({
 			type : "POST",
 			url : '${ctx}/penalizeOutBill/deletePenalizeOutBill',
-			data : {id : id},
+			data : {ids : billIds},
 			dataType : "json",
 			success : function(data) {
-				if (data.errorCode == 0) {
-					alert(data.error);
+					alert("成功删除"+data+"条账单");
 					$("#deleteBillForm").submit();
-				}
 			}
 		});
 	}
@@ -267,11 +278,27 @@ function deleteBill(){
 } */
 function updateBill(data){
 	if(data == undefined){
-		var id = $("#updatePageForm input[name='id']").val();
-		if(id ==""){
-			alert("请选择需要查看/修改的记录！")
+		var chkBoxes = $("#gd_table input[type='checkbox'][name='checkBox']");
+		var strs= new Array();
+		var billIds = "";
+		var sign = 0;
+		$(chkBoxes).each(function() {
+			if ($(this)[0].checked == true)
+			{
+				strs = $(this).val().split(",");
+				billIds =billIds + strs[0] + ",";
+			}
+		}); 
+		billIds = billIds.substring(0,billIds.length-1);
+		if(!billIds){
+			alert("请选择需要查看/修改的账单！");
 			return false;
 		}
+		if(billIds.indexOf(",") > 0){
+			alert("请只选择一条需要查看/修改的账单")
+			return false;
+		}
+		$("#updatePageForm input[name='id']").val(billIds);
 	}else{
 		$("#updatePageForm input[name='id']").val(data)
 	}
@@ -279,7 +306,7 @@ function updateBill(data){
 }
 
 function addPenalizeInside(){
-	var id = $("#updateForm input[type='hidden'][name='id']").val(); 
+	var id = $("#updateForm input[name='id']").val(); 
 	$("#addPenalizeInsideForm input[name='id']").val(id);
 	$("#addPenalizeInsideForm").submit();
 }
@@ -328,12 +355,6 @@ function findbigSort(self,chufaobject){
 	var parent=$(self).find("option:selected").attr("title");
 	$("#addForm select[name='punishbigsort'] option[value='"+parent+"']").attr("selected","selected");
 }
-
-function setId(data,billstate){
-	$("#updatePageForm input[name='id']").val(data);
-	$("#updatePageForm input[name='billstate']").val(billstate);
-}
-
 function allchecked()
 { var ids="";
 	$("[id=id]").each(
@@ -511,7 +532,7 @@ function verify(){
 		<div style="overflow: auto;">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
-		<!-- <td align="center" valign="middle"style="font-weight: bold;"><input type="checkbox" name="checkAll" onclick="checkAll('gd_table')"/></td> -->
+		<td align="center" valign="middle"style="font-weight: bold;"><input type="checkbox" name="checkAll" onclick="checkAll('gd_table')"/></td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单批次</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 账单状态</td>
 		<td align="center" valign="middle"style="font-weight: bold;"> 客户名称</td>
@@ -524,8 +545,8 @@ function verify(){
 		<td align="center" valign="middle"style="font-weight: bold;"> 审核日期 </td>
 	</tr>
 	<c:forEach items="${billList}" var="bill">
-	<tr onclick="setId(${bill.id},${bill.billstate})">
-		<%-- <td align="center" valign="middle" ><input type="checkbox" name="checkBox" value="${bill.id}" /></td> --%>
+	<tr >
+		<td align="center" valign="middle" ><input type="checkbox" name="checkBox" value="${bill.id},${bill.billstate}" /></td>
 		<td align="center" valign="middle" >${bill.billbatches}</td>
 		<td align="center" valign="middle" >
 			<c:forEach items="${PunishBillStateEnum}" var="state">

@@ -129,7 +129,7 @@ public class PenalizeOutBillController {
 			@RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark, @RequestParam(value = "checkbox1", required = false) String checkbox1) {
 		Long id = this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
 		if ((checkbox1 != "") && (checkbox1 != null)) {
-			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd,compensatebig);
+			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd,compensatebig,compensatesmall);
 		}
 		return id;
 	}
@@ -486,8 +486,8 @@ public class PenalizeOutBillController {
 	// 删除指定的账单
 	@RequestMapping("/deletePenalizeOutBill")
 	@ResponseBody
-	public String deletePenalizeOutBill(@RequestParam(value = "id", required = false) Integer id) {
-		this.penalizeOutBillService.deletePenalizeOutBill(id);
-		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+	public int deletePenalizeOutBill(@RequestParam(value = "ids", required = false) String id) {
+		int count = this.penalizeOutBillService.deletePenalizeOutBill(id);
+		return count;
 	}
 }
