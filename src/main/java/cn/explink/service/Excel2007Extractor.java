@@ -33,7 +33,6 @@ public class Excel2007Extractor extends ExcelExtractor {
 				throw new BadExcelException();
 			}
 			XSSFSheet sheet = xwb.getSheetAt(0);
-
 			logger.info("开始解析");
 
 			int rowindex = 1;

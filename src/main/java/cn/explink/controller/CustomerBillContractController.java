@@ -210,12 +210,11 @@ public class CustomerBillContractController {
 				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
 				long a=0;
 				for(CwbOrder str:col){
-					a+=1;
-					
+					a+=1;					
 					distributionMoney=distributionMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, str.getCwb()));
 					deliveryMoney=deliveryMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, str.getCwb()));
 					transferMoney=transferMoney.add(paifeiruleservice.getPFRulefee(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, str.getCwb()));
-					//还差一个拒收派费暂时没有方法接口
+					refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customerid)==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(str.getCustomerid()).getJushouPFfee());
 					sb.append(str.getCwb()+",");
 					
 					//--------------------------
@@ -237,11 +236,11 @@ public class CustomerBillContractController {
 					sv.setBillBatches(BillBatches);
 					
 				
-					customerbillcontractdao.addBillVo(sv);
+					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单
 				}
 				String cwbsOfOneBill=sb.substring(0,sb.length()-1);
 				BigDecimal totalCharge=new BigDecimal("0"); //派费总计	
-				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
+				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
 				
 				
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
@@ -377,7 +376,7 @@ public class CustomerBillContractController {
 						
 						List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHelike(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 						String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						if(dcwbs.length()>0){
+						if(dcwbs!=null){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -400,7 +399,7 @@ public class CustomerBillContractController {
 						}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 							List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypelike(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 							String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						if(dcwbs.length()>0){
+							if(dcwbs!=null){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -418,7 +417,7 @@ public class CustomerBillContractController {
 		    			
 		    			List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 		    			String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    			if(dcwbs.length()>0){
+		    			if(dcwbs!=null){
 			    			if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 			    				col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 			    				correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -441,7 +440,7 @@ public class CustomerBillContractController {
 		    			}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 		    				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 		    				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    				if(dcwbs.length()>0){
+		    				if(dcwbs!=null){
 			    				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 			    					col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 			    					correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -523,7 +522,7 @@ public class CustomerBillContractController {
 	            HttpServletRequest request, HttpServletResponse response)throws Exception{
 					String billBatches=request.getParameter("billBatches");
 			InputStream in = null;
-			
+					
 				in = uploadExcel.getInputStream();
 				/*POIFSFileSystem pfs = new POIFSFileSystem(in);*/
 				List<ImportBillExcel> objlist=customerbillcontractservice.getUploadExcel(in);
@@ -919,6 +918,8 @@ public class CustomerBillContractController {
 				}
 			}
 		}
+		
+
 		return "{\"success\":0,\"successdata\":\"修改成功\"}";
 	}
 

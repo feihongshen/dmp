@@ -35,7 +35,6 @@ public class Excel2003Extractor extends ExcelExtractor {
 				throw new BadExcelException();
 			}
 			HSSFSheet sheet = xwb.getSheetAt(0);
-
 			logger.info("开始解析");
 
 			int rowindex = 1;
