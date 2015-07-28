@@ -1,3 +1,4 @@
+<%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.customerCoutract.CustomerContractManagement"%>
 <%@page import="cn.explink.domain.customerCoutract.DepositInformation"%>
@@ -9,7 +10,7 @@
 <%@page import="cn.explink.enumutil.coutracManagementEnum.SettlementPeriodEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.InvoiceTypeEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.WhetherHaveDepositEnum"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+
 
 <%
 	Page page_obj = (Page)request.getAttribute("page_obj");
