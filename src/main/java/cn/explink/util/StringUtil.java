@@ -35,7 +35,7 @@ public class StringUtil {
 	 */
 	public static boolean isLetter(char c) {
 		int k = 0x80;
-		return c / k == 0 ? true : false;
+		return (c / k) == 0 ? true : false;
 	}
 
 	/**
@@ -46,13 +46,14 @@ public class StringUtil {
 	 * @return i得到的字符串长度
 	 */
 	public static int length(String s) {
-		if (s == null)
+		if (s == null) {
 			return 0;
+		}
 		char[] c = s.toCharArray();
 		int len = 0;
 		for (int i = 0; i < c.length; i++) {
 			len++;
-			if (!isLetter(c[i])) {
+			if (!StringUtil.isLetter(c[i])) {
 				len++;
 			}
 		}
@@ -72,22 +73,23 @@ public class StringUtil {
 	 * @return 返回的字符串
 	 */
 	public static String substring(String origin, int len, String c) {
-		if (origin == null || origin.equals("") || len < 1)
+		if ((origin == null) || origin.equals("") || (len < 1)) {
 			return "";
+		}
 		byte[] strByte = new byte[len];
-		if (len > length(origin)) {
+		if (len > StringUtil.length(origin)) {
 			return origin + c;
 		}
 		try {
 			System.arraycopy(origin.getBytes("GBK"), 0, strByte, 0, len);
 			int count = 0;
 			for (int i = 0; i < len; i++) {
-				int value = (int) strByte[i];
+				int value = strByte[i];
 				if (value < 0) {
 					count++;
 				}
 			}
-			if (count % 2 != 0) {
+			if ((count % 2) != 0) {
 				len = (len == 1) ? ++len : --len;
 			}
 			return new String(strByte, 0, len, "GBK") + c;
@@ -98,7 +100,7 @@ public class StringUtil {
 
 	/**
 	 * 按字节数获取子字符串
-	 * 
+	 *
 	 * @param str
 	 *            原字符串
 	 * @param beginindex
@@ -116,11 +118,11 @@ public class StringUtil {
 		int charBeginIndex = -1;
 		int charEndIndex = -1;
 
-		if (endindex > beginindex && beginindex >= 0) {
+		if ((endindex > beginindex) && (beginindex >= 0)) {
 			for (int i = 0; i < str.length(); i++) {
 				try {
 
-					if (charset == null || charset.isEmpty()) {
+					if ((charset == null) || charset.isEmpty()) {
 						charLength = str.substring(i, i + 1).getBytes().length;
 					} else {
 						charLength = str.substring(i, i + 1).getBytes(charset).length;
@@ -132,11 +134,11 @@ public class StringUtil {
 				tempIndex1 = tempIndex2;
 				tempIndex2 += charLength;
 
-				if (beginindex >= tempIndex1 && beginindex < tempIndex2) {
+				if ((beginindex >= tempIndex1) && (beginindex < tempIndex2)) {
 					charBeginIndex = i;
 				}
 
-				if (endindex >= tempIndex1 && endindex < tempIndex2) {
+				if ((endindex >= tempIndex1) && (endindex < tempIndex2)) {
 					charEndIndex = endindex == tempIndex1 ? i : i + 1;
 					break;
 				}
@@ -152,7 +154,7 @@ public class StringUtil {
 
 	/**
 	 * 按字节数获取子字符串
-	 * 
+	 *
 	 * @param str
 	 *            原字符串
 	 * @param beginindex
@@ -170,18 +172,18 @@ public class StringUtil {
 		int charBeginIndex = -1;
 		int charEndIndex = -1;
 
-		if (endindex > beginindex && beginindex >= 0) {
+		if ((endindex > beginindex) && (beginindex >= 0)) {
 			for (int i = 0; i < str.length(); i++) {
 				charLength = str.substring(i, i + 1).getBytes().length;
 
 				tempIndex1 = tempIndex2;
 				tempIndex2 += charLength;
 
-				if (beginindex >= tempIndex1 && beginindex < tempIndex2) {
+				if ((beginindex >= tempIndex1) && (beginindex < tempIndex2)) {
 					charBeginIndex = i;
 				}
 
-				if (endindex >= tempIndex1 && endindex < tempIndex2) {
+				if ((endindex >= tempIndex1) && (endindex < tempIndex2)) {
 					charEndIndex = endindex == tempIndex1 ? i : i + 1;
 					break;
 				}
@@ -197,7 +199,7 @@ public class StringUtil {
 
 	/**
 	 * 返回String 数组 的toString
-	 * 
+	 *
 	 * @param strS
 	 *            数组
 	 * @return toString
@@ -217,7 +219,7 @@ public class StringUtil {
 
 	/**
 	 * 按字节数获取子字符串
-	 * 
+	 *
 	 * @param str
 	 *            原字符串
 	 * @param beginindex
@@ -255,7 +257,7 @@ public class StringUtil {
 
 	/**
 	 * 按字节数获取子字符串
-	 * 
+	 *
 	 * @param str
 	 *            原字符串
 	 * @param beginindex
@@ -273,12 +275,12 @@ public class StringUtil {
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		/*String str = "张鹏凯";
 		System.out.println(str.getBytes("GBK").length);*/
-		
-		
+
+
 		String str1 = "1,2,3,4,5,6";
 		String str2 = "5,6,7,8";
-		
-		System.out.println(removalDuplicateString(str1,str2));
+
+		System.out.println(StringUtil.removalDuplicateString(str1,str2));
 	}
 
 	public static String getStringsByLongList(List<Long> strArr) {
@@ -316,7 +318,7 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String getTimeToQuartzHHMMss(String time) {
-		return reverseSort(time).replaceAll(":", " ") + " * * ? *";
+		return StringUtil.reverseSort(time).replaceAll(":", " ") + " * * ? *";
 	}
 
 	/**
@@ -332,15 +334,15 @@ public class StringUtil {
 
 		return str2;
 	}
-	
+
 	public static String removalDuplicateString(String strs){
 		List list = Arrays.asList(strs.split(","));
 		Set set = new HashSet(list);
 		String [] strArr=(String [])set.toArray(new String[0]);
-		String rtnStr = getStringsToString(strArr);
+		String rtnStr = StringUtil.getStringsToString(strArr);
 		return rtnStr;
 	}
-	
+
 	public static String removalDuplicateString(String srcStr, String destStr){
 		List<String> list = Arrays.asList(srcStr.split(","));
 		List<String> rtnList = new ArrayList<String>();
@@ -351,5 +353,9 @@ public class StringUtil {
 		}
 		String rtnStr = StringUtils.join(rtnList, ",");
 		return rtnStr;
+	}
+	public static BigDecimal nullOrEmptyConvertToBigDecimal(Object bd) {
+		BigDecimal lastusername = ((bd == null)||((null!=bd)&&bd.equals("")) )? BigDecimal.ZERO : (BigDecimal) bd;
+		return lastusername;
 	}
 }
