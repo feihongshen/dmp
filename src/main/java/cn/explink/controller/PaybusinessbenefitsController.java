@@ -48,7 +48,11 @@ public class PaybusinessbenefitsController {
 	@ResponseBody
 	public String cutData(@PathVariable("ids")String customerids){
 		int num=paybusinessbenefitsDao.cutDatabyCustomerids(customerids);
-		return "{\"errorcode\":0,\"errormsg\":\"成功删除"+num+"单数据\"}";
+		if (num>0) {
+			return "{\"errorcode\":0,\"errormsg\":\"成功删除"+customerids.split(",").length+"单数据\"}";
+		}else{
+			return "{\"errorcode\":1,\"errormsg\":\"数据问题或系统内部出现异常，删除失败！！\"}";
+		}
 	}
 	
 	@RequestMapping("/savedata")

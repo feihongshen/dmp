@@ -74,26 +74,61 @@ $(function (){
           {field:'tuotouprate',title:'妥投率上限', width:100, align:'right', editor: { type: 'validatebox',options: { required: true } }},
           {field:'kpimoney',title:'KPI奖励金额', width:100, align:'right', editor: { type: 'validatebox', options: { required: true } }}
     	]],
+    	
     	onAfterEdit:function(rowIndex, rowData, changes){
-    		 if(rowData.kpimoney<0||isNaN(rowData.kpimoney)){
-                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
-    	          $.messager.alert("提示", "KPI奖励金额不能为负数或其它非数值类型的值！！请重新输入！！", "warning");
-				
- 		}
+    		var $rows=$('#'+obj).datagrid('getRows');
     		 if(rowData.tuotoudownrate<0||isNaN(rowData.tuotoudownrate)||rowData.tuotoudownrate>100){
-                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
-    	          $.messager.alert("提示", "妥投率下限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
-				
- 		}
-    		 if(rowData.tuotouprate<0||isNaN(rowData.tuotouprate)||rowData.tuotouprate>100){
-                  $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
-    	          $.messager.alert("提示", "妥投率上限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
-				
- 		}
-    		 if(rowData.tuotoudownrate>rowData.tuotouprate){
-                 $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
-      	          $.messager.alert("提示", "妥投率下限不能大于妥投率上限的值，请重新输入妥投率上限！！", "warning");
-       		 }
+                 $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotoudownrate:'0'} });
+   	          $.messager.alert("提示", "妥投率下限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
+		}
+   		 if(rowData.tuotouprate<0||isNaN(rowData.tuotouprate)||rowData.tuotouprate>100){
+   			 	/**
+   			 	 * 里面执行的为异步的，需要添加时间限制
+   			 	 */
+                 setTimeout(function (){$('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });},100);
+                 /*for (var i = rowIndex+1; i < $rows.length; i++) {
+                     $('#'+obj).datagrid('deleteRow', rowIndex+1);
+                 }*/
+               deleteallnext(obj,rowIndex,1);
+   	          $.messager.alert("提示", "妥投率上限不能为负数或非数值类型的值并且不能大于100！！请重新输入！！", "warning");
+		}
+		 if(rowData.kpimoney<0||isNaN(rowData.kpimoney)){
+             $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {kpimoney:'0'} });
+	          $.messager.alert("提示", "KPI奖励金额不能为负数或其它非数值类型的值！！请重新输入！！", "warning");
+	    }
+		 if(Number(rowData.tuotoudownrate)>=Number(rowData.tuotouprate)){
+			 if($rows.length-1==rowIndex){
+		           $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:'0'} });
+			 }else{
+		           $('#'+obj).datagrid('updateRow', { index: rowIndex, row: {tuotouprate:$rows[rowIndex+1].tuotoudownrate} });
+			 }
+ 	          $.messager.alert("提示", "妥投率下限不能大于等于妥投率上限的值，请重新输入妥投率上限！！", "warning");
+ 	   
+  		 }
+    		if((rowIndex+2<=$rows.length)&&Number(rowData.tuotouprate)<=100){
+    			if(Number(rowData.tuotouprate)!=100){
+    			     $('#'+obj).datagrid('updateRow', { index: rowIndex+1, row: {tuotoudownrate:rowData.tuotouprate} });
+    	                if(Number($rows[rowIndex+1].tuotoudownrate)>=Number($rows[rowIndex+1].tuotouprate)){
+    	                    $('#'+obj).datagrid('updateRow', { index: rowIndex+1, row: {tuotouprate:'0'} });
+    	                   /* for (var i = rowIndex+2; i < $rows.length; i++) {
+    	                        $('#'+obj).datagrid('deleteRow', rowIndex+2);
+    	                    }*/
+    	                    deleteallnext(obj,rowIndex,2);
+    	      	          $.messager.alert("提示", "第"+(rowIndex+2)+"行数据中的妥投下限不能大于妥投上限，请重新输入该行的上限值！！", "warning");
+    	                }
+    			}else{
+    				$.messager.confirm("提示", 
+    						"该行记录数据的妥投率上限为100，如果下面还有数据记录，将会被删除，确定要执行此操作吗？？", 
+    						function (r){
+    					if(r){
+    	                    deleteallnext(obj,rowIndex,1);
+    					}
+    					
+    				});
+    			}
+           
+    		}
+    
     	}
 		,
 		onDblClickCell: function(index,field,value){
@@ -121,6 +156,10 @@ $(function (){
 	          $.messager.alert("提示", "前一条记录的妥投率上限不能为0！！", "warning");
 	          return;
 	  } 
+		  if(Number($rows[$rows.length-1].tuotouprate)==100){
+			  $.messager.alert("提示", "前一条记录的妥投率上限已经为100,不能再添加记录！！", "warning");
+			  return;
+		  } 
 	  }
 
 	  if($rows.length==0){
@@ -149,13 +188,22 @@ $(function (){
   /*删除选择的行  */
   function deleteRow(obj){
       var rows = $("#"+obj).datagrid("getSelections");
+      var rowsNum = $("#"+obj).datagrid("getRows").length;
       if (rows.length > 0) {
-          $.messager.confirm("提示", "你确定要移除吗?", function (r) {
+          $.messager.confirm("提示", "你确定要移除吗(如果删除的话，后面的数据将会全部删除)?", function (r) {
               if (r) {
-                  for (var i = 0; i < rows.length; i++) {
+            	  var  firstrowIndex=0;
+            	  if(rowsNum==rows.length){
+            		  deleteallnext(obj,0,0);
+            	  }else{
+            		  firstrowIndex=$('#'+obj).datagrid('getRowIndex', rows[0]);
+                      deleteallnext(obj,firstrowIndex,0);
+            	  }
+                 /* for (var i = 0; i < rows.length; i++) {
                       var rowIndex = $('#'+obj).datagrid('getRowIndex', rows[i]);
-                      $('#'+obj).datagrid('deleteRow', rowIndex);
-                  }
+                      //$('#'+obj).datagrid('deleteRow', rowIndex);
+                      deleteallnext(obj,rowIndex,0);
+                  }*/
               }
           });
       }
@@ -178,9 +226,13 @@ $(function (){
 	  }
 	  var savedata="";
 	  var rows = $("#"+obj).datagrid("getRows"); 
-	  if(rows.length>0&&rows[rows.length-1].tuotouprate==0){
+	/*  if(rows.length>0&&rows[rows.length-1].tuotouprate==0){
           $.messager.alert("提示", "下面妥投率上限不能为0！！", "warning");
           return;
+	  }*/
+	  if(rows.length>0&&Number(rows[rows.length-1].tuotouprate)!=100){
+		  $.messager.alert("提示", "最后一行妥投率上限必须为100！！", "warning");
+		  return;
 	  }
 	  for(var i=0;i<rows.length;i++)
 	  {
@@ -281,4 +333,17 @@ $(function (){
   		return false;
   	}
   }
- 
+  /**
+   * 删除当前行的下面的所有的行
+   * obj为对象id
+   * rowdexnum为当前所在行
+   * k为从所在行的第几行开始删除
+   * @param obj
+   * @param rowdexnum
+   */
+  function deleteallnext(obj,rowdexnum,k){
+	  var $rows=$('#'+obj).datagrid('getRows');
+	  for (var i = ($rows.length-1); i>=rowdexnum+k; i--) {
+          $('#'+obj).datagrid('deleteRow',i);
+      }
+  }
