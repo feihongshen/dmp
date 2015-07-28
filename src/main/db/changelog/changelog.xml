@@ -7974,5 +7974,11 @@ CREATE TABLE `cs_complaint_accept` (
 		<sql>
 			INSERT INTO `dmp40_function` VALUES('802050',2,'应付甲方明细报表','802050','${eapUrl}reportForm.do?payableCustomerFormIndexDetail&amp;','8020');
 		</sql>
-	</changeSet>	
+	</changeSet>
+	<changeSet id="liuxiao-2015-07-28-01" author="liuxiao">
+	   	<sql>
+			  ALTER TABLE `express_set_salary` ADD COLUMN `addordeductimport` int(4) DEFAULT '1';
+	   	</sql>
+	</changeSet>
+		
 </databaseChangeLog>
