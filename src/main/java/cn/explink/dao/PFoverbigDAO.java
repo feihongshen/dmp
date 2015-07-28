@@ -147,6 +147,14 @@ public class PFoverbigDAO {
 			return null;
 		}
 	}
+	public List<PFoverbig> getAllPFoverbig() {
+		String sql = "select * from paifeirule_overbig  ";
+		try {
+			return this.jdbcTemplate.query(sql, new PFoverbigRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * @param areaid

@@ -150,6 +150,14 @@ public class PFoverweightDAO {
 			return null;
 		}
 	}
+	public List<PFoverweight> getAllPfoverweight() {
+		String sql = "select * from paifeirule_overweight  ";
+		try {
+			return this.jdbcTemplate.query(sql, new PFoverweightRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	/**
 	 * @param id
 	 * @return
