@@ -325,6 +325,8 @@ public class PenalizeOutBillService {
 				sum = sumPrice;
 			}
 
+		}else{
+			sum = sumPrice;
 		}
 		punishinsideBill.setPunishsmallsort(compensatesmall);
 		punishinsideBill.setPunishbigsort(compensatebig);
@@ -337,7 +339,6 @@ public class PenalizeOutBillService {
 		punishinsideBill.setDutybranchid(batchstate);
 		punishinsideBill.setPunishInsideRemark(punishInsideRemark);
 		punishinsideBill.setBillState(PunishBillStateEnum.WeiShenHe.getValue());
-		//punishinsideBill.setDutybranchid(dutybranchid);
 		this.punishinsideBillDAO.createPunishinsideBill(punishinsideBill);
 	}
 

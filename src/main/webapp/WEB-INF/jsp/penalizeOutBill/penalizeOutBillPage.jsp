@@ -435,7 +435,9 @@ function addPunishBillPage(){
 		}
 	});
 	$('#sumPrice').focus(function(){
-		$('#sumPrice').val('');
+		if($('#sumPrice').val()== '默认为赔付金额,可修改'){
+			$('#sumPrice').val('');
+		}
 	}).blur(function(){
 		if(!$('#sumPrice').val()){
 			$('#sumPrice').val('默认为赔付金额,可修改');
@@ -487,10 +489,10 @@ function verify(){
 	}
 	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
 	if(chkBoxes[0].checked == true){
-		var reg = /^[1-9]\d*$/;
+		var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
 	    var isMoneyFormatRight = reg.test($("#sumPrice").val());
 	    if(!isMoneyFormatRight){
-	  	  alert("扣罚金额只能为数字，并不能为负数！");
+	  	  alert("扣罚金额只能为数字，并不能为负数，允许保留两位小数！");
 	  	  return false;
 	    }
 	}
