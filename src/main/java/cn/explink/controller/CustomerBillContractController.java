@@ -159,7 +159,7 @@ public class CustomerBillContractController {
 				
 				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-				if(dcwbs.length()>0){
+				if(dcwbs!=null&&dcwbs.length()>0){
 						if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 							col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
 							correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -185,7 +185,7 @@ public class CustomerBillContractController {
 				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 					List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 					String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-					if(dcwbs.length()>0){
+					if(dcwbs!=null&&dcwbs.length()>0){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -377,7 +377,7 @@ public class CustomerBillContractController {
 						
 						List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHelike(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 						String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						if(dcwbs.length()>0){
+						if(dcwbs!=null&&dcwbs.length()>0){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -400,7 +400,7 @@ public class CustomerBillContractController {
 						}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 							List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypelike(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 							String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-						if(dcwbs.length()>0){
+							if(dcwbs!=null&&dcwbs.length()>0){
 							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 								col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -418,7 +418,7 @@ public class CustomerBillContractController {
 		    			
 		    			List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 		    			String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    			if(dcwbs.length()>0){
+		    			if(dcwbs!=null&&dcwbs.length()>0){
 			    			if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 			    				col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 			    				correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
@@ -441,7 +441,7 @@ public class CustomerBillContractController {
 		    			}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 		    				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
 		    				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-		    				if(dcwbs.length()>0){
+		    				if(dcwbs!=null&&dcwbs.length()>0){
 			    				if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
 			    					col=cwbdao.getCwbByCwbsAndTypeByPage(dcwbs,cwbOrderType,start,number);
 			    					correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
