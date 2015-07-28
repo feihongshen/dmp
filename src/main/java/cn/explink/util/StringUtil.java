@@ -354,8 +354,8 @@ public class StringUtil {
 		String rtnStr = StringUtils.join(rtnList, ",");
 		return rtnStr;
 	}
-	public static BigDecimal nullOrEmptyConvertToBigDecimal(Object bd) {
-		BigDecimal lastusername = ((bd == null)||((null!=bd)&&bd.equals("")) )? BigDecimal.ZERO : (BigDecimal) bd;
+	public static BigDecimal nullOrEmptyConvertToBigDecimal(String bd) {
+		BigDecimal lastusername = ((bd == null)||((null!=bd)&&bd.equals("")) )? BigDecimal.ZERO : new BigDecimal(bd);
 		return lastusername;
 	}
 }
