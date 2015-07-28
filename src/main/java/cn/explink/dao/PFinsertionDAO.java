@@ -137,7 +137,7 @@ public class PFinsertionDAO {
 	 * @param i
 	 * @return
 	 */
-	public PFinsertion getPFinsertionByPfruleidAndCount(long pfruleid, int tabid, int count) {
+	public PFinsertion getPFinsertionByPfruleidAndCount(long pfruleid, int tabid, long count) {
 		String sql = "select * from paifeirule_insertion where mincount<=? and maxcount>? and pfruleid=? and tabid=?";
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new PFinsertionRowMapper(), count, count, pfruleid, tabid);
