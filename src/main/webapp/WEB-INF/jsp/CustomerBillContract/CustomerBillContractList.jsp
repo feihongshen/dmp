@@ -824,9 +824,11 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
       	  			 $.messager.alert('提示','您的Excel文件版本过高！','info');   
       	  				return false;    	  				
       	  			}else{
+      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
+   	  				return false;  
       	  			$('#uploadExcel').val(''); 
       	  			$('#dga').datagrid('reload');
-      	  				}
+      	  			}
       	  			},
       	  			success: function(data){
       	  				var data = eval('('+data+')');
