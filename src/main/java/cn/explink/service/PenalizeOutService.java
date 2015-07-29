@@ -97,7 +97,7 @@ public class PenalizeOutService {
 		final String[] cloumnName4 = cloumnName2;
 		String sheetName = "对外赔付信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String fileName = sheetName+"_" + df.format(new Date()) + ".xlsx"; // 文件名
+		String fileName = "PensizeOut_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			// 查询出数据
 			final List<PenalizeOut> penalizeOutlList = this.penalizeOutDAO.getPenalizeOutByListExport(cwbs, flowordertype, customerid, penalizeOutbig, penalizeOutsmall, penalizeState, starttime, endtime);
