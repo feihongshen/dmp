@@ -23,7 +23,9 @@
 />
 
 
-function function1(obj){
+function function1(curSel,curEle){
+	//	curSel    当前选项
+	//  cruEle    当前元素
 	alert(obj);
 }
 
@@ -87,7 +89,7 @@ function initEnumSelect(data){
 	if(!isNull(afterSelect)){
 		s.combobox({
 			onSelect:function(obj1){
-	    		callFunByName(afterSelect,obj1)
+	    		callFunByName(afterSelect,obj1,s)
 			}
 		})
 	}
@@ -164,7 +166,7 @@ function initTABLESelect(data){
 			if(!isNull(afterSelect)){
 				s.combobox({
 					onSelect:function(obj1){
-			    		callFunByName(afterSelect,obj1)
+			    		callFunByName(afterSelect,obj1,s)
 					}
 				})
 			}
@@ -199,7 +201,7 @@ function initTABLESelect(data){
 		if(!isNull(afterSelect)){
 			s.combobox({
 				onSelect:function(obj1){
-		    		callFunByName(afterSelect,obj1)
+		    		callFunByName(afterSelect,obj1,s)
 				}
 			})
 		}
@@ -320,13 +322,13 @@ function isNull(obj){
  * @param fn
  * @param args
  */
-function callFunByName(fnName,args){ 
+function callFunByName(fnName,arg1,arg2){ 
     try {
     	fnName = eval(fnName);
     } catch(e) {
         console.log(e);
     }
     if (typeof fnName === 'function'){
-    	fnName.call(this,args); 
+    	fnName.call(this,arg1,arg2); 
     }    
 }
