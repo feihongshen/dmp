@@ -887,26 +887,26 @@ public class PaiFeiRuleService {
 						}
 					}
 				}
-					return feeMap;
-				}
-				if (type == PaiFeiBuZhuTypeEnum.Business) {
-					for (CwbOrder co : cwbOrders) {
-						if (pFbusiness != null) {
-							feeMap.put(co.getCwb(), pFbusiness.getSubsidyfee());
-						}
+				return feeMap;
+			}
+			if (type == PaiFeiBuZhuTypeEnum.Business) {
+				for (CwbOrder co : cwbOrders) {
+					if (pFbusiness != null) {
+						feeMap.put(co.getCwb(), pFbusiness.getSubsidyfee());
 					}
-					return feeMap;
 				}
-				if (type == PaiFeiBuZhuTypeEnum.Insertion) {
-					for (CwbOrder co : cwbOrders) {
-						long count = co.getSendcarnum();
-						PFinsertion pFinsertion = this.getPFinsertionByCount(pFinsertions, count);
-						if (pFinsertion != null) {
-							feeMap.put(co.getCwb(), pFinsertion.getInsertionfee());
-						}
+				return feeMap;
+			}
+			if (type == PaiFeiBuZhuTypeEnum.Insertion) {
+				for (CwbOrder co : cwbOrders) {
+					long count = co.getSendcarnum();
+					PFinsertion pFinsertion = this.getPFinsertionByCount(pFinsertions, count);
+					if (pFinsertion != null) {
+						feeMap.put(co.getCwb(), pFinsertion.getInsertionfee());
+					}
 
-					}
-					return feeMap;
+				}
+				return feeMap;
 			}
 		}
 		return null;
@@ -966,6 +966,77 @@ public class PaiFeiRuleService {
 			}
 		}
 		return areafee;
+	}
+
+	// 货物超大补助
+	public Map<String, BigDecimal> getOverbigFeeOfBatch(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
+		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
+		if (cwbOrders != null) {
+			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<ExpressSetExceedSubsidyApply> subsidys = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyList();
+			List<PFoverbig> pFoverbigs = this.pFoverbigDAO.getAllPFoverbig();
+			for (CwbOrder co : cwbOrders) {
+				BigDecimal areafee = new BigDecimal("0");
+				long areaid = 0;
+				if (co != null) {
+					PFarea pFarea = this.getPFareaByAreaid(pFareas, areaid);
+					if (pFarea != null) {
+						if (pFarea.getOverbigflag() == 1) {
+							// 需要调用申请表
+							ExpressSetExceedSubsidyApply subsidy = this.getExceedSubsidyApplyByCwb(subsidys, co.getCwb());
+							if (subsidy != null) {
+								BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
+								if (overbigfee != null) {
+									areafee.add(overbigfee);
+								}
+							}
+						} else {
+							// 货物体积
+							long carsize = 0;
+							try {
+								carsize = Long.parseLong(co.getCarsize());
+							} catch (Exception e) {
+							}
+							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+							if (pFoverbig != null) {
+								areafee.add(pFoverbig.getSubsidyfee());
+							}
+						}
+						feeMap.put(co.getCwb(), areafee);
+					}
+				}
+			}
+
+		}
+		return feeMap;
+	}
+
+	// 货物超重补助
+	public Map<String, BigDecimal> getOverweightFeeOfBacth(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
+		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
+		if (cwbOrders != null) {
+			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
+			List<PFoverweight> pFoverweights = this.pFoverweightDAO.getAllPfoverweight();
+			for (CwbOrder co : cwbOrders) {
+				long areaid = 0;
+				BigDecimal areafee = new BigDecimal("0");
+				if (co != null) {
+					PFarea pFarea = this.getPFareaByAreaid(pFareas, areaid);
+					if (pFarea != null) {
+						BigDecimal carrealweight = co.getCarrealweight();
+						if (carrealweight == null) {
+							carrealweight = new BigDecimal("0");
+						}
+						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+						if (pFoverweight != null) {
+							areafee.add(pFoverweight.getSubsidyfee());
+						}
+					}
+					feeMap.put(co.getCwb(), areafee);
+				}
+			}
+		}
+		return feeMap;
 	}
 
 	/**
