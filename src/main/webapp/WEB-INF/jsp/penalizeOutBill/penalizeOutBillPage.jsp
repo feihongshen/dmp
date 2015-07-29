@@ -153,23 +153,6 @@ $.ajax({
 		}
 	}});
 }
-function checkgeneration(){
-	$("#generationloses").checked;
-	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
-	if(chkBoxes[0].checked == true){
-		$("#add input[name='checkbox1']").val("1");
-		$("#punishInside").css("display","");
-		$("#punishInside1").css("display","");
-	}else {
-		$("#add input[name='checkbox1']").val("");
-		$("#punishInside").css("display","none");
-		$("#punishInside1").css("display","none");
-		$("#punishInsideRemark").val("");
-		$("#batchstate").val("");
-		$("#dutypersonid").val("");
-		$("#sumPrice").val("");
-	}
-}
 
 function checkAll(id){ 
 	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
@@ -191,14 +174,6 @@ function addbill(){
 	if(compensateexplain == "不超过100字"){
 		var compensateexplain = $("#add #compensateexplain").val("");
 	}
-	var punishInsideRemark = $("#add #punishInsideRemark").val();
-	if(punishInsideRemark == "不超过100字"){
-		var punishInsideRemark = $("#add #punishInsideRemark").val("");
-	}
-	var sumPrice = $("#add #sumPrice").val();
-	if(sumPrice == "默认为赔付金额,可修改"){
-		var sumPrice = $("#add #sumPrice").val("0");
-	}
 	$.ajax({
 		type : "POST",
 		url : $("#creationfrom").attr("action"),
@@ -212,26 +187,6 @@ function addbill(){
 	});
 }
 
-//责任机构下拉框联动
-function selectbranchUsers(){
-	var dutyPersonEle = $("#creationfrom select[name='dutypersonid']");
-	var url = "<%=request.getContextPath()%>/abnormalOrder/getbranchusers";
-	$.ajax({
-		url:url,
-		type:"POST",
-		data:"dutybranchid="+$("#creationfrom select[name='batchstate']").val(),
-	dataType:'json',
-	success:function (json){
-		dutyPersonEle.empty();
-		var optstr = "<option value ='0'>请选择责任人</option>";
-		dutyPersonEle.append(optstr);// 添加下拉框的option
-		for (var j = 0; j < json.length; j++) {
-			optstr = "<option value='"+ json[j].userid +"'>"+json[j].realname+"</option>";
-			dutyPersonEle.append(optstr);
-		}
-	}
-	});
-}
 //删除
 function deleteBill(){
 	var chkBoxes = $("#gd_table input[type='checkbox'][name='checkBox']");
@@ -385,22 +340,6 @@ function allchecked()
 		});
 	}
 }
-/* function checkall()
-{ var checked=$("#all")[0].checked;
-	$("[id=id]").each(function(){
-		var e = $(this)[0];
-		if(checked=='true'||checked=='checked')
-		{
-			e['checked'] = checked;
-			//$(e).attr('checked',checked);
-			}
-		else {
-			//$(e).removeAttr('checked');
-			e['checked'] = checked;
-		}
-	});
-} */
-
 
 function addPunishBillPage(){
 	$('#add').dialog('open');
@@ -422,24 +361,6 @@ function addPunishBillPage(){
 	}).blur(function(){
 		if(!$("#add textarea[name='compensateexplain']").val()){
 			$("#add textarea[name='compensateexplain']").val('不超过100字');
-		}
-	});
-	$("#add textarea[name='punishInsideRemark']").focus(function(){
-		if($("#add textarea[name='punishInsideRemark']").val() && $("#add textarea[name='punishInsideRemark']").val() == '不超过100字'){
-			$("#add textarea[name='punishInsideRemark']").val('');
-		}
-	}).blur(function(){
-		if(!$("#add textarea[name='punishInsideRemark']").val()){
-			$("#add textarea[name='punishInsideRemark']").val('不超过100字');
-		}
-	});
-	$('#sumPrice').focus(function(){
-		if($('#sumPrice').val()== '默认为赔付金额,可修改'){
-			$('#sumPrice').val('');
-		}
-	}).blur(function(){
-		if(!$('#sumPrice').val()){
-			$('#sumPrice').val('默认为赔付金额,可修改');
 		}
 	});
 }
@@ -486,21 +407,8 @@ function verify(){
 		alert("单号中不允许含有特殊字符，多个单号请以回车分隔！")
 		return false;
 	}
-	var chkBoxes = $("#add input[type='checkbox'][id='generationloses']");
-	if(chkBoxes[0].checked == true){
-		var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
-	    var isMoneyFormatRight = reg.test($("#sumPrice").val());
-	    if(!isMoneyFormatRight){
-	  	  alert("扣罚金额只能为数字，并不能为负数，允许保留两位小数！");
-	  	  return false;
-	    }
-	}
 	if($("#compensateexplain").val().length >100){
 		alert("赔付说明长度不允许超过100位字符！");
-		return false;
-	}
-	if($("#punishInsideRemark").val().length >100){
-		alert("扣罚说明长度不允许超过100位字符！");
 		return false;
 	}
 	return flag;
@@ -619,7 +527,7 @@ function verify(){
 		</div>
 	
 <!-- 新增层显示 -->
-<div  id="add" class="easyui-dialog" data-options="modal:true"  title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:350px;">
+<div  id="add" class="easyui-dialog" data-options="modal:true"  title="新增" data-options="iconCls:'icon-save,modal:true'" style="width:700px;height:220px;">
 	<form action="${ctx}/penalizeOutBill/addPenalizeOutBill" method="post" id="creationfrom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr >
@@ -677,44 +585,6 @@ function verify(){
          	</tr>
          	</tr>
          		<tr><td>&nbsp;</td>
-         	</tr>
-         	<tr>
-         		<td align="left" nowrap="nowrap" colspan="6">
-         			<input type="checkbox" id="generationloses" name="generationloses"  align="left" onclick="checkgeneration();">同时生成对内扣罚账单</input>
-         			<input type="hidden" name="checkbox1" ></input>
-         		</td>
-         	</tr>
-         	</tr>
-         		<tr><td>&nbsp;</td>
-         	</tr>
-         	<tr style="display: none" id="punishInside">
-         		<td align="right" nowrap="nowrap">责任机构:</td>
-         		<td nowrap="nowrap" style="width: 20%;">
-         			<select name="batchstate" style="width: 100%;" onchange="selectbranchUsers();">
-	         			<c:forEach items="${branchList}" var="branch">
-	         				<option value="${branch.branchid}" ${branch.branchid==batchstate?'selected=seleted':''}>${branch.branchname}</option>
-						</c:forEach>
-		         	</select>
-         		</td>
-         		<td nowrap="nowrap" align="right">责任人:</td>
-       			<td>
-         			<select  name="dutypersonid" name = "dutypersonid" class="select1">
-						<option value='0' selected="selected">请选择责任人</option>
-					</select>
-         		</td>
-         		<td nowrap="nowrap" align="right">扣罚金额:</td>
-         		<td nowrap="nowrap" style="width: 20%;">
-         			<input  type="text" id="sumPrice" name="sumPrice" style="width: 100%;" value="默认为赔付金额,可修改"></input>
-         		</td>
-         	</tr>
-         	</tr>
-         		<tr><td>&nbsp;</td>
-         	</tr>
-         	<tr style="display: none" id="punishInside1">
-         		<td nowrap="nowrap" align="right" rowspan="2">扣罚说明：</td>
-         		<td nowrap="nowrap" colspan="6" >
-			   	 <textarea rows="3" id="punishInsideRemark" name="punishInsideRemark" style="width: 100%;resize: none;">不超过100字</textarea>
-		        </td>
          	</tr>
          	</table>
          	</form>

@@ -241,48 +241,6 @@ public class PenalizeOutBillService {
 
 	// 修改指定账单信息
 	public void penalizeOutBillUpdate(PenalizeOutBill bill) {
-		/*BigDecimal sumBigDecimal = new BigDecimal(0);
-		if (StringUtils.isNotBlank(bill.getCompensateodd())) {
-			PenalizeOutBill  bill2 = this.PenalizeOutBilldao.queryById(bill.getId());
-			
-			 获取移除的赔付单号，并将其状态置为0
-			String[] arr1 = bill.getCompensateodd().split(",");
-			String[] arr2 =	bill2.getCompensateodd().split(",");
-			for (int i = 0; i < arr1.length; i++) {
-				for (int j = 0; j < arr2.length; j++) {
-					if (arr2[j].equals(arr1[i])) {
-						arr2[j] = "";
-					}
-				}
-			}
-			int i = 0;
-			StringBuffer sBuffer = new StringBuffer();
-			for (int j = 0; j < arr2.length; j++) {
-				if (!"".equals(arr2[j])) {
-					sBuffer.append(arr2[j] + ",");
-					i++;
-				}
-			}
-			if(StringUtils.isNotBlank(sBuffer)){
-				
-				String order1 = sBuffer.toString();
-				order1 = this.spiltString(order1);order1.substring(0, order1.length() - 1);
-				this.penalizeOutDAO.setWhetherGeneratePeiFuBill(order1);
-			}
-			
-			
-			String order = PenalizeOutBillService.spiltString(bill.getCompensateodd());
-			List<PenalizeOut> penalizeList = this.penalizeOutDAO.getPenalizeOutByid(order);
-			for (int k = 0; k < penalizeList.size(); k++) {
-				PenalizeOut out = penalizeList.get(k);
-				BigDecimal fee = out.getPenalizeOutfee();
-				sumBigDecimal = sumBigDecimal.add(fee);
-			}
-			bill.setCompensatefee(sumBigDecimal);
-		} else {
-			bill.setCompensatefee(sumBigDecimal);
-			bill.setCompensateodd("");
-		}*/
 		if(bill.getBillstate() != PunishBillStateEnum.WeiShenHe.getValue()){
 			if(bill.getBillstate() == PunishBillStateEnum.YiShenHe.getValue()){
 				bill.setVerifier((int) this.getSessionUser().getUserid());
@@ -296,57 +254,6 @@ public class PenalizeOutBillService {
 		}
 		
 		this.PenalizeOutBilldao.penalizeOutBillUpdate(bill);
-	}
-
-	/**
-	 * 新增的同时添加对内扣罚账单
-	 *
-	 * @param str
-	 * @return
-	 */
-	public void addpunishinsideBill(Integer batchstate, Integer dutypersonid, BigDecimal sumPrice, String punishInsideRemark, String compensateodd,Integer compensatebig,Integer compensatesmall) {
-		ExpressOpsPunishinsideBill punishinsideBill = new ExpressOpsPunishinsideBill();
-		
-		String odd = "";
-		BigDecimal sum = new BigDecimal(0);
-		if (StringUtils.isNotBlank(compensateodd)) {
-			odd = compensateodd.replace("\r\n", ",");
-			String str = PenalizeOutBillService.spilt(compensateodd);
-			if(sumPrice == sum){
-				List<PenalizeOut> list = this.penalizeOutDAO.getPenalizeOutByid(str);
-				for (int i = 0; i < list.size(); i++) {
-					PenalizeOut out = list.get(i);
-					if (out.getPenalizeOutfee() != null) {
-						BigDecimal fee = out.getPenalizeOutfee();
-						sum = sum.add(fee);
-					}
-				}
-			}else{
-				sum = sumPrice;
-			}
-
-		}else{
-			sum = sumPrice;
-		}
-		punishinsideBill.setPunishsmallsort(compensatesmall);
-		punishinsideBill.setPunishbigsort(compensatebig);
-		punishinsideBill.setCreator((int)this.getSessionUser().getUserid());
-		punishinsideBill.setCreateDate(DateTimeUtil.getNowTime());
-		punishinsideBill.setSumPrice(sum);
-		punishinsideBill.setBillBatch(this.BillBatch());
-		punishinsideBill.setPunishNos(odd);
-		punishinsideBill.setDutypersonid(dutypersonid);
-		punishinsideBill.setDutybranchid(batchstate);
-		punishinsideBill.setPunishInsideRemark(punishInsideRemark);
-		punishinsideBill.setBillState(PunishBillStateEnum.WeiShenHe.getValue());
-		this.punishinsideBillDAO.createPunishinsideBill(punishinsideBill);
-	}
-
-	public String BillBatch() {
-		String rule = "K";
-		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
-		String billBatch = rule + nowTime;
-		return billBatch;
 	}
 
 	public static String spiltString(String str) {

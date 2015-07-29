@@ -124,13 +124,8 @@ public class PenalizeOutBillController {
 	public Long addPenalizeOutBill(@RequestParam(value = "compensatebig", required = false) Integer compensatebig, @RequestParam(value = "compensatesmall", required = false) Integer compensatesmall,
 			@RequestParam(value = "compensateodd", required = false) String compensateodd, @RequestParam(value = "customerid", required = false) String customerid,
 			@RequestParam(value = "creationStartDate", required = false) String creationStartDate, @RequestParam(value = "creationEndDate", required = false) String creationEndDate,
-			@RequestParam(value = "compensateexplain", required = false) String compensateexplain, @RequestParam(value = "batchstate", required = false) Integer batchstate,
-			@RequestParam(value = "dutypersonid", required = false) Integer dutypersonid, @RequestParam(value = "sumPrice", required = false) BigDecimal sumPrice,
-			@RequestParam(value = "punishInsideRemark", required = false) String punishInsideRemark, @RequestParam(value = "checkbox1", required = false) String checkbox1) {
+			@RequestParam(value = "compensateexplain", required = false) String compensateexplain) {
 		Long id = this.penalizeOutBillService.addPenalizeOutBill(compensatebig, compensatesmall, compensateodd, customerid, creationStartDate, creationEndDate, compensateexplain);
-		if ((checkbox1 != "") && (checkbox1 != null)) {
-			this.penalizeOutBillService.addpunishinsideBill(batchstate, dutypersonid, sumPrice, punishInsideRemark, compensateodd,compensatebig,compensatesmall);
-		}
 		return id;
 	}
 
