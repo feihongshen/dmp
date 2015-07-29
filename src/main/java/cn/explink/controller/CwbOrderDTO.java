@@ -80,7 +80,16 @@ public class CwbOrderDTO {
 	String resendtime;// 滞留订单再次配送时间
 	BigDecimal shouldfare = BigDecimal.ZERO;
 	BigDecimal infactfare = BigDecimal.ZERO;
+	long getDataFlag; //是否已同步到主表	
 	
+	public long getGetDataFlag() {
+		return getDataFlag;
+	}
+
+	public void setGetDataFlag(long getDataFlag) {
+		this.getDataFlag = getDataFlag;
+	}
+
 	public String getResendtime() {
 		return resendtime;
 	}
