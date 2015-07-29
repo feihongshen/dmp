@@ -131,8 +131,8 @@ public class BranchContractDAO {
 				});
 	}
 	
-	public int deleteBranchContract(int id) {
-		String sql = "delete from express_set_branch_contract where id=" + id;
+	public int deleteBranchContract(String ids) {
+		String sql = "delete from express_set_branch_contract where id in (" + ids + ")";
 		return this.jdbcTemplate.update(sql);
 	}
 	

@@ -192,8 +192,8 @@ public class BranchContractController {
 	
 	@RequestMapping("/deleteBranchContract")
 	@ResponseBody
-	public String deleteBranchContract(@RequestParam(value="id",defaultValue="",required=true) int id){
-		this.branchContractService.deleteBranchContract(id);
+	public String deleteBranchContract(@RequestParam(value="ids",defaultValue="",required=true) String ids){
+		this.branchContractService.deleteBranchContract(ids);
 		return "{\"errorCode\":0,\"error\":\"删除成功\"}";
 	}
 	

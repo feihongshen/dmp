@@ -109,8 +109,8 @@ public class BranchContractDetailDAO {
 		return this.jdbcTemplate.update(sql);
 	}
 	
-	public int deleteBranchContractDetailByBranchId(int branchId) {
-		String sql = "delete from express_set_branch_contract_detail where branchId=" + branchId;
+	public int deleteBranchContractDetailByBranchId(String branchIds) {
+		String sql = "delete from express_set_branch_contract_detail where branchId in (" + branchIds + ")";
 		return this.jdbcTemplate.update(sql);
 	}
 	

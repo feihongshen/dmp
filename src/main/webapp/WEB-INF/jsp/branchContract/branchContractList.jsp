@@ -42,34 +42,43 @@ $(function(){
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
 	$('#delete_button').click(function(){
-		if(!$("#branchId").val()){
-			alert("请选择一条记录!");
-			return false;
-		}
-		var state = $("#branchContractState").val();
 		var xinjian = "<%=ContractStateEnum.XinJian.getValue()%>";
-		if(state != xinjian){
+		
+		var chkBoxes = $("#callertb input[type='checkbox'][name='checkBox']");
+		var strs= new Array();
+		var sign = 0;
+		var ids = "";
+		$(chkBoxes).each(function() {
+			if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
+			{
+				strs = $(this).val().split(",");
+				if(strs[1] == xinjian){
+					ids = strs[0] + "," + ids;
+				} else {
+					sign = 1;
+				}
+			}
+		}); 
+		if(sign == 1){
 			alert("只有新建状态的合同才能进行删除!");
+		}
+		if(!ids){
 			return false;
 		}
-		/* var checked = $("#callertb input[type='checkbox'][name='count']");
-		$(checked).each(function() {
-			if ($(this).attr("checked") == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
-			{ */
-				$.ajax({
-					type:'POST',
-					data:'id='+$("#branchId").val(),
-					url:'<%=request.getContextPath()%>/branchContract/deleteBranchContract',
-					dataType:'json',
-					success:function(data){
-						if(data && data.errorCode==0){
-							alert(data.error);
-							window.location.href='<%=request.getContextPath()%>/branchContract/branchContractList/1';
-						}
+		if(window.confirm("是否确定删除?")){
+			$.ajax({
+				type:'POST',
+				data:'ids='+ids,
+				url:'<%=request.getContextPath()%>/branchContract/deleteBranchContract',
+				dataType:'json',
+				success:function(data){
+					if(data && data.errorCode==0){
+						alert(data.error);
+						window.location.href='<%=request.getContextPath()%>/branchContract/branchContractList/1';
 					}
-				});
-		/* 	}
-		});  */
+				}
+			});
+		}
 	});
 });
 
@@ -88,7 +97,13 @@ function afterInit(){
 function editInit(){
 	
 }
-
+function checkAll(id){ 
+	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
+	var chkBoxes = $("#"+ id +" input[type='checkbox'][name='checkBox']");
+	$(chkBoxes).each(function() {
+		$(this)[0].checked = chkAll;
+	});
+}
 function initSelect(){
 	$("#contractState").append('<option value ="<%=ContractStateEnum.XinJian.getValue()%>"><%=ContractStateEnum.XinJian.getText()%></option>'); 
 	$("#contractState").append('<option value ="<%=ContractStateEnum.ZhiXingZhong.getValue()%>"><%=ContractStateEnum.ZhiXingZhong.getText()%></option>'); 
@@ -145,9 +160,9 @@ function addContract() {
 			'		           		</td>'+
 			'						<th align="left">合同日期范围</th>'+
 			'						<td>'+
-			'							<input type="text" name="contractBeginDate" id="contractBeginDate" class="input_text1">'+
+			'							<input type="text" name="contractBeginDate" id="contractBeginDate" readonly="true" class="input_text1">'+
 			'							至'+
-			'							<input type="text" name="contractEndDate" id="contractEndDate" class="input_text1">'+
+			'							<input type="text" name="contractEndDate" id="contractEndDate" readonly="true" class="input_text1">'+
 			'						</td>'+
 			'					</tr>'+
 			'					<tr>'+
@@ -238,8 +253,29 @@ function addContract() {
 	centerBox();
 }
 
+
+
+
+
+
+
+
+
 function updateContract(){
-	if(!$("#branchId").val()){
+	var chkBoxes = $("#callertb input[type='checkbox'][name='checkBox']");
+	var strs= new Array();
+	var sign = 0;
+	var id = 0;
+	$(chkBoxes).each(function() {
+		if ($(this)[0].checked == true) // 注意：此处判断不能用$(this).attr("checked")==‘true'来判断
+		{
+			sign = parseInt(sign) + 1;
+			strs = $(this).val().split(",");
+			id = strs[0];
+		}
+	}); 
+	
+	if(sign != 1){
 		alert("请选择一条记录!");
 		return false;
 	}
@@ -359,7 +395,7 @@ function updateContract(){
 			'		</div>'+
 			'		</div>');
 	initSelect();
-	getEditData($("#branchId").val());
+	getEditData(id);
 	$("#contractState").attr("disabled","disabled");
 	$("#isDeposit").attr("disabled","disabled");
 	$("#alert_box").show();
@@ -409,9 +445,9 @@ function queryContract(){
 			'					<tr>'+
 			'						<th align="left">合同开始日期</th>'+
 			'						<td>'+
-			'							<input type="text" name="contractBeginDateFrom" id="contractBeginDateFrom" value="${branchContractVO.contractBeginDateFrom}" class="input_text1"/>'+
+			'							<input type="text" name="contractBeginDateFrom" readonly="true" id="contractBeginDateFrom" value="${branchContractVO.contractBeginDateFrom}" class="input_text1"/>'+
 			'							至'+
-			'							<input type="text" name="contractBeginDateTo" id="contractBeginDateTo" value="${branchContractVO.contractBeginDateTo}" class="input_text1"/>'+
+			'							<input type="text" name="contractBeginDateTo" readonly="true" id="contractBeginDateTo" value="${branchContractVO.contractBeginDateTo}" class="input_text1"/>'+
 			'						</td>'+
 			'						<th align="left">合同结束日期</th>'+
 			'						<td>'+
@@ -1041,6 +1077,7 @@ function trim(str) {
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="callertb">
 				<tr class="font_1">
 					<!-- <th bgcolor="#eef6ff"><input type="checkbox" id="checkAll" value=""/></th> -->
+					<th bgcolor="#eef6ff"><input type="checkbox" name="checkAll" onclick="checkAll('callertb')"/> </th>
 					<th bgcolor="#eef6ff">编号</th>
 					<th bgcolor="#eef6ff">合同状态</th>
 					<th bgcolor="#eef6ff">加盟商名称</th>
@@ -1051,7 +1088,9 @@ function trim(str) {
 				</tr>
 				<%if(branchContractList!=null){ %>
 				<%for(ExpressSetBranchContract bc:branchContractList){ %>
-				<tr onclick="setBranchId('<%=bc.getId()%>','<%=bc.getContractState()%>')">
+				<%-- <tr onclick="setBranchId('<%=bc.getId()%>','<%=bc.getContractState()%>')"> --%>
+				<tr>
+					<td><input type="checkbox" name="checkBox" value="<%=bc.getId()%><%=','%><%=bc.getContractState()%>" /> </td>
 					<td><%=bc.getContractNo()==null?"": bc.getContractNo()%></td>
 					<td>
 					<%if(bc.getContractState() == ContractStateEnum.XinJian.getValue()){%>
@@ -1075,8 +1114,8 @@ function trim(str) {
 				
 			<%-- <input type="hidden" id="add" value="<%=request.getContextPath()%>/branchContract/addBranchContractPage"/> --%>
 			<input type="hidden" id="edit" value="<%=request.getContextPath()%>/branchContract/updateBranchContractPage/"/>
-			<input type="hidden" id="branchId" value=""/>
-			<input type="hidden" id="branchContractState" value=""/>
+			<!-- <input type="hidden" id="branchId" value=""/>
+			<input type="hidden" id="branchContractState" value=""/> -->
 			
 			</table>
 			<div class="jg_10"></div>

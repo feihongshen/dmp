@@ -2,6 +2,7 @@ package cn.explink.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -124,9 +125,10 @@ public class BranchContractService {
 	}
 
 	@Transactional
-	public void deleteBranchContract(int id) {
-		this.branchContractDetailDAO.deleteBranchContractDetailByBranchId(id);
-		this.branchContractDAO.deleteBranchContract(id);
+	public void deleteBranchContract(String ids) {
+		ids = StringUtil.getStringsByStringList(Arrays.asList(ids.split(",")));
+		this.branchContractDetailDAO.deleteBranchContractDetailByBranchId(ids);
+		this.branchContractDAO.deleteBranchContract(ids);
 	}
 
 	public String generateContractNo(){
