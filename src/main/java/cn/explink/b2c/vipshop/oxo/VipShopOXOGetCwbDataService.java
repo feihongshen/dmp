@@ -165,6 +165,10 @@ public class VipShopOXOGetCwbDataService {
 			this.logger.info("未开启VipShop_OXO[" + vipshop_key + "]对接！");
 			return -1;
 		}
+		if (vipshop.getIsopendownload() == 0) {
+			this.logger.info("未开启VipShop_OXO[" + vipshop_key + "]订单下载接口");
+			return -1;
+		}
 
 		// 构建请求，解析返回信息
 		TpsOrderVo responseVo = this.requestHttpAndCallBackAnaly(vipshop);
@@ -330,11 +334,12 @@ public class VipShopOXOGetCwbDataService {
 	@Transactional
 	public void extractedDataImport(List<TpsOrderVo.Orders.Order> orders,VipShop vipshop){
 	
-		long warehouseid = vipshop.getWarehouseid(); // 获取虚拟库房
+		long warehouse_id = vipshop.getWarehouseid(); // 获取虚拟库房
+		long warehouseid = warehouse_id != 0 ? warehouse_id : dataImportService_B2c.getTempWarehouseIdForB2c(); // 获取虚拟库房
 		
 		long customerid = Long.valueOf(vipshop.getCustomerids()); //客户id
 
-		EmailDate ed = dataImportService.getOrCreateEmailDate_B2C(Long.valueOf(vipshop.getCustomerids()), 0, warehouseid, 0); //生成批次
+		EmailDate ed = dataImportService.getOrCreateEmailDate(Long.valueOf(vipshop.getCustomerids()), 0, warehouseid); //生成批次
 		User user = new User();
 		user.setUserid(1);
 		user.setBranchid(warehouseid);
@@ -367,13 +372,13 @@ public class VipShopOXOGetCwbDataService {
 						continue;
 					}
 					
-					if(cwbOrder_temp.getGetDataFlag() != 1){//如果临时表数据没有同步到了主表，只需修改临时表数据
+					if(cwbOrder_temp.getGetDataFlag() == 0){//如果临时表数据没有同步到了主表，只需修改临时表数据
 						//update 临时表
 						dataImportDAO_B2c.updateBycwb(this.convertOrderVoToMap(order));
 						continue;
 					}
 					
-					if(cwbOrder_temp.getGetDataFlag() == 1){//如果临时表数据已经同步到了主表,只需修改主表数据
+					if(cwbOrder_temp.getGetDataFlag() != 0){//如果临时表数据已经同步到了主表,只需修改主表数据
 						CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
 						if(cwbOrder_biz != null){
 							//如果已揽收成功，不允编辑

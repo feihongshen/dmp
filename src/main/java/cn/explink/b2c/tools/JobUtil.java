@@ -52,7 +52,6 @@ import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.b2c.vipshop.VipShopService;
-import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
 import cn.explink.b2c.wangjiu.WangjiuInsertCwbDetailTimmer;
 import cn.explink.b2c.wenxuan.WenxuanInsertCwbDetailTimmer;
 import cn.explink.b2c.wenxuan.WenxuanService_getOrder;
@@ -115,8 +114,6 @@ public class JobUtil {
 	HaoXiangGouService haoXiangGouService;
 	@Autowired
 	HXGInsertCwbDetailTimmer hXGInsertCwbDetailTimmer;
-	@Autowired
-	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	@Autowired
 	AmazonService amazonService;
 	@Autowired

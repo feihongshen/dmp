@@ -9,6 +9,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.vipshop.oxo.VipShopOXOGetCwbDataService;
+import cn.explink.b2c.vipshop.oxo.VipShopOXOInsertCwbDetailTimmer;
 import cn.explink.dao.CustomerDAO;
 
 @Service
@@ -20,6 +21,8 @@ public class VipShopService {
 	VipShopOXOGetCwbDataService vipShopOXOGetCwbDataService;
 	@Autowired
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
+	@Autowired
+	VipShopOXOInsertCwbDetailTimmer vipshopOXOInsertCwbDetailTimmer;
 	@Autowired
 	JointService jointService;
 	@Autowired
@@ -105,7 +108,7 @@ public class VipShopService {
 		int loopcount = 20;
 		for (int i = 0; i < loopcount; i++) {
 			long resultflag = vipShopOXOGetCwbDataService.getOrdersByVipShopOXO(enums.getKey());
-			//vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(enums.getKey());
+			vipshopOXOInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(enums.getKey());
 			if (resultflag == -1) { // -1标识下载不到或者异常，跳出循环 ,1标识仍然有数据未下载完毕
 				return;
 			}
