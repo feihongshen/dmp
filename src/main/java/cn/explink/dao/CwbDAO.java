@@ -36,6 +36,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -229,9 +230,6 @@ public class CwbDAO {
 			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
 			cwbOrder.setCity(StringUtil.nullConvertToEmptyString(rs.getString("city")));
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
-			cwbOrder.setPickbranchid(rs.getLong("pickbranchid"));
-			cwbOrder.setOxodeliverystate(rs.getLong("oxodeliverystate"));
-			cwbOrder.setOxopickstate(rs.getLong("oxopickstate"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
@@ -6265,6 +6263,58 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	
+	/**
+	 * 统计揽件未到站的数量，其中flowordertype为1（已导入）,cwbordertypeid为oxo和oxo_jit,  oxopickstate=已处理，且揽收站点必须和当前站点匹配
+	 *
+	 * @param branchid 当前站点，
+	 * @return
+	 */
+	public long countLanJianWeiDaoZhanByBranch(long branchid) {
+		
+		String sql = "SELECT COUNT(1) count FROM express_ops_cwb_detail " + getLanJianWeiDaoZhanByBranchWhereSql(branchid) ;
+		
+		return this.jdbcTemplate.queryForLong(sql);
+	}
+	
+	/**
+	 * 统计揽件未到站的列表，其中flowordertype为1（已导入）,cwbordertypeid为oxo和oxo_jit,  oxopickstate=已处理，且揽收站点必须和当前站点匹配
+	 *
+	 * @param branchid 当前站点，
+	 * @return
+	 */
+	public List<CwbOrder> getLanJianWeiDaoZhanByBranchidForList(long branchid,long page) {
+		
+		String sql = "SELECT * FROM express_ops_cwb_detail " + getLanJianWeiDaoZhanByBranchWhereSql(branchid) + "  limit ?,? " ;
+		
+		return this.jdbcTemplate.query(sql,new CwbMapper(),(page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+	
+	public String getLanJianWeiDaoZhanByBranchidListSql(long branchid) {
+		String sql = "SELECT * FROM express_ops_cwb_detail " + getLanJianWeiDaoZhanByBranchWhereSql(branchid);
+		return sql;
+	}
+	
+	private String getLanJianWeiDaoZhanByBranchWhereSql(long branchid){
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append(" WHERE 1 = 1")
+		.append(" AND flowordertype =").append(FlowOrderTypeEnum.DaoRuShuJu.getValue())
+		.append(" AND cwbordertypeid in (").append(CwbOrderTypeIdEnum.OXO.getValue() + "," + CwbOrderTypeIdEnum.OXO_JIT.getValue()).append(")")
+		.append(" AND oxopickstate =").append(CwbOXOStateEnum.Processed.getValue())
+		.append(" AND oxodeliverystate =").append(CwbOXOStateEnum.UnProcessed.getValue())
+		.append(" and pickbranchid = " + branchid + " and state=1");
+		return sqlBuilder.toString() ;
+	}
 
-
+	public void updateOXOPickState(int state,String cwb) {
+		String sql = "update express_ops_cwb_detail set oxopickstate=? where cwb=? and state = 1";
+		this.jdbcTemplate.update(sql,state,cwb);
+	}
+	
+	public void updateOXODeliveryState(int state,String cwb) {
+		String sql = "update express_ops_cwb_detail set oxodeliverystate=? where cwb=? and state = 1";
+		this.jdbcTemplate.update(sql,state,cwb);
+	}
+	
 }

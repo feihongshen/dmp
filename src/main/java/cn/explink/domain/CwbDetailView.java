@@ -117,6 +117,9 @@ public class CwbDetailView {
 	private String pickGoodstime = "";// 小件员领货时间
 	private String timelimited;// 地址库匹配时效
 
+	private String pickaddress; //揽件地址
+	private String cwbordertype;//订单类型
+	
 	public String getTimelimited() {
 		return timelimited;
 	}
@@ -959,4 +962,21 @@ public class CwbDetailView {
 		this.pickGoodstime = pickGoodstime;
 	}
 
+	public String getPickaddress() {
+		return pickaddress;
+	}
+
+	public void setPickaddress(String pickaddress) {
+		this.pickaddress = pickaddress;
+	}
+
+	public String getCwbordertype() {
+		return cwbordertype;
+	}
+
+	public void setCwbordertype(String cwbordertype) {
+		this.cwbordertype = cwbordertype;
+	}
+
+	
 }

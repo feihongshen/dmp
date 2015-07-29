@@ -161,6 +161,7 @@ import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -1595,9 +1596,22 @@ public class CwbOrderService {
 				}
 			}
 		}
-
+		
+		// ==== 扫描成功后，更新配送状态为‘处理中=====
+		updateOXODeliveryState(co,CwbOXOStateEnum.Processing);
 	}
 
+	/**
+	 * 更新OXO订单的配送状态
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	private void updateOXODeliveryState(CwbOrder co, CwbOXOStateEnum oxoStateEnum){
+		if(isOXOType(co)){
+			this.cwbDAO.updateOXODeliveryState(oxoStateEnum.getValue(), co.getCwb());
+		}
+	}
+	
 	/**
 	 * 退货站入库扫描
 	 *
@@ -4698,6 +4712,11 @@ public class CwbOrderService {
 							deliverystate.getSign_man(), 1, "", 1, 1, "single", PosEnum.XitongFanKui.getMethod(), 1, "");
 				}
 
+			}
+			// =======OXO配送状态逻辑: by jinghui.pan@pjbest.com
+			// ==== 如果订单的配送状态为'配送成功'，更新配送状态为'已处理'=====
+			if(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()){
+				updateOXODeliveryState(co,CwbOXOStateEnum.Processed);
 			}
 
 			// =======结算逻辑==========

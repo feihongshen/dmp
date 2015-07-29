@@ -11,6 +11,7 @@ List<CwbDetailView> jinriweidaohuolist = (List<CwbDetailView>)request.getAttribu
 List<CwbDetailView> historyweidaohuolist = (List<CwbDetailView>)request.getAttribute("historyweidaohuolist");
 boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(Boolean)request.getAttribute("showCustomerSign");
 List<CwbDetailView> yidaohuolist = (List<CwbDetailView>)request.getAttribute("yidaohuoViewlist");
+List<CwbDetailView> lanjianweidaohuolist = (List<CwbDetailView>)request.getAttribute("lanjianweidaohuolist");
 
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
 List<User> uList = (List<User>)request.getAttribute("userList");
@@ -75,6 +76,7 @@ function getcwbsdataForDaoHuo(cwb){
 			$("#successcwbnum").html(data.yidaohuonum);
 			$("#yuyuedaweidaohuocount").html(data.yuyuedaweidaohuocount);
 			$("#yuyuedayidaohuocount").html(data.yuyuedayidaohuocount);
+			$("#lanjianweidaozhancount").html(data.lanjianweidaozhancount);
 		}
 	});
 }
@@ -272,6 +274,9 @@ function exportField(flag){
 	}else if(flag==5){
 		$("#type").val(flag);
 		$("#searchForm3").submit();
+	}else if(flag==6){
+		$("#type").val("lanjianwdz");
+		$("#searchForm3").submit();
 	}
 }
 
@@ -288,6 +293,7 @@ function clearMsg(){
 var jinriweipage=1;
 var historyweipage=1;
 var yipage=1;
+var lanjianweipage=1;
 function yidaohuo(){
 	yipage+=1;
 	$.ajax({
@@ -490,6 +496,40 @@ function getdaohuocwbquejiandataList(){
 	});
 } --%>
 
+/**================== 揽件未到站 =========================*/
+function getlanjianweidaozhan(){
+	lanjianweipage+=1;
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/PDA/getbranchimportlanjianweidaolist",
+		data:{"page":lanjianweipage},
+		success:function(data){
+			if(data.length>0){
+				var optionstring = "";
+				for ( var i = 0; i < data.length; i++) {
+					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"'>"
+					+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+					+"<td width='100' align='center'>"+data[i].customername+"</td>"
+					+"<td width='100' align='center'> "+data[i].cwbordertype+"</td>"
+					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
+					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
+					+"<td width='140' align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td  align='left'> "+data[i].pickaddress+"</td>"
+					+ "</tr>";
+				}
+				$("#lanjianweidaohuo").remove();
+				$("#lanjianweidaohuoTable").append(optionstring);
+				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="getlanjianweidaozhan();" id="lanjianweidaohuo">查看更多</td></tr>';
+				$("#lanjianweidaohuoTable").append(more);
+				}
+			}
+		}
+	});
+}
+
+
+
 //=========合包到货=============
 function baledaohuo(scancwb,driverid,requestbatchno){
 	if($("#baleno").val()==""){
@@ -550,6 +590,12 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 			<dt>一票多件缺货件数</dt>
 			<dd style="cursor:pointer" onclick="tabView('table_quejian');"  id="lesscwbnum" name="lesscwbnum" >0</dd>
 		</dl>
+		<!-- dmp4.2 oxo: 增加揽收未到站统计 by jinghui.pan@pjbest.com -->
+		<dl class="green">
+			<dt>揽收未到站</dt>
+			<dd style="cursor:pointer" onclick="tabView('table_oxo_lanjianweidaozhan');"  id="lanjianweidaozhancount" >0</dd>
+		</dl>
+		
 		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchimortdetail'" style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		
 		<br clear="all"/>
@@ -629,6 +675,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 				<!-- <li><a id="table_youhuowudan" href="#">有货无单明细</a></li> -->
 				<li><a id="table_quejian" href="#" onclick='getdaohuocwbquejiandataList();'>一票多件缺件</a></li>
 				<li><a href="#">异常单明细</a></li>
+				<li><a id="table_oxo_lanjianweidaozhan" href="#" onclick='getlanjianweidaozhan();'>揽收未到站</a></li>
 			</ul>
 		</div>
 		<div id="ViewList" class="tabbox">
@@ -836,6 +883,50 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 								</table>
 								<div style="height: 160px; overflow-y: scroll">
 									<table id="errorTable" width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2">
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</li>
+			<!-- 揽件未到站table view-->
+			<li>
+				<input type ="button" id="btnval" value="导出Excel" class="input_button1" onclick='exportField(6);'/>
+				<table width="100%" border="0" cellspacing="10" cellpadding="0">
+					<tbody>
+						<tr>
+							<td width="100%" height="26" align="left" valign="top">
+								<table width="100%" border="0" cellspacing="0" cellpadding="2"
+									class="table_5">
+									<tr>
+										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">订单类型</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>	
+										<td width="140" align="center" bgcolor="#f1f1f1">收件地址</td>								
+										<td  align="center" bgcolor="#f1f1f1">揽件地址</td>
+			
+									</tr>
+								</table>
+								<div style="height: 160px; overflow-y: scroll">
+									<table id="lanjianweidaohuoTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+										class="table_2">
+										<%for(CwbDetailView co : lanjianweidaohuolist){ %>
+										<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>">
+											<td width="120" align="center"><%=co.getCwb() %></td>
+											<td width="100" align="center"><%=co.getCustomername() %></td>
+											<td width="100"><%=co.getCwbordertype() %></td>
+											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
+											<td width="100"><%=co.getConsigneename() %></td>
+											<td align="140"><%=co.getConsigneeaddress() %></td>
+											<td align="left"><%=co.getPickaddress() %></td>
+										</tr>
+										<%} %>
+										<%if(lanjianweidaohuolist!=null&&lanjianweidaohuolist.size()==Page.DETAIL_PAGE_NUMBER){ %>
+											<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="getlanjianweidaozhan();" id="lanjianweidaozhan">查看更多</td></tr>
+										<%} %>
 									</table>
 								</div>
 							</td>

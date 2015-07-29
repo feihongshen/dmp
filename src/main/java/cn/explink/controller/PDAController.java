@@ -580,6 +580,13 @@ public class PDAController {
 
 		List<CwbDetailView> yidaohuoViewlist = this.getcwbDetail(yidaohuolist, customerList, showCustomerjSONArray, branchList, 2);
 
+		
+		//揽件未到货list
+		List<CwbOrder> lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), 1);
+		List<CwbDetailView> lanjianweidaohuoViewlist = this.getcwbDetail(lanjianweidaohuolist, this.customerDAO.getAllCustomers(), showCustomerjSONArray, branchList, 1);
+
+		
+		model.addAttribute("lanjianweidaohuolist", lanjianweidaohuoViewlist);
 		model.addAttribute("jinriweidaohuolist", jinriweidaohuoViewlist);
 		model.addAttribute("historyweidaohuolist", historyweidaohuoViewlist);
 
@@ -6073,9 +6080,14 @@ public class PDAController {
 		// long historyweidaohuocount =
 		// cwbDAO.getHistoryWeiDaoHuoCount(b.getBranchid(),flowordertypes,jinriweidaohuocwbs);
 
+		//揽件未到站数量统计
+		long lanjianweidaozhancount = this.cwbDAO.countLanJianWeiDaoZhanByBranch(branchid);//揽件未到站 货物数量统计
+		
+		
 		obj.put("branch", b);
 		obj.put("jinriweidaohuocount", jinriweidaohuocount);
 		obj.put("historyweidaohuocount", historyweidaohuocount);
+		obj.put("lanjianweidaozhancount", lanjianweidaozhancount);
 		obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
 		return obj;
 	}
@@ -8618,6 +8630,9 @@ public class PDAController {
 					}
 					sqlstr = this.cwbDAO.getSqlByCwb(orderflowcwbs);
 				}
+				if (type.equals("lanjianwdz")) {//揽件未到站sql
+					sqlstr = this.cwbDAO.getLanJianWeiDaoZhanByBranchidListSql(this.getSessionUser().getBranchid());
+				}
 			}
 			if (sqlstr.length() == 0) {
 				return;
@@ -8807,6 +8822,10 @@ public class PDAController {
 				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
 				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
 				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
+				
+				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
+				view.setPickaddress(wco.getRemark4());
+				
 				cwbViewlist.add(view);
 			}
 		}
@@ -9162,6 +9181,30 @@ public class PDAController {
 			}
 		}
 		return "";
+	}
+	
+	/**
+	 * 分站到货揽件未到货list
+	 *
+	 * @param page
+	 * @return
+	 */
+	@RequestMapping("/getbranchimportlanjianweidaolist")
+	public @ResponseBody
+	List<CwbDetailView> getbranchimportlanjianweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<CwbOrder> lanjianweidaohuolist = new ArrayList<CwbOrder>();
+		lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), 1);
+		
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+
+		// 历史未到货
+		List<CwbDetailView> lanjianweidaohuoViewlist = this.getcwbDetail(lanjianweidaohuolist, this.customerDAO.getAllCustomers(), showCustomerjSONArray, branchList, 1);
+
+		return lanjianweidaohuoViewlist;
+
 	}
 
 }
