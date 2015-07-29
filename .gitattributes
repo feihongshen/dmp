@@ -699,6 +699,7 @@ src/main/java/cn/explink/controller/CwbApplyController.java -text
 src/main/java/cn/explink/controller/CwbDiuShiController.java -text
 src/main/java/cn/explink/controller/CwbKuaiDiController.java -text
 src/main/java/cn/explink/controller/CwbLablePrintController.java -text
+src/main/java/cn/explink/controller/CwbOXODetailController.java -text
 src/main/java/cn/explink/controller/CwbOrderController.java -text
 src/main/java/cn/explink/controller/CwbOrderDTO.java -text
 src/main/java/cn/explink/controller/CwbOrderPDAController.java -text
@@ -916,6 +917,7 @@ src/main/java/cn/explink/dao/CwbDAO.java -text
 src/main/java/cn/explink/dao/CwbDiuShiDAO.java -text
 src/main/java/cn/explink/dao/CwbErrorDAO.java -text
 src/main/java/cn/explink/dao/CwbKuaiDiDAO.java -text
+src/main/java/cn/explink/dao/CwbOXODetailDAO.java -text
 src/main/java/cn/explink/dao/CwbOrderTypeDAO.java -text
 src/main/java/cn/explink/dao/CwbStateControlDAO.java -text
 src/main/java/cn/explink/dao/CwbTempDAO.java -text
@@ -1110,6 +1112,7 @@ src/main/java/cn/explink/domain/CwbDiuShiView.java -text
 src/main/java/cn/explink/domain/CwbError.java -text
 src/main/java/cn/explink/domain/CwbKuaiDi.java -text
 src/main/java/cn/explink/domain/CwbKuaiDiView.java -text
+src/main/java/cn/explink/domain/CwbOXODetailBean.java -text
 src/main/java/cn/explink/domain/CwbOrder.java -text
 src/main/java/cn/explink/domain/CwbOrderAndCustomname.java -text
 src/main/java/cn/explink/domain/CwbOrderCopyToOms.java -text
@@ -1345,6 +1348,7 @@ src/main/java/cn/explink/enumutil/CwbDateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOXOStateEnum.java -text
+src/main/java/cn/explink/enumutil/CwbOXOTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderListTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderPDAEnum.java -text
@@ -2141,6 +2145,7 @@ src/main/webapp/WEB-INF/jsp/cwborder/warehousebackpage.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbordertype/add.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbordertype/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbordertype/list.jsp -text
+src/main/webapp/WEB-INF/jsp/cwboxodetail/list.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbstatecontrol/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/cwbstatecontrol/list.jsp -text
 src/main/webapp/WEB-INF/jsp/dashboard.jsp -text
