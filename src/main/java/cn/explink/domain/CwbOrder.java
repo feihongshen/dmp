@@ -132,6 +132,10 @@ public class CwbOrder {
 	private int firstlevelid; //一级滞留原因id
 	private String city;//通过百度API匹配的城市
 	private String area;//通过百度API匹配的城区区域
+	
+	private long pickbranchid; //提货站点id
+	private long oxopickstate; //oxo揽件状态  。取值参考 CwbOXOStateEnum枚举类
+	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 
 	/**
@@ -1152,5 +1156,31 @@ public class CwbOrder {
 	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
 		this.consigneephoneOfkf = consigneephoneOfkf;
 	}
+
+	public long getPickbranchid() {
+		return pickbranchid;
+	}
+
+	public void setPickbranchid(long pickbranchid) {
+		this.pickbranchid = pickbranchid;
+	}
+
+	public long getOxopickstate() {
+		return oxopickstate;
+	}
+
+	public void setOxopickstate(long oxopickstate) {
+		this.oxopickstate = oxopickstate;
+	}
+
+	public long getOxodeliverystate() {
+		return oxodeliverystate;
+	}
+
+	public void setOxodeliverystate(long oxodeliverystate) {
+		this.oxodeliverystate = oxodeliverystate;
+	}
+	
+	
 
 }
