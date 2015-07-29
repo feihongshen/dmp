@@ -948,13 +948,13 @@ public class UserDAO {
 		return this.jdbcTemplate.query(sql, new UserRowMapper(), pfruleid);
 	}
 
-	public List<User> getUsersByrealnames(String usernames) {
-		String sql = "select * from express_set_user wehere realname in("+usernames+")";
+	public List<User> getUsersByuserids(String userids) {
+		String sql = "select * from express_set_user where userid in("+userids+")";
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
 	}
 
-	public long updatelateradvanceByreamlname(String realname, BigDecimal add) {
-		String sql = "update express_set_user set lateradvance=? where realname=?";
-		return this.jdbcTemplate.update(sql,add,realname);
+	public long updatelateradvanceByuserid(long userid, BigDecimal add) {
+		String sql = "update express_set_user set lateradvance=? where userid=?";
+		return this.jdbcTemplate.update(sql,add,userid);
 	}
 }

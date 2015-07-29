@@ -198,22 +198,22 @@ function submitform(){
 
 function hexiao(){
 	var actionvar = $("#saveform").attr("action");
-	var ids = "";
+	var batchids = "";
 	$('input[type="checkbox"][name="checkname"]').each(
 		function(){
 			if($(this).attr("checked")=="checked"){
-				ids += $(this).val(); 	
+				batchids += $(this).val()+","; 	
 			}
 		}		
 	);
-	if(ids.length==0){
+	if(batchids.length==0){
 		alert("请选择需要核销的信息!");
 	}else{
-		ids = ids.substring(0,ids.length-1);
+		batchids = batchids.substring(0,batchids.length-1);
 		$.ajax({
 		   type: "POST",
 		   url: actionvar,
-		   data: "ids="+ids,
+		   data: {batchids:batchids},
 		   dataType : "json",
 		   success: function(data){
 		     if(data.errorCode==0){
@@ -558,7 +558,7 @@ function hexiao(){
 				
 				<c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
-						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.id}"/></td>
+						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.batchid}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
 						<td align="center" valign="middle">${salary.realname}</td>
 						<td align="center" valign="middle">${salary.idcard}</td>

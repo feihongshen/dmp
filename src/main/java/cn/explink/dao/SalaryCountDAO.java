@@ -179,7 +179,7 @@ public class SalaryCountDAO {
 	}
 	public long updateSalaryState(String ids) {
 		try{
-			String sql = "update express_ops_salaryCount_detail set batchstate=? where id in("+ids+")";
+			String sql = "update express_ops_salaryCount_detail set batchstate=? where batchid in("+ids+")";
 			return this.jdbcTemplate.update(sql, BatchSateEnum.Yihexiao.getValue());
 		}catch(Exception e){
 			e.printStackTrace();

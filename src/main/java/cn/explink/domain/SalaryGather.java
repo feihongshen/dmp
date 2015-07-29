@@ -9,6 +9,8 @@ public class SalaryGather {
 	private String batchid;
 	/**站点id**/
 	private long branchid;
+	/**姓名id**/
+	private long userid;
 	/**姓名**/
 	private String	realname;
 	/**身份证号码**/
@@ -118,6 +120,13 @@ public class SalaryGather {
 	
 	/**站点名=====用于显示**/
 	private String branchname;
+	
+	public long getUserid() {
+		return userid;
+	}
+	public void setUserid(long userid) {
+		this.userid = userid;
+	}
 	/**
 	 * @return the id
 	 */

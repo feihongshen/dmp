@@ -79,6 +79,7 @@ public class SalaryGatherDao {
 			salary.setSalarypush(rs.getBigDecimal("salarypush"));//提成
 			salary.setBranchid(rs.getLong("branchid"));
 			salary.setBranchname(branchDAO.getbranchname(rs.getLong("branchid"))==null?"":branchDAO.getbranchname(rs.getLong("branchid")).getBranchname());
+			salary.setUserid(rs.getLong("userid"));
 			return salary;
 		}
 	}
@@ -94,7 +95,7 @@ public class SalaryGatherDao {
 				+ "agejob,bonusroom,bonusallday,bonusfood,bonustraffic,bonusphone,bonusweather,penalizecancel,penalizecancel_import,bonusother1,bonusother2,bonusother3,"
 				+ "bonusother4,bonusother5,bonusother6,overtimework,attendance,security,gongjijin,foul,foul_import,goods,dorm,penalizeother1,penalizeother2,penalizeother3,"
 				+ "penalizeother4,penalizeother5,penalizeother6,imprestgoods,imprestother1,imprestother2,imprestother3,imprestother4,imprestother5,imprestother6,salaryaccrual,"
-				+ "carrent,carmaintain,carfuel,pushcash,salarypush,tax,salary,accountSingle) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "carrent,carmaintain,carfuel,pushcash,salarypush,tax,salary,accountSingle,userid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -150,6 +151,7 @@ public class SalaryGatherDao {
 						ps.setBigDecimal(50, salaryGather.getTax());
 						ps.setBigDecimal(51, salaryGather.getSalary());
 						ps.setLong(52, salaryGather.getAccountSingle());
+						ps.setLong(53, salaryGather.getUserid());
 					}
 				});
 	}
@@ -198,7 +200,7 @@ public class SalaryGatherDao {
 	}
 
 	public List<SalaryGather> getSalaryGathersByids(String ids) {
-		String sql = "select * from express_ops_salarygather_detail where id in("+ids+")";
+		String sql = "select * from express_ops_salarygather_detail where batchid in("+ids+")";
 		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper());
 	}
 }

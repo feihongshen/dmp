@@ -245,47 +245,56 @@ public class SalaryCountController {
 	
 	@RequestMapping("/hexiao")
 	public @ResponseBody
-	String heXiao(@RequestParam(value = "ids",required = false,defaultValue = "") String ids){
+	String heXiao(@RequestParam(value = "batchids",required = false,defaultValue = "") String ids){
 		try{
+			
 			long counts = 0;
 			if(!"".equals(ids)){
+				String batchids = "";
+				String[] strArray = ids.split(",");
+				for(String strs : strArray){
+					batchids += "'"+strs+"',";
+				}
+				if(batchids.length()>0){
+					batchids = batchids.substring(0,batchids.length()-1);
+				}
 				//更改批次为已核销状态(批量)
 				//返回修改成功的单量
-				counts = this.salaryCountDAO.updateSalaryState(ids);
+				counts = this.salaryCountDAO.updateSalaryState(batchids);
 				//对user表维护字段进行修改（后期预付款字段later...）
-				String userrealnames = "";
-				Map<String, BigDecimal> map = new HashMap<String, BigDecimal>();
-				List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(ids);
+				String userids = "";
+				Map<Long, BigDecimal> map = new HashMap<Long, BigDecimal>();
+				List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(batchids);
 				if(sgList!=null&&!sgList.isEmpty()){
 					for(SalaryGather sg : sgList){
-						userrealnames += "'"+sg.getRealname()+"',";
-						map.put(sg.getRealname(), sg.getImprestgoods());
+						userids += sg.getUserid()+",";
+						map.put(sg.getUserid(), sg.getImprestgoods());
 					}
 				}
-				List<String> strList = new ArrayList<String>();
+				List<Long> strList = new ArrayList<Long>();
 				if(!map.isEmpty()&&map.size()>0){
-					Set<String> ssList =  map.keySet();
+					Set<Long> ssList =  map.keySet();
 					Iterator oter = ssList.iterator();
 					while(oter.hasNext()){
-						String str = (String)(oter.next());
+						long str = (Long)(oter.next());
 						strList.add(str);
 					}
 				}
-				String usernames = "";
-				if(userrealnames.length()>0){
-					usernames = usernames.substring(0,userrealnames.length()-1);
+				String useridStr = "";
+				if(userids.length()>0){
+					useridStr = userids.substring(0,userids.length()-1);
 				}
 				List<User> userList = new ArrayList<User>();
-				if(usernames.length()>0){
-					userList = this.userDAO.getUsersByrealnames(usernames);
+				if(useridStr.length()>0){
+					userList = this.userDAO.getUsersByuserids(useridStr);
 				}
 				if(strList!=null&&!strList.isEmpty()&&userList!=null&&!userList.isEmpty()){
-					for(String str : strList){
+					for(long userid : strList){ 
 						for(User user : userList){
-							if(str==user.getRealname()  ){
-								BigDecimal bdec = map.get(str);
+							if(userid==user.getUserid()){
+								BigDecimal bdec = map.get(userid);
 								//修改此时配送员的当前(后期预付款)
-								this.userDAO.updatelateradvanceByreamlname(str,user.getLateradvance().add(bdec));
+								this.userDAO.updatelateradvanceByuserid(userid,user.getLateradvance().add(bdec));
 							}
 						}
 					}

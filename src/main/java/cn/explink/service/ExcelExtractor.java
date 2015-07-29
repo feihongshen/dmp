@@ -1477,8 +1477,10 @@ public abstract class ExcelExtractor {
 			}
 			if(user.getJiesuanstate() == JiesuanstateEnum.TingzhiJiesuan.getValue()){
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"为离职状态,停止结算！", importflag);
+				return null;
 			}
 		}
+		salary.setUserid(user.getUserid());//配送员id
 		salary.setBatchid(sc.getBatchid());//批次编号
 		salary.setBranchid(sc.getBranchid());//直营站点
 		salary.setRealname(realname);
