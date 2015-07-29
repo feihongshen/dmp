@@ -5,7 +5,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
@@ -34,8 +38,10 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
@@ -194,6 +200,12 @@ public class VipShopOXOGetCwbDataService {
 
 	}
 	
+	/**
+	 * 订单报文实体 转换 为 CwbOrderDTO
+	 * @param cwbOrder
+	 * @param order
+	 * @param vipshop
+	 */
 	private void convertOrderVoToCwbOrderDTO(CwbOrderDTO cwbOrder,TpsOrderVo.Orders.Order order,VipShop vipshop){
 		if(StringUtils.isNotBlank(order.getBusinessType())){
 			if(order.getBusinessType().equals("20")){
@@ -211,12 +223,12 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setRemark2(order.getCustomerName());//订单客户，还不确定存到哪个字段 
 		cwbOrder.setRemark3(order.getValuationValue());//保价价值 ,新增字段
 		cwbOrder.setRemark4(order.getCnorProv()+"&"+order.getCnorCity()+"&"+order.getCnorRegion()+"&"+order.getCnorAddr());//发货省，市，区，详细地址
-		cwbOrder.setRemark5( order.getWarehouse()+"&"+order.getWarehouseAddr());//仓库+仓库地址 
+		cwbOrder.setRemark5(order.getWarehouse()+"&"+order.getWarehouseAddr());//仓库+仓库地址 
 	
 		cwbOrder.setCustomercommand(order.getRequiredTime());//要求提货时间
 		cwbOrder.setTranscwb(order.getCustOrderNo());//TMS订单号
 		cwbOrder.setCwb(order.getOrderSn()); //订单号，tps运单号
-		cwbOrder.setConsigneename( order.getBuyerName());//收件人
+		cwbOrder.setConsigneename(order.getBuyerName());//收件人
 		cwbOrder.setConsigneeaddress(order.getBuyerAddress());//收件人地址
 		cwbOrder.setConsigneephone(order.getTel());//收件人电话
 		cwbOrder.setConsigneemobile(order.getMobile());//收件人手机
@@ -255,12 +267,68 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 				
 	}
+	
+	/**
+	 * 订单报文实体转换为 map
+	 * @param order
+	 * @param vipshop
+	 * @return
+	 */
+	private Map<String,String> convertOrderVoToMap(TpsOrderVo.Orders.Order order){
+		Map<String,String> orderMap = new HashMap<String,String>();
+		orderMap.put("consigneename", order.getBuyerName());
+		orderMap.put("sendcarnum", order.getTotalPack());
+		orderMap.put("consigneemobile", order.getMobile());
+		orderMap.put("consigneephone", order.getTel());
+		orderMap.put("consigneepostcode", order.getPostCode());
+		
+		orderMap.put("consigneeaddress", order.getBuyerAddress());
+		orderMap.put("receivablefee", order.getMoney());
+		orderMap.put("customercommand", order.getRequiredTime());
+		orderMap.put("remark1", order.getBrandName()+"&"+order.getStoreName()+"&"+order.getStoreContacts()+"&"+order.getStoreTel());
+		orderMap.put("remark2", order.getCustomerName());
+		orderMap.put("remark3", order.getValuationValue());
+		orderMap.put("remark4", order.getCnorProv()+"&"+order.getCnorCity()+"&"+order.getCnorRegion()+"&"+order.getCnorAddr());
+		
+		orderMap.put("remark5", order.getWarehouse()+"&"+order.getWarehouseAddr());
+		orderMap.put("cargorealweight", order.getOriginalWeight());
+		
+		if(StringUtils.isNotBlank(order.getExtPayType())){
+			if(order.getExtPayType().equals("-1")){ //非货到付款
+				orderMap.put("paywayid", "" + PaytypeEnum.Qita.getValue());
+			}
+			
+			if(order.getExtPayType().equals("0")){//货到付款现金支付
+				orderMap.put("paywayid", "" + PaytypeEnum.Xianjin.getValue());
+			}
+			
+			if(order.getExtPayType().equals("1")){//货到付款刷卡支付
+				orderMap.put("paywayid", "" + PaytypeEnum.Pos.getValue());
+			}
+			
+			if(order.getExtPayType().equals("2")){//货到付款支付宝 支付
+				orderMap.put("paywayid", "" + PaytypeEnum.CodPos.getValue());
+			}
+		}
+		
+		if(StringUtils.isBlank(order.getExtPayType())){
+			orderMap.put("paywayid", "" + PaytypeEnum.Qita.getValue());
+		}
+		orderMap.put("cargotype", order.getTransportType());
+		orderMap.put("cwbordertypeid", "" + Long.valueOf(order.getBusinessType()));
+		orderMap.put("shouldfare", order.getFreight());
+		orderMap.put("cwb", order.getOrderSn());
+		
+		return orderMap;
+		
+	}
 
 	/**
 	 * 插入到临时表
 	 * @param orders
 	 */
-	private void extractedDataImport(List<TpsOrderVo.Orders.Order> orders,VipShop vipshop){
+	@Transactional
+	public void extractedDataImport(List<TpsOrderVo.Orders.Order> orders,VipShop vipshop){
 	
 		long warehouseid = vipshop.getWarehouseid(); // 获取虚拟库房
 		
@@ -271,37 +339,80 @@ public class VipShopOXOGetCwbDataService {
 		user.setUserid(1);
 		user.setBranchid(warehouseid);
 		
+		
 		for(TpsOrderVo.Orders.Order order : orders){
 			try{
-				CwbOrderDTO cwbOrder = new CwbOrderDTO();
-				convertOrderVoToCwbOrderDTO(cwbOrder,order,vipshop);
+				
+				/**
+				 * 处理新增命令 逻辑
+				 */
 				if("new".equalsIgnoreCase(order.getCmdType())){
-					//cwb 对应 order_sn是否已经存在 continue
-					if(dataImportDAO_B2c.getCwbByCwbB2ctemp(cwbOrder.getCwb()) != null){
+					//如果临时表中已存在对应记录 则 continue
+					if(dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getOrderSn()) != null){
+						logger.warn("接收到VipShop_OXO发来cmd_type='new'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail_b2ctemp表中已存在对应记录，系统将不做任何操作。");
 						continue;
 					}
+					CwbOrderDTO cwbOrder = new CwbOrderDTO();
+					convertOrderVoToCwbOrderDTO(cwbOrder,order,vipshop);
 					dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
 	
 				}
+				/**
+				 * 处理编码命令 逻辑
+				 */
 				else if("edit".equalsIgnoreCase(order.getCmdType())){
-					//判断揽件状态是否 是 揽件成功 不允许编辑 continue
-					//cwbDAO.get
-					//dataImportDAO_B2c.update
-				}
-				else if("cancel".equalsIgnoreCase(order.getCmdType())){
+					CwbOrderDTO cwbOrder_temp = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getOrderSn());
+					if(cwbOrder_temp == null ){//如果临时表还不存在 指定 cwb的订单数据 ，则continue
+						logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getOrderSn()+"。但未在express_ops_cwb_detail_b2ctemp表中找到对应记录，系统将不做任何操作。");
+						continue;
+					}
 					
-					//TODO 判断订单是否已经揽收成功，如果揽收成功则不允许取消。如果未揽收成功，则执行取消操作
-					dataImportDAO_B2c.dataLoseB2ctempByCwb(cwbOrder.getCwb());
-					this.cwbDAO.dataLoseByCwb(cwbOrder.getCwb());
-					cwbOrderService.datalose_vipshop(cwbOrder.getCwb());
+					if(cwbOrder_temp.getGetDataFlag() != 1){//如果临时表数据没有同步到了主表，只需修改临时表数据
+						//update 临时表
+						dataImportDAO_B2c.updateBycwb(this.convertOrderVoToMap(order));
+						continue;
+					}
+					
+					if(cwbOrder_temp.getGetDataFlag() == 1){//如果临时表数据已经同步到了主表,只需修改主表数据
+						CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
+						if(cwbOrder_biz != null){
+							//如果已揽收成功，不允编辑
+							if(cwbOrder_biz.getOxopickstate() == CwbOXOStateEnum.Processed.getValue()){
+								logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做修改操作。");
+								continue;
+							}
+							cwbDAO.updateBycwb(this.convertOrderVoToMap(order));
+							//TODO 重新进行地址解析
+						}
+					}
+					
+
+					
+				}
+				/**
+				 * 处理取消命令 逻辑
+				 */
+				else if("cancel".equalsIgnoreCase(order.getCmdType())){
+					CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
+					if(cwbOrder_biz != null){
+						//如果已揽收成功，不允取消
+						if(cwbOrder_biz.getOxopickstate() == CwbOXOStateEnum.Processed.getValue()){
+							logger.warn("接收到VipShop_OXO发来cmd_type='cancel'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做取消操作。");
+							continue;
+						}
+					}
+					dataImportDAO_B2c.dataLoseB2ctempByCwb(order.getOrderSn());
+					this.cwbDAO.dataLoseByCwb(order.getOrderSn());
+					cwbOrderService.datalose_vipshop(order.getOrderSn());
 				}
 			
 			}catch(Exception e){
 				logger.error("VIP_OXO数据插入临时表发生未知异常cwb=" + order.getOrderSn(), e);
 			}
 			
-
 		}
+		vipshop.setVipshop_seq(vipshop.getVipshop_seq() + orders.size());
+		this.updateMaxSEQ(B2cEnum.VipShop_OXO.getKey(), vipshop);
 	}
 	
 
@@ -426,17 +537,15 @@ public class VipShopOXOGetCwbDataService {
 		return result.toString();
 	}
 	public static void main(String[] args) {
-		//String[] seq_arrs={"110000011787834","110000011787835","110000011787838","110000011787840"};
 		
-		//System.out.println(getMaxSEQ(seq_arrs));
-		VipShop vipshop = new VipShop();
-		vipshop.setGetCwb_URL("http://test.tps.vip.com:7172/ws/tpsCarrierService");
-		vipshop.setPrivate_key("30113");
-		vipshop.setShipper_no("NHLDP089");
-		vipshop.setVipshop_seq(0);
-		vipshop.setGetMaxCount(10);
-		VipShopOXOGetCwbDataService service = new VipShopOXOGetCwbDataService();
-		service.requestHttpAndCallBackAnaly(vipshop);
+//		VipShop vipshop = new VipShop();
+//		vipshop.setGetCwb_URL("http://test.tps.vip.com:7172/ws/tpsCarrierService");
+//		vipshop.setPrivate_key("30113");
+//		vipshop.setShipper_no("NHLDP089");
+//		vipshop.setVipshop_seq(0);
+//		vipshop.setGetMaxCount(10);
+//		VipShopOXOGetCwbDataService service = new VipShopOXOGetCwbDataService();
+//		service.requestHttpAndCallBackAnaly(vipshop);
 		
 	}
 	
