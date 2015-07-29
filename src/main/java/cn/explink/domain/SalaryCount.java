@@ -3,6 +3,8 @@
  */
 package cn.explink.domain;
 
+import java.util.List;
+
 /**
  * @author Administrator
  *
@@ -22,6 +24,15 @@ private String branchname;
 
 //用于页面传值时判断使用
 private int isnow;
+//查看修改的时候需要显示的值
+private List<SalaryGather> salaryGathers;
+
+public List<SalaryGather> getSalaryGathers() {
+	return salaryGathers;
+}
+public void setSalaryGathers(List<SalaryGather> salaryGathers) {
+	this.salaryGathers = salaryGathers;
+}
 public int getIsnow() {
 	return isnow;
 }

@@ -163,11 +163,71 @@ function seeoralter(){
 				$("#remark").val(data.remark);//备注
 				$('#save').dialog('open');
 				$('#save').removeAttr('hidden');
+				var insertHtml="";
+				$.each(data.salaryGathers,function (i,salary){
+					insertHtml+="<tr id=\"sg\" > "+
+					"						<td align=\"center\" valign=\"middle\"><input type=\"checkbox\" id=\"id\" name=\"checkname\" value=\""+salary.batchid+"\"/></td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.branchname+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.realname+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.idcard+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.accountSingle+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.salarybasic+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.salaryjob+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.pushcash+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.jobpush+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.salarypush+"</td><!-- 提成 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.agejob+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusroom+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusallday+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusfood+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonustraffic+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusphone+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusweather+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizecancel+"</td><!-- 扣款撤销 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizecancel_import+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother1+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother2+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother3+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother4+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother5+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.bonusother6+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.overtimework+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.attendance+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.security+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.gongjijin+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.foul+"</td><!-- 违纪违规扣罚 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.foul_import+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.goods+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.dorm+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother1+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother2+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother3+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother4+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother5+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.penalizeother6+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestgoods+"</td><!-- 货物预付款 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother1+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother2+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother3+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother4+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother5+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.imprestother6+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.carrent+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.carmaintain+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.carfuel+"</td>"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.salaryaccrual+"</td><!-- 应该工资 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.tax+"</td><!-- 个税 -->"+
+					"						<td align=\"center\" valign=\"middle\">"+salary.salary+"</td><!-- 实发工资 -->"+
+					"					</tr>";
+					});
+				$("#sgListAll").html(insertHtml);
 			}else{
 				alert("系统异常！");
 			}
-		}
-	});
+			
+		
+	
+	}});
 }
 
 function checkit(){ 
@@ -179,6 +239,20 @@ function checkit(){
 			else {
 				$(this).removeAttr('checked');
 			}
+			
+		});
+}
+
+function checkitAdd(){ 
+	var checked=$("#allAdd").attr('checked');
+	$("[name=checkname]").each(
+		function(){
+			if(checked=='true'||checked=='checked'){
+				$(this).attr('checked',checked);}
+			else {
+				$(this).removeAttr('checked');
+			}
+			
 		});
 }
 
@@ -213,17 +287,18 @@ function hexiao(){
 		$.ajax({
 		   type: "POST",
 		   url: actionvar,
+		   async:false,
 		   data: {batchids:batchids},
-		   dataType : "json",
-		   success: function(data){
-		     if(data.errorCode==0){
-		    	 alert(data.error);
-		     }else{
-		    	 alert(data.error);
-		     }
+		   dataType : 'json',
+		   success: function (data){
+			     if(data.errorCode==0){
+			    	 alert("成功核销"+data.error+"单数据");
+		 			window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
+			     }else{
+			    	 $.messager.alert("提示",data.error,"info");
+			     } 
 		   }
 		});
-		window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
 	}
 }
 
@@ -497,12 +572,13 @@ function hexiao(){
 		        </td>
          	</tr>
          </form>	
+          
          	<tr>
          		<div class="right_title">
 				<div style="overflow: auto;">
 			<table width="700%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				<tr>
-					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="all"  onclick="checkit()"/> </td>
+					<td align="center" valign="middle" style="font-weight: lighter;width: 20px;"><input type="checkbox" id="allAdd"  onclick="checkitAdd()"/> </td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 100px;"> 站点</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 50px;"> 姓名</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 120px;"> 身份证号</td>
@@ -555,8 +631,11 @@ function hexiao(){
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 个税</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 实发工资</td>
 				</tr>
+				<tbody id="sgListAll">
 				
-				<c:forEach items="${sgList}" var="salary">
+				
+				</tbody>
+				<%-- <c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
 						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.batchid}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
@@ -611,7 +690,7 @@ function hexiao(){
 						<td align="center" valign="middle">${salary.tax}</td><!-- 个税 -->
 						<td align="center" valign="middle">${salary.salary}</td><!-- 实发工资 -->
 					</tr>
-				</c:forEach>
+				</c:forEach> --%>
 				</table>
 					<input type="button" onclick="" value="移除"/>
 				</div>

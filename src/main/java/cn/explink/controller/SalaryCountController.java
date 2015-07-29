@@ -209,12 +209,14 @@ public class SalaryCountController {
 		String batchid = request.getParameter("batchid");
 		SalaryCount salary=this.salaryCountDAO.getSalaryCountBybatchid(batchid);
 		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
+		List<SalaryGather> salaryGathers=salaryGatherDao.getSalaryGathers(batchid);
 		for(Branch b:branchList){
 			if(b.getBranchid()==salary.getBranchid()){
 				salary.setBranchname(b.getBranchname());
 			}
 		}
 		try {
+			salary.setSalaryGathers(salaryGathers);
 			return JsonUtil.translateToJson(salary);
 		} catch (Exception e) {
 			e.printStackTrace();	
@@ -300,7 +302,7 @@ public class SalaryCountController {
 					}
 				}
 			}
-			return "{\"errorCode\":0,\"error\":"+counts+"\"}";
+			return "{\"errorCode\":0,\"error\":"+counts+"}";
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{\"errorCode\":1,\"error\":\"核销系统异常！\"}";
@@ -382,6 +384,5 @@ public class SalaryCountController {
 		excelExtractor.extractSalaryGather(inputStream,importflag,user,sc);
 
 	}
-	
 	
 }
