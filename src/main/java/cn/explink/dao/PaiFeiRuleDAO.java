@@ -153,6 +153,18 @@ public class PaiFeiRuleDAO {
 			return null;
 		}
 	}
+	/**
+	 * @param pfruleNO
+	 * @return
+	 */
+	public List<PaiFeiRule> getPaiFeiRuleByIds(String pfruleids) {
+		String sql = "select * from express_ops_paifeirule where  id in("+pfruleids+") ";
+		try {
+			return this.jdbcTemplate.query(sql, new PaiFeiRuleRowMapper());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * @param no
