@@ -229,6 +229,9 @@ public class CwbDAO {
 			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
 			cwbOrder.setCity(StringUtil.nullConvertToEmptyString(rs.getString("city")));
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
+			cwbOrder.setPickbranchid(rs.getLong("pickbranchid"));
+			cwbOrder.setOxodeliverystate(rs.getLong("oxodeliverystate"));
+			cwbOrder.setOxopickstate(rs.getLong("oxopickstate"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
