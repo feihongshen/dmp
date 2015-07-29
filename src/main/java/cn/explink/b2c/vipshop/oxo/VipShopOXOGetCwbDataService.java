@@ -33,11 +33,8 @@ import cn.explink.b2c.vipshop.VipShopConfig;
 import cn.explink.b2c.vipshop.VipShopExceptionHandler;
 import cn.explink.b2c.vipshop.oxo.response.TpsOrderVo;
 import cn.explink.controller.CwbOrderDTO;
-import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.dao.OrderGoodsDAO;
-import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
@@ -61,21 +58,12 @@ public class VipShopOXOGetCwbDataService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	DataImportDAO_B2c dataImportDAO_B2c;
-
 	@Autowired
 	JointService jointService;
 	@Autowired
 	CustomerDAO customerDAO;
 	@Autowired
-	CustomWareHouseDAO customWarehouseDAO;
-	@Autowired
-	OrderGoodsDAO orderGoodsDAO;
-	@Autowired
-	UserDAO userDAO;
-	@Autowired
 	DataImportService dataImportService;
-	@Autowired
-	ReaderXMLHandler readXML;
 	@Autowired
 	CwbDAO cwbDAO;
 	
@@ -344,10 +332,15 @@ public class VipShopOXOGetCwbDataService {
 		user.setUserid(1);
 		user.setBranchid(warehouseid);
 		
+		long maxSeq = vipshop.getVipshop_seq();
 		
 		for(TpsOrderVo.Orders.Order order : orders){
 			try{
-				
+				long id =  Long.valueOf(order.getId()).longValue();
+				if(maxSeq < id){ //把每次请求返回的最大id作为下次请求的seq.
+					maxSeq = id;
+				}
+			
 				/**
 				 * 处理新增命令 逻辑
 				 */
@@ -378,7 +371,7 @@ public class VipShopOXOGetCwbDataService {
 						continue;
 					}
 					
-					if(cwbOrder_temp.getGetDataFlag() != 0){//如果临时表数据已经同步到了主表,只需修改主表数据
+					if(cwbOrder_temp.getGetDataFlag() != 0){//如果临时表数据已经同步到了主表,修改主表数据
 						CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
 						if(cwbOrder_biz != null){
 							//如果已揽收成功，不允编辑
@@ -386,8 +379,16 @@ public class VipShopOXOGetCwbDataService {
 								logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做修改操作。");
 								continue;
 							}
-							cwbDAO.updateBycwb(this.convertOrderVoToMap(order));
-							//TODO 重新进行地址解析
+							Map<String,String> orderMap  = this.convertOrderVoToMap(order);
+							boolean needRematchAddress = false;
+							//如果发货地址 和 收货地址发生了变化，需要重新地址解析
+							if(!orderMap.get("remark4").equals(cwbOrder_biz.getRemark4()) || !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
+								needRematchAddress = true;
+							}
+							cwbDAO.updateBycwb(orderMap);
+							if(needRematchAddress){
+								//TODO 重新进行地址解析
+							}
 						}
 					}
 					
@@ -416,7 +417,7 @@ public class VipShopOXOGetCwbDataService {
 			}
 			
 		}
-		vipshop.setVipshop_seq(vipshop.getVipshop_seq() + orders.size());
+		vipshop.setVipshop_seq(maxSeq);
 		this.updateMaxSEQ(B2cEnum.VipShop_OXO.getKey(), vipshop);
 	}
 	
@@ -495,8 +496,7 @@ public class VipShopOXOGetCwbDataService {
 		try {
 			String soapActionString = nameSpace + "/" + methodName;
 			StringBuffer paramXml = new StringBuffer();
-			readXML = readXML == null? new ReaderXMLHandler():readXML;
-			paramXml.append("<arg0>" + readXML.parse(requestXML) + "</arg0>");
+			paramXml.append("<arg0>" + readXMLHandler.parse(requestXML) + "</arg0>");
 			paramXml.append("<arg1>" + sign.toLowerCase() + "</arg1>");
 			paramXml.append("<arg2>S201</arg2>");
 
