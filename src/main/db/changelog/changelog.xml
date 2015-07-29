@@ -8001,4 +8001,13 @@ CREATE TABLE `cs_complaint_accept` (
 		                                                   ADD COLUMN `kpifee` DECIMAL(19,2) DEFAULT '0.00';
 		</sql>
 	</changeSet>
+	
+	<changeSet id="liangyedong-2015-07-29-02" author="liangyedong">
+	   	<sql>
+			ALTER TABLE `express_ops_cwb_detail`  ADD INDEX `detail_pickbranchid_idx` (`pickbranchid`), 
+                                                  ADD INDEX `detail_oxopickstate_idx` (`oxopickstate`),
+                                                  ADD INDEX `detail_oxodeliverystate_idx` (`oxodeliverystate`);
+	   	</sql>
+	</changeSet>
+	
 </databaseChangeLog>
