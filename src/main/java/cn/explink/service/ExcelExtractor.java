@@ -1667,7 +1667,9 @@ public abstract class ExcelExtractor {
 
 			//标准费用(平均值)
 			BigDecimal average = BigDecimal.ZERO;
-			average = basicfee.divide(new BigDecimal(new DecimalFormat("0").format(new BigDecimal(dsList.size()))));
+			if(dsList!=null&&!dsList.isEmpty()){
+				average = basicfee.divide(new BigDecimal(new DecimalFormat("0").format(new BigDecimal(dsList.size()))));
+			}
 			//调整额度
 			BigDecimal tiaozheng = average.multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
 
