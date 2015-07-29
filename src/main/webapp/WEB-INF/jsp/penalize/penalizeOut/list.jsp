@@ -401,7 +401,7 @@ function showUp()
 	</c:if>
 	<form action="${pageContext.request.contextPath}/penalizeOut/exportExcel" method="post" id="exportExcel">
 	<input type="hidden" name="cwbs" value="${cwbstr}"/>
-	<input type="hidden" name="cutomeird" value="${customerid }"/>
+	<input type="hidden" name="customeird" value="${customerid }"/>
 	<input type="hidden" name="flowordertype" value="${flowordertype }"/>
 	<input type="hidden" name="penalizeOutbig" value="${penalizeOutbig }"/>
 	<input type="hidden" name="penalizeOutsmall" value="${penalizeOutsmall }"/>
