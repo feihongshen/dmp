@@ -1089,10 +1089,10 @@ function deleteExceedSubsidyApply(){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
 			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','1');$('#exceedSubsidyApplyListForm').submit();" >第一页</a>　
-			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#exceedSubsidyApplyListForm').submit();">上一页</a>　
-			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#exceedSubsidyApplyListForm').submit();" >下一页</a>　
-			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#exceedSubsidyApplyListForm').submit();" >最后一页</a>
+			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${pageContext.request.contextPath}/exceedSubsidyApply/exceedSubsidyApplyList/1');$('#exceedSubsidyApplyListForm').submit();" >第一页</a>　
+			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${pageContext.request.contextPath}/exceedSubsidyApply/exceedSubsidyApplyList/${page_obj.previous<1?1:page_obj.previous}');$('#exceedSubsidyApplyListForm').submit();">上一页</a>　
+			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${pageContext.request.contextPath}/exceedSubsidyApply/exceedSubsidyApplyList/${page_obj.next<1?1:page_obj.next }');$('#exceedSubsidyApplyListForm').submit();" >下一页</a>　
+			<a href="javascript:$('#exceedSubsidyApplyListForm').attr('action','${pageContext.request.contextPath}/exceedSubsidyApply/exceedSubsidyApplyList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#exceedSubsidyApplyListForm').submit();" >最后一页</a>
 			　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 			<select id="selectPg" onchange="$('#exceedSubsidyApplyListForm').attr('action',$(this).val());$('#exceedSubsidyApplyListForm').submit()">
 				<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
@@ -1107,10 +1107,10 @@ function deleteExceedSubsidyApply(){
 <div>
 	<form action="<%=request.getContextPath()%>/exceedSubsidyApply/exceedSubsidyApplyList/1" method="post" id="exceedSubsidyApplyListForm">
 		<input type="hidden" name="cwbOrder" value="${queryConditionVO.cwbOrder}" />
-		<input type="hidden" name="applyState" value="${queryConditionVO.applyState}" />
+		<input type="hidden" name="applyState" value="${empty queryConditionVO.applyState ? '0' : queryConditionVO.applyState}" />
 		<input type="hidden" name="deliveryPersonName" value="${queryConditionVO.deliveryPersonName}" />
 		<input type="hidden" name="column" value="${queryConditionVO.column}" />
-		<input type="hidden" name="column" value="${queryConditionVO.columnOrder}" />
+		<input type="hidden" name="columnOrder" value="${queryConditionVO.columnOrder}" />
 	</form>
 </div>
 </body>

@@ -215,7 +215,7 @@ function addContract() {
 			'					</tr>'+
 			'					<tr id="firstDepositTr" style="display: none">'+
 			'						<th align="left"><font color="red">*</font>押金收取日期</th>'+
-			'						<td><input type="text" name="depositCollectDate" id="depositCollectDate" value="" class="input_text1"/></td>'+
+			'						<td><input type="text" name="depositCollectDate" id="depositCollectDate" readonly="true" value="" class="input_text1"/></td>'+
 			'						<th align="left"><font color="red">*</font>押金收取金额</th>'+
 			'						<td><input type="text" name="depositCollectAmount" value="" id="depositCollectAmount" maxlength="20"  onblur="isFloatVal(this)"/></td>'+
 			'						<th></th>'+
@@ -874,7 +874,7 @@ function addTr(){
 	checkTd.append($("<input type='checkbox' name='count' value='checkbox"+rowCount+"'>"));
 	tr.append(checkTd); 
 	var depositReturnTimeTd = $("<td class='contractTd' name='depositReturnTime' width='120px'></td>"); 
-	depositReturnTimeTd.append($("<input type='text' id='depositReturnTime"+rowCount+"' name='depositReturnTime"+rowCount+"' style='border:0;outline:none;width:120px'/>"));
+	depositReturnTimeTd.append($("<input type='text' id='depositReturnTime"+rowCount+"' readonly='true' name='depositReturnTime"+rowCount+"' style='border:0;outline:none;width:120px'/>"));
 	tr.append(depositReturnTimeTd); 
 	var depositReturnAmountTd = $("<td class='contractTd' name='depositReturnAmount' width='120px'></td>"); 
 	depositReturnAmountTd.append($("<input type='text' id='depositReturnAmount"+rowCount+"' name='depositReturnAmount"+rowCount+"' style='border:0;outline:none;width:120px' onblur='isFloatVal(this)'/>"));
@@ -1128,10 +1128,10 @@ function trim(str) {
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tr>
 							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-							<a href="javascript:$('#branchContractListForm').attr('action','1');$('#branchContractListForm').submit();" >第一页</a>　
-							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#branchContractListForm').submit();">上一页</a>　
-							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#branchContractListForm').submit();" >下一页</a>　
-							<a href="javascript:$('#branchContractListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchContractListForm').submit();" >最后一页</a>
+							<a href="javascript:$('#branchContractListForm').attr('action','${pageContext.request.contextPath}/branchContract/branchContractList/1');$('#branchContractListForm').submit();" >第一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${pageContext.request.contextPath}/branchContract/branchContractList/${page_obj.previous<1?1:page_obj.previous}');$('#branchContractListForm').submit();">上一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${pageContext.request.contextPath}/branchContract/branchContractList/${page_obj.next<1?1:page_obj.next }');$('#branchContractListForm').submit();" >下一页</a>　
+							<a href="javascript:$('#branchContractListForm').attr('action','${pageContext.request.contextPath}/branchContract/branchContractList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchContractListForm').submit();" >最后一页</a>
 							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 							<select id="selectPg" onchange="$('#branchContractListForm').attr('action',$(this).val());$('#branchContractListForm').submit()">
 								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
@@ -1144,6 +1144,20 @@ function trim(str) {
 	</div>
 	<div>
 		<form action="<%=request.getContextPath()%>/branchContract/branchContractList/1" method="post" id="branchContractListForm">
+			<input type="hidden" name="contractNo" value="${branchContractVO.contractNo}"/>
+			<input type="hidden" name="contractState" value="${empty branchContractVO.contractState ? '0' : branchContractVO.contractState}"/>
+			<input type="hidden" name="branchName" value="${branchContractVO.branchName}"/>
+			<input type="hidden" name="areaManager" value="${branchContractVO.areaManager}"/>
+			<input type="hidden" name="siteChief" value="${branchContractVO.siteChief}"/>
+			<input type="hidden" name="chiefIdentity" value="${branchContractVO.chiefIdentity}"/>
+			<input type="hidden" name="contractDescription" value="${branchContractVO.contractDescription}"/>
+			<input type="hidden" name="isDeposit" value="${empty branchContractVO.isDeposit ? '0' : branchContractVO.isDeposit}"/>
+			<input type="hidden" name="contractBeginDateFrom" value="${branchContractVO.contractBeginDateFrom}"/>
+			<input type="hidden" name="contractBeginDateTo" value="${branchContractVO.contractBeginDateTo}"/>
+			<input type="hidden" name="contractEndDateFrom" value="${branchContractVO.contractEndDateFrom}"/>
+			<input type="hidden" name="contractEndDateTo" value="${branchContractVO.contractEndDateTo}"/>
+			<input type="hidden" name="contractColumn" value="${branchContractVO.contractColumn}"/>
+			<input type="hidden" name="contractColumnOrder" value="${branchContractVO.contractColumnOrder}"/>
 		</form>
 	</div>
 </body>

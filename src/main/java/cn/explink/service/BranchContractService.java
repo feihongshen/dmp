@@ -98,9 +98,8 @@ public class BranchContractService {
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(branchContract,
 					branchContractVO);
 			this.branchContractDAO.updateBranchContract(branchContract);
-			/*this.branchContractDetailDAO
-					.deleteBranchContractDetailByBranchId(branchContract
-							.getId());*/
+			String idStr = "'" + branchContract.getId() + "'";
+			this.branchContractDetailDAO.deleteBranchContractDetailByBranchId(idStr);
 			
 			String branchContractDetailVOStr = branchContractVO.getBranchContractDetailVOStr();
 			JSONArray jsonArray = JSONArray.fromObject(branchContractDetailVOStr);

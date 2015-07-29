@@ -933,10 +933,10 @@ function changeBillState(state){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
 			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-			<a href="javascript:$('#punishinsideBillListForm').attr('action','1');$('#punishinsideBillListForm').submit();" >第一页</a>　
-			<a href="javascript:$('#punishinsideBillListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#punishinsideBillListForm').submit();">上一页</a>　
-			<a href="javascript:$('#punishinsideBillListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#punishinsideBillListForm').submit();" >下一页</a>　
-			<a href="javascript:$('#punishinsideBillListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#punishinsideBillListForm').submit();" >最后一页</a>
+			<a href="javascript:$('#punishinsideBillListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/punishinsideBillList/1');$('#punishinsideBillListForm').submit();" >第一页</a>　
+			<a href="javascript:$('#punishinsideBillListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/punishinsideBillList/${page_obj.previous<1?1:page_obj.previous}');$('#punishinsideBillListForm').submit();">上一页</a>　
+			<a href="javascript:$('#punishinsideBillListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/punishinsideBillList/${page_obj.next<1?1:page_obj.next }');$('#punishinsideBillListForm').submit();" >下一页</a>　
+			<a href="javascript:$('#punishinsideBillListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/punishinsideBillList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#punishinsideBillListForm').submit();" >最后一页</a>
 			　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 			<select id="selectPg" onchange="$('#punishinsideBillListForm').attr('action',$(this).val());$('#punishinsideBillListForm').submit()">
 				<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
@@ -950,17 +950,17 @@ function changeBillState(state){
 <div>
 	<form action="<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList/1" method="post" id="punishinsideBillListForm">
 		<input type="hidden" name="billBatch" value="${queryConditionVO.billBatch}"/> 
-		<input type="hidden" name="billState" value="${queryConditionVO.billState}"/> 
+		<input type="hidden" name="billState" value="${empty queryConditionVO.billState ? '0' : queryConditionVO.billState}"/> 
  		<input type="hidden" name="createDateFrom" value="${queryConditionVO.createDateFrom}"/>
   		<input type="hidden" name="createDateTo" value="${queryConditionVO.createDateTo}"/>
  		<input type="hidden" name="heXiaoDateFrom" value="${queryConditionVO.heXiaoDateFrom}"/>
   		<input type="hidden" name="heXiaoDateTo"  value="${queryConditionVO.heXiaoDateTo}"/>
 		<input type="hidden" name="dutybranchname" value="${queryConditionVO.dutybranchname}" /> 
-		<input type="hidden" name="punishbigsort" value="${queryConditionVO.punishbigsort}" /> 
+		<input type="hidden" name="punishbigsort" value="${empty queryConditionVO.punishbigsort ? '0' : queryConditionVO.punishbigsort}" /> 
 		<input type="hidden" name="dutypersonname" value="${queryConditionVO.dutypersonname}" /> 
-		<input type="hidden" name="punishsmallsort" value="${queryConditionVO.punishsmallsort}" /> 
+		<input type="hidden" name="punishsmallsort" value="${empty queryConditionVO.punishsmallsort ? '0' : queryConditionVO.punishsmallsort}" /> 
 		<input type="hidden" name="contractColumn" value="${queryConditionVO.contractColumn}" /> 
-		<input type="hidden" name="contractColumnOrder" value="${queryConditionVO.contractColumnOrder}" /> 
+		<input type="hidden" name="contractColumnOrder" value="${queryConditionVO.contractColumnOrder}" />
 	</form>
 </div>
 </body>

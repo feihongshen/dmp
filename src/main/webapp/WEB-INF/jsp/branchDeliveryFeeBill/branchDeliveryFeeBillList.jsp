@@ -2771,10 +2771,10 @@ function deleteBranchDeliveryFeeBill(){
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tr>
 							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
-							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','1');$('#branchDeliveryFeeBillListForm').submit();" >第一页</a>　
-							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#branchDeliveryFeeBillListForm').submit();">上一页</a>　
-							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#branchDeliveryFeeBillListForm').submit();" >下一页</a>　
-							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchDeliveryFeeBillListForm').submit();" >最后一页</a>
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${pageContext.request.contextPath}/branchDeliveryFeeBill/branchDeliveryFeeBillList/1');$('#branchDeliveryFeeBillListForm').submit();" >第一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${pageContext.request.contextPath}/branchDeliveryFeeBill/branchDeliveryFeeBillList/${page_obj.previous<1?1:page_obj.previous}');$('#branchDeliveryFeeBillListForm').submit();">上一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${pageContext.request.contextPath}/branchDeliveryFeeBill/branchDeliveryFeeBillList/${page_obj.next<1?1:page_obj.next }');$('#branchDeliveryFeeBillListForm').submit();" >下一页</a>　
+							<a href="javascript:$('#branchDeliveryFeeBillListForm').attr('action','${pageContext.request.contextPath}/branchDeliveryFeeBill/branchDeliveryFeeBillList/${page_obj.maxpage<1?1:page_obj.maxpage}');$('#branchDeliveryFeeBillListForm').submit();" >最后一页</a>
 							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 							<select id="selectPg" onchange="$('#branchDeliveryFeeBillListForm').attr('action',$(this).val());$('#branchDeliveryFeeBillListForm').submit()">
 								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
@@ -2788,6 +2788,16 @@ function deleteBranchDeliveryFeeBill(){
 	</c:if>
 	<div>
 		<form action="<%=request.getContextPath()%>/branchDeliveryFeeBill/branchDeliveryFeeBillList/1" method="post" id="branchDeliveryFeeBillListForm">
+			<input type="hidden" name="billBatch" value="${queryConditionVO.billBatch}" />
+			<input type="hidden" name="billState" value="${empty queryConditionVO.billState ? '0' : queryConditionVO.billState}" />
+			<input type="hidden" name="createDateFrom" value="${queryConditionVO.createDateFrom}" />
+			<input type="hidden" name="createDateTo" value="${queryConditionVO.createDateTo}" />
+			<input type="hidden" name="heXiaoDateFrom" value="${queryConditionVO.heXiaoDateFrom}" />
+			<input type="hidden" name="heXiaoDateTo" value="${queryConditionVO.heXiaoDateTo}" />
+			<input type="hidden" name="branchName" value="${queryConditionVO.branchName}" />
+			<input type="hidden" name="cwbType" value="${empty queryConditionVO.cwbType ? '0' : queryConditionVO.cwbType}" />
+			<input type="hidden" name="contractColumn" value="${queryConditionVO.contractColumn}" />
+			<input type="hidden" name="contractColumnOrder" value="${queryConditionVO.contractColumnOrder}" />
 		</form>
 	</div>
 </body>

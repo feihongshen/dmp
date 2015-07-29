@@ -131,8 +131,13 @@ public class BranchDeliveryFeeBillController {
 		
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
+		// 订单类型枚举
+		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
+		// 日期类型枚举
+		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		//支付方式
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
@@ -164,8 +169,11 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("branchDeliveryFeeBillList", list);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("billStateMap", billStateMap);
+		model.addAttribute("cwbTypeMap", cwbTypeMap);
+		model.addAttribute("dateTypeMap", dateTypeMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("cwbOrderTypeMap", cwbOrderTypeMap);
+		model.addAttribute("payTypeMap", payTypeMap);
 		model.addAttribute("updatePage", 1);
 		model.addAttribute("branchDeliveryFeeBillVO", branchDeliveryFeeBillVO);
 		return "branchDeliveryFeeBill/branchDeliveryFeeBillList";
@@ -177,6 +185,10 @@ public class BranchDeliveryFeeBillController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 订单类型枚举
+		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
+		// 日期类型枚举
+		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
@@ -210,6 +222,8 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("branchDeliveryFeeBillList", list);
 		model.addAttribute("billStateMap", billStateMap);
+		model.addAttribute("cwbTypeMap", cwbTypeMap);
+		model.addAttribute("dateTypeMap", dateTypeMap);
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("cwbOrderTypeMap", cwbOrderTypeMap);
 		model.addAttribute("payTypeMap", payTypeMap);
@@ -223,8 +237,13 @@ public class BranchDeliveryFeeBillController {
 			Model model) {
 
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
+		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
+		// 日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
+		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
 		int count = this.branchDeliveryFeeBillDAO
@@ -260,6 +279,9 @@ public class BranchDeliveryFeeBillController {
 		model.addAttribute("billStateMap", billStateMap);
 		model.addAttribute("cwbTypeMap", cwbTypeMap);
 		model.addAttribute("dateTypeMap", dateTypeMap);
+		model.addAttribute("cwbStateMap", cwbStateMap);
+		model.addAttribute("cwbOrderTypeMap", cwbOrderTypeMap);
+		model.addAttribute("payTypeMap", payTypeMap);
 		model.addAttribute("addPage", 1);
 		model.addAttribute("branchListPage", 1);
 		return "branchDeliveryFeeBill/branchDeliveryFeeBillList";
