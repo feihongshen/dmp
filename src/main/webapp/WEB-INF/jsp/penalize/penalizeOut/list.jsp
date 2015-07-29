@@ -295,7 +295,7 @@ function showUp()
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
+	<table width="100%" style="height: 400px;overflow: auto;" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr>
 	<td height="30px"  valign="middle"> </td>
 	<td align="center" valign="middle"style="font-weight: bold;"> 赔付单号</td>
