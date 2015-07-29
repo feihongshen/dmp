@@ -64,10 +64,21 @@ public class BranchDeliveryFeeBillService {
 			ExpressSetBranchDeliveryFeeBillVO billVO) {
 		ExpressSetBranchDeliveryFeeBill bill = new ExpressSetBranchDeliveryFeeBill();
 		if (billVO != null) {
+			if(StringUtils.isNotBlank(billVO.getCwbs())){
+				String cwbs = StringUtil.removalDuplicateString(billVO.getCwbs());
+				billVO.setCwbs(cwbs);
+				cwbs = StringUtil.getStringsByStringList(Arrays.asList(billVO.getCwbs().split(",")));
+				this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(bill.getId(), cwbs);
+				int branchfeebillexportflag = 0;
+				if(billVO.getBillState() == DeliveryFeeBillStateEnum.WeiShenHe.getValue()){
+					this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbs);
+				} else if(billVO.getBillState() == DeliveryFeeBillStateEnum.YiShenHe.getValue()){
+					branchfeebillexportflag = 1;
+					this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbs);
+				}
+			}
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(bill, billVO);
 			this.branchDeliveryFeeBillDAO.updateBranchDeliveryFeeBill(bill);
-			String cwbs = StringUtil.getStringsByStringList(Arrays.asList(billVO.getCwbs().split(",")));
-			this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(bill.getId(), cwbs);
 		}
 	}
 

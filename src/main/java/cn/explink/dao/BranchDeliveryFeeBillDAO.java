@@ -22,6 +22,7 @@ import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -605,7 +606,7 @@ public class BranchDeliveryFeeBillDAO {
 				+ " on cwb.cwb = d.cwb "	
 				+ leftJoinSql
 				+ onSql
-				+ " where 1=1 ";
+				+ " where branchfeebillexportflag=0 ";
 
 		if (branchDeliveryFeeBill != null) {
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
@@ -644,6 +645,12 @@ public class BranchDeliveryFeeBillDAO {
 		return this.jdbcTemplate.queryForObject(sql, BigDecimal.class);
 	}
 
+	public void updateCwbOrder(int branchfeebillexportflag, String cwbs) {
+		String cwbsql = "update express_ops_cwb_detail set branchfeebillexportflag=" + branchfeebillexportflag
+				+ " where cwb in (" + cwbs + ")";
+		this.jdbcTemplate.update(cwbsql);
+	}
+	
 	public List<ExpressSetBranchDeliveryFeeBill> getBranchDeliveryFeeBillByChukuDate(
 			String begindate, String enddate, long page) {
 		String sql = "select * from express_ops_bale where cretime>=? and cretime<=? ";

@@ -126,7 +126,14 @@ function selectBranch(){
 	$('#branchListPage').dialog('close');
 }
 
-function updateBranchDeliveryFeeBill(){
+function updateBranchDeliveryFeeBill(state){
+	if(state){
+		changeBillState(state);
+	}
+	updateBranchDeliveryFeeBillFun();
+}
+
+function updateBranchDeliveryFeeBillFun(){
 	var chkBoxes = $("#cwbOrderTable input[type='checkbox'][name='checkBox']");
 	var cwbs = "";
 	$(chkBoxes).each(function() {
@@ -682,7 +689,7 @@ function deleteBranchDeliveryFeeBill(){
 						<td colspan="2" align="left">
 							<input type="button" class="input_button2" value="返回" onclick="$('#updatePage').dialog('close');" />
 							<c:if test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
-								<input type="button" class="input_button2" value="保存" onclick="updateBranchDeliveryFeeBill()" />
+								<input type="button" class="input_button2" value="保存" onclick="updateBranchDeliveryFeeBill('')" />
 							</c:if>
 						</td>
 						<c:choose>
@@ -690,13 +697,13 @@ function deleteBranchDeliveryFeeBill(){
 								<c:choose>
 									<c:when test="${weiShenHeState==branchDeliveryFeeBillVO.billState}">
 										<td align="right" colspan="2">
-											<input type="button" class="input_button2" onclick="changeBillState('ShenHe')" value="审核" />
+											<input type="button" class="input_button2" onclick="updateBranchDeliveryFeeBill('ShenHe')" value="审核" />
 										</td>
 									</c:when>
 									<c:when test="${yiShenHeState==branchDeliveryFeeBillVO.billState}">
 										<td align="right" colspan="2">
-											<input type="button" class="input_button2" onclick="changeBillState('QuXiaoShenHe')" value="取消审核" />
-											<input type="button" class="input_button2" onclick="changeBillState('HeXiaoWanCheng')" value="核销完成" />
+											<input type="button" class="input_button2" onclick="updateBranchDeliveryFeeBill('QuXiaoShenHe')" value="取消审核" />
+											<input type="button" class="input_button2" onclick="updateBranchDeliveryFeeBill('HeXiaoWanCheng')" value="核销完成" />
 										</td>
 									</c:when>
 								</c:choose>
@@ -704,7 +711,7 @@ function deleteBranchDeliveryFeeBill(){
 							<c:when test="${jiesuanAdvanceAuthority==1}">
 								<c:if test="${yiHeXiaoState==branchDeliveryFeeBillVO.billState}">
 									<td align="right" colspan="2">
-										<input type="button" class="input_button2" onclick="changeBillState('QuXiaoHeXiao')" value="取消核销" />
+										<input type="button" class="input_button2" onclick="updateBranchDeliveryFeeBill('QuXiaoHeXiao')" value="取消核销" />
 									</td>
 								</c:if>
 							</c:when>

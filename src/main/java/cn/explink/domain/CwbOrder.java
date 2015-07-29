@@ -137,6 +137,7 @@ public class CwbOrder {
 	private long oxopickstate; //oxo揽件状态  。取值参考 CwbOXOStateEnum枚举类
 	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
+	private int branchfeebillexportflag;//加盟商派费账单导出标志
 
 	/**
 	 * @return the city
@@ -1181,6 +1182,12 @@ public class CwbOrder {
 		this.oxodeliverystate = oxodeliverystate;
 	}
 	
-	
+	public int getBranchfeebillexportflag() {
+		return branchfeebillexportflag;
+	}
+
+	public void setBranchfeebillexportflag(int branchfeebillexportflag) {
+		this.branchfeebillexportflag = branchfeebillexportflag;
+	}
 
 }
