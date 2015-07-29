@@ -7994,4 +7994,11 @@ CREATE TABLE `cs_complaint_accept` (
 			  ALTER TABLE `express_ops_salarygather_detail` ADD COLUMN `userid` int(11) DEFAULT '0';
 	   	</sql>
 	</changeSet>
+	<changeSet id="wukong-2015-07-29-01" author="wukong">
+		<sql>
+			ALTER TABLE `express_ops_paybusiness_benefits` ADD COLUMN `lower` VARCHAR(11) DEFAULT '',
+		                                                   ADD COLUMN `upper` VARCHAR(11) DEFAULT '',
+		                                                   ADD COLUMN `kpifee` DECIMAL(19,2) DEFAULT '0.00';
+		</sql>
+	</changeSet>
 </databaseChangeLog>
