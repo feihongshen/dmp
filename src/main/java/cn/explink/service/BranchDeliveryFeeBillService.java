@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,11 +114,9 @@ public class BranchDeliveryFeeBillService {
 		List<CwbOrder> orderList = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(branchDeliveryFeeBill, leftJoinSql,
 						onSql, dateColumn);
-		CwbOrder order = null;
+		Branch branch = this.branchDAO.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
 		String cwbs = "";
 		int cwbCount = 0;
-		Branch branch = this.branchDAO
-				.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
 		BigDecimal deliverySumFee = new BigDecimal(0.0);
 		BigDecimal deliveryBasicFee = new BigDecimal(0.0);
 		BigDecimal deliveryCollectionSubsidyFee = new BigDecimal(0.0);
@@ -137,38 +136,51 @@ public class BranchDeliveryFeeBillService {
 
 		BigDecimal deliveryFee = new BigDecimal(0.0);
 		if (orderList != null && orderList.size() > 0) {
-			for (int i = 0; i < orderList.size(); i++) {
-				order = orderList.get(i);
+			//配送费
+			Map<String, BigDecimal> deliveryBasicFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, orderList);
+			Map<String, BigDecimal> deliveryCollectionSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, orderList);
+			Map<String, BigDecimal> deliveryAreaSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, orderList);
+			Map<String, BigDecimal> deliveryExceedSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, orderList);
+			Map<String, BigDecimal> deliveryBusinessSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, orderList);
+			Map<String, BigDecimal> deliveryAttachSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, orderList);
+			//提货费
+			Map<String, BigDecimal> pickupCollectionSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Collection, orderList);
+			Map<String, BigDecimal> pickupAreaSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Area, orderList);
+			Map<String, BigDecimal> pickupExceedSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Overarea, orderList);
+			Map<String, BigDecimal> pickupAttachSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Insertion, orderList);
+			Map<String, BigDecimal> pickupBasicFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Basic, orderList);
+			Map<String, BigDecimal> pickupBusinessSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Business, orderList);
+			for (CwbOrder order : orderList) {
 				if (StringUtils.isNotBlank(order.getCwb())) {
 					billDetail = new ExpressSetBranchDeliveryFeeBillDetail();
 					
-					deliveryBasicFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, order.getCwb());
+					deliveryBasicFee = deliveryBasicFeeMap.get(order.getCwb());
 					billDetail.setDeliveryBasicFee(deliveryBasicFee);
-					deliveryCollectionSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, order.getCwb());
+					deliveryCollectionSubsidyFee = deliveryCollectionSubsidyFeeMap.get(order.getCwb());
 					billDetail.setDeliveryCollectionSubsidyFee(deliveryCollectionSubsidyFee);
-					deliveryAreaSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, order.getCwb());
+					deliveryAreaSubsidyFee = deliveryAreaSubsidyFeeMap.get(order.getCwb());
 					billDetail.setDeliveryAreaSubsidyFee(deliveryAreaSubsidyFee);
-					deliveryExceedSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, order.getCwb());
+					deliveryExceedSubsidyFee = deliveryExceedSubsidyFeeMap.get(order.getCwb());
 					billDetail.setDeliveryExceedSubsidyFee(deliveryExceedSubsidyFee);
-					deliveryBusinessSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, order.getCwb());
+					deliveryBusinessSubsidyFee = deliveryBusinessSubsidyFeeMap.get(order.getCwb());
 					billDetail.setDeliveryBusinessSubsidyFee(deliveryBusinessSubsidyFee);
-					deliveryAttachSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, order.getCwb());
+					deliveryAttachSubsidyFee = deliveryAttachSubsidyFeeMap.get(order.getCwb());
 					billDetail.setDeliveryAttachSubsidyFee(deliveryAttachSubsidyFee);
 					deliverySumFee = deliveryBasicFee.add(deliveryCollectionSubsidyFee).add(deliveryAreaSubsidyFee)
 							.add(deliveryExceedSubsidyFee).add(deliveryBusinessSubsidyFee).add(deliveryAttachSubsidyFee);
 					billDetail.setDeliverySumFee(deliverySumFee);
 
-					pickupCollectionSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Collection, order.getCwb());
+					pickupCollectionSubsidyFee = pickupCollectionSubsidyFeeMap.get(order.getCwb());
 					billDetail.setPickupCollectionSubsidyFee(pickupCollectionSubsidyFee);
-					pickupAreaSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Area, order.getCwb());
+					pickupAreaSubsidyFee = pickupAreaSubsidyFeeMap.get(order.getCwb());
 					billDetail.setPickupAreaSubsidyFee(pickupAreaSubsidyFee);
-					pickupExceedSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Overarea, order.getCwb());
+					pickupExceedSubsidyFee = pickupExceedSubsidyFeeMap.get(order.getCwb());
 					billDetail.setPickupExceedSubsidyFee(pickupExceedSubsidyFee);
-					pickupAttachSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Insertion, order.getCwb());
+					pickupAttachSubsidyFee = pickupAttachSubsidyFeeMap.get(order.getCwb());
 					billDetail.setPickupAttachSubsidyFee(pickupAttachSubsidyFee);
-					pickupBasicFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Basic, order.getCwb());
+					pickupBasicFee = pickupBasicFeeMap.get(order.getCwb());
 					billDetail.setPickupBasicFee(pickupBasicFee);
-					pickupBusinessSubsidyFee = this.paiFeiRuleService.getPFTypefeeByType(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Business, order.getCwb());
+					pickupBusinessSubsidyFee = pickupBusinessSubsidyFeeMap.get(order.getCwb());
 					billDetail.setPickupBusinessSubsidyFee(pickupBusinessSubsidyFee);
 					pickupSumFee = pickupCollectionSubsidyFee.add(pickupAreaSubsidyFee).add(pickupExceedSubsidyFee)
 							.add(pickupAttachSubsidyFee).add(pickupBasicFee).add(pickupBusinessSubsidyFee);
