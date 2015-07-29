@@ -5,6 +5,7 @@ package cn.explink.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,20 +96,21 @@ public class DiliverymanPaifeiBillService {
 			for (int i = 0; i < diliveryman.length; i++) {
 				bill = new DiliverymanPaifeiBill();
 				Integer diliverymanid = Integer.parseInt(diliveryman[i]);
+				User deliveryUser=userDAO.getUserByUserid(diliverymanid);
 				/* 根据小件员id 查询出该小件员所有的订单 */
 				if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
 					/* 日期类型为反馈时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, diliverymanid, startDate, endDate);
 
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
 					/* 日期类型为发货时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, diliverymanid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
 					/* 日期类型为入库时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, diliverymanid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				}
 				bill.setBillbatch(this.generateBillBatch());
 				bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
@@ -129,19 +131,20 @@ public class DiliverymanPaifeiBillService {
 				bill = new DiliverymanPaifeiBill();
 				user = list.get(i);
 				Integer userid = (int) user.getUserid();
+				User deliveryUser=userDAO.getUserByUserid(userid);
 				/* 根据小件员id 查询出该小件员所有的订单 */
 				if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
 					/* 日期类型为反馈时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
 					/* 日期类型为发货时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
 					/* 日期类型为入库时间时执行这个方法 */
 					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList);
+					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
 				}
 				bill.setBillbatch(this.generateBillBatch());
 				bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
@@ -209,7 +212,7 @@ public class DiliverymanPaifeiBillService {
 	/**
 	 * 根据查出来的订单信息 再调用相关规则计算派费
 	 */
-	public DiliverymanPaifeiBill calculatePaFei(DiliverymanPaifeiBill bill, List<DeliveryState> deliveryStateList) {
+	public DiliverymanPaifeiBill calculatePaFei(DiliverymanPaifeiBill bill, List<DeliveryState> deliveryStateList,User user) {
 		StringBuffer ordernumber = new StringBuffer();
 		Integer ordersum = 0;
 		BigDecimal orderfee = new BigDecimal(0);
@@ -230,34 +233,56 @@ public class DiliverymanPaifeiBillService {
 			String ordernumberString = DiliverymanPaifeiBillService.spiltString(orderString);
 			/* 根据订单号查出对应的数据 */
 			List<CwbOrder> cwborderList = this.cwbDAO.getCwbByCwbs(ordernumberString);
+			Map<String,BigDecimal> basicMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwborderList);
+			Map<String,BigDecimal> collectionMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, cwborderList);
+			Map<String,BigDecimal> areaMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwborderList);
+			Map<String,BigDecimal> overareaMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, cwborderList);
+			Map<String,BigDecimal> businessMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, cwborderList);
+			Map<String,BigDecimal> insertionMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, cwborderList);
+			Map<String, String> orderFlowMap = this.orderFlowDAO.getOrderFlowByCwbs(ordernumberString);
 			for (int i = 0; i < cwborderList.size(); i++) {
 				BigDecimal sum = new BigDecimal(0);
 				order = new DiliverymanPaifeiOrder();
 				CwbOrder cwbOrder = cwborderList.get(i);
 				/* 通过订单号查出到货时间 */
-				OrderFlow orderFlow = this.orderFlowDAO.getOrderCurrentFlowByCwb(cwbOrder.getCwb());
+				
 				order.setOrdernumber(cwbOrder.getCwb());
 				order.setOrdertype(cwbOrder.getCwbordertypeid());
 				order.setOrderstatus((int) cwbOrder.getFlowordertype());
 				order.setDeliverytime(cwbOrder.getEmaildate());
 				order.setDateoflodgment(cwbOrder.getPodtime());
 				order.setPaymentmode(Integer.parseInt(cwbOrder.getNewpaywayid()));
-				order.setTimeofdelivery(orderFlow.getCredate().toString());
-				/* 根据 订单号，配送员调用规则生成配送费用 */
-				Long pfruleid = this.userDAO.getbranchidbyuserid(cwbOrder.getDeliverid()).getPfruleid();
-				BigDecimal basic = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwbOrder.getCwb());
-				BigDecimal collection = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, cwbOrder.getCwb());
-				BigDecimal area = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwbOrder.getCwb());
-				BigDecimal overarea = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, cwbOrder.getCwb());
-				BigDecimal business = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, cwbOrder.getCwb());
-				BigDecimal insertion = this.paiFeiRuleService.getPFTypefeeByType(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, cwbOrder.getCwb());
-				order.setBasicpaifei(basic); /* 基本派费 */
-				order.setSubsidiesfee(collection); /* 代收补助费 */
-				order.setAreasubsidies(area); /* 区域属性补助费 */
-				order.setBeyondareasubsidies(overarea); /* 超出区域补助费 */
-				order.setBusinesssubsidies(business);/* 业务补助 */
-				order.setDelaysubsidies(insertion); /* 脱单补助 */
-				sum = sum.add(basic.add(collection.add(area.add(overarea.add(business.add(insertion))))));
+				order.setTimeofdelivery(orderFlowMap.get(cwbOrder.getCwb()));
+				BigDecimal basic = basicMap.get(cwbOrder.getCwb()); /* 基本派费 */
+				BigDecimal collection = collectionMap.get(cwbOrder.getCwb());/* 代收补助费 */
+				BigDecimal area = areaMap.get(cwbOrder.getCwb());/* 区域属性补助费 */
+				BigDecimal overarea = overareaMap.get(cwbOrder.getCwb());/* 超出区域补助费 */
+				BigDecimal business = businessMap.get(cwbOrder.getCwb());/* 业务补助 */
+				BigDecimal insertion = insertionMap.get(cwbOrder.getCwb());/* 脱单补助 */
+				if(basic != null){
+					order.setBasicpaifei(basic); /* 基本派费 */
+					sum = sum.add(basic);
+				}
+				if(collection != null){
+					order.setSubsidiesfee(collection); /* 代收补助费 */
+					sum = sum.add(collection);
+				}
+				if(area != null){
+					order.setAreasubsidies(area); /* 区域属性补助费 */
+					sum = sum.add(area);
+				}
+				if(overarea != null){
+					order.setBeyondareasubsidies(overarea); /* 超出区域补助费 */
+					sum = sum.add(overarea);
+				}
+				if(business != null){
+					order.setBusinesssubsidies(business);/* 业务补助 */
+					sum = sum.add(business);
+				}
+				if(insertion != null){
+					order.setDelaysubsidies(insertion); /* 脱单补助 */
+					sum = sum.add(insertion);
+				}
 				order.setPaifeicombined(sum);
 				orderfee = orderfee.add(sum);
 				this.diliverymanPaifeiBillDAO.addOrder(order);

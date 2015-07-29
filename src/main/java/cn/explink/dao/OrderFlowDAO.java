@@ -195,6 +195,19 @@ public class OrderFlowDAO {
 		}
 		return orderFlowList.get(0);
 	}
+	public Map<String, String> getOrderFlowByCwbs(String cwbs) {
+		Map<String, String> map = new HashMap<String, String>();
+		String sql = "select * from express_ops_order_flow where cwb in("+cwbs+") and isnow = 1";
+		List<OrderFlow> orderFlowList = this.jdbcTemplate.query(sql,  new OrderFlowRowMapper());
+		if (orderFlowList.size() > 0) {
+			for(int i=0;i<orderFlowList.size();i++){
+				OrderFlow order = new OrderFlow();
+				order = orderFlowList.get(i);
+				map.put(order.getCwb(), order.getCredate().toString());
+			}
+		}
+		return map;
+	}
 
 	public List<OrderFlow> getOrderFlowByFlowordertypeAndCwb(long flowordertype, String cwb, long branchid) {
 		String sql = "select * from express_ops_order_flow where flowordertype=? and cwb=? and branchid=?";
