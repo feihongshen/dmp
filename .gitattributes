@@ -1343,6 +1343,7 @@ src/main/java/cn/explink/enumutil/ConfirmStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
+src/main/java/cn/explink/enumutil/CwbOXOStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderListTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderPDAEnum.java -text
