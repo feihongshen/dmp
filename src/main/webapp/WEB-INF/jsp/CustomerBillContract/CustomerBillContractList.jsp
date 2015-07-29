@@ -408,15 +408,6 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			$('#dlgserch').dialog('open').dialog('setTitle','查询表单');
 			$('#fm1').form('clear');
 		}
-	  	
-	    	
-	  	/**
-	  	编辑框弹出  初始化
-	  	*/
-	  	/* function initMethod(){
-	  		initDynamicSelect(customernames);
-	  		initDynamicSelect(billState);
-	  	} */
 	 
 	 	function neweditbill(){		
 	 	 	var row = $('#dg').datagrid('getSelected');		
@@ -461,10 +452,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				        {field:'billBatches',title:'billBatches',hidden:true}
 				    ]],
 				    
-				    toolbar:'#tbNewAddofEdit'
-				});
-				/*  $('#fm2').form('onLoadSuccess',initMethod());
-				url = '${pageContext.request.contextPath}/CustomerBillContract/editBill?id='+row.id;  */
+				  		  toolbar:'#tbNewAddofEdit'
+					});
 				} 
 			
 
@@ -569,15 +558,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
  						$('#khdddr').hide();
 						$('#removebille').hide();
 						$('#addbille').hide();
-  					} 
-  					
-  					
-  					
-  					
-  					
-  					
-  					
-  					
+  					}  					
 				}
 			});
 	 	}
@@ -1031,37 +1012,8 @@ function changeImportToDmpAllMoney(){
 }
 
 
-function importAllMoney(a){
-
-			
+function importAllMoney(a){			
 		$('#importAllMoneydiv').dialog('open').dialog('setTitle','导入详情 ');
-/* 
-		 $('#dgimportAllMoney').datagrid({    
-			method: "POST",
-		    url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+a, 
-		  	fit:true, 
-			fitColumns:true,
-			border:true,
-			striped:true,
-			idField:'id',
-					
-			columns:[[         
-				        {field:'id',title:'id',hidden:true},  
-						{field:'cwb',title:'订单号',sortable:true,width:100,align:'center'},						 
-				        {field:'jijiaMoney',title:'基价',sortable:true,width:75,align:'center'},    
-				        {field:'xuzhongMoney',title:'续重',sortable:true,align:'center',width:75},				    
-				        {field:'fandanMoney',title:'返单费',sortable:true,width:100,align:'center'},
-				        {field:'fanchengMoney',title:'返程费',sortable:true,width:100,align:'center'},
-				        {field:'daishoukuanshouxuMoney',title:'代收款手续费',sortable:true,width:100,align:'center'},
-				        {field:'posShouxuMoney',title:'POS手续费',sortable:true,width:100,align:'center'},
-				        {field:'baojiaMoney',title:'保价费',sortable:true,width:100,align:'center'},	
-				        {field:'baozhuangMoney',title:'包装费',sortable:true,width:100,align:'center'},
-				        {field:'ganxianbutieMoney',title:'干线补贴',sortable:true,width:100,align:'center'}
-				    ]]
-			});				
-	 var row = $('#dgMoneyChaYi').datagrid('getSelected');
-			if(row){  */ 
-				
 		$.ajax({
 			type:'POST',			
 			url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+a,
@@ -1083,8 +1035,7 @@ function importAllMoney(a){
 			}
 		}); 
 	} 
-/* } */	
-		
+
 	</script>
 </head>
 <body>
@@ -1098,7 +1049,7 @@ function importAllMoney(a){
 	</div>	
 	
 	<!-- datagrid list -->
-	<table id="dg"></table>	
+		<table id="dg"></table>	
 	
 	<!-- 新增一级 弹窗 -->
 <div style="margin-top: 3cm;margin-left: 3cm">	
@@ -1238,7 +1189,6 @@ function importAllMoney(a){
 	</div>
 	<!-- 查询弹窗 操作区域 -->
 	<div id="dlg-buttonsserch">
-		<!-- <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="newaddsearchbill()">查询</a> -->
 		<a href="#" onclick="form1Method()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</a>		
 		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgserch').dialog('close')">关闭</a>
 	</div>
@@ -1253,7 +1203,6 @@ function importAllMoney(a){
 							<input type="text" class="filename" readonly="readonly"/>
 							<input type="button" name="file" class="button" value="浏 览"/>
 							<input type="file" size="30" id="uploadExcel" name="uploadExcel" />&nbsp;&nbsp;&nbsp;
-							<!-- <a href="#"  class="easyui-linkbutton" onclick="uploadExcel()" >客户订单导入</a> -->
 					</div>
 				</form>	
 			
@@ -1274,36 +1223,13 @@ function importAllMoney(a){
 				<table class="fitem">
 						<tr>
 							<td align="right" style="width:90px;">账单批次</td><td style="width:30px;" ><input name="billBatches" id="billBatchess" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
-							<td align="right" style="width:90px;">账单状态</td><td style="width:30px;">
-							<input name="billState" id="billState" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0">
-							<!-- <input type="text" name="billState" id="billState1" class="easyui-validatebox" 
-									 	data-options="width:150,prompt: '账单状态'"
-									 	initDataType="ENUM" 
-									 	initDataKey="cn.explink.enumutil.BillStateEnum"
-									 	viewField="text" 
-									 	saveField="value"
-									 	value="-1"
-									 	
-								/> -->
-							</td>
+							<td align="right" style="width:90px;">账单状态</td><td style="width:30px;"><input name="billState" id="billState" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 							<td align="right" style="width:90px;">日期范围</td><td style="width:30px;"><input name="dateRange" id="dateRange" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 						</tr>
 						<tr>
 							<td align="right" style="width:90px;">派费合计(元)</td><td style="width:30px;"><input name="totalCharge" id="totalCharge" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 							<td align="right" style="width:90px;">对应订单数</td><td style="width:30px;"><input name="correspondingCwbNum" id="correspondingCwbNum" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
-							<td align="right" style="width:90px;">客户名称</td><td style="width:30px;">
-							<input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0">
-							<!-- <input type="text" name="customerId" class="easyui-validatebox"						
-									id="customernames"
-								 	data-options="width:150"
-								 	initDataType="TABLE" 
-								 	initDataKey="Customer"
-								 	viewField="customername" 
-								 	saveField="customerid"
-								 	value="-1"
-								 	
-								/> -->
-							</td>
+							<td align="right" style="width:90px;">客户名称</td><td style="width:30px;"><input name="customerId" id="customernames" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
 						</tr>
 						<tr>
 							<td align="right" style="width:90px;">提货费(元)</td><td style="width:30px;"><input name="deliveryMoney" id="deliveryMoney" class="easyui-validatebox" readonly="readonly" style="color: #C0C0C0"></td>
@@ -1316,7 +1242,7 @@ function importAllMoney(a){
 						</tr>
 				</table>
 		</form>
-		<table id="dga"></table>
+				<table id="dga"></table>
 		<div id="tbNewAddofEdit">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="dlgNewAddofEdit()" id="addbille">添加</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeofEdit()" id="removebille">移除</a>	
@@ -1325,7 +1251,7 @@ function importAllMoney(a){
 	
 	
 	
-		<div id="dlgAddofEdit" class="easyui-dialog" style="width:730px;height:300px;padding:10px 20px"
+	<div id="dlgAddofEdit" class="easyui-dialog" style="width:730px;height:300px;padding:10px 20px"
 			closed="true" buttons="#dlgAddofEdit-buttons">
 		<form id="fmAddofEdit" method="post">	
 				<ul>
@@ -1377,21 +1303,21 @@ function importAllMoney(a){
 	
 		<div id="CountChaYi" class="easyui-dialog" style="width:800px;height:500px;padding:10px 20px"
 			closed="true" buttons="#dlgAddChaYi-buttons">
-		<table id="dgCountChaYi" class="fitem" border="1"></table>
+			<table id="dgCountChaYi" class="fitem" border="1"></table>
 		</div>
 		<div id="dlgAddChaYi-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addBillCwbNumInChaYi()" id="addCurrentBill">加入当前账单</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()" id="removeCurrentBill">从当前账单移除</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="addBillCwbNumInChaYi()" id="addCurrentBill">加入当前账单</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="removeofEditInChaYi()" id="removeCurrentBill">从当前账单移除</a>
 		</div>
 		
 		<div id="MoneyChaYi" class="easyui-dialog" style="width:1100px;height:500px;padding:10px 20px" closed="true" buttons="#dlgAddMoneyChaYi-buttons">
-			<table id="dgMoneyChaYi" class="fitem" border="1"></table>
+				<table id="dgMoneyChaYi" class="fitem" border="1"></table>
 		</div>
 		<div id="dlgAddMoneyChaYi-buttons">
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpAllMoney()">基于导入更新全部订单配费</a>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpMoney()">基于导入更新订单配费</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpAllMoney()">基于导入更新全部订单配费</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="changeImportToDmpMoney()">基于导入更新订单配费</a>
 		</div>
-		<div id="importAllMoneydiv" class="easyui-dialog" style="width:668px;height:135px;padding:10px 20px" closed="true">
+	<div id="importAllMoneydiv" class="easyui-dialog" style="width:668px;height:135px;padding:10px 20px" closed="true">
 			<!--  	 <table id="dgimportAllMoney" border="1"></table>  -->
 		
 			<table class="gridtable">
@@ -1421,7 +1347,7 @@ function importAllMoney(a){
 					</tr>
 					
 		</table>
-		</div>
+	</div>
 		
 		
 <input type="hidden" id="hv"/> <!--批次  -->

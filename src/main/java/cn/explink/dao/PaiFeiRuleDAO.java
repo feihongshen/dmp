@@ -85,7 +85,7 @@ public class PaiFeiRuleDAO {
 	 * @param type
 	 * @param remark
 	 * @param orderby
-	 * @param orderbyType
+	 * @param orderbyType        
 	 * @return
 	 */
 	private String creConditions(String name, int state, int type, String remark, String orderby, String orderbyType) {
