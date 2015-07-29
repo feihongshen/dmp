@@ -3,17 +3,22 @@ package cn.explink.service;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import scala.Array;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.PaybusinessbenefitsDao;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Paybusinessbenefits;
 import cn.explink.domain.Smtcount;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
@@ -32,7 +37,7 @@ public class SalaryGatherService {
 	PaybusinessbenefitsDao paybusinessbenefitsDao;
 	
 	//获取基本派费，区域派费，超区补助，脱单补助，业务补助 方法
-	public List<BigDecimal> getSalarypush(long pfruleid, String cwb){
+	/*public List<BigDecimal> getSalarypush(long pfruleid, List<?> list){
 		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
 		BigDecimal bdbasicarea = BigDecimal.ZERO;
 		//单件配送费
@@ -64,6 +69,100 @@ public class SalaryGatherService {
 		bdbasicarea = bd1.add(bd2);//基本派费+区域派费
 		bdList.add(1, bdbasicarea);
 		return bdList;
+	}*/
+	
+	public List<BigDecimal> getSalarypush(long pfruleid, List<CwbOrder> cwbList){
+		/*//基本派费
+		BigDecimal bd1 = BigDecimal.ZERO;
+		//区域派费
+		BigDecimal bd2 = BigDecimal.ZERO;
+		//超区补助
+		BigDecimal bd3 = BigDecimal.ZERO;
+		//拖单补助
+		BigDecimal bd4 = BigDecimal.ZERO;
+		//业务补助
+		BigDecimal bd5 = BigDecimal.ZERO;
+		//大件补助 
+		BigDecimal bd6 = BigDecimal.ZERO;
+		//超重补助 
+		BigDecimal bd7 = BigDecimal.ZERO;*/
+		Map<String, BigDecimal> strBig1 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic,cwbList);
+		Map<String, BigDecimal> strBig2 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area,cwbList);
+		Map<String, BigDecimal> strBig3 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea,cwbList);
+		Map<String, BigDecimal> strBig4 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion,cwbList);
+		Map<String, BigDecimal> strBig5 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business,cwbList);
+		Map<String, BigDecimal> strBig6 = this.paiFeiRuleService.getOverbigFeeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong,cwbList);
+		Map<String, BigDecimal> strBig7 = this.paiFeiRuleService.getOverweightFeeOfBacth(pfruleid, PaiFeiRuleTabEnum.Paisong,cwbList);
+		List<BigDecimal> bdbasicareaList = new ArrayList<BigDecimal>();
+		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
+		if(strBig1!=null&&strBig1.size()>0){
+			/*Set<String> list =  strBig1.keySet();
+			Iterator iter = list.iterator();
+			while(iter.hasNext()){
+				String str = (String)iter.next();
+			}*/
+			Collection<BigDecimal> bdcolls = strBig1.values();
+			for(BigDecimal bde : bdcolls){
+				bdbasicareaList.add(bde);
+				bdList.add(bde);
+			}
+		}
+		if(strBig2!=null&&strBig2.size()>0){
+			Collection<BigDecimal> bdcolls = strBig2.values();
+			for(BigDecimal bde : bdcolls){
+				bdbasicareaList.add(bde);
+				bdList.add(bde);
+			}
+		}
+		if(strBig3!=null&&strBig3.size()>0){
+			Collection<BigDecimal> bdcolls = strBig3.values();
+			for(BigDecimal bde : bdcolls){
+				bdList.add(bde);
+			}
+		}
+		if(strBig4!=null&&strBig4.size()>0){
+			Collection<BigDecimal> bdcolls = strBig4.values();
+			for(BigDecimal bde : bdcolls){
+				bdList.add(bde);
+			}
+		}
+		if(strBig5!=null&&strBig5.size()>0){
+			Collection<BigDecimal> bdcolls = strBig5.values();
+			for(BigDecimal bde : bdcolls){
+				bdList.add(bde);
+			}
+		}
+		if(strBig6!=null&&strBig6.size()>0){
+			Collection<BigDecimal> bdcolls = strBig6.values();
+			for(BigDecimal bde : bdcolls){
+				bdList.add(bde);
+			}
+		}
+		if(strBig7!=null&&strBig7.size()>0){
+			Collection<BigDecimal> bdcolls = strBig7.values();
+			for(BigDecimal bde : bdcolls){
+				bdList.add(bde);
+			}
+		}
+		
+		List<BigDecimal> lsit = new ArrayList<BigDecimal>();
+		//（基本派费+区域派费）总和
+		BigDecimal bdbasicarea = BigDecimal.ZERO;
+		if(bdbasicareaList!=null&&!bdbasicareaList.isEmpty()){
+			for(BigDecimal bd : bdbasicareaList){
+				bdbasicarea = bdbasicarea.add(bd);
+			}
+		}
+		lsit.add(bdbasicarea);
+		//计件配送费总和（kpi补助和其他补助排除）
+		BigDecimal salaryfee = BigDecimal.ZERO;
+		if(bdList!=null&&!bdList.isEmpty()){
+			for(BigDecimal bd : bdList){
+				salaryfee = salaryfee.add(bd);
+			}
+		}
+		lsit.add(salaryfee);
+		return lsit;
 	}
 	//个税计算公式
 	public BigDecimal getTax(BigDecimal salaryaccrual) {
@@ -164,8 +263,8 @@ public class SalaryGatherService {
 				double tuotoulv = (Double)(map.get(2));
 				for(Paybusinessbenefits pbbf : pbbfList){
 					if(customerid == pbbf.getCustomerid()){
-						double lower = Double.parseDouble(pbbf.getLower()==null?"0":pbbf.getLower());
-						double upper = Double.parseDouble(pbbf.getUpper()==null?"0":pbbf.getUpper());
+						double lower = Double.parseDouble((pbbf.getLower()==null)||("".equals(pbbf.getLower()))?"0":pbbf.getLower());
+						double upper = Double.parseDouble((pbbf.getUpper()==null)||("".equals(pbbf.getUpper()))?"0":pbbf.getUpper());
 						if(tuotoulv>lower&&tuotoulv<=upper){
 							Map maps = new HashMap();
 							maps.put(1, pbbf.getCustomerid());//供货商

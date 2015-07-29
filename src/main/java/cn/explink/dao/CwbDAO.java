@@ -6253,5 +6253,10 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong("select count(1) from express_ops_cwb_detail where state=1");
 	}
 
+	public List<CwbOrder> getCwbsBycwbs(String cwbsStr) {
+		String sql = "select * from express_ops_cwb_detail where cwb in("+cwbsStr+") and state=1";
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+
 
 }

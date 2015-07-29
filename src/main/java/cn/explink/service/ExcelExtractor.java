@@ -1495,7 +1495,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal salarybasic = BigDecimal.ZERO;
 			if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==1)) {//基本工资
-				salarybasic = new BigDecimal(this.getXRowCellData(row, 3));
+				salarybasic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3));
 			}else{
 				salarybasic = sf.getSalarybasic();
 			}
@@ -1504,7 +1504,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal salaryjob = BigDecimal.ZERO;
 			if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==1)) {//岗位工资
-				salaryjob = new BigDecimal(this.getXRowCellData(row, 4));
+				salaryjob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4));
 			}else{
 				salaryjob = sf.getSalaryjob();
 			}
@@ -1513,7 +1513,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal pushcash = BigDecimal.ZERO;
 			if((null!=map.get("pushcash"))&&(map.get("pushcash")==1)) {//绩效奖金pushcash
-				pushcash = new BigDecimal(this.getXRowCellData(row, 5));
+				pushcash = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5));
 			}else{
 				pushcash = sf.getPushcash();
 			}
@@ -1522,7 +1522,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal jobpush = BigDecimal.ZERO;
 			if((null!=map.get("jobpush"))&&(map.get("jobpush")==1)) {//岗位津贴
-				jobpush = new BigDecimal(this.getXRowCellData(row, 6));
+				jobpush = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6));
 			}else{
 				jobpush = sf.getJobpush();
 			}
@@ -1627,11 +1627,20 @@ public abstract class ExcelExtractor {
 				}
 			}*/
 
-
-			//bds寄件配送费(多个单件之和)
+			//cwbsStr
+			
+			List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
+			//返回（list(0):基本+区域 总和    list(1):减去kpi+其他派费总和 ）
+			List<BigDecimal> bdLists = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
+			BigDecimal basicfee = BigDecimal.ZERO;
 			BigDecimal bds = BigDecimal.ZERO;
+			if(bdLists!=null&&!bdLists.isEmpty()){
+				basicfee = bdLists.get(0);
+				bds = bdLists.get(1);
+			}
+			//bds寄件配送费(多个单件之和)
 
-			//标准费用(总量)
+			/*//标准费用(总量)
 			BigDecimal basicfee = BigDecimal.ZERO;
 			if((dsList!=null)&&!dsList.isEmpty()){
 				for(DeliveryState ds : dsList){
@@ -1648,7 +1657,8 @@ public abstract class ExcelExtractor {
 					basicfee = basicfee.add(bdbasicarea);
 
 				}
-			}
+			}*/
+			
 			//最终计件配送费
 			BigDecimal bdss = bds.add(bd1).add(bd2);
 
@@ -1667,7 +1677,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal agejob = BigDecimal.ZERO;
 			if((null!=map.get("agejob"))&&(map.get("agejob")==1)) {//工龄
-				agejob = new BigDecimal(this.getXRowCellData(row, 7));
+				agejob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7));
 			}else{
 				agejob = sf.getAgejob();
 			}
@@ -1676,7 +1686,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusroom = BigDecimal.ZERO;
 			if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==1)) {//住房补贴
-				bonusroom = new BigDecimal(this.getXRowCellData(row, 8));
+				bonusroom = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8));
 			}else{
 				bonusroom = sf.getBonusroom();
 			}
@@ -1685,7 +1695,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusallday = BigDecimal.ZERO;
 			if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==1)) {//全勤补贴
-				bonusallday = new BigDecimal(this.getXRowCellData(row, 9));
+				bonusallday = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9));
 			}else{
 				bonusallday = sf.getBonusallday();
 			}
@@ -1694,7 +1704,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusfood = BigDecimal.ZERO;
 			if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==1)) {//餐费补贴
-				bonusfood = new BigDecimal(this.getXRowCellData(row, 10));
+				bonusfood = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10));
 			}else{
 				bonusfood = sf.getBonusfood();
 			}
@@ -1703,7 +1713,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonustraffic = BigDecimal.ZERO;
 			if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==1)) {//交通补贴
-				bonustraffic = new BigDecimal(this.getXRowCellData(row, 11));
+				bonustraffic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11));
 			}else{
 				bonustraffic = sf.getBonustraffic();
 			}
@@ -1712,7 +1722,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusphone = BigDecimal.ZERO;
 			if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==1)) {//通讯补贴
-				bonusphone = new BigDecimal(this.getXRowCellData(row, 12));
+				bonusphone = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12));
 			}else{
 				bonusphone = sf.getBonusphone();
 			}
@@ -1721,7 +1731,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusweather = BigDecimal.ZERO;
 			if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==1)) {//高温寒冷补贴
-				bonusweather = new BigDecimal(this.getXRowCellData(row, 13));
+				bonusweather = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13));
 			}else{
 				bonusweather = sf.getBonusweather();
 			}
@@ -1736,7 +1746,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizecancel_import = BigDecimal.ZERO;
 			if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
-				penalizecancel_import = new BigDecimal(this.getXRowCellData(row, 14));
+				penalizecancel_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14));
 			}else{
 				penalizecancel_import = sf.getPenalizecancel_import();
 			}
@@ -1745,7 +1755,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother1 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==1)) {//其他补贴
-				bonusother1 = new BigDecimal(this.getXRowCellData(row, 15));
+				bonusother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15));
 			}else{
 				bonusother1 = sf.getBonusother1();
 			}
@@ -1754,7 +1764,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother2 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==1)) {//其他补贴2
-				bonusother2 = new BigDecimal(this.getXRowCellData(row, 16));
+				bonusother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16));
 			}else{
 				bonusother2 = sf.getBonusother2();
 			}
@@ -1763,7 +1773,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother3 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==1)) {//其他补贴3
-				bonusother3 = new BigDecimal(this.getXRowCellData(row, 17));
+				bonusother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17));
 			}else{
 				bonusother3 = sf.getBonusother3();
 			}
@@ -1772,7 +1782,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother4 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==1)) {//其他补贴4
-				bonusother4 = new BigDecimal(this.getXRowCellData(row, 18));
+				bonusother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18));
 			}else{
 				bonusother4 = sf.getBonusother4();
 			}
@@ -1781,7 +1791,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother5 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==1)) {//其他补贴5
-				bonusother5 = new BigDecimal(this.getXRowCellData(row, 19));
+				bonusother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19));
 			}else{
 				bonusother5 = sf.getBonusother5();
 			}
@@ -1790,7 +1800,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal bonusother6 = BigDecimal.ZERO;
 			if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==1)) {//其他补贴6
-				bonusother6 = new BigDecimal(this.getXRowCellData(row, 20));
+				bonusother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20));
 			}else{
 				bonusother6 = sf.getBonusother6();
 			}
@@ -1799,7 +1809,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal overtimework = BigDecimal.ZERO;
 			if((null!=map.get("overtimework"))&&(map.get("overtimework")==1)) {//加班费
-				overtimework = new BigDecimal(this.getXRowCellData(row, 21));
+				overtimework = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21));
 			}else{
 				overtimework = sf.getOvertimework();
 			}
@@ -1808,7 +1818,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal attendance = BigDecimal.ZERO;
 			if((null!=map.get("attendance"))&&(map.get("attendance")==1)) {//考勤扣款
-				attendance = new BigDecimal(this.getXRowCellData(row, 22));
+				attendance = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22));
 			}else{
 				attendance = sf.getAttendance();
 			}
@@ -1817,7 +1827,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal security = BigDecimal.ZERO;
 			if((null!=map.get("security"))&&(map.get("security")==1)) {//个人社保扣款
-				security = new BigDecimal(this.getXRowCellData(row, 23));
+				security = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23));
 			}else{
 				security = sf.getSecurity();
 			}
@@ -1826,7 +1836,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal gongjijin = BigDecimal.ZERO;
 			if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==1)) {//个人公积金扣款
-				gongjijin = new BigDecimal(this.getXRowCellData(row, 24));
+				gongjijin = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24));
 			}else{
 				gongjijin = sf.getGongjijin();
 			}
@@ -1841,7 +1851,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal foul_import = BigDecimal.ZERO;
 			if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
-				foul_import = new BigDecimal(this.getXRowCellData(row, 25));
+				foul_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25));
 			}else{
 				foul_import = sf.getFoul_import();
 			}
@@ -1856,7 +1866,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal dorm = BigDecimal.ZERO;
 			if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用
-				dorm = new BigDecimal(this.getXRowCellData(row, 26));
+				dorm = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26));
 			}else{
 				dorm = sf.getDorm();
 			}
@@ -1865,7 +1875,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother1 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==1)) {//其他扣罚
-				penalizeother1 = new BigDecimal(this.getXRowCellData(row, 27));
+				penalizeother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27));
 			}else{
 				penalizeother1 = sf.getPenalizeother1();
 			}
@@ -1874,7 +1884,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother2 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==1)) {//其他扣罚2
-				penalizeother2 = new BigDecimal(this.getXRowCellData(row, 28));
+				penalizeother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28));
 			}else{
 				penalizeother2 = sf.getPenalizeother2();
 			}
@@ -1883,7 +1893,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother3 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==1)) {//其他扣罚3
-				penalizeother3 = new BigDecimal(this.getXRowCellData(row, 29));
+				penalizeother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29));
 			}else{
 				penalizeother3 = sf.getPenalizeother3();
 			}
@@ -1892,7 +1902,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother4 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==1)) {//其他扣罚4
-				penalizeother4 = new BigDecimal(this.getXRowCellData(row, 30));
+				penalizeother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30));
 			}else{
 				penalizeother4 = sf.getPenalizeother4();
 			}
@@ -1901,7 +1911,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother5 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==1)) {//其他扣罚5
-				penalizeother5 = new BigDecimal(this.getXRowCellData(row, 31));
+				penalizeother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31));
 			}else{
 				penalizeother5 = sf.getPenalizeother5();
 			}
@@ -1910,7 +1920,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal penalizeother6 = BigDecimal.ZERO;
 			if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==1)) {//其他扣罚6
-				penalizeother6 = new BigDecimal(this.getXRowCellData(row, 32));
+				penalizeother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32));
 			}else{
 				penalizeother6 = sf.getPenalizeother6();
 			}
@@ -1919,7 +1929,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother1 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==1)) {//其他预付款
-				imprestother1 = new BigDecimal(this.getXRowCellData(row, 33));
+				imprestother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33));
 			}else{
 				imprestother1 = sf.getImprestother1();
 			}
@@ -1928,7 +1938,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother2 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==1)) {//其他预付款2
-				imprestother2 = new BigDecimal(this.getXRowCellData(row, 34));
+				imprestother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34));
 			}else{
 				imprestother2 = sf.getImprestother2();
 			}
@@ -1937,7 +1947,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother3 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==1)) {//其他预付款3
-				imprestother3 = new BigDecimal(this.getXRowCellData(row, 35));
+				imprestother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35));
 			}else{
 				imprestother3 = sf.getImprestother3();
 			}
@@ -1946,7 +1956,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother4 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==1)) {//其他预付款4
-				imprestother4 = new BigDecimal(this.getXRowCellData(row, 36));
+				imprestother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36));
 			}else{
 				imprestother4 = sf.getImprestother5();
 			}
@@ -1955,7 +1965,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother5 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==1)) {//其他预付款5
-				imprestother5 = new BigDecimal(this.getXRowCellData(row, 37));
+				imprestother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37));
 			}else{
 				imprestother5 = sf.getImprestother5();
 			}
@@ -1964,7 +1974,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal imprestother6 = BigDecimal.ZERO;
 			if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==1)) {//其他预付款6
-				imprestother6 = new BigDecimal(this.getXRowCellData(row, 38));
+				imprestother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38));
 			}else{
 				imprestother6 = sf.getImprestother6();
 			}
@@ -1973,7 +1983,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal carrent = BigDecimal.ZERO;
 			if((null!=map.get("carrent"))&&(map.get("carrent")==1)) {//租用车辆费用
-				carrent = new BigDecimal(this.getXRowCellData(row, 39));
+				carrent = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39));
 			}else{
 				carrent = sf.getCarrent();
 			}
@@ -1982,7 +1992,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal carmaintain = BigDecimal.ZERO;
 			if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==1)) {//车子维修给用
-				carmaintain = new BigDecimal(this.getXRowCellData(row, 40));
+				carmaintain = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 40));
 			}else{
 				carmaintain = sf.getCarmaintain();
 			}
@@ -1991,7 +2001,7 @@ public abstract class ExcelExtractor {
 
 			BigDecimal carfuel = BigDecimal.ZERO;
 			if((null!=map.get("carfuel"))&&(map.get("carfuel")==1)) {//油/电费用
-				carfuel = new BigDecimal(this.getXRowCellData(row, 41));
+				carfuel = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 41));
 			}else{
 				carfuel = sf.getCarfuel();
 			}
