@@ -386,7 +386,7 @@ function hexiao(){
 </div>
 <!-- 查看/修改层显示 -->
 <%-- <c:if test="${edit==1 }"> --%>
-	<div  id="save" hidden="hidden" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true" style="width:800px;height:220px;">
+	<div  id="save" hidden="hidden" class="easyui-dialog" title="编辑" data-options="iconCls:'icon-save',modal:true" style="width:1000px;height:400px;">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
 		<form action="${ctx}/salaryCount/hexiao" method="post" id="saveform">
         	<tr>

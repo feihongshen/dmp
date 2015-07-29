@@ -195,7 +195,7 @@ public class SalaryGatherDao {
 	}
 
 	public List<SalaryGather> getSalaryGathers(String batchid) {
-		String sql = "select * from express_ops_salarygather_detail where batchid=? order by id desc limit 1";
+		String sql = "select * from express_ops_salarygather_detail where batchid=?";
 		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
 	}
 

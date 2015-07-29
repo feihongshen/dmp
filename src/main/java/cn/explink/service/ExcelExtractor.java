@@ -1137,7 +1137,7 @@ public abstract class ExcelExtractor {
 			return null;
 		}
 		else {
-			if(!idcard.equals(user.getIdcardno()))
+			if(!idcard.trim().equals(user.getIdcardno()))
 			{
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码有误！", importflag);
 				return null;
@@ -1471,7 +1471,7 @@ public abstract class ExcelExtractor {
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"不属于该批次指定站点！", importflag);
 				return null;
 			}
-			if(!idcard.equals(user.getIdcardno())){
+			if(!idcard.trim().equals(user.getIdcardno())){
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码:"+user.getIdcardno()+"有误！", importflag);
 				return null;
 			}
@@ -1629,6 +1629,9 @@ public abstract class ExcelExtractor {
 
 			//cwbsStr
 			
+			if("".equals(cwbsStr)){
+				cwbsStr = "''";
+			}
 			List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
 			//返回（list(0):基本+区域 总和    list(1):减去kpi+其他派费总和 ）
 			List<BigDecimal> bdLists = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
@@ -2055,6 +2058,7 @@ public abstract class ExcelExtractor {
 			salary.setSalary(salarys);
 
 		}catch(Exception e){
+			e.printStackTrace();
 			this.salaryErrorDAO.creSalaryError(realname, idcard, "数据格式有误", importflag);
 			ExcelExtractor.logger.error("人事数据导入异常",e);
 			return null;
