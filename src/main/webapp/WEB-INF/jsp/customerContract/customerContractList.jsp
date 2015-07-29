@@ -3,15 +3,12 @@
 <%@page import="cn.explink.domain.customerCoutract.CustomerContractManagement"%>
 <%@page import="cn.explink.domain.customerCoutract.DepositInformation"%>
 <%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.domain.customerCoutract.CustomerContractManagement"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.ContractStateEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.LoanTypeEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.ContracTypeEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.SettlementPeriodEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.InvoiceTypeEnum"%>
 <%@page import="cn.explink.enumutil.coutracManagementEnum.WhetherHaveDepositEnum"%>
-
-
 <%
 	Page page_obj = (Page)request.getAttribute("page_obj");
 	List<Customer> customerList = (List<Customer>)request.getAttribute("contractList");
@@ -65,19 +62,16 @@ function query(){
 }
 
 function setCondition(){
-	$("#number").val("${customer.number}");
-	$("#contractstatus").val("${customer.contractstatus}");
-	$("#customerid").val("${customer.customerid}");
-	$("#partyaname").val("${customer.partyaname}");
-	$("#marketingprincipal").val("${customer.marketingprincipal}");
-	$("#othercontractors").val("${customer.othercontractors}");
-	$("#contractdescription").val("${customer.contractdescription}");
-	$("#loansandsettlementway").val("${customer.loansandsettlementway}");
+	$("#number").val("${number}");
+	$("#contractstatus").val("${contractstatus}");
+	$("#customerid").val("${customerid}");
+	$("#partyaname").val("${partyaname}");
+	$("#marketingprincipal").val("${marketingprincipal}");
+	$("#othercontractors").val("${othercontractors}");
+	$("#contractdescription").val("${contractdescription}");
+	$("#loansandsettlementway").val("${loansandsettlementway}");
 	$("#createStatrtTime").val("${createStatrtTime}");
-	//$("#createEndTime").val("${createEndTime}");
-	$("#overStartTime").val("${overStartTime}");
-	$("#overEndTime").val("${overEndTime}");
-	$("#whetherhavedeposit").val("${customer.whetherhavedeposit}");
+	$("#whetherhavedeposit").val("${whetherhavedeposit}");
 	$("#sort").val("${sort}");
 	$("#method").val("${method}");
 }
