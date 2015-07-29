@@ -491,7 +491,7 @@ public class UserDAO {
 	 */
 	public List<User> queryAllUserByBranchId(long branchid) {
 		List<User> list = new ArrayList<User>();
-		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and userDeleteFlag=1 ";
+		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and userDeleteFlag=1 ";
 		try {
 			list = this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (DataAccessException e) {
@@ -898,6 +898,14 @@ public class UserDAO {
 		Object[] paras = new Object[] { branchId };
 		this.jdbcTemplate.query(sql, paras, new UserIdNameRCH(deliverNameMap));
 
+		return deliverNameMap;
+	}
+	public Map<Long, String> getDeliverNameMapByBranchid(long branchId) {
+		String sql = "select userid,realname from express_set_user where roleid in (2,4) and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and branchid = ?";
+		Map<Long, String> deliverNameMap = new HashMap<Long, String>();
+		Object[] paras = new Object[] { branchId };
+		this.jdbcTemplate.query(sql, paras, new UserIdNameRCH(deliverNameMap));
+		
 		return deliverNameMap;
 	}
 

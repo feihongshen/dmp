@@ -373,24 +373,28 @@ function changeBillState(state){
 				$("#updateForm select[name='billstate']").val('${yiShenHeState}');
 				$("#updateForm input[name='checktime']").val(date);
 				$("#updateForm select[name='verifier']").val('${userid}');
+				updatePunishinsideBill();
 			 }
 		} else if(state == 'QuXiaoShenHe'){
 			if(confirm("是否确认取消审核?")){
 				$("#updateForm select[name='billstate']").val('${weiShenHeState}');
 				$("#updateForm input[name='checktime']").val('');
 				$("#updateForm select[name='verifier']").val('');
+				updatePunishinsideBill();
 			}
 		} else if(state == 'HeXiaoWanCheng'){
 			if(confirm("是否确认核销完成?")){
 				$("#updateForm select[name='billstate']").val('${yiHeXiaoState}');
 				$("#updateForm input[name='verificationdate']").val(date);
 				$("#updateForm select[name='verificationperson']").val('${userid}');
+				updatePunishinsideBill();
 			}
 		} else if(state == 'QuXiaoHeXiao'){
 			if(confirm("是否确认取消核销?")){
 				$("#updateForm select[name='billstate']").val('${yiShenHeState}');
 				$("#updateForm input[name='verificationdate']").val('');
 				$("#updateForm select[name='verificationperson']").val('');
+				updatePunishinsideBill();
 			}
 		}
 	}

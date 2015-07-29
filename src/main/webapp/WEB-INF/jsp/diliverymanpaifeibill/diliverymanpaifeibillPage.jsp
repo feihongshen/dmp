@@ -64,7 +64,7 @@ function fillStationDeliver(stationId) {
 	$.ajax({
 		type : "post",
 		dataType : "json",
-		url : "${ctx}/smtfaresettle/getstationdeliver?"
+		url : "${ctx}/diliverymanpaifeibill/getstationdeliver?"
 				+ Math.random(),
 		data : {
 			stationId : stationId
@@ -79,7 +79,7 @@ function filltheirsite(stationId) {
 	$.ajax({
 		type : "post",
 		dataType : "json",
-		url : "${ctx}/smtfaresettle/getstationdeliver?"
+		url : "${ctx}/diliverymanpaifeibill/getstationdeliver?"
 				+ Math.random(),
 		data : {
 			stationId : stationId

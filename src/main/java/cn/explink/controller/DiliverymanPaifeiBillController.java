@@ -6,6 +6,8 @@ package cn.explink.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -208,4 +210,13 @@ public class DiliverymanPaifeiBillController {
 		this.diliverymanPaifeiBillDAO.updateBillState(id,state);
 		return "{\"errorCode\":0,\"error\":\"修改状态成功\"}";
 	}
+	@RequestMapping("/getstationdeliver")
+	@ResponseBody
+	public Map<Long, String> getStationDeliver(HttpServletRequest request) {
+		String strStationId = request.getParameter("stationId");
+		long stationId = Long.valueOf(strStationId);
+
+		return this.userDAO.getDeliverNameMapByBranchid(stationId);
+	}
+	
 }
