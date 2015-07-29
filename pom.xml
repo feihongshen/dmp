@@ -707,7 +707,7 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -3200,7 +3200,7 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
