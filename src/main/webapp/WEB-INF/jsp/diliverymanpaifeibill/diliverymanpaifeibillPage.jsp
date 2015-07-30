@@ -583,7 +583,7 @@ function verify(){
 </div>
 <!-- 查看/修改层显示 -->
 <c:if test="${updatePage==1}"> 
-<div  id="update" class="easyui-dialog" data-options="modal:true" title="查看/修改"  style="width:1200px;height:600px;">
+<div  id="update" class="easyui-dialog" data-options="modal:true" title="查看/修改"  style="width:1200px;height:606px;">
 	<form action="${ctx}/diliverymanpaifeibill/updateDilivermanBill" method="post" id="updateForm">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
       		<tr>
@@ -676,7 +676,7 @@ function verify(){
          	<tr>
          		<td nowrap="nowrap" align="right" rowspan="2">备注：</td>
          		<td nowrap="nowrap" colspan="5" >
-			   	 <textarea rows="3"  id="remarks" name="remarks" style="width: 100%;resize: none;" value="">${bill.remarks}</textarea>
+			   	 <textarea rows="2"  id="remarks" name="remarks" style="width: 100%;resize: none;" value="">${bill.remarks}</textarea>
 		        </td>
          	</tr>
          	<tr>
