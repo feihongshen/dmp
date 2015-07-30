@@ -202,7 +202,7 @@ public class CustomerBillContractService {
 			String dateRange, long correspondingCwbNum, BigDecimal deliveryMoney,
 			BigDecimal distributionMoney, BigDecimal transferMoney, BigDecimal refuseMoney,
 			BigDecimal totalCharge, String remark,String cwbtype, long dateState,String cwbs) {
-		String createBillDate=DateTimeUtil.getNowDate();
+			String createBillDate=DateTimeUtil.getNowTime();
 		long cwbType=-1;
 		if(cwbtype!=null&&!cwbtype.equals("")){
 			cwbType=Long.valueOf(cwbtype);

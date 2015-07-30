@@ -90,20 +90,18 @@ public class CustomerBillContractDao {
 					sb.append(" and bill_state="+billState);
 				}
 				if(!crestartdate.equals("")&&!creenddate.equals("")){
-					sb.append(" and date_create_bill>='"+crestartdate+"' and date_create_bill<='"+creenddate+"'");
+					sb.append(" and date_create_bill>='"+crestartdate+" 00:00:00' and date_create_bill<='"+creenddate+" 23:59:59'");
 				}
 				if(!verificationstratdate.equals("")&&!verificationenddate.equals("")){
-					sb.append(" and date_create_bill>='"+verificationstratdate+"' and date_create_bill<='"+verificationenddate+"'");
+					sb.append(" and date_create_bill>='"+verificationstratdate+"  00:00:00' and date_create_bill<='"+verificationenddate+"  23:59:59'");
 				}
 				if(customerId>0){
 					sb.append(" and customer_id="+customerId);
 				}
 				if(cwbOrderType>0){
 					sb.append(" and cwb_order_type="+cwbOrderType);
-				}
-				
-				sb.append(" ORDER BY '"+condition+"'");
-				sb.append(" '"+sequence+"'");
+				}				
+				sb.append(" ORDER BY "+condition+" "+sequence);
 				sb.append(" limit "+start+","+number);
 				sql+=sb.toString();
 				System.out.println(sql);
@@ -249,7 +247,7 @@ public class CustomerBillContractDao {
 			
 			//查出所有账单
 			public List<CustomerBillContract> dateAllbillBatche(int start,int pageSize) {	
-				String sql="select * from customerbillcontract limit "+start+","+pageSize;
+				String sql="select * from customerbillcontract desc limit "+start+","+pageSize;
 				List<CustomerBillContract> cbc=null;
 				try {
 					
