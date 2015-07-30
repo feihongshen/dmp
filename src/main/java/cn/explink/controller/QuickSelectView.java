@@ -71,10 +71,38 @@ public class QuickSelectView {
 	String consigneenameOfkf;
 	String consigneemobileOfkf;
 	String consigneephoneOfkf;
-	
-	
-	
 
+	private String city;//通过百度API匹配的城市
+	private String area;//通过百度API匹配的城区区域
+
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return this.city;
+	}
+
+	/**
+	 * @param city the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the area
+	 */
+	public String getArea() {
+		return this.area;
+	}
+
+	/**
+	 * @param area the area to set
+	 */
+	public void setArea(String area) {
+		this.area = area;
+	}
 	public String getTimelimited() {
 		return this.timelimited;
 	}
@@ -121,9 +149,9 @@ public class QuickSelectView {
 	private String sign_man; // 签收人
 	private String sign_time; // 签收时间
 	private String shangmenlanshoutime;// 上门揽收时间
-	
+
 	public String getShangmenlanshoutime() {
-		return shangmenlanshoutime;
+		return this.shangmenlanshoutime;
 	}
 
 	public void setShangmenlanshoutime(String shangmenlanshoutime) {

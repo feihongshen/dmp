@@ -130,6 +130,10 @@ function goForm(cwb){
 										<td bgcolor="#EBFFD7"><b>电话：</b><%=view.getConsigneephone()%></td>
 									</tr>
 									<tr>
+										<td bgcolor="#EBFFD7"><b>派送城市：</b><%=view.getCity()==null?"":view.getCity()%></td>
+										<td bgcolor="#EBFFD7"><b>派送区域：</b><%=view.getArea()==null?"":view.getArea()%></td>
+									</tr>
+									<tr>
 										<td bgcolor="#EBFFD7"><b>订单金额：</b><%=view.getCaramount()%>元</td>
 										<td bgcolor="#EBFFD7"><b>代收款：</b><%=view.getReceivablefee()%>
 										元
