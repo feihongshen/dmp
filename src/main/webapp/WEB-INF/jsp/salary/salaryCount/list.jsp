@@ -119,6 +119,7 @@ function check(flag){
 		alert("开始时间不能大于结束时间");
 		return ;
 	} 
+	$("#sgListAll").html("");
 	$("#"+flag+" form").submit();
 }
 $(function(){
@@ -166,6 +167,7 @@ function seeoralter(){
 				$('#save').dialog('open');
 				$('#save').removeAttr('hidden');
 				var insertHtml="";
+				$("#sgListAll").html("");
 				$.each(data.salaryGathers,function (i,salary){
 					insertHtml+="<tr id=\"sg\" > "+
 					"						<td align=\"center\" valign=\"middle\"><input type=\"checkbox\" id=\"id\" name=\"checkname\" value=\""+salary.batchid+"\"/></td>"+
@@ -294,7 +296,7 @@ function hexiao(){
 		   dataType : 'json',
 		   success: function (data){
 			     if(data.errorCode==0){
-			    	 alert("成功核销"+data.error+"单数据");
+			    	 alert("成功核销"+data.error+"名配送员工资信息!");
 		 			window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
 			     }else{
 			    	 $.messager.alert("提示",data.error,"info");
@@ -636,7 +638,7 @@ function hexiao(){
 				<tbody id="sgListAll">
 				
 				
-				</tbody>
+		
 				<c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
 						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.batchid}"/></td>
@@ -693,6 +695,7 @@ function hexiao(){
 						<td align="center" valign="middle">${salary.salary}</td><!-- 实发工资 -->
 					</tr>
 				</c:forEach>
+						</tbody>
 				</table>
 					<input type="button" onclick="" value="移除"/>
 				</div>

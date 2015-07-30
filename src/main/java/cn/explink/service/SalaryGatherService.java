@@ -316,8 +316,8 @@ public class SalaryGatherService {
 	@Transactional
 	public long getHexiaoCounts(String ids, User use, String dateStr) {
 		long counts = 0;
+		long usercount = 0;
 		if(!"".equals(ids)){
-			long usercount = 0;
 			String batchids = "";
 			String[] strArray = ids.split(",");
 			for(String strs : strArray){
@@ -370,7 +370,7 @@ public class SalaryGatherService {
 			//返回修改成功的单量
 			counts = this.salaryCountDAO.updateSalaryState(batchids,use.getUserid(),dateStr,usercount);
 		} 
-		return counts;
+		return usercount;
 	}
 	
 }
