@@ -908,6 +908,14 @@ public class UserDAO {
 		
 		return deliverNameMap;
 	}
+	
+	public List<User> getAllDeliverUser(long branchId) {
+		String sql = "select * from express_set_user where roleid in (2,4)";
+		if(branchId != 0){
+			sql += " and branchid =" + branchId;
+		}
+		return this.jdbcTemplate.query(sql, new UserRowMapper());
+	}
 
 	public User getUserByUsernameToUpper(String username) {
 		return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where UPPER(username)=? and userDeleteFlag=1 limit 1", new UserRowMapper(), username);

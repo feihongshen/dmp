@@ -87,7 +87,7 @@ public class ExceedSubsidyApplyService {
 	}
 	
 	public List<User> getDeliveryUserList(long branchid){
-		List<User> deliveryUserList = new ArrayList<User>();
+		/*List<User> deliveryUserList = new ArrayList<User>();
 		List<Role> roleList = this.roleDAO.getRolesByRolename("小件员");
 		if(roleList != null && !roleList.isEmpty()){
 			if(branchid == 0){
@@ -97,7 +97,8 @@ public class ExceedSubsidyApplyService {
 				roleid = "'" + roleid + "'";
 				deliveryUserList = this.userDAO.getUserByRole(roleid, branchid);
 			}
-		}
+		}*/
+		List<User> deliveryUserList = this.userDAO.getAllDeliverUser(branchid);
 		return deliveryUserList;
 	}
 	public String generateApplyNo() {

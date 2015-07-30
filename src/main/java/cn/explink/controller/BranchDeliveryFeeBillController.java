@@ -371,28 +371,52 @@ public class BranchDeliveryFeeBillController {
 	}
 	
 	@RequestMapping("/getExportData")
+	@ResponseBody
 	public ExpressSetBranchDeliveryFeeBillVO getExportData(
 			@RequestParam(value = "cwbs", defaultValue = "", required = true) String cwbs, HttpServletRequest request) throws IOException {
 		ExpressSetBranchDeliveryFeeBillVO rtnVO = new ExpressSetBranchDeliveryFeeBillVO();
-		Map<String, Object> rtnMap = new HashMap<String, Object>();
+		Map<Object, Object> rtnMap = new HashMap<Object, Object>();
 		List<ExpressSetBranchDeliveryFeeBillDetailVO> rtnList = null;
 		cwbs = StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(",")));
 		
 		final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
 		List<ExpressSetBranchDeliveryFeeBillDetailVO> billDetailVOList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailVOList(cwbs);
+		ExpressSetBranchDeliveryFeeBillDetailVO billDetailVOByCustomer = new ExpressSetBranchDeliveryFeeBillDetailVO();
+		// 小计
+		billDetailVOByCustomer.setIsReceived(2);
 		ExpressSetBranchDeliveryFeeBillDetailVO billDetailVO = null;
 		if(billDetailVOList != null && !billDetailVOList.isEmpty()){
 			for(int i = 0; i < billDetailVOList.size(); i++){
 				billDetailVO = billDetailVOList.get(i);
 				if(billDetailVO != null){
 					if(billDetailVO.getCustomerid() != 0){
-						if(rtnMap.get(cMap.get(billDetailVO.getCustomerid()).getCustomername()) == null){
+						if(rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername()) == null){
 							rtnList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetailVO>();
 							rtnList.add(billDetailVO);
-							rtnMap.put(cMap.get(billDetailVO.getCustomerid()).getCustomername(),rtnList);
+							rtnMap.put(cMap.get((long)billDetailVO.getCustomerid()).getCustomername(),rtnList);
+							
+							billDetailVOByCustomer.setCustomerid(billDetailVO.getCustomerid());
+							billDetailVOByCustomer.setCwbOrderCount(billDetailVO.getCwbOrderCount());
+							billDetailVOByCustomer.setDeliverySumFee(billDetailVO.getDeliverySumFee());
+							billDetailVOByCustomer.setDeliveryBasicFee(billDetailVO.getDeliveryBasicFee());
+							billDetailVOByCustomer.setDeliveryCollectionSubsidyFee(billDetailVO.getDeliveryCollectionSubsidyFee());
+							billDetailVOByCustomer.setDeliveryAreaSubsidyFee(billDetailVO.getDeliveryAreaSubsidyFee());
+							billDetailVOByCustomer.setDeliveryExceedSubsidyFee(billDetailVO.getDeliveryExceedSubsidyFee());
+							billDetailVOByCustomer.setDeliveryBusinessSubsidyFee(billDetailVO.getDeliveryBusinessSubsidyFee());
+							billDetailVOByCustomer.setDeliveryAttachSubsidyFee(billDetailVO.getDeliveryAttachSubsidyFee());
 						} else {
-							rtnList = (List<ExpressSetBranchDeliveryFeeBillDetailVO>)rtnMap.get(cMap.get(billDetailVO.getCustomerid()).getCustomername());
+							rtnList = (List<ExpressSetBranchDeliveryFeeBillDetailVO>)rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername());
 							rtnList.add(billDetailVO);
+							
+							billDetailVOByCustomer.setCwbOrderCount(billDetailVO.getCwbOrderCount() + billDetailVOByCustomer.getCwbOrderCount());
+							billDetailVOByCustomer.setDeliverySumFee(billDetailVO.getDeliverySumFee().add(billDetailVOByCustomer.getDeliverySumFee()));
+							billDetailVOByCustomer.setDeliveryBasicFee(billDetailVO.getDeliveryBasicFee().add(billDetailVOByCustomer.getDeliveryBasicFee()));
+							billDetailVOByCustomer.setDeliveryCollectionSubsidyFee(billDetailVO.getDeliveryCollectionSubsidyFee().add(billDetailVOByCustomer.getDeliveryCollectionSubsidyFee()));
+							billDetailVOByCustomer.setDeliveryAreaSubsidyFee(billDetailVO.getDeliveryAreaSubsidyFee().add(billDetailVOByCustomer.getDeliveryAreaSubsidyFee()));
+							billDetailVOByCustomer.setDeliveryExceedSubsidyFee(billDetailVO.getDeliveryExceedSubsidyFee().add(billDetailVOByCustomer.getDeliveryExceedSubsidyFee()));
+							billDetailVOByCustomer.setDeliveryBusinessSubsidyFee(billDetailVO.getDeliveryBusinessSubsidyFee().add(billDetailVOByCustomer.getDeliveryBusinessSubsidyFee()));
+							billDetailVOByCustomer.setDeliveryAttachSubsidyFee(billDetailVO.getDeliveryAttachSubsidyFee().add(billDetailVOByCustomer.getDeliveryAttachSubsidyFee()));
+							rtnList.add(billDetailVOByCustomer);
 						}
 					}
 				}

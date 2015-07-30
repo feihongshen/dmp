@@ -68,6 +68,14 @@ function checkAll(id){
 	});
 }
 
+function checkTable(id){ 
+	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
+	var chkBoxes = $("#"+ id +" input[type='checkbox'][name='checkBox']");
+	$(chkBoxes).each(function() {
+		$(this)[0].checked = chkAll;
+	});
+}
+
 function queryBillList(){
 	$("#queryForm").submit();
 	$('#queryPage').dialog('close');
@@ -400,7 +408,7 @@ function deleteBranchDeliveryFeeBill(){
 						var tdCount = 0;
 						rowSpanSize = parseInt(customerDeliveryFeeObj.length)*3+1;
 						for(var i in customerDeliveryFeeObj){
-								++count;
+								count = parseInt(count) + 1;
 								customerName = i;
 								
 								trObj = "<tr style='mso-yfti-irow: 1; height: 19.95pt'></tr>";
@@ -784,7 +792,7 @@ function deleteBranchDeliveryFeeBill(){
 								class="table_2" id="cwbOrderTable">
 								<tr>
 									<td height="30px" valign="middle">
-										<input type="checkbox" name="checkAll" onclick="javascript:checkAll('cwbOrderTable');" />
+										<input type="checkbox" name="checkAll" onclick="checkTable('cwbOrderTable')"/>
 									</td>
 									<td align="center" valign="middle" style="font-weight: bold;">
 										订单号</td>

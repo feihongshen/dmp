@@ -35,7 +35,7 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 	private String branchname;
 	private String branchaddress;
 	private List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList;
-	private Map<String, Object> customerDeliveryFee;
+	private Map<Object, Object> customerDeliveryFee;
 	private ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj;
 	private ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj;
 	private String qualityControlClause;
@@ -240,20 +240,11 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 		this.branchName = branchName;
 	}
 
-	public List<ExpressSetBranchDeliveryFeeBillDetail> getBillDetailList() {
-		return billDetailList;
-	}
-
-	public void setBillDetailList(
-			List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList) {
-		this.billDetailList = billDetailList;
-	}
-
-	public Map<String, Object> getCustomerDeliveryFee() {
+	public Map<Object, Object> getCustomerDeliveryFee() {
 		return customerDeliveryFee;
 	}
 
-	public void setCustomerDeliveryFee(Map<String, Object> customerDeliveryFee) {
+	public void setCustomerDeliveryFee(Map<Object, Object> customerDeliveryFee) {
 		this.customerDeliveryFee = customerDeliveryFee;
 	}
 
@@ -297,6 +288,15 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 
 	public void setBranchaddress(String branchaddress) {
 		this.branchaddress = branchaddress;
+	}
+
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBillDetailList() {
+		return billDetailList;
+	}
+
+	public void setBillDetailList(
+			List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList) {
+		this.billDetailList = billDetailList;
 	}
 
 }

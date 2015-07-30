@@ -1,5 +1,6 @@
 package cn.explink.domain.VO;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class ExpressSetBranchContractVO {
 	}
 
 	public void setBranchName(String branchName) {
-		this.branchName = branchName;
+		this.branchName = this.translatePageCode(branchName);
 	}
 
 	public String getBranchName() {
@@ -125,7 +126,7 @@ public class ExpressSetBranchContractVO {
 	}
 
 	public void setSiteChief(String siteChief) {
-		this.siteChief = siteChief;
+		this.siteChief = this.translatePageCode(siteChief);
 	}
 
 	public String getSiteChief() {
@@ -141,7 +142,7 @@ public class ExpressSetBranchContractVO {
 	}
 
 	public void setAreaManager(String areaManager) {
-		this.areaManager = areaManager;
+		this.areaManager = this.translatePageCode(areaManager);
 	}
 
 	public String getAreaManager() {
@@ -189,7 +190,7 @@ public class ExpressSetBranchContractVO {
 	}
 
 	public void setContractDescription(String contractDescription) {
-		this.contractDescription = contractDescription;
+		this.contractDescription = this.translatePageCode(contractDescription);
 	}
 
 	public String getContractDescription() {
@@ -333,4 +334,18 @@ public class ExpressSetBranchContractVO {
 		this.branchaddress = branchaddress;
 	}
 
+	/**
+	 * 页面乱码转换
+	 * @param pageCode
+	 * @return
+	 */
+	private String translatePageCode(String pageCode){
+		String resultString = null;
+		try {
+			resultString = new String(pageCode.getBytes("iso-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return resultString;
+	}
 }

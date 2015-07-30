@@ -146,6 +146,65 @@ public class BranchDeliveryFeeBillDAO {
 		}
 	}
 	
+	private final class BranchDeliveryFeeBillDetailVOListMapper implements
+	RowMapper<ExpressSetBranchDeliveryFeeBillDetailVO> {
+		@Override
+		public ExpressSetBranchDeliveryFeeBillDetailVO mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			ExpressSetBranchDeliveryFeeBillDetailVO branchDeliveryFeeBillDetailVO = new ExpressSetBranchDeliveryFeeBillDetailVO();
+			branchDeliveryFeeBillDetailVO.setCustomerid(rs.getInt("customerid"));
+			branchDeliveryFeeBillDetailVO.setIsReceived(rs.getInt("isReceived"));
+			branchDeliveryFeeBillDetailVO.setCwbOrderCount(rs.getInt("cwbOrderCount"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBasicFee(rs.getBigDecimal("deliveryBasicFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryCollectionSubsidyFee(rs.getBigDecimal("deliveryCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAreaSubsidyFee(rs.getBigDecimal("deliveryAreaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryExceedSubsidyFee(rs.getBigDecimal("deliveryExceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBusinessSubsidyFee(rs.getBigDecimal("deliveryBusinessSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAttachSubsidyFee(rs.getBigDecimal("deliveryAttachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliverySumFee(rs.getBigDecimal("deliverySumFee"));
+			
+			return branchDeliveryFeeBillDetailVO;
+		}
+	}
+	
+	private final class DeliveryFeeMapper implements
+	RowMapper<ExpressSetBranchDeliveryFeeBillDetailVO> {
+		@Override
+		public ExpressSetBranchDeliveryFeeBillDetailVO mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			ExpressSetBranchDeliveryFeeBillDetailVO branchDeliveryFeeBillDetailVO = new ExpressSetBranchDeliveryFeeBillDetailVO();
+			branchDeliveryFeeBillDetailVO.setCwbOrderCount(rs.getInt("cwbOrderCount"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBasicFee(rs.getBigDecimal("deliveryBasicFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryCollectionSubsidyFee(rs.getBigDecimal("deliveryCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAreaSubsidyFee(rs.getBigDecimal("deliveryAreaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryExceedSubsidyFee(rs.getBigDecimal("deliveryExceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryBusinessSubsidyFee(rs.getBigDecimal("deliveryBusinessSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliveryAttachSubsidyFee(rs.getBigDecimal("deliveryAttachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setDeliverySumFee(rs.getBigDecimal("deliverySumFee"));
+			
+			return branchDeliveryFeeBillDetailVO;
+		}
+	}
+	
+	private final class PickupFeeMapper implements
+	RowMapper<ExpressSetBranchDeliveryFeeBillDetailVO> {
+		@Override
+		public ExpressSetBranchDeliveryFeeBillDetailVO mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			ExpressSetBranchDeliveryFeeBillDetailVO branchDeliveryFeeBillDetailVO = new ExpressSetBranchDeliveryFeeBillDetailVO();
+			branchDeliveryFeeBillDetailVO.setCwbOrderCount(rs.getInt("cwbOrderCount"));
+			branchDeliveryFeeBillDetailVO.setPickupSumFee(rs.getBigDecimal("pickupSumFee"));
+			branchDeliveryFeeBillDetailVO.setPickupCollectionSubsidyFee(rs.getBigDecimal("pickupCollectionSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupAreaSubsidyFee(rs.getBigDecimal("pickupAreaSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupExceedSubsidyFee(rs.getBigDecimal("pickupExceedSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupAttachSubsidyFee(rs.getBigDecimal("pickupAttachSubsidyFee"));
+			branchDeliveryFeeBillDetailVO.setPickupBasicFee(rs.getBigDecimal("pickupBasicFee"));
+			branchDeliveryFeeBillDetailVO.setPickupBusinessSubsidyFee(rs.getBigDecimal("pickupBusinessSubsidyFee"));
+			
+			return branchDeliveryFeeBillDetailVO;
+		}
+	}
+	
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 
 		@Override
@@ -432,8 +491,8 @@ public class BranchDeliveryFeeBillDAO {
 				+ "sum(deliveryCollectionSubsidyFee) as deliveryCollectionSubsidyFee,sum(deliveryAreaSubsidyFee) as deliveryAreaSubsidyFee,"
 				+ "sum(deliveryExceedSubsidyFee) as deliveryExceedSubsidyFee,sum(deliveryBusinessSubsidyFee) as deliveryBusinessSubsidyFee,"
 				+ "sum(deliveryAttachSubsidyFee) as deliveryAttachSubsidyFee,sum(deliverySumFee) as deliverySumFee "
-				+ " from express_set_branch_delivery_fee_bill_detail group by customerid,isReceived where deliverySumFee != 0.00 and cwb in (" + cwbs + ")";
-		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailVOMapper());
+				+ " from express_set_branch_delivery_fee_bill_detail where deliverySumFee != 0.00 and cwb in (" + cwbs + ") group by customerid,isReceived";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailVOListMapper());
 	}
 	
 	public ExpressSetBranchDeliveryFeeBillDetailVO getDeliveryFee(String cwbs) {
@@ -441,8 +500,8 @@ public class BranchDeliveryFeeBillDAO {
 				+ "sum(deliveryAreaSubsidyFee) as deliveryAreaSubsidyFee,sum(deliveryExceedSubsidyFee) as deliveryExceedSubsidyFee,"
 				+ "sum(deliveryBusinessSubsidyFee) as deliveryBusinessSubsidyFee,sum(deliveryAttachSubsidyFee) as deliveryAttachSubsidyFee,"
 				+ "sum(deliverySumFee) as deliverySumFee "
-				+ " from express_set_branch_delivery_fee_bill_detail group by billId where deliverySumFee != 0.00 and cwb in (" + cwbs + ")";
-		return jdbcTemplate.queryForObject(sql, new BranchDeliveryFeeBillDetailVOMapper());
+				+ " from express_set_branch_delivery_fee_bill_detail where deliverySumFee != 0.00 and cwb in (" + cwbs + ") group by billId";
+		return jdbcTemplate.queryForObject(sql, new DeliveryFeeMapper());
 	}
 	
 	public ExpressSetBranchDeliveryFeeBillDetailVO getPickupFee(String cwbs) {
@@ -450,8 +509,8 @@ public class BranchDeliveryFeeBillDAO {
 				+ "sum(pickupAreaSubsidyFee) as pickupAreaSubsidyFee,sum(pickupExceedSubsidyFee) as pickupExceedSubsidyFee,"
 				+ "sum(pickupBusinessSubsidyFee) as pickupBusinessSubsidyFee,sum(pickupAttachSubsidyFee) as pickupAttachSubsidyFee,"
 				+ "sum(pickupSumFee) as pickupSumFee "
-				+ " from express_set_branch_delivery_fee_bill_detail group by billId where pickupSumFee != 0.00 and cwb in (" + cwbs + ")";
-		return jdbcTemplate.queryForObject(sql, new BranchDeliveryFeeBillDetailVOMapper());
+				+ " from express_set_branch_delivery_fee_bill_detail where pickupSumFee != 0.00 and cwb in (" + cwbs + ") group by billId";
+		return jdbcTemplate.queryForObject(sql, new PickupFeeMapper());
 	}
 
 	public ExpressSetBranchDeliveryFeeBill getBranchDeliveryFeeBillListById(
