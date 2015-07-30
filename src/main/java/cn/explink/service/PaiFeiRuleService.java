@@ -53,6 +53,7 @@ import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
+import cn.explink.util.StringUtil;
 
 @SuppressWarnings("unchecked")
 /**
@@ -379,8 +380,8 @@ public class PaiFeiRuleService {
 			// 获取区域补助
 			// 需要获取订单中的区域
 			Area area = null;
-			String cwbcity = co.getCity();
-			String cwbarea = co.getArea();
+			String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+			String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
 			if (!cwbarea.equals("") && !cwbcity.equals("")) {
 
 				area = this.areaDAO.getAreaByCityAndArea(cwbcity, cwbarea);
@@ -476,8 +477,8 @@ public class PaiFeiRuleService {
 					fee=fee.add(pFcollection.getCollectionPFfee());
 				}
 				Area area = null;
-				String cwbcity = co.getCity();
-				String cwbarea = co.getArea();
+				String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+				String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
 				// 获取区域补助
 				// 需要获取订单中的区域
 
@@ -706,8 +707,8 @@ public class PaiFeiRuleService {
 			// 需要获取订单中的区域
 			if (type == PaiFeiBuZhuTypeEnum.Area) {
 				Area area = null;
-				String cwbcity = co.getCity();
-				String cwbarea = co.getArea();
+				String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+				String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
 				if (!cwbarea.equals("") && !cwbcity.equals("")) {
 
 					area = this.areaDAO.getAreaByCityAndArea(cwbcity, cwbarea);
@@ -827,8 +828,8 @@ public class PaiFeiRuleService {
 			if (type == PaiFeiBuZhuTypeEnum.Area) {
 				for (CwbOrder co : cwbOrders) {
 					Area area = null;
-					String cwbcity = co.getCity();
-					String cwbarea = co.getArea();
+					String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+					String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
 
 					area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
 					long areaid = 0;
