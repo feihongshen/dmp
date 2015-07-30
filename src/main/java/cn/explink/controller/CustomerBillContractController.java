@@ -179,7 +179,7 @@ public class CustomerBillContractController {
 						correspondingCwbNum=cwbdao.findcwbByCwbsAndDateCount(cwbs, startdate+" 00:00:00", enddate+" 23:59:59");
 					}								
 				}else if(dateState==CwbDateEnum.RUKuRiQi.getValue()){
-					col=customerbillcontractservice.findcwbByCwbsAndDateAndtypeedao(cwbs,startdate+" 00:00",enddate+" 23:59",cwbOrderType);
+					col=customerbillcontractservice.findcwbByCwbsAndDateAndtypeedao(cwbs,startdate+" 00:00",enddate+" 23:59",cwbOrderType);		
 					correspondingCwbNum=edao.findcwbByCwbsAndDateAndtypeCount(cwbs,startdate+" 00:00",enddate+" 23:59",cwbOrderType);
 				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
 					List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
@@ -200,12 +200,12 @@ public class CustomerBillContractController {
 				String dateRange=startdate+"至"+enddate;   //日期范围
 				String BillBatches=customerbillcontractservice.getBillBatches(); //自动生成批次号
 				long initbillState= BillStateEnum.WeiShenHe.getValue();  //默认未审核
-				BigDecimal deliveryMoney=new BigDecimal("0");   //提货费
-				BigDecimal distributionMoney=new BigDecimal("0"); //配送费
-				BigDecimal transferMoney=new BigDecimal("0");	//中转费
-				BigDecimal refuseMoney=new BigDecimal("0");  //拒收派费
-				BigDecimal totalCharge=new BigDecimal("0"); //派费总计	
-				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
+				BigDecimal deliveryMoney=BigDecimal.ZERO;   //提货费
+				BigDecimal distributionMoney=BigDecimal.ZERO; //配送费
+				BigDecimal transferMoney=BigDecimal.ZERO;	//中转费
+				BigDecimal refuseMoney=BigDecimal.ZERO;  //拒收派费
+				BigDecimal totalCharge=BigDecimal.ZERO; //派费总计	
+				
 				
 
 			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
@@ -242,11 +242,11 @@ public class CustomerBillContractController {
 				
 					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单
 				}
-				
-				
-				String cwbsOfOneBill=sb.substring(0,sb.length()-1);
-				
-				
+				String cwbsOfOneBill=null;
+				if(sb.length()>0){
+				cwbsOfOneBill=sb.substring(0,sb.length()-1);
+				}
+				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
 
 				

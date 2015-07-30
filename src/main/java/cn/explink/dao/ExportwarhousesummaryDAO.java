@@ -508,7 +508,7 @@ public class ExportwarhousesummaryDAO {
 	
 	public List<CwbOrder> findcwbByCwbsAndDateAndtype(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select * from express_ops_order_intowarhouse where cwb in("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
-		List<CwbOrder> cwblist;
+		List<CwbOrder> cwblist=null;
 		try {
 			cwblist = jdbcTemplate.query(sql, new Cwbs());
 		} catch (DataAccessException e) {
