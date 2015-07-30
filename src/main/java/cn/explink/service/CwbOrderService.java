@@ -7004,4 +7004,16 @@ public class CwbOrderService {
 		explinkResponse.setStatuscode("11111");
 		return explinkResponse;
 	}
+
+	public void updatePickBranch(User user, CwbOrder cwbOrder, Branch branch,
+			CwbOrderAddressCodeEditTypeEnum addresscodeedittype) {
+		this.logger.info("更新提货站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
+
+		this.validateStateTransfer(cwbOrder, FlowOrderTypeEnum.UpdatePickBranch);
+
+		this.cwbDAO.updatePickBranchid(branch.getBranchid(), cwbOrder.getCwb());
+		
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdatePickBranch, "", System.currentTimeMillis());
+		
+	}
 }
