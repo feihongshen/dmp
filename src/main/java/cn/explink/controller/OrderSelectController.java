@@ -1129,6 +1129,12 @@ public class OrderSelectController {
 				return MessageFormat.format("货物配送站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
 						.getBranchByBranchid(cwbOrder.getDeliverybranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
+			
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdatePickBranch.getValue()) {
+				return MessageFormat.format("货物揽收站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
+						.getBranchByBranchid(cwbOrder.getPickbranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
+			}
+			
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
 				return MessageFormat.format("货物已由<font color =\"red\">[{0}]</font>退供货商拒收返库入库；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone,
 						comment);
@@ -1257,6 +1263,10 @@ public class OrderSelectController {
 				return MessageFormat.format("货物配送站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
 						.getBranchByBranchid(cwbOrder.getDeliverybranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdatePickBranch.getValue()) {
+				return MessageFormat.format("货物揽收站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
+						.getBranchByBranchid(cwbOrder.getPickbranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
+			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
 				return MessageFormat.format("货物已由<font color =\"red\">[{0}]</font>退供货商拒收返库入库；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone,
 						comment);
@@ -1365,6 +1375,10 @@ public class OrderSelectController {
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()) {
 				return MessageFormat.format("货物配送站点变更为[{0}]；操作人：[{1}]；联系电话：[{2}]", this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid()).getBranchname(),
 						this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdatePickBranch.getValue()) {
+				return MessageFormat.format("货物揽收站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
+						.getBranchByBranchid(cwbOrder.getPickbranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
 				return MessageFormat.format("货物已由[{0}]退供货商拒收返库入库；联系电话：[{1}]；备注：[{2}]", currentbranchname, phone, comment);
