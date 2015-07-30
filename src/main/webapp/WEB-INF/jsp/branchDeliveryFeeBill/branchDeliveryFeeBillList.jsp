@@ -2793,7 +2793,7 @@ function deleteBranchDeliveryFeeBill(){
 							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 							<select id="selectPg" onchange="$('#branchDeliveryFeeBillListForm').attr('action',$(this).val());$('#branchDeliveryFeeBillListForm').submit()">
 								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
-									<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+									<option value='${pageContext.request.contextPath}/branchDeliveryFeeBill/branchDeliveryFeeBillList/${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>
 							</select>页
 							</td>

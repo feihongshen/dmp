@@ -1135,7 +1135,7 @@ function trim(str) {
 							　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 							<select id="selectPg" onchange="$('#branchContractListForm').attr('action',$(this).val());$('#branchContractListForm').submit()">
 								<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
-									<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+									<option value='${pageContext.request.contextPath}/branchContract/branchContractList/${i}' ${page==i?'selected=seleted':''}>${i}</option>
 								</c:forEach>
 							</select>页
 							</td>

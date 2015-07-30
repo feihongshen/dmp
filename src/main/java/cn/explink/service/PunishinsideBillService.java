@@ -108,7 +108,7 @@ public class PunishinsideBillService {
 			punishNos = StringUtil.getStringsByStringList(list);
 		}
 		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
-				.getMaxBillBatch();
+				.getAllAuditedBill();
 		String punishNosSaved = "";
 		if (billList != null && !billList.isEmpty()) {
 			for (int i = 0; i < billList.size(); i++) {
@@ -220,7 +220,7 @@ public class PunishinsideBillService {
 			punishNos = StringUtil.removalDuplicateString(billVO
 					.getPunishNos());
 			List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
-					.getMaxBillBatch();
+					.getAllAuditedBill();
 			String punishNosSaved = "";
 			if (billList != null && !billList.isEmpty()) {
 				for (int i = 0; i < billList.size(); i++) {
@@ -241,5 +241,31 @@ public class PunishinsideBillService {
 		}
 		this.punishinsideBillDAO.updatePunishinsideBill(punishNos,sumPrice,
 				billVO.getId());
+	}
+	
+	public 	String getExistedPunishNos(int id){
+		// 所有已存在的赔付单号
+		String existedPunishNos = "";
+		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO.getAllAuditedBill();
+		// 已审核或已核销的赔付单号
+		String punishNosAudited = "";
+		if (billList != null && !billList.isEmpty()) {
+			for (int i = 0; i < billList.size(); i++) {
+				if (billList.get(i).getId() != id && StringUtils.isNotBlank(billList.get(i).getPunishNos())) {
+					punishNosAudited = billList.get(i).getPunishNos() + "," + punishNosAudited;
+				}
+			}
+		}
+		// 当前扣罚账单已存在的赔付单号
+		String currentExistedPunishNos = "";
+		ExpressOpsPunishinsideBill punishinsideBill = this.punishinsideBillDAO
+				.getPunishinsideBillListById(id);
+		if (punishinsideBill != null) {
+			if (StringUtils.isNotBlank(punishinsideBill.getPunishNos())) {
+				currentExistedPunishNos = punishinsideBill.getPunishNos();
+			}
+		}
+		existedPunishNos = punishNosAudited + currentExistedPunishNos;
+		return existedPunishNos;
 	}
 }

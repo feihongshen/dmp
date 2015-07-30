@@ -89,6 +89,14 @@ function checkAll(id){
 	});
 }
 
+function checkTable(id){ 
+	var chkAll = $("#"+ id +" input[type='checkbox'][name='checkAll']")[0].checked;
+	var chkBoxes = $("#"+ id +" input[type='checkbox'][name='checkBox']");
+	$(chkBoxes).each(function() {
+		$(this)[0].checked = chkAll;
+	});
+}
+
 function queryBillList(){
 	$("#queryForm").submit();
 	$('#queryPage').dialog('close');
@@ -631,7 +639,7 @@ function changeBillState(state){
          		<td colspan="8">
 		         	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="penalizeInsideTable" >
 						<tr>
-							<td height="30px"  valign="middle"><input type="checkbox" name="checkAll" onclick="checkAll('penalizeInsideTable')"/> </td>
+							<td height="30px"  valign="middle"><input type="checkbox" <c:if test='${weiShenHeState!=punishinsideBillVO.billState}'>disabled="disabled"</c:if> name="checkAll" onclick="checkTable('penalizeInsideTable')"/> </td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 扣罚单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单号</td>
 							<td align="center" valign="middle" style="font-weight: bold;"> 订单状态</td>
@@ -884,27 +892,27 @@ function changeBillState(state){
 			<input class="input_button2" type="button" onclick="$('#penalizeInsidePage').dialog('close')" value="取消"/>
 		</div>
 	</div>
-		<%-- <c:if test="${page_obj.maxpage>1}"> --%>
-			<div class="iframe_bottom"> 
-				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
-					<tr>
-						<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
-						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','1');$('#queryPenalizeInsideListForm').submit();" >第一页</a>　
-						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${page_obj.previous<1?1:page_obj.previous}');$('#queryPenalizeInsideListForm').submit();">上一页</a>　
-						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${page_obj.next<1?1:page_obj.next }');$('#queryPenalizeInsideListForm').submit();" >下一页</a>　
-						<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${page_obj.maxpage<1?1:page_obj.maxpage}');$('#queryPenalizeInsideListForm').submit();" >最后一页</a>
-						　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第<select
-								id="selectPg"
-								onchange="$('#queryPenalizeInsideListForm').attr('action',$(this).val());$('#queryPenalizeInsideListForm').submit()">
-								<c:forEach var="i" begin="1" end="${page_obj.maxpage}">
-								<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
-								</c:forEach>
-								</select>页
-						</td>
-					</tr>
-				</table>
-			</div>
-		<%-- </c:if> --%>
+	<c:if test="${page_obj_penalize.maxpage>1}">
+		<div class="iframe_bottom"> 
+			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+				<tr>
+					<td height="38" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 10px;">
+					<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/penalizeInsideList/1');$('#queryPenalizeInsideListForm').submit();" >第一页</a>　
+					<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/penalizeInsideList/${page_obj_penalize.previous<1?1:page_obj_penalize.previous}');$('#queryPenalizeInsideListForm').submit();">上一页</a>　
+					<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/penalizeInsideList/${page_obj_penalize.next<1?1:page_obj_penalize.next }');$('#queryPenalizeInsideListForm').submit();" >下一页</a>　
+					<a href="javascript:$('#queryPenalizeInsideListForm').attr('action','${pageContext.request.contextPath}/punishinsideBill/penalizeInsideList/${page_obj_penalize.maxpage<1?1:page_obj_penalize.maxpage}');$('#queryPenalizeInsideListForm').submit();" >最后一页</a>
+					　共${page_obj_penalize.maxpage}页　共${page_obj_penalize.total}条记录 　当前第<select
+							id="selectPg"
+							onchange="$('#queryPenalizeInsideListForm').attr('action',$(this).val());$('#queryPenalizeInsideListForm').submit()">
+							<c:forEach var="i" begin="1" end="${page_obj_penalize.maxpage}">
+							<option value='${pageContext.request.contextPath}/punishinsideBill/penalizeInsideList/${i}' ${page_penalize==i?'selected=seleted':''}>${i}</option>
+							</c:forEach>
+							</select>页
+					</td>
+				</tr>
+			</table>
+		</div>
+	</c:if>
 </div>
 </c:if>
 
@@ -940,7 +948,7 @@ function changeBillState(state){
 			　共${page_obj.maxpage}页　共${page_obj.total}条记录 　当前第
 			<select id="selectPg" onchange="$('#punishinsideBillListForm').attr('action',$(this).val());$('#punishinsideBillListForm').submit()">
 				<c:forEach var="i" begin='1' end='${page_obj.maxpage}'>
-					<option value='${i}' ${page==i?'selected=seleted':''}>${i}</option>
+					<option value='${pageContext.request.contextPath}/punishinsideBill/punishinsideBillList/${i}' ${page==i?'selected=seleted':''}>${i}</option>
 				</c:forEach>
 			</select>页
 			</td>

@@ -154,33 +154,33 @@ public class BranchDeliveryFeeBillService {
 				if (StringUtils.isNotBlank(order.getCwb())) {
 					billDetail = new ExpressSetBranchDeliveryFeeBillDetail();
 					
-					deliveryBasicFee = deliveryBasicFeeMap.get(order.getCwb());
+					deliveryBasicFee = deliveryBasicFeeMap.get(order.getCwb()) != null ? deliveryBasicFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryBasicFee(deliveryBasicFee);
-					deliveryCollectionSubsidyFee = deliveryCollectionSubsidyFeeMap.get(order.getCwb());
+					deliveryCollectionSubsidyFee = deliveryCollectionSubsidyFeeMap.get(order.getCwb()) != null ? deliveryCollectionSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryCollectionSubsidyFee(deliveryCollectionSubsidyFee);
-					deliveryAreaSubsidyFee = deliveryAreaSubsidyFeeMap.get(order.getCwb());
+					deliveryAreaSubsidyFee = deliveryAreaSubsidyFeeMap.get(order.getCwb()) != null ? deliveryAreaSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryAreaSubsidyFee(deliveryAreaSubsidyFee);
-					deliveryExceedSubsidyFee = deliveryExceedSubsidyFeeMap.get(order.getCwb());
+					deliveryExceedSubsidyFee = deliveryExceedSubsidyFeeMap.get(order.getCwb()) != null ? deliveryExceedSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryExceedSubsidyFee(deliveryExceedSubsidyFee);
-					deliveryBusinessSubsidyFee = deliveryBusinessSubsidyFeeMap.get(order.getCwb());
+					deliveryBusinessSubsidyFee = deliveryBusinessSubsidyFeeMap.get(order.getCwb()) != null ? deliveryBusinessSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryBusinessSubsidyFee(deliveryBusinessSubsidyFee);
-					deliveryAttachSubsidyFee = deliveryAttachSubsidyFeeMap.get(order.getCwb());
+					deliveryAttachSubsidyFee = deliveryAttachSubsidyFeeMap.get(order.getCwb()) != null ? deliveryAttachSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setDeliveryAttachSubsidyFee(deliveryAttachSubsidyFee);
 					deliverySumFee = deliveryBasicFee.add(deliveryCollectionSubsidyFee).add(deliveryAreaSubsidyFee)
 							.add(deliveryExceedSubsidyFee).add(deliveryBusinessSubsidyFee).add(deliveryAttachSubsidyFee);
 					billDetail.setDeliverySumFee(deliverySumFee);
 
-					pickupCollectionSubsidyFee = pickupCollectionSubsidyFeeMap.get(order.getCwb());
+					pickupCollectionSubsidyFee = pickupCollectionSubsidyFeeMap.get(order.getCwb()) != null ? pickupCollectionSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupCollectionSubsidyFee(pickupCollectionSubsidyFee);
-					pickupAreaSubsidyFee = pickupAreaSubsidyFeeMap.get(order.getCwb());
+					pickupAreaSubsidyFee = pickupAreaSubsidyFeeMap.get(order.getCwb()) != null ? pickupAreaSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupAreaSubsidyFee(pickupAreaSubsidyFee);
-					pickupExceedSubsidyFee = pickupExceedSubsidyFeeMap.get(order.getCwb());
+					pickupExceedSubsidyFee = pickupExceedSubsidyFeeMap.get(order.getCwb()) != null ? pickupExceedSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupExceedSubsidyFee(pickupExceedSubsidyFee);
-					pickupAttachSubsidyFee = pickupAttachSubsidyFeeMap.get(order.getCwb());
+					pickupAttachSubsidyFee = pickupAttachSubsidyFeeMap.get(order.getCwb()) != null ? pickupAttachSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupAttachSubsidyFee(pickupAttachSubsidyFee);
-					pickupBasicFee = pickupBasicFeeMap.get(order.getCwb());
+					pickupBasicFee = pickupBasicFeeMap.get(order.getCwb()) != null ? pickupBasicFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupBasicFee(pickupBasicFee);
-					pickupBusinessSubsidyFee = pickupBusinessSubsidyFeeMap.get(order.getCwb());
+					pickupBusinessSubsidyFee = pickupBusinessSubsidyFeeMap.get(order.getCwb()) != null ? pickupBusinessSubsidyFeeMap.get(order.getCwb()):new BigDecimal(0.00);
 					billDetail.setPickupBusinessSubsidyFee(pickupBusinessSubsidyFee);
 					pickupSumFee = pickupCollectionSubsidyFee.add(pickupAreaSubsidyFee).add(pickupExceedSubsidyFee)
 							.add(pickupAttachSubsidyFee).add(pickupBasicFee).add(pickupBusinessSubsidyFee);

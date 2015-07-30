@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.ExpressOpsPunishinsideBill;
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.VO.ExpressOpsPunishinsideBillVO;
+import cn.explink.enumutil.PunishBillStateEnum;
 import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
 
@@ -444,7 +445,7 @@ public class PunishinsideBillDAO {
 	}
 
 	//根据查询条件查询对内扣罚的扣罚单
-	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+	public List<PenalizeInside> findByCondition(long page,String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,String existedPunishNos){
 		String sql="select * from express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
@@ -473,6 +474,9 @@ public class PunishinsideBillDAO {
 		if (!enddate.equals("")) {
 			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
 		}
+		if(StringUtils.isNotBlank(existedPunishNos)){
+			sql+=" And punishNo not in ("+existedPunishNos+") ";
+		}
 		if (page!=-9) {
 			sql += " ORDER BY creDate DESC limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		}
@@ -481,7 +485,7 @@ public class PunishinsideBillDAO {
 	}
 	
 	//根据查询条件查询对内扣罚的扣罚单总单数
-	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate){
+	public int findByConditionSum(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,String existedPunishNos){
 		String sql="select count(1) from express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
@@ -510,12 +514,15 @@ public class PunishinsideBillDAO {
 		if (!enddate.equals("")) {
 			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
 		}
+		if(StringUtils.isNotBlank(existedPunishNos)){
+			sql+=" And punishNo not in ("+existedPunishNos+") ";
+		}
 		return this.jdbcTemplate.queryForInt(sql);
 		
 	}
 		
-	public List<ExpressOpsPunishinsideBill> getMaxBillBatch() {
-		String sql = "select * from express_ops_punishinside_bill order by billBatch desc";
+	public List<ExpressOpsPunishinsideBill> getAllAuditedBill() {
+		String sql = "select * from express_ops_punishinside_bill where billState !=" + PunishBillStateEnum.WeiShenHe.getValue() + " order by billBatch desc";
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());
 	}
 	

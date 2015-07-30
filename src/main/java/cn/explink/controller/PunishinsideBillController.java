@@ -271,10 +271,36 @@ public class PunishinsideBillController {
 				.getPenalizeTypeByType(2);
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(id);
+		User user = getSessionUser();
+		int jiesuanAuthority = 0;
+		int jiesuanAdvanceAuthority = 0;
+		long userid = 0;
+		String realname = "";
+		if(user != null){
+			long roleid = user.getRoleid();
+			Role role = this.roleDAO.getRolesByRoleid(roleid);
+			if(role != null){
+				if("结算".equals(role.getRolename())){
+					jiesuanAuthority = 1;
+					jiesuanAdvanceAuthority = 1;
+				}
+			}
+			userid = user.getUserid();
+			realname = user.getRealname();
+		}
+		String nowDate = DateTimeUtil.getNowDate();
 		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 		
 		model.addAttribute("page", 1);
 		model.addAttribute("page_obj", page_obj);
+		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
+		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
+		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
+		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
+		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
+		model.addAttribute("userid", userid);
+		model.addAttribute("realname", realname);
+		model.addAttribute("nowDate", nowDate);
 		model.addAttribute("userList", userList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("dutyPersonList", dutyPersonList);
@@ -300,7 +326,9 @@ public class PunishinsideBillController {
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
-				.queryPunishinsideBill(page, new ExpressOpsPunishinsideBillVO());
+				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
@@ -312,20 +340,53 @@ public class PunishinsideBillController {
 			List<String> cwbList = Arrays.asList(billVO.getCwbs().split(","));
 			cwbs = StringUtil.getStringsByStringList(cwbList);
 		}
+		String existedPunishNos = this.punishinsideBillService.getExistedPunishNos(billVO.getId());
+		if(StringUtils.isNotBlank(existedPunishNos)){
+			existedPunishNos = StringUtil.getStringsByStringList(Arrays.asList(existedPunishNos.split(",")));
+		}
 		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
 				.findByCondition(page, cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate());
-		int count = this.punishinsideBillDAO
+						billVO.getPunishNoCreateEndDate(), existedPunishNos);
+		int penalizeInsideCount = this.punishinsideBillDAO
 				.findByConditionSum(cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
-						billVO.getPunishNoCreateEndDate());
-
-		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
-		model.addAttribute("page", page);
+						billVO.getPunishNoCreateEndDate(), existedPunishNos);
+		User user = getSessionUser();
+		int jiesuanAuthority = 0;
+		int jiesuanAdvanceAuthority = 0;
+		long userid = 0;
+		String realname = "";
+		if(user != null){
+			long roleid = user.getRoleid();
+			Role role = this.roleDAO.getRolesByRoleid(roleid);
+			if(role != null){
+				if("结算".equals(role.getRolename())){
+					jiesuanAuthority = 1;
+					jiesuanAdvanceAuthority = 1;
+				}
+			}
+			userid = user.getUserid();
+			realname = user.getRealname();
+		}
+		String nowDate = DateTimeUtil.getNowDate();
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		Page page_obj_penalize = new Page(penalizeInsideCount, page, Page.ONE_PAGE_NUMBER);
+		
+		model.addAttribute("page", 1);
 		model.addAttribute("page_obj", page_obj);
+		model.addAttribute("page_penalize", page);
+		model.addAttribute("page_obj_penalize", page_obj_penalize);
+		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
+		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
+		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
+		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
+		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
+		model.addAttribute("userid", userid);
+		model.addAttribute("realname", realname);
+		model.addAttribute("nowDate", nowDate);
 		model.addAttribute("userList", userList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("dutyPersonList", dutyPersonList);
@@ -339,9 +400,6 @@ public class PunishinsideBillController {
 		model.addAttribute("penalizeInsidePage", 1);
 		model.addAttribute("penalizeInsideList", penalizeInsideList);
 		model.addAttribute("penalizeInsideQueryConditionVO", billVO);
-		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());
-		model.addAttribute("yiShenHeState", PunishBillStateEnum.YiShenHe.getValue());
-		model.addAttribute("yiHeXiaoState", PunishBillStateEnum.YiHeXiao.getValue());
 		return "punishinsideBill/punishinsideBillList";
 	}
 	
