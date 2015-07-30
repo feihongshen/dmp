@@ -6307,6 +6307,12 @@ public class CwbDAO {
 		return sqlBuilder.toString() ;
 	}
 
+	public void updatePickBranchid(long branchid,
+			String cwb) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail set pickbranchid=? where state =1 and cwb=?", branchid, cwb);
+		
+	}
+
 	public void updateOXOPickState(int state,String cwb) {
 		String sql = "update express_ops_cwb_detail set oxopickstate=? where cwb=? and state = 1";
 		this.jdbcTemplate.update(sql,state,cwb);
@@ -6317,4 +6323,5 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql,state,cwb);
 	}
 	
+
 }
