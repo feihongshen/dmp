@@ -1606,9 +1606,6 @@ public class CwbOrderService {
 				}
 			}
 		}
-		
-		// ==== 扫描成功后，更新配送状态为‘处理中=====
-		updateOXODeliveryState(co,CwbOXOStateEnum.Processing);
 	}
 
 	/**
@@ -3773,6 +3770,10 @@ public class CwbOrderService {
 		String sql = "update express_ops_cwb_detail set excelbranch=?,deliverybranchid=?, startbranchid=?,currentbranchid=?, flowordertype=?,deliverid=?,deliverystate=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, this.branchDAO.getBranchByBranchid(deliveryUser.getBranchid()).getBranchname(), deliveryUser.getBranchid(), currentbranchid, 0,
 				FlowOrderTypeEnum.FenZhanLingHuo.getValue(), deliveryUser.getUserid(), DeliveryStateEnum.WeiFanKui.getValue(), cwb);
+		
+		// ==== 领货后，更新配送状态为‘处理中=====
+		updateOXODeliveryState(co,CwbOXOStateEnum.Processing);
+		
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
 		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.FenZhanLingHuo, "", System.currentTimeMillis());
 
