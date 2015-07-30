@@ -108,8 +108,8 @@ function addTR(pf, type) {
 	i++;
 	var customerid = "customerid" + i;
 	// var customername="customername";
-	var customer = "<input type='text'  id='" + customerid + "' name='customerid' class='easyui-validatebox' style='width: 100%;'"
-			+ "initDataType='TABLE'" + "initDataKey='Customer' " + "viewField='customername'" + "saveField='customerid'" + "/>";
+	var customer = "<input type='text'  id='" + customerid + "' name='customerid'  class='easyui-validatebox' style='width: 100%;'"
+			+ "initDataType='TABLE'" + "initDataKey='Customer' afterSelect='checkCustomer' " + "viewField='customername'" + "saveField='customerid'" + "/>";
 	var PFfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='" + type + "PFfee' name='" + type + "PFfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr><input type='hidden' name='showflag' value='1'/>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>"
@@ -421,6 +421,16 @@ function addArea(tab, areaname, areaid) {
 		$area_table.find("#overweight_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overweight + '")');
 		$area_table.find("#overbig_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overbig + '")');
 		$("#" + tab + "_area_div").append($area_table);
+		if ($("tr [id=" + tab + "_" + areaid + "]").find("#isareafee").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#isareafeetr").remove();
+		}
+		if ($("tr [id=" + tab + "_" + areaid + "]").find("#isoverbig").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#overbigflagtr").remove();
+			$("#" + tab + "_area_table_" + areaid).find("#overbigflagtrno").remove();
+		}
+		if ($("tr [id=" + tab + "_" + areaid + "]").find("#isoverweight").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#isoverweighttr").remove();
+		}
 	} else if ($("tr [id=" + tab + "_" + areaid + "]")[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
 		$("tr [id=" + tab + "_" + areaid + "]")[0].style.background = '';
 		$("#" + tab + "_area_div table[id=" + tab + "_area_table_" + areaid + "]").remove();
@@ -760,3 +770,20 @@ function subAreaEidt(e, areaid, type) {
 		}
 	});
 }
+
+function checkCustomer(obj,e)
+{   var count=0;
+	e.parent().parent().parent().find("[name=customerid]").each(
+			function(){
+				if($(this).val()==obj.id)
+				{
+					count++;
+				}
+			});
+	if(count>1)
+		{
+		alert("供货商已经存在！");
+		e.combobox('clear');
+		return ;
+		}
+	}

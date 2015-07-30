@@ -650,7 +650,9 @@
 													<td align='center'><input type='checkbox' /></td>
 													<td><input type="text" id="${basic.customerid }" name="customerid"
 														class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-														initDataKey="Customer" viewField="customername" saveField="customerid"
+														initDataKey="Customer"
+														afterSelect="checkCustomer" viewField="customername" saveField="customerid"
+														afterSelect="checkCustomer"
 														value="${basic.customerid}" /></td>
 													<td><input style='width: 100%;' type='text' id='basicPFfee' name='basicPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 														value="${basic.basicPFfee }" /></td>
@@ -697,7 +699,9 @@
 													<td align='center'><input type='checkbox' /></td>
 													<td><input type="text" id="${collection.customerid }" name="customerid"
 														class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-														initDataKey="Customer" viewField="customername" saveField="customerid"
+														initDataKey="Customer" 
+														afterSelect="checkCustomer"
+														viewField="customername" saveField="customerid"
 														value="${collection.customerid}" /></td>
 													<td><input style='width: 100%;' type='text' id='collectionPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 														name='collectionPFfee' value="${collection.collectionPFfee}" /></td>
@@ -915,7 +919,8 @@
 														<td align='center'><input type='checkbox' /></td>
 														<td><input type="text" id="${basic.customerid }" name="customerid"
 															class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-															initDataKey="Customer" viewField="customername" saveField="customerid"
+															initDataKey="Customer"
+															afterSelect="checkCustomer" viewField="customername" saveField="customerid"
 															value="${basic.customerid}" /></td>
 														<td><input style='width: 100%;' type='text' id='basicPFfee' name='basicPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															value="${basic.basicPFfee }" /></td>
@@ -959,7 +964,8 @@
 														<td align='center'><input type='checkbox' /></td>
 														<td><input type="text" id="${collection.customerid }" name="customerid"
 															class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-															initDataKey="Customer" viewField="customername" saveField="customerid"
+															initDataKey="Customer"
+															afterSelect="checkCustomer" viewField="customername" saveField="customerid"
 															value="${collection.customerid}" /></td>
 														<td><input style='width: 100%;' type='text' id='collectionPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															name='collectionPFfee' value="${collection.collectionPFfee }" /></td>
@@ -1178,7 +1184,8 @@
 														<td align='center'><input type='checkbox' /></td>
 														<td><input type="text" id="${basic.customerid }" name="customerid"
 															class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-															initDataKey="Customer" viewField="customername" saveField="customerid"
+															initDataKey="Customer"
+															afterSelect="checkCustomer" viewField="customername" saveField="customerid"
 															value="${basic.customerid}" /></td>
 														<td><input style='width: 100%;' type='text' id='basicPFfee' name='basicPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															value="${basic.basicPFfee }" /></td>
@@ -1223,7 +1230,8 @@
 														<td align='center'><input type='checkbox' /></td>
 														<td><input type="text" id="${collection.customerid }" name="customerid"
 															class="easyui-validatebox" style="width: 100%;" initDataType="TABLE"
-															initDataKey="Customer" viewField="customername" saveField="customerid"
+															initDataKey="Customer"
+															afterSelect="checkCustomer" viewField="customername" saveField="customerid"
 															value="${collection.customerid}" /></td>
 														<td><input style='width: 100%;' type='text' id='collectionPFfee' onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 															name='collectionPFfee' value="${collection.collectionPFfee }" /></td>
