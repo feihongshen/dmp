@@ -687,7 +687,7 @@ function subArea(tablename, tab) {
 		},
 		dataType : "json",
 		success : function(obj) {
-
+				alert(obj.error);
 		}
 	});
 }
@@ -741,6 +741,7 @@ function getJsonOfAreaEdit(tablename, ruleType) {
 	return json;
 }
 function subAreaEidt(e, areaid, type) {
+	var dmpurl = $("#dmpurl").val();
 	var areafee = '';
 	var overbigflag = '';
 	if (type == 'areafee') {
