@@ -144,6 +144,7 @@ public class CustomerBillContractController {
 				){		
 			//查找所有该客户下的订单信息
 				List<CwbOrder> cwborderlist=cwbdao.findCwbByCustomerid(customerid);
+				
 				//通过客户id查找该客户对象
 				Customer customer=customerdao.getCustomerById(customerid);
 				String cwbs=customerbillcontractservice.listToString(cwborderlist);		
@@ -290,11 +291,11 @@ public class CustomerBillContractController {
 		String newcwb=sb.substring(0,sb.length()-1);
 		
 			long newcorrespondingCwbNum=c.getCorrespondingCwbNum()-1;		
-			BigDecimal newDeliveryMoney=c.getDeliveryMoney().subtract(c1.getDeliveryMoney());
+			BigDecimal newDeliveryMoney=c.    getDeliveryMoney().subtract(c1.getDeliveryMoney());
 			BigDecimal newdistributionMoney=c.getDistributionMoney().subtract(c1.getDistributionMoney());
 			BigDecimal newrefuseMoney=c.getRefuseMoney().subtract(c1.getRefuseMoney());
 			BigDecimal newtransferMoney=c.getTransferMoney().subtract(c1.getTransferMoney());
-			BigDecimal newtotalCharge=c.getTotalCharge().subtract(c1.getDeliveryMoney().subtract(c1.getDistributionMoney()).subtract(c1.getRefuseMoney()).subtract(c1.getTransferMoney()));
+			BigDecimal newtotalCharge=c.getTotalCharge().subtract(c1.getDeliveryMoney().add(c1.getDistributionMoney()).add(c1.getRefuseMoney()).add(c1.getTransferMoney()));
 			customerbillcontractdao.updateCustomerBillContract(newcwb,billBatchs, newcorrespondingCwbNum, newDeliveryMoney, newdistributionMoney, newrefuseMoney, newtransferMoney, newtotalCharge);
 			customerbillcontractdao.removeSerachCustomerBillContractVOByCwb(cwb);
 			return "{\"success\":0,\"successdata\":\"删除成功\"}";

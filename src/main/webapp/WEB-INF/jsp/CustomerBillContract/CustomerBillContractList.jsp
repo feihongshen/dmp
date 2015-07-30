@@ -577,6 +577,10 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
  function removeBill(){
 	var row = $('#dg').datagrid('getSelected');
 	if (row){
+		if(row.billState==$('#billstateyishenhe').val()||row.billState==$('#billstateyihexiao').val()){
+			 $.messager.alert('提示','已核销或者已审核的账单不能删除！','info');  
+			 return false;
+		}
 		$.messager.confirm('提示','你确定要删除这个帐单吗?',function(r){
 			if (r){
 				$.post('${pageContext.request.contextPath}/CustomerBillContract/removeBill',{id:row.id},function(result){
@@ -1354,6 +1358,8 @@ function importAllMoney(a){
 <input type="hidden" id="hv1"/>
 <input type="hidden" id="hv2"/>
 <input type="hidden" id="hv3"/>
+<input type="hidden" id="billstateyishenhe" value="<%=BillStateEnum.YiShenHe.getValue()%>"/>
+<input type="hidden" id="billstateyihexiao" value="<%=BillStateEnum.YiHeXiao.getValue()%>"/>
 
 </body>
 </html>
