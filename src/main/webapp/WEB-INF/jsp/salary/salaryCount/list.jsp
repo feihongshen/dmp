@@ -637,7 +637,7 @@ function hexiao(){
 				
 				
 				</tbody>
-				<%-- <c:forEach items="${sgList}" var="salary">
+				<c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
 						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.batchid}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
@@ -692,7 +692,7 @@ function hexiao(){
 						<td align="center" valign="middle">${salary.tax}</td><!-- 个税 -->
 						<td align="center" valign="middle">${salary.salary}</td><!-- 实发工资 -->
 					</tr>
-				</c:forEach> --%>
+				</c:forEach>
 				</table>
 					<input type="button" onclick="" value="移除"/>
 				</div>
