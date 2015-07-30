@@ -344,5 +344,18 @@ public class SalaryCountController {
 		excelExtractor.extractSalaryGather(inputStream,importflag,user,sc);
 
 	}
+	@RequestMapping("/removeDeliveryUserSalaryData")
+	public @ResponseBody String removeDeliveryUserSalaryData(@RequestParam(value="userids",defaultValue="",required=false)String userids,
+			@RequestParam(value="batchid",defaultValue="0",required=false)long batchid
+			){
+		//根据小件员的id来删除相关的信息
+		int influencecount=salaryGatherDao.removeDeliveryUserSalaryData(userids,batchid);
+		if (influencecount>0) {
+			return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+		}else {
+			return "{\"errorCode\":0,\"error\":\"删除失败\"}";
+		}
+		
+	}
 	
 }

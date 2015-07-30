@@ -203,4 +203,17 @@ public class SalaryGatherDao {
 		String sql = "select * from express_ops_salarygather_detail where userid in("+ids+") and batchid=?";
 		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
 	}
+	/**
+	 * 根据userids来删除信息
+	 * @param userids
+	 * @return
+	 */
+	public int removeDeliveryUserSalaryData(String userids,long batchid) {
+		String sql = "delete from express_ops_salarygather_detail where userid IN("+userids+") and batchid=?";
+		try {
+			return this.jdbcTemplate.update(sql,batchid);
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
 }

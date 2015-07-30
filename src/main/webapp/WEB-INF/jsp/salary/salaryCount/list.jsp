@@ -169,7 +169,7 @@ function seeoralter(){
 				var insertHtml="";
 				$("#sgListAll").html("");
 				$.each(data.salaryGathers,function (i,salary){
-					insertHtml+="<tr id=\"sg\" > "+
+					insertHtml+="<tr id=\"sg"+salary.userid+"\" > "+
 					"						<td align=\"center\" valign=\"middle\"><input type=\"checkbox\" id=\"id\" name=\"checkname\" value=\""+salary.userid+"\"/></td>"+
 					"						<td align=\"center\" valign=\"middle\">"+salary.branchname+"</td>"+
 					"						<td align=\"center\" valign=\"middle\">"+salary.realname+"</td>"+
@@ -309,7 +309,40 @@ function hexiao(){
 		});
 	}
 }
-
+function removeDeliveryUserData(){
+	var userids="";
+	$('input[type="checkbox"][name="checkname"]').each(
+			function(){
+				if($(this).attr("checked")=="checked"){
+					userids += $(this).val()+","; 	
+				}
+			}		
+		);
+	if(userids.length==0){
+		alert("当前没有要移除的数据，请选择！！");
+		return;
+	}
+	/* var batchid=$("#sg"+userids.split(",")[0]).children("td").eq(1).text(); */
+	var batchidReal=$("#batchid").val();
+	$.ajax({
+		type:'post',
+		url:"<%=request.getContextPath()%>/salaryCount/removeDeliveryUserSalaryData",
+		data:{userids:userids.substring(0,userids.length-1),
+				batchid:batchidReal
+				},
+		dataType:'json',
+		success:function (data){
+			if(data.errorCode==0){
+				
+				for(var i=0; i<userids.split(",").length;i++){
+					$("tr[id=sg"+userids.split(",")[i]+"]").remove();
+				}
+			}
+			alert(data.error);
+			
+		}
+	});
+}
 </script>
 </head>
 
@@ -638,10 +671,11 @@ function hexiao(){
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 应发工资</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 个税</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 实发工资</td>
-				</tr>				
+				</tr>               
 				<tbody id="sgListAll">
 				<c:forEach items="${sgList}" var="salary">
-					<tr id="sg" > 
+
+					<tr id="sg${salary.userid}" > 
 						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.userid}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
 						<td align="center" valign="middle">${salary.realname}</td>
@@ -698,7 +732,7 @@ function hexiao(){
 				</c:forEach>
 				</tbody>
 				</table>
-					<input type="button" onclick="" value="移除"/>
+					<input type="button" onclick="removeDeliveryUserData();" value="移除"/>
 				</div>
 				</div>
          	</tr>
