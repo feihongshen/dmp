@@ -12,15 +12,21 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import scala.Array;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.PaybusinessbenefitsDao;
+import cn.explink.dao.SalaryCountDAO;
+import cn.explink.dao.SalaryGatherDao;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Paybusinessbenefits;
+import cn.explink.domain.SalaryGather;
 import cn.explink.domain.Smtcount;
+import cn.explink.domain.User;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
 import cn.explink.util.StringUtil;
@@ -35,6 +41,12 @@ public class SalaryGatherService {
 	CustomerDAO customerDAO;
 	@Autowired
 	PaybusinessbenefitsDao paybusinessbenefitsDao;
+	@Autowired
+	UserDAO userDAO;
+	@Autowired
+	SalaryCountDAO salaryCountDAO;
+	@Autowired
+	SalaryGatherDao salaryGatherDao;
 	
 	//获取基本派费，区域派费，超区补助，脱单补助，业务补助 方法
 	/*public List<BigDecimal> getSalarypush(long pfruleid, List<?> list){
@@ -300,4 +312,65 @@ public class SalaryGatherService {
 		bdecList.add(others);
 		return bdecList;
 	}
+	
+	@Transactional
+	public long getHexiaoCounts(String ids, User use, String dateStr) {
+		long counts = 0;
+		if(!"".equals(ids)){
+			long usercount = 0;
+			String batchids = "";
+			String[] strArray = ids.split(",");
+			for(String strs : strArray){
+				batchids += "'"+strs+"',";
+			}
+			if(batchids.length()>0){
+				batchids = batchids.substring(0,batchids.length()-1);
+				usercount = strArray.length;
+			}
+			
+			//对user表维护字段进行修改（后期预付款字段later...）
+			String userids = "";
+			Map<Long, BigDecimal> map = new HashMap<Long, BigDecimal>();
+			List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(batchids);
+			if(sgList!=null&&!sgList.isEmpty()){
+				for(SalaryGather sg : sgList){
+					userids += sg.getUserid()+",";
+					map.put(sg.getUserid(), sg.getImprestgoods());
+				}
+			}
+			List<Long> strList = new ArrayList<Long>();
+			if(!map.isEmpty()&&map.size()>0){
+				Set<Long> ssList =  map.keySet();
+				Iterator oter = ssList.iterator();
+				while(oter.hasNext()){
+					long str = (Long)(oter.next());
+					strList.add(str);
+				}
+			}
+			String useridStr = "";
+			if(userids.length()>0){
+				useridStr = userids.substring(0,userids.length()-1);
+			}
+			List<User> userList = new ArrayList<User>();
+			if(useridStr.length()>0){
+				userList = this.userDAO.getUsersByuserids(useridStr);
+			}
+			if(strList!=null&&!strList.isEmpty()&&userList!=null&&!userList.isEmpty()){
+				for(long userid : strList){ 
+					for(User user : userList){
+						if(userid==user.getUserid()){
+							BigDecimal bdec = map.get(userid);
+							//修改此时配送员的当前(后期预付款)
+							this.userDAO.updatelateradvanceByuserid(userid,user.getLateradvance().add(bdec));
+						}
+					}
+				}
+			}
+			//更改批次为已核销状态(批量)
+			//返回修改成功的单量
+			counts = this.salaryCountDAO.updateSalaryState(batchids,use.getUserid(),dateStr,usercount);
+		} 
+		return counts;
+	}
+	
 }

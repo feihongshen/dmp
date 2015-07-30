@@ -1079,6 +1079,11 @@ function check_user() {
 		 * alert("手机号码格式有误!"); return false; }
 		 */
 	}
+	
+	if ($("#idcardno").val().length == 0) {
+		alert("身份证号不能为空!");
+		return false;
+	}
 	return true;
 }
 function roleChange() {
@@ -4286,6 +4291,11 @@ function check_userbranch() {
 		alert("员工手机不能为空");
 		return false;
 	}
+	if ($("#idcardno").val().length == 0) {
+		alert("身份证号不能为空!");
+		return false;
+	}
+	
 	/*
 	 * if ($("#usermobile").val().length != 11 ||
 	 * isMobileNumber($("#usermobile").val()) == false) { alert("手机号码格式有误!");

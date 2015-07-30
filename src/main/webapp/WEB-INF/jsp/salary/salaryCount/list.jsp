@@ -32,10 +32,10 @@ function addInit(){
 }
 function allchecked(){ 
 	var ids="";
-	$("[id=id]").each(function(){
-		if($(this)[0].checked==true){
-			ids+=","+$(this).val();
-		}
+	$("[id=id]").each(function(index){
+		/* if($(this)[0].checked==true){
+		} */
+		ids+=","+$(this).val();
 	});
 		if(ids.indexOf(',')!=-1){
 			ids=ids.substr(1);
@@ -60,14 +60,16 @@ function allchecked(){
 		});
 	}
 }
-function checkall(){ 
-	var checked=$("#all")[0].checked;
+function checkall()
+{ var checked=$("#all")[0].checked;
 	$("[id=id]").each(function(){
 		var e = $(this)[0];
-		if(checked=='true'||checked=='checked'){
+		if(checked=='true'||checked=='checked')
+		{
 			e['checked'] = checked;
 			//$(e).attr('checked',checked);
-		}else {
+			}
+		else {
 			//$(e).removeAttr('checked');
 			e['checked'] = checked;
 		}
@@ -328,7 +330,7 @@ function hexiao(){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 		<tr>
 			<td height="30px"  valign="middle">
-				<input type="checkbox" id="all" onclick="checkall()"/> 
+				<input type="checkbox" id="all" onclick="checkall();"/> 
 			</td>
 			<td align="center" valign="middle"style="font-weight: lighter;"> 批次编号</td>
 			<td align="center" valign="middle"style="font-weight: lighter;"> 批次状态</td>
@@ -712,7 +714,13 @@ function hexiao(){
          	<tr>
          		<td align="right" nowrap="nowrap" style="width: 15%;">批次编号：</td>
          		<td nowrap="nowrap" style="width: 30%;">
-         			<input  name="batchid" type="text" style="width: 100%;" value="${batchid }" /> 
+         			<input  name="batchid" type="text" style="width: 100%;" value="${batchid }" />
+         			<%-- <select id="batchidse">
+         				<option value="-1">==请选择==</option>
+         				<c:forEach items="${scList}" var="scsalary">
+         					<option value="${scsalary.batchid }">${scsalary.batchid }</option>
+         				</c:forEach>
+         			</select> --%>
          		</td>
          		<td nowrap="nowrap" align="right" style="width: 15%;" value="${batchstate }" >批次状态：</td>
          		<td nowrap="nowrap" style="width: 30%;">
@@ -730,12 +738,13 @@ function hexiao(){
          		<td nowrap="nowrap" align="right" >站点：</td> 
          		<td nowrap="nowrap">
          		<%-- <select name="branchid" style="width: 100%">
-         		 <option value="-1"></option>
-         		 <c:forEach items="${ branchList}" var="branch">
-         		 <option value="${branch.branchid }">${branch.branchname }</option>
-         		 </c:forEach>
+	         		 <option value="-1"></option>
+	         		 <c:forEach items="${branchList}" var="branch">
+	         		 	<option value="${branch.branchid }">${branch.branchname }</option>
+         		 	 </c:forEach>
          		</select> --%>
          			<input type="text" name="branchname" value="${branchname}"/>
+         			
          		</td>
          		<td nowrap="nowrap" align="right">期间：</td>
          		<td nowrap="nowrap">

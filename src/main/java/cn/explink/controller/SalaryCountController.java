@@ -5,7 +5,9 @@ package cn.explink.controller;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
-import scala.Array;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.SalaryCountDAO;
@@ -35,7 +35,6 @@ import cn.explink.dao.SalaryGatherDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SalaryCount;
-import cn.explink.domain.SalaryFixed;
 import cn.explink.domain.SalaryGather;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BatchSateEnum;
@@ -45,6 +44,7 @@ import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.SalaryGatherService;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 
@@ -73,6 +73,8 @@ public class SalaryCountController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	DataStatisticsService dataStatisticsService;
+	@Autowired
+	SalaryGatherService salaryGatherService;
 	
 	/**
 	 * 控制查询条件时使用(线程变量)
@@ -156,7 +158,8 @@ public class SalaryCountController {
 				}
 			}
 		}
-		
+		//List<SalaryCount> scList = this.salaryCountDAO.getAllSalaryCounts();//用于查询时的下拉框
+		//model.addAttribute("scList",scList);
 		SalaryCount salary = new SalaryCount();
 		salary.setIsnow(-1);
 		model.addAttribute("salary",salary);
@@ -245,63 +248,18 @@ public class SalaryCountController {
 		return map;
 	}
 	
+	
+	//核销
 	@RequestMapping("/hexiao")
 	public @ResponseBody
 	String heXiao(@RequestParam(value = "batchids",required = false,defaultValue = "") String ids){
 		try{
-			
-			long counts = 0;
-			if(!"".equals(ids)){
-				String batchids = "";
-				String[] strArray = ids.split(",");
-				for(String strs : strArray){
-					batchids += "'"+strs+"',";
-				}
-				if(batchids.length()>0){
-					batchids = batchids.substring(0,batchids.length()-1);
-				}
-				//更改批次为已核销状态(批量)
-				//返回修改成功的单量
-				counts = this.salaryCountDAO.updateSalaryState(batchids);
-				//对user表维护字段进行修改（后期预付款字段later...）
-				String userids = "";
-				Map<Long, BigDecimal> map = new HashMap<Long, BigDecimal>();
-				List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(batchids);
-				if(sgList!=null&&!sgList.isEmpty()){
-					for(SalaryGather sg : sgList){
-						userids += sg.getUserid()+",";
-						map.put(sg.getUserid(), sg.getImprestgoods());
-					}
-				}
-				List<Long> strList = new ArrayList<Long>();
-				if(!map.isEmpty()&&map.size()>0){
-					Set<Long> ssList =  map.keySet();
-					Iterator oter = ssList.iterator();
-					while(oter.hasNext()){
-						long str = (Long)(oter.next());
-						strList.add(str);
-					}
-				}
-				String useridStr = "";
-				if(userids.length()>0){
-					useridStr = userids.substring(0,userids.length()-1);
-				}
-				List<User> userList = new ArrayList<User>();
-				if(useridStr.length()>0){
-					userList = this.userDAO.getUsersByuserids(useridStr);
-				}
-				if(strList!=null&&!strList.isEmpty()&&userList!=null&&!userList.isEmpty()){
-					for(long userid : strList){ 
-						for(User user : userList){
-							if(userid==user.getUserid()){
-								BigDecimal bdec = map.get(userid);
-								//修改此时配送员的当前(后期预付款)
-								this.userDAO.updatelateradvanceByuserid(userid,user.getLateradvance().add(bdec));
-							}
-						}
-					}
-				}
-			}
+			User use = this.getSessionUser();
+			Date date = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String dateStr = sdf.format(date);
+			//核销主方法(返回核销成功的工资条数)
+			long counts = this.salaryGatherService.getHexiaoCounts(ids,use,dateStr);
 			return "{\"errorCode\":0,\"error\":"+counts+"}";
 		}catch(Exception e){
 			e.printStackTrace();
