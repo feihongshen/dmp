@@ -24,6 +24,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Paybusinessbenefits;
+import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
@@ -314,27 +315,18 @@ public class SalaryGatherService {
 	}
 	
 	@Transactional
-	public long getHexiaoCounts(String ids, User use, String dateStr) {
+	public long getHexiaoCounts(String ids, User use, String dateStr, String batchidstr) {
 		long counts = 0;
 		long usercount = 0;
 		if(!"".equals(ids)){
-			String batchids = "";
 			String[] strArray = ids.split(",");
-			for(String strs : strArray){
-				batchids += "'"+strs+"',";
-			}
-			if(batchids.length()>0){
-				batchids = batchids.substring(0,batchids.length()-1);
-				usercount = strArray.length;
-			}
+			usercount = strArray.length;
 			
 			//对user表维护字段进行修改（后期预付款字段later...）
-			String userids = "";
 			Map<Long, BigDecimal> map = new HashMap<Long, BigDecimal>();
-			List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(batchids);
+			List<SalaryGather> sgList = this.salaryGatherDao.getSalaryGathersByids(ids,batchidstr);
 			if(sgList!=null&&!sgList.isEmpty()){
 				for(SalaryGather sg : sgList){
-					userids += sg.getUserid()+",";
 					map.put(sg.getUserid(), sg.getImprestgoods());
 				}
 			}
@@ -347,14 +339,9 @@ public class SalaryGatherService {
 					strList.add(str);
 				}
 			}
-			String useridStr = "";
-			if(userids.length()>0){
-				useridStr = userids.substring(0,userids.length()-1);
-			}
-			List<User> userList = new ArrayList<User>();
-			if(useridStr.length()>0){
-				userList = this.userDAO.getUsersByuserids(useridStr);
-			}
+			
+			List<User> userList = this.userDAO.getUsersByuserids(ids);
+			
 			if(strList!=null&&!strList.isEmpty()&&userList!=null&&!userList.isEmpty()){
 				for(long userid : strList){ 
 					for(User user : userList){
@@ -366,9 +353,27 @@ public class SalaryGatherService {
 					}
 				}
 			}
+			
+			/*String batchid = "''";
+			//SalaryCount sc = new SalaryCount();
+			SalaryGather sg = new SalaryGather();
+			if(sgList!=null&&!sgList.isEmpty()){
+				sg = sgList.get(0);
+				batchid = sg.getBatchid();
+			}*/
+			
+			/*long userlong = 0;
+			String userid = strArray[0];
+			if(!"".equals(userid)){
+				userlong = Long.parseLong(userid);
+			}*/
+			//SalaryCount sc = this.salaryCountDAO.getSalarycount(userlong);
 			//更改批次为已核销状态(批量)
 			//返回修改成功的单量
-			counts = this.salaryCountDAO.updateSalaryState(batchids,use.getUserid(),dateStr,usercount);
+			/*if(sc!=null){
+				batchid = sc.getBatchid();
+			}*/
+			counts = this.salaryCountDAO.updateSalaryState(batchidstr,use.getUserid(),dateStr,usercount);
 		} 
 		return usercount;
 	}

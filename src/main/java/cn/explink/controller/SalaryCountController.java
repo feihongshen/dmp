@@ -252,14 +252,16 @@ public class SalaryCountController {
 	//核销
 	@RequestMapping("/hexiao")
 	public @ResponseBody
-	String heXiao(@RequestParam(value = "batchids",required = false,defaultValue = "") String ids){
+	String heXiao(@RequestParam(value = "userids",required = false,defaultValue = "") String ids,
+			@RequestParam(value = "batchid",required = false,defaultValue = "") String batchid){
+		
 		try{
 			User use = this.getSessionUser();
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String dateStr = sdf.format(date);
 			//核销主方法(返回核销成功的工资条数)
-			long counts = this.salaryGatherService.getHexiaoCounts(ids,use,dateStr);
+			long counts = this.salaryGatherService.getHexiaoCounts(ids,use,dateStr,batchid);
 			return "{\"errorCode\":0,\"error\":"+counts+"}";
 		}catch(Exception e){
 			e.printStackTrace();

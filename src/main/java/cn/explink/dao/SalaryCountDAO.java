@@ -177,10 +177,10 @@ public class SalaryCountDAO {
 		String sql = "update express_ops_salaryCount_detail set remark=? where batchid=?";
 		this.jdbcTemplate.update(sql,salaryCount.getRemark(),salaryCount.getBatchid());
 	}
-	public long updateSalaryState(String ids,long userid,String operationTime,long usercount) {
+	public long updateSalaryState(String batchid,long userid,String operationTime,long usercount) {
 		try{
-			String sql = "update express_ops_salaryCount_detail set batchstate=?, userid=?,operationTime=?,usercount=?  where batchid in("+ids+")";
-			return this.jdbcTemplate.update(sql, BatchSateEnum.Yihexiao.getValue(),userid,operationTime,usercount);
+			String sql = "update express_ops_salaryCount_detail set batchstate=?, userid=?,operationTime=?,usercount=?  where batchid=?";
+			return this.jdbcTemplate.update(sql, BatchSateEnum.Yihexiao.getValue(),userid,operationTime,usercount,batchid);
 		}catch(Exception e){
 			e.printStackTrace();
 			return 0;
@@ -189,6 +189,15 @@ public class SalaryCountDAO {
 	public List<SalaryCount> getAllSalaryCounts() {
 		String sql = "select * from express_ops_salaryCount_detail";
 		return this.jdbcTemplate.query(sql, new SalaryCountRowMapper());
+	}
+	public SalaryCount getSalarycount(long userlong) {
+		try{
+			String sql = "select * from express_ops_salaryCount_detail where userid=? in limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper(),userlong);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

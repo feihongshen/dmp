@@ -199,8 +199,8 @@ public class SalaryGatherDao {
 		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
 	}
 
-	public List<SalaryGather> getSalaryGathersByids(String ids) {
-		String sql = "select * from express_ops_salarygather_detail where batchid in("+ids+")";
-		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper());
+	public List<SalaryGather> getSalaryGathersByids(String ids,String batchid) {
+		String sql = "select * from express_ops_salarygather_detail where userid in("+ids+") and batchid=?";
+		return this.jdbcTemplate.query(sql, new SalaryGatherRowMapper(),batchid);
 	}
 }

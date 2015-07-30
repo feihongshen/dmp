@@ -170,7 +170,7 @@ function seeoralter(){
 				$("#sgListAll").html("");
 				$.each(data.salaryGathers,function (i,salary){
 					insertHtml+="<tr id=\"sg\" > "+
-					"						<td align=\"center\" valign=\"middle\"><input type=\"checkbox\" id=\"id\" name=\"checkname\" value=\""+salary.batchid+"\"/></td>"+
+					"						<td align=\"center\" valign=\"middle\"><input type=\"checkbox\" id=\"id\" name=\"checkname\" value=\""+salary.userid+"\"/></td>"+
 					"						<td align=\"center\" valign=\"middle\">"+salary.branchname+"</td>"+
 					"						<td align=\"center\" valign=\"middle\">"+salary.realname+"</td>"+
 					"						<td align=\"center\" valign=\"middle\">"+salary.idcard+"</td>"+
@@ -256,7 +256,6 @@ function checkitAdd(){
 			else {
 				$(this).removeAttr('checked');
 			}
-			
 		});
 }
 
@@ -275,24 +274,29 @@ function submitform(){
 }
 
 function hexiao(){
+	$("#batchid").removeAttr("disabled");
+	$("#batchid").attr("readonly","readonly");
+	var batchid = $("#batchid").val();
 	var actionvar = $("#saveform").attr("action");
-	var batchids = "";
+	var userids = "";
 	$('input[type="checkbox"][name="checkname"]').each(
 		function(){
 			if($(this).attr("checked")=="checked"){
-				batchids += $(this).val()+","; 	
+				userids += $(this).val()+","; 	
 			}
 		}		
 	);
-	if(batchids.length==0){
+	if(userids.length==0){
 		alert("请选择需要核销的信息!");
 	}else{
-		batchids = batchids.substring(0,batchids.length-1);
+		userids = userids.substring(0,userids.length-1);
 		$.ajax({
 		   type: "POST",
 		   url: actionvar,
 		   async:false,
-		   data: {batchids:batchids},
+		   data: {userids:userids,
+			   batchid:batchid	   
+		   },
 		   dataType : 'json',
 		   success: function (data){
 			     if(data.errorCode==0){
@@ -634,14 +638,11 @@ function hexiao(){
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 应发工资</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 个税</td>
 					<td align="center" valign="middle"style="font-weight: lighter;width: 80px;"> 实发工资</td>
-				</tr>
+				</tr>				
 				<tbody id="sgListAll">
-				
-				
-		
 				<c:forEach items="${sgList}" var="salary">
 					<tr id="sg" > 
-						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.batchid}"/></td>
+						<td align="center" valign="middle"><input type="checkbox" id="id" name="checkname" value="${salary.userid}"/></td>
 						<td align="center" valign="middle">${salary.branchname}</td>
 						<td align="center" valign="middle">${salary.realname}</td>
 						<td align="center" valign="middle">${salary.idcard}</td>
@@ -695,7 +696,7 @@ function hexiao(){
 						<td align="center" valign="middle">${salary.salary}</td><!-- 实发工资 -->
 					</tr>
 				</c:forEach>
-						</tbody>
+				</tbody>
 				</table>
 					<input type="button" onclick="" value="移除"/>
 				</div>
@@ -707,7 +708,7 @@ function hexiao(){
 	         	</td>
          	</tr>
          </table>
-        </form>
+ <!--        </form> -->
 	</div>
 <%-- </c:if> --%>
 <!-- 查询层显示 -->
