@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class VipShopOXOInsertCwbDetailTimmer {
 	VipShopOXOGetCwbDataService vipShopOXOGetCwbDataService;
 	@Autowired
 	CwbDAO cwbDAO;
-	@Produce(uri = "jms:topic:addressmatch")
+	@Produce(uri = "jms:topic:addressmatchOXO")
 	ProducerTemplate addressmatch;
 	@Autowired
 	DataImportService dataImportService;
@@ -113,11 +114,23 @@ public class VipShopOXOInsertCwbDetailTimmer {
 			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), ed.getWarehouseid(), user, ed);
 			logger.info("定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
-			if (cwbOrder.getExcelbranch() == null || cwbOrder.getExcelbranch().length() == 0) {
+			if(StringUtils.isNotBlank(cwbOrder.getRemark4())){
+				String pickAddress = cwbOrder.getRemark4().replaceAll("&", "");
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
-				addressmatch.sendBodyAndHeaders(null, map);
+				map.put("address", pickAddress);
+				map.put("notifytype", 0);
+				addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
+			}
+			
+			if(StringUtils.isNotBlank(cwbOrder.getConsigneeaddress())){
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("cwb", cwbOrder.getCwb());
+				map.put("userid", "1");
+				map.put("address", cwbOrder.getConsigneeaddress());
+				map.put("notifytype", 1);
+				addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
 			}
 
 		}

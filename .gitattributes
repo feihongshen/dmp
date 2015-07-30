@@ -1744,6 +1744,7 @@ src/main/java/cn/explink/service/WorkOrderService.java -text
 src/main/java/cn/explink/service/XiazaiService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMappingService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMatchManager.java -text
+src/main/java/cn/explink/service/addressmatch/AddressMatchOXOService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMatchService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressProcessStep.java -text
 src/main/java/cn/explink/service/addressmatch/AddressQueryService.java -text
