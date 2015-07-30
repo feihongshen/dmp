@@ -6,14 +6,12 @@ package cn.explink.domain.customerCoutract;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import cn.explink.util.BeanUtilsSelfDef;
-
 /**
  * 客户合同管理实体
  *
  * @author wangqiang
  */
-public class CustomerContractManagement {
+public class CustomerContractManagementVO {
 	private Long id;
 	// 编号
 	private String number;
@@ -78,9 +76,10 @@ public class CustomerContractManagement {
 	/**
 	 *
 	 */
-	public CustomerContractManagement() {
+	public CustomerContractManagementVO() {
+		// TODO Auto-generated constructor stub
 	}
-	
+
 	public Long getId() {
 		return this.id;
 	}
@@ -94,7 +93,7 @@ public class CustomerContractManagement {
 	}
 
 	public void setNumber(String number) {
-		this.number = number;
+		this.number = this.translatePageCode(number);
 	}
 
 	public Integer getContractstatus() {
@@ -118,7 +117,7 @@ public class CustomerContractManagement {
 	}
 
 	public void setPartyaname(String partyaname) {
-		this.partyaname = partyaname;
+		this.partyaname = this.translatePageCode(partyaname);
 	}
 
 	public String getContractstartdate() {
@@ -166,7 +165,7 @@ public class CustomerContractManagement {
 	}
 
 	public void setOthercontractors(String othercontractors) {
-		this.othercontractors = othercontractors;
+		this.othercontractors =this.translatePageCode(othercontractors);
 	}
 
 	public Integer getPaifeisettlementcycle() {
@@ -198,7 +197,13 @@ public class CustomerContractManagement {
 	}
 
 	public void setMarketingprincipal(String marketingprincipal) {
-		this.marketingprincipal = marketingprincipal;
+		String resultString = null;
+		try {
+			resultString = new String(marketingprincipal.getBytes("iso-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		this.marketingprincipal = resultString;
 	}
 
 	public Integer getInvoicetype() {
@@ -222,7 +227,7 @@ public class CustomerContractManagement {
 	}
 
 	public void setContractdescription(String contractdescription) {
-		this.contractdescription = contractdescription;
+		this.contractdescription = this.translatePageCode(contractdescription);
 	}
 
 	public String getContractname() {
@@ -327,6 +332,21 @@ public class CustomerContractManagement {
 
 	public void setDepositInformationList(List<DepositInformation> depositInformationList) {
 		this.depositInformationList = depositInformationList;
+	}
+	
+	/**
+	 * 页面乱码转换
+	 * @param pageCode
+	 * @return
+	 */
+	private String translatePageCode(String pageCode){
+		String resultString = null;
+		try {
+			resultString = new String(pageCode.getBytes("iso-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return resultString;
 	}
 
 }

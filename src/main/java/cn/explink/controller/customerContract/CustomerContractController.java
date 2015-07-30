@@ -28,7 +28,9 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.contractManagement.CustomerContractDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.customerCoutract.CustomerContractManagement;
+import cn.explink.domain.customerCoutract.CustomerContractManagementVO;
 import cn.explink.service.contractManagement.ContractManagementService;
+import cn.explink.util.BeanUtilsSelfDef;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -62,13 +64,19 @@ public class CustomerContractController {
 	 * @return
 	 */
 	@RequestMapping("/customerContractList/{page}")
-	public String getCustomerContractList(Model model, @PathVariable("page") long page, CustomerContractManagement contractManagement,
+	public String getCustomerContractList(Model model, @PathVariable("page") long page, CustomerContractManagementVO contractManagementVO,
 			@RequestParam(value = "createStatrtTime", required = false) String createStatrtTime, @RequestParam(value = "createEndTime", required = false, defaultValue = "") String createEndTime,
 			@RequestParam(value = "overStartTime", required = false) String overStartTime, @RequestParam(value = "overEndTime", required = false) String overEndTime,
 			@RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "method", required = false) String method) {
+		/**
+		 * 对象转化
+		 */
+		CustomerContractManagement contractManagement = new CustomerContractManagement();
+		BeanUtilsSelfDef.copyPropertiesIgnoreException(contractManagement,contractManagementVO);
 		List<CustomerContractManagement> list = this.contractManagementService.getCustomerContractList(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method,
 				page);
 		model.addAttribute("customerContractList", list);
+		
 		int count = this.customerContractDAO.getCustomerContractcount(contractManagement, createStatrtTime, createEndTime, overStartTime, overEndTime, sort, method);
 		// 客户信息
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -76,19 +84,19 @@ public class CustomerContractController {
 		model.addAttribute("page_obj", page_obj);
 		List<Customer> customerList = this.customerDao.getAllCustomerss();
 		model.addAttribute("contractList", customerList);
-		model.addAttribute("number", contractManagement.getNumber());
-		model.addAttribute("contractstatus", contractManagement.getContractstatus());
-		model.addAttribute("customerid", contractManagement.getCustomerid());
-		model.addAttribute("partyaname", contractManagement.getPartyaname());
-		model.addAttribute("marketingprincipal", contractManagement.getMarketingprincipal());
-		model.addAttribute("othercontractors", contractManagement.getOthercontractors());
-		model.addAttribute("contractdescription", contractManagement.getContractdescription());
-		model.addAttribute("loansandsettlementway", contractManagement.getLoansandsettlementway());
+		model.addAttribute("number", contractManagementVO.getNumber());
+		model.addAttribute("contractstatus", contractManagementVO.getContractstatus());
+		model.addAttribute("customerid", contractManagementVO.getCustomerid());
+		model.addAttribute("partyaname", contractManagementVO.getPartyaname());
+		model.addAttribute("marketingprincipal", contractManagementVO.getMarketingprincipal());
+		model.addAttribute("othercontractors", contractManagementVO.getOthercontractors());
+		model.addAttribute("contractdescription", contractManagementVO.getContractdescription());
+		model.addAttribute("loansandsettlementway", contractManagementVO.getLoansandsettlementway());
 		model.addAttribute("createStatrtTime", createStatrtTime);
 		model.addAttribute("createEndTime", createEndTime);
 		model.addAttribute("overStartTime", overStartTime);
 		model.addAttribute("overEndTime", overEndTime);
-		model.addAttribute("whetherhavedeposit", contractManagement.getWhetherhavedeposit());
+		model.addAttribute("whetherhavedeposit", contractManagementVO.getWhetherhavedeposit());
 		model.addAttribute("sort", sort);
 		model.addAttribute("method", method);
 		return "customerContract/customerContractList";
