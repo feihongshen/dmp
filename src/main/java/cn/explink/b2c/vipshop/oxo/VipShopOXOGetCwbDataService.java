@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -66,7 +68,8 @@ public class VipShopOXOGetCwbDataService {
 	DataImportService dataImportService;
 	@Autowired
 	CwbDAO cwbDAO;
-	
+	@Produce(uri = "jms:topic:addressmatchOXO")
+	ProducerTemplate addressmatch;
 	@Autowired
 	CwbOrderService cwbOrderService;
 
@@ -210,7 +213,6 @@ public class VipShopOXOGetCwbDataService {
 				//TODO保留类型
 			}
 		}
-		cwbOrder.setCwbordertypeid(Long.valueOf(order.getBusinessType()));
 		cwbOrder.setRemark1(order.getBrandName()+"&"+order.getStoreName()+"&"+order.getStoreContacts()+"&"+order.getStoreTel());//品牌商&提货门店&提货联系人&提货联系方式
 		cwbOrder.setRemark2(order.getCustomerName());//订单客户，还不确定存到哪个字段 
 		cwbOrder.setRemark3(order.getValuationValue());//保价价值 ,新增字段
@@ -256,7 +258,7 @@ public class VipShopOXOGetCwbDataService {
 		//orderMap.put("", order.getOrgName()); //提货站点名称
 		//orderMap.put("", order.getOrgCode());//提货站点编码
 		cwbOrder.setCustomerid(Long.valueOf(vipshop.getCustomerids())); //客户id
-		cwbOrder.setStartbranchid(vipshop.getWarehouseid());
+		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 				
 	}
 	
@@ -380,15 +382,27 @@ public class VipShopOXOGetCwbDataService {
 								continue;
 							}
 							Map<String,String> orderMap  = this.convertOrderVoToMap(order);
-							boolean needRematchAddress = false;
+							cwbDAO.updateBycwb(orderMap);							
 							//如果发货地址 和 收货地址发生了变化，需要重新地址解析
-							if(!orderMap.get("remark4").equals(cwbOrder_biz.getRemark4()) || !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
-								needRematchAddress = true;
+							if(StringUtils.isNotBlank(orderMap.get("remark4")) && !orderMap.get("remark4").equals(cwbOrder_biz.getRemark4())){
+								//重发解析揽件站点
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("cwb", cwbOrder_biz.getCwb());
+								map.put("userid", "1");
+								map.put("address", orderMap.get("remark4").replaceAll("&", ""));
+								map.put("notifytype", 0);
+								addressmatch.sendBodyAndHeaders(null, map);
 							}
-							cwbDAO.updateBycwb(orderMap);
-							if(needRematchAddress){
-								//TODO 重新进行地址解析
+							if(StringUtils.isNotBlank(orderMap.get("consigneeaddress")) && !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
+								//重新解析派件站点
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("cwb", cwbOrder_biz.getCwb());
+								map.put("userid", "1");
+								map.put("address", orderMap.get("consigneeaddress"));
+								map.put("notifytype", 1);
+								addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
 							}
+			
 						}
 					}
 					
