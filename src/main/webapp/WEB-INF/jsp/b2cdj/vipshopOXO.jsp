@@ -52,7 +52,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="11">*
 						</li>
-						
+						<li><span>是否开启订单下载：</span>
+							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1" <%if(vipshop.getIsopendownload()==1){%>checked<%}%>  >开启
+							<input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   <%if(vipshop.getIsopendownload()==0){%>checked<%}%>  >关闭
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 
 						</li>
@@ -89,6 +92,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="11">*
+						</li>
+						<li><span>是否开启订单下载：</span>
+							<input type ="radio" id="isopendownload1" name ="isopendownload" value="1"  checked>开启
+							<input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   >关闭
 						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 
