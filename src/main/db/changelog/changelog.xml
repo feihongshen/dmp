@@ -8029,4 +8029,11 @@ CREATE TABLE `cs_complaint_accept` (
 			MODIFY COLUMN `accountSingle`  int(11) NULL DEFAULT 0 COMMENT '结算单量' AFTER `branchid`;
 	   	</sql>
 	</changeSet>
+	<changeSet id="wangyonghe-2015-07-30-01" author="wangyonghe">
+	   	<sql>
+			ALTER TABLE `paifeirule_overweight`
+			MODIFY COLUMN `mincount`  decimal(18,2) NULL DEFAULT 0 COMMENT '开始超重数(kg)' AFTER `id`,
+			MODIFY COLUMN `maxcount`  decimal(18,2) NULL DEFAULT 0 COMMENT '截至超重数(kg)	' AFTER `mincount`;
+	   	</sql>
+	</changeSet>
 </databaseChangeLog>
