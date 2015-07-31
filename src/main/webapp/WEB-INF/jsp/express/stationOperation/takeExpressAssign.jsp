@@ -8,7 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
-    //今日待揽收
+	//今日待揽收
 	List<CwbDetailView> todayToTakeList = (List<CwbDetailView>)request.getAttribute("todayToTakeList");
     //今日已揽收
 	List<CwbDetailView> todayTakedList = (List<CwbDetailView>)request.getAttribute("todayTakedList");
@@ -56,7 +56,7 @@ $(function(){
 })
 
 $(function(){
-	getExpressCount("<%=request.getContextPath() %>",$("#deliverid").val());
+	getExpressCount("<%=request.getContextPath()%>",$("#deliverid").val());
 	 $("#preOrderNo").focus();
 });
 
@@ -81,7 +81,7 @@ function addAndRemoval(cwb,tab,isRemoval){
  */
  var deliverStr=[];
  
-<%for(User deliver : deliverList){ %>
+<%for(User deliver : deliverList){%>
 	deliverStr[<%=deliver.getUserid()%>]="";
 <%}%>
 function assign(path,preOrderNo,deliverid){
@@ -212,225 +212,149 @@ function  moreTodayTaked(){
 	$.ajax({
 		type:"post",
 		url:"<%=request.getContextPath()%>/stationOperation/getMoreTodayTakedList",
-		data:{"page":todayTakedPage,"deliverid":$("#deliverid").val()},
-		success:function(data){
-			if(data.length>0){
-				var optionstring = "";
-				for ( var i = 0; i < data.length; i++) {
-					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
-					+"<td width='120' align='center'>"+data[i].cwb+"</td>"
-					+"<td width='100' align='center'> "+data[i].customername+"</td>"
-					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
-					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
-					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
-					+ "</tr>";
-				}
-				$("#moreTodayTaked").remove();
-				$("#todayTakedTable").append(optionstring);
-				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-					var more='<tr align="center"  ><td  colspan="6" style="cursor:pointer" onclick="moreTodayTaked();" id="moreTodayTaked">查看更多</td></tr>';
-				$("#todayTakedTable").append(more);
-				}
-			}
-		}
-	});
-	
-	
-}  
+					data : {
+						"page" : todayTakedPage,
+						"deliverid" : $("#deliverid").val()
+					},
+					success : function(data) {
+						if (data.length > 0) {
+							var optionstring = "";
+							for (var i = 0; i < data.length; i++) {
+								optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
+										+ "<td width='120' align='center'>"
+										+ data[i].cwb
+										+ "</td>"
+										+ "<td width='100' align='center'> "
+										+ data[i].customername
+										+ "</td>"
+										+ "<td width='140' align='center'> "
+										+ data[i].emaildate
+										+ "</td>"
+										+ "<td width='100' align='center'> "
+										+ data[i].consigneename
+										+ "</td>"
+										+ "<td width='100' align='center'> "
+										+ data[i].receivablefee
+										+ "</td>"
+										+ "<td  align='left'> "
+										+ data[i].consigneeaddress
+										+ "</td>"
+										+ "</tr>";
+							}
+							$("#moreTodayTaked").remove();
+							$("#todayTakedTable").append(optionstring);
+							if (data.length ==
+<%=Page.DETAIL_PAGE_NUMBER%>
+	) {
+								var more = '<tr align="center"  ><td  colspan="6" style="cursor:pointer" onclick="moreTodayTaked();" id="moreTodayTaked">查看更多</td></tr>';
+								$("#todayTakedTable").append(more);
+							}
+						}
+					}
+				});
 
-function tohome(){
-	window.location.href="<%=request.getContextPath()%>/stationOperation/takeExpressAssign?deliverid="
-				+ $("#deliverid").val();
 	}
+	
+$(function() {
+	$("#assign_button").click(function() {
+		$.ajax({
+			type : "POST",
+			url : $("#assign").val(),
+			dataType : "html",
+			success : function(data) {
+				$("#alert_box", parent.document).html(data);
+				
+			},
+			complete : function() {
+// 				addInit();// 初始化某些ajax弹出页面
+				viewBox();
+			}
+		});
+		
+	});
+
+});
+function viewBox() {
+	$("#alert_box", parent.document).show();
+	$("#dress_box", parent.document).css("visibility", "hidden");
+	window.parent.centerBox();
+}
+	
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
+
+	<div class="inputselect_box">
+		<span><input name="" type="button" value="分配" class="input_button1" id="assign_button" /> </span>
+		<form action="<%=request.getAttribute("page") == null ? "1" : request.getAttribute("page")%>"
+			method="post" id="searchForm">
+			分配情况：<select id="customerid" name="customerid" class="select1">
+				<option value=-1>全部</option>
+			</select> 小件员：<select id="customerid" name="customerid" class="select1">
+				<option value=-1>全部</option>
+				<%
+					for (User deliver : deliverList) {
+				%>
+				<option value=<%=deliver.getUserid()%>><%=deliver.getRealname()%></option>
+				<%
+					}
+				%>
+			</select> <input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;"
+				value="查询" class="input_button2" />
+		</form>
+	</div>
+
 	<div class="saomiao_box2">
-
-		<div class="saomiao_tab2">
-			<ul>
-				<li><a href="#" class="light">逐单操作</a></li>
-				<li><a href="<%=request.getContextPath()%>/stationOperation/takeExpressAssignBatch">批量操作</a></li>
-			</ul>
-		</div>
-
-
-		<div class="saomiao_topnum2">
-			<dl class="blue">
-				<dt>今日待揽收</dt>
-				<dd style="cursor: pointer" onclick="tabView('table_todayToTake')" id="todayToTakeCount">0</dd>
-			</dl>
-			<dl class="yellow">
-				<dt>今日已揽收</dt>
-				<dd style="cursor: pointer" onclick="tabView('table_todayTaked')"
-					id="todayTakedCount">0</dd>
-			</dl>
-			<input type="button" id="refresh" value="刷新"
-				onclick="location.href='<%=request.getContextPath()%>/stationOperation/takeExpressAssign'"
-				style="float: left; width: 100px; height: 65px; cursor: pointer; border: none; background: url(../images/buttonbgimg1.gif) no-repeat; font-size: 18px; font-family: '微软雅黑', '黑体'" />
-			<br clear="all">
-		</div>
-
-		<div class="saomiao_info2">
-			<div class="saomiao_inbox2">
-				<div class="saomiao_righttitle" id="pagemsg"></div>
-				<div class="saomiao_selet2">
-					小件员： <select id="deliverid" name="deliverid" onchange="tohome();" class="select1">
-						<option value="-1" selected>请选择</option>
-						<%
-							for (User deliver : deliverList) {
-						%>
-						<option value="<%=deliver.getUserid()%>" <%if (deliverid == deliver.getUserid()) {%> selected=selected
-							<%}%>><%=deliver.getRealname()%></option>
-						<%
-							}
-						%>
-					</select>*
-				</div>
-				<div class="saomiao_inwrith2">
-					<div class="saomiao_left2">
-						<p>
-							<span>预订单编号：</span> <input type="text" class="saomiao_inputtxt2" id="preOrderNo" name="preOrderNo"
-								value=""
-								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){assign("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val());}' />
-						</p>
-					</div>
-					<div class="saomiao_right2">
-						<p id="msg" name="msg"></p>
-						<p id="cwbordertype" name="cwbordertype"></p>
-						<p id="showcwb" name="showcwb"></p>
-						<p id="cwbgaojia" name="cwbgaojia" style="display: none">高价</p>
-						<p id="consigneeaddress" name="consigneeaddress"></p>
-						<p id="fee" name="fee"></p>
-						<p id="exceldeliverid" name="exceldeliverid"></p>
-						<p id="cwbDetailshow" name="cwbDetailshow"></p>
-						<p id="customercommand" name="customercommand"></p>
-						<div style="display: none" id="EMBED"></div>
-						<div style="display: none">
-							<EMBED id='ypdj' name='ypdj'
-								SRC='<%=request.getContextPath()%><%=ServiceUtil.waverrorPath%><%=CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl()%>'
-								LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
-						</div>
-						<div style="display: none" id="errorvedio"></div>
-					</div>
-					<input type="hidden" id="requestbatchno" name="requestbatchno" value="0" /> 
-					<input type="hidden" id="scansuccesscwb" name="scansuccesscwb" value="" />
-				</div>
-			</div>
-		</div>
 		<div>
-			<div class="saomiao_tab2">
-				<span style="float: right; padding: 10px"> <input class="input_button1" type="button"
-					name="littlefalshbutton" id="flash" value="刷新"
-					onclick="location.href='<%=request.getContextPath()%>/stationOperation/takeExpressAssign'" />
-				</span>
-				<ul id="smallTag">
-					<li><a id="table_todayToTake" href="#" class="light">今日待揽收明细</a></li>
-					<li><a id="table_todayTaked" href="#">今日已揽收明细</a></li>
-				</ul>
-			</div>
-			<div id="ViewList" class="tabbox">
-				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
-					onclick='exportField(1,$("#deliverid").val());' />
-					<table width="100%" border="0" cellspacing="10" cellpadding="0">
-						<tbody>
-							<tr>
-								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
-										<tr>
-											<td width="50" align="center" bgcolor="#f1f1f1">预订单编号</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">寄件人</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">手机号</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">固话</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">取件地址</td>
-										</tr>
-									</table>
-									<div style="height: 160px; overflow-y: scroll">
-										<table id="todayToTakeTable" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
-											<%
-												if (todayToTakeList != null && !todayToTakeList.isEmpty())
-													for (CwbDetailView todayToTake : todayToTakeList) {
-											%>
-											<tr id="TR<%=todayToTake.getCwb()%>" cwb="<%=todayToTake.getCwb()%>"
-												customerid="<%=todayToTake.getCustomerid()%>" deliverid="<%=todayToTake.getDeliverid()%>">
-												<td width="120" align="center"><%=todayToTake.getCwb()%></td>
-												<td width="140"><%=todayToTake.getInSitetime()%></td>
-												<td width="100"><%=todayToTake.getConsigneename()%></td>
-												<td width="100"><%=todayToTake.getReceivablefee().doubleValue()%></td>
-												<td align="left"><%=todayToTake.getConsigneeaddress()%></td>
-											</tr>
-											<%
-												}
-											%>
-											<%
-												if (todayToTakeList != null && todayToTakeList.size() == Page.DETAIL_PAGE_NUMBER) {
-											%>
-											<tr align="center">
-												<td colspan="6" style="cursor: pointer"
-													onclick="moreTodayToTake();" id="moreTodayToTake">查看更多</td>
-											</tr>
-											<%
-												}
-											%>
-										</table>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table></li>
-				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportField(4,$("#deliverid").val());' />
-					<table width="100%" border="0" cellspacing="10" cellpadding="0">
-						<tbody>
-							<tr>
-								<td width="10%" height="26" align="left" valign="top">
-									<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
-										<tr>
-											<td width="50" align="center" bgcolor="#f1f1f1">预订单编号</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">寄件人</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">手机号</td>
-											<td width="50" align="center" bgcolor="#f1f1f1">固话</td>
-											<td width="100" align="center" bgcolor="#f1f1f1">取件地址</td>
-											
-										</tr>
-									</table>
-									<div style="height: 160px; overflow-y: scroll">
-										<table id="todayTakedTable" width="100%" border="0" cellspacing="1" cellpadding="2"
-											class="table_2">
-											<%
-												if (todayTakedList != null && !todayTakedList.isEmpty())
-													for (CwbDetailView todayTaked : todayTakedList) {
-											%>
-											<tr id="TR<%=todayTaked.getCwb()%>" cwb="<%=todayTaked.getCwb()%>"
-												customerid="<%=todayTaked.getCustomerid()%>" deliverid="<%=todayTaked.getDeliverid()%>">
-												<td width="120" align="center"><%=todayTaked.getCwb()%></td>
-												<td width="140"><%=todayTaked.getInSitetime()%></td>
-												<td width="100"><%=todayTaked.getConsigneename()%></td>
-												<td width="100"><%=todayTaked.getReceivablefee().doubleValue()%></td>
-												<td align="left"><%=todayTaked.getConsigneeaddress()%></td>
-											</tr>
-											<%
-												}
-											%>
-											<%
-												if (todayTakedList != null && todayTakedList.size() == Page.DETAIL_PAGE_NUMBER) {
-											%>
-											<tr align="center">
-												<td colspan="6" style="cursor: pointer"
-													onclick="moreTodayTaked();" id="moreTodayTaked">查看更多</td>
-											</tr>
-											<%
-												}
-											%>
-										</table>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table></li>
-			</div>
+			<input type="button" id="btnval0" value="导出Excel" class="input_button1"
+				onclick='exportField(1,$("#deliverid").val());' />
+			<table width="100%" border="0" cellspacing="10" cellpadding="0">
+				<tbody>
+					<tr>
+						<td width="10%" height="26" align="left" valign="top">
+							<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
+								<tr>
+									<td width="50" align="center" bgcolor="#f1f1f1">预订单编号</td>
+									<td width="50" align="center" bgcolor="#f1f1f1">寄件人</td>
+									<td width="50" align="center" bgcolor="#f1f1f1">手机号</td>
+									<td width="50" align="center" bgcolor="#f1f1f1">固话</td>
+									<td width="50" align="center" bgcolor="#f1f1f1">预约时间</td>
+									<td width="100" align="center" bgcolor="#f1f1f1">取件地址</td>
+								</tr>
+							</table>
+							<div style="height: 160px; overflow-y: scroll">
+								<table id="todayToTakeTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+									class="table_2">
+									<%
+										if (todayToTakeList != null && !todayToTakeList.isEmpty())
+											for (CwbDetailView todayToTake : todayToTakeList) {
+									%>
+									<tr id="TR<%=todayToTake.getCwb()%>" cwb="<%=todayToTake.getCwb()%>"
+										customerid="<%=todayToTake.getCustomerid()%>" deliverid="<%=todayToTake.getDeliverid()%>">
+										<td width="120" align="center"><%=todayToTake.getCwb()%></td>
+										<td width="140"><%=todayToTake.getInSitetime()%></td>
+										<td width="100"><%=todayToTake.getConsigneename()%></td>
+										<td width="100"><%=todayToTake.getReceivablefee().doubleValue()%></td>
+										<td align="left"><%=todayToTake.getConsigneeaddress()%></td>
+									</tr>
+									<%
+										}
+									%>
+									<%
+										if (todayToTakeList != null && todayToTakeList.size() == Page.DETAIL_PAGE_NUMBER) {
+									%>
+									<tr align="center">
+										<td colspan="6" style="cursor: pointer" onclick="moreTodayToTake();" id="moreTodayToTake">查看更多</td>
+									</tr>
+									<%
+										}
+									%>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 		<form action="<%=request.getContextPath()%>/PDA/exportExcle" method="post" id="searchForm2">
 			<input type="hidden" name="cwbs" id="cwbs" value="" /> <input type="hidden" name="exportmould2"
@@ -442,5 +366,7 @@ function tohome(){
 				id="deliverid" /> <input type="hidden" name="type" value="" id="type" />
 		</form>
 	</div>
+	<!-- 分配的ajax地址 -->
+    <input type="hidden" id="assign" value="<%=request.getContextPath()%>/stationOperation/openAssignDlg" />
 </body>
 </html>

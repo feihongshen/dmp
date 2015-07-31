@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.controller.ExplinkResponse;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
@@ -43,6 +44,9 @@ public class StationOperationController extends ExpressCommonController {
 
 	@Autowired
 	private RoleDAO roleDAO;
+
+	@Autowired
+	private CustomerDAO customerDAO;
 
 	@Autowired
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -69,6 +73,13 @@ public class StationOperationController extends ExpressCommonController {
 		model.addAttribute("todayTakedList", todayTakedList);
 		model.addAttribute("deliverList", deliverList);
 		return "express/stationOperation/takeExpressAssign";
+	}
+
+	@RequestMapping("/openAssignDlg")
+	public String openAssignDlg(Model model, HttpServletRequest request) {
+		List<User> deliverList = this.getDeliverList();
+		model.addAttribute("deliverList", deliverList);
+		return "express/stationOperation/assignDlg";
 	}
 
 	/**

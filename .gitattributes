@@ -2237,8 +2237,8 @@ src/main/webapp/WEB-INF/jsp/exceptionmonitor/system.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/search.jsp -text
+src/main/webapp/WEB-INF/jsp/express/stationOperation/assignDlg.jsp -text
 src/main/webapp/WEB-INF/jsp/express/stationOperation/takeExpressAssign.jsp -text
-src/main/webapp/WEB-INF/jsp/express/stationOperation/takeExpressAssignBatch.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payamount/DeliveryView.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payamount/DeliveryViewAudit.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payamount/view.jsp -text
