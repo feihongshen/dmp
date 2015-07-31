@@ -525,8 +525,10 @@ src/main/java/cn/explink/b2c/vipshop/addresspre/response/Response.java -text
 src/main/java/cn/explink/b2c/vipshop/addresspre/response/ResponseItem.java -text
 src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOConfig.java -text
 src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOGetCwbDataService.java -text
+src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOGetPickStateService.java -text
 src/main/java/cn/explink/b2c/vipshop/oxo/VipShopOXOInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/vipshop/oxo/response/TpsOrderVo.java -text
+src/main/java/cn/explink/b2c/vipshop/oxo/response/TpsOxoPickStateVo.java -text
 src/main/java/cn/explink/b2c/wangjiu/CwbColumnSetWangjiu.java -text
 src/main/java/cn/explink/b2c/wangjiu/Wangjiu.java -text
 src/main/java/cn/explink/b2c/wangjiu/WangjiuConfig.java -text
