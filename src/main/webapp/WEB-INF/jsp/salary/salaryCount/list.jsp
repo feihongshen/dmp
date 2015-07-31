@@ -33,9 +33,9 @@ function addInit(){
 function allchecked(){ 
 	var ids="";
 	$("[id=id]").each(function(index){
-		/* if($(this)[0].checked==true){
-		} */
-		ids+=","+$(this).val();
+		if($(this)[0].checked==true){
+			ids+=","+$(this).val();
+		}
 	});
 		if(ids.indexOf(',')!=-1){
 			ids=ids.substr(1);

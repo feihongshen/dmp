@@ -1028,7 +1028,7 @@ function checkUsername() {
 }
 
 function check_user() {
-	var checkuserformid = "user_cre_Form";
+	//var checkuserformid = "user_cre_Form";
 	roleChange();
 	if ($("#realname").val().length == 0) {
 		alert("员工姓名不能为空!");
@@ -1086,7 +1086,7 @@ function check_user() {
 		return false;
 	}
 	
-	var s1 = $("#"+checkuserformid+" input[id=maxcutpayment]").val();
+	/*var s1 = $("#"+checkuserformid+" input[id=maxcutpayment]").val();
 	var s2 = $("#"+checkuserformid+" input[id=basicadvance]").val();
 	var s3 = $("#"+checkuserformid+" input[id=lateradvance]").val();
 	//var s4 = $("#"+checkuserformid+" input[id=fixedadvance]").val();
@@ -1100,7 +1100,7 @@ function check_user() {
 	} else{
 		alert("金额输入格式有误！(注:小数点后最多两位小数)");
 		return false;
-	}
+	}*/
 	
 	return true;
 }

@@ -370,7 +370,7 @@ public class PunishInsideDao {
 			buffer.append(" and punishcwbstate="+PunishInsideStateEnum.koufachengli.getValue());
 		}
 		
-			sumprice=this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(), cwbs,userid,PunishInsideStateEnum.koufachexiao.getValue());
+			sumprice=this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(), cwbs,userid);
 		} catch (DataAccessException e) {
 			this.logger.error("在对内扣罚表中查询扣款撤销或货损赔偿或违纪违规扣罚时出现异常",e);
 		}

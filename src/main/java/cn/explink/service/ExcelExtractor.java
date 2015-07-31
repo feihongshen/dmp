@@ -1483,8 +1483,8 @@ public abstract class ExcelExtractor {
 		salary.setUserid(user.getUserid());//配送员id
 		salary.setBatchid(sc.getBatchid());//批次编号
 		salary.setBranchid(sc.getBranchid());//直营站点
-		salary.setRealname(realname);
-		salary.setIdcard(idcard);
+		salary.setRealname(realname);//真实姓名
+		salary.setIdcard(idcard);//身份证号
 		SalaryFixed sf = fixedMap.get(idcard);
 		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
 		try{
