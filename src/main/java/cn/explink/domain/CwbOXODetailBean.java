@@ -9,6 +9,7 @@ public class CwbOXODetailBean {
 	private double receivablefee; //应收金额
 	private String branchName; //揽件/配送站点
 	private String payWay; //支付方式
+	private String oxoType;//执行类型 1揽收 2配送
 	
 	public String getCwb() {
 		return cwb;
@@ -51,5 +52,11 @@ public class CwbOXODetailBean {
 	}
 	public void setPayWay(String payWay) {
 		this.payWay = payWay;
+	}
+	public String getOxoType() {
+		return oxoType;
+	}
+	public void setOxoType(String oxoType) {
+		this.oxoType = oxoType;
 	}
 }
