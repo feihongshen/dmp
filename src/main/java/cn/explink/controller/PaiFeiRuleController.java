@@ -202,7 +202,7 @@ public class PaiFeiRuleController {
 	String saveArea(@RequestParam(value = "rulejson", required = false, defaultValue = "{}") String rulejson, @RequestParam(value = "areajson", required = false, defaultValue = "{}") String areajson,
 			@RequestParam(value = "tab", required = false, defaultValue = "") String tab, Model model, HttpServletRequest request) {
 
-		int count = this.paiFeiRuleService.saveArea(areajson, rulejson, tab);
+		long count = this.paiFeiRuleService.saveArea(areajson, rulejson, tab);
 		if (count > 0) {
 			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
 		} else {

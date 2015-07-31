@@ -1436,10 +1436,11 @@ public class PaiFeiRuleService {
 	}
 
 	@Transactional
-	public int saveArea(String areajson, String rulejson, String tab) {
+	public long saveArea(String areajson, String rulejson, String tab) {
 		PaiFeiRule rule = (PaiFeiRule) JSONObject.toBean(JSONObject.fromObject(rulejson), PaiFeiRule.class);
 		PFareaJson pFareaJson = (PFareaJson) JSONObject.toBean(JSONObject.fromObject(areajson), PFareaJson.class);
 		int tabid = 0;
+		long id =0;
 		if (tab.equals("ps")) {
 			tabid = PaiFeiRuleTabEnum.Paisong.getValue();
 		} else if (tab.equals("th")) {
@@ -1456,7 +1457,8 @@ public class PaiFeiRuleService {
 		pf.setPfruleid(rule.getId());
 		pf.setTypeid(rule.getType());
 		pf.setOverbigflag(pFareaJson.getOverbigflag());
-		long id = this.savedata(pf);
+		id= this.savedata(pf);
+
 		if (pf.getOverbigflag() != 1) {
 
 			List<PFoverbig> bigs = (List<PFoverbig>) JSONArray.toCollection(JSONArray.fromObject(pFareaJson.getOverbig()), PFoverbig.class);
@@ -1491,6 +1493,6 @@ public class PaiFeiRuleService {
 		 * area.setPfruleid(rule.getId()); area.setTypeid(rule.getType());
 		 * this.savedata(area);
 		 */
-		return 0;
+		return id;
 	}
 }
