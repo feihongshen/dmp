@@ -143,7 +143,7 @@ public class BranchContractService {
 					int maxOrderInt = Integer.valueOf(maxOrderStr);
 					maxOrderInt++;
 					String orderStr = String.valueOf(maxOrderInt);
-					while(orderStr.length() != 3){
+					while(orderStr.length() < 3){
 						orderStr = "0" + orderStr;
 					}
 					contractNo = partContractNo + orderStr;

@@ -111,11 +111,25 @@ public class BranchDeliveryFeeBillService {
 			dateColumn = "i.credate";
 		}
 
+		String cwbs = "";
+		List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList();
+		if(billDetailList != null && !billDetailList.isEmpty()){
+			for(int i = 0; i < billDetailList.size(); i++){
+				if(billDetailList.get(i) != null && StringUtils.isNotBlank(billDetailList.get(i).getCwb())){
+					cwbs = billDetailList.get(i).getCwb() + "," + cwbs;
+				}
+			}
+		}
+		if(StringUtils.isNotBlank(cwbs)){
+			cwbs = cwbs.substring(0, cwbs.length() - 1);
+			List<String> list = Arrays.asList(cwbs.split(","));
+			cwbs = StringUtil.getStringsByStringList(list);
+		}
 		List<CwbOrder> orderList = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(branchDeliveryFeeBill, leftJoinSql,
-						onSql, dateColumn);
+						onSql, dateColumn, cwbs);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
-		String cwbs = "";
+		cwbs = "";
 		int cwbCount = 0;
 		BigDecimal deliverySumFee = new BigDecimal(0.0);
 		BigDecimal deliveryBasicFee = new BigDecimal(0.0);
@@ -251,8 +265,23 @@ public class BranchDeliveryFeeBillService {
 
 	public String generateBillBatch() {
 		String rule = "B";
-		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
+		String nowTime = DateTimeUtil.getNowTime("yyyyMMdd");
 		String billBatch = rule + nowTime;
+		String orderStr = "00001";
+		ExpressSetBranchDeliveryFeeBill bill = this.branchDeliveryFeeBillDAO.getMaxBillBatch(billBatch);
+		if(bill != null){
+			String maxBillBatch = bill.getBillBatch();
+			if(StringUtils.isNotBlank(maxBillBatch)){
+				String maxOrderStr = maxBillBatch.substring(9);
+				int maxOrderInt = Integer.valueOf(maxOrderStr);
+				maxOrderInt++;
+				orderStr = String.valueOf(maxOrderInt);
+				while(orderStr.length() < 5){
+					orderStr = "0" + orderStr;
+				}
+			}
+		}
+		billBatch = billBatch + orderStr;
 		return billBatch;
 	}
 

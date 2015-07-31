@@ -88,7 +88,6 @@ public class PunishinsideBillService {
 				int maxOrderInt = Integer.valueOf(maxOrderStr);
 				maxOrderInt++;
 				orderStr = String.valueOf(maxOrderInt);
-				orderStr = orderStr.substring(0, 4);
 				while(orderStr.length() < 4){
 					orderStr = "0" + orderStr;
 				}

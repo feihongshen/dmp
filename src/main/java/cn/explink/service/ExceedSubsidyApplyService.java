@@ -114,7 +114,7 @@ public class ExceedSubsidyApplyService {
 				int maxOrderInt = Integer.valueOf(maxOrderStr);
 				maxOrderInt++;
 				orderStr = String.valueOf(maxOrderInt);
-				while(orderStr.length() != 4){
+				while(orderStr.length() < 4){
 					orderStr = "0" + orderStr;
 				}
 			}

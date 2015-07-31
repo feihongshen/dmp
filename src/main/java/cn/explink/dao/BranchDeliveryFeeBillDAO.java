@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -22,7 +23,6 @@ import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
-import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -481,6 +481,11 @@ public class BranchDeliveryFeeBillDAO {
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper(), billId);
 	}
 	
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList() {
+		String sql = "select * from express_set_branch_delivery_fee_bill_detail ";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper());
+	}
+	
 	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList(String cwbs) {
 		String sql = "select * from express_set_branch_delivery_fee_bill_detail where cwb in (" + cwbs + ")";
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper());
@@ -658,7 +663,7 @@ public class BranchDeliveryFeeBillDAO {
 	
 	public List<CwbOrder> queryBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill, String leftJoinSql,
-			String onSql, String dateColumn) {
+			String onSql, String dateColumn, String cwbs) {
 
 		String sql = "select cwb.* from express_ops_cwb_detail cwb "
 				+ " left join express_ops_delivery_state d "
@@ -687,15 +692,22 @@ public class BranchDeliveryFeeBillDAO {
 						+ branchDeliveryFeeBill.getCwbType();
 			}
 		}
+		if(StringUtils.isNotBlank(cwbs)){
+			sql += " and cwb.cwb not in (" + cwbs + ")";
+		}
 
 		return jdbcTemplate.query(sql, new CwbMapper());
 	}
 
-	public List<ExpressSetBranchDeliveryFeeBill> getMaxBillBatch() {
-		String sql = "select * from express_set_branch_delivery_fee_bill order by billBatch desc";
-		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillMapper());
+	public ExpressSetBranchDeliveryFeeBill getMaxBillBatch(String billBatch) {
+		String sql = "select * from express_set_branch_delivery_fee_bill where billBatch like '%" + billBatch + "%' order by billBatch desc limit 0,1";
+		try{
+			return jdbcTemplate.queryForObject(sql, new BranchDeliveryFeeBillMapper());
+		}catch (EmptyResultDataAccessException e) {
+            return null;   
+        }
 	}
-
+	
 	public BigDecimal calculateSumPrice(String punishNos) {
 		String sql = "SELECT SUM(punishInsideprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
 		if (StringUtils.isNotBlank(punishNos)) {
