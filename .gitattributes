@@ -1313,6 +1313,7 @@ src/main/java/cn/explink/domain/b2cdj/CwbOrderTemp.java -text
 src/main/java/cn/explink/domain/customerCoutract/CustomerContractManagement.java -text
 src/main/java/cn/explink/domain/customerCoutract/CustomerContractManagementVO.java -text
 src/main/java/cn/explink/domain/customerCoutract/DepositInformation.java -text
+src/main/java/cn/explink/domain/express/ExpressPreOrder.java -text
 src/main/java/cn/explink/domain/lefengVo.java -text
 src/main/java/cn/explink/domain/logdto/TodayArrivalDTO.java -text
 src/main/java/cn/explink/domain/logdto/TodayDeliveryDTO.java -text
