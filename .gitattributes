@@ -1433,6 +1433,7 @@ src/main/java/cn/explink/enumutil/coutracManagementEnum/InvoiceTypeEnum.java -te
 src/main/java/cn/explink/enumutil/coutracManagementEnum/LoanTypeEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/SettlementPeriodEnum.java -text
 src/main/java/cn/explink/enumutil/coutracManagementEnum/WhetherHaveDepositEnum.java -text
+src/main/java/cn/explink/enumutil/express/ExcuteTypeEnum.java -text
 src/main/java/cn/explink/enumutil/switchs/SwitchEnum.java -text
 src/main/java/cn/explink/exception/BadExcelException.java -text
 src/main/java/cn/explink/exception/CwbException.java -text
