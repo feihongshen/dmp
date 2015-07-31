@@ -238,16 +238,14 @@ public class CustomerBillContractController {
 							.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
 							.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
 							);
-					sv.setBillBatches(BillBatches);
-					
-				
-					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单
+					sv.setBillBatches(BillBatches);				
+					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
 				}
 				String cwbsOfOneBill=null;
 				if(sb.length()>0){
 				cwbsOfOneBill=sb.substring(0,sb.length()-1);
 				}
-				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney).add(refuseMoney);
+				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
 
 				
