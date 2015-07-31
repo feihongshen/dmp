@@ -118,7 +118,7 @@ public class CustomerBillContractController {
 					}else{
 						creenddate=cccv.getCreenddate();
 					}
-					cbclist=customerbillcontractservice.getCustomerBillContractBySelect(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"),cccv.getCondition(),cccv.getSequence(),start,number);
+					cbclist=customerbillcontractservice.getCustomerBillContractBySelect(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"),cccv.getCondition().equals("") ? "bill_batches":cccv.getCondition(),cccv.getSequence().equals("") ? "ASC" :cccv.getSequence(),start,number);
 					dataCount=customerbillcontractservice.findCustomerBillContractCount(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"));				
 				}else{
 					cbclist=customerbillcontractdao.dateAllbillBatche(start,number);
