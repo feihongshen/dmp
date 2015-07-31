@@ -9194,7 +9194,7 @@ public class PDAController {
 	List<CwbDetailView> getbranchimportlanjianweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<CwbOrder> lanjianweidaohuolist = new ArrayList<CwbOrder>();
-		lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), 1);
+		lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), page);
 		
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();

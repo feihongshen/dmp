@@ -517,10 +517,10 @@ function getlanjianweidaozhan(){
 					+"<td  align='left'> "+data[i].pickaddress+"</td>"
 					+ "</tr>";
 				}
-				$("#lanjianweidaohuo").remove();
+				$("#lanjianweidaozhan").remove();//删除‘查看更多’的按钮
 				$("#lanjianweidaohuoTable").append(optionstring);
 				if(data.length==<%=Page.DETAIL_PAGE_NUMBER%>){
-				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="getlanjianweidaozhan();" id="lanjianweidaohuo">查看更多</td></tr>';
+				var more='<tr align="center"  ><td  colspan="<%if(showCustomerSign){ %>8<%}else{ %>7<%} %>" style="cursor:pointer" onclick="getlanjianweidaozhan();" id="lanjianweidaozhan">查看更多</td></tr>';
 				$("#lanjianweidaohuoTable").append(more);
 				}
 			}
@@ -675,7 +675,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 				<!-- <li><a id="table_youhuowudan" href="#">有货无单明细</a></li> -->
 				<li><a id="table_quejian" href="#" onclick='getdaohuocwbquejiandataList();'>一票多件缺件</a></li>
 				<li><a href="#">异常单明细</a></li>
-				<li><a id="table_oxo_lanjianweidaozhan" href="#" onclick='getlanjianweidaozhan();'>揽收未到站</a></li>
+				<li><a id="table_oxo_lanjianweidaozhan" href="#">揽收未到站</a></li>
 			</ul>
 		</div>
 		<div id="ViewList" class="tabbox">
