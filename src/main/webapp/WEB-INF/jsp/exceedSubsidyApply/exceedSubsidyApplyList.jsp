@@ -807,7 +807,7 @@ function deleteExceedSubsidyApply(){
 						大件补助金额
 					</td>
 					<td colspan="5">
-						<input type="text" name="bigGoodsSubsidyAmount" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.bigGoodsSubsidyRemark}">
+						<input type="text" name="bigGoodsSubsidyAmount" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.bigGoodsSubsidyAmount}">
 					</td>
 				</tr>
 				</c:if>
