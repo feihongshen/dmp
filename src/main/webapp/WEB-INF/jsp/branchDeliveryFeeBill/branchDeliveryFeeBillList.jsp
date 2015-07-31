@@ -401,7 +401,8 @@ function deleteBranchDeliveryFeeBill(){
 			dataType:'json',
 			success:function(data){
 				if(data){
-					titleTr = "<tr style=\'mso-yfti-irow: 0; mso-yfti-firstrow: yes; height: 19.95pt\'>"+
+					var branchFeeTable = $("#branchFeeTable");
+					titleTr = "<tr style=\'mso-yfti-irow: 0; mso-yfti-firstrow: yes; height: 19.95pt\' id='branchFeeTr0'>"+
 					"				<td width=23"+
 					"					style=\'width: 16.95pt; border-top: 1.5pt; border-left: 1.5pt; border-bottom: 1.0pt; border-right: 1.0pt; border-color: black; border-style: solid; mso-border-top-alt: 1.5pt; mso-border-left-alt: 1.5pt; mso-border-bottom-alt: .5pt; mso-border-right-alt: .5pt; mso-border-color-alt: black; mso-border-themecolor: text1; mso-border-style-alt: solid; background: #D9D9D9; mso-background-themecolor: background1; mso-background-themeshade: 217; padding: 0cm 0cm 0cm 0cm; height: 19.95pt\'>"+
 					"					<p class=MsoNormal align=center"+
@@ -548,6 +549,7 @@ function deleteBranchDeliveryFeeBill(){
 					"					</p>"+
 					"				</td>"+
 					"			</tr>";
+					branchFeeTable.append(titleTr);
 					if(data.customerDeliveryFee){
 						var customerDeliveryFeeObj = data.customerDeliveryFee;
 						var count = 0;
@@ -558,7 +560,7 @@ function deleteBranchDeliveryFeeBill(){
 								customerName = i;
 								
 								if(count == 1){
-									firstReceiveTr = "<tr style=\'mso-yfti-irow: 1; height: 19.95pt\'>"+
+									firstReceiveTr = "<tr style=\'mso-yfti-irow: 1; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
 									"				<td width=23 rowspan=7 "+
 									"					style=\'width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
 									"					<p class=MsoNormal align=center style=\'text-align: center\'>"+
@@ -654,8 +656,9 @@ function deleteBranchDeliveryFeeBill(){
 									"					</p>"+
 									"				</td>"+
 									"			</tr>";
+									$("#branchFeeTr" + (parseInt(count)-1)).after(firstReceiveTr); 
 								} else {
-									anotherReceiveTr = "<tr style=\'mso-yfti-irow: 4; height: 19.95pt\'>"+
+									anotherReceiveTr = "<tr style=\'mso-yfti-irow: 4; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
 									"				<td width=34 rowspan=3 "+
 									"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
 									"					<p class=MsoNormal>"+
@@ -736,8 +739,9 @@ function deleteBranchDeliveryFeeBill(){
 									"					</p>"+
 									"				</td>"+
 									"			</tr>";
+									$("#branchFeeTr" + (parseInt(count)-1)).after(anotherReceiveTr); 
 								}
-								notReceiveTr = "<tr style=\'mso-yfti-irow: 2; height: 19.95pt\'>"+
+								notReceiveTr = "<tr style=\'mso-yfti-irow: 2; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+1 + "'>"+
 								"				<td width=60"+
 								"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
 								"					<p class=MsoNormal>"+
@@ -810,7 +814,8 @@ function deleteBranchDeliveryFeeBill(){
 								"					</p>"+
 								"				</td>"+
 								"			</tr>";
-								totalTr = "			<tr style=\'mso-yfti-irow: 3; height: 19.95pt\'>"+
+								$("#branchFeeTr" + count).after(notReceiveTr); 
+								totalTr = "			<tr style=\'mso-yfti-irow: 3; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+2 + "'>"+
 								"				<td width=60"+
 								"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black .5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
 								"					<p class=MsoNormal>"+
@@ -883,7 +888,7 @@ function deleteBranchDeliveryFeeBill(){
 								"					</p>"+
 								"				</td>"+
 								"			</tr>";
-								
+								$("#branchFeeTr" + (parseInt(count)+1)).after(totalTr); 
 							   feeObj = customerDeliveryFeeObj[i];
 							   for(var j in feeObj){
 								   ++tdCount;
@@ -905,7 +910,7 @@ function deleteBranchDeliveryFeeBill(){
 							   }
 						}
 						
-						"<tr style=\'mso-yfti-irow: 7; height: 19.95pt\'>"+
+						sumTotalTr = "<tr style=\'mso-yfti-irow: 7; height: 19.95pt\' id='branchFeeTr" + parseInt(count)*3+1 + "'>"+
 						"				<td width=94 colspan=2"+
 						"					style=\'width: 70.65pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black .5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
 						"					<p class=MsoNormal>"+
@@ -978,7 +983,7 @@ function deleteBranchDeliveryFeeBill(){
 						"					</p>"+
 						"				</td>"+
 						"			</tr>";
-						
+						$("#branchFeeTr" + (parseInt(count)*3)).after(sumTotalTr); 
 						
 					}
 				}
