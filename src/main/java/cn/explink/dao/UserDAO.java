@@ -491,7 +491,7 @@ public class UserDAO {
 	 */
 	public List<User> queryAllUserByBranchId(long branchid) {
 		List<User> list = new ArrayList<User>();
-		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and userDeleteFlag=1 ";
+		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and userDeleteFlag=1 and roleid in(2,4)";
 		try {
 			list = this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (DataAccessException e) {
