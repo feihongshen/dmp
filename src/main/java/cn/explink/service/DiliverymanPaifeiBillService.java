@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.DiliverymanPaifeiBill;
 import cn.explink.domain.DiliverymanPaifeiOrder;
+import cn.explink.domain.PenalizeOutBill;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DateTypeEnum;
@@ -180,10 +182,44 @@ public class DiliverymanPaifeiBillService {
 	 * @return
 	 */
 	public String generateBillBatch() {
-		String rule = "B";
-		String nowTime = DateTimeUtil.getNowTime("yyyyMMddHHmmssSSS");
-		String billBatch = rule + nowTime;
-		return billBatch;
+		String number = "";
+		List<DiliverymanPaifeiBill> contractList = this.diliverymanPaifeiBillDAO.getMaxNumber();
+		String maxNumber = "";
+		String partContractNo = "";
+		String orderStr = "0001";
+		if ((contractList != null) && !contractList.isEmpty()) {
+			for (int i = 0; i < contractList.size(); i++) {
+				DiliverymanPaifeiBill contract = contractList.get(i);
+				 maxNumber = contract.getBillbatch();
+				if ((maxNumber.length() == 13) && "P".equals(maxNumber.substring(0, 1))) {
+					 partContractNo = maxNumber.substring(0, 9);
+					String str = partContractNo.substring(1);
+					if(!str.equals( DateTimeUtil.getCurrentDate())){
+						String rule = "P";
+						String date = DateTimeUtil.getCurrentDate();
+						
+						number = rule + date + orderStr;
+					}else{
+						String maxOrderStr = maxNumber.substring(9);
+						int maxOrderInt = Integer.valueOf(maxOrderStr);
+						maxOrderInt++;
+						 orderStr = String.valueOf(maxOrderInt);
+						while (orderStr.length() != 4) {
+							orderStr = "0" + orderStr;
+						}
+						number = partContractNo + orderStr;
+					}
+					break;
+				}
+			}
+		}
+		if (StringUtils.isBlank(number)) {
+			String rule = "P";
+			String date = DateTimeUtil.getCurrentDate();
+			 orderStr = "0001";
+			number = rule + date + orderStr;
+			}
+		return number;
 	}
 
 	/**
@@ -245,7 +281,6 @@ public class DiliverymanPaifeiBillService {
 				order = new DiliverymanPaifeiOrder();
 				CwbOrder cwbOrder = cwborderList.get(i);
 				/* 通过订单号查出到货时间 */
-				
 				order.setOrdernumber(cwbOrder.getCwb());
 				order.setOrdertype(cwbOrder.getCwbordertypeid());
 				order.setOrderstatus((int) cwbOrder.getFlowordertype());
@@ -253,35 +288,47 @@ public class DiliverymanPaifeiBillService {
 				order.setDateoflodgment(cwbOrder.getPodtime());
 				order.setPaymentmode(Integer.parseInt(cwbOrder.getNewpaywayid()));
 				order.setTimeofdelivery(orderFlowMap.get(cwbOrder.getCwb()));
-				BigDecimal basic = basicMap.get(cwbOrder.getCwb()); /* 基本派费 */
-				BigDecimal collection = collectionMap.get(cwbOrder.getCwb());/* 代收补助费 */
-				BigDecimal area = areaMap.get(cwbOrder.getCwb());/* 区域属性补助费 */
-				BigDecimal overarea = overareaMap.get(cwbOrder.getCwb());/* 超出区域补助费 */
-				BigDecimal business = businessMap.get(cwbOrder.getCwb());/* 业务补助 */
-				BigDecimal insertion = insertionMap.get(cwbOrder.getCwb());/* 脱单补助 */
-				if(basic != null){
-					order.setBasicpaifei(basic); /* 基本派费 */
-					sum = sum.add(basic);
+				if(basicMap != null){
+					BigDecimal basic = basicMap.get(cwbOrder.getCwb()); /* 基本派费 */
+					if(basic != null){
+						order.setBasicpaifei(basic); /* 基本派费 */
+						sum = sum.add(basic);
+					}
 				}
-				if(collection != null){
-					order.setSubsidiesfee(collection); /* 代收补助费 */
-					sum = sum.add(collection);
+				if(collectionMap != null){
+					BigDecimal collection = collectionMap.get(cwbOrder.getCwb());/* 代收补助费 */
+					if(collection != null){
+						order.setSubsidiesfee(collection); /* 代收补助费 */
+						sum = sum.add(collection);
+					}
 				}
-				if(area != null){
-					order.setAreasubsidies(area); /* 区域属性补助费 */
-					sum = sum.add(area);
+				if(areaMap != null){
+					BigDecimal area = areaMap.get(cwbOrder.getCwb());/* 区域属性补助费 */
+					if(area != null){
+						order.setAreasubsidies(area); /* 区域属性补助费 */
+						sum = sum.add(area);
+					}
 				}
-				if(overarea != null){
-					order.setBeyondareasubsidies(overarea); /* 超出区域补助费 */
-					sum = sum.add(overarea);
+				if(overareaMap != null){
+					BigDecimal overarea = overareaMap.get(cwbOrder.getCwb());/* 超出区域补助费 */
+					if(overarea != null){
+						order.setBeyondareasubsidies(overarea); /* 超出区域补助费 */
+						sum = sum.add(overarea);
+					}
 				}
-				if(business != null){
-					order.setBusinesssubsidies(business);/* 业务补助 */
-					sum = sum.add(business);
+				if(businessMap != null){
+					BigDecimal business = businessMap.get(cwbOrder.getCwb());/* 业务补助 */
+					if(business != null){
+						order.setBusinesssubsidies(business);/* 业务补助 */
+						sum = sum.add(business);
+					}
 				}
-				if(insertion != null){
-					order.setDelaysubsidies(insertion); /* 脱单补助 */
-					sum = sum.add(insertion);
+				if(insertionMap != null){
+					BigDecimal insertion = insertionMap.get(cwbOrder.getCwb());/* 脱单补助 */
+					if(insertion != null){
+						order.setDelaysubsidies(insertion); /* 脱单补助 */
+						sum = sum.add(insertion);
+					}
 				}
 				order.setPaifeicombined(sum);
 				orderfee = orderfee.add(sum);

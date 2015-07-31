@@ -136,7 +136,7 @@ public class DiliverymanPaifeiBillDAO {
 		if (StringUtils.isNotBlank(bill.getOrderingMethod())) {
 			querySql.append(" " + bill.getOrderingMethod() + "");
 		}else{
-			querySql.append(" ORDER BY billstate desc");
+			querySql.append(" ORDER BY billbatch desc");
 		}
 		return querySql.toString();
 	}
@@ -271,4 +271,11 @@ public class DiliverymanPaifeiBillDAO {
 		String sql = "update express_ops_diliveryman_paifei_bill set billstate = '"+state+"' where id = '"+id+"'";
 		this.jdbcTemplate.update(sql);
 	}
+	
+	// 获取最大编号
+	public List<DiliverymanPaifeiBill> getMaxNumber() {
+		String sql = "select * from express_ops_diliveryman_paifei_bill order by billbatch desc ";
+		return this.jdbcTemplate.query(sql,new DiliverymanPaifeiBillRowMapper());
+	}
+	
 }

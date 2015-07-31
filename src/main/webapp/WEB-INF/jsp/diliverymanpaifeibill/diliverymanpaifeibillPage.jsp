@@ -846,8 +846,8 @@ function verify(){
          		<td nowrap="nowrap" align="right">排序：</td>
          		<td nowrap="nowrap">
 			    	<select style="width:60%;" name="sortField">
-			    		<option value="billstate">账单状态</option>
 			    		<option value="billbatch">账单批次</option>
+			    		<option value="billstate">账单状态</option>
 			    		<option value="billestablishdate">账单创建日期</option>
 			    		<option value="ordersum">对应订单数</option>
 			    	</select>
