@@ -93,7 +93,6 @@ public class CwbOXODetailDAO {
 				+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
 				+ " and deliverybranchid = " + currentBranchId 
 				+ " and cwbordertypeid =" + OXOValue 
-				+ " and currentbranchid = " + currentBranchId
 				+ " and oxopickstate = " + OXOStateProcessedValue );
 		    
 		if (startDate.length() > 0) {
@@ -114,6 +113,7 @@ public class CwbOXODetailDAO {
 		
 		if (OXOStateUnProcessedValue.equals(cwbOXOStateId)) {
 			deliverySql.append(" and flowordertype = " + fenZhanDaoHuo );
+			deliverySql.append(" and currentbranchid = " + currentBranchId );
 		} else if (OXOStateProcessingValue.equals(cwbOXOStateId)) {
 			deliverySql.append(" and flowordertype = " + fenZhanLingHuo );
 		} else if (OXOStateProcessedValue.equals(cwbOXOStateId)) {
@@ -174,7 +174,6 @@ public class CwbOXODetailDAO {
 						+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
 						+ " and deliverybranchid = " + currentBranchId 
 						+ " and cwbordertypeid =" + OXOValue 
-						+ " and currentbranchid = " + currentBranchId
 						+ " and oxopickstate = " + OXOStateProcessedValue );
 				    
 				if (startDate.length() > 0) {
@@ -195,6 +194,7 @@ public class CwbOXODetailDAO {
 				
 				if (OXOStateUnProcessedValue.equals(cwbOXOStateId)) {
 					deliverySql.append(" and flowordertype = " + fenZhanDaoHuo );
+					deliverySql.append(" and currentbranchid = " + currentBranchId );
 				} else if (OXOStateProcessingValue.equals(cwbOXOStateId)) {
 					deliverySql.append(" and flowordertype = " + fenZhanLingHuo );
 				} else if (OXOStateProcessedValue.equals(cwbOXOStateId)) {
@@ -202,7 +202,7 @@ public class CwbOXODetailDAO {
 				}
 				
 				StringBuilder sql = new StringBuilder();
-				sql.append("select count(1) FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(" );
+				sql.append("select count(1)  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(" );
 				if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
 					sql.append(pickSql + " union " + deliverySql );
 				} else {
@@ -212,7 +212,7 @@ public class CwbOXODetailDAO {
 						sql.append(deliverySql);
 					}
 				}
-				sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid " );
+				sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid ");
 		return this.jdbcTemplate.queryForInt(sql.toString());
 	}
 }
