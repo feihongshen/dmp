@@ -508,7 +508,7 @@ function verify(){
 		</div>
 		</div>
 <!-- 新增层显示 -->
-<div  id="add" class="easyui-dialog" data-options="modal:true" title="新增"  style="width:700px;height:220px;">
+<div  id="add" class="easyui-dialog" data-options="modal:true" title="新增"  style="width:700px;height:250px;">
 	<form action="${ctx}/diliverymanpaifeibill/addDilivermanBill" method="post" id="creationfrom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" style="margin-top: 10px;font-size: 10px;">
          		<tr >

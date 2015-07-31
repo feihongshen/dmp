@@ -94,7 +94,6 @@ public class DiliverymanPaifeiBillService {
 		Integer billcount = 0;
 		// 当用户选择站点，并且选择 了小件员的时候，执行此方法
 		if ((diliveryman != null) && (diliveryman.length != 0)) {
-			/* 该站点下有多少个小件员就创建多少个账单 */
 			for (int i = 0; i < diliveryman.length; i++) {
 				bill = new DiliverymanPaifeiBill();
 				Integer diliverymanid = Integer.parseInt(diliveryman[i]);
@@ -127,6 +126,7 @@ public class DiliverymanPaifeiBillService {
 			}
 		} else {
 			/* 当用户选择站点，但是没有选择站点所属小件员的时候，执行此方法 */
+			/* 该站点下有多少个小件员就创建多少个账单 */
 			List<User> list = this.userDAO.queryAllUserByBranchId(site);
 			User user = null;
 			for (int i = 0; i < list.size(); i++) {
@@ -382,7 +382,9 @@ public class DiliverymanPaifeiBillService {
 				}
 			}
 			String order = sBuffer.toString();
-			order = order.substring(0, order.length() - 1);
+			if(StringUtils.isNotBlank(order)){
+				order = order.substring(0, order.length() - 1);
+			}
 			this.diliverymanPaifeiBillDAO.updateBillForOrder(i, order, id,sum);
 			orderString = DiliverymanPaifeiBillService.spiltString(ordernumber);
 			this.diliverymanPaifeiBillDAO.deleteorder(orderString);
