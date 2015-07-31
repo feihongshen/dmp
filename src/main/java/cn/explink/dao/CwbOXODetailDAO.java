@@ -127,7 +127,7 @@ public class CwbOXODetailDAO {
 				sql += deliverySql;
 			}
 		}
-		sql += ")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid order by cwb.cwb asc limit "
+		sql += ")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid order by cwb.credate desc limit "
 				+ ((page - 1) * Page.ONE_PAGE_NUMBER)
 				+ " ,"
 				+ Page.ONE_PAGE_NUMBER;
