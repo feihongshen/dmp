@@ -962,9 +962,9 @@ public class BranchDAO {
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 	}
 
-	public List<Branch> getBranchssBycontractflag(String contractflag) {
-		String sql = "SELECT * from express_set_branch  WHERE contractflag=?  and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag);
+	public List<Branch> getBranchssBycontractflag(String contractflag,long sitetype) {
+		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=? and brancheffectflag='1' ";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag,sitetype);
 	}
 	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype,String contractflag){
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=?  and brancheffectflag='1' ";

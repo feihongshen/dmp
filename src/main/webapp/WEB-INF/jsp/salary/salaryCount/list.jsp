@@ -158,7 +158,8 @@ function seeoralter(){
 				$("#batchid").val(data.batchid);//批次编号
 				//$("#hiddenbatchid").val(data.batchid);//(隐藏批次编号，核销时使用)
 				$("#batchstate").val(data.batchstate);//核销状态
-				$("#branchname").val(data.branchname);//站点
+				$("#branchname").val(data.branchid);//站点id
+				//$("#branchname").val(data.branchname);//站点
 				//$("#hiddenbranchid").val(data.branchid);//(隐藏站点，核销时使用)
 				$("#salarydata").val(salaryStr);
 				$("#starttime").val(data.starttime);//开始时间
@@ -343,6 +344,13 @@ function removeDeliveryUserData(){
 		}
 	});
 }
+
+//$('#add').dialog('close');
+function returntolist(){
+	$('#save').dialog('close');
+	window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
+}
+
 </script>
 </head>
 
@@ -462,21 +470,20 @@ function removeDeliveryUserData(){
        		</td>
        		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
        		<td nowrap="nowrap" style="width: 20%;">
-       		<%-- <select name="branchid" style="width: 100%">
-       		 <option value="-1"></option>
-       		 <c:forEach items="${ branchList}" var="branch">
-       		 <option value="${branch.branchid }">${branch.branchname }</option>
-       		 </c:forEach>
-       		</select> --%>
-       		<input type="text" name="branchid" class="easyui-validatebox" 
+	       		<select name="branchid" style="width: 100%">
+	       		 	<option value="-1"></option>
+		       		<c:forEach items="${ branchList}" var="branch">
+		       			<option value="${branch.branchid }">${branch.branchname }</option>
+		       		</c:forEach>
+	       		</select>
+       		<!-- <input type="text" name="branchid" class="easyui-validatebox" 
 				initDataType="TABLE" 
 				initDataKey="Branch" 
 				viewField="branchname" 
 	  	        saveField="branchid"
 	  	        filterField="sitetype" 
 				filterVal="2"  
-				data-options="width:150,prompt: '站点'"
-			/>
+				data-options="width:150,prompt: '站点'"/> -->
        		</td>
        	</tr>
        	<tr>
@@ -507,7 +514,7 @@ function removeDeliveryUserData(){
 		<form action="${ctx}/salaryCount/hexiao" method="post" id="saveform">
         	<tr>
 	         	<td colspan="5"  align="left" valign="bottom">
-		         	<input type="button" class="input_button2" value="返回" onclick="$('#save').dialog('close');"/>
+		         	<input type="button" class="input_button2" value="返回" onclick="returntolist();"/>
 		         	<input type="button" class="input_button2" value="保存" onclick="saveform();"/>
 		         	<!-- <input type="hidden" name="isnow" value="1" /> -->
 		         	<input type="button" class="input_button2" value="核销完成" onclick="hexiao();" />
@@ -525,16 +532,7 @@ function removeDeliveryUserData(){
 							<tr>
 								<td>
 									<input type="file"   name="Filedata" id="filename" onchange="showButton()" accept=".xls,.xlsx"/> <!--  -->
-									<!-- <input type="hidden" id="hiddenbatchid" name="hiddenbatchid" value="" />
-									<input type="hidden" id="hiddenbranchid" name="hiddenbranchid" value=""/> -->
 									<input type="hidden" id="salarydata" name="salarydata" />
-									<%-- <input type="hidden" id="salarycount" name="salarycount" value="${salarycount}" /> --%>
-									<%-- <input type="hidden" name="batchid" value="${salary.isnow!=-1?salary.batchid:salarycount.batchid}"></input>
-									<input type="hidden" name="batchstate" value="${salary.batchstate}"></input>
-									<input type="hidden" name="branchid" value="${salary.branchid"></input>
-									<input type="hidden" name="starttime" value="${salary.isnow!=-1?(salary.starttime):(salarycount.starttime)}"></input>
-									<input type="hidden" name="endtime" value="${salary.isnow!=-1?(salary.endtime):(salarycount.endtime)}"></input>
-									<input type="hidden" name="remark" value="${salary.isnow!=-1?(salary.remark):(salarycount.remark)}"></input> --%>
 								</td>
 								<td>
 									<input type="button" class="input_button2" value="确认" disabled="disabled" id="subfile" onclick="submitform();"/>

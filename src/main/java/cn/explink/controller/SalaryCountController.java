@@ -4,7 +4,6 @@
 package cn.explink.controller;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -38,6 +33,7 @@ import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryGather;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BatchSateEnum;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.Excel2003Extractor;
@@ -102,7 +98,7 @@ public class SalaryCountController {
 			@RequestParam(value = "edit",required = false,defaultValue = "0") int edit,*/
 			Model model) {
 		
-		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
+		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"",BranchEnum.ZhanDian.getValue());
 		List<User> userList=this.userDAO.getAllUser();
 		String userids="";
 		String branchids="";
@@ -195,7 +191,7 @@ public class SalaryCountController {
 			this.salaryCountDAO.cresalaryCount(salaryCount);
 			/*this.salaryGatherDao.cresalaryGather(salaryCount);*/
 			SalaryCount salary=this.salaryCountDAO.getSalaryCountBybatchid(salaryCount.getBatchid());
-			List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
+			List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"",BranchEnum.ZhanDian.getValue());
 			List<User> userList=this.userDAO.getAllUser();
 			model.addAttribute("salary", salary);
 			model.addAttribute("branchList", branchList);
@@ -211,7 +207,7 @@ public class SalaryCountController {
 	public String seeOralter(Model model,HttpServletRequest request){
 		String batchid = request.getParameter("batchid");
 		SalaryCount salary=this.salaryCountDAO.getSalaryCountBybatchid(batchid);
-		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
+		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"",BranchEnum.ZhanDian.getValue());
 		List<SalaryGather> salaryGathers=salaryGatherDao.getSalaryGathers(batchid);
 		for(Branch b:branchList){
 			if(b.getBranchid()==salary.getBranchid()){
@@ -309,7 +305,7 @@ public class SalaryCountController {
 		final User user=this.getSessionUser();
 		final long importflag=System.currentTimeMillis();
 		List<SalaryGather> sgList = new ArrayList<SalaryGather>();
-		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"");
+		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"",BranchEnum.ZhanDian.getValue());
 		if (excelExtractor != null) {
 			
 			//数据导入并计算工资
