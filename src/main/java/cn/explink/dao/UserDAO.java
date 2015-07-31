@@ -968,7 +968,8 @@ public class UserDAO {
 		String sql = "select * from express_set_user where userid in("+userids+")";
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
 	}
-
+	
+	@CacheEvict(value = "userCache", key = "#userid")
 	public long updatelateradvanceByuserid(long userid, BigDecimal add) {
 		String sql = "update express_set_user set lateradvance=? where userid=?";
 		return this.jdbcTemplate.update(sql,add,userid);
