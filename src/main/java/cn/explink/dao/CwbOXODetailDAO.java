@@ -63,147 +63,156 @@ public class CwbOXODetailDAO {
 			String cwbOrderTypeId) {
 
 		// 揽件指令查询SQL
-		String pickSql = "select "
+		StringBuilder pickSql = new StringBuilder();
+		pickSql.append("select "
 				+ OXOTypePick
 				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 and pickbranchid = "
 				+ currentBranchId + " and cwbordertypeid in (" + OXOValue + ","
-				+ OXOJITValue + ")";
+				+ OXOJITValue + ")");
 		if (startDate.length() > 0) {
-			pickSql += " and credate >= DATE('" + startDate + "')";
+			pickSql.append(" and credate >= str_to_date('" + startDate + "','%Y-%m-%d %H:%i:%s')" );
 		}
 		if (endDate.length() > 0) {
-			pickSql += " and credate <= DATE('" + endDate + "')";
+			pickSql.append(" and credate <= str_to_date('" + endDate + "','%Y-%m-%d %H:%i:%s')" );
 		}
 		if (customerId.length() > 0 && !"0".equals(customerId)) {
-			pickSql += " and customerid in (" + customerId + ")";
+			pickSql.append(" and customerid in (" + customerId + ")" );
 		}
 		if (cwbOXOStateId.length() > 0) {
-			pickSql += " and oxopickstate =" + cwbOXOStateId;
+			pickSql.append(" and oxopickstate =" + cwbOXOStateId );
 		}
 		if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
-			pickSql += " and cwbordertypeid =" + cwbOrderTypeId;
+			pickSql.append(" and cwbordertypeid =" + cwbOrderTypeId );
 		}
 
 		//配送指令查询SQL
-		String deliverySql = "select "
+		StringBuilder deliverySql = new StringBuilder();
+		
+		deliverySql.append("select "
 				+ OXOTypeDelivery
 				+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
 				+ " and deliverybranchid = " + currentBranchId 
 				+ " and cwbordertypeid =" + OXOValue 
 				+ " and currentbranchid = " + currentBranchId
-				+ " and oxopickstate = " + OXOStateProcessedValue;
+				+ " and oxopickstate = " + OXOStateProcessedValue );
 		    
 		if (startDate.length() > 0) {
-			deliverySql += " and credate >= DATE('" + startDate + "')";
+			pickSql.append(" and credate >= str_to_date('" + startDate + "','%Y-%m-%d %H:%i:%s')" );
 		}
 		if (endDate.length() > 0) {
-			deliverySql += " and credate <= DATE('" + endDate + "')";
+			pickSql.append(" and credate <= str_to_date('" + endDate + "','%Y-%m-%d %H:%i:%s')" );
 		}
 		if (customerId.length() > 0 && !"0".equals(customerId)) {
-			deliverySql += " and customerid in (" + customerId + ")";
+			deliverySql.append(" and customerid in (" + customerId + ")" );
 		}
 		if (cwbOXOStateId.length() > 0) {
-			deliverySql += " and oxodeliverystate =" + cwbOXOStateId;
+			deliverySql.append(" and oxodeliverystate =" + cwbOXOStateId );
 		}
 		if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
-			deliverySql += " and cwbordertypeid =" + cwbOrderTypeId;
+			deliverySql.append(" and cwbordertypeid =" + cwbOrderTypeId );
 		}
 		
 		if (OXOStateUnProcessedValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + fenZhanDaoHuo;
+			deliverySql.append(" and flowordertype = " + fenZhanDaoHuo );
 		} else if (OXOStateProcessingValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + fenZhanLingHuo;
+			deliverySql.append(" and flowordertype = " + fenZhanLingHuo );
 		} else if (OXOStateProcessedValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + yiShenHe;
+			deliverySql.append(" and flowordertype = " + yiShenHe );
 		}
 		
-		String sql = "select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,pay.payway  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(";
+		StringBuilder sql = new StringBuilder();
+		sql.append("select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,pay.payway  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(" );
 		if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
-			sql += pickSql + " union " + deliverySql;
+			sql.append(pickSql + " union " + deliverySql );
 		} else {
 			if (OXOTypePick.equals(cwbOXOTypeId)) { // 揽收
-				sql += pickSql;
+				sql.append(pickSql);
 			} else if (OXOTypeDelivery.equals(cwbOXOTypeId)) {// 配送
-				sql += deliverySql;
+				sql.append(deliverySql);
 			}
 		}
-		sql += ")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid order by cwb.credate desc limit "
+		sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid order by cwb.credate desc limit "
 				+ ((page - 1) * Page.ONE_PAGE_NUMBER)
 				+ " ,"
-				+ Page.ONE_PAGE_NUMBER;
+				+ Page.ONE_PAGE_NUMBER );
 
-		return this.jdbcTemplate.query(sql, new CwbOXODetailRowMapper());
+		return this.jdbcTemplate.query(sql.toString(), new CwbOXODetailRowMapper());
 	}
 
 	public long getCwbOXODetailCount(long currentBranchId, String startDate,
 			String endDate, String cwbOXOTypeId, String cwbOXOStateId,
 			String customerId, String cwbOrderTypeId) {
 
-		String pickSql = "select "
-				+ OXOTypePick
-				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 and pickbranchid = "
-				+ currentBranchId + " and cwbordertypeid in (" + OXOValue + ","
-				+ OXOJITValue + ")";
-		if (startDate.length() > 0) {
-			pickSql += " and credate >= DATE('" + startDate + "')";
-		}
-		if (endDate.length() > 0) {
-			pickSql += " and credate <= DATE('" + endDate + "')";
-		}
-		if (customerId.length() > 0 && !"0".equals(customerId)) {
-			pickSql += " and customerid in (" + customerId + ")";
-		}
-		if (cwbOXOStateId.length() > 0) {
-			pickSql += " and oxopickstate =" + cwbOXOStateId;
-		}
-		if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
-			pickSql += " and cwbordertypeid =" + cwbOrderTypeId;
-		}
+		// 揽件指令查询SQL
+				StringBuilder pickSql = new StringBuilder();
+				pickSql.append("select "
+						+ OXOTypePick
+						+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 and pickbranchid = "
+						+ currentBranchId + " and cwbordertypeid in (" + OXOValue + ","
+						+ OXOJITValue + ")");
+				if (startDate.length() > 0) {
+					pickSql.append(" and credate >= str_to_date('" + startDate + "','%Y-%m-%d %H:%i:%s')" );
+				}
+				if (endDate.length() > 0) {
+					pickSql.append(" and credate <= str_to_date('" + endDate + "','%Y-%m-%d %H:%i:%s')" );
+				}
+				if (customerId.length() > 0 && !"0".equals(customerId)) {
+					pickSql.append(" and customerid in (" + customerId + ")" );
+				}
+				if (cwbOXOStateId.length() > 0) {
+					pickSql.append(" and oxopickstate =" + cwbOXOStateId );
+				}
+				if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
+					pickSql.append(" and cwbordertypeid =" + cwbOrderTypeId );
+				}
 
-		String deliverySql = "select "
-				+ OXOTypeDelivery
-				+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
-				+ " and deliverybranchid = " + currentBranchId 
-				+ " and cwbordertypeid =" + OXOValue 
-				+ " and currentbranchid = " + currentBranchId
-				+ " and oxopickstate = " + OXOStateProcessedValue;
-		    
-
-		if (startDate.length() > 0) {
-			deliverySql += " and credate >= DATE('" + startDate + "')";
-		}
-		if (endDate.length() > 0) {
-			deliverySql += " and credate <= DATE('" + endDate + "')";
-		}
-		if (customerId.length() > 0 && !"0".equals(customerId)) {
-			deliverySql += " and customerid in (" + customerId + ")";
-		}
-		if (cwbOXOStateId.length() > 0) {
-			deliverySql += " and oxodeliverystate =" + cwbOXOStateId;
-		}
-		if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
-			deliverySql += " and cwbordertypeid =" + cwbOrderTypeId;
-		}
-		
-		if (OXOStateUnProcessedValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + fenZhanDaoHuo;
-		} else if (OXOStateProcessingValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + fenZhanLingHuo;
-		} else if (OXOStateProcessedValue.equals(cwbOXOStateId)) {
-			deliverySql += " and flowordertype = " + yiShenHe;
-		}
-		
-		String sql = "select count(1)  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(";
-		if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
-			sql += pickSql + " union " + deliverySql;
-		} else {
-			if (OXOTypePick.equals(cwbOXOTypeId)) { // 揽收
-				sql += pickSql;
-			} else if (OXOTypeDelivery.equals(cwbOXOTypeId)) {// 配送
-				sql += deliverySql;
-			}
-		}
-		sql += ")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid";
-		return this.jdbcTemplate.queryForInt(sql);
+				//配送指令查询SQL
+				StringBuilder deliverySql = new StringBuilder();
+				
+				deliverySql.append("select "
+						+ OXOTypeDelivery
+						+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
+						+ " and deliverybranchid = " + currentBranchId 
+						+ " and cwbordertypeid =" + OXOValue 
+						+ " and currentbranchid = " + currentBranchId
+						+ " and oxopickstate = " + OXOStateProcessedValue );
+				    
+				if (startDate.length() > 0) {
+					pickSql.append(" and credate >= str_to_date('" + startDate + "','%Y-%m-%d %H:%i:%s')" );
+				}
+				if (endDate.length() > 0) {
+					pickSql.append(" and credate <= str_to_date('" + endDate + "','%Y-%m-%d %H:%i:%s')" );
+				}
+				if (customerId.length() > 0 && !"0".equals(customerId)) {
+					deliverySql.append(" and customerid in (" + customerId + ")" );
+				}
+				if (cwbOXOStateId.length() > 0) {
+					deliverySql.append(" and oxodeliverystate =" + cwbOXOStateId );
+				}
+				if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
+					deliverySql.append(" and cwbordertypeid =" + cwbOrderTypeId );
+				}
+				
+				if (OXOStateUnProcessedValue.equals(cwbOXOStateId)) {
+					deliverySql.append(" and flowordertype = " + fenZhanDaoHuo );
+				} else if (OXOStateProcessingValue.equals(cwbOXOStateId)) {
+					deliverySql.append(" and flowordertype = " + fenZhanLingHuo );
+				} else if (OXOStateProcessedValue.equals(cwbOXOStateId)) {
+					deliverySql.append(" and flowordertype = " + yiShenHe );
+				}
+				
+				StringBuilder sql = new StringBuilder();
+				sql.append("select count(1) FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(" );
+				if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
+					sql.append(pickSql + " union " + deliverySql );
+				} else {
+					if (OXOTypePick.equals(cwbOXOTypeId)) { // 揽收
+						sql.append(pickSql);
+					} else if (OXOTypeDelivery.equals(cwbOXOTypeId)) {// 配送
+						sql.append(deliverySql);
+					}
+				}
+				sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid " );
+		return this.jdbcTemplate.queryForInt(sql.toString());
 	}
 }
