@@ -405,8 +405,8 @@ function addArea(tab, areaname, areaid) {
 		$area_table[0].id = tab + "_area_table_" + areaid;
 		$area_table.find("#areaid").val(areaid);
 		$area_table.find("#areaname").text(areaname);
-		var overbig = "overbig" + areaid;
-		var overweight = "overweight" + areaid;
+		var overbig = "overbig_" + areaid;
+		var overweight = "overweight_" + areaid;
 		if ($("#edit_ruletype1").val() == 2) {
 			$area_table.find("#overbig_table")[0].id = tab + "_" + overbig + "_table";
 		}
@@ -416,7 +416,7 @@ function addArea(tab, areaname, areaid) {
 		$area_table.find("#overweight_checbox").attr('onclick', 'AllTR("' + tab + '","' + overweight + '")');
 
 		$area_table.find("#overbig_remove").attr('onclick', 'removeTR("' + tab + '","' + overbig + '")');
-		$area_table.find("#overweight__remove").attr('onclick', 'removeTR("' + tab + '","' + overweight + '")');
+		$area_table.find("#overweight_remove").attr('onclick', 'removeTR("' + tab + '","' + overweight + '")');
 
 		$area_table.find("#overweight_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overweight + '")');
 		$area_table.find("#overbig_add").attr('onclick', 'addTROfOverArea("' + tab + '","' + overbig + '")');
@@ -748,7 +748,7 @@ function subAreaEidt(e, areaid, type) {
 		areafee = $(e).parent().find("areafee").val();
 		overbigflag = -1;
 	} else if (type == 'overbigflag') {
-		var flag = $(e).parent().parent().find("overbigflag").checked;
+		var flag = $(e).parent().parent().find("#overbigflag").checked;
 		if (flag) {
 			overbigflag = 1;
 		} else {

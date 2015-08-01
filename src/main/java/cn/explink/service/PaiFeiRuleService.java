@@ -918,8 +918,17 @@ public class PaiFeiRuleService {
 	public BigDecimal getOverbigFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
+		List<Area> areas = this.areaDAO.getAllArea();
 		BigDecimal areafee = new BigDecimal("0");
 		if (co != null) {
+			Area area = null;
+			String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+			String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
+
+			area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
+			if (area != null) {
+				areaid = area.getId();
+			}
 			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 			if (pFarea != null) {
 				if (pFarea.getOverbigflag() == 1) {
@@ -953,7 +962,16 @@ public class PaiFeiRuleService {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
 		BigDecimal areafee = new BigDecimal("0");
+		List<Area> areas = this.areaDAO.getAllArea();
 		if (co != null) {
+			Area area = null;
+			String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+			String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
+
+			area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
+			if (area != null) {
+				areaid = area.getId();
+			}
 			PFarea pFarea = this.pFareaDAO.getPFareaBypfruleidAndTabidAndAreaid(pfruleid, tab.getValue(), areaid);
 			if (pFarea != null) {
 				BigDecimal carrealweight = co.getCarrealweight();
@@ -976,9 +994,19 @@ public class PaiFeiRuleService {
 			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
 			List<ExpressSetExceedSubsidyApply> subsidys = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyList();
 			List<PFoverbig> pFoverbigs = this.pFoverbigDAO.getAllPFoverbig();
+			List<Area> areas = this.areaDAO.getAllArea();
 			for (CwbOrder co : cwbOrders) {
 				BigDecimal areafee = new BigDecimal("0");
+
+				Area area = null;
+				String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+				String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
+
+				area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
 				long areaid = 0;
+				if (area != null) {
+					areaid = area.getId();
+				}
 				if (co != null) {
 					PFarea pFarea = this.getPFareaByAreaid(pFareas, areaid);
 					if (pFarea != null) {
@@ -1003,8 +1031,8 @@ public class PaiFeiRuleService {
 								areafee=areafee.add(pFoverbig.getSubsidyfee());
 							}
 						}
-						feeMap.put(co.getCwb(), areafee);
 					}
+					feeMap.put(co.getCwb(), areafee);
 				}
 			}
 
@@ -1016,10 +1044,19 @@ public class PaiFeiRuleService {
 	public Map<String, BigDecimal> getOverweightFeeOfBacth(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
 		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
 		if (cwbOrders != null) {
+			List<Area> areas = this.areaDAO.getAllArea();
 			List<PFarea> pFareas = this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tab.getValue());
 			List<PFoverweight> pFoverweights = this.pFoverweightDAO.getAllPfoverweight();
 			for (CwbOrder co : cwbOrders) {
 				long areaid = 0;
+				Area area = null;
+				String cwbcity = StringUtil.nullConvertToEmptyString(co.getCity());
+				String cwbarea = StringUtil.nullConvertToEmptyString(co.getArea());
+
+				area = this.getAreaByCityAndArea(areas, cwbcity, cwbarea);
+				if (area != null) {
+					areaid = area.getId();
+				}
 				BigDecimal areafee = new BigDecimal("0");
 				if (co != null) {
 					PFarea pFarea = this.getPFareaByAreaid(pFareas, areaid);

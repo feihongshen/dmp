@@ -761,7 +761,7 @@
 			<c:if test="${area.typeid!=2 }">
 			<tr id="overbigflagtrno">
 			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
-			<td align="left"><input type="button" value="保存" onclick="subAreaEidt('${area.id }','overbigflag')" /></td>
+			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
 			</tr>
 			</c:if>
 			<c:if test="${area.typeid==2 }">
