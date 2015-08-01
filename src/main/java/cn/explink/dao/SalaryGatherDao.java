@@ -216,4 +216,5 @@ public class SalaryGatherDao {
 			return 0;
 		}
 	}
+	
 }

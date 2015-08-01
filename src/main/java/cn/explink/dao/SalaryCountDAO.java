@@ -199,5 +199,15 @@ public class SalaryCountDAO {
 			return null;
 		}
 	}
+	
+	public int getSalaryCountWithHexiao(long batchstate,long batchid){
+		try{
+			String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=? ";
+			 return this.jdbcTemplate.queryForInt(sql,batchid,batchstate);
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
+	}
 
 }

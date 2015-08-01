@@ -324,25 +324,26 @@ function removeDeliveryUserData(){
 		return;
 	}
 	/* var batchid=$("#sg"+userids.split(",")[0]).children("td").eq(1).text(); */
-	var batchidReal=$("#batchid").val();
-	$.ajax({
-		type:'post',
-		url:"<%=request.getContextPath()%>/salaryCount/removeDeliveryUserSalaryData",
-		data:{userids:userids.substring(0,userids.length-1),
-				batchid:batchidReal
-				},
-		dataType:'json',
-		success:function (data){
-			if(data.errorCode==0){
-				
-				for(var i=0; i<userids.split(",").length;i++){
-					$("tr[id=sg"+userids.split(",")[i]+"]").remove();
+	if(confirm("确定要移除这些记录吗？？")){
+		var batchidReal=$("#batchid").val();
+		$.ajax({
+			type:'post',
+			url:"<%=request.getContextPath()%>/salaryCount/removeDeliveryUserSalaryData",
+			data:{userids:userids.substring(0,userids.length-1),
+					batchid:batchidReal
+					},
+			dataType:'json',
+			success:function (data){
+				alert(data.error);
+				if(data.errorCode==0){
+					for(var i=0; i<userids.split(",").length;i++){
+						$("tr[id=sg"+userids.split(",")[i]+"]").remove();
+					}
 				}
+				
 			}
-			alert(data.error);
-			
-		}
-	});
+		});
+	}
 }
 
 //$('#add').dialog('close');
@@ -520,7 +521,7 @@ function returntolist(){
 		         	<input type="button" class="input_button2" value="核销完成" onclick="hexiao();" />
 	         	</td>
 	         	<td>
-	         		<input type="button"  style="width:110px;" class="input_button2" id="imp"  onclick="showUp()" value="人事数据导入"/>
+	         		<input type="button"   class="input_button1" id="imp"  onclick="showUp()" value="人事数据导入"/>
 	         	</td>
          	</tr>
      	</form>    	

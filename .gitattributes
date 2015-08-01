@@ -1265,6 +1265,7 @@ src/main/java/cn/explink/domain/SmtOrderContainer.java -text
 src/main/java/cn/explink/domain/Smtcount.java -text
 src/main/java/cn/explink/domain/StockDetail.java -text
 src/main/java/cn/explink/domain/StockResult.java -text
+src/main/java/cn/explink/domain/SumPrice.java -text
 src/main/java/cn/explink/domain/Switch.java -text
 src/main/java/cn/explink/domain/SystemInstall.java -text
 src/main/java/cn/explink/domain/TimeEffectiveVO.java -text

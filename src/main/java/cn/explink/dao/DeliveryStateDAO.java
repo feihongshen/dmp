@@ -1634,7 +1634,7 @@ public class DeliveryStateDAO {
 		return cwblist;
 	}
 
-	public List<Smtcount> getLinghuoCount(long userid, String starttime,
+	public List<Smtcount> getShenheCount(long userid, String starttime,
 			String endtime) {
 		try{
 			String sql = "select customerid,count(1) as pscount  from express_ops_delivery_state where deliveryid=? and auditingtime>='"+starttime+" 00:00:00' and auditingtime<='"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1  group by customerid";

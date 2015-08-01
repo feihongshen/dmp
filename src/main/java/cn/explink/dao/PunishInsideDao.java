@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeInsideShenhe;
+import cn.explink.domain.SumPrice;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
@@ -114,11 +115,16 @@ public class PunishInsideDao {
 			}
 		});
 	}
-	private final class SumPriceROwMapper implements RowMapper<BigDecimal>{
+	private final class SumPriceROwMapper implements RowMapper<Double>{
 
 		@Override
-		public BigDecimal mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return rs.getBigDecimal(1);
+		public Double mapRow(ResultSet rs, int rowNum) throws SQLException {
+/*			sumPrice.setPrice();
+*///			System.out.println(rs.getString("price"));
+//			System.out.println(rs.getDouble(1));
+//			System.out.println(rs.getLong("price"));
+//			System.out.println(rs.getString(1));
+			 return rs.getDouble("price");
 		}
 		
 	}
@@ -353,28 +359,29 @@ public class PunishInsideDao {
 	 * @param userid
 	 */
 	public BigDecimal getKouFaPrice(String cwbs,long userid,long flag){
-		BigDecimal sumprice = null;
+		Double sumprices=null;
 		try {
 		StringBuffer buffer=new StringBuffer();
 		if (flag==1) {//扣款撤销
-			buffer.append("select SUM(shenhepunishprice)");
+			buffer.append("select SUM(a.shenhepunishprice) as price   ");
 		}else if (flag==2) {//货损赔偿
-			buffer.append("select SUM(lastgoodpunishprice)");
+			buffer.append("select SUM(a.lastgoodpunishprice) as price  ");
 		}else if (flag==3) {//违纪违规扣罚
-			buffer.append("select SUM(lastqitapunishprice)");
+			buffer.append("select SUM(a.lastqitapunishprice) as price  ");
 		}
-		buffer.append("from express_ops_punishInside_detail where cwb IN(?) and dutypersonid=?");
+		buffer.append("from express_ops_punishInside_detail as a where a.cwb IN("+ cwbs +") and a.dutypersonid=?");
 		if (flag==1) {
-			buffer.append(" and punishcwbstate="+PunishInsideStateEnum.koufachexiao.getValue());
+			buffer.append(" and a.punishcwbstate="+PunishInsideStateEnum.koufachexiao.getValue());
 		}else {
-			buffer.append(" and punishcwbstate="+PunishInsideStateEnum.koufachengli.getValue());
+			buffer.append(" and a.punishcwbstate="+PunishInsideStateEnum.koufachengli.getValue());
 		}
-		
-			sumprice=this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(), cwbs,userid);
-		} catch (DataAccessException e) {
+			
+			sumprices = this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(),userid);
+/*			sumprices=this.jdbcTemplate.query(buffer.toString(), new SumPriceROwMapper(),userid);
+*/		} catch (DataAccessException e) {
 			this.logger.error("在对内扣罚表中查询扣款撤销或货损赔偿或违纪违规扣罚时出现异常",e);
 		}
-		return sumprice==null?new BigDecimal("0.00"):sumprice;
+		return sumprices==null?new BigDecimal("0.00"):new  BigDecimal(sumprices);
 
 	}
 	

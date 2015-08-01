@@ -12,8 +12,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.SalaryCountDAO;
@@ -344,12 +347,22 @@ public class SalaryCountController {
 	public @ResponseBody String removeDeliveryUserSalaryData(@RequestParam(value="userids",defaultValue="",required=false)String userids,
 			@RequestParam(value="batchid",defaultValue="0",required=false)long batchid
 			){
-		//根据小件员的id来删除相关的信息
-		int influencecount=salaryGatherDao.removeDeliveryUserSalaryData(userids,batchid);
-		if (influencecount>0) {
-			return "{\"errorCode\":0,\"error\":\"删除成功\"}";
-		}else {
-			return "{\"errorCode\":0,\"error\":\"删除失败\"}";
+		try {
+			int count=salaryCountDAO.getSalaryCountWithHexiao(BatchSateEnum.Yihexiao.getValue(), batchid);
+			if(count>0){
+				return "{\"errorCode\":1,\"error\":\"已核销的批次号不能移除数据\"}";
+			}
+			//根据小件员的id来删除相关的信息
+			int influencecount=salaryGatherDao.removeDeliveryUserSalaryData(userids,batchid);
+			if (influencecount>0) {
+				return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+			}else {
+				return "{\"errorCode\":0,\"error\":\"删除失败\"}";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "{\"errorCode\":1,\"error\":\"系统内部异常，请排查！！\"}";
 		}
 		
 	}

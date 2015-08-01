@@ -574,7 +574,7 @@ public class PunishInsideService {
 		}
 		public boolean checkisshenhe(long id){
 			PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
-			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.daishenhe.getValue()) {
+			if (penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachengli.getValue()||penalizeInside.getPunishcwbstate()==PunishInsideStateEnum.koufachexiao.getValue()) {
 				return true;
 			}
 		

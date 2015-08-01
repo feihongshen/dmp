@@ -2,6 +2,7 @@ package cn.explink.service;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -255,7 +256,7 @@ public class SalaryGatherService {
 	public List<BigDecimal> getKpiOthers(long userid,String starttime,String endtime){
 		List<Map> mapLists = new ArrayList<Map>();
 		List<Map> mapList = new ArrayList<Map>();
-		List<Smtcount> scList = this.deliveryStateDAO.getLinghuoCount(userid,starttime,endtime);
+		List<Smtcount> scList = this.deliveryStateDAO.getShenheCount(userid,starttime,endtime);
 		List<Smtcount> linghuos  = this.deliveryStateDAO.getLinghuocwbs(userid,starttime,endtime);
 		List<Paybusinessbenefits> pbbfList = this.paybusinessbenefitsDao.getAllpbbf();
 		if(scList!=null&&!scList.isEmpty()&&!linghuos.isEmpty()&&linghuos!=null){
@@ -274,11 +275,15 @@ public class SalaryGatherService {
 			for(Map map : mapList){
 				long customerid = (Long)(map.get(1));
 				double tuotoulv = (Double)(map.get(2));
+				NumberFormat nf = NumberFormat.getPercentInstance();
+				nf.setMinimumFractionDigits(2);
+				String strs = nf.format(tuotoulv);
+				double db = Double.parseDouble(strs.split("%")[0]);
 				for(Paybusinessbenefits pbbf : pbbfList){
 					if(customerid == pbbf.getCustomerid()){
 						double lower = Double.parseDouble((pbbf.getLower()==null)||("".equals(pbbf.getLower()))?"0":pbbf.getLower());
 						double upper = Double.parseDouble((pbbf.getUpper()==null)||("".equals(pbbf.getUpper()))?"0":pbbf.getUpper());
-						if(tuotoulv>lower&&tuotoulv<=upper){
+						if(db>lower&&db<=upper){
 							Map maps = new HashMap();
 							maps.put(1, pbbf.getCustomerid());//供货商
 							maps.put(2, pbbf.getKpifee());//kpi业务补助
